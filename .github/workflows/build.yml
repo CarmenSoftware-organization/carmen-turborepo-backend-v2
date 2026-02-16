@@ -91,6 +91,12 @@ jobs:
     environment: production
 
     steps:
+      - name: Test SSH connectivity
+        run: |
+          echo "Testing connectivity to SSH host..."
+          nc -zv -w 10 ${{ secrets.INSTANCE_HOST }} 22 || echo "NC failed"
+          curl -v telnet://${{ secrets.INSTANCE_HOST }}:22 --connect-timeout 10 2>&1 | head -5 || echo "Curl failed"
+
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -99,6 +105,7 @@ jobs:
           key: ${{ secrets.INSTANCE_SSH_KEY }}
           port: 22
           command_timeout: 30m
+          debug: true
           script: |
             # Load shell profile for PATH
             source ~/.bashrc 2>/dev/null || source ~/.bash_profile 2>/dev/null || true
