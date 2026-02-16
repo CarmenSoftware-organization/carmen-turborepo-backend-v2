@@ -91,54 +91,76 @@ jobs:
     environment: production
 
     steps:
-      - name: Test SSH connectivity
-        run: |
-          echo "Testing connectivity to SSH host..."
-          nc -zv -w 10 ${{ secrets.INSTANCE_HOST }} 22 || echo "NC failed"
-          curl -v telnet://${{ secrets.INSTANCE_HOST }}:22 --connect-timeout 10 2>&1 | head -5 || echo "Curl failed"
-
-      - name: Deploy to EC2 via SSH
-        uses: appleboy/ssh-action@v1.2.0
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          host: ${{ secrets.INSTANCE_HOST }}
-          username: ${{ secrets.INSTANCE_USER }}
-          key: ${{ secrets.INSTANCE_SSH_KEY }}
-          port: 22
-          command_timeout: 30m
-          debug: true
-          script: |
-            # Load shell profile for PATH
-            source ~/.bashrc 2>/dev/null || source ~/.bash_profile 2>/dev/null || true
-            export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-            # Set Variables
-            export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-            export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            export AWS_DEFAULT_REGION=${{ secrets.AWS_REGION }}
-            export ECR_REGISTRY=${{ secrets.AWS_ECR_REGISTRY }}
-            export IMAGE_PREFIX=${{ secrets.DOCKER_IMAGE_PREFIX }}
-            export IMAGE_TAG=$(echo "${{ github.sha }}" | cut -c1-7) 
+      - name: Deploy to EC2 via SSM
+        run: |
+          IMAGE_TAG=$(echo "${{ github.sha }}" | cut -c1-7)
 
-            # Login to ECR
-            aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "${{ secrets.INSTANCE_ID }}" \
+            --document-name "AWS-RunShellScript" \
+            --timeout-seconds 1800 \
+            --parameters commands='[
+              "#!/bin/bash",
+              "set -e",
+              "export PATH=/usr/local/bin:/usr/bin:/bin:$PATH",
+              "export AWS_DEFAULT_REGION=${{ secrets.AWS_REGION }}",
+              "export ECR_REGISTRY=${{ secrets.AWS_ECR_REGISTRY }}",
+              "export IMAGE_PREFIX=${{ secrets.DOCKER_IMAGE_PREFIX }}",
+              "export IMAGE_TAG='"$IMAGE_TAG"'",
+              "",
+              "# Login to ECR",
+              "aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY",
+              "",
+              "# Manage Project Directory",
+              "PROJECT_DIR=/home/ec2-user/carmen-turborepo-backend-v2",
+              "if [ ! -d $PROJECT_DIR ]; then git clone https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git $PROJECT_DIR; fi",
+              "cd $PROJECT_DIR",
+              "",
+              "# Update Code",
+              "git remote set-url origin https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git",
+              "git fetch origin main",
+              "git reset --hard origin/main",
+              "",
+              "# Deployment",
+              "docker-compose pull",
+              "docker-compose up -d --remove-orphans",
+              "",
+              "# Cleanup & Status",
+              "docker image prune -f",
+              "echo === Deployment Complete for SHA: '"$IMAGE_TAG"' ===",
+              "docker-compose ps"
+            ]' \
+            --query 'Command.CommandId' --output text)
 
-            # Manage Project Directory
-            PROJECT_DIR="$HOME/carmen-turborepo-backend-v2"
-            if [ ! -d "$PROJECT_DIR" ]; then
-              git clone https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git $PROJECT_DIR
-            fi
-            cd $PROJECT_DIR
+          echo "SSM Command ID: $COMMAND_ID"
 
-            # Update Code
-            git remote set-url origin https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git
-            git fetch origin main
-            git reset --hard origin/main
+          # Wait for command to complete
+          echo "Waiting for deployment to complete..."
+          aws ssm wait command-executed \
+            --command-id "$COMMAND_ID" \
+            --instance-id "${{ secrets.INSTANCE_ID }}" || true
 
-            # Deployment
-            docker-compose pull 
-            docker-compose up -d --remove-orphans
-            
-            # Cleanup & Status
-            docker image prune -f
-            echo "=== Deployment Complete for SHA: ${GITHUB_SHA::7} ==="
-            docker-compose ps
+          # Get command result
+          RESULT=$(aws ssm get-command-invocation \
+            --command-id "$COMMAND_ID" \
+            --instance-id "${{ secrets.INSTANCE_ID }}" \
+            --query '{Status:Status,Output:StandardOutputContent,Error:StandardErrorContent}' \
+            --output json)
+
+          echo "$RESULT" | jq -r '.Output'
+
+          STATUS=$(echo "$RESULT" | jq -r '.Status')
+          if [ "$STATUS" != "Success" ]; then
+            echo "::error::Deployment failed with status: $STATUS"
+            echo "$RESULT" | jq -r '.Error'
+            exit 1
+          fi
+
+          echo "Deployment completed successfully!"
