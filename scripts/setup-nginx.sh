@@ -32,7 +32,7 @@ if [ ! -f /etc/nginx/ssl/carmen-api.crt ]; then
     sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
         -keyout /etc/nginx/ssl/carmen-api.key \
         -out /etc/nginx/ssl/carmen-api.crt \
-        -subj "/C=AU/ST=NSW/L=Sydney/O=Carmen/CN=52.64.239.78"
+        -subj "/C=TH/ST=Bangkok/L=Bangkok/O=Carmen/CN=43.209.126.252"
 fi
 
 if [ ! -f /etc/nginx/ssl/carmen-app.crt ]; then
@@ -40,7 +40,7 @@ if [ ! -f /etc/nginx/ssl/carmen-app.crt ]; then
     sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
         -keyout /etc/nginx/ssl/carmen-app.key \
         -out /etc/nginx/ssl/carmen-app.crt \
-        -subj "/C=AU/ST=NSW/L=Sydney/O=Carmen/CN=52.64.239.78"
+        -subj "/C=TH/ST=Bangkok/L=Bangkok/O=Carmen/CN=43.209.126.252"
 fi
 
 if [ ! -f /etc/nginx/ssl/carmen-platform.crt ]; then
@@ -48,7 +48,7 @@ if [ ! -f /etc/nginx/ssl/carmen-platform.crt ]; then
     sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
         -keyout /etc/nginx/ssl/carmen-platform.key \
         -out /etc/nginx/ssl/carmen-platform.crt \
-        -subj "/C=AU/ST=NSW/L=Sydney/O=Carmen/CN=52.64.239.78"
+        -subj "/C=TH/ST=Bangkok/L=Bangkok/O=Carmen/CN=43.209.126.252"
 fi
 
 # Backup original nginx.conf if not already backed up
@@ -120,7 +120,7 @@ echo ""
 echo "=== Nginx setup complete ==="
 echo ""
 echo "API is now accessible at:"
-echo "  http://ec2-15-135-75-230.ap-southeast-2.compute.amazonaws.com"
-echo "  https://ec2-15-135-75-230.ap-southeast-2.compute.amazonaws.com"
+echo "  http://43.209.126.252"
+echo "  https://43.209.126.252"
 echo ""
 echo "Note: HTTPS uses a self-signed certificate. For production, use Let's Encrypt."
