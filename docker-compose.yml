@@ -1,9 +1,6 @@
 services:
   api-backend-gateway:
-    build:
-      context: .
-      dockerfile: ./apps/backend-gateway/Dockerfile
-    image: ${ECR_REGISTRY:-local}/${IMAGE_PREFIX:-carmen}-backend-gateway:${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY}/${IMAGE_PREFIX}-backend-gateway:${IMAGE_TAG:-latest}
     container_name: carmen-api-backend-gateway
     restart: unless-stopped
     ports:
@@ -23,10 +20,7 @@ services:
       start_period: 40s
 
   api-micro-file:
-    build:
-      context: .
-      dockerfile: ./apps/micro-file/Dockerfile
-    image: ${ECR_REGISTRY:-local}/${IMAGE_PREFIX:-carmen}-micro-file:${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY}/${IMAGE_PREFIX}-micro-file:${IMAGE_TAG:-latest}
     container_name: carmen-api-micro-file
     restart: unless-stopped
     ports:
@@ -42,10 +36,7 @@ services:
       - api-backend-gateway
 
   api-micro-cronjob:
-    build:
-      context: .
-      dockerfile: ./apps/micro-cronjob/Dockerfile
-    image: ${ECR_REGISTRY:-local}/${IMAGE_PREFIX:-carmen}-micro-cronjob:${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY}/${IMAGE_PREFIX}-micro-cronjob:${IMAGE_TAG:-latest}
     container_name: carmen-api-micro-cronjob
     restart: unless-stopped
     ports:
@@ -61,10 +52,7 @@ services:
       - api-backend-gateway
 
   api-micro-keycloak-api:
-    build:
-      context: .
-      dockerfile: ./apps/micro-keycloak-api/Dockerfile
-    image: ${ECR_REGISTRY:-local}/${IMAGE_PREFIX:-carmen}-micro-keycloak-api:${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY}/${IMAGE_PREFIX}-micro-keycloak-api:${IMAGE_TAG:-latest}
     container_name: carmen-api-micro-keycloak-api
     restart: unless-stopped
     ports:
@@ -81,10 +69,7 @@ services:
 
   # Notification service (separated from micro-business)
   api-micro-notification:
-    build:
-      context: .
-      dockerfile: ./apps/micro-notification/Dockerfile
-    image: ${ECR_REGISTRY:-local}/${IMAGE_PREFIX:-carmen}-micro-notification:${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY}/${IMAGE_PREFIX}-micro-notification:${IMAGE_TAG:-latest}
     container_name: carmen-api-micro-notification
     restart: unless-stopped
     ports:
@@ -106,10 +91,7 @@ services:
       start_period: 40s
 
   api-micro-business:
-    build:
-      context: .
-      dockerfile: ./apps/micro-business/Dockerfile
-    image: ${ECR_REGISTRY:-local}/${IMAGE_PREFIX:-carmen}-micro-business:${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY}/${IMAGE_PREFIX}-micro-business:${IMAGE_TAG:-latest}
     container_name: carmen-api-micro-business
     restart: unless-stopped
     ports:
