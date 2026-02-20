@@ -84,6 +84,33 @@ export class PhysicalCountController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  @MessagePattern({ cmd: 'physical-count.review-items', service: 'physical-count' })
+  async reviewItems(@Payload() payload: any): Promise<any> {
+    this.logger.debug({ function: 'reviewItems', payload }, PhysicalCountController.name);
+    const id = payload.id;
+    const data = payload.data;
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.physicalCountService.reviewItems(id, data, user_id, tenant_id),
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({ cmd: 'physical-count.get-review', service: 'physical-count' })
+  async getReview(@Payload() payload: any): Promise<any> {
+    this.logger.debug({ function: 'getReview', payload }, PhysicalCountController.name);
+    const id = payload.id;
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.physicalCountService.findOne(id, user_id, tenant_id),
+    );
+    return this.handleResult(result);
+  }
+
   @MessagePattern({ cmd: 'physical-count.submit', service: 'physical-count' })
   async submit(@Payload() payload: any): Promise<any> {
     this.logger.debug({ function: 'submit', payload }, PhysicalCountController.name);
