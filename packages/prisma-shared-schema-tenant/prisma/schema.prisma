@@ -1477,6 +1477,7 @@ model tb_product {
   tb_spot_check_detail                tb_spot_check_detail[]
   tb_physical_count_detail            tb_physical_count_detail[]
   tb_product_comment                  tb_product_comment[]
+  tb_recipe_ingredient                tb_recipe_ingredient[]
 
   @@unique([code, name, deleted_at], map: "product_code_name_u")
   @@index([code], map: "product_code_idx")
@@ -3168,7 +3169,9 @@ model tb_unit {
 
   @@unique([name, deleted_at], map: "unit_name_deletedat_u")
   @@index([name], map: "unit_name_idx")
-  tb_physical_count_detail tb_physical_count_detail[]
+  tb_physical_count_detail                                                                      tb_physical_count_detail[]
+  tb_recipe_ingredient_ingredient_unit                                                           tb_recipe_ingredient[]    @relation("recipe_ingredient_unit")
+  tb_recipe_ingredient_inventory_unit                                                            tb_recipe_ingredient[]    @relation("recipe_inventory_unit")
 }
 
 model tb_unit_comment {
@@ -5094,4 +5097,477 @@ model tb_physical_count_detail_comment {
   deleted_by_id String?   @db.Uuid
 
   tb_physical_count_detail tb_physical_count_detail @relation(fields: [physical_count_detail_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+// ==========================================
+// Recipe Enums
+// ==========================================
+
+enum enum_cuisine_region {
+  ASIA
+  EUROPE
+  AMERICAS
+  AFRICA
+  MIDDLE_EAST
+  OCEANIA
+}
+
+enum enum_recipe_difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum enum_recipe_status {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum enum_ingredient_type {
+  product
+  recipe
+}
+
+enum enum_temperature_unit {
+  c
+  f
+}
+
+// ==========================================
+// Recipe Models
+// ==========================================
+
+model tb_recipe_cuisines {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  // Basic Information
+  name        String              @db.VarChar
+  description String?             @db.VarChar
+  note        String?             @db.VarChar
+  is_active   Boolean?            @default(true)
+  region      enum_cuisine_region
+
+  // Characteristics
+  popular_dishes  Json @default("[]")
+  key_ingredients Json @default("[]")
+
+  // Relationships
+  tb_recipe tb_recipe[]
+
+  info        Json? @default("{}") @db.JsonB
+  dimension   Json? @default("[]") @db.JsonB
+  doc_version Int   @default(0) @db.Integer
+
+  // Audit Trail
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_by_id String?   @db.Uuid
+  deleted_at    DateTime? @db.Timestamptz(6)
+  deleted_by_id String?   @db.Uuid
+
+  @@unique([name, deleted_at], map: "recipe_cuisines_name_u")
+  @@index([region])
+  @@index([name], map: "recipe_cuisines_name_idx")
+}
+
+model tb_recipe_equipment_category {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @db.VarChar
+  description String?  @db.VarChar
+  note        String?  @db.VarChar
+  is_active   Boolean? @default(true)
+
+  info        Json? @default("{}") @db.JsonB
+  dimension   Json? @default("[]") @db.JsonB
+  doc_version Int   @default(0) @db.Integer
+
+  created_at          DateTime?             @default(now()) @db.Timestamptz(6)
+  created_by_id       String?               @db.Uuid
+  updated_at          DateTime?             @default(now()) @db.Timestamptz(6)
+  updated_by_id       String?               @db.Uuid
+  deleted_at          DateTime?             @db.Timestamptz(6)
+  deleted_by_id       String?               @db.Uuid
+  tb_recipe_equipment tb_recipe_equipment[]
+
+  @@unique([name, deleted_at], map: "recipe_equipment_category_name_u")
+  @@index([name], map: "recipe_equipment_category_name_idx")
+}
+
+model tb_recipe_equipment {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code        String  @db.VarChar
+  name        String  @db.VarChar
+  description String? @db.VarChar
+
+  category_id   String? @db.Uuid
+  category_name String? @db.VarChar
+
+  // Physical details
+  brand     String? @db.VarChar
+  model     String? @db.VarChar
+  serial_no String? @db.VarChar
+
+  // capacity and specifications
+  capacity     String? @db.VarChar
+  power_rating String? @db.VarChar
+
+  // Location and assignment
+  station String? @db.VarChar
+
+  // Operational details
+  operation_instructions String? @db.VarChar
+  safety_notes           String? @db.VarChar
+  cleaning_instructions  String? @db.VarChar
+
+  // maintenance details
+  maintenance_schedule  String?   @db.VarChar
+  last_maintenance_date DateTime? @db.Timestamptz(6)
+  next_maintenance_date DateTime? @db.Timestamptz(6)
+
+  note String? @db.VarChar
+
+  // status and availability
+  is_active     Boolean? @default(true)
+  is_poolable   Boolean? @default(false)
+  available_qty Int?     @default(0)
+  total_qty     Int?     @default(0)
+
+  //usage tracking
+  usage_count        Int?     @default(0)
+  average_usage_time Decimal? @default(0) @db.Decimal(20, 5)
+
+  // media
+  attachments  Json? @default("[]") @db.JsonB
+  manuals_urls Json? @default("[]") @db.JsonB
+
+  info        Json? @default("{}") @db.JsonB
+  dimension   Json? @default("[]") @db.JsonB
+  doc_version Int   @default(0) @db.Integer
+
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_by_id String?   @db.Uuid
+  deleted_at    DateTime? @db.Timestamptz(6)
+  deleted_by_id String?   @db.Uuid
+
+  tb_recipe_equipment_category tb_recipe_equipment_category? @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([code, name, deleted_at], map: "recipe_equipment_code_name_u")
+  @@index([code, name], map: "recipe_equipment_code_name_idx")
+  @@index([name], map: "recipe_equipment_name_idx")
+}
+
+model tb_recipe_category {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  // Basic Information
+  code        String   @db.VarChar
+  name        String   @db.VarChar
+  description String?  @db.VarChar
+  note        String?  @db.VarChar
+  is_active   Boolean? @default(true)
+
+  // Hierarchy
+  parent_id                        String?              @db.Uuid
+  tb_recipe_category_parent        tb_recipe_category?  @relation("CategoryHierarchy", fields: [parent_id], references: [id], onDelete: Restrict)
+  tb_recipe_category_subcategories tb_recipe_category[] @relation("CategoryHierarchy")
+  level                            Int                  @default(1)
+
+  // Default Cost Settings
+  default_cost_settings Json @default("{}") @db.JsonB
+
+  // Default Margins
+  default_margins Json @default("{}") @db.JsonB
+
+  info        Json? @default("{}") @db.JsonB
+  dimension   Json? @default("[]") @db.JsonB
+  doc_version Int   @default(0) @db.Integer
+
+  // Relationships
+  tb_recipe tb_recipe[]
+
+  // Audit Fields
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_by_id String?   @db.Uuid
+  deleted_at    DateTime? @db.Timestamptz(6)
+  deleted_by_id String?   @db.Uuid
+}
+
+model tb_recipe {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  // Basic Information
+  code        String   @db.VarChar
+  name        String   @db.VarChar
+  description String?  @db.VarChar
+  note        String?  @db.VarChar
+  is_active   Boolean? @default(true)
+
+  images Json? @default("[]") @db.JsonB
+
+  // Classification
+  category_id        String             @db.Uuid
+  tb_recipe_category tb_recipe_category @relation(fields: [category_id], references: [id], onDelete: Restrict)
+
+  cuisine_id         String             @db.Uuid
+  tb_recipe_cuisines tb_recipe_cuisines @relation(fields: [cuisine_id], references: [id], onDelete: Restrict)
+
+  difficulty enum_recipe_difficulty @default(MEDIUM)
+
+  // Yield Configuration
+  base_yield      Decimal @db.Decimal(20, 5)
+  base_yield_unit String  @db.VarChar
+
+  default_variant_id      String?                  @db.Uuid
+  tb_recipe_yield_variant tb_recipe_yield_variant? @relation("DefaultVariant", fields: [default_variant_id], references: [id], onDelete: Restrict)
+
+  // Timing
+  prep_time Int @default(0)
+  cook_time Int @default(0)
+
+  // Cost Analysis
+  total_ingredient_cost Decimal @default(0) @db.Decimal(20, 5)
+  labor_cost            Decimal @default(0) @db.Decimal(20, 5)
+  overhead_cost         Decimal @default(0) @db.Decimal(20, 5)
+  cost_per_portion      Decimal @default(0) @db.Decimal(20, 5)
+
+  // Pricing
+  suggested_price             Decimal? @db.Decimal(20, 5)
+  selling_price               Decimal? @db.Decimal(20, 5)
+  target_food_cost_percentage Decimal? @default(33.00) @db.Decimal(20, 5)
+  actual_food_cost_percentage Decimal? @db.Decimal(20, 5)
+  gross_margin                Decimal? @db.Decimal(20, 5)
+  gross_margin_percentage     Decimal? @db.Decimal(20, 5)
+
+  // Cost Percentages
+  labor_cost_percentage Decimal? @default(30.00) @db.Decimal(20, 5)
+  overhead_percentage   Decimal? @default(20.00) @db.Decimal(20, 5)
+
+  // Environmental
+  carbon_footprint Decimal? @default(0) @db.Decimal(20, 5)
+
+  // Inventory
+  deduct_from_stock Boolean @default(true)
+
+  // Status
+  status enum_recipe_status @default(DRAFT)
+
+  // Tags
+  tags      Json @default("[]") @db.JsonB
+  allergens Json @default("[]") @db.JsonB
+
+  published_at DateTime?
+  archived_at  DateTime?
+
+  // Relationships
+  tb_recipe_ingredients       tb_recipe_ingredient[]
+  tb_recipe_preparation_steps tb_recipe_preparation_step[]
+  tb_recipe_yield_variants    tb_recipe_yield_variant[]    @relation("RecipeYieldVariants")
+  tb_recipe_versions          tb_recipe_version[]
+  tb_recipe_pricing_history   tb_recipe_pricing_history[]
+
+  // Recipes using this as sub-recipe
+  tb_recipe_used_in_recipes tb_recipe_ingredient[] @relation("SubRecipeIngredients")
+
+  // Audit Fields
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_by_id String?   @db.Uuid
+  deleted_at    DateTime? @db.Timestamptz(6)
+  deleted_by_id String?   @db.Uuid
+
+  @@unique([code, name, deleted_at], map: "recipe_code_name_u")
+  @@index([code], map: "recipe_code_idx")
+  @@index([name], map: "recipe_name_idx")
+  @@index([code, name], map: "recipe_code_name_idx")
+}
+
+model tb_recipe_ingredient {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  sequence_no Int?    @default(1)
+  name        String  @db.VarChar
+  note        String? @db.VarChar
+
+  recipe_id String    @db.Uuid
+  tb_recipe tb_recipe @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
+
+  // Ingredient Reference
+  ingredient_type enum_ingredient_type
+
+  product_id String?     @db.Uuid
+  tb_product tb_product? @relation(fields: [product_id], references: [id], onDelete: Restrict)
+
+  sub_recipe_id String?    @db.Uuid
+  tb_sub_recipe tb_recipe? @relation("SubRecipeIngredients", fields: [sub_recipe_id], references: [id], onDelete: Restrict)
+
+  // Quantity ingredient
+  qty                Decimal @db.Decimal(20, 5)
+  ingredient_unit_id String  @db.Uuid
+  tb_unit_ingredient tb_unit @relation("recipe_ingredient_unit", fields: [ingredient_unit_id], references: [id], onDelete: Restrict)
+
+  // Quantity inventory
+  inventory_qty     Decimal? @db.Decimal(20, 5)
+  inventory_unit_id String?  @db.Uuid
+  tb_unit_inventory tb_unit? @relation("recipe_inventory_unit", fields: [inventory_unit_id], references: [id], onDelete: Restrict)
+  conversion_factor Decimal? @db.Decimal(20, 5)
+
+  // Costing
+  cost_per_unit      Decimal @default(0) @db.Decimal(20, 5)
+  wastage_percentage Decimal @default(0) @db.Decimal(20, 5)
+  net_cost           Decimal @default(0) @db.Decimal(20, 5)
+  wastage_cost       Decimal @default(0) @db.Decimal(20, 5)
+
+  // Audit Fields
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_by_id String?   @db.Uuid
+  deleted_at    DateTime? @db.Timestamptz(6)
+  deleted_by_id String?   @db.Uuid
+
+  // Yield Variant
+  tb_recipe_yield_variantId String?                  @db.Uuid
+  tb_recipe_yield_variant   tb_recipe_yield_variant? @relation(fields: [tb_recipe_yield_variantId], references: [id])
+}
+
+model tb_recipe_preparation_step {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  recipe_id String    @db.Uuid
+  tb_recipe tb_recipe @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
+
+  // Step Details
+  sequence_no Int
+  title       String? @db.VarChar
+  description String  @db.Text
+
+  // Media
+  images Json? @default("[]") @db.JsonB
+  videos Json? @default("[]") @db.JsonB
+
+  // Timing & Conditions
+  duration         Int?
+  temperature      Decimal?              @db.Decimal(20, 5)
+  temperature_unit enum_temperature_unit? @default(c)
+
+  // Resources
+  equipment  Json @default("[]")
+  techniques Json @default("[]")
+
+  // Tips & Notes
+  chef_notes      String? @db.Text
+  safety_warnings String? @db.Text
+
+  // Audit Fields
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_by_id String?   @db.Uuid
+  deleted_at    DateTime? @db.Timestamptz(6)
+  deleted_by_id String?   @db.Uuid
+}
+
+model tb_recipe_version {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  recipe_id String    @db.Uuid
+  tb_recipe tb_recipe @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
+
+  version_number Int
+
+  // Version Data
+  recipe_data      Json @db.JsonB
+  ingredients_data Json @db.JsonB
+  steps_data       Json @db.JsonB
+  variants_data    Json @db.JsonB
+
+  // Metadata
+  change_summary String? @db.Text
+  published      Boolean @default(false)
+
+  // Audit Fields
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_by_id String?   @db.Uuid
+  deleted_at    DateTime? @db.Timestamptz(6)
+  deleted_by_id String?   @db.Uuid
+}
+
+model tb_recipe_pricing_history {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  recipe_id String    @db.Uuid
+  tb_recipe tb_recipe @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
+
+  variant_id              String?                  @db.Uuid
+  tb_recipe_yield_variant tb_recipe_yield_variant? @relation(fields: [variant_id], references: [id], onDelete: Cascade)
+
+  // Pricing Snapshot
+  cost_per_portion     Decimal @db.Decimal(20, 5)
+  selling_price        Decimal @db.Decimal(20, 5)
+  food_cost_percentage Decimal @db.Decimal(20, 5)
+  gross_margin         Decimal @db.Decimal(20, 5)
+
+  // Market Analysis
+  competitor_avg_price Decimal? @db.Decimal(20, 5)
+  competitor_min_price Decimal? @db.Decimal(20, 5)
+  competitor_max_price Decimal? @db.Decimal(20, 5)
+
+  // Change Reason
+  change_reason  String?  @db.VarChar
+  effective_date DateTime @db.Timestamptz(6)
+
+  // Audit Fields
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_by_id String?   @db.Uuid
+  deleted_at    DateTime? @db.Timestamptz(6)
+  deleted_by_id String?   @db.Uuid
+}
+
+model tb_recipe_yield_variant {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  recipe_id String    @db.Uuid
+  tb_recipe tb_recipe @relation("RecipeYieldVariants", fields: [recipe_id], references: [id], onDelete: Cascade)
+
+  // Variant Details
+  variant_name     String  @db.VarChar
+  variant_unit     String  @db.VarChar
+  variant_quantity Decimal @db.Decimal(20, 5)
+
+  // Conversion
+  conversion_rate Decimal @db.Decimal(20, 5)
+
+  // Pricing
+  cost_per_unit        Decimal? @db.Decimal(20, 5)
+  selling_price        Decimal? @db.Decimal(20, 5)
+  food_cost_percentage Decimal? @db.Decimal(20, 5)
+  gross_margin         Decimal? @db.Decimal(20, 5)
+
+  // Properties
+  is_default   Boolean  @default(false)
+  shelf_life   Int?
+  wastage_rate Decimal? @db.Decimal(20, 5)
+
+  // Ordering Constraints
+  min_order_quantity Int?
+  max_order_quantity Int?
+
+  // Audit Fields
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_by_id String?   @db.Uuid
+  deleted_at    DateTime? @db.Timestamptz(6)
+  deleted_by_id String?   @db.Uuid
+
+  tb_recipe_ingredients     tb_recipe_ingredient[]
+  tb_recipe_pricing_history tb_recipe_pricing_history[]
+  tb_recipe_default_variant tb_recipe[]                 @relation("DefaultVariant")
 }

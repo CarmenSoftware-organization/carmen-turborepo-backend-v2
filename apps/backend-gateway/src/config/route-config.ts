@@ -24,6 +24,10 @@ import { ConfigCronjobModule } from './config_cronjob/config_cronjob.module';
 import { ConfigApplicationRoleModule } from './config_application_role/config_application_role.module';
 import { ConfigPermissionModule } from './config_permission/config_permssion.module';
 import { ConfigUserApplicationRoleModule } from './config_user_application_role/config_user_application_role.module';
+import { Config_RecipeModule } from './config_recipe/config_recipe.module';
+import { Config_RecipeCategoryModule } from './config_recipe-category/config_recipe-category.module';
+import { Config_RecipeCuisineModule } from './config_recipe-cuisine/config_recipe-cuisine.module';
+import { Config_RecipeEquipmentModule } from './config_recipe-equipment/config_recipe-equipment.module';
 
 @Module({
   imports: [
@@ -52,6 +56,10 @@ import { ConfigUserApplicationRoleModule } from './config_user_application_role/
     // Config_UserLocationModule,
     // Config_UnitCommentModule,
     ConfigCronjobModule,
+    Config_RecipeModule,
+    Config_RecipeCategoryModule,
+    Config_RecipeCuisineModule,
+    Config_RecipeEquipmentModule,
   ],
   controllers: [],
   providers: [],

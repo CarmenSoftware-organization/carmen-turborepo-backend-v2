@@ -277,7 +277,7 @@ export class PhysicalCountService {
           location_name: location.name,
           description: data.description || null,
           status: enum_physical_count_status.in_progress,
-          start_counting_at: new Date(),
+          start_counting_at: new Date().toISOString(),
           start_counting_by_id: user_id,
           product_total: stockByProduct.length,
           product_counted: 0,
@@ -369,7 +369,7 @@ export class PhysicalCountService {
             counted_qty: countedQty,
             diff_qty: diffQty,
             updated_by_id: user_id,
-            updated_at: new Date(),
+            updated_at: new Date().toISOString(),
           },
         });
       }
@@ -387,7 +387,7 @@ export class PhysicalCountService {
         data: {
           product_counted: totalCounted,
           updated_by_id: user_id,
-          updated_at: new Date(),
+          updated_at: new Date().toISOString(),
         },
       });
     });
@@ -469,7 +469,7 @@ export class PhysicalCountService {
             on_hand_qty: onHandQty,
             diff_qty: diffQty,
             updated_by_id: user_id,
-            updated_at: new Date(),
+            updated_at: new Date().toISOString(),
           },
         });
       }
@@ -484,7 +484,7 @@ export class PhysicalCountService {
         data: {
           product_counted: totalCounted,
           updated_by_id: user_id,
-          updated_at: new Date(),
+          updated_at: new Date().toISOString(),
         },
       });
     });
@@ -572,7 +572,6 @@ export class PhysicalCountService {
         const stockIn = await tx.tb_stock_in.create({
           data: {
             si_no: siNo,
-            si_date: new Date(),
             description: periodNote,
             doc_status: enum_doc_status.completed,
             doc_version: 0,
@@ -607,7 +606,6 @@ export class PhysicalCountService {
         const stockOut = await tx.tb_stock_out.create({
           data: {
             so_no: soNo,
-            so_date: new Date(),
             description: periodNote,
             doc_status: enum_doc_status.completed,
             doc_version: 0,
@@ -640,10 +638,10 @@ export class PhysicalCountService {
         where: { id: data.id },
         data: {
           status: enum_physical_count_status.completed,
-          completed_at: new Date(),
+          completed_at: new Date().toISOString(),
           completed_by_id: user_id,
           updated_by_id: user_id,
-          updated_at: new Date(),
+          updated_at: new Date().toISOString(),
         },
       });
     });
@@ -694,7 +692,7 @@ export class PhysicalCountService {
       await tx.tb_physical_count_detail.updateMany({
         where: { physical_count_id: id },
         data: {
-          deleted_at: new Date(),
+          deleted_at: new Date().toISOString(),
           deleted_by_id: user_id,
         },
       });
@@ -702,7 +700,7 @@ export class PhysicalCountService {
       await tx.tb_physical_count.update({
         where: { id },
         data: {
-          deleted_at: new Date(),
+          deleted_at: new Date().toISOString(),
           deleted_by_id: user_id,
         },
       });
@@ -830,7 +828,7 @@ export class PhysicalCountService {
       data: {
         ...updateData,
         updated_by_id: user_id,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       },
     });
 
@@ -872,7 +870,7 @@ export class PhysicalCountService {
     await prisma.tb_physical_count_detail_comment.update({
       where: { id },
       data: {
-        deleted_at: new Date(),
+        deleted_at: new Date().toISOString(),
         deleted_by_id: user_id,
       },
     });
