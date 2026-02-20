@@ -19,22 +19,42 @@ export class SpotCheckLogic {
     prisma: any,
     location_id: string,
   ): Promise<ProductAtLocation[]> {
-    const products = await prisma.$queryRaw<ProductAtLocation[]>`
-      SELECT
-        itd.product_id,
-        p.name as product_name,
-        p.code as product_code,
-        p.sku as product_sku,
-        p.inventory_unit_id,
-        COALESCE(SUM(itd.qty), 0) as on_hand_qty
-      FROM tb_inventory_transaction_detail itd
-      JOIN tb_product p ON itd.product_id = p.id
-      WHERE itd.location_id = ${location_id}::uuid
-        AND p.deleted_at IS NULL
-      GROUP BY itd.product_id, p.name, p.code, p.sku, p.inventory_unit_id
-      HAVING COALESCE(SUM(itd.qty), 0) != 0
-    `;
-    return products;
+    // Group inventory transactions by product to get on_hand_qty
+    const stockGrouped = await prisma.tb_inventory_transaction_detail.groupBy({
+      by: ['product_id'],
+      where: { location_id },
+      _sum: { qty: true },
+    });
+
+    // Filter products with non-zero stock
+    const nonZeroStock = stockGrouped.filter(
+      (g: any) => g._sum.qty && !g._sum.qty.equals(0),
+    );
+
+    if (nonZeroStock.length === 0) return [];
+
+    const productIds = nonZeroStock.map((g: any) => g.product_id);
+
+    // Get product details
+    const productRecords = await prisma.tb_product.findMany({
+      where: { id: { in: productIds }, deleted_at: null },
+      select: { id: true, name: true, code: true, sku: true, inventory_unit_id: true },
+    });
+
+    // Build on_hand_qty map
+    const qtyMap = new Map(
+      nonZeroStock.map((g: any) => [g.product_id, g._sum.qty as Prisma.Decimal]),
+    );
+
+    // Combine product details with on_hand_qty
+    return productRecords.map((p: any) => ({
+      product_id: p.id,
+      product_name: p.name,
+      product_code: p.code,
+      product_sku: p.sku,
+      inventory_unit_id: p.inventory_unit_id,
+      on_hand_qty: qtyMap.get(p.id) || new Prisma.Decimal(0),
+    }));
   }
 
   selectRandom(

@@ -65,6 +65,10 @@ import { VendorBusinessTypeModule } from './master/vendor_business_type/vendor_b
 import { VendorsModule } from './master/vendors/vendors.module';
 import { WorkflowsModule } from './master/workflows/workflows.module';
 import { PeriodModule } from './master/period/period.module';
+import { RecipeModule } from './master/recipe/recipe.module';
+import { RecipeCategoryModule } from './master/recipe-category/recipe-category.module';
+import { RecipeCuisineModule } from './master/recipe-cuisine/recipe-cuisine.module';
+import { RecipeEquipmentModule } from './master/recipe-equipment/recipe-equipment.module';
 
 // Procurement modules
 import { CreditNoteModule } from './procurement/credit-note/credit-note.module';
@@ -145,6 +149,10 @@ import { CommonModule } from './common/common.module';
     VendorsModule,
     WorkflowsModule,
     PeriodModule,
+    RecipeModule,
+    RecipeCategoryModule,
+    RecipeCuisineModule,
+    RecipeEquipmentModule,
 
     // Procurement modules (from micro-tenant-procurement)
     CreditNoteModule,

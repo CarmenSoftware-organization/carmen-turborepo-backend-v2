@@ -238,31 +238,36 @@ export class PhysicalCountService {
       return this.findOne(existingCount.id, user_id, tenant_id);
     }
 
-    const stockByProduct = await prisma.$queryRaw<
-      Array<{
-        product_id: string;
-        product_name: string;
-        product_code: string;
-        product_sku: string;
-        inventory_unit_id: string;
-        on_hand_qty: Prisma.Decimal;
-      }>
-    >`
-      SELECT
-        itd.product_id,
-        p.name as product_name,
-        p.code as product_code,
-        p.sku as product_sku,
-        p.inventory_unit_id,
-        COALESCE(SUM(itd.qty), 0) as on_hand_qty
-      FROM tb_inventory_transaction_detail itd
-      JOIN tb_product p ON itd.product_id = p.id
-      WHERE itd.location_id = ${data.location_id}::uuid
-        AND p.deleted_at IS NULL
-      GROUP BY itd.product_id, p.name, p.code, p.sku, p.inventory_unit_id
-      HAVING COALESCE(SUM(itd.qty), 0) != 0
-    `;
+    // Get products that have stock at this location (to know WHICH products to count)
+    // on_hand_qty will be computed later during the review step
+    const stockGrouped = await prisma.tb_inventory_transaction_detail.groupBy({
+      by: ['product_id'],
+      where: { location_id: data.location_id },
+      _sum: { qty: true },
+    });
 
+    // Filter products with non-zero stock
+    const productIdsWithStock = stockGrouped
+      .filter((g) => g._sum.qty && !g._sum.qty.equals(0))
+      .map((g) => g.product_id);
+
+    // Get product details
+    const products = productIdsWithStock.length > 0
+      ? await prisma.tb_product.findMany({
+          where: { id: { in: productIdsWithStock }, deleted_at: null },
+          select: { id: true, name: true, code: true, sku: true, inventory_unit_id: true },
+        })
+      : [];
+
+    const stockByProduct = products.map((p) => ({
+      product_id: p.id,
+      product_name: p.name,
+      product_code: p.code,
+      product_sku: p.sku,
+      inventory_unit_id: p.inventory_unit_id,
+    }));
+
+    // Create physical count and details in transaction
     const result = await prisma.$transaction(async (tx) => {
       const physicalCount = await tx.tb_physical_count.create({
         data: {
@@ -272,7 +277,7 @@ export class PhysicalCountService {
           location_name: location.name,
           description: data.description || null,
           status: enum_physical_count_status.in_progress,
-          start_counting_at: new Date(),
+          start_counting_at: new Date().toISOString(),
           start_counting_by_id: user_id,
           product_total: stockByProduct.length,
           product_counted: 0,
@@ -280,6 +285,7 @@ export class PhysicalCountService {
         },
       });
 
+      // Create details for each product (on_hand_qty = 0, will be computed at review)
       if (stockByProduct.length > 0) {
         const detailsData = stockByProduct.map((item) => ({
           physical_count_id: physicalCount.id,
@@ -288,7 +294,7 @@ export class PhysicalCountService {
           product_code: item.product_code,
           product_sku: item.product_sku,
           inventory_unit_id: item.inventory_unit_id,
-          on_hand_qty: item.on_hand_qty,
+          on_hand_qty: new Prisma.Decimal(0),
           counted_qty: new Prisma.Decimal(0),
           diff_qty: new Prisma.Decimal(0),
           created_by_id: user_id,
@@ -363,7 +369,7 @@ export class PhysicalCountService {
             counted_qty: countedQty,
             diff_qty: diffQty,
             updated_by_id: user_id,
-            updated_at: new Date(),
+            updated_at: new Date().toISOString(),
           },
         });
       }
@@ -381,12 +387,109 @@ export class PhysicalCountService {
         data: {
           product_counted: totalCounted,
           updated_by_id: user_id,
-          updated_at: new Date(),
+          updated_at: new Date().toISOString(),
         },
       });
     });
 
     return this.findOne(data.id, user_id, tenant_id);
+  }
+
+  @TryCatch
+  async reviewItems(
+    id: string,
+    data: { items: Array<{ id: string; actual_qty: number }> },
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<any>> {
+    this.logger.debug(
+      { function: 'reviewItems', id, data, user_id, tenant_id },
+      PhysicalCountService.name,
+    );
+
+    const tenant = await this.tenantService.getdb_connection(
+      user_id,
+      tenant_id,
+    );
+    if (!tenant) {
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+    }
+
+    const prisma = await this.prismaTenant(
+      tenant.tenant_id,
+      tenant.db_connection,
+    );
+
+    const physicalCount = await prisma.tb_physical_count.findFirst({
+      where: { id, deleted_at: null },
+    });
+
+    if (!physicalCount) {
+      return Result.error('Physical Count not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (physicalCount.status === enum_physical_count_status.completed) {
+      return Result.error(
+        'Physical Count is already completed',
+        ErrorCode.INVALID_ARGUMENT,
+      );
+    }
+
+    const details = await prisma.tb_physical_count_detail.findMany({
+      where: { physical_count_id: id, deleted_at: null },
+    });
+
+    // Build a map of actual_qty from items
+    const actualQtyMap = new Map(
+      (data.items || []).map((item) => [item.id, new Prisma.Decimal(item.actual_qty)]),
+    );
+
+    // Compute on_hand_qty from inventory_transaction_detail
+    const onHandGrouped = await prisma.tb_inventory_transaction_detail.groupBy({
+      by: ['product_id'],
+      where: { location_id: physicalCount.location_id },
+      _sum: { qty: true },
+    });
+
+    const onHandMap = new Map(
+      onHandGrouped.map((item) => [item.product_id, item._sum.qty || new Prisma.Decimal(0)]),
+    );
+
+    // Update each detail with actual_qty (counted_qty), computed on_hand_qty, and diff_qty
+    await prisma.$transaction(async (tx) => {
+      for (const detail of details) {
+        const onHandQty = onHandMap.get(detail.product_id) || new Prisma.Decimal(0);
+        const countedQty = actualQtyMap.get(detail.id) || detail.counted_qty;
+        const diffQty = countedQty.minus(onHandQty);
+
+        await tx.tb_physical_count_detail.update({
+          where: { id: detail.id },
+          data: {
+            counted_qty: countedQty,
+            on_hand_qty: onHandQty,
+            diff_qty: diffQty,
+            updated_by_id: user_id,
+            updated_at: new Date().toISOString(),
+          },
+        });
+      }
+
+      // Update product_counted
+      const totalCounted = details.filter(
+        (d) => actualQtyMap.has(d.id) || (d.counted_qty && !d.counted_qty.equals(0)),
+      ).length;
+
+      await tx.tb_physical_count.update({
+        where: { id },
+        data: {
+          product_counted: totalCounted,
+          updated_by_id: user_id,
+          updated_at: new Date().toISOString(),
+        },
+      });
+    });
+
+    return this.findOne(id, user_id, tenant_id);
   }
 
   @TryCatch
@@ -535,10 +638,10 @@ export class PhysicalCountService {
         where: { id: data.id },
         data: {
           status: enum_physical_count_status.completed,
-          completed_at: new Date(),
+          completed_at: new Date().toISOString(),
           completed_by_id: user_id,
           updated_by_id: user_id,
-          updated_at: new Date(),
+          updated_at: new Date().toISOString(),
         },
       });
     });
@@ -589,7 +692,7 @@ export class PhysicalCountService {
       await tx.tb_physical_count_detail.updateMany({
         where: { physical_count_id: id },
         data: {
-          deleted_at: new Date(),
+          deleted_at: new Date().toISOString(),
           deleted_by_id: user_id,
         },
       });
@@ -597,7 +700,7 @@ export class PhysicalCountService {
       await tx.tb_physical_count.update({
         where: { id },
         data: {
-          deleted_at: new Date(),
+          deleted_at: new Date().toISOString(),
           deleted_by_id: user_id,
         },
       });
@@ -725,7 +828,7 @@ export class PhysicalCountService {
       data: {
         ...updateData,
         updated_by_id: user_id,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       },
     });
 
@@ -767,7 +870,7 @@ export class PhysicalCountService {
     await prisma.tb_physical_count_detail_comment.update({
       where: { id },
       data: {
-        deleted_at: new Date(),
+        deleted_at: new Date().toISOString(),
         deleted_by_id: user_id,
       },
     });
