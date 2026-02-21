@@ -1508,6 +1508,16 @@ export class AuthService {
       },
     });
 
+    if (!user) {
+      return {
+        data: null,
+        response: {
+          status: HttpStatus.NOT_FOUND,
+          message: 'User not found',
+        },
+      };
+    }
+
     const userInfo = await this.prismaSystem.tb_user_profile.findFirst({
       where: {
         user_id: id,
