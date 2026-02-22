@@ -84,7 +84,7 @@ export class PriceListController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Query() query: any,
+    @Query() query: Record<string, string>,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
