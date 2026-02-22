@@ -28,8 +28,6 @@ export class InventoryTransactionMapper {
       throw new Error(response.response.message);
     }
 
-    console.log('response', response.data);
-
     return response.data;
   }
 }

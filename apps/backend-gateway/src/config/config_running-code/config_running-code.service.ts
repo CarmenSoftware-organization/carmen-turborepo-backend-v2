@@ -1,6 +1,7 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable, firstValueFrom } from 'rxjs';
+import { MicroserviceResponse } from '@/common';
 import {
   IRunningCodeCreate,
   IRunningCodeUpdate,
@@ -24,8 +25,8 @@ export class Config_RunningCodeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
-    const res: Observable<any> = this.masterService.send(
+  ): Promise<unknown> {
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'running-code.findOne', service: 'running-codes' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -47,7 +48,7 @@ export class Config_RunningCodeService {
     bu_code: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -58,7 +59,7 @@ export class Config_RunningCodeService {
       },
       Config_RunningCodeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'running-code.findAll', service: 'running-codes' },
       {
         user_id: user_id,
@@ -85,7 +86,7 @@ export class Config_RunningCodeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'create',
@@ -94,7 +95,7 @@ export class Config_RunningCodeService {
       },
       Config_RunningCodeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'running-code.create', service: 'running-codes' },
       {
         data: createDto,
@@ -121,7 +122,7 @@ export class Config_RunningCodeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'update',
@@ -130,7 +131,7 @@ export class Config_RunningCodeService {
       },
       Config_RunningCodeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'running-code.update', service: 'running-codes' },
       {
         data: updateDto,
@@ -157,7 +158,7 @@ export class Config_RunningCodeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'delete',
@@ -166,7 +167,7 @@ export class Config_RunningCodeService {
       },
       Config_RunningCodeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'running-code.delete', service: 'running-codes' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -188,7 +189,7 @@ export class Config_RunningCodeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findByType',
@@ -197,7 +198,7 @@ export class Config_RunningCodeService {
       },
       Config_RunningCodeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'running-code.findByType', service: 'running-codes' },
       { type: type, user_id: user_id, bu_code: bu_code, version: version },
     );

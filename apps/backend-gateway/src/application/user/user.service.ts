@@ -2,7 +2,7 @@ import { Inject, HttpStatus, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { AuthService } from 'src/auth/auth.service';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -15,7 +15,7 @@ export class UserService {
     @Inject('AUTH_SERVICE') private readonly authService: ClientProxy,
   ) {}
 
-  async getUserProfile(id: string, version: string): Promise<Result<any>> {
+  async getUserProfile(id: string, version: string): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getUserProfile',
@@ -25,7 +25,7 @@ export class UserService {
       UserService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'get-user-profile', service: 'auth' },
       { id: id, version: version },
     );
@@ -52,7 +52,7 @@ export class UserService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getAllUserInTenant',
@@ -63,7 +63,7 @@ export class UserService {
       UserService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'get-all-user-in-tenant', service: 'auth' },
       { user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -92,7 +92,7 @@ export class UserService {
       telephone?: string;
     },
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'updateUserById',
@@ -103,7 +103,7 @@ export class UserService {
       UserService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'update-user-profile', service: 'auth' },
       { user_id: userId, data: updateData, version: version },
     );
@@ -126,7 +126,7 @@ export class UserService {
     return Result.ok(response.data);
   }
 
-  async getPermission(user_id: string, version: string): Promise<any> {
+  async getPermission(user_id: string, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'getPermission',
@@ -136,7 +136,7 @@ export class UserService {
       UserService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'get-permission', service: 'auth' },
       { user_id: user_id, version: version },
     );

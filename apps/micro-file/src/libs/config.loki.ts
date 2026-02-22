@@ -10,7 +10,7 @@ export interface LokiConfig {
   json: boolean;
   format: string;
   replaceTimestamp: boolean;
-  onConnectionError: (error: any) => void;
+  onConnectionError: (error: Error) => void;
 }
 
 export class DefaultLokiConfig implements LokiConfig {
@@ -26,8 +26,7 @@ export class DefaultLokiConfig implements LokiConfig {
   json = true;
   format = 'json';
   replaceTimestamp = true;
-  onConnectionError = (error: any) => {
-    console.error('Loki connection error:', error);
+  onConnectionError = (error: Error) => {
   };
 }
 

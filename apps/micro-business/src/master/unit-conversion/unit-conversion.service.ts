@@ -70,7 +70,7 @@ export class UnitConversionService {
   ) { }
 
   @TryCatch
-  async getOrderUnitByProductId(productId: string): Promise<Result<any>> {
+  async getOrderUnitByProductId(productId: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, productId },
       'getOrderUnitByProductId',
@@ -128,14 +128,12 @@ export class UnitConversionService {
       return newData.sort((a, b) => a.name.localeCompare(b.name))
     })
 
-    console.log('what is be', units)
-
     const serializedUnits = units.map((item) => UnitConversionItemResponseSchema.parse(item));
     return Result.ok(serializedUnits);
   }
 
   @TryCatch
-  async getIngredientUnitByProductId(productId: string): Promise<Result<any>> {
+  async getIngredientUnitByProductId(productId: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, productId },
       'getIngredientUnitByProductId',
@@ -198,7 +196,7 @@ export class UnitConversionService {
   }
 
   @TryCatch
-  async getAvailableUnitByProductId(productId: string): Promise<Result<any>> {
+  async getAvailableUnitByProductId(productId: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, productId },
       'getAvailableUnitByProductId',

@@ -4,7 +4,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { CreatePurchaseRequestTemplateDto } from './dto/purchase-requesr-template.dto';
 import { UpdatePurchaseRequestTemplateDto } from './dto/update-purchase-request-template.dto';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
@@ -24,7 +24,7 @@ export class PurchaseRequestTemplateService {
     bu_code: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -36,7 +36,7 @@ export class PurchaseRequestTemplateService {
       PurchaseRequestTemplateService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request-template.find-all',
         service: 'purchase-request-template',
@@ -66,7 +66,7 @@ export class PurchaseRequestTemplateService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -76,7 +76,7 @@ export class PurchaseRequestTemplateService {
       PurchaseRequestTemplateService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request-template.find-one',
         service: 'purchase-request-template',
@@ -101,7 +101,7 @@ export class PurchaseRequestTemplateService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -111,7 +111,7 @@ export class PurchaseRequestTemplateService {
       PurchaseRequestTemplateService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request-template.create',
         service: 'purchase-request-template',
@@ -142,7 +142,7 @@ export class PurchaseRequestTemplateService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -153,7 +153,7 @@ export class PurchaseRequestTemplateService {
       PurchaseRequestTemplateService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request-template.update',
         service: 'purchase-request-template',
@@ -183,7 +183,7 @@ export class PurchaseRequestTemplateService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'delete',
@@ -193,7 +193,7 @@ export class PurchaseRequestTemplateService {
       PurchaseRequestTemplateService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request-template.delete',
         service: 'purchase-request-template',

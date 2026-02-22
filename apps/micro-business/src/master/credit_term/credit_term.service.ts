@@ -81,7 +81,7 @@ export class CreditTermService {
   async findOne(
     id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code, version },
       CreditTermService.name,
@@ -115,7 +115,7 @@ export class CreditTermService {
   async findAll(
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate, version },
       CreditTermService.name,
@@ -165,7 +165,7 @@ export class CreditTermService {
   async create(
     data: ICreateCreditTerm,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code, version },
       CreditTermService.name,
@@ -197,7 +197,7 @@ export class CreditTermService {
   async update(
     data: IUpdateCreditTerm,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code, version },
       CreditTermService.name,
@@ -247,7 +247,7 @@ export class CreditTermService {
   async delete(
     id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code, version },
       CreditTermService.name,

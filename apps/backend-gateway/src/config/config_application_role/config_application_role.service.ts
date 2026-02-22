@@ -3,7 +3,7 @@ import { ICreateConfigApplicationRole, IUpdateConfigApplicationRole } from './dt
 import { ClientProxy } from '@nestjs/microservices'
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { firstValueFrom, Observable } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class ConfigApplicationRoleService {
       ConfigApplicationRoleService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'role_permission.find-all', service: 'role_permission' },
       {
         paginate,
@@ -57,7 +57,7 @@ export class ConfigApplicationRoleService {
       ConfigApplicationRoleService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'role_permission.find-one', service: 'role_permission' },
       {
         id,
@@ -89,7 +89,7 @@ export class ConfigApplicationRoleService {
       ConfigApplicationRoleService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'role_permission.create', service: 'role_permission' },
       {
         data: createConfigApplicationRoleDto,
@@ -121,7 +121,7 @@ export class ConfigApplicationRoleService {
       ConfigApplicationRoleService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'role_permission.update', service: 'role_permission' },
       {
         data: updateConfigApplicationRoleDto,
@@ -153,7 +153,7 @@ export class ConfigApplicationRoleService {
       ConfigApplicationRoleService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'role_permission.remove', service: 'role_permission' },
       {
         id,

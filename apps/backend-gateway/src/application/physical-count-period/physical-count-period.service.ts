@@ -4,7 +4,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Inject } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
@@ -23,13 +23,13 @@ export class PhysicalCountPeriodService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id, tenant_id, version },
       PhysicalCountPeriodService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-period.findOne', service: 'physical-count-period' },
       { id, user_id, tenant_id, version },
     );
@@ -51,13 +51,13 @@ export class PhysicalCountPeriodService {
     tenant_id: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id, tenant_id, paginate, version },
       PhysicalCountPeriodService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-period.findAll', service: 'physical-count-period' },
       { user_id, tenant_id, paginate, version },
     );
@@ -78,13 +78,13 @@ export class PhysicalCountPeriodService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findNearest', user_id, tenant_id, version },
       PhysicalCountPeriodService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-period.nearest', service: 'physical-count-period' },
       { user_id, tenant_id, version },
     );
@@ -102,17 +102,17 @@ export class PhysicalCountPeriodService {
   }
 
   async create(
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id, tenant_id, version },
       PhysicalCountPeriodService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-period.create', service: 'physical-count-period' },
       { data, user_id, tenant_id, version },
     );
@@ -131,17 +131,17 @@ export class PhysicalCountPeriodService {
 
   async update(
     id: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', id, data, user_id, tenant_id, version },
       PhysicalCountPeriodService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-period.update', service: 'physical-count-period' },
       { id, data, user_id, tenant_id, version },
     );
@@ -163,13 +163,13 @@ export class PhysicalCountPeriodService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id, tenant_id, version },
       PhysicalCountPeriodService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-period.delete', service: 'physical-count-period' },
       { id, user_id, tenant_id, version },
     );

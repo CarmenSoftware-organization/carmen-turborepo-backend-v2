@@ -74,7 +74,7 @@ export class IssueService {
   ) { }
 
   @TryCatch
-  async findAll(paginate: IPaginate): Promise<Result<any>> {
+  async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate }, IssueService.name);
     const defaultSearchFields = ['name', 'description', 'category'];
 
@@ -123,7 +123,7 @@ export class IssueService {
   }
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code }, IssueService.name);
 
     const issue = await this.prismaService.tb_issue.findFirst({
@@ -154,8 +154,8 @@ export class IssueService {
     tags?: string[];
     resolution?: string;
     note?: string;
-    info?: any;
-  }): Promise<Result<any>> {
+    info?: Record<string, unknown>;
+  }): Promise<Result<unknown>> {
     this.logger.debug({ function: 'create', data, user_id: this.userId, tenant_id: this.bu_code }, IssueService.name);
 
     const issue = await this.prismaService.tb_issue.create({
@@ -193,8 +193,8 @@ export class IssueService {
     tags?: string[];
     resolution?: string;
     note?: string;
-    info?: any;
-  }): Promise<Result<any>> {
+    info?: Record<string, unknown>;
+  }): Promise<Result<unknown>> {
     this.logger.debug({ function: 'update', id, data, user_id: this.userId, tenant_id: this.bu_code }, IssueService.name);
 
     const existingIssue = await this.prismaService.tb_issue.findFirst({
@@ -233,7 +233,7 @@ export class IssueService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code }, IssueService.name);
 
     const existingIssue = await this.prismaService.tb_issue.findFirst({

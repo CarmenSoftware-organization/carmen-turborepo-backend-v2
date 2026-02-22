@@ -73,7 +73,7 @@ export class CreditNoteReasonService {
   ) { }
 
   @TryCatch
-  async findAll(paginate: IPaginate): Promise<Result<any>> {
+  async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate }, CreditNoteReasonService.name);
     const defaultSearchFields = ['name'];
 
@@ -116,7 +116,7 @@ export class CreditNoteReasonService {
   }
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code }, CreditNoteReasonService.name);
 
     const creditNoteReason = await this.prismaService.tb_credit_note_reason.findFirst({

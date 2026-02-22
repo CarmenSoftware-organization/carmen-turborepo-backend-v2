@@ -206,6 +206,25 @@ export interface QueryAdvance {
   where: Record<string, string>;
 }
 
+type CastValueResult = string | number | boolean | Date;
+
+interface PrismaWhereInput {
+  AND?: Record<string, unknown> | Record<string, unknown>[];
+  OR?: Record<string, unknown>[];
+  [key: string]: unknown;
+}
+
+interface PrismaOrderByInput {
+  [key: string]: 'asc' | 'desc';
+}
+
+interface PrismaFindManyArgs {
+  where: PrismaWhereInput;
+  orderBy: PrismaOrderByInput[] | Record<string, never>;
+  skip: number;
+  take?: number;
+}
+
 export default class QueryParams {
   public readonly page: number = 1;
   public readonly perpage: number = 10;
@@ -219,7 +238,7 @@ export default class QueryParams {
   constructor(
     page: number = 1,
     perpage: number = 10,
-    search: any = '',
+    search: string | unknown = '',
     searchFields: string[] = [],
     defaultSearchFields: string[] = [],
     filter: string | string[] | Record<string, string> = [],
@@ -247,8 +266,6 @@ export default class QueryParams {
   private normalizeFilter(
     filter: string | string[] | Record<string, string>,
   ): string[] {
-    console.log('normalizeFilter:', filter);
-
     if (!filter) {
       return [];
     }
@@ -277,7 +294,7 @@ export default class QueryParams {
     fieldName: string,
     fieldType: string | undefined,
     value: string,
-  ): Record<string, any> {
+  ): Record<string, unknown> {
     const trimmedValue = value?.trim() ?? '';
 
     switch (fieldType) {
@@ -309,8 +326,8 @@ export default class QueryParams {
   private castSearchValue(
     fieldName: string,
     fieldType: string | undefined,
-    value: any,
-  ): Record<string, any> {
+    value: unknown,
+  ): Record<string, unknown> {
 
     const safeValue =
       typeof value === 'string'
@@ -320,7 +337,6 @@ export default class QueryParams {
           : '';
 
     const trimmedValue = safeValue.trim();
-    console.log('search value:', this.search, 'type:', typeof this.search);
 
     switch (fieldType) {
       case 'number':
@@ -349,8 +365,8 @@ export default class QueryParams {
     }
   }
 
-  public where(): any {
-    const _where: any = {
+  public where(): PrismaWhereInput {
+    const _where: PrismaWhereInput = {
       AND: {},
     };
 
@@ -388,11 +404,10 @@ export default class QueryParams {
       }
     }
 
-    console.log('where:', _where)
     return _where;
   }
 
-  public orderBy(): any {
+  public orderBy(): PrismaOrderByInput[] | Record<string, never> {
     if (this.sort.length === 0) {
       return {};
     }
@@ -404,32 +419,32 @@ export default class QueryParams {
         if (!trimmedField) {
           return null;
         }
-        return { [trimmedField]: order === 'desc' ? 'desc' : 'asc' };
+        return { [trimmedField]: order === 'desc' ? 'desc' : 'asc' } as PrismaOrderByInput;
       })
-      .filter((o) => o !== null);
+      .filter((o): o is PrismaOrderByInput => o !== null);
   }
 
-  public findMany(): any {
-    const _where: any = this.where();
-    const _order: any = this.orderBy();
+  public findMany(): PrismaFindManyArgs {
+    const _where: PrismaWhereInput = this.where();
+    const _order: PrismaOrderByInput[] | Record<string, never> = this.orderBy();
     const _skip: number = (this.page - 1) * this.perpage;
     const _take: number = this.perpage;
 
-    const query = {
+    const query: PrismaFindManyArgs = {
       where: _where,
       orderBy: _order,
       skip: _skip,
     };
 
     if (_take >= 0) {
-      query['take'] = _take;
+      query.take = _take;
     }
 
     return query;
   }
 
   //---------------------------------------
-  private parseFilterDSL(filter: string): Record<string, any> {
+  private parseFilterDSL(filter: string): Record<string, unknown> {
     // BETWEEN
     if (filter.includes(':between:')) {
       const [field, , range] = filter.split(':');
@@ -496,7 +511,7 @@ export default class QueryParams {
     return {};
   }
 
-  private castValue(value: string): any {
+  private castValue(value: string): CastValueResult {
     const v = value.trim();
 
     if (v === 'true' || v === 'false') {
@@ -515,21 +530,26 @@ export default class QueryParams {
     return v;
   }
 
-  public where_(): any {
-    const where: any = { AND: [] };
+  public where_(): PrismaWhereInput {
+    const andConditions: Record<string, unknown>[] = [];
 
     if (this.advance?.where) {
-      where.AND.push(this.advance.where);
+      andConditions.push(this.advance.where);
     }
 
-    console.log('filter:', this.filter)
     if (this.filter?.length) {
       this.filter.forEach(f => {
         const parsed = this.parseFilterDSL(f);
         if (Object.keys(parsed).length > 0) {
-          where.AND.push(parsed);
+          andConditions.push(parsed);
         }
       });
+    }
+
+    const where: PrismaWhereInput = {};
+
+    if (andConditions.length > 0) {
+      where.AND = andConditions;
     }
 
     if (this.search) {
@@ -541,11 +561,6 @@ export default class QueryParams {
       }));
     }
 
-    if (where.AND.length === 0) {
-      delete where.AND;
-    }
-
-    console.log('where:', where)
     return where;
   }
 

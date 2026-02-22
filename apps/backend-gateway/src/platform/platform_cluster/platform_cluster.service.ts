@@ -4,7 +4,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { IClusterCreate, IClusterUpdate } from './dto/cluster.dto';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class Platform_ClusterService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'createCluster',
@@ -33,7 +33,7 @@ export class Platform_ClusterService {
       },
       Platform_ClusterService.name,
     );
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'cluster.create', service: 'cluster' },
       { data: data, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -55,7 +55,7 @@ export class Platform_ClusterService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'updateCluster',
@@ -66,7 +66,7 @@ export class Platform_ClusterService {
       },
       Platform_ClusterService.name,
     );
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'cluster.update', service: 'cluster' },
       { data: data, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -88,7 +88,7 @@ export class Platform_ClusterService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'deleteCluster',
@@ -99,7 +99,7 @@ export class Platform_ClusterService {
       },
       Platform_ClusterService.name,
     );
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'cluster.delete', service: 'cluster' },
       { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -121,7 +121,7 @@ export class Platform_ClusterService {
     tenant_id: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'getlistCluster',
@@ -132,7 +132,7 @@ export class Platform_ClusterService {
       },
       Platform_ClusterService.name,
     );
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'cluster.list', service: 'cluster' },
       {
         user_id: user_id,
@@ -159,7 +159,7 @@ export class Platform_ClusterService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'getClusterById',
@@ -170,7 +170,7 @@ export class Platform_ClusterService {
       },
       Platform_ClusterService.name,
     );
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'cluster.get-by-id', service: 'cluster' },
       { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
     );

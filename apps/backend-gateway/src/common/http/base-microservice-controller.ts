@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common/enums/http-status.enum';
 import { Result } from '../result/result';
 import { StdStatus } from '../std-response/std-status';
 
-export interface MicroserviceResponse<T = any> {
+export interface MicroserviceResponse<T = unknown> {
   data?: T;
   paginate?: {
     total: number;
@@ -19,7 +19,7 @@ export interface MicroserviceResponse<T = any> {
 
 export abstract class BaseMicroserviceController {
   protected handleResultCrate<T>(
-    result: Result<T, any>,
+    result: Result<T, unknown>,
     successStatus: HttpStatus = HttpStatus.CREATED,
   ): MicroserviceResponse<T> {
     if (result.isOk()) {
@@ -44,7 +44,7 @@ export abstract class BaseMicroserviceController {
   }
 
   protected handleResult<T>(
-    result: Result<T, any>,
+    result: Result<T, unknown>,
     successStatus: HttpStatus = HttpStatus.OK,
   ): MicroserviceResponse<T> {
     if (result.isOk()) {
@@ -69,11 +69,11 @@ export abstract class BaseMicroserviceController {
   }
 
   protected handleMultiPaginatedResult<T>(
-    result: Result<any[], any>,
+    result: Result<unknown[], unknown>,
   ): MicroserviceResponse<T[]> {
     if (result.isOk()) {
       return {
-        data: result.value,
+        data: result.value as T[],
         response: {
           status: HttpStatus.OK,
           message: 'Success',
@@ -93,7 +93,7 @@ export abstract class BaseMicroserviceController {
   }
 
   protected handlePaginatedResult<T>(
-    result: Result<{ paginate: any; data: T[] }, any>,
+    result: Result<{ paginate: { total: number; page: number; perpage: number; pages: number }; data: T[] }, unknown>,
   ): MicroserviceResponse<T[]> {
     if (result.isOk()) {
       const paginate = result.value.paginate;

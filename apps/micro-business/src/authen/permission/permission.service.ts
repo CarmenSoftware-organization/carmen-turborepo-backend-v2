@@ -30,7 +30,7 @@ export class PermissionService {
   ) { }
 
   @TryCatch
-  async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id: id, user_id, tenant_id },
       PermissionService.name,
@@ -48,13 +48,11 @@ export class PermissionService {
   }
 
   @TryCatch
-  async findAll(user_id: string, tenant_id: string, paginate: any): Promise<Result<any>> {
+  async findAll(user_id: string, tenant_id: string, paginate: any): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', paginate: paginate, user_id, tenant_id },
       PermissionService.name,
     );
-
-    console.log('Paginate:', paginate);
 
     const defaultSearchFields = ['resource', 'action', 'description'];
 
@@ -68,8 +66,6 @@ export class PermissionService {
       paginate.sort,
       paginate.advance,
     );
-
-    console.log('Query Params:', q.findMany());
 
     const permissions = await this.prismaSystem.tb_permission.findMany({
       ...q.findMany(),
@@ -98,7 +94,7 @@ export class PermissionService {
   }
 
   @TryCatch
-  async create(data: IPermissionCreate, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async create(data: IPermissionCreate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data: data, user_id, tenant_id },
       PermissionService.name,
@@ -131,7 +127,7 @@ export class PermissionService {
   }
 
   @TryCatch
-  async update(data: IPermissionUpdate, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async update(data: IPermissionUpdate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data: data, user_id, tenant_id },
       PermissionService.name,
@@ -159,7 +155,7 @@ export class PermissionService {
   }
 
   @TryCatch
-  async remove(id: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async remove(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'remove', id: id, user_id, tenant_id },
       PermissionService.name,

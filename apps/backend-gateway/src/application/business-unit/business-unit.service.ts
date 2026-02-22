@@ -2,7 +2,7 @@ import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
@@ -16,7 +16,7 @@ export class BusinessUnitService {
     @Inject('CLUSTER_SERVICE') private readonly clusterService: ClientProxy,
   ) { }
 
-  async getSystemConfigs(user_id: string, bu_code: string): Promise<Result<any>> {
+  async getSystemConfigs(user_id: string, bu_code: string): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getSystemConfigs',
@@ -26,7 +26,7 @@ export class BusinessUnitService {
       BusinessUnitService.name,
     );
 
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'business-unit.get-system-configs', service: 'business-unit' },
       { user_id: user_id, bu_code: bu_code, version: 'latest' },
     );
@@ -48,7 +48,7 @@ export class BusinessUnitService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findCurrentConfigByKey',
@@ -60,7 +60,7 @@ export class BusinessUnitService {
       BusinessUnitService.name,
     );
 
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       {
         cmd: 'business-unit.find-current-tenant-config-by-key',
         service: 'business-unit',

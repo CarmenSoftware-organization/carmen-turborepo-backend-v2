@@ -18,7 +18,7 @@ export class TenantService {
     @Inject('CLUSTER_SERVICE') private readonly clusterService: ClientProxy,
   ) { }
 
-  async getTenantInfo(userId: string): Promise<any> {
+  async getTenantInfo(userId: string): Promise<TenantConnection> {
     this.logger.debug({ function: 'getTenantInfo', userId }, TenantService.name);
     const tenant = await this.prismaSystem.tb_user_tb_business_unit
       .findFirst({
@@ -38,13 +38,16 @@ export class TenantService {
       .then(async (res) => {
         return {
           tenant_id: res.tb_business_unit.id,
-          db_connection: res.tb_business_unit.db_connection,
+          db_connection: this.getConnectionString(
+            res.tb_business_unit.db_connection as unknown as databaseConfig,
+          ),
         };
       });
 
     return tenant;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getUserDepartment(userId: string, tenantId: string): Promise<any> {
     this.logger.debug(
       { function: 'getUserDepartment', userId, tenantId },
@@ -115,6 +118,7 @@ export class TenantService {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getTenantByCode(bu_code: string, user_id: string): Promise<any> {
     this.logger.debug(
       { function: 'getTenantByCode', bu_code },
@@ -134,6 +138,7 @@ export class TenantService {
     return tenant;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getSystemBusinessUnitConfig(userId: string, tenantId: string): Promise<any> {
     this.logger.debug(
       { function: 'getSystemBusinessUnitConfig', userId, tenantId },
@@ -151,6 +156,7 @@ export class TenantService {
       };
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const res: Observable<any> = this.clusterService.send(
       {
         cmd: 'business-unit.get-system-configs',
@@ -171,7 +177,7 @@ export class TenantService {
     };
   }
 
-  async getdbConnectionByCode(user_id: string, tenantId: string): Promise<any> {
+  async getdbConnectionByCode(user_id: string, tenantId: string): Promise<TenantConnection> {
     this.logger.debug(
       { function: 'getdb_connection', user_id, tenantId },
       TenantService.name,
@@ -214,7 +220,7 @@ export class TenantService {
 
     return tenant;
   }
-  async getdb_connection(user_id: string, tenantId: string): Promise<any> {
+  async getdb_connection(user_id: string, tenantId: string): Promise<TenantConnection> {
     this.logger.debug(
       { function: 'getdb_connection', user_id, tenantId },
       TenantService.name,
@@ -365,4 +371,10 @@ interface databaseConfig {
   port: number;
   database: string;
   schema: string;
+}
+
+export interface TenantConnection {
+  tenant_id: string;
+  db_connection: string;
+  bu_code?: string;
 }

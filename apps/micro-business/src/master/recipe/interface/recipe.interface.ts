@@ -6,7 +6,7 @@ export interface ICreateRecipe {
   description?: string | null;
   note?: string | null;
   is_active?: boolean;
-  images?: any;
+  images?: string[];
   category_id: string;
   cuisine_id: string;
   difficulty?: enum_recipe_difficulty;
@@ -30,8 +30,8 @@ export interface ICreateRecipe {
   carbon_footprint?: number | null;
   deduct_from_stock?: boolean;
   status?: enum_recipe_status;
-  tags?: any;
-  allergens?: any;
+  tags?: string[];
+  allergens?: string[];
 }
 
 export interface IUpdateRecipe {
@@ -41,7 +41,7 @@ export interface IUpdateRecipe {
   description?: string | null;
   note?: string | null;
   is_active?: boolean;
-  images?: any;
+  images?: string[];
   category_id?: string;
   cuisine_id?: string;
   difficulty?: enum_recipe_difficulty;
@@ -65,6 +65,6 @@ export interface IUpdateRecipe {
   carbon_footprint?: number | null;
   deduct_from_stock?: boolean;
   status?: enum_recipe_status;
-  tags?: any;
-  allergens?: any;
+  tags?: string[];
+  allergens?: string[];
 }

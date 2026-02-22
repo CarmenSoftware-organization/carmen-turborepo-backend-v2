@@ -7,7 +7,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Observable, firstValueFrom } from 'rxjs';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { CreateApplicationPermissionDto, UpdateApplicationPermissionDto } from './dto/application-permission.dto';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class ApplicationPermissionService {
    * @param version
    * @returns
    */
-  async findAll(version: string): Promise<any> {
+  async findAll(version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -34,7 +34,7 @@ export class ApplicationPermissionService {
       ApplicationPermissionService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'get-all-application-permissions', service: 'auth' },
       { version },
     );
@@ -57,7 +57,7 @@ export class ApplicationPermissionService {
    * @param version
    * @returns
    */
-  async findOne(id: string, version: string): Promise<any> {
+  async findOne(id: string, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -67,7 +67,7 @@ export class ApplicationPermissionService {
       ApplicationPermissionService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'get-application-permission-by-id', service: 'auth' },
       { id, version },
     );
@@ -93,7 +93,7 @@ export class ApplicationPermissionService {
   async create(
     createApplicationPermissionDto: CreateApplicationPermissionDto,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'create',
@@ -103,7 +103,7 @@ export class ApplicationPermissionService {
       ApplicationPermissionService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'create-application-permission', service: 'auth' },
       { data: createApplicationPermissionDto, version },
     );
@@ -131,7 +131,7 @@ export class ApplicationPermissionService {
     id: string,
     updateApplicationPermissionDto: UpdateApplicationPermissionDto,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'update',
@@ -142,7 +142,7 @@ export class ApplicationPermissionService {
       ApplicationPermissionService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'update-application-permission', service: 'auth' },
       { id, data: updateApplicationPermissionDto, version },
     );
@@ -165,7 +165,7 @@ export class ApplicationPermissionService {
    * @param version
    * @returns
    */
-  async delete(id: string, version: string): Promise<any> {
+  async delete(id: string, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'delete',
@@ -175,7 +175,7 @@ export class ApplicationPermissionService {
       ApplicationPermissionService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'delete-application-permission', service: 'auth' },
       { id, version },
     );

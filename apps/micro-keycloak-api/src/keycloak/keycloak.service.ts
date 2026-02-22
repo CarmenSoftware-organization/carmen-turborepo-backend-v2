@@ -14,6 +14,29 @@ import {
   ResetPasswordPayload,
 } from './interface/keycloak.interface';
 
+/** Keycloak token introspection response */
+interface KeycloakTokenIntrospection {
+  active: boolean;
+  sub?: string;
+  exp?: number;
+  iat?: number;
+  aud?: string | string[];
+  typ?: string;
+  [key: string]: unknown;
+}
+
+/** Keycloak user session info */
+interface KeycloakUserSession {
+  id: string;
+  username?: string;
+  userId?: string;
+  ipAddress?: string;
+  start?: number;
+  lastAccess?: number;
+  clients?: Record<string, string>;
+  [key: string]: unknown;
+}
+
 @Injectable()
 export class KeycloakService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -66,8 +89,6 @@ export class KeycloakService {
     params.append('username', this.config.adminUsername || '');
     params.append('password', this.config.adminPassword || '');
     params.append('client_secret', this.config.adminClientSecret);
-
-    console.log('Keycloak Admin Token Request Params:', params.toString());
 
     const response = await fetch(tokenUrl, {
       method: 'POST',
@@ -151,7 +172,7 @@ export class KeycloakService {
   private async request<T>(
     method: string,
     path: string,
-    body?: any,
+    body?: Record<string, unknown> | unknown[] | object,
     realm?: string,
   ): Promise<T> {
     const token = await this.getAdminToken();
@@ -290,7 +311,7 @@ export class KeycloakService {
     };
 
     // 3. Remove read-only fields before PUT
-    const { id, createdTimestamp, ...updatePayload } = mergedUser as any;
+    const { id, createdTimestamp, ...updatePayload } = mergedUser as Record<string, unknown>;
 
     // 4. PUT the full user object back
     await this.request<void>('PUT', `/users/${userId}`, updatePayload, realm);
@@ -375,7 +396,7 @@ export class KeycloakService {
     user.attributes['BusinessUnit'] = buList.map((b) => JSON.stringify(b));
 
     // 3. PUT the full user object back (remove read-only fields)
-    const { id, createdTimestamp, ...updatePayload } = user as any;
+    const { id, createdTimestamp, ...updatePayload } = user as unknown as Record<string, unknown>;
     await this.request<void>('PUT', `/users/${userId}`, updatePayload, realm);
   }
 
@@ -424,7 +445,7 @@ export class KeycloakService {
     }
 
     // 3. PUT the full user object back (remove read-only fields)
-    const { id, createdTimestamp, ...updatePayload } = user as any;
+    const { id, createdTimestamp, ...updatePayload } = user as unknown as Record<string, unknown>;
     await this.request<void>('PUT', `/users/${userId}`, updatePayload, realm);
     this.logger.log(`BU '${buId}' removed from user: ${userId}`);
   }
@@ -750,7 +771,7 @@ export class KeycloakService {
    * Verify/introspect a token.
    * Uses client credentials to introspect - does NOT require admin token.
    */
-  async verifyToken(token: string, realm?: string): Promise<any> {
+  async verifyToken(token: string, realm?: string): Promise<KeycloakTokenIntrospection> {
     const targetRealm = realm || this.config.realm;
     const introspectUrl = `${this.config.baseUrl}/realms/${targetRealm}/protocol/openid-connect/token/introspect`;
 
@@ -791,9 +812,9 @@ export class KeycloakService {
 
   // ==================== Session Management (Admin Token Required) ====================
 
-  async getUserSessions(userId: string, realm?: string): Promise<any[]> {
+  async getUserSessions(userId: string, realm?: string): Promise<KeycloakUserSession[]> {
     this.logger.log(`Fetching sessions for user: ${userId}`);
-    return this.request<any[]>(
+    return this.request<KeycloakUserSession[]>(
       'GET',
       `/users/${userId}/sessions`,
       undefined,

@@ -19,11 +19,11 @@ export interface IPhysicalCountSubmit {
 export interface IPhysicalCountDetailCommentCreate {
   physical_count_detail_id: string;
   message?: string;
-  attachments?: any[];
+  attachments?: string[];
 }
 
 export interface IPhysicalCountDetailCommentUpdate {
   id: string;
   message?: string;
-  attachments?: any[];
+  attachments?: string[];
 }

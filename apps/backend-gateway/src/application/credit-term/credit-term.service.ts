@@ -1,7 +1,7 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { IPaginateQuery } from 'src/shared-dto/paginate.dto';
@@ -22,7 +22,7 @@ export class CreditTermService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -34,7 +34,7 @@ export class CreditTermService {
       CreditTermService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'credit-term.findOne', service: 'credit-term' },
       { id, user_id, bu_code, version },
     );
@@ -52,7 +52,7 @@ export class CreditTermService {
     bu_code: string,
     paginate: IPaginateQuery,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -64,7 +64,7 @@ export class CreditTermService {
       CreditTermService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'credit-term.findAll', service: 'credit-term' },
       { user_id, bu_code, paginate, version },
     );

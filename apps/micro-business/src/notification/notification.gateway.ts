@@ -33,18 +33,15 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
   constructor(private readonly notificationService: NotificationService) {}
 
   async handleConnection(client: Socket) {
-    console.log(`Client connected: ${client.id}`);
   }
 
   async handleDisconnect(client: Socket) {
     const user_id = this.socketToUser.get(client.id);
     if (user_id) {
-      console.log(`User disconnected: ${user_id}`);
       this.userConnections.delete(user_id);
       this.socketToUser.delete(client.id);
       await this.notificationService.updateUserOnlineStatus(user_id, false);
     }
-    console.log(`Client disconnected: ${client.id}`);
   }
 
   @SubscribeMessage('message')
@@ -52,8 +49,6 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
     @ConnectedSocket() client: Socket,
     @MessageBody() message: string | WebSocketMessage,
   ) {
-    console.log('WebSocket message received:', message);
-
     try {
       let data: WebSocketMessage;
 
@@ -61,7 +56,6 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
         try {
           data = JSON.parse(message);
         } catch (parseError) {
-          console.error('Invalid JSON message:', message);
           return;
         }
       } else {
@@ -69,7 +63,6 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
       }
 
       if (!data || typeof data !== 'object' || !data.type) {
-        console.error('Invalid message format:', data);
         return;
       }
 
@@ -77,25 +70,18 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
         case 'register':
           if (data.user_id) {
             await this.handleUserRegister(client, data.user_id);
-          } else {
-            console.error('Register message missing user_id:', data);
           }
           break;
 
         case 'markAsRead':
           if (data.notificationId) {
             await this.handleMarkAsRead(data.notificationId);
-          } else {
-            console.error('MarkAsRead message missing notificationId:', data);
           }
           break;
 
         default:
-          console.warn('Unknown message type:', data.type);
       }
     } catch (error) {
-      console.error('WebSocket message error:', error);
-      console.error('Raw message:', message);
     }
   }
 
@@ -120,10 +106,8 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
   }
 
   private async handleUserRegister(client: Socket, user_id: string) {
-    console.log(`User registering WebSocket: ${user_id}`);
     this.userConnections.set(user_id, client);
     this.socketToUser.set(client.id, user_id);
-    console.log(`WebSocket registered for user: ${user_id}`);
 
     const unreadNotifications = await this.notificationService.getUnreadNotifications(user_id);
 
@@ -136,7 +120,7 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
     await this.notificationService.markNotificationAsRead(notificationId);
   }
 
-  sendNotificationToUser(user_id: string, notification: any) {
+  sendNotificationToUser(user_id: string, notification: Record<string, unknown>) {
     const client = this.userConnections.get(user_id);
 
     if (client) {
@@ -155,9 +139,10 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   broadcastSystemNotification(notifications: any[]) {
     for (const notification of notifications) {
-      this.sendNotificationToUser(notification.to_user_id, notification);
+      this.sendNotificationToUser(notification.to_user_id as string, notification);
     }
   }
 

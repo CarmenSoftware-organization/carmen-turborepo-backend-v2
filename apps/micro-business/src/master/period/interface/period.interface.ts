@@ -6,8 +6,8 @@ export interface ICreatePeriod {
   end_at: string | Date;
   status?: 'open' | 'closed' | 'locked';
   note?: string | null;
-  info?: any | null;
-  dimension?: any | null;
+  info?: Record<string, unknown> | null;
+  dimension?: unknown[] | null;
 }
 
 export interface IUpdatePeriod {
@@ -19,6 +19,6 @@ export interface IUpdatePeriod {
   end_at?: string | Date;
   status?: 'open' | 'closed' | 'locked';
   note?: string | null;
-  info?: any | null;
-  dimension?: any | null;
+  info?: Record<string, unknown> | null;
+  dimension?: unknown[] | null;
 }

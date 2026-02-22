@@ -22,7 +22,8 @@ export class CreditNoteLogic implements IClassLogic {
       CreditNoteLogic.name,
     );
     await this.creditNoteService.initializePrismaService(tenant_id, user_id);
-    const populatedData: any = await this.populateData(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const populatedData: Record<string, any> = await this.populateData(
       data,
       user_id,
       tenant_id,
@@ -40,15 +41,15 @@ export class CreditNoteLogic implements IClassLogic {
 
     if (createCreditNote.credit_note_detail?.add?.length) {
       createCreditNote.credit_note_detail.add =
-        createCreditNote.credit_note_detail.add.map((detail: any) => {
+        createCreditNote.credit_note_detail.add.map((detail: Record<string, unknown>) => {
           const returnUnit = populatedData.unit_ids.find(
-            (unit: any) => unit.id === detail.return_unit_id,
+            (unit: Record<string, unknown>) => unit.id === detail.return_unit_id,
           );
           const product = populatedData.product_ids.find(
-            (product: any) => product.id === detail.product_id,
+            (product: Record<string, unknown>) => product.id === detail.product_id,
           );
           const location = populatedData.location_ids.find(
-            (location: any) => location.id === detail.location_id,
+            (location: Record<string, unknown>) => location.id === detail.location_id,
           );
 
           const product_obj = {
@@ -93,7 +94,8 @@ export class CreditNoteLogic implements IClassLogic {
       CreditNoteLogic.name,
     );
     await this.creditNoteService.initializePrismaService(tenant_id, user_id);
-    const populatedData: any = await this.populateData(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const populatedData: Record<string, any> = await this.populateData(
       data,
       user_id,
       tenant_id,
@@ -111,15 +113,15 @@ export class CreditNoteLogic implements IClassLogic {
 
     if (updateCreditNote.credit_note_detail?.add?.length) {
       updateCreditNote.credit_note_detail.add =
-        updateCreditNote.credit_note_detail.add.map((detail: any) => {
+        updateCreditNote.credit_note_detail.add.map((detail: Record<string, unknown>) => {
           const returnUnit = populatedData.unit_ids.find(
-            (unit: any) => unit.id === detail.return_unit_id,
+            (unit: Record<string, unknown>) => unit.id === detail.return_unit_id,
           );
           const product = populatedData.product_ids.find(
-            (product: any) => product.id === detail.product_id,
+            (product: Record<string, unknown>) => product.id === detail.product_id,
           );
           const location = populatedData.location_ids.find(
-            (location: any) => location.id === detail.location_id,
+            (location: Record<string, unknown>) => location.id === detail.location_id,
           );
 
           const product_obj = {
@@ -149,15 +151,15 @@ export class CreditNoteLogic implements IClassLogic {
 
     if (updateCreditNote.credit_note_detail?.update?.length) {
       updateCreditNote.credit_note_detail.update =
-        updateCreditNote.credit_note_detail.update.map((detail: any) => {
+        updateCreditNote.credit_note_detail.update.map((detail: Record<string, unknown>) => {
           const returnUnit = populatedData.unit_ids.find(
-            (unit: any) => unit.id === detail.return_unit_id,
+            (unit: Record<string, unknown>) => unit.id === detail.return_unit_id,
           );
           const product = populatedData.product_ids.find(
-            (product: any) => product.id === detail.product_id,
+            (product: Record<string, unknown>) => product.id === detail.product_id,
           );
           const location = populatedData.location_ids.find(
-            (location: any) => location.id === detail.location_id,
+            (location: Record<string, unknown>) => location.id === detail.location_id,
           );
 
           const product_obj = {
@@ -268,7 +270,7 @@ export class CreditNoteLogic implements IClassLogic {
    */
   private async sendCNCreatedNotification(
     cnData: { id: string },
-    createData: any,
+    createData: Record<string, unknown>,
     creatorId: string,
   ): Promise<void> {
     try {

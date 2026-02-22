@@ -253,7 +253,7 @@ export class PriceListTemplateService {
       };
 
       const data = await this.prismaService.tb_pricelist_template.findMany({
-        select: selectClause,
+        select: selectClause as any,
         where: q.where(),
         orderBy: q.orderBy(),
         ...pagination,
@@ -261,7 +261,7 @@ export class PriceListTemplateService {
 
       const total = await this.prismaService.tb_pricelist_template.count({ where: q.where() });
 
-      const priceListTemplates = data.map((item) => ({
+      const priceListTemplates = data.map((item: any) => ({
         id: item.id,
         name: item.name,
         description: item.description,
@@ -272,7 +272,7 @@ export class PriceListTemplateService {
         vendor_instructions: item.vendor_instructions,
         created_at: item.created_at,
         updated_at: item.updated_at,
-        products: item.tb_pricelist_template_detail.map((detail) => ({
+        products: item.tb_pricelist_template_detail.map((detail: any) => ({
           id: detail.id,
           product_id: detail.product_id,
           product_name: detail.tb_product.name,
@@ -300,7 +300,6 @@ export class PriceListTemplateService {
         },
       };
     } catch (error) {
-      console.error('Error in findAll:', error);
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -388,7 +387,7 @@ export class PriceListTemplateService {
         created_by_id: this.userId,
         tb_pricelist_template_detail: data.products
           ? {
-            create: data.products.add.map((detail: any, index: number) => ({
+            create: data.products.add.map((detail: Record<string, unknown>, index: number) => ({
               product_id: detail.product_id,
               product_name: detail.product_name,
               sequence_no: detail.sequence_no || index + 1,

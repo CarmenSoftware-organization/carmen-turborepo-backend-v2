@@ -2,6 +2,7 @@ import { ConsoleLogger, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import {
   PriceListCreateDto,
   PriceListUpdateDto,
+  MicroserviceResponse,
 } from '@/common';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { firstValueFrom } from 'rxjs';
@@ -25,7 +26,7 @@ export class Config_PriceListService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -35,7 +36,7 @@ export class Config_PriceListService {
       Config_PriceListService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'price-list.findOne', service: 'price-list' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -57,7 +58,7 @@ export class Config_PriceListService {
     bu_code: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -69,7 +70,7 @@ export class Config_PriceListService {
       Config_PriceListService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'price-list.findAll', service: 'price-list' },
       {
         user_id: user_id,
@@ -97,7 +98,7 @@ export class Config_PriceListService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'update',
@@ -108,7 +109,7 @@ export class Config_PriceListService {
       Config_PriceListService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'price-list.update', service: 'price-list' },
       {
         id: id,
@@ -136,7 +137,7 @@ export class Config_PriceListService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'create',
@@ -146,7 +147,7 @@ export class Config_PriceListService {
       Config_PriceListService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'price-list.create', service: 'price-list' },
       {
         data: createConfigPriceListDto,
@@ -173,7 +174,7 @@ export class Config_PriceListService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'remove',
@@ -183,7 +184,7 @@ export class Config_PriceListService {
       Config_PriceListService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'price-list.remove', service: 'price-list' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -205,7 +206,7 @@ export class Config_PriceListService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'uploadExcel',
@@ -215,7 +216,7 @@ export class Config_PriceListService {
       Config_PriceListService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'price-list.uploadExcel', service: 'price-list' },
       {
         data: createConfigPriceListDto,
@@ -242,7 +243,7 @@ export class Config_PriceListService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'downloadExcel',
@@ -252,7 +253,7 @@ export class Config_PriceListService {
       Config_PriceListService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'price-list.downloadExcel', service: 'price-list' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -274,7 +275,7 @@ export class Config_PriceListService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'importCsv',
@@ -284,7 +285,7 @@ export class Config_PriceListService {
       Config_PriceListService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'price-list.importCsv', service: 'price-list' },
       {
         csvContent: csvContent,

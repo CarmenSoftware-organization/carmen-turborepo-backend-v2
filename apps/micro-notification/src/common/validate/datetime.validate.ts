@@ -15,9 +15,9 @@ export const toISOStringOrThrow = (date: Date | string | null | undefined): stri
   return result;
 };
 
-export const isValidDate = (date: any): boolean => {
+export const isValidDate = (date: unknown): boolean => {
   if (!date) return false;
-  const parsed = new Date(date);
+  const parsed = new Date(date as string | number | Date);
   return !isNaN(parsed.getTime());
 };
 

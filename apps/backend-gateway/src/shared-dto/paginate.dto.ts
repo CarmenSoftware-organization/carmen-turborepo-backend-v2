@@ -79,7 +79,7 @@ export type IPaginate = {
   searchfields: string[];
   sort: string[];
   filter: Record<string, string>;
-  advance: Record<string, any> | null;
+  advance: Record<string, unknown> | null;
   bu_code: string[];
 };
 

@@ -33,7 +33,7 @@ export class StockOutService {
   ) {}
 
   @TryCatch
-  async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findOne', id, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -66,7 +66,7 @@ export class StockOutService {
   }
 
   @TryCatch
-  async findAll(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<any>> {
+  async findAll(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAll', user_id, tenant_id, paginate }, StockOutService.name);
 
     const defaultSearchFields = ['so_no', 'description'];
@@ -130,7 +130,7 @@ export class StockOutService {
   }
 
   @TryCatch
-  async create(data: IStockOutCreate, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async create(data: IStockOutCreate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'create', data, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -237,7 +237,7 @@ export class StockOutService {
   }
 
   @TryCatch
-  async update(data: IStockOutUpdate, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async update(data: IStockOutUpdate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'update', data, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -351,7 +351,7 @@ export class StockOutService {
       const { stock_out_detail: _, id: __, ...stockOutUpdateData } = data;
 
       if (Object.keys(stockOutUpdateData).length > 0) {
-        const updatePayload: any = {
+        const updatePayload: Record<string, unknown> = {
           ...stockOutUpdateData,
           updated_by_id: user_id,
           updated_at: new Date(),
@@ -430,7 +430,7 @@ export class StockOutService {
   }
 
   @TryCatch
-  async delete(id: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async delete(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -500,6 +500,7 @@ export class StockOutService {
   private async generateSONo(soDate: string, tenant_id: string, user_id: string): Promise<string> {
     this.logger.debug({ function: 'generateSONo', soDate, tenant_id, user_id }, StockOutService.name);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
     const res: Observable<any> = this.masterService.send(
       { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
       { type: 'SO', user_id, tenant_id },
@@ -524,6 +525,7 @@ export class StockOutService {
       ? Number(latestSO.so_no.slice(-Number(runningPattern.pattern)))
       : 0;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
     const generateCodeRes: Observable<any> = this.masterService.send(
       { cmd: 'running-code.generate-code', service: 'running-codes' },
       {
@@ -543,7 +545,7 @@ export class StockOutService {
   // ==================== Stock Out Detail CRUD ====================
 
   @TryCatch
-  async findDetailById(detailId: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async findDetailById(detailId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findDetailById', detailId, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -576,7 +578,7 @@ export class StockOutService {
   }
 
   @TryCatch
-  async findDetailsByStockOutId(stockOutId: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async findDetailsByStockOutId(stockOutId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findDetailsByStockOutId', stockOutId, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -616,7 +618,7 @@ export class StockOutService {
     data: IStockOutDetailCreate,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug({ function: 'createDetail', stockOutId, data, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -694,7 +696,7 @@ export class StockOutService {
     data: IStockOutDetailUpdate,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug({ function: 'updateDetail', detailId, data, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -732,7 +734,7 @@ export class StockOutService {
   }
 
   @TryCatch
-  async deleteDetail(detailId: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async deleteDetail(detailId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'deleteDetail', detailId, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -769,7 +771,7 @@ export class StockOutService {
   // ==================== Standalone Stock Out Detail API ====================
 
   @TryCatch
-  async findAllDetails(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<any>> {
+  async findAllDetails(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAllDetails', user_id, tenant_id, paginate }, StockOutService.name);
 
     const defaultSearchFields = ['product_name', 'product_local_name', 'location_name', 'description'];
@@ -848,7 +850,7 @@ export class StockOutService {
     data: IStockOutDetailCreate & { stock_out_id: string },
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug({ function: 'createStandaloneDetail', data, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);

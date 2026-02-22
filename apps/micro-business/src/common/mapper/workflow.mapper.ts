@@ -28,7 +28,6 @@ export class WorkflowMapper {
     );
     const response = await firstValueFrom(res);
 
-    console.log('response workflow', response);
     if (response.response.status !== HttpStatus.OK) {
       throw new Error(response.response.message);
     }

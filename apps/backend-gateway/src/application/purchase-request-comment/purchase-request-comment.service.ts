@@ -4,7 +4,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { ResponseLib } from 'src/libs/response.lib';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class PurchaseRequestCommentService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findById',
@@ -33,7 +33,7 @@ export class PurchaseRequestCommentService {
       PurchaseRequestCommentService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request-comment.find-by-id',
         service: 'purchase-request-comment',
@@ -59,7 +59,7 @@ export class PurchaseRequestCommentService {
     bu_code: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findAllByPurchaseRequestId',
@@ -70,7 +70,7 @@ export class PurchaseRequestCommentService {
       PurchaseRequestCommentService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request-comment.find-all-by-purchase-request-id',
         service: 'purchase-request-comment',
@@ -91,11 +91,11 @@ export class PurchaseRequestCommentService {
   }
 
   async create(
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'create',
@@ -105,7 +105,7 @@ export class PurchaseRequestCommentService {
       PurchaseRequestCommentService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request-comment.create',
         service: 'purchase-request-comment',
@@ -127,11 +127,11 @@ export class PurchaseRequestCommentService {
 
   async update(
     id: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'update',
@@ -142,7 +142,7 @@ export class PurchaseRequestCommentService {
       PurchaseRequestCommentService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request-comment.update',
         service: 'purchase-request-comment',
@@ -167,7 +167,7 @@ export class PurchaseRequestCommentService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'delete',
@@ -177,7 +177,7 @@ export class PurchaseRequestCommentService {
       PurchaseRequestCommentService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request-comment.delete',
         service: 'purchase-request-comment',
@@ -199,11 +199,11 @@ export class PurchaseRequestCommentService {
 
   async addAttachment(
     id: string,
-    attachment: any,
+    attachment: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'addAttachment',
@@ -214,7 +214,7 @@ export class PurchaseRequestCommentService {
       PurchaseRequestCommentService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request-comment.add-attachment',
         service: 'purchase-request-comment',
@@ -240,7 +240,7 @@ export class PurchaseRequestCommentService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'removeAttachment',
@@ -251,7 +251,7 @@ export class PurchaseRequestCommentService {
       PurchaseRequestCommentService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request-comment.remove-attachment',
         service: 'purchase-request-comment',

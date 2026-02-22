@@ -32,12 +32,13 @@ export class PurchaseRequestLogic {
     await this.purchaseRequestService.initializePrismaService(tenant_id, user_id);
     const data = payload.details
     const extractId = this.populateData(data)
-    const foreignValue: any = await this.mapperLogic.populate(extractId, user_id, tenant_id)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractId, user_id, tenant_id)
 
     // Validate HOD requirement when workflow is being assigned
     if (data?.workflow_id && data?.department_id) {
       const workflowData = foreignValue?.workflow_id?.data;
-      const stagesWithHod = workflowData?.stages?.filter((stage: any) => stage.is_hod === true) || [];
+      const stagesWithHod = workflowData?.stages?.filter((stage: Record<string, unknown>) => stage.is_hod === true) || [];
       if (stagesWithHod.length > 0) {
         const hodCheckRes = this.masterService.send(
           { cmd: 'department-users.has-hod-in-department', service: 'department-users' },
@@ -89,7 +90,7 @@ export class PurchaseRequestLogic {
     const createPurchaseRequestDetail = []
 
     for (const detail of data?.purchase_request_detail?.add ?? []) {
-      const detailAny = detail as any;
+      const detailAny = detail as unknown as Record<string, unknown>;
       const product = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id);
       const location = foreignValue?.location_ids?.find((location) => location?.id === detail?.location_id);
       const requestedUnit = foreignValue?.unit_ids?.find((unit) => unit?.id === detail?.requested_unit_id);
@@ -123,6 +124,7 @@ export class PurchaseRequestLogic {
     id,
     { state_role, details: data }: {
       state_role: enum_stage_role,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       details: any
     },
     user_id: string,
@@ -130,15 +132,17 @@ export class PurchaseRequestLogic {
     this.logger.debug({ function: 'save', data, user_id, tenant_id }, PurchaseRequestLogic.name);
     await this.purchaseRequestService.initializePrismaService(tenant_id, user_id);
     let updatePR = {}
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let updatePRDetail: any = {}
     if (state_role === enum_stage_role.create) {
       const extractId = this.populateData(data)
-      const foreignValue: any = await this.mapperLogic.populate(extractId, user_id, tenant_id)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractId, user_id, tenant_id)
 
       // Validate HOD requirement when workflow is being assigned
       if (data?.workflow_id && data?.department_id) {
         const workflowData = foreignValue?.workflow_id?.data;
-        const stagesWithHod = workflowData?.stages?.filter((stage: any) => stage.is_hod === true) || [];
+        const stagesWithHod = workflowData?.stages?.filter((stage: Record<string, unknown>) => stage.is_hod === true) || [];
         if (stagesWithHod.length > 0) {
           const hodCheckRes = this.masterService.send(
             { cmd: 'department-users.has-hod-in-department', service: 'department-users' },
@@ -276,7 +280,8 @@ export class PurchaseRequestLogic {
       }
     } else if (state_role === enum_stage_role.purchase || state_role === enum_stage_role.approve) {
       const extractIds = this.populateDetail(data)
-      const foreignValue: any = await this.mapperLogic.populate(extractIds, user_id, tenant_id)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id)
       updatePRDetail = []
       for (const detail of data as PurchaseRoleApprovePurchaseRequestDetail[]) {
         updatePRDetail.push(
@@ -310,12 +315,13 @@ export class PurchaseRequestLogic {
     this.validateBeforeSubmit(purchaseRequestData)
 
     const total_amount = purchaseRequestData?.purchase_request_detail?.reduce((curr, acc) => curr + acc.total_price, 0)
-    const populateData: any = await this.mapperLogic.populate({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const populateData: Record<string, any> = await this.mapperLogic.populate({
       workflow_id: purchaseRequestData?.workflow_id,
       user_id: user_id,
     }, user_id, bu_code)
 
-    const workflowData = (populateData as any)?.workflow_id?.data
+    const workflowData = populateData?.workflow_id?.data
 
     // Determine current stage - if empty (old data), get first stage then navigate to stage 2
     let currentStageForNavigation = purchaseRequestData?.workflow_current_stage
@@ -404,7 +410,8 @@ export class PurchaseRequestLogic {
     }:
       {
         state_role: enum_stage_role,
-        details: any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      details: any[]
       },
     user_id: string,
     tenant_id: string
@@ -412,7 +419,8 @@ export class PurchaseRequestLogic {
     await this.purchaseRequestService.initializePrismaService(tenant_id, user_id);
     const updatePRDetail = []
     const extractIds = this.populateDetail(details)
-    const foreignValue: any = await this.mapperLogic.populate(extractIds, user_id, tenant_id)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id)
     for (const detail of details as PurchaseRoleApprovePurchaseRequestDetail[]) {
       updatePRDetail.push(
         JSON.parse(
@@ -435,13 +443,14 @@ export class PurchaseRequestLogic {
     }
     const purchaseRequestData = purchaseRequestResult.value;
     const total_amount = purchaseRequestData?.purchase_request_detail?.reduce((curr, acc) => curr + acc.total_price, 0)
-    const populateData: any = await this.mapperLogic.populate({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const populateData: Record<string, any> = await this.mapperLogic.populate({
       workflow_id: purchaseRequestData?.workflow_id,
       user_id: user_id,
     }, user_id, tenant_id)
 
 
-    const workflowData = (populateData as any)?.workflow_id?.data
+    const workflowData = populateData?.workflow_id?.data
 
     const res = this.masterService.send(
       { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
@@ -543,6 +552,7 @@ export class PurchaseRequestLogic {
     }
     const purchaseRequest = purchaseRequestResult.value;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const userRes: Observable<any> = await this.authService.send(
       {
         cmd: 'get-user-by-id',
@@ -621,7 +631,7 @@ export class PurchaseRequestLogic {
       last_action_by_name: userResponse?.data?.name,
       workflow_history: workflow_history
     }
-    const result = await this.purchaseRequestService.review(id, body, workflow as any)
+    const result = await this.purchaseRequestService.review(id, body, workflow as WorkflowHeader)
 
     // Send notification for review (send back)
     this.sendReviewNotification(
@@ -780,22 +790,24 @@ export class PurchaseRequestLogic {
     ValidatePRBeforeSubmitSchema.parse(purchaseRequest);
   }
 
-  private distinctData(d: any[]): any[] {
+  private distinctData(d: unknown[]): unknown[] {
     return [...new Set(d)];
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async buildUserAction(
     currentStageInfo: any,
     department_id: string,
     department_name: string,
     user_id: string,
     bu_code: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<{ execute: any[] } | null> {
     const userIdsToAssign: string[] = []
 
     // Always add assigned_users from workflow stage
     // assigned_users can be either string[] (IDs) or object[] (full profiles)
-    const assignedUsers = currentStageInfo?.assigned_users || []
+    const assignedUsers: any[] = currentStageInfo?.assigned_users || []
     for (const user of assignedUsers) {
       if (typeof user === 'string') {
         userIdsToAssign.push(user)
@@ -839,6 +851,7 @@ export class PurchaseRequestLogic {
         department: { id: department_id, name: department_name }
       },
     );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const profilesResult: { data: any[] } = await firstValueFrom(profilesRes);
 
     return { execute: profilesResult.data || [] }
@@ -848,7 +861,8 @@ export class PurchaseRequestLogic {
    * Send notification when PR is submitted
    */
   private async sendSubmitNotification(
-    purchaseRequest: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    purchaseRequest: Record<string, any>,
     workflow: WorkflowHeader,
     submitterId: string,
     submitterName: string,
@@ -886,7 +900,8 @@ export class PurchaseRequestLogic {
    * Send notification when PR is approved
    */
   private async sendApproveNotification(
-    purchaseRequest: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    purchaseRequest: Record<string, any>,
     workflow: WorkflowHeader,
     approverId: string,
     approverName: string,
@@ -951,7 +966,8 @@ export class PurchaseRequestLogic {
    * Send notification when PR is reviewed (sent back)
    */
   private async sendReviewNotification(
-    purchaseRequest: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    purchaseRequest: Record<string, any>,
     workflow: WorkflowHeader,
     reviewerId: string,
     reviewerName: string,

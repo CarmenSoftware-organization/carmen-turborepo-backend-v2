@@ -1,7 +1,7 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
@@ -23,12 +23,12 @@ export class Config_RecipeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, version },
       Config_RecipeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe.findOne', service: 'recipe' },
       { id, user_id, bu_code, version },
     );
@@ -50,12 +50,12 @@ export class Config_RecipeService {
     bu_code: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', paginate, version },
       Config_RecipeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe.findAll', service: 'recipe' },
       { user_id, paginate, bu_code, version },
     );
@@ -77,12 +77,12 @@ export class Config_RecipeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', createDto, version },
       Config_RecipeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe.create', service: 'recipe' },
       { data: createDto, user_id, bu_code, version },
     );
@@ -104,12 +104,12 @@ export class Config_RecipeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', updateDto, version },
       Config_RecipeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe.update', service: 'recipe' },
       { data: updateDto, user_id, bu_code, version },
     );
@@ -131,12 +131,12 @@ export class Config_RecipeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'patch', updateDto, version },
       Config_RecipeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe.patch', service: 'recipe' },
       { data: updateDto, user_id, bu_code, version },
     );
@@ -158,12 +158,12 @@ export class Config_RecipeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, version },
       Config_RecipeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe.delete', service: 'recipe' },
       { id, user_id, bu_code, version },
     );

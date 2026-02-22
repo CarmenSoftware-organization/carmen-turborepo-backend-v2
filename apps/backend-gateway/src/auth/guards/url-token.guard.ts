@@ -59,14 +59,14 @@ export class UrlTokenGuard implements CanActivate {
     }
 
     // Decode the JWT token
-    let decodedToken: any;
+    let decodedToken: Record<string, unknown> | null;
     try {
       decodedToken = this.jwtService.decode(shotUrl.token);
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error(
         {
           url_token: urlToken,
-          error: error?.message || 'Unknown error',
+          error: error instanceof Error ? error.message : 'Unknown error',
         },
         'Failed to decode token',
       );

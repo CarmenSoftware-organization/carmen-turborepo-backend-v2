@@ -67,7 +67,7 @@ export class UnitsService {
   ) { }
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
       UnitsService.name,
@@ -93,7 +93,7 @@ export class UnitsService {
   @TryCatch
   async findAll(
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate },
       UnitsService.name,
@@ -137,7 +137,7 @@ export class UnitsService {
   @TryCatch
   async findAllById(
     ids: string[],
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAllById', ids, user_id: this.userId, tenant_id: this.bu_code },
       UnitsService.name,
@@ -156,7 +156,7 @@ export class UnitsService {
   @TryCatch
   async create(
     data: ICreateUnits,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
       UnitsService.name,
@@ -184,7 +184,7 @@ export class UnitsService {
   @TryCatch
   async update(
     data: IUpdateUnits,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code },
       UnitsService.name,
@@ -214,7 +214,7 @@ export class UnitsService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code }, UnitsService.name);
 
     const unit = await this.prismaService.tb_unit.findFirst({

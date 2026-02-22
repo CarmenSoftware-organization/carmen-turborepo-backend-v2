@@ -24,7 +24,7 @@ export class ApplicationRoleService {
   ) { }
 
   @TryCatch
-  async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id: id, user_id, tenant_id },
       ApplicationRoleService.name,
@@ -42,7 +42,7 @@ export class ApplicationRoleService {
   }
 
   @TryCatch
-  async findAll(user_id: string, tenant_id: string, paginate: any): Promise<Result<any>> {
+  async findAll(user_id: string, tenant_id: string, paginate: any): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', paginate: paginate, user_id, tenant_id },
       ApplicationRoleService.name,
@@ -88,7 +88,7 @@ export class ApplicationRoleService {
   }
 
   @TryCatch
-  async create(data: IApplicationRoleCreate, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async create(data: IApplicationRoleCreate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data: data, user_id, tenant_id },
       ApplicationRoleService.name,
@@ -118,7 +118,7 @@ export class ApplicationRoleService {
   }
 
   @TryCatch
-  async update(data: IApplicationRoleUpdate, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async update(data: IApplicationRoleUpdate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data: data, user_id, tenant_id },
       ApplicationRoleService.name,
@@ -146,7 +146,7 @@ export class ApplicationRoleService {
   }
 
   @TryCatch
-  async remove(id: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async remove(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'remove', id: id, user_id, tenant_id },
       ApplicationRoleService.name,

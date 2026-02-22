@@ -72,7 +72,7 @@ export class TaxProfileService {
   ) { }
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
       TaxProfileService.name,
@@ -100,7 +100,7 @@ export class TaxProfileService {
   @TryCatch
   async findOneByName(
     name: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOneByName', name, user_id: this.userId, tenant_id: this.bu_code },
       'findOneByName',
@@ -128,7 +128,7 @@ export class TaxProfileService {
   @TryCatch
   async findAll(
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate },
       'findAll',
@@ -154,11 +154,7 @@ export class TaxProfileService {
       orderBy: q.orderBy(),
       ...pagination,
     };
-    console.log('Prisma findMany params:', JSON.stringify(prismaParams, null, 2));
     const data = await this.prismaService.tb_tax_profile.findMany(prismaParams);
-
-    console.log('data:', data)
-
 
     const total = await this.prismaService.tb_tax_profile.count({ where: q.where() });
 
@@ -183,7 +179,7 @@ export class TaxProfileService {
   @TryCatch
   async findAllById(
     ids: string[],
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAllById', ids, user_id: this.userId, tenant_id: this.bu_code },
       'findAllById',
@@ -213,7 +209,7 @@ export class TaxProfileService {
   @TryCatch
   async create(
     data: ICreateTaxProfile,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
       'create',
@@ -241,8 +237,6 @@ export class TaxProfileService {
 
     const id = createdTaxProfile.id;
 
-    console.log(id);
-
     return Result.ok({ id: id });
   }
 
@@ -250,7 +244,7 @@ export class TaxProfileService {
   async update(
     id: string,
     data: IUpdateTaxProfile,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', id, data, user_id: this.userId, tenant_id: this.bu_code },
       'update',
@@ -286,7 +280,7 @@ export class TaxProfileService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code }, 'delete');
 
     const gbl_taxProfile = await this.prismaService.tb_tax_profile.findFirst({

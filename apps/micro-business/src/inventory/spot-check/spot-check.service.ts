@@ -41,7 +41,7 @@ export class SpotCheckService {
     id: string,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id, tenant_id },
       SpotCheckService.name,
@@ -76,7 +76,7 @@ export class SpotCheckService {
     user_id: string,
     tenant_id: string,
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id, tenant_id, paginate },
       SpotCheckService.name,
@@ -127,7 +127,7 @@ export class SpotCheckService {
     data: any,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id, tenant_id },
       SpotCheckService.name,
@@ -181,7 +181,7 @@ export class SpotCheckService {
             ErrorCode.INVALID_ARGUMENT,
           );
         }
-        const manualIds = data.products.map((p: any) => p.product_id);
+        const manualIds = data.products.map((p: Record<string, unknown>) => p.product_id);
         selectedProducts = this.spotCheckLogic.selectManual(
           allProducts,
           manualIds,
@@ -245,7 +245,7 @@ export class SpotCheckService {
     id: string,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id, tenant_id },
       SpotCheckService.name,
@@ -283,6 +283,7 @@ export class SpotCheckService {
     );
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
       const res: Observable<any> = this.masterService.send(
         {
           cmd: 'running-code.get-pattern-by-type',
@@ -299,7 +300,7 @@ export class SpotCheckService {
 
       let datePattern;
       let runningPattern;
-      patterns.forEach((pattern: any) => {
+      patterns.forEach((pattern: Record<string, unknown>) => {
         if (pattern.type === 'date') datePattern = pattern;
         else if (pattern.type === 'running') runningPattern = pattern;
       });
@@ -325,6 +326,7 @@ export class SpotCheckService {
         )
         : 0;
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
       const generateCodeRes: Observable<any> = this.masterService.send(
         { cmd: 'running-code.generate-code', service: 'running-codes' },
         {
@@ -339,7 +341,7 @@ export class SpotCheckService {
       return generateCodeResponse.data.code;
     } catch (error) {
       this.logger.warn(
-        { function: 'generateSCNo', error: (error as any).message },
+        { function: 'generateSCNo', error: (error as Error).message },
         SpotCheckService.name,
       );
       return `SC-${format(new Date(scDate), 'yyyyMMdd')}-${Date.now().toString(36)}`;

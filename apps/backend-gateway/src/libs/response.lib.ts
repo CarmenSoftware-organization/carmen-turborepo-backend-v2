@@ -1,7 +1,7 @@
 import { IPaginate } from "src/shared-dto/paginate.dto";
 
 export class ResponseLib {
-  static success(data: any) {
+  static success(data: unknown) {
     return {
       data: data,
       // response: {
@@ -15,7 +15,7 @@ export class ResponseLib {
     };
   }
 
-  static successWithPaginate(data: any, paginate: IPaginate) {
+  static successWithPaginate(data: unknown, paginate: IPaginate) {
     return {
       data: data,
       paginate: paginate,
@@ -31,7 +31,7 @@ export class ResponseLib {
     };
   }
 
-  static created(data: any) {
+  static created(data: unknown) {
     return {
       data: data,
       // response: {
@@ -61,7 +61,7 @@ export class ResponseLib {
     };
   }
 
-  static successWithBuCodePaginate(data: any[]) {
+  static successWithBuCodePaginate(data: unknown[]) {
 
     return {
       data,

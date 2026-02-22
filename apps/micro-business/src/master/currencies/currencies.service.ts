@@ -76,7 +76,7 @@ export class CurrenciesService {
   ) { }
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
       CurrenciesService.name,
@@ -110,7 +110,7 @@ export class CurrenciesService {
   @TryCatch
   async findAll(
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, paginate, tenant_id: this.bu_code },
       CurrenciesService.name,
@@ -159,7 +159,7 @@ export class CurrenciesService {
   @TryCatch
   async findAllActive(
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAllActive', user_id: this.userId, tenant_id: this.bu_code, paginate },
       CurrenciesService.name,
@@ -217,7 +217,7 @@ export class CurrenciesService {
   @TryCatch
   async findAllById(
     ids: string[],
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAllById', ids, user_id: this.userId, tenant_id: this.bu_code },
       CurrenciesService.name,
@@ -245,7 +245,7 @@ export class CurrenciesService {
   @TryCatch
   async create(
     data: ICreateCurrencies,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
       CurrenciesService.name,
@@ -275,7 +275,7 @@ export class CurrenciesService {
   @TryCatch
   async update(
     data: IUpdateCurrencies,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code },
       CurrenciesService.name,
@@ -307,7 +307,7 @@ export class CurrenciesService {
   @TryCatch
   async patch(
     data: IUpdateCurrencies,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug({ function: 'patch', data, user_id: this.userId, tenant_id: this.bu_code }, CurrenciesService.name);
 
     const currency = await this.prismaService.tb_currency.findFirst({
@@ -336,7 +336,7 @@ export class CurrenciesService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code },
       CurrenciesService.name,
@@ -369,7 +369,7 @@ export class CurrenciesService {
   }
 
   @TryCatch
-  async getDefault(): Promise<Result<any>> {
+  async getDefault(): Promise<Result<unknown>> {
     this.logger.debug({ function: 'getDefault', user_id: this.userId, tenant_id: this.bu_code }, CurrenciesService.name);
 
     const businessUnit = await this.prismaSystem.tb_business_unit.findFirst({
@@ -393,7 +393,7 @@ export class CurrenciesService {
 
     const currency = await this.prismaService.tb_currency.findFirst({
       where: {
-        id: config.value.currency_id,
+        id: (config.value as any).currency_id,
         is_active: true,
       },
     });

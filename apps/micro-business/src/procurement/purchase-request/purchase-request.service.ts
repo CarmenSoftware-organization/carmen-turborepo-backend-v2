@@ -141,8 +141,10 @@ export class PurchaseRequestService {
       bu_id: string;
       bu_code: string;
       role: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       permissions: any;
     } = null,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value accessed by logic layer
   ): Promise<Result<any>> {
     this.logger.debug(
       {
@@ -243,8 +245,9 @@ export class PurchaseRequestService {
             await firstValueFrom(workflowCallReq);
           const currentWorkflowDetail = CallCurrentWorkflowDetail.data;
 
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const userActionExecute = (res.user_action as { execute: any[] })?.execute || [];
-          const userIds: string[] = userActionExecute.map((u: any) =>
+          const userIds: string[] = userActionExecute.map((u) =>
             typeof u === 'string' ? u : u?.user_id
           ).filter(Boolean);
 
@@ -279,9 +282,10 @@ export class PurchaseRequestService {
       bu_id: string;
       bu_code: string;
       role: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       permissions: any;
     }[],
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id, bu_code, paginate },
       PurchaseRequestService.name,
@@ -301,7 +305,6 @@ export class PurchaseRequestService {
       paginate.advance,
     );
     const results = [];
-    console.log('Processing BU code:', bu_code);
 
     for (const code of bu_code) {
       const userData = userDatas.find((ud) => ud.bu_code === code);
@@ -461,7 +464,7 @@ export class PurchaseRequestService {
   async findAllWorkflowStagesByPr(
     user_id: string,
     bu_code: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     const tenant = await this.tenantService.getdb_connection(user_id, bu_code);
 
     if (!tenant) {
@@ -551,8 +554,9 @@ export class PurchaseRequestService {
           message: 'Business unit retrieved successfully',
         },
       };
-    } catch (error: any) {
-      this.logger.error(error.message, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred while retrieving business unit';
+      this.logger.error(errorMessage, {
         file: PurchaseRequestService.name,
         function: 'getBus',
         userId,
@@ -561,8 +565,7 @@ export class PurchaseRequestService {
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message:
-            error.message || 'An error occurred while retrieving business unit',
+          message: errorMessage,
         },
       };
     }
@@ -573,7 +576,7 @@ export class PurchaseRequestService {
     user_id: string,
     bu_code: string,
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id, bu_code, paginate },
       PurchaseRequestService.name,
@@ -767,7 +770,7 @@ export class PurchaseRequestService {
   async create(
     createPR: IPurchaseRequest,
     createPRDetail: IPurchaseRequestDetail[],
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -825,7 +828,7 @@ export class PurchaseRequestService {
     id: string,
     payload: SubmitPurchaseRequest,
     workflowHeader: WorkflowHeader,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'submit', id, user_id: this.userId, tenant_id: this.bu_code },
       PurchaseRequestService.name,
@@ -869,10 +872,12 @@ export class PurchaseRequestService {
 
       for (const detail of PRdetail) {
         const findDetails = payload.details.find((d) => d.id === detail.id);
-        const stages_status = Array.isArray(detail.stages_status)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const stages_status: any[] = Array.isArray(detail.stages_status)
           ? (detail.stages_status as StageStatus[])
           : [];
-        const history = (detail.history as any[]) || [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const history: any[] = (detail.history as any[]) || [];
         const latestStageStatus = stages_status[stages_status.length - 1];
 
         if (findDetails.stage_status === state_status.approve) {
@@ -941,11 +946,12 @@ export class PurchaseRequestService {
   }
 
   @TryCatch
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async update(
     id: string,
     updatePPayload: any,
     updatePRDetail: any,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -1026,7 +1032,6 @@ export class PurchaseRequestService {
 
       if (updatePRDetail?.purchase_request_detail?.update?.length > 0) {
         for (const item of updatePRDetail.purchase_request_detail.update) {
-          console.log('update Item = ', item);
           await prismatx.tb_purchase_request_detail.update({
             where: {
               id: item.id,
@@ -1089,7 +1094,7 @@ export class PurchaseRequestService {
     ids: string[],
     user_id: string,
     bu_code: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'duplicatePr', ids, user_id, bu_code },
       PurchaseRequestService.name,
@@ -1198,6 +1203,7 @@ export class PurchaseRequestService {
     detailIds: string[],
     user_id: string,
     bu_code: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value accessed by spec tests
   ): Promise<Result<any>> {
     this.logger.debug(
       { function: 'splitPr', id, detailIds, user_id, bu_code },
@@ -1269,8 +1275,8 @@ export class PurchaseRequestService {
           workflow_current_stage: originalPr.workflow_current_stage,
           workflow_previous_stage: originalPr.workflow_previous_stage,
           workflow_next_stage: originalPr.workflow_next_stage,
-          workflow_history: originalPr.workflow_history as any,
-          user_action: originalPr.user_action as any,
+          workflow_history: originalPr.workflow_history as unknown as Record<string, unknown>,
+          user_action: originalPr.user_action as unknown as Record<string, unknown>,
           last_action: originalPr.last_action,
           last_action_at_date: originalPr.last_action_at_date,
           last_action_by_id: originalPr.last_action_by_id,
@@ -1280,8 +1286,8 @@ export class PurchaseRequestService {
           department_id: originalPr.department_id,
           department_name: originalPr.department_name,
           note: originalPr.note,
-          info: originalPr.info as any,
-          dimension: originalPr.dimension as any,
+          info: originalPr.info as unknown as Record<string, unknown>,
+          dimension: originalPr.dimension as unknown as Record<string, unknown>,
           created_by_id: user_id,
         },
       });
@@ -1335,7 +1341,7 @@ export class PurchaseRequestService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code },
       PurchaseRequestService.name,
@@ -1364,7 +1370,8 @@ export class PurchaseRequestService {
   }
 
   @TryCatch
-  async approve(id: string, workflow, payload: any[]): Promise<Result<any>> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async approve(id: string, workflow: any, payload: any[]): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'approve',
@@ -1421,8 +1428,8 @@ export class PurchaseRequestService {
           findPRDoc.stages_status[
           (findPRDoc.stages_status as StageStatus[]).length - 1
           ];
-        const stages_status: StageStatus[] = findPRDoc?.stages_status as any;
-        const history: any[] = (findPRDoc?.history as any) || [];
+        const stages_status: StageStatus[] = findPRDoc?.stages_status as unknown as StageStatus[];
+        const history: Record<string, unknown>[] = (findPRDoc?.history as unknown as Record<string, unknown>[]) || [];
 
         if (latestStageStatus.status === state_status.reject) {
           continue;
@@ -1528,8 +1535,8 @@ export class PurchaseRequestService {
           continue;
         }
 
-        const stagesStatus: StageStatus[] = detail.stages_status as any;
-        const history: any[] = (detail.history as any) || [];
+        const stagesStatus: StageStatus[] = detail.stages_status as unknown as StageStatus[];
+        const history: Record<string, unknown>[] = (detail.history as unknown as Record<string, unknown>[]) || [];
 
         history.push({
           seq: history.length + 1,
@@ -1586,7 +1593,7 @@ export class PurchaseRequestService {
   async reject(
     id: string,
     payload: RejectPurchaseRequestDto,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'reject', id, user_id: this.userId, tenant_id: this.bu_code },
       PurchaseRequestService.name,
@@ -1614,11 +1621,11 @@ export class PurchaseRequestService {
     const tx = await this.prismaService.$transaction(async (txp) => {
       for (const detail of purchaseRequestDetail) {
         const findPR = payload.details.find((d) => d.id === detail.id);
-        let stages_status = detail.stages_status as any;
+        let stages_status = detail.stages_status as unknown as StageStatus[];
         stages_status = stages_status.map((stage) => {
           return {
             ...stage,
-            status: 'reject',
+            status: state_status.reject,
           };
         });
 
@@ -1705,7 +1712,7 @@ export class PurchaseRequestService {
   async findAllByStatus(
     status: string,
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAllByStatus',
@@ -1781,7 +1788,7 @@ export class PurchaseRequestService {
   }
 
   @TryCatch
-  async findAllMyPendingStages(): Promise<Result<any>> {
+  async findAllMyPendingStages(): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAllMyPendingStages',
@@ -2111,7 +2118,8 @@ export class PurchaseRequestService {
       ]);
     });
 
-    const docDefinition: TDocumentDefinitions = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const docDefinition: any = {
       pageSize: 'A4',
       pageMargins: [40, 60, 40, 60],
       content: [
@@ -2193,7 +2201,7 @@ export class PurchaseRequestService {
           },
           layout: {
             hLineWidth: (i: number, node: any) =>
-              i === 0 || i === 1 || i === node.table.body.length ? 1 : 0.5,
+              i === 0 || i === 1 || i === node.table?.body?.length ? 1 : 0.5,
             vLineWidth: () => 0.5,
             hLineColor: () => '#aaaaaa',
             vLineColor: () => '#aaaaaa',

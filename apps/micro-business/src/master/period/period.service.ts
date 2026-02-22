@@ -68,7 +68,7 @@ export class PeriodService {
   ) {}
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
       PeriodService.name,
@@ -89,7 +89,7 @@ export class PeriodService {
   }
 
   @TryCatch
-  async findAll(paginate: IPaginate): Promise<Result<any>> {
+  async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, paginate, tenant_id: this.bu_code },
       PeriodService.name,
@@ -137,7 +137,7 @@ export class PeriodService {
   }
 
   @TryCatch
-  async create(data: ICreatePeriod): Promise<Result<any>> {
+  async create(data: ICreatePeriod): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
       PeriodService.name,
@@ -185,7 +185,7 @@ export class PeriodService {
   }
 
   @TryCatch
-  async update(data: IUpdatePeriod): Promise<Result<any>> {
+  async update(data: IUpdatePeriod): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code },
       PeriodService.name,
@@ -202,7 +202,7 @@ export class PeriodService {
       return Result.error('Period not found', ErrorCode.NOT_FOUND);
     }
 
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       updated_by_id: this.userId,
       updated_at: new Date(),
     };
@@ -228,7 +228,7 @@ export class PeriodService {
   }
 
   @TryCatch
-  async patch(data: IUpdatePeriod): Promise<Result<any>> {
+  async patch(data: IUpdatePeriod): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'patch', data, user_id: this.userId, tenant_id: this.bu_code },
       PeriodService.name,
@@ -245,7 +245,7 @@ export class PeriodService {
       return Result.error('Period not found', ErrorCode.NOT_FOUND);
     }
 
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       updated_by_id: this.userId,
       updated_at: new Date(),
     };
@@ -271,7 +271,7 @@ export class PeriodService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code },
       PeriodService.name,

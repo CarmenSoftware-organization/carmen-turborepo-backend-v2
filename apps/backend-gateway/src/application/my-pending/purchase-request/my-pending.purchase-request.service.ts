@@ -8,7 +8,7 @@ import {
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
-import { CreatePurchaseRequestDto, Result } from '@/common';
+import { CreatePurchaseRequestDto, Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
@@ -28,7 +28,7 @@ export class MyPendingPurchaseRequestService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findById',
@@ -38,7 +38,7 @@ export class MyPendingPurchaseRequestService {
       MyPendingPurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.find-by-id', service: 'purchase-request' },
       { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -60,7 +60,7 @@ export class MyPendingPurchaseRequestService {
     bu_code: string[],
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -72,7 +72,7 @@ export class MyPendingPurchaseRequestService {
       MyPendingPurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'my-pending.purchase-request.find-all', service: 'my-pending' },
       {
         user_id: user_id,
@@ -83,8 +83,6 @@ export class MyPendingPurchaseRequestService {
     );
 
     const response = await firstValueFrom(res);
-
-    console.log('Response from procurement service:', response);
 
     if (response.response.status !== HttpStatus.OK) {
       return Result.error(
@@ -101,7 +99,7 @@ export class MyPendingPurchaseRequestService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -111,7 +109,7 @@ export class MyPendingPurchaseRequestService {
       MyPendingPurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request.create',
         service: 'purchase-request',
@@ -138,11 +136,11 @@ export class MyPendingPurchaseRequestService {
 
   async update(
     id: string,
-    updateDto: any,
+    updateDto: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -153,7 +151,7 @@ export class MyPendingPurchaseRequestService {
       MyPendingPurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.update', service: 'purchase-request' },
       {
         data: { id, ...updateDto },
@@ -180,7 +178,7 @@ export class MyPendingPurchaseRequestService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'submit',
@@ -190,7 +188,7 @@ export class MyPendingPurchaseRequestService {
       MyPendingPurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.submit', service: 'purchase-request' },
       { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -209,11 +207,11 @@ export class MyPendingPurchaseRequestService {
 
   async approve(
     id: string,
-    payload: any,
+    payload: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'approve',
@@ -224,7 +222,7 @@ export class MyPendingPurchaseRequestService {
       MyPendingPurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.approve', service: 'purchase-request' },
       {
         id: id,
@@ -252,7 +250,7 @@ export class MyPendingPurchaseRequestService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'reject',
@@ -262,7 +260,7 @@ export class MyPendingPurchaseRequestService {
       MyPendingPurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.reject', service: 'purchase-request' },
       { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -281,11 +279,11 @@ export class MyPendingPurchaseRequestService {
 
   async review(
     id: string,
-    body: any,
+    body: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'review',
@@ -295,7 +293,7 @@ export class MyPendingPurchaseRequestService {
       MyPendingPurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.review', service: 'purchase-request' },
       {
         id: id,
@@ -323,7 +321,7 @@ export class MyPendingPurchaseRequestService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'delete',
@@ -333,7 +331,7 @@ export class MyPendingPurchaseRequestService {
       MyPendingPurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.delete', service: 'purchase-request' },
       { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -355,7 +353,7 @@ export class MyPendingPurchaseRequestService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAllByStatus',
@@ -365,7 +363,7 @@ export class MyPendingPurchaseRequestService {
       MyPendingPurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request.find-all-by-status',
         service: 'purchase-request',
@@ -394,7 +392,7 @@ export class MyPendingPurchaseRequestService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAllMyPendingStages',
@@ -404,7 +402,7 @@ export class MyPendingPurchaseRequestService {
       },
       MyPendingPurchaseRequestService.name,
     );
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request.find-all-my-pending-stages',
         service: 'purchase-request',
@@ -431,7 +429,7 @@ export class MyPendingPurchaseRequestService {
   async findAllMyPendingPurchaseRequestsCount(
     user_id: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findAllMyPendingPurchaseRequestsCount',
@@ -440,7 +438,7 @@ export class MyPendingPurchaseRequestService {
       },
       MyPendingPurchaseRequestService.name,
     );
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'my-pending.purchase-request.find-all.count', service: 'my-pending' },
       {
         user_id,

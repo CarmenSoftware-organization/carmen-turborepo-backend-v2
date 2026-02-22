@@ -54,7 +54,7 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   async findAll(@Req() req: Request, @Res() res: Response, @Param('bu_code') bu_code: string, @Query() query?: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'findAll', query, version }, Config_RecipeEquipmentController.name);
     const { user_id } = ExtractRequestHeader(req);
-    const paginate = PaginateQuery(query) as any;
+    const paginate = PaginateQuery(query) as unknown;
     const result = await this.recipeEquipmentService.findAll(user_id, bu_code, paginate, version);
     this.respond(res, result);
   }

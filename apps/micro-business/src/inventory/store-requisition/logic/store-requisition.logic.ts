@@ -31,7 +31,7 @@ export class StoreRequisitionLogic {
     await this.storeRequisitionService.initializePrismaService(tenant_id, user_id);
     const data = payload.details;
     const extractId = this.populateData(data);
-    const foreignValue: any = await this.mapperLogic.populate(extractId, user_id, tenant_id);
+    const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractId, user_id, tenant_id);
     const createSR = JSON.parse(JSON.stringify({
       ...data,
       workflow_name: foreignValue?.workflow_id?.name,
@@ -76,7 +76,7 @@ export class StoreRequisitionLogic {
 
     if (state_role === enum_stage_role.create) {
       const extractId = this.populateData(data);
-      const foreignValue: any = await this.mapperLogic.populate(extractId, user_id, tenant_id);
+      const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractId, user_id, tenant_id);
 
       updateSR = JSON.parse(JSON.stringify({
         ...data,
@@ -121,8 +121,8 @@ export class StoreRequisitionLogic {
         updateSRDetail.store_requisition_detail.remove = data?.store_requisition_detail?.remove;
       }
     } else if (state_role === enum_stage_role.approve) {
-      const extractIds = this.populateDetail(data);
-      const foreignValue: any = await this.mapperLogic.populate(extractIds, user_id, tenant_id);
+      const extractIds = this.populateDetail(data as any[]);
+      const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id);
       updateSRDetail = [];
       for (const detail of data as any[]) {
         updateSRDetail.push(
@@ -152,12 +152,12 @@ export class StoreRequisitionLogic {
 
     this.validateBeforeSubmit(storeRequisitionData);
 
-    const populateData: any = await this.mapperLogic.populate({
+    const populateData: Record<string, any> = await this.mapperLogic.populate({
       workflow_id: storeRequisitionData?.workflow_id,
       user_id: user_id,
     }, user_id, bu_code);
 
-    const workflowData = (populateData as any)?.workflow_id?.data;
+    const workflowData = populateData?.workflow_id?.data;
 
     const res = this.masterService.send(
       { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
@@ -231,7 +231,8 @@ export class StoreRequisitionLogic {
       details
     }: {
       state_role: enum_stage_role;
-      details: any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      details: any[];
     },
     user_id: string,
     tenant_id: string
@@ -239,9 +240,9 @@ export class StoreRequisitionLogic {
     await this.storeRequisitionService.initializePrismaService(tenant_id, user_id);
     const updateSRDetail = [];
     const extractIds = this.populateDetail(details);
-    const foreignValue: any = await this.mapperLogic.populate(extractIds, user_id, tenant_id);
+    const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id);
 
-    for (const detail of details as any[]) {
+    for (const detail of details) {
       updateSRDetail.push(
         JSON.parse(
           JSON.stringify({
@@ -259,12 +260,12 @@ export class StoreRequisitionLogic {
     }
     const storeRequisitionData = storeRequisitionResult.value;
 
-    const populateData: any = await this.mapperLogic.populate({
+    const populateData: Record<string, any> = await this.mapperLogic.populate({
       workflow_id: storeRequisitionData?.workflow_id,
       user_id: user_id,
     }, user_id, tenant_id);
 
-    const workflowData = (populateData as any)?.workflow_id?.data;
+    const workflowData = populateData?.workflow_id?.data;
 
     const res = this.masterService.send(
       { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
@@ -356,7 +357,7 @@ export class StoreRequisitionLogic {
     return result;
   }
 
-  private populateData(data) {
+  private populateData(data: any) {
     const headerFields = {
       workflow_id: data?.workflow_id,
       requestor_id: data?.requestor_id,
@@ -410,12 +411,13 @@ export class StoreRequisitionLogic {
     ValidateSRBeforeSubmitSchema.parse(storeRequisition);
   }
 
-  private distinctData(d: any[]): any[] {
+  private distinctData(d: unknown[]): unknown[] {
     return [...new Set(d)];
   }
 
   private async sendSubmitNotification(
-    storeRequisition: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    storeRequisition: Record<string, any>,
     workflow: WorkflowHeader,
     submitterId: string,
     submitterName: string,
@@ -449,7 +451,8 @@ export class StoreRequisitionLogic {
   }
 
   private async sendApproveNotification(
-    storeRequisition: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    storeRequisition: Record<string, any>,
     workflow: WorkflowHeader,
     approverId: string,
     approverName: string,

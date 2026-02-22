@@ -286,7 +286,7 @@ export interface IPurchaseRequest {
   pr_no: string;
   description?: string;
   workflow_id?: string;
-  workflow_obj?: any;
+  workflow_obj?: Record<string, unknown>;
   current_workflow_status?: string;
   pr_status?: enum_purchase_request_doc_status;
   requestor_id?: string;

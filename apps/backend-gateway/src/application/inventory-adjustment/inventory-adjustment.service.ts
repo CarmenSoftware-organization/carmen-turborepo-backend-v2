@@ -4,7 +4,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Inject } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
@@ -21,7 +21,7 @@ export interface InventoryAdjustmentItem {
   description?: string;
   created_at: string;
   updated_at: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 @Injectable()
@@ -39,7 +39,7 @@ export class InventoryAdjustmentService {
     paginate: IPaginate,
     version: string,
     type?: AdjustmentType,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id, tenant_id, paginate, version, type },
       InventoryAdjustmentService.name,
@@ -51,7 +51,7 @@ export class InventoryAdjustmentService {
 
     // Fetch stock-in data if type is not specified or type is 'stock-in'
     if (!type || type === 'stock-in') {
-      const stockInRes: Observable<any> = this.inventoryService.send(
+      const stockInRes: Observable<MicroserviceResponse> = this.inventoryService.send(
         { cmd: 'stock-in.findAll', service: 'stock-in' },
         { user_id, tenant_id, paginate, version },
       );
@@ -59,7 +59,7 @@ export class InventoryAdjustmentService {
       const stockInResponse = await firstValueFrom(stockInRes);
 
       if (stockInResponse.response.status === HttpStatus.OK) {
-        const stockInItems = (stockInResponse.data || []).map((item: any) => ({
+        const stockInItems = (stockInResponse.data || []).map((item: Record<string, unknown>) => ({
           ...item,
           type: 'stock-in' as AdjustmentType,
           document_no: item.si_no || item.document_no,
@@ -71,7 +71,7 @@ export class InventoryAdjustmentService {
 
     // Fetch stock-out data if type is not specified or type is 'stock-out'
     if (!type || type === 'stock-out') {
-      const stockOutRes: Observable<any> = this.inventoryService.send(
+      const stockOutRes: Observable<MicroserviceResponse> = this.inventoryService.send(
         { cmd: 'stock-out.findAll', service: 'stock-out' },
         { user_id, tenant_id, paginate, version },
       );
@@ -79,7 +79,7 @@ export class InventoryAdjustmentService {
       const stockOutResponse = await firstValueFrom(stockOutRes);
 
       if (stockOutResponse.response.status === HttpStatus.OK) {
-        const stockOutItems = (stockOutResponse.data || []).map((item: any) => ({
+        const stockOutItems = (stockOutResponse.data || []).map((item: Record<string, unknown>) => ({
           ...item,
           type: 'stock-out' as AdjustmentType,
           document_no: item.so_no || item.document_no,
@@ -114,7 +114,7 @@ export class InventoryAdjustmentService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, type, user_id, tenant_id, version },
       InventoryAdjustmentService.name,
@@ -123,7 +123,7 @@ export class InventoryAdjustmentService {
     const cmd = type === 'stock-in' ? 'stock-in.findOne' : 'stock-out.findOne';
     const service = type === 'stock-in' ? 'stock-in' : 'stock-out';
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd, service },
       { id, user_id, tenant_id, version },
     );

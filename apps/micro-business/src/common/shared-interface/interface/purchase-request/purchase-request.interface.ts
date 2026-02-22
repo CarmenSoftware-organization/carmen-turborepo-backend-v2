@@ -57,10 +57,10 @@ export interface IPurchaseRequestDetail {
   base_sub_total_price?: number
   base_net_amount?: number
   base_total_price?: number
-  history?: any
-  stages_status?: any
-  info?: any
-  dimension?: any
+  history?: unknown
+  stages_status?: unknown
+  info?: unknown
+  dimension?: unknown
   doc_version?: number
   created_at?: Date
   created_by_id?: string
@@ -79,8 +79,8 @@ export interface ICreatePurchaseRequest {
   requestor_id: string;
   department_id: string;
   note?: string;
-  info?: any;
-  dimension?: any;
+  info?: unknown;
+  dimension?: unknown;
 } // deprecated
 
 export interface IPurchaseRequest {
@@ -99,7 +99,7 @@ export interface IPurchaseRequest {
   workflow_current_stage?: string
   workflow_previous_stage?: string
   workflow_next_stage?: string
-  user_action?: any
+  user_action?: unknown
   last_action?: string
   last_action_at_date?: Date
   last_action_by_id?: string
@@ -109,8 +109,8 @@ export interface IPurchaseRequest {
   department_id?: string
   department_name?: string
   note?: string
-  info?: any
-  dimension?: any
+  info?: unknown
+  dimension?: unknown
   doc_version?: number
   created_at: Date
   created_by_id: string
@@ -141,5 +141,5 @@ export interface IGetAllResponse {
     perpage?: number;
     pages?: number;
   };
-  data: any[];
+  data: unknown[];
 }

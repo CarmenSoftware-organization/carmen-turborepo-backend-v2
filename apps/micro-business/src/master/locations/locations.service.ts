@@ -94,7 +94,7 @@ export class LocationsService {
     withUsers: boolean = false,
     withProducts: boolean = false,
     version: string = 'latest',
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -151,12 +151,12 @@ export class LocationsService {
           },
         },
       })
-      .then(async (res: any) => {
+      .then(async (res) => {
         const user_location = [];
         const product_location = [];
 
-        if (withUsers && res?.tb_user_location) {
-          for (const user of res.tb_user_location) {
+        if (withUsers && (res as any)?.tb_user_location) {
+          for (const user of (res as any).tb_user_location) {
             this.logger.debug(
               { function: 'with user option', user },
               LocationsService.name,
@@ -183,8 +183,8 @@ export class LocationsService {
           }
         }
 
-        if (withProducts && res?.tb_product_location) {
-          for (const product of res.tb_product_location) {
+        if (withProducts && (res as any)?.tb_product_location) {
+          for (const product of (res as any).tb_product_location) {
             this.logger.debug(
               { function: 'with product option', product },
               LocationsService.name,
@@ -298,11 +298,9 @@ export class LocationsService {
       orderBy: q.orderBy(),
       ...pagination,
     };
-    console.log('Prisma findMany params:', JSON.stringify(prismaParams, null, 2));
     const data = await this.prismaService.tb_location.findMany(prismaParams);
 
-    console.log('data:', data)
-    const locations = data.map((item: any) => {
+    const locations = data.map((item) => {
       return {
         id: item.id,
         code: item.code,
@@ -346,8 +344,6 @@ export class LocationsService {
       { function: 'findAllByUser', user_id: this.userId, tenant_id: this.bu_code, version },
       LocationsService.name,
     );
-
-    console.log('findAllByUser:',)
 
     const locations = await this.prismaService.tb_location.findMany({
       where: {

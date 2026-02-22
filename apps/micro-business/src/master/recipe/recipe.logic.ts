@@ -23,7 +23,7 @@ export class RecipeLogic {
     });
   }
 
-  convertDecimalFields(recipe: any): any {
+  convertDecimalFields(recipe: Record<string, unknown>): Record<string, unknown> {
     const decimalFields = [
       'base_yield', 'total_ingredient_cost', 'labor_cost', 'overhead_cost',
       'cost_per_portion', 'suggested_price', 'selling_price',

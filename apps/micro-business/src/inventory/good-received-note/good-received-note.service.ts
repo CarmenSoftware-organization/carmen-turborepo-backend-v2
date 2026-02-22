@@ -45,7 +45,7 @@ export class GoodReceivedNoteService {
   ) { }
 
   @TryCatch
-  async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id, tenant_id },
       GoodReceivedNoteService.name,
@@ -112,7 +112,7 @@ export class GoodReceivedNoteService {
     user_id: string,
     tenant_id: string,
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id, tenant_id, paginate },
       GoodReceivedNoteService.name,
@@ -212,7 +212,7 @@ export class GoodReceivedNoteService {
     data: IGoodReceivedNoteCreate,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id, tenant_id },
       GoodReceivedNoteService.name,
@@ -388,9 +388,9 @@ export class GoodReceivedNoteService {
             }
 
             if (gbl_findTaxProfile && gbl_findTaxProfile.value) {
-              const taxProfile = gbl_findTaxProfile.value as any[];
+              const taxProfile = gbl_findTaxProfile.value as unknown as Record<string, unknown>[];
               const findTaxProfile = taxProfile.find(
-                (tax: any) => tax.id === item.tax_profile_id,
+                (tax) => tax.id === item.tax_profile_id,
               );
               if (!findTaxProfile) {
                 taxProfileNotFound.push(item.tax_profile_name);
@@ -588,7 +588,7 @@ export class GoodReceivedNoteService {
     data: IGoodReceivedNoteUpdate,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id, tenant_id },
       'update',
@@ -777,9 +777,9 @@ export class GoodReceivedNoteService {
               }
 
               if (gbl_findTaxProfile && gbl_findTaxProfile.value) {
-                const taxProfile = gbl_findTaxProfile.value as any[];
+                const taxProfile = gbl_findTaxProfile.value as unknown as Record<string, unknown>[];
                 const findTaxProfile = taxProfile.find(
-                  (tax: any) => tax.id === item.tax_profile_id,
+                  (tax) => tax.id === item.tax_profile_id,
                 );
                 if (!findTaxProfile) {
                   taxProfileNotFound.push(item.tax_profile_name);
@@ -958,9 +958,9 @@ export class GoodReceivedNoteService {
               }
 
               if (gbl_findTaxProfile && gbl_findTaxProfile.value) {
-                const taxProfile = gbl_findTaxProfile.value as any[];
+                const taxProfile = gbl_findTaxProfile.value as unknown as Record<string, unknown>[];
                 const findTaxProfile = taxProfile.find(
-                  (tax: any) => tax.id === item.tax_profile_id,
+                  (tax) => tax.id === item.tax_profile_id,
                 );
                 if (!findTaxProfile) {
                   taxProfileNotFound.push(item.tax_profile_name);
@@ -1084,9 +1084,9 @@ export class GoodReceivedNoteService {
                 }
 
                 if (gbl_findTaxProfile && gbl_findTaxProfile.value) {
-                  const taxProfile = gbl_findTaxProfile.value as any[];
+                  const taxProfile = gbl_findTaxProfile.value as unknown as Record<string, unknown>[];
                   const findTaxProfile = taxProfile.find(
-                    (tax: any) => tax.id === item.tax_profile_id,
+                    (tax) => tax.id === item.tax_profile_id,
                   );
                   if (!findTaxProfile) {
                     taxProfileNotFound.push(item.tax_profile_name);
@@ -1145,9 +1145,9 @@ export class GoodReceivedNoteService {
                 }
 
                 if (gbl_findTaxProfile && gbl_findTaxProfile.value) {
-                  const taxProfile = gbl_findTaxProfile.value as any[];
+                  const taxProfile = gbl_findTaxProfile.value as unknown as Record<string, unknown>[];
                   const findTaxProfile = taxProfile.find(
-                    (tax: any) => tax.id === item.tax_profile_id,
+                    (tax) => tax.id === item.tax_profile_id,
                   );
                   if (!findTaxProfile) {
                     taxProfileNotFound.push(item.tax_profile_name);
@@ -1328,7 +1328,7 @@ export class GoodReceivedNoteService {
   }
 
   @TryCatch
-  async delete(id: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async delete(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id, tenant_id }, 'delete');
     const tenant = await this.tenantService.getdb_connection(
       user_id,
@@ -1441,12 +1441,14 @@ export class GoodReceivedNoteService {
       'generateGRNNo',
     );
     // const pattern = await this.commonLogic.getRunningPattern('PR', user_id, tenant_id)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
     const res: Observable<any> = this.masterService.send(
       { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
       { type: 'GRN', user_id, bu_code: tenant_id },
     );
     const response = await firstValueFrom(res);
-    const patterns = response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const patterns: any[] = response.data as any[];
 
     let datePattern;
     let runningPattern;
@@ -1469,6 +1471,7 @@ export class GoodReceivedNoteService {
       ? Number(latestGRN.grn_no.slice(-Number(runningPattern.pattern)))
       : 0;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const generateCodeRes: Observable<any> = this.masterService.send(
       { cmd: 'running-code.generate-code', service: 'running-codes' },
       {
@@ -1664,7 +1667,7 @@ export class GoodReceivedNoteService {
     reason: string,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'reject', id, reason, user_id, tenant_id },
       GoodReceivedNoteService.name,
@@ -1723,7 +1726,8 @@ export class GoodReceivedNoteService {
    * Send notification when GRN is rejected
    */
   private async sendGRNRejectedNotification(
-    grn: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    grn: Record<string, any>,
     reason: string,
     rejectorId: string,
   ): Promise<void> {
@@ -1765,7 +1769,7 @@ export class GoodReceivedNoteService {
     detailId: string,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findDetailById', detailId, user_id, tenant_id },
       GoodReceivedNoteService.name,
@@ -1823,7 +1827,7 @@ export class GoodReceivedNoteService {
     grnId: string,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findDetailsByGrnId', grnId, user_id, tenant_id },
       GoodReceivedNoteService.name,
@@ -1883,7 +1887,7 @@ export class GoodReceivedNoteService {
     data: IGoodReceivedNoteDetailCreate,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'createDetail', grnId, data, user_id, tenant_id },
       GoodReceivedNoteService.name,
@@ -1981,7 +1985,7 @@ export class GoodReceivedNoteService {
     data: IGoodReceivedNoteDetailUpdate,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'updateDetail', detailId, data, user_id, tenant_id },
       GoodReceivedNoteService.name,
@@ -2073,7 +2077,7 @@ export class GoodReceivedNoteService {
     detailId: string,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'deleteDetail', detailId, user_id, tenant_id },
       GoodReceivedNoteService.name,

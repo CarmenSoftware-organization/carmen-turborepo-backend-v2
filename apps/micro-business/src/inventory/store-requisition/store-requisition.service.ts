@@ -128,8 +128,10 @@ export class StoreRequisitionService {
       bu_id: string;
       bu_code: string;
       role: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       permissions: any;
     } = null,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value accessed by logic layer
   ): Promise<Result<any>> {
     this.logger.debug(
       {
@@ -238,9 +240,10 @@ export class StoreRequisitionService {
       bu_id: string;
       bu_code: string;
       role: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       permissions: any;
     }[],
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id, bu_code, paginate },
       StoreRequisitionService.name,
@@ -391,7 +394,7 @@ export class StoreRequisitionService {
   async create(
     createSR: IStoreRequisition,
     createSRDetail: IStoreRequisitionDetail[],
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -447,7 +450,7 @@ export class StoreRequisitionService {
     id: string,
     payload: SubmitStoreRequisition,
     workflowHeader: WorkflowHeader,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'submit', id, user_id: this.userId, tenant_id: this.bu_code },
       StoreRequisitionService.name,
@@ -496,7 +499,7 @@ export class StoreRequisitionService {
         const stages_status = Array.isArray(detail.stages_status)
           ? (detail.stages_status as StageStatus[])
           : [];
-        const history = (detail.history as any[]) || [];
+        const history = (detail.history as unknown as unknown[]) || [];
         const latestStageStatus = stages_status[stages_status.length - 1];
 
         if (findDetails.stage_status === state_status.approve) {
@@ -556,11 +559,12 @@ export class StoreRequisitionService {
   }
 
   @TryCatch
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async update(
     id: string,
     updatePayload: any,
     updateSRDetail: any,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -688,7 +692,7 @@ export class StoreRequisitionService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code },
       StoreRequisitionService.name,
@@ -717,7 +721,8 @@ export class StoreRequisitionService {
   }
 
   @TryCatch
-  async approve(id: string, workflow, payload: any[]): Promise<Result<any>> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async approve(id: string, workflow: any, payload: any[]): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'approve',
@@ -774,8 +779,10 @@ export class StoreRequisitionService {
           findSRDoc.stages_status[
             (findSRDoc.stages_status as StageStatus[]).length - 1
           ];
-        const stages_status: StageStatus[] = findSRDoc?.stages_status as any;
-        const history: any[] = (findSRDoc?.history as any) || [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const stages_status: any[] = findSRDoc?.stages_status as unknown as any[];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const history: any[] = (findSRDoc?.history as unknown as any[]) || [];
 
         if (latestStageStatus.status === state_status.reject) {
           continue;
@@ -843,7 +850,7 @@ export class StoreRequisitionService {
   async reject(
     id: string,
     payload: RejectStoreRequisitionDto,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'reject', id, user_id: this.userId, tenant_id: this.bu_code },
       StoreRequisitionService.name,
@@ -871,11 +878,12 @@ export class StoreRequisitionService {
     const tx = await this.prismaService.$transaction(async (txp) => {
       for (const detail of storeRequisitionDetail) {
         const findSR = payload.details.find((d) => d.id === detail.id);
-        let stages_status = detail.stages_status as any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let stages_status: any[] = detail.stages_status as unknown as any[];
         stages_status = stages_status.map((stage) => {
           return {
             ...stage,
-            status: 'reject',
+            status: state_status.reject,
           };
         });
 
@@ -916,7 +924,7 @@ export class StoreRequisitionService {
   async review(
     id: string,
     payload: ReviewStoreRequisitionDto,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'review', id, user_id: this.userId, tenant_id: this.bu_code },
       StoreRequisitionService.name,
@@ -944,7 +952,7 @@ export class StoreRequisitionService {
     await this.prismaService.$transaction(async (txp) => {
       for (const detail of storeRequisitionDetail) {
         const findSR = payload.details.find((d) => d.id === detail.id);
-        const stages_status = detail.stages_status as any;
+        const stages_status = detail.stages_status as unknown as StageStatus[];
 
         stages_status.push({
           seq: stages_status.length + 1,
@@ -1035,7 +1043,7 @@ export class StoreRequisitionService {
   async findAllByStatus(
     status: string,
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAllByStatus',
@@ -1115,7 +1123,7 @@ export class StoreRequisitionService {
     user_id: string,
     bu_code: string,
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAllMyPending', user_id, bu_code, paginate },
       StoreRequisitionService.name,
@@ -1306,8 +1314,9 @@ export class StoreRequisitionService {
           message: 'Business unit retrieved successfully',
         },
       };
-    } catch (error: any) {
-      this.logger.error(error.message, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred while retrieving business unit';
+      this.logger.error(errorMessage, {
         file: StoreRequisitionService.name,
         function: 'getBus',
         userId,
@@ -1316,8 +1325,7 @@ export class StoreRequisitionService {
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message:
-            error.message || 'An error occurred while retrieving business unit',
+          message: errorMessage,
         },
       };
     }

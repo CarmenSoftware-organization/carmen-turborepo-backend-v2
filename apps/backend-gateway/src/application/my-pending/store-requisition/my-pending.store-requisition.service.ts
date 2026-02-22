@@ -8,6 +8,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
 import {
   Result,
+  MicroserviceResponse,
 } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -28,7 +29,7 @@ export class MyPendingStoreRequisitionService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findById',
@@ -40,7 +41,7 @@ export class MyPendingStoreRequisitionService {
       MyPendingStoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.find-by-id', service: 'store-requisition' },
       { id, user_id, bu_code, version },
     );
@@ -62,7 +63,7 @@ export class MyPendingStoreRequisitionService {
     bu_code: string[],
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -74,7 +75,7 @@ export class MyPendingStoreRequisitionService {
       MyPendingStoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'my-pending.store-requisition.find-all', service: 'my-pending' },
       {
         user_id: user_id,
@@ -97,11 +98,11 @@ export class MyPendingStoreRequisitionService {
   }
 
   async create(
-    body: any,
+    body: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -113,7 +114,7 @@ export class MyPendingStoreRequisitionService {
       MyPendingStoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.create', service: 'store-requisition' },
       { data: body, user_id, bu_code, version },
     );
@@ -132,11 +133,11 @@ export class MyPendingStoreRequisitionService {
 
   async update(
     id: string,
-    body: any,
+    body: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -149,7 +150,7 @@ export class MyPendingStoreRequisitionService {
       MyPendingStoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.update', service: 'store-requisition' },
       { data: { id, ...body }, user_id, bu_code, version },
     );
@@ -171,7 +172,7 @@ export class MyPendingStoreRequisitionService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'submit',
@@ -183,7 +184,7 @@ export class MyPendingStoreRequisitionService {
       MyPendingStoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.submit', service: 'store-requisition' },
       { id, user_id, bu_code, version },
     );
@@ -205,7 +206,7 @@ export class MyPendingStoreRequisitionService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'approve',
@@ -217,7 +218,7 @@ export class MyPendingStoreRequisitionService {
       MyPendingStoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.approve', service: 'store-requisition' },
       { id, user_id, bu_code, version },
     );
@@ -239,7 +240,7 @@ export class MyPendingStoreRequisitionService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'reject',
@@ -251,7 +252,7 @@ export class MyPendingStoreRequisitionService {
       MyPendingStoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.reject', service: 'store-requisition' },
       { id, user_id, bu_code, version },
     );
@@ -273,7 +274,7 @@ export class MyPendingStoreRequisitionService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'review',
@@ -285,7 +286,7 @@ export class MyPendingStoreRequisitionService {
       MyPendingStoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.review', service: 'store-requisition' },
       { id, user_id, bu_code, version },
     );
@@ -307,7 +308,7 @@ export class MyPendingStoreRequisitionService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'delete',
@@ -319,7 +320,7 @@ export class MyPendingStoreRequisitionService {
       MyPendingStoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.delete', service: 'store-requisition' },
       { id, user_id, bu_code, version },
     );
@@ -341,7 +342,7 @@ export class MyPendingStoreRequisitionService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAllByStatus',
@@ -353,7 +354,7 @@ export class MyPendingStoreRequisitionService {
       MyPendingStoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       {
         cmd: 'store-requisition.find-all-by-status',
         service: 'store-requisition',
@@ -377,7 +378,7 @@ export class MyPendingStoreRequisitionService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAllMyPendingStages',
@@ -388,7 +389,7 @@ export class MyPendingStoreRequisitionService {
       MyPendingStoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       {
         cmd: 'store-requisition.find-all-my-pending-stages',
         service: 'store-requisition',
@@ -415,7 +416,7 @@ export class MyPendingStoreRequisitionService {
   async findAllMyPendingStoreRequisitionsCount(
     user_id: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findAllMyPendingStoreRequisitionsCount',
@@ -425,7 +426,7 @@ export class MyPendingStoreRequisitionService {
       MyPendingStoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       {
         cmd: 'my-pending.store-requisition.find-all.count',
         service: 'my-pending',

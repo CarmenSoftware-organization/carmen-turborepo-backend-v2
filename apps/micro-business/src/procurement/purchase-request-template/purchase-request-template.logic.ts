@@ -25,7 +25,8 @@ export class PurchaseRequestTemplateLogic {
       PurchaseRequestTemplateLogic.name,
     );
 
-    const populateData: any = await this.populateData(data, user_id, bu_code);
+    const populateData: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Record<string, any> = await this.populateData(data, user_id, bu_code);
     const purchaseRequestTemplate: Partial<CreatePurchaseRequestTemplate> = {
       department_id: populateData?.department_id?.id,
       department_name: populateData?.department_id?.name,
@@ -71,7 +72,8 @@ export class PurchaseRequestTemplateLogic {
       throw new Error('Purchase request template not found');
     }
 
-    const populateData: any = await this.populateData(data, user_id, bu_code);
+    const populateData: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Record<string, any> = await this.populateData(data, user_id, bu_code);
     const purchaseRequestTemplate: Partial<UpdatePurchaseRequestTemplate> = {
       department_id: populateData?.department_id?.id,
       department_name: populateData?.department_id?.name,
@@ -106,7 +108,7 @@ export class PurchaseRequestTemplateLogic {
     data: CreatePurchaseRequestTemplate | UpdatePurchaseRequestTemplate,
     user_id: string,
     tenant_id: string,
-    oldDoc: any = {},
+    oldDoc: Record<string, unknown> = {},
   ) {
     this.logger.debug(
       { function: 'populateData', data, user_id, tenant_id, oldDoc },
@@ -197,7 +199,8 @@ export class PurchaseRequestTemplateLogic {
     return populateData;
   }
 
-  private mapDetailFields(detail: any, populateData: any) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private mapDetailFields(detail: Record<string, any>, populateData: Record<string, any>) {
     const product = populateData?.product_ids?.find(
       (product) => product?.id === detail?.product_id,
     );

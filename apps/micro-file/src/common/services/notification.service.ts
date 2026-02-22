@@ -23,7 +23,7 @@ export interface SendNotificationOptions {
   /** Notification type (default: SYS_INFO) */
   type?: string;
   /** Additional metadata as JSON */
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   /** Schedule for future delivery (ISO date string) */
   scheduled_at?: string;
 }
@@ -184,7 +184,7 @@ export class NotificationService {
     to: string,
     title: string,
     message: string,
-    metadata?: Record<string, any>,
+    metadata?: Record<string, unknown>,
     schedule?: string,
   ): Promise<NotificationResponseModel | null> {
     return this.sendToUser({
@@ -212,7 +212,7 @@ export class NotificationService {
     from: string,
     title: string,
     message: string,
-    metadata?: Record<string, any>,
+    metadata?: Record<string, unknown>,
     schedule?: string,
   ): Promise<NotificationResponseModel[] | null> {
     return this.sendSystem({
@@ -240,7 +240,7 @@ export class NotificationService {
     bu: string,
     title: string,
     message: string,
-    metadata?: Record<string, any>,
+    metadata?: Record<string, unknown>,
     schedule?: string,
   ): Promise<NotificationResponseModel[] | null> {
     return this.sendToBusinessUnit({
@@ -261,7 +261,7 @@ export class NotificationService {
     to_user_id: string,
     title: string,
     message: string,
-    metadata?: Record<string, any>,
+    metadata?: Record<string, unknown>,
     from_user_id?: string,
   ): Promise<NotificationResponseModel | null> {
     return this.sendToUser({
@@ -281,7 +281,7 @@ export class NotificationService {
     to_user_id: string,
     title: string,
     message: string,
-    metadata?: Record<string, any>,
+    metadata?: Record<string, unknown>,
     from_user_id?: string,
   ): Promise<NotificationResponseModel | null> {
     return this.sendToUser({
@@ -301,7 +301,7 @@ export class NotificationService {
     to_user_id: string,
     title: string,
     message: string,
-    metadata?: Record<string, any>,
+    metadata?: Record<string, unknown>,
     from_user_id?: string,
   ): Promise<NotificationResponseModel | null> {
     return this.sendToUser({
@@ -321,7 +321,7 @@ export class NotificationService {
     to_user_id: string,
     title: string,
     message: string,
-    metadata?: Record<string, any>,
+    metadata?: Record<string, unknown>,
     from_user_id?: string,
   ): Promise<NotificationResponseModel | null> {
     return this.sendToUser({
@@ -341,7 +341,7 @@ export class NotificationService {
     to_user_id: string,
     title: string,
     message: string,
-    metadata?: Record<string, any>,
+    metadata?: Record<string, unknown>,
     from_user_id?: string,
   ): Promise<NotificationResponseModel | null> {
     return this.sendToUser({
@@ -449,7 +449,7 @@ export class NotificationService {
   /**
    * Internal method to send notification
    */
-  private async send<T>(payload: any): Promise<T | null> {
+  private async send<T>(payload: Record<string, unknown>): Promise<T | null> {
     try {
       this.logger.debug(`Sending notification: ${JSON.stringify(payload)}`);
 

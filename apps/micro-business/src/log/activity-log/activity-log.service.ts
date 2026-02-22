@@ -10,7 +10,7 @@ export interface IPaginate {
   search?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
-  filters?: Record<string, any>;
+  filters?: Record<string, unknown>;
 }
 
 export interface IActivityLogFilter {
@@ -54,7 +54,7 @@ export class ActivityLogService {
   async findAll(
     paginate: IPaginate,
     filters?: IActivityLogFilter,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', paginate, filters },
       ActivityLogService.name,
@@ -64,7 +64,8 @@ export class ActivityLogService {
     const limit = paginate?.limit || 20;
     const skip = (page - 1) * limit;
 
-    const where: any = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const where: Record<string, any> = {
       deleted_at: null,
     };
 
@@ -97,7 +98,7 @@ export class ActivityLogService {
       ];
     }
 
-    const orderBy: any = {};
+    const orderBy: Record<string, unknown> = {};
     if (paginate?.sortBy) {
       orderBy[paginate.sortBy] = paginate.sortOrder || 'desc';
     } else {
@@ -126,7 +127,7 @@ export class ActivityLogService {
   }
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findOne', id }, ActivityLogService.name);
 
     const activity = await this.prismaService.tb_activity.findUnique({
@@ -141,7 +142,7 @@ export class ActivityLogService {
   }
 
   @TryCatch
-  async delete(id: string, userId: string): Promise<Result<any>> {
+  async delete(id: string, userId: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, userId },
       ActivityLogService.name,
@@ -167,7 +168,7 @@ export class ActivityLogService {
   }
 
   @TryCatch
-  async deleteMany(ids: string[], userId: string): Promise<Result<any>> {
+  async deleteMany(ids: string[], userId: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'deleteMany', ids, userId },
       ActivityLogService.name,
@@ -192,7 +193,7 @@ export class ActivityLogService {
   }
 
   @TryCatch
-  async hardDelete(id: string): Promise<Result<any>> {
+  async hardDelete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'hardDelete', id },
       ActivityLogService.name,
@@ -214,7 +215,7 @@ export class ActivityLogService {
   }
 
   @TryCatch
-  async hardDeleteMany(ids: string[]): Promise<Result<any>> {
+  async hardDeleteMany(ids: string[]): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'hardDeleteMany', ids },
       ActivityLogService.name,

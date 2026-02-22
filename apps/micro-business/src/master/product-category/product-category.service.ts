@@ -80,7 +80,7 @@ export class ProductCategoryService {
   ) { }
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
       ProductCategoryService.name,
@@ -111,7 +111,7 @@ export class ProductCategoryService {
   @TryCatch
   async findAll(
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate },
       ProductCategoryService.name,
@@ -162,7 +162,7 @@ export class ProductCategoryService {
   @TryCatch
   async create(
     data: ICreateProductCategory,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
       ProductCategoryService.name,
@@ -204,7 +204,7 @@ export class ProductCategoryService {
   @TryCatch
   async update(
     data: IUpdateProductCategory,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code },
       ProductCategoryService.name,
@@ -262,7 +262,7 @@ export class ProductCategoryService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code },
       ProductCategoryService.name,

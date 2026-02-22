@@ -7,7 +7,7 @@ import { RpcException } from '@nestjs/microservices';
  */
 
 // Response interfaces matching GlobalApiReturn pattern
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success?: boolean;
   response: {
     status: number;
@@ -17,7 +17,7 @@ export interface ApiResponse<T = any> {
   message?: string;
 }
 
-export interface PaginatedResponse<T = any> extends ApiResponse<T[]> {
+export interface PaginatedResponse<T = unknown> extends ApiResponse<T[]> {
   data: T[];
   pagination: {
     total: number;
@@ -34,7 +34,7 @@ export interface PaginatedResponse<T = any> extends ApiResponse<T[]> {
 /**
  * Creates a standard success response
  */
-export const resSuccess = <T = any>(
+export const resSuccess = <T = unknown>(
   data?: T,
   message: string = 'Success',
 ): ApiResponse<T> => ({
@@ -47,7 +47,7 @@ export const resSuccess = <T = any>(
 /**
  * Creates a success response with data
  */
-export const resSuccessWithData = <T = any>(
+export const resSuccessWithData = <T = unknown>(
   data: T,
   message: string = 'Success',
 ): ApiResponse<T> => ({
@@ -60,7 +60,7 @@ export const resSuccessWithData = <T = any>(
 /**
  * Creates a success response for resource creation
  */
-export const resCreated = <T = any>(
+export const resCreated = <T = unknown>(
   data: T,
   message: string = 'Resource created successfully',
 ): ApiResponse<T> => ({
@@ -73,7 +73,7 @@ export const resCreated = <T = any>(
 /**
  * Creates a success response with pagination
  */
-export const resSuccessWithPaginate = <T = any>(
+export const resSuccessWithPaginate = <T = unknown>(
   data: T[],
   total: number,
   page: number,
@@ -185,7 +185,7 @@ export const resError = (
 /**
  * Creates an error response with additional data
  */
-export const resErrorWithData = <T = any>(
+export const resErrorWithData = <T = unknown>(
   status: number,
   message: string,
   data: T,

@@ -44,8 +44,8 @@ const toNumber = (val: unknown): number | null | undefined => {
   if (typeof val === 'number') return val;
   if (typeof val === 'string') return Number(val);
   // Handle Prisma Decimal objects (they have toNumber() method)
-  if (typeof val === 'object' && val !== null && 'toNumber' in val && typeof (val as any).toNumber === 'function') {
-    return (val as any).toNumber();
+  if (typeof val === 'object' && val !== null && 'toNumber' in val && typeof (val as unknown as { toNumber: () => number }).toNumber === 'function') {
+    return (val as unknown as { toNumber: () => number }).toNumber();
   }
   // Fallback: try to convert to number
   return Number(val);

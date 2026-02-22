@@ -30,9 +30,9 @@ export class BackendLogger extends ConsoleLogger {
   }
 
   error(
-    message: any,
-    trace?: any,
-    context?: any,
+    message: unknown,
+    trace?: unknown,
+    context?: unknown,
     iam?: IAMInfo,
     meta?: LogMeta,
   ): void {
@@ -57,7 +57,7 @@ export class BackendLogger extends ConsoleLogger {
     }
   }
 
-  warn(message: any, context?: any, iam?: IAMInfo, meta?: LogMeta): void {
+  warn(message: unknown, context?: unknown, iam?: IAMInfo, meta?: LogMeta): void {
     let logMeta = {};
 
     if (context) {
@@ -79,7 +79,7 @@ export class BackendLogger extends ConsoleLogger {
     }
   }
 
-  log(message: any, context?: any, iam?: IAMInfo, meta?: LogMeta): void {
+  log(message: unknown, context?: unknown, iam?: IAMInfo, meta?: LogMeta): void {
     let logMeta: LogMeta = {};
 
     if (context) {
@@ -101,7 +101,7 @@ export class BackendLogger extends ConsoleLogger {
     }
   }
 
-  verbose(message: any, context?: any, iam?: IAMInfo, meta?: LogMeta): void {
+  verbose(message: unknown, context?: unknown, iam?: IAMInfo, meta?: LogMeta): void {
     let logMeta: LogMeta = {};
 
     if (context) {
@@ -123,7 +123,7 @@ export class BackendLogger extends ConsoleLogger {
     }
   }
 
-  debug(message: any, context?: any): void {
+  debug(message: unknown, context?: unknown): void {
     super.debug(message, context);
   }
 }

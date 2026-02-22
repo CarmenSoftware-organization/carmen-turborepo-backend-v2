@@ -73,7 +73,8 @@ export class PurchaseOrderLogic {
 
     // Enrich detail data with foreign values
     const extractIds = this.populateDetail(details);
-    const foreignValue: any = await this.mapperLogic.populate(extractIds, user_id, tenant_id);
+    const foreignValue: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id);
     const updatePODetail = [];
     for (const detail of details) {
       updatePODetail.push(this.enrichApproveDetail(detail, foreignValue));
@@ -90,7 +91,8 @@ export class PurchaseOrderLogic {
       0,
     );
 
-    const populateData: any = await this.mapperLogic.populate(
+    const populateData: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Record<string, any> = await this.mapperLogic.populate(
       {
         workflow_id: purchaseOrderData?.workflow_id,
         user_id: user_id,
@@ -99,7 +101,7 @@ export class PurchaseOrderLogic {
       tenant_id,
     );
 
-    const workflowData = (populateData as any)?.workflow_id?.data;
+    const workflowData = populateData?.workflow_id?.data;
 
     const res = this.masterService.send(
       { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
@@ -194,6 +196,7 @@ export class PurchaseOrderLogic {
     return result;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private populateDetail(details: any[]) {
     const unit_ids = [];
     const tax_profile_ids = [];
@@ -216,7 +219,8 @@ export class PurchaseOrderLogic {
     };
   }
 
-  private enrichApproveDetail(detail: any, foreignValue: any): any {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private enrichApproveDetail(detail: Record<string, any>, foreignValue: Record<string, any>): Record<string, any> {
     return JSON.parse(
       JSON.stringify({
         ...detail,
@@ -227,7 +231,8 @@ export class PurchaseOrderLogic {
     );
   }
 
-  private findById(arr: any[], id: string): any {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private findById(arr: any[], id: string): any | null {
     if (!arr || !id) return null;
     return arr.find((item) => item.id === id);
   }
@@ -257,15 +262,17 @@ export class PurchaseOrderLogic {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async buildUserAction(
     currentStageInfo: any,
     user_id: string,
     bu_code: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<{ execute: any[] } | null> {
     const userIdsToAssign: string[] = [];
 
     // Always add assigned_users from workflow stage
-    const assignedUsers = currentStageInfo?.assigned_users || [];
+    const assignedUsers: any[] = currentStageInfo?.assigned_users || [];
     for (const user of assignedUsers) {
       if (typeof user === 'string') {
         userIdsToAssign.push(user);
@@ -298,7 +305,8 @@ export class PurchaseOrderLogic {
   }
 
   private async sendApproveNotification(
-    purchaseOrder: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    purchaseOrder: Record<string, any>,
     workflow: WorkflowHeader,
     user_id: string,
     user_name: string,

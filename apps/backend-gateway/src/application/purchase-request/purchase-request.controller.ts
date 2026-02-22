@@ -136,7 +136,7 @@ export class PurchaseRequestController extends BaseHttpController {
       bu_id: string;
       bu_code: string;
       role: string;
-      permissions: Record<string, unknown>;
+      permissions: Record<string, string[]>;
     } = JSON.parse(req.headers['x-bu-datas'] as string)
 
     if (paginate?.bu_code.length === 0) {
@@ -273,7 +273,7 @@ export class PurchaseRequestController extends BaseHttpController {
       bu_id: string;
       bu_code: string;
       role: string;
-      permissions: Record<string, unknown>;
+      permissions: Record<string, string[]>;
     }[] = JSON.parse(req.headers['x-bu-datas'] as string)
 
     const { user_id } = ExtractRequestHeader(req);

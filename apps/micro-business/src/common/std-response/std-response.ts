@@ -1,7 +1,7 @@
 import { Result } from '../result/result';
 import { ErrorCode } from '../result/error';
 
-export class StdResponse<T = any> {
+export class StdResponse<T = unknown> {
   constructor(
     public readonly data: T | null,
     public readonly paginate: {
@@ -54,10 +54,10 @@ export class StdResponse<T = any> {
 
   static fromResult<T, E>(result: Result<T, E>): StdResponse<T> {
     if (result.isOk()) {
-      const value = result.value as any;
+      const value = result.value as unknown as Record<string, unknown>;
       // Check if this is a paginated result
       if (value && typeof value === 'object' && 'paginate' in value && 'data' in value && Array.isArray(value.data)) {
-        return StdResponse.successPaginated(value.data, value.paginate) as unknown as StdResponse<T>;
+        return StdResponse.successPaginated(value.data, value.paginate as { total: number; page: number; perpage: number; pages: number }) as unknown as StdResponse<T>;
       }
       return StdResponse.success(result.value);
     }
@@ -81,7 +81,7 @@ export class StdResponse<T = any> {
   }
 
   toJSON() {
-    const result: Record<string, any> = {
+    const result: Record<string, unknown> = {
       data: this.data,
       status: this.status,
       success: this.success,

@@ -5,8 +5,8 @@ export interface ICreateAdjustmentType {
   description?: string;
   is_active?: boolean;
   note?: string;
-  info?: Record<string, any>;
-  dimension?: any[];
+  info?: Record<string, unknown>;
+  dimension?: unknown[];
 }
 
 export interface IUpdateAdjustmentType {
@@ -17,6 +17,6 @@ export interface IUpdateAdjustmentType {
   description?: string;
   is_active?: boolean;
   note?: string;
-  info?: Record<string, any>;
-  dimension?: any[];
+  info?: Record<string, unknown>;
+  dimension?: unknown[];
 }

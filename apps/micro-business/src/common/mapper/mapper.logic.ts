@@ -52,7 +52,8 @@ export class MapperLogic {
     tax_profile_ids: this.taxProfileMapper
   };
 
-  async populate(data: any, user_id: string, bu_code: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async populate(data: Record<string, any>, user_id: string, bu_code: string) {
     const result = {};
     for (const key in data) {
       this.deadValue = key

@@ -315,7 +315,7 @@ export class RunningCodeService {
       RunningCodeService.name,
     );
     const runningCode = await this.findOneOrCreate(type);
-    const pattern = getPattern(runningCode.data.config);
+    const pattern = getPattern(runningCode.data.config as any);
 
     return {
       data: pattern,

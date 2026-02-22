@@ -27,7 +27,7 @@ export class InventoryTransactionService {
     ids: string[],
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAllByIds', ids, user_id, tenant_id },
       InventoryTransactionService.name,

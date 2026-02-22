@@ -45,8 +45,8 @@ export interface IPaginate {
   search: string;
   searchfields: string[];
   sort: string[];
-  filter: Record<string, any>;
-  advance: any;
+  filter: Record<string, unknown>;
+  advance: unknown;
   bu_code: string[];
 }
 
@@ -359,7 +359,7 @@ export class FilesService implements OnModuleInit {
   /**
    * List files with pagination support
    */
-  async listFiles(paginate: IPaginate): Promise<any> {
+  async listFiles(paginate: IPaginate): Promise<PaginatedResult<FileInfo>> {
     const bu_code = paginate.bu_code[0];
     // Check if bucket exists    
     const bucketExists = await this.minioClient.bucketExists(this.bucketName);
@@ -454,7 +454,7 @@ export class FilesService implements OnModuleInit {
     // Apply content type filter
     if (paginate.filter?.contentType) {
       filteredFiles = filteredFiles.filter((file) =>
-        file.contentType.includes(paginate.filter.contentType),
+        file.contentType.includes(String(paginate.filter.contentType)),
       );
     }
 

@@ -6,7 +6,7 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable, firstValueFrom } from 'rxjs';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 
@@ -26,7 +26,7 @@ export class PlatformUserService {
    * @param version
    * @returns
    */
-  async fetchUsers(version: string): Promise<any> {
+  async fetchUsers(version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'fetchUsers',
@@ -35,7 +35,7 @@ export class PlatformUserService {
       PlatformUserService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'sync-realm-users', service: 'auth' },
       { data: {}, version },
     );
@@ -57,7 +57,7 @@ export class PlatformUserService {
     tenant_id: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getUserList',
@@ -69,7 +69,7 @@ export class PlatformUserService {
       PlatformUserService.name,
     );
 
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'user.list', service: 'user' },
       {
         data: null,
@@ -100,7 +100,7 @@ export class PlatformUserService {
     tenant_id: string,
     id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getUser',
@@ -112,7 +112,7 @@ export class PlatformUserService {
       PlatformUserService.name,
     );
 
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'user.get', service: 'user' },
       {
         id,
@@ -137,9 +137,9 @@ export class PlatformUserService {
   async createUser(
     user_id: string,
     tenant_id: string,
-    data: any,
+    data: Record<string, unknown>,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'createUser',
@@ -151,7 +151,7 @@ export class PlatformUserService {
       PlatformUserService.name,
     );
 
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'user.create', service: 'user' },
       {
         data,
@@ -177,9 +177,9 @@ export class PlatformUserService {
     user_id: string,
     tenant_id: string,
     id: string,
-    data: any,
+    data: Record<string, unknown>,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'updateUser',
@@ -192,7 +192,7 @@ export class PlatformUserService {
       PlatformUserService.name,
     );
 
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'user.update', service: 'user' },
       {
         id,
@@ -220,7 +220,7 @@ export class PlatformUserService {
     tenant_id: string,
     id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'deleteUser',
@@ -232,7 +232,7 @@ export class PlatformUserService {
       PlatformUserService.name,
     );
 
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'user.delete', service: 'user' },
       {
         id,

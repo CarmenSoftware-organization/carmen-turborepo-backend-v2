@@ -27,8 +27,6 @@ export class KeycloakGuard extends AuthGuard('keycloak') {
       ],
     );
 
-    console.log('Ignored Guards:', ignoredGuards);
-
     // 3. Check if *this* specific Guard class is in the list
     if (ignoredGuards && ignoredGuards.includes(KeycloakGuard)) {
       return true; // Bypass this guard
@@ -169,7 +167,7 @@ export class KeycloakGuard extends AuthGuard('keycloak') {
     return true;
   }
 
-  handleRequest(err: any, user: any) {
+  handleRequest(err: Error | null, user: ValidatedUser | null) {
     if (err || !user) {
       throw err || new UnauthorizedException('Authentication failed');
     }
@@ -180,7 +178,7 @@ export class KeycloakGuard extends AuthGuard('keycloak') {
    * Set ALL user's BUs to request headers when bu_code is optional and not provided.
    * This allows endpoints to return data for all BUs the user has access to.
    */
-  private async setAllUserBusToRequest(request: any, user: ValidatedUser): Promise<boolean> {
+  private async setAllUserBusToRequest(request: Record<string, unknown>, user: ValidatedUser): Promise<boolean> {
     const allBus = user.bu;
 
     if (allBus.length === 1) {

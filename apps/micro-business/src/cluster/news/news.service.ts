@@ -18,7 +18,7 @@ export class NewsService {
     user_id: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<any> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',

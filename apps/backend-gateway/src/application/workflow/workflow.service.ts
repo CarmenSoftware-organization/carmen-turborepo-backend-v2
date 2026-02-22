@@ -2,7 +2,7 @@ import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { Observable } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
@@ -21,7 +21,7 @@ export class WorkflowService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findByType',
@@ -33,7 +33,7 @@ export class WorkflowService {
       WorkflowService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'workflows.find-by-type', service: 'workflows' },
       {
         type: workflowType,
@@ -60,7 +60,7 @@ export class WorkflowService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getPreviousStages',
@@ -73,7 +73,7 @@ export class WorkflowService {
       WorkflowService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'workflows.get-previous-stages', service: 'workflows' },
       {
         workflow_id: workflow_id,

@@ -95,8 +95,8 @@ describe('PurchaseRequestController', () => {
         'BU001',
       );
       expect(result.response.status).toBe(HttpStatus.OK);
-      expect(result.data.new_pr_id).toBe('new-pr-456');
-      expect(result.data.split_detail_count).toBe(2);
+      expect((result.data as any).new_pr_id).toBe('new-pr-456');
+      expect((result.data as any).split_detail_count).toBe(2);
     });
 
     it('should handle error when PR not found', async () => {

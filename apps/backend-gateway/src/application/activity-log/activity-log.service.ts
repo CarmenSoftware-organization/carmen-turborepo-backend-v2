@@ -4,7 +4,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Inject } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
@@ -33,7 +33,7 @@ export class ActivityLogService {
     bu_code: string,
     paginate: IPaginate,
     filters?: IActivityLogFilter,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -45,7 +45,7 @@ export class ActivityLogService {
       ActivityLogService.name,
     );
 
-    const res: Observable<any> = this.logService.send(
+    const res: Observable<MicroserviceResponse> = this.logService.send(
       { cmd: 'activity-log.findAll', service: 'activity-log' },
       {
         user_id,
@@ -68,7 +68,7 @@ export class ActivityLogService {
     id: string,
     user_id: string,
     bu_code: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -79,7 +79,7 @@ export class ActivityLogService {
       ActivityLogService.name,
     );
 
-    const res: Observable<any> = this.logService.send(
+    const res: Observable<MicroserviceResponse> = this.logService.send(
       { cmd: 'activity-log.findOne', service: 'activity-log' },
       { id, user_id, bu_code },
     );
@@ -97,7 +97,7 @@ export class ActivityLogService {
     id: string,
     user_id: string,
     bu_code: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'delete',
@@ -108,7 +108,7 @@ export class ActivityLogService {
       ActivityLogService.name,
     );
 
-    const res: Observable<any> = this.logService.send(
+    const res: Observable<MicroserviceResponse> = this.logService.send(
       { cmd: 'activity-log.delete', service: 'activity-log' },
       { id, user_id, bu_code },
     );
@@ -126,7 +126,7 @@ export class ActivityLogService {
     ids: string[],
     user_id: string,
     bu_code: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'deleteMany',
@@ -137,7 +137,7 @@ export class ActivityLogService {
       ActivityLogService.name,
     );
 
-    const res: Observable<any> = this.logService.send(
+    const res: Observable<MicroserviceResponse> = this.logService.send(
       { cmd: 'activity-log.deleteMany', service: 'activity-log' },
       { ids, user_id, bu_code },
     );
@@ -155,7 +155,7 @@ export class ActivityLogService {
     id: string,
     user_id: string,
     bu_code: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'hardDelete',
@@ -166,7 +166,7 @@ export class ActivityLogService {
       ActivityLogService.name,
     );
 
-    const res: Observable<any> = this.logService.send(
+    const res: Observable<MicroserviceResponse> = this.logService.send(
       { cmd: 'activity-log.hardDelete', service: 'activity-log' },
       { id, user_id, bu_code },
     );
@@ -184,7 +184,7 @@ export class ActivityLogService {
     ids: string[],
     user_id: string,
     bu_code: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'hardDeleteMany',
@@ -195,7 +195,7 @@ export class ActivityLogService {
       ActivityLogService.name,
     );
 
-    const res: Observable<any> = this.logService.send(
+    const res: Observable<MicroserviceResponse> = this.logService.send(
       { cmd: 'activity-log.hardDeleteMany', service: 'activity-log' },
       { ids, user_id, bu_code },
     );

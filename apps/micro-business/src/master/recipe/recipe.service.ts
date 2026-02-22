@@ -71,7 +71,7 @@ export class RecipeService {
   ) { }
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
       RecipeService.name,
@@ -138,7 +138,7 @@ export class RecipeService {
   }
 
   @TryCatch
-  async findAll(paginate: IPaginate): Promise<Result<any>> {
+  async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, paginate, tenant_id: this.bu_code },
       RecipeService.name,
@@ -204,7 +204,7 @@ export class RecipeService {
   }
 
   @TryCatch
-  async create(data: ICreateRecipe): Promise<Result<any>> {
+  async create(data: ICreateRecipe): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
       RecipeService.name,
@@ -274,7 +274,7 @@ export class RecipeService {
   }
 
   @TryCatch
-  async update(data: IUpdateRecipe): Promise<Result<any>> {
+  async update(data: IUpdateRecipe): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code },
       RecipeService.name,
@@ -292,7 +292,7 @@ export class RecipeService {
     }
 
     const { id, category_id, cuisine_id, status, ...fields } = data;
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       ...fields,
       updated_by_id: this.userId,
       updated_at: new Date().toISOString(),
@@ -335,7 +335,7 @@ export class RecipeService {
   }
 
   @TryCatch
-  async patch(data: IUpdateRecipe): Promise<Result<any>> {
+  async patch(data: IUpdateRecipe): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'patch', data, user_id: this.userId, tenant_id: this.bu_code },
       RecipeService.name,
@@ -353,7 +353,7 @@ export class RecipeService {
     }
 
     const { id, category_id, cuisine_id, status, ...fields } = data;
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       ...fields,
       updated_by_id: this.userId,
       updated_at: new Date().toISOString(),
@@ -393,7 +393,7 @@ export class RecipeService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code },
       RecipeService.name,

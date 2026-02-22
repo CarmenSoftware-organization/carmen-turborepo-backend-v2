@@ -90,6 +90,7 @@ export class WorkflowsService {
   constructor(private readonly tenantService: TenantService) {}
 
   @TryCatch
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value accessed by controller
   async findOne(id: string): Promise<Result<any>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, bu_code: this.bu_code },
@@ -113,7 +114,7 @@ export class WorkflowsService {
   }
 
   @TryCatch
-  async findAll(paginate: IPaginate): Promise<Result<any>> {
+  async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -169,7 +170,7 @@ export class WorkflowsService {
   async findByType(
     type: enum_workflow_type,
     user_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findByType',
@@ -194,7 +195,7 @@ export class WorkflowsService {
     // Process workflows with proper async handling
     const workflows = await Promise.all(
       results.map(async (workflow) => {
-        const data = workflow.data as any;
+        const data = workflow.data as unknown as Record<string, unknown>;
         let can_create = false;
 
         if (data && typeof data === 'object') {
@@ -470,9 +471,9 @@ export class WorkflowsService {
       initials: string;
     }[] = [];
     if (data && typeof data === 'object' && 'stages' in data) {
-      const stages = (data as any).stages;
+      const stages = (data as unknown as Record<string, unknown>).stages;
       if (Array.isArray(stages)) {
-        const stage = stages.find((s: any) => s.name === stage_name);
+        const stage = stages.find((s: Record<string, unknown>) => s.name === stage_name);
         if (stage && 'assigned_users' in stage) {
           const assigned_users = stage.assigned_users;
           if (Array.isArray(assigned_users)) {
@@ -493,6 +494,7 @@ export class WorkflowsService {
     ids: string[],
     bu_code: string,
     user_id: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value iterated by controller
   ): Promise<Result<any>> {
     this.logger.debug(
       { function: 'findAllWorkflowByIds', ids, bu_code, user_id },
@@ -517,7 +519,7 @@ export class WorkflowsService {
   }
 
   @TryCatch
-  async create(data: ICreateWorkflow): Promise<Result<any>> {
+  async create(data: ICreateWorkflow): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -550,7 +552,7 @@ export class WorkflowsService {
   }
 
   @TryCatch
-  async update(data: IUpdateWorkflow): Promise<Result<any>> {
+  async update(data: IUpdateWorkflow): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -585,7 +587,7 @@ export class WorkflowsService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code },
       WorkflowsService.name,

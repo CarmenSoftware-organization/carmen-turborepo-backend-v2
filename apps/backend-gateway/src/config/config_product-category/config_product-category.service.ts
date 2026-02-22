@@ -5,6 +5,7 @@ import {
   ICreateProductCategory,
   IUpdateProductCategory,
   Result,
+  MicroserviceResponse,
 } from '@/common';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -26,7 +27,7 @@ export class Config_ProductCategoryService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -36,7 +37,7 @@ export class Config_ProductCategoryService {
       Config_ProductCategoryService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'product-category.findOne', service: 'product-category' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -58,7 +59,7 @@ export class Config_ProductCategoryService {
     bu_code: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -70,7 +71,7 @@ export class Config_ProductCategoryService {
       Config_ProductCategoryService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'product-category.findAll', service: 'product-category' },
       {
         user_id: user_id,
@@ -97,7 +98,7 @@ export class Config_ProductCategoryService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -107,7 +108,7 @@ export class Config_ProductCategoryService {
       Config_ProductCategoryService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'product-category.create', service: 'product-category' },
       {
         data: createDto,
@@ -134,7 +135,7 @@ export class Config_ProductCategoryService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -144,7 +145,7 @@ export class Config_ProductCategoryService {
       Config_ProductCategoryService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'product-category.update', service: 'product-category' },
       {
         data: updateDto,
@@ -171,7 +172,7 @@ export class Config_ProductCategoryService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'delete',
@@ -181,7 +182,7 @@ export class Config_ProductCategoryService {
       Config_ProductCategoryService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'product-category.delete', service: 'product-category' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );

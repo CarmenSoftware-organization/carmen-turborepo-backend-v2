@@ -7,7 +7,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Observable, firstValueFrom } from 'rxjs';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { CreateApplicationRoleDto, UpdateApplicationRoleDto } from './dto/application-role.dto';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class ApplicationRoleService {
    * @param version
    * @returns
    */
-  async findAll(version: string): Promise<any> {
+  async findAll(version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -34,7 +34,7 @@ export class ApplicationRoleService {
       ApplicationRoleService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'get-all-application-roles', service: 'auth' },
       { version },
     );
@@ -57,7 +57,7 @@ export class ApplicationRoleService {
    * @param version
    * @returns
    */
-  async findOne(id: string, version: string): Promise<any> {
+  async findOne(id: string, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -67,7 +67,7 @@ export class ApplicationRoleService {
       ApplicationRoleService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'get-application-role-by-id', service: 'auth' },
       { id, version },
     );
@@ -93,7 +93,7 @@ export class ApplicationRoleService {
   async create(
     createApplicationRoleDto: CreateApplicationRoleDto,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'create',
@@ -103,7 +103,7 @@ export class ApplicationRoleService {
       ApplicationRoleService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'create-application-role', service: 'auth' },
       { data: createApplicationRoleDto, version },
     );
@@ -131,7 +131,7 @@ export class ApplicationRoleService {
     id: string,
     updateApplicationRoleDto: UpdateApplicationRoleDto,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'update',
@@ -142,7 +142,7 @@ export class ApplicationRoleService {
       ApplicationRoleService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'update-application-role', service: 'auth' },
       { id, data: updateApplicationRoleDto, version },
     );
@@ -165,7 +165,7 @@ export class ApplicationRoleService {
    * @param version
    * @returns
    */
-  async delete(id: string, version: string): Promise<any> {
+  async delete(id: string, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'delete',
@@ -175,7 +175,7 @@ export class ApplicationRoleService {
       ApplicationRoleService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'delete-application-role', service: 'auth' },
       { id, version },
     );

@@ -8,7 +8,7 @@ import * as Sentry from "@sentry/nestjs";
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new BackendLogger(AllExceptionsFilter.name);
 
-  catch(exception: any, host: ArgumentsHost): Observable<any> {
+  catch(exception: Error & { stack?: string }, host: ArgumentsHost): Observable<never> {
     const contextType = host.getType();    
     const rpcHost = host.switchToRpc();
     const data = rpcHost.getData();
@@ -55,6 +55,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       Sentry.captureException(exception);
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let error: any;
 
     if (exception instanceof RpcException) {

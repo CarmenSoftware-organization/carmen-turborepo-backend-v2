@@ -37,7 +37,7 @@ export class PeriodService {
     id: string,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id, tenant_id },
       PeriodService.name,
@@ -72,7 +72,7 @@ export class PeriodService {
     user_id: string,
     tenant_id: string,
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id, tenant_id, paginate },
       PeriodService.name,
@@ -135,7 +135,7 @@ export class PeriodService {
     data: ICreatePeriod,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id, tenant_id },
       PeriodService.name,
@@ -200,7 +200,7 @@ export class PeriodService {
     data: IUpdatePeriod,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id, tenant_id },
       PeriodService.name,
@@ -229,7 +229,7 @@ export class PeriodService {
 
     const { id, ...fields } = data;
 
-    const updatePayload: any = {
+    const updatePayload: Record<string, unknown> = {
       updated_by_id: user_id,
       updated_at: new Date(),
     };
@@ -257,7 +257,7 @@ export class PeriodService {
     id: string,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id, tenant_id },
       PeriodService.name,

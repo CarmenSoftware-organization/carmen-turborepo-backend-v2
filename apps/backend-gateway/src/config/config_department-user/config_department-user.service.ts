@@ -18,7 +18,7 @@ export class Config_DepartmentUserService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -35,7 +35,7 @@ export class Config_DepartmentUserService {
     bu_code: string,
     query: IPaginate,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -48,11 +48,11 @@ export class Config_DepartmentUserService {
   }
 
   async create(
-    createDto: any,
+    createDto: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'create',
@@ -66,11 +66,11 @@ export class Config_DepartmentUserService {
 
   async update(
     id: string,
-    updateDto: any,
+    updateDto: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'update',
@@ -88,7 +88,7 @@ export class Config_DepartmentUserService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'delete',

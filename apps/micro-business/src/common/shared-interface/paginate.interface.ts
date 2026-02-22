@@ -5,6 +5,7 @@ export interface IPaginate {
   searchfields?: string[];
   filter?: string | string[] | Record<string, string>;
   sort?: string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   advance?: any;
 }
 

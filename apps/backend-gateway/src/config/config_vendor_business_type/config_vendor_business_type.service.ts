@@ -1,6 +1,7 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
+import { MicroserviceResponse } from '@/common';
 import {
   ICreateVendorBusinessType,
   IUpdateVendorBusinessType,
@@ -25,7 +26,7 @@ export class Config_VendorBusinessTypeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -34,7 +35,7 @@ export class Config_VendorBusinessTypeService {
       },
       Config_VendorBusinessTypeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'vendor-business-type.findOne', service: 'vendor-business-type' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -56,7 +57,7 @@ export class Config_VendorBusinessTypeService {
     bu_code: string,
     query: IPaginate,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -67,7 +68,7 @@ export class Config_VendorBusinessTypeService {
       },
       Config_VendorBusinessTypeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'vendor-business-type.findAll', service: 'vendor-business-type' },
       {
         user_id: user_id,
@@ -94,7 +95,7 @@ export class Config_VendorBusinessTypeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'create',
@@ -103,7 +104,7 @@ export class Config_VendorBusinessTypeService {
       },
       Config_VendorBusinessTypeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'vendor-business-type.create', service: 'vendor-business-type' },
       {
         data: createDto,
@@ -130,7 +131,7 @@ export class Config_VendorBusinessTypeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'update',
@@ -139,7 +140,7 @@ export class Config_VendorBusinessTypeService {
       },
       Config_VendorBusinessTypeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'vendor-business-type.update', service: 'vendor-business-type' },
       {
         data: updateDto,
@@ -166,7 +167,7 @@ export class Config_VendorBusinessTypeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'delete',
@@ -175,7 +176,7 @@ export class Config_VendorBusinessTypeService {
       },
       Config_VendorBusinessTypeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'vendor-business-type.delete', service: 'vendor-business-type' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );

@@ -8,8 +8,6 @@ export class ConfigCronjobService {
   private readonly CRONJOB_SERVICE_URL = `http://${envConfig.CRONJOB_SERVICE_HOST}:${envConfig.CRONJOB_SERVICE_PORT}`;
 
   private async request(endpoint: string, options: RequestInit = {}) {
-    console.log('CRONJOB_SERVICE_URL', this.CRONJOB_SERVICE_URL);
-    console.log('endpoint', endpoint);
     try {
       const response = await fetch(`${this.CRONJOB_SERVICE_URL}${endpoint}`, {
         headers: {
@@ -42,14 +40,14 @@ export class ConfigCronjobService {
     return this.request(`/api/cronjobs/${id}`);
   }
 
-  async create(data: any) {
+  async create(data: Record<string, unknown>) {
     return this.request('/api/cronjobs', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async update(id: string, data: any) {
+  async update(id: string, data: Record<string, unknown>) {
     return this.request(`/api/cronjobs/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),

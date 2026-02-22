@@ -85,7 +85,7 @@ export class DeliveryPointService {
   constructor(private readonly tenantService: TenantService) { }
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -114,7 +114,7 @@ export class DeliveryPointService {
   }
 
   @TryCatch
-  async findAll(paginate: IPaginate): Promise<Result<any>> {
+  async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -161,7 +161,7 @@ export class DeliveryPointService {
   }
 
   @TryCatch
-  async findAllById(ids: string[]): Promise<Result<any>> {
+  async findAllById(ids: string[]): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAllById',
@@ -183,7 +183,7 @@ export class DeliveryPointService {
   }
 
   @TryCatch
-  async create(data: ICreateDeliveryPoint): Promise<Result<any>> {
+  async create(data: ICreateDeliveryPoint): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -218,7 +218,7 @@ export class DeliveryPointService {
   }
 
   @TryCatch
-  async update(data: IUpdateDeliveryPoint): Promise<Result<any>> {
+  async update(data: IUpdateDeliveryPoint): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -258,7 +258,7 @@ export class DeliveryPointService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code },
       DeliveryPointService.name,

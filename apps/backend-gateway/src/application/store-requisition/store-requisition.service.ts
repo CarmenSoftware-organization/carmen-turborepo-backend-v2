@@ -11,6 +11,7 @@ import {
   RejectStoreRequisitionDto,
   SubmitStoreRequisitionDto,
   ReviewStoreRequisitionDto,
+  MicroserviceResponse,
 } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -34,10 +35,10 @@ export class StoreRequisitionService {
       bu_id: string;
       bu_code: string;
       role: string;
-      permissions: any;
+      permissions: Record<string, string[]>;
     },
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -47,7 +48,7 @@ export class StoreRequisitionService {
       StoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.find-by-id', service: 'store-requisition' },
       {
         id: id,
@@ -78,10 +79,10 @@ export class StoreRequisitionService {
       bu_id: string;
       bu_code: string;
       role: string;
-      permissions: any;
+      permissions: Record<string, string[]>;
     }[],
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -93,7 +94,7 @@ export class StoreRequisitionService {
       StoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.find-all', service: 'store-requisition' },
       {
         user_id: user_id,
@@ -117,11 +118,11 @@ export class StoreRequisitionService {
   }
 
   async create(
-    createDto: any,
+    createDto: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -131,7 +132,7 @@ export class StoreRequisitionService {
       StoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       {
         cmd: 'store-requisition.create',
         service: 'store-requisition',
@@ -158,11 +159,11 @@ export class StoreRequisitionService {
 
   async save(
     id: string,
-    updateDto: any,
+    updateDto: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'save',
@@ -173,7 +174,7 @@ export class StoreRequisitionService {
       StoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.save', service: 'store-requisition' },
       {
         id,
@@ -202,7 +203,7 @@ export class StoreRequisitionService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'submit',
@@ -212,7 +213,7 @@ export class StoreRequisitionService {
       StoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.submit', service: 'store-requisition' },
       { id: id, payload, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -231,11 +232,11 @@ export class StoreRequisitionService {
 
   async approve(
     id: string,
-    payload: any,
+    payload: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'approve',
@@ -246,7 +247,7 @@ export class StoreRequisitionService {
       StoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.approve', service: 'store-requisition' },
       {
         id: id,
@@ -275,7 +276,7 @@ export class StoreRequisitionService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'reject',
@@ -285,7 +286,7 @@ export class StoreRequisitionService {
       StoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.reject', service: 'store-requisition' },
       { id: id, body, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -308,7 +309,7 @@ export class StoreRequisitionService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'review',
@@ -318,7 +319,7 @@ export class StoreRequisitionService {
       StoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.review', service: 'store-requisition' },
       { id: id, body, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -337,11 +338,11 @@ export class StoreRequisitionService {
 
   async update(
     id: string,
-    updateDto: any,
+    updateDto: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -360,7 +361,7 @@ export class StoreRequisitionService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'delete',
@@ -370,7 +371,7 @@ export class StoreRequisitionService {
       StoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.delete', service: 'store-requisition' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -393,7 +394,7 @@ export class StoreRequisitionService {
     bu_code: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAllByStatus',
@@ -403,7 +404,7 @@ export class StoreRequisitionService {
       StoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       {
         cmd: 'store-requisition.find-all-by-status',
         service: 'store-requisition',
@@ -434,7 +435,7 @@ export class StoreRequisitionService {
     bu_code: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAllMyPending',
@@ -446,7 +447,7 @@ export class StoreRequisitionService {
       StoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       {
         cmd: 'my-pending.store-requisition.find-all',
         service: 'my-pending',
@@ -478,7 +479,7 @@ export class StoreRequisitionService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getWorkflowPermission',
@@ -488,7 +489,7 @@ export class StoreRequisitionService {
       StoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.get-workflow-permission', service: 'store-requisition' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -510,7 +511,7 @@ export class StoreRequisitionService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getWorkflowPreviousStepList',
@@ -520,7 +521,7 @@ export class StoreRequisitionService {
       StoreRequisitionService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.get-workflow-previous-step-list', service: 'store-requisition' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );

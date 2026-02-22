@@ -5,6 +5,7 @@ import {
   ICreateExtraCostType,
   IUpdateExtraCostType,
   Result,
+  MicroserviceResponse,
 } from '@/common';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -26,7 +27,7 @@ export class Config_ExtraCostTypeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -36,7 +37,7 @@ export class Config_ExtraCostTypeService {
       Config_ExtraCostTypeService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'extra-cost-type.findOne', service: 'extra-cost-type' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -57,7 +58,7 @@ export class Config_ExtraCostTypeService {
     bu_code: string,
     query: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -67,7 +68,7 @@ export class Config_ExtraCostTypeService {
       Config_ExtraCostTypeService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'extra-cost-type.findAll', service: 'extra-cost-type' },
       {
         user_id: user_id,
@@ -94,7 +95,7 @@ export class Config_ExtraCostTypeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -104,7 +105,7 @@ export class Config_ExtraCostTypeService {
       Config_ExtraCostTypeService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'extra-cost-type.create', service: 'extra-cost-type' },
       {
         data: createDto,
@@ -130,7 +131,7 @@ export class Config_ExtraCostTypeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -140,7 +141,7 @@ export class Config_ExtraCostTypeService {
       Config_ExtraCostTypeService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'extra-cost-type.update', service: 'extra-cost-type' },
       {
         data: updateDto,
@@ -166,7 +167,7 @@ export class Config_ExtraCostTypeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'delete',
@@ -176,7 +177,7 @@ export class Config_ExtraCostTypeService {
       Config_ExtraCostTypeService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'extra-cost-type.delete', service: 'extra-cost-type' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );

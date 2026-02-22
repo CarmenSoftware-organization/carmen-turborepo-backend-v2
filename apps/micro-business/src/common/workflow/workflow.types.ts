@@ -64,7 +64,7 @@ export interface StageInfo {
   name: string;
   sla: string;
   sla_unit: string;
-  assigned_users: any[];
+  assigned_users: string[];
   hide_fields: object;
   is_hod?: boolean;
   role?: string

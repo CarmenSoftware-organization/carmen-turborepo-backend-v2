@@ -3,7 +3,7 @@ import { Result } from '../result/result';
 import { StdResponse } from '../std-response/std-response';
 import { StdStatus } from '../std-response/std-status';
 
-export interface MicroserviceResponse<T = any> {
+export interface MicroserviceResponse<T = unknown> {
   data?: T;
   paginate?: {
     total: number;
@@ -19,8 +19,9 @@ export interface MicroserviceResponse<T = any> {
 }
 
 export abstract class BaseMicroserviceController {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected handleResultCrate<T>(
-    result: Result<T, any>,
+    result: Result<any, any>,
     successStatus: HttpStatus = HttpStatus.CREATED,
   ): MicroserviceResponse<T> {
     if (result.isOk()) {
@@ -44,8 +45,9 @@ export abstract class BaseMicroserviceController {
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected handleResult<T>(
-    result: Result<T, any>,
+    result: Result<any, any>,
     successStatus: HttpStatus = HttpStatus.OK,
   ): MicroserviceResponse<T> {
     if (result.isOk()) {
@@ -69,13 +71,14 @@ export abstract class BaseMicroserviceController {
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected handleMultiPaginatedResult<T>(
-    result: Result<any[], any>,
+    result: Result<any, any>,
   ): MicroserviceResponse<T[]> {
     if (result.isOk()) {
       // console.log('Multi Paginated Result Value:', result.value);
       return {
-        data: result.value,
+        data: result.value as T[],
         response: {
           status: HttpStatus.OK,
           message: 'Success',
@@ -94,13 +97,14 @@ export abstract class BaseMicroserviceController {
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected handlePaginatedResult<T>(
-    result: Result<{ paginate: any; data: T[] }, any>,
+    result: Result<any, any>,
   ): MicroserviceResponse<T[]> {
     if (result.isOk()) {
-      // console.log('Paginated Result Value:', result.value);
-      const paginate = result.value.paginate;
-      const data = result.value.data;
+      const value = result.value as { paginate: { total: number; page: number; perpage: number; pages: number }; data: T[] };
+      const paginate = value.paginate;
+      const data = value.data;
 
       return {
         paginate,

@@ -90,7 +90,7 @@ export class DepartmentsService {
   ) {}
 
   @TryCatch
-  async findOne(id: string, withUsers: boolean = false): Promise<Result<any>> {
+  async findOne(id: string, withUsers: boolean = false): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -126,13 +126,13 @@ export class DepartmentsService {
           id: id,
         },
       })
-      .then(async (res: any) => {
+      .then(async (res) => {
         if (!res) return null;
         const hod_users = [];
         const department_users = [];
 
-        if (withUsers && res?.tb_department_user) {
-          for (const user of res.tb_department_user) {
+        if (withUsers && (res as any)?.tb_department_user) {
+          for (const user of (res as any).tb_department_user) {
             user.id = user.user_id;
             const userProfile =
               await this.prismaSystem.tb_user_profile.findFirst({
@@ -181,7 +181,7 @@ export class DepartmentsService {
   }
 
   @TryCatch
-  async findAll(paginate: IPaginate): Promise<Result<any>> {
+  async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -234,7 +234,7 @@ export class DepartmentsService {
   }
 
   @TryCatch
-  async create(data: ICreateDepartments): Promise<Result<any>> {
+  async create(data: ICreateDepartments): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, bu_code: this.bu_code },
       DepartmentsService.name,
@@ -298,7 +298,7 @@ export class DepartmentsService {
   }
 
   @TryCatch
-  async update(data: IUpdateDepartments): Promise<Result<any>> {
+  async update(data: IUpdateDepartments): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id: this.userId, bu_code: this.bu_code },
       DepartmentsService.name,
@@ -420,7 +420,7 @@ export class DepartmentsService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id: this.userId, bu_code: this.bu_code },
       DepartmentsService.name,

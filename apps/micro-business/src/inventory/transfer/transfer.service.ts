@@ -40,6 +40,7 @@ export class TransferService {
 
   private async getNextRunningNumber(tenant_id: string, user_id: string): Promise<number> {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res: Observable<any> = this.masterService.send(
         { cmd: 'running-code.generate', service: 'running-code' },
         {
@@ -57,7 +58,7 @@ export class TransferService {
   }
 
   @TryCatch
-  async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findOne', id, user_id, tenant_id }, TransferService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -90,7 +91,7 @@ export class TransferService {
   }
 
   @TryCatch
-  async findAll(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<any>> {
+  async findAll(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAll', user_id, tenant_id, paginate }, TransferService.name);
 
     const defaultSearchFields = ['tr_no', 'description'];
@@ -166,7 +167,7 @@ export class TransferService {
   }
 
   @TryCatch
-  async create(data: ITransferCreate, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async create(data: ITransferCreate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'create', data, user_id, tenant_id }, TransferService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -278,7 +279,7 @@ export class TransferService {
   }
 
   @TryCatch
-  async update(data: ITransferUpdate, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async update(data: ITransferUpdate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'update', data, user_id, tenant_id }, TransferService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -296,7 +297,7 @@ export class TransferService {
       return Result.error('Transfer not found', ErrorCode.NOT_FOUND);
     }
 
-    const updatePayload: any = {
+    const updatePayload: Record<string, unknown> = {
       updated_by_id: user_id,
       updated_at: new Date(),
     };
@@ -334,7 +335,7 @@ export class TransferService {
   }
 
   @TryCatch
-  async delete(id: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async delete(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id, tenant_id }, TransferService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -372,7 +373,7 @@ export class TransferService {
   // ==================== Transfer Detail CRUD ====================
 
   @TryCatch
-  async findDetailById(detailId: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async findDetailById(detailId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findDetailById', detailId, user_id, tenant_id }, TransferService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -395,7 +396,7 @@ export class TransferService {
   }
 
   @TryCatch
-  async findDetailsByTransferId(transferId: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async findDetailsByTransferId(transferId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findDetailsByTransferId', transferId, user_id, tenant_id }, TransferService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -414,7 +415,7 @@ export class TransferService {
   }
 
   @TryCatch
-  async createDetail(transferId: string, data: ITransferDetailCreate, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async createDetail(transferId: string, data: ITransferDetailCreate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'createDetail', transferId, data, user_id, tenant_id }, TransferService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -477,7 +478,7 @@ export class TransferService {
   }
 
   @TryCatch
-  async updateDetail(detailId: string, data: ITransferDetailUpdate, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async updateDetail(detailId: string, data: ITransferDetailUpdate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'updateDetail', detailId, data, user_id, tenant_id }, TransferService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -500,7 +501,7 @@ export class TransferService {
       return Result.error('Cannot update detail of non-draft transfer', ErrorCode.VALIDATION_FAILURE);
     }
 
-    const updatePayload: any = {
+    const updatePayload: Record<string, unknown> = {
       updated_by_id: user_id,
       updated_at: new Date(),
     };
@@ -525,7 +526,7 @@ export class TransferService {
   }
 
   @TryCatch
-  async deleteDetail(detailId: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async deleteDetail(detailId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'deleteDetail', detailId, user_id, tenant_id }, TransferService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -559,7 +560,7 @@ export class TransferService {
   // ==================== Standalone Transfer Detail API ====================
 
   @TryCatch
-  async findAllDetails(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<any>> {
+  async findAllDetails(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAllDetails', user_id, tenant_id, paginate }, TransferService.name);
 
     const defaultSearchFields = ['product_name', 'description'];
@@ -610,7 +611,7 @@ export class TransferService {
   }
 
   @TryCatch
-  async createStandaloneDetail(data: ITransferDetailCreate, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async createStandaloneDetail(data: ITransferDetailCreate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'createStandaloneDetail', data, user_id, tenant_id }, TransferService.name);
 
     if (!data.transfer_id) {

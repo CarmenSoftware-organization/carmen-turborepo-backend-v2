@@ -138,7 +138,7 @@ export class RequestForPricingService {
   }
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
       RequestForPricingService.name,
@@ -297,7 +297,7 @@ export class RequestForPricingService {
   }
 
   @TryCatch
-  async findAll(paginate: IPaginate): Promise<Result<any>> {
+  async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate },
       RequestForPricingService.name,
@@ -414,7 +414,7 @@ export class RequestForPricingService {
   }
 
   @TryCatch
-  async create(data: any): Promise<Result<any>> {
+  async create(data: any): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
       RequestForPricingService.name,
@@ -521,7 +521,7 @@ export class RequestForPricingService {
   }
 
   @TryCatch
-  async update(data: any): Promise<Result<any>> {
+  async update(data: any): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code },
       RequestForPricingService.name,
@@ -644,7 +644,7 @@ export class RequestForPricingService {
   }
 
   @TryCatch
-  async remove(id: string): Promise<Result<any>> {
+  async remove(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'remove', id, user_id: this.userId, tenant_id: this.bu_code },
       RequestForPricingService.name,

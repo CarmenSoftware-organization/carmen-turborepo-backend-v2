@@ -22,7 +22,7 @@ export class PurchaseOrderService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -54,7 +54,7 @@ export class PurchaseOrderService {
     bu_code: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -84,11 +84,11 @@ export class PurchaseOrderService {
   }
 
   async create(
-    createDto: any,
+    createDto: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -117,11 +117,11 @@ export class PurchaseOrderService {
 
   async update(
     id: string,
-    updateDto: any,
+    updateDto: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -154,7 +154,7 @@ export class PurchaseOrderService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'delete',
@@ -186,7 +186,7 @@ export class PurchaseOrderService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'groupPrForPo',
@@ -218,7 +218,7 @@ export class PurchaseOrderService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'confirmPrToPo',
@@ -250,7 +250,7 @@ export class PurchaseOrderService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'cancel',
@@ -282,7 +282,7 @@ export class PurchaseOrderService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'closePO',
@@ -387,11 +387,11 @@ export class PurchaseOrderService {
 
   async approve(
     id: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'approve',
@@ -425,7 +425,7 @@ export class PurchaseOrderService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findDetailById', detailId, version },
       PurchaseOrderService.name,
@@ -453,7 +453,7 @@ export class PurchaseOrderService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findDetailsByPurchaseOrderId', purchaseOrderId, version },
       PurchaseOrderService.name,
@@ -478,11 +478,11 @@ export class PurchaseOrderService {
 
   async createDetail(
     purchaseOrderId: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'createDetail', purchaseOrderId, data, version },
       PurchaseOrderService.name,
@@ -507,11 +507,11 @@ export class PurchaseOrderService {
 
   async updateDetail(
     detailId: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'updateDetail', detailId, data, version },
       PurchaseOrderService.name,
@@ -539,7 +539,7 @@ export class PurchaseOrderService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'deleteDetail', detailId, version },
       PurchaseOrderService.name,

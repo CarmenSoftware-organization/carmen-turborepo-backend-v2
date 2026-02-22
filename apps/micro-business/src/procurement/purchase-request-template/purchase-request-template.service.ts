@@ -83,7 +83,7 @@ export class PurchaseRequestTemplateService {
   ) { }
 
   @TryCatch
-  async findAll(paginate: IPaginate): Promise<Result<any>> {
+  async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate },
       PurchaseRequestTemplateService.name,
@@ -116,7 +116,7 @@ export class PurchaseRequestTemplateService {
 
         if (res.length === 0) return []
 
-        const response = res.map((pr: any) => {
+        const response = res.map((pr) => {
           const purchase_request_template_detail =
             pr.tb_purchase_request_template_detail;
 
@@ -152,7 +152,7 @@ export class PurchaseRequestTemplateService {
   }
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
       PurchaseRequestTemplateService.name,
@@ -189,7 +189,7 @@ export class PurchaseRequestTemplateService {
   }
 
   @TryCatch
-  async create(data: CreatePurchaseRequestTemplateDto): Promise<Result<any>> {
+  async create(data: CreatePurchaseRequestTemplateDto): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
       PurchaseRequestTemplateService.name,
@@ -233,7 +233,7 @@ export class PurchaseRequestTemplateService {
   }
 
   @TryCatch
-  async update(data: UpdatePurchaseRequestTemplateDto): Promise<Result<any>> {
+  async update(data: UpdatePurchaseRequestTemplateDto): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code },
       PurchaseRequestTemplateService.name,
@@ -309,7 +309,7 @@ export class PurchaseRequestTemplateService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code },
       PurchaseRequestTemplateService.name,

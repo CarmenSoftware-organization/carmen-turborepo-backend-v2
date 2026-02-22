@@ -9,6 +9,6 @@ export interface IUpdateRunningCode {
   id?: string;
   type?: string;
   note?: string;
-  config?: any;
+  config?: Record<string, unknown>;
   format?: string;
 }

@@ -77,7 +77,7 @@ export class BusinessUnitService {
         code: data.code,
         name: data.name,
         alias_name: data.alias_name,
-        config: data.config as any,
+        config: data.config as unknown as Record<string, unknown>,
         is_hq: data.is_hq,
         is_active: data.is_active,
         created_by_id: user_id,
@@ -143,7 +143,7 @@ export class BusinessUnitService {
         code: data.code,
         name: data.name,
         alias_name: data.alias_name,
-        config: data.config as any,
+        config: data.config as unknown as Record<string, unknown>,
         is_hq: data.is_hq,
         is_active: data.is_active,
         updated_by_id: user_id,
@@ -189,7 +189,7 @@ export class BusinessUnitService {
   }
 
   @TryCatch
-  async listBusinessUnit(paginate: IPaginate): Promise<Result<{ paginate: any; data: any[] }>> {
+  async listBusinessUnit(paginate: IPaginate): Promise<Result<{ paginate: unknown; data: unknown[] }>> {
     this.logger.debug(
       { function: 'listBusinessUnit', paginate: paginate },
       BusinessUnitService.name,
@@ -227,7 +227,7 @@ export class BusinessUnitService {
   }
 
   @TryCatch
-  async getBusinessUnitById(id: string): Promise<Result<any>> {
+  async getBusinessUnitById(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'getBusinessUnitById', id: id },
       BusinessUnitService.name,
@@ -246,7 +246,7 @@ export class BusinessUnitService {
   }
 
   @TryCatch
-  async getBusinessUnitByUserId(user_id: string): Promise<Result<any[]>> {
+  async getBusinessUnitByUserId(user_id: string): Promise<Result<unknown[]>> {
     this.logger.debug(
       { function: 'getBusinessUnitByUserId', user_id: user_id },
       BusinessUnitService.name,
@@ -265,7 +265,7 @@ export class BusinessUnitService {
   }
 
   @TryCatch
-  async setDefaultTenant(user_id: string, tenant_id: string): Promise<Result<any[]>> {
+  async setDefaultTenant(user_id: string, tenant_id: string): Promise<Result<unknown[]>> {
     this.logger.debug(
       { function: 'setDefaultTenant', user_id: user_id, tenant_id: tenant_id },
       BusinessUnitService.name,
@@ -362,7 +362,7 @@ export class BusinessUnitService {
   // User Business Unit
 
   @TryCatch
-  async userBusinessUnitFindOne(id: string): Promise<Result<any>> {
+  async userBusinessUnitFindOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'userBusinessUnitFindOne', id: id },
       BusinessUnitService.name,
@@ -382,7 +382,7 @@ export class BusinessUnitService {
   }
 
   @TryCatch
-  async userBusinessUnitFindAll(paginate: IPaginate): Promise<Result<{ paginate: any; data: any[] }>> {
+  async userBusinessUnitFindAll(paginate: IPaginate): Promise<Result<{ paginate: unknown; data: unknown[] }>> {
     this.logger.debug(
       { function: 'userBusinessUnitFindAll', paginate: paginate },
       BusinessUnitService.name,
@@ -492,9 +492,9 @@ export class BusinessUnitService {
           BusinessUnitService.name,
         );
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error(
-        `Error calling Keycloak service: ${error.message}`,
+        `Error calling Keycloak service: ${error instanceof Error ? error.message : 'Unknown error'}`,
         BusinessUnitService.name,
       );
     }
@@ -623,9 +623,9 @@ export class BusinessUnitService {
           BusinessUnitService.name,
         );
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error(
-        `Error calling Keycloak service: ${error.message}`,
+        `Error calling Keycloak service: ${error instanceof Error ? error.message : 'Unknown error'}`,
         BusinessUnitService.name,
       );
     }
@@ -641,7 +641,7 @@ export class BusinessUnitService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getBusinessUnitConfigs',
@@ -706,7 +706,7 @@ export class BusinessUnitService {
 
     await this.prismaSystem.tb_business_unit.update({
       where: { id: businessUnit.id },
-      data: { config: data as any },
+      data: { config: data as unknown as Record<string, unknown> },
     });
 
     return Result.ok({ id: businessUnit.id });
@@ -759,7 +759,7 @@ export class BusinessUnitService {
 
     await this.prismaSystem.tb_business_unit.update({
       where: { id: businessUnit.id },
-      data: { config: data as any },
+      data: { config: data as unknown as Record<string, unknown> },
     });
 
     return Result.ok({ id: businessUnit.id });
@@ -794,7 +794,7 @@ export class BusinessUnitService {
 
     const updatedConfig = {
       ...(businessUnit.config as IBusinessUnitConfig[]),
-    } as any;
+    } as unknown as Record<string, unknown>;
     delete updatedConfig[key];
 
     await this.prismaSystem.tb_business_unit.update({
@@ -889,14 +889,10 @@ export class BusinessUnitService {
       BusinessUnitService.name,
     );
 
-    console.log(data);
-
     const { error, message } = BusinessUnitService.validateValueByDataType(
       data.value,
       data.datatype,
     );
-
-    console.log(error, message);
 
     if (error) {
       return Result.error(message, ErrorCode.VALIDATION_FAILURE);
@@ -938,7 +934,7 @@ export class BusinessUnitService {
     await this.prismaSystem.tb_business_unit.update({
       where: { id: businessUnit.id },
       data: {
-        config: configs as any,
+        config: configs as unknown as Record<string, unknown>,
       },
     });
 
@@ -951,7 +947,7 @@ export class BusinessUnitService {
     user_id: string,
     // tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getSystemBusinessUnitConfigs',
@@ -1019,7 +1015,7 @@ export class BusinessUnitService {
   }
 
   static validateValueByDataType(
-    value: any,
+    value: unknown,
     datatype: string,
   ): { error: boolean; message: string } {
     let error = false;
@@ -1069,7 +1065,6 @@ export class BusinessUnitService {
         break;
 
       case 'default_currency': {
-        console.log({ default_currency: value });
         const result = DefaultCurrencyObjectSchema.parse(value);
         if (!result) {
           error = true;
@@ -1087,7 +1082,7 @@ export class BusinessUnitService {
     return { error, message };
   }
 
-  static isValidDate(value: any): boolean {
+  static isValidDate(value: unknown): boolean {
     if (value instanceof Date) {
       return !isNaN(value.getTime());
     }

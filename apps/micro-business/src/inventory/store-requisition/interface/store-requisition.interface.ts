@@ -113,7 +113,7 @@ export interface StoreRequisitionDetail {
   reject_by_name?: string;
   reject_date_at?: string;
   history?: object;
-  stages_status?: any;
+  stages_status?: Record<string, unknown>[];
   current_stage_status?: string;
   info?: Pick<Info, 'specifications'>;
   dimension?: Dimension;
@@ -139,7 +139,7 @@ export interface StoreRequisition {
   workflow_current_stage?: string;
   workflow_previous_stage?: string;
   workflow_next_stage?: string;
-  user_action?: any;
+  user_action?: Record<string, unknown>;
   requestor_id?: string;
   requestor_name?: string;
   department_id?: string;
@@ -210,7 +210,7 @@ export interface IStoreRequisitionDetail {
   reject_by_id?: string;
   reject_by_name?: string;
   history?: object;
-  stages_status?: any;
+  stages_status?: Record<string, unknown>[];
   current_stage_status?: string;
   info?: object;
   dimension?: {
@@ -234,12 +234,12 @@ export interface IStoreRequisition {
   to_location_name?: string;
   workflow_id?: string;
   workflow_name?: string;
-  workflow_obj?: any;
+  workflow_obj?: Record<string, unknown>;
   workflow_history?: WorkflowHistory[];
   workflow_current_stage?: string;
   workflow_previous_stage?: string;
   workflow_next_stage?: string;
-  user_action?: any;
+  user_action?: Record<string, unknown>;
   current_workflow_status?: string;
   requestor_id?: string;
   requestor_name?: string;

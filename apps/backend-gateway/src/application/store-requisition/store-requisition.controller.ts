@@ -114,8 +114,8 @@ export class StoreRequisitionController extends BaseHttpController {
       bu_id: string;
       bu_code: string;
       role: string;
-      permissions: Record<string, unknown>;
-    }[] = JSON.parse((req.headers as any)['x-bu-datas'] as string);
+      permissions: Record<string, string[]>;
+    }[] = JSON.parse((req.headers as Record<string, string>)['x-bu-datas'] as string);
     const userData = userDatas.find((ud) => ud.bu_code === bu_code);
     const result = await this.storeRequisitionService.findOne(
       id,
@@ -185,8 +185,8 @@ export class StoreRequisitionController extends BaseHttpController {
       bu_id: string;
       bu_code: string;
       role: string;
-      permissions: Record<string, unknown>;
-    }[] = JSON.parse((req.headers as any)['x-bu-datas'] as string);
+      permissions: Record<string, string[]>;
+    }[] = JSON.parse((req.headers as Record<string, string>)['x-bu-datas'] as string);
     const result = await this.storeRequisitionService.findAll(
       user_id,
       bu_code,

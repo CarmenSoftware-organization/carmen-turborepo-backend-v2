@@ -6,9 +6,9 @@ export default function order(sort: string[]) {
           const parts = s.includes(':') ? s.split(':') : s.split(' ');
           const field = parts[0];
           const dir = parts[1] ? parts[1].toLowerCase() : 'asc';
-          return { [field]: dir === 'desc' ? 'desc' : 'asc' } as any;
+          return { [field]: dir === 'desc' ? 'desc' : 'asc' } as Record<string, string>;
         }
-        return s as any;
+        return s as unknown;
       })
     : undefined;
 }

@@ -48,7 +48,6 @@ export class TenantHeaderGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    return true
     const request = context.switchToHttp().getRequest();
     const tenantId = request.headers['x-tenant-id']
 

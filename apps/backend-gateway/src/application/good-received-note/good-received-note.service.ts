@@ -8,6 +8,7 @@ import {
   IGoodReceivedNoteCreate,
   IGoodReceivedNoteUpdate,
   Result,
+  MicroserviceResponse,
 } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -28,7 +29,7 @@ export class GoodReceivedNoteService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -40,7 +41,7 @@ export class GoodReceivedNoteService {
       GoodReceivedNoteService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.findOne', service: 'good-received-note' },
       { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -62,7 +63,7 @@ export class GoodReceivedNoteService {
     tenant_id: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -74,7 +75,7 @@ export class GoodReceivedNoteService {
       GoodReceivedNoteService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.findAll', service: 'good-received-note' },
       {
         user_id: user_id,
@@ -93,9 +94,6 @@ export class GoodReceivedNoteService {
       );
     }
 
-    console.log('response data:', response.data)
-    console.log('response paginate:', response.paginate)
-
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
@@ -104,7 +102,7 @@ export class GoodReceivedNoteService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -116,7 +114,7 @@ export class GoodReceivedNoteService {
       GoodReceivedNoteService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.create', service: 'good-received-note' },
       { data: data, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -138,7 +136,7 @@ export class GoodReceivedNoteService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -150,7 +148,7 @@ export class GoodReceivedNoteService {
       GoodReceivedNoteService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.update', service: 'good-received-note' },
       { data: data, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -172,7 +170,7 @@ export class GoodReceivedNoteService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'delete',
@@ -184,7 +182,7 @@ export class GoodReceivedNoteService {
       GoodReceivedNoteService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.delete', service: 'good-received-note' },
       { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -218,7 +216,7 @@ export class GoodReceivedNoteService {
       GoodReceivedNoteService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.export', service: 'good-received-note' },
       { id, user_id, tenant_id, version },
     );
@@ -247,7 +245,7 @@ export class GoodReceivedNoteService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'reject',
@@ -260,7 +258,7 @@ export class GoodReceivedNoteService {
       GoodReceivedNoteService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.reject', service: 'good-received-note' },
       { id, reason, user_id, tenant_id, version },
     );
@@ -284,13 +282,13 @@ export class GoodReceivedNoteService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findDetailById', detailId, user_id, tenant_id, version },
       GoodReceivedNoteService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note-detail.find-by-id', service: 'good-received-note' },
       { detail_id: detailId, user_id, tenant_id, version },
     );
@@ -312,13 +310,13 @@ export class GoodReceivedNoteService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findDetailsByGrnId', grnId, user_id, tenant_id, version },
       GoodReceivedNoteService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note-detail.find-all', service: 'good-received-note' },
       { grn_id: grnId, user_id, tenant_id, version },
     );
@@ -337,17 +335,17 @@ export class GoodReceivedNoteService {
 
   async createDetail(
     grnId: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'createDetail', grnId, data, user_id, tenant_id, version },
       GoodReceivedNoteService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note-detail.create', service: 'good-received-note' },
       { grn_id: grnId, data, user_id, tenant_id, version },
     );
@@ -366,17 +364,17 @@ export class GoodReceivedNoteService {
 
   async updateDetail(
     detailId: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'updateDetail', detailId, data, user_id, tenant_id, version },
       GoodReceivedNoteService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note-detail.update', service: 'good-received-note' },
       { detail_id: detailId, data, user_id, tenant_id, version },
     );
@@ -398,13 +396,13 @@ export class GoodReceivedNoteService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'deleteDetail', detailId, user_id, tenant_id, version },
       GoodReceivedNoteService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note-detail.delete', service: 'good-received-note' },
       { detail_id: detailId, user_id, tenant_id, version },
     );
@@ -428,13 +426,13 @@ export class GoodReceivedNoteService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findByManualPO', po_no, user_id, tenant_id, version },
       GoodReceivedNoteService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.find-by-manual-po', service: 'good-received-note' },
       { po_no, user_id, tenant_id, version },
     );
@@ -453,17 +451,17 @@ export class GoodReceivedNoteService {
 
   async confirm(
     id: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'confirm', id, data, user_id, tenant_id, version },
       GoodReceivedNoteService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.confirm', service: 'good-received-note' },
       { id, data, user_id, tenant_id, version },
     );
@@ -485,13 +483,13 @@ export class GoodReceivedNoteService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'getComments', id, user_id, tenant_id, version },
       GoodReceivedNoteService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.get-comments', service: 'good-received-note' },
       { id, user_id, tenant_id, version },
     );
@@ -514,13 +512,13 @@ export class GoodReceivedNoteService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'createComment', id, data, user_id, tenant_id, version },
       GoodReceivedNoteService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.create-comment', service: 'good-received-note' },
       { id, data, user_id, tenant_id, version },
     );
@@ -540,7 +538,7 @@ export class GoodReceivedNoteService {
   async findAllPendingGoodReceivedNoteCount(
     user_id: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findAllPendingGoodReceivedNoteCount',
@@ -550,7 +548,7 @@ export class GoodReceivedNoteService {
       GoodReceivedNoteService.name,
     );
 
-    // const res: Observable<any> = this.inventoryService.send(
+    // const res: Observable<MicroserviceResponse> = this.inventoryService.send(
     //   { cmd: 'good-received-note.find-all.count', service: 'good-received-note' },
     //   {
     //     user_id,

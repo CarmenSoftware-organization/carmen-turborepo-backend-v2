@@ -5,6 +5,7 @@ import {
   ICreateExchangeRate,
   IUpdateExchangeRate,
   Result,
+  MicroserviceResponse,
 } from '@/common';
 import { IPaginate, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -26,7 +27,7 @@ export class Config_ExchangeRateService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -36,7 +37,7 @@ export class Config_ExchangeRateService {
       Config_ExchangeRateService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'exchange-rate.findOne', service: 'exchange-rate' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -58,7 +59,7 @@ export class Config_ExchangeRateService {
     bu_code: string,
     query: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -68,7 +69,7 @@ export class Config_ExchangeRateService {
       Config_ExchangeRateService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'exchange-rate.findAll', service: 'exchange-rate' },
       {
         user_id: user_id,
@@ -95,7 +96,7 @@ export class Config_ExchangeRateService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -105,7 +106,7 @@ export class Config_ExchangeRateService {
       Config_ExchangeRateService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'exchange-rate.create', service: 'exchange-rate' },
       {
         data: createDto,
@@ -132,7 +133,7 @@ export class Config_ExchangeRateService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -142,7 +143,7 @@ export class Config_ExchangeRateService {
       Config_ExchangeRateService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'exchange-rate.update', service: 'exchange-rate' },
       {
         data: updateDto,
@@ -169,7 +170,7 @@ export class Config_ExchangeRateService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'delete',
@@ -179,7 +180,7 @@ export class Config_ExchangeRateService {
       Config_ExchangeRateService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'exchange-rate.delete', service: 'exchange-rate' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );

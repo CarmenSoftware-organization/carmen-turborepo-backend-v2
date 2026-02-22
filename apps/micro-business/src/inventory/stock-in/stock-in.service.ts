@@ -33,7 +33,7 @@ export class StockInService {
   ) {}
 
   @TryCatch
-  async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findOne', id, user_id, tenant_id }, StockInService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -66,7 +66,7 @@ export class StockInService {
   }
 
   @TryCatch
-  async findAll(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<any>> {
+  async findAll(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAll', user_id, tenant_id, paginate }, StockInService.name);
 
     const defaultSearchFields = ['si_no', 'description'];
@@ -130,7 +130,7 @@ export class StockInService {
   }
 
   @TryCatch
-  async create(data: IStockInCreate, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async create(data: IStockInCreate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'create', data, user_id, tenant_id }, StockInService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -239,7 +239,7 @@ export class StockInService {
   }
 
   @TryCatch
-  async update(data: IStockInUpdate, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async update(data: IStockInUpdate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'update', data, user_id, tenant_id }, StockInService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -353,7 +353,7 @@ export class StockInService {
       const { stock_in_detail: _, id: __, ...stockInUpdateData } = data;
 
       if (Object.keys(stockInUpdateData).length > 0) {
-        const updatePayload: any = {
+        const updatePayload: Record<string, unknown> = {
           ...stockInUpdateData,
           updated_by_id: user_id,
           updated_at: new Date(),
@@ -435,7 +435,7 @@ export class StockInService {
   }
 
   @TryCatch
-  async delete(id: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async delete(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id, tenant_id }, StockInService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -508,6 +508,7 @@ export class StockInService {
   private async generateSINo(siDate: string, tenant_id: string, user_id: string): Promise<string> {
     this.logger.debug({ function: 'generateSINo', siDate, tenant_id, user_id }, StockInService.name);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
     const res: Observable<any> = this.masterService.send(
       { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
       { type: 'SI', user_id, tenant_id },
@@ -532,6 +533,7 @@ export class StockInService {
       ? Number(latestSI.si_no.slice(-Number(runningPattern.pattern)))
       : 0;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
     const generateCodeRes: Observable<any> = this.masterService.send(
       { cmd: 'running-code.generate-code', service: 'running-codes' },
       {
@@ -551,7 +553,7 @@ export class StockInService {
   // ==================== Stock In Detail CRUD ====================
 
   @TryCatch
-  async findDetailById(detailId: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async findDetailById(detailId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findDetailById', detailId, user_id, tenant_id }, StockInService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -584,7 +586,7 @@ export class StockInService {
   }
 
   @TryCatch
-  async findDetailsByStockInId(stockInId: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async findDetailsByStockInId(stockInId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findDetailsByStockInId', stockInId, user_id, tenant_id }, StockInService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -624,7 +626,7 @@ export class StockInService {
     data: IStockInDetailCreate,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug({ function: 'createDetail', stockInId, data, user_id, tenant_id }, StockInService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -706,7 +708,7 @@ export class StockInService {
     data: IStockInDetailUpdate,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug({ function: 'updateDetail', detailId, data, user_id, tenant_id }, StockInService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -744,7 +746,7 @@ export class StockInService {
   }
 
   @TryCatch
-  async deleteDetail(detailId: string, user_id: string, tenant_id: string): Promise<Result<any>> {
+  async deleteDetail(detailId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'deleteDetail', detailId, user_id, tenant_id }, StockInService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
@@ -781,7 +783,7 @@ export class StockInService {
   // ==================== Standalone Stock In Detail API ====================
 
   @TryCatch
-  async findAllDetails(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<any>> {
+  async findAllDetails(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAllDetails', user_id, tenant_id, paginate }, StockInService.name);
 
     const defaultSearchFields = ['product_name', 'product_local_name', 'location_name', 'description'];
@@ -862,7 +864,7 @@ export class StockInService {
     data: IStockInDetailCreate & { stock_in_id: string },
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug({ function: 'createStandaloneDetail', data, user_id, tenant_id }, StockInService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);

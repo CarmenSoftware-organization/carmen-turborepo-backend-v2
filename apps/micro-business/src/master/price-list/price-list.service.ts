@@ -79,7 +79,7 @@ export class PriceListService {
   ) { }
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
       PriceListService.name,
@@ -202,6 +202,7 @@ export class PriceListService {
   }
 
   @TryCatch
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value accessed by callers within this service
   async getTaxProfileList(id: string): Promise<Result<any>> {
     this.logger.debug(
       { function: 'getTaxProfileList', user_id: this.userId, tenant_id: this.bu_code },
@@ -217,14 +218,14 @@ export class PriceListService {
     if (gbl_taxProfile && gbl_taxProfile.value) {
       const parsed = typeof gbl_taxProfile.value === 'string' ? JSON.parse(gbl_taxProfile.value as string) : gbl_taxProfile.value;
       const taxProfiles = Array.isArray(parsed) ? parsed : [];
-      const found = taxProfiles.find((item: any) => item.id === id);
+      const found = taxProfiles.find((item) => item.id === id);
       return Result.ok(found || null);
     }
     return Result.ok(null);
   }
 
   @TryCatch
-  async findAll(paginate: IPaginate): Promise<Result<any>> {
+  async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate },
       PriceListService.name,
@@ -361,7 +362,7 @@ export class PriceListService {
   async findAllById(
     ids: string[],
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAllById', ids, user_id: this.userId, tenant_id: this.bu_code, paginate },
       PriceListService.name,
@@ -498,7 +499,7 @@ export class PriceListService {
     due_date: Date,
     unit_id?: string;
     currency_id: string
-  }): Promise<Result<any>> {
+  }): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'price-compare', data, user_id: this.userId, bu_code: this.bu_code },
     )
@@ -568,7 +569,7 @@ export class PriceListService {
   }
 
   @TryCatch
-  async create(data: any): Promise<Result<any>> {
+  async create(data: any): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
       PriceListService.name,
@@ -626,7 +627,7 @@ export class PriceListService {
         created_by_id: this.userId,
         note: data.note,
         tb_pricelist_detail: {
-          create: data.pricelist_detail.add.map((item: any) => ({
+          create: data.pricelist_detail.add.map((item) => ({
             sequence_no: item.sequence_no,
             tb_unit: { connect: { id: item.unit_id } },
             unit_name: item.unit_name,
@@ -648,7 +649,7 @@ export class PriceListService {
   }
 
   @TryCatch
-  async update(data: any): Promise<Result<any>> {
+  async update(data: any): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code },
       PriceListService.name,
@@ -791,7 +792,7 @@ export class PriceListService {
   }
 
   @TryCatch
-  async remove(id: string): Promise<Result<any>> {
+  async remove(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'remove', id, user_id: this.userId, tenant_id: this.bu_code }, PriceListService.name);
 
     const priceList = await this.prismaService.tb_pricelist.update({
@@ -809,7 +810,7 @@ export class PriceListService {
   @TryCatch
   async uploadExcel(
     data: any,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'uploadExcel', data, user_id: this.userId, tenant_id: this.bu_code },
       PriceListService.name,
@@ -824,7 +825,7 @@ export class PriceListService {
   @TryCatch
   async downloadExcel(
     id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'downloadExcel', id, user_id: this.userId, tenant_id: this.bu_code },
       PriceListService.name,
@@ -844,7 +845,7 @@ export class PriceListService {
   @TryCatch
   async findAllByDetail(
     price_list_detail_ids: string[],
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAllByDetail',
@@ -874,7 +875,7 @@ export class PriceListService {
   }
 
   @TryCatch
-  async importCsv(csvContent: string): Promise<Result<any>> {
+  async importCsv(csvContent: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'importCsv', contentLength: csvContent?.length, user_id: this.userId, tenant_id: this.bu_code },
       PriceListService.name,
@@ -891,7 +892,7 @@ export class PriceListService {
       },
       created_ids: [] as string[],
       updated_ids: [] as string[],
-      errors: [] as Array<{ row: number; field?: string; message: string; data?: Record<string, any> }>,
+      errors: [] as Array<{ row: number; field?: string; message: string; data?: Record<string, unknown> }>,
     };
 
     // Parse CSV content
@@ -903,14 +904,14 @@ export class PriceListService {
     result.summary.total_rows = rows.length;
 
     // Group rows by pricelist_no (for upsert logic)
-    const priceListGroups = new Map<string, Array<{ row: number; data: Record<string, any> }>>();
+    const priceListGroups = new Map<string, Array<{ row: number; data: any }>>();
 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       const rowNumber = i + 2; // +2 because header is row 1, data starts at row 2
 
       // Use pricelist_no as grouping key, or generate a unique key if not provided
-      const groupKey = row.pricelist_no || `__new_${i}`;
+      const groupKey = (row.pricelist_no || `__new_${i}`) as string;
 
       if (!priceListGroups.has(groupKey)) {
         priceListGroups.set(groupKey, []);
@@ -929,11 +930,11 @@ export class PriceListService {
           result.summary.updated++;
           result.updated_ids.push(processResult.id);
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         result.summary.errors++;
         result.errors.push({
           row: groupRows[0].row,
-          message: error.message || 'Unknown error processing price list',
+          message: error instanceof Error ? error.message : 'Unknown error processing price list',
           data: groupRows[0].data,
         });
       }
@@ -945,7 +946,7 @@ export class PriceListService {
     return Result.ok(result);
   }
 
-  private parseCsv(csvContent: string): Array<Record<string, any>> {
+  private parseCsv(csvContent: string): Array<Record<string, unknown>> {
     const lines = csvContent.split('\n').filter(line => line.trim() !== '');
     if (lines.length < 2) {
       return [];
@@ -956,10 +957,10 @@ export class PriceListService {
     const headers = this.parseCsvLine(headerLine).map(h => h.trim().toLowerCase());
 
     // Parse data rows
-    const rows: Array<Record<string, any>> = [];
+    const rows: Array<Record<string, unknown>> = [];
     for (let i = 1; i < lines.length; i++) {
       const values = this.parseCsvLine(lines[i]);
-      const row: Record<string, any> = {};
+      const row: Record<string, unknown> = {};
 
       for (let j = 0; j < headers.length; j++) {
         const header = headers[j];
@@ -1008,8 +1009,8 @@ export class PriceListService {
 
   private async processImportGroup(
     groupKey: string,
-    groupRows: Array<{ row: number; data: Record<string, any> }>,
-    result: any,
+    groupRows: Array<{ row: number; data: any }>,
+    result: Record<string, any>,
   ): Promise<{ id: string; created: boolean; updated: boolean }> {
     const firstRow = groupRows[0].data;
     const isNewPriceList = groupKey.startsWith('__new_');
@@ -1140,7 +1141,7 @@ export class PriceListService {
         data: {
           name: firstRow.name || existingPriceList.name,
           description: firstRow.description,
-          status: (firstRow.status as any) || existingPriceList.status,
+          status: (firstRow.status as unknown as string) || existingPriceList.status,
           vendor_id: firstRow.vendor_id,
           vendor_name: vendor?.name,
           currency_id: firstRow.currency_id,

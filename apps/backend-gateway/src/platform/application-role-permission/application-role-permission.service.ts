@@ -12,7 +12,7 @@ import {
   AssignPermissionToRoleDto,
   RemovePermissionFromRoleDto,
 } from './dto/application-role-permission.dto';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
 @Injectable()
@@ -31,7 +31,7 @@ export class ApplicationRolePermissionService {
    * @param version
    * @returns
    */
-  async getPermissionsByRole(roleId: string, version: string): Promise<any> {
+  async getPermissionsByRole(roleId: string, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'getPermissionsByRole',
@@ -41,7 +41,7 @@ export class ApplicationRolePermissionService {
       ApplicationRolePermissionService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'get-permissions-by-role', service: 'auth' },
       { roleId, version },
     );
@@ -67,7 +67,7 @@ export class ApplicationRolePermissionService {
   async getRolesByPermission(
     permissionId: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'getRolesByPermission',
@@ -77,7 +77,7 @@ export class ApplicationRolePermissionService {
       ApplicationRolePermissionService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'get-roles-by-permission', service: 'auth' },
       { permissionId, version },
     );
@@ -103,7 +103,7 @@ export class ApplicationRolePermissionService {
   async assignPermissionsToRole(
     assignPermissionsDto: AssignPermissionsToRoleDto,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'assignPermissionsToRole',
@@ -113,7 +113,7 @@ export class ApplicationRolePermissionService {
       ApplicationRolePermissionService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'assign-permissions-to-role', service: 'auth' },
       { data: assignPermissionsDto, version },
     );
@@ -139,7 +139,7 @@ export class ApplicationRolePermissionService {
   async removePermissionsFromRole(
     removePermissionsDto: RemovePermissionsFromRoleDto,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'removePermissionsFromRole',
@@ -149,7 +149,7 @@ export class ApplicationRolePermissionService {
       ApplicationRolePermissionService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'remove-permissions-from-role', service: 'auth' },
       { data: removePermissionsDto, version },
     );
@@ -175,7 +175,7 @@ export class ApplicationRolePermissionService {
   async assignPermissionToRole(
     assignPermissionDto: AssignPermissionToRoleDto,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'assignPermissionToRole',
@@ -185,7 +185,7 @@ export class ApplicationRolePermissionService {
       ApplicationRolePermissionService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'assign-permission-to-role', service: 'auth' },
       { data: assignPermissionDto, version },
     );
@@ -211,7 +211,7 @@ export class ApplicationRolePermissionService {
   async removePermissionFromRole(
     removePermissionDto: RemovePermissionFromRoleDto,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'removePermissionFromRole',
@@ -221,7 +221,7 @@ export class ApplicationRolePermissionService {
       ApplicationRolePermissionService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'remove-permission-from-role', service: 'auth' },
       { data: removePermissionDto, version },
     );

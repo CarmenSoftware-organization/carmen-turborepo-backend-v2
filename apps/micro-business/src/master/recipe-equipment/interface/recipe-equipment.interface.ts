@@ -22,10 +22,10 @@ export interface ICreateRecipeEquipment {
   total_qty?: number;
   usage_count?: number;
   average_usage_time?: number;
-  attachments?: any;
-  manuals_urls?: any;
-  info?: any | null;
-  dimension?: any | null;
+  attachments?: unknown[];
+  manuals_urls?: string[];
+  info?: Record<string, unknown> | null;
+  dimension?: unknown[] | null;
 }
 
 export interface IUpdateRecipeEquipment {
@@ -53,8 +53,8 @@ export interface IUpdateRecipeEquipment {
   total_qty?: number;
   usage_count?: number;
   average_usage_time?: number;
-  attachments?: any;
-  manuals_urls?: any;
-  info?: any | null;
-  dimension?: any | null;
+  attachments?: unknown[];
+  manuals_urls?: string[];
+  info?: Record<string, unknown> | null;
+  dimension?: unknown[] | null;
 }

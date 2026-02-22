@@ -8,6 +8,7 @@ import {
   ITransferCreate,
   ITransferUpdate,
   Result,
+  MicroserviceResponse,
 } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -26,13 +27,13 @@ export class TransferService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id, tenant_id, version },
       TransferService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer.findOne', service: 'transfer' },
       { id, user_id, tenant_id, version },
     );
@@ -54,13 +55,13 @@ export class TransferService {
     tenant_id: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id, tenant_id, paginate, version },
       TransferService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer.findAll', service: 'transfer' },
       { user_id, tenant_id, paginate, version },
     );
@@ -82,13 +83,13 @@ export class TransferService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id, tenant_id, version },
       TransferService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer.create', service: 'transfer' },
       { data, user_id, tenant_id, version },
     );
@@ -110,13 +111,13 @@ export class TransferService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id, tenant_id, version },
       TransferService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer.update', service: 'transfer' },
       { data, user_id, tenant_id, version },
     );
@@ -138,13 +139,13 @@ export class TransferService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id, tenant_id, version },
       TransferService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer.delete', service: 'transfer' },
       { id, user_id, tenant_id, version },
     );
@@ -168,13 +169,13 @@ export class TransferService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findDetailById', detailId, user_id, tenant_id, version },
       TransferService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer-detail.find-by-id', service: 'transfer' },
       { detail_id: detailId, user_id, tenant_id, version },
     );
@@ -196,13 +197,13 @@ export class TransferService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findDetailsByTransferId', transferId, user_id, tenant_id, version },
       TransferService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer-detail.find-all', service: 'transfer' },
       { transfer_id: transferId, user_id, tenant_id, version },
     );
@@ -221,17 +222,17 @@ export class TransferService {
 
   async createDetail(
     transferId: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'createDetail', transferId, data, user_id, tenant_id, version },
       TransferService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer-detail.create', service: 'transfer' },
       { transfer_id: transferId, data, user_id, tenant_id, version },
     );
@@ -250,17 +251,17 @@ export class TransferService {
 
   async updateDetail(
     detailId: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'updateDetail', detailId, data, user_id, tenant_id, version },
       TransferService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer-detail.update', service: 'transfer' },
       { detail_id: detailId, data, user_id, tenant_id, version },
     );
@@ -282,13 +283,13 @@ export class TransferService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'deleteDetail', detailId, user_id, tenant_id, version },
       TransferService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer-detail.delete', service: 'transfer' },
       { detail_id: detailId, user_id, tenant_id, version },
     );

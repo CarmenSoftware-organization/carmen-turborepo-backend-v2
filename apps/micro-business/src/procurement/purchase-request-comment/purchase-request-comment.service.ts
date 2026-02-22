@@ -294,7 +294,7 @@ export class PurchaseRequestCommentService {
       };
     }
 
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       updated_by_id: this.userId,
     };
 

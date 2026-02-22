@@ -2,7 +2,7 @@ import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { Observable } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -22,7 +22,7 @@ export class PriceListTemplateService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -34,7 +34,7 @@ export class PriceListTemplateService {
       PriceListTemplateService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'price-list-template.findOne', service: 'price-list-template' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -56,7 +56,7 @@ export class PriceListTemplateService {
     bu_code: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -67,7 +67,7 @@ export class PriceListTemplateService {
       },
       PriceListTemplateService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'price-list-template.findAll', service: 'price-list-template' },
       {
         user_id: user_id,
@@ -90,11 +90,11 @@ export class PriceListTemplateService {
   }
 
   async create(
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -106,7 +106,7 @@ export class PriceListTemplateService {
       PriceListTemplateService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'price-list-template.create', service: 'price-list-template' },
       { data: data, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -123,11 +123,11 @@ export class PriceListTemplateService {
   }
 
   async update(
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -139,7 +139,7 @@ export class PriceListTemplateService {
       PriceListTemplateService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'price-list-template.update', service: 'price-list-template' },
       { data: data, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -161,7 +161,7 @@ export class PriceListTemplateService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'remove',
@@ -173,7 +173,7 @@ export class PriceListTemplateService {
       PriceListTemplateService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'price-list-template.remove', service: 'price-list-template' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -196,7 +196,7 @@ export class PriceListTemplateService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'updateStatus',
@@ -209,7 +209,7 @@ export class PriceListTemplateService {
       PriceListTemplateService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'price-list-template.updateStatus', service: 'price-list-template' },
       { id: id, status: status, user_id: user_id, bu_code: bu_code, version: version },
     );

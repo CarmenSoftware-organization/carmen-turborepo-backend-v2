@@ -1,8 +1,9 @@
 import { Injectable, LoggerService, Scope } from '@nestjs/common';
 import * as winston from 'winston';
 
-const formatMeta = (meta: any) => {
-  const splat = meta[Symbol.for('splat')];
+const formatMeta = (meta: unknown) => {
+  const record = meta as Record<symbol, unknown[]>;
+  const splat = record[Symbol.for('splat')];
   if (splat && splat.length) {
     return splat.length === 1
       ? JSON.stringify(splat[0])
@@ -48,23 +49,23 @@ export class BackendLogger implements LoggerService {
     this.context = context;
   }
 
-  log(message: any, context?: string) {
-    winstonLogger.info(message, { context: context || this.context });
+  log(message: unknown, context?: string) {
+    winstonLogger.info(String(message), { context: context || this.context });
   }
 
-  error(message: any, trace?: string, context?: string) {
-    winstonLogger.error(message, { trace, context: context || this.context });
+  error(message: unknown, trace?: string, context?: string) {
+    winstonLogger.error(String(message), { trace, context: context || this.context });
   }
 
-  warn(message: any, context?: string) {
-    winstonLogger.warn(message, { context: context || this.context });
+  warn(message: unknown, context?: string) {
+    winstonLogger.warn(String(message), { context: context || this.context });
   }
 
-  debug(message: any, context?: string) {
-    winstonLogger.debug(message, { context: context || this.context });
+  debug(message: unknown, context?: string) {
+    winstonLogger.debug(String(message), { context: context || this.context });
   }
 
-  verbose(message: any, context?: string) {
-    winstonLogger.verbose(message, { context: context || this.context });
+  verbose(message: unknown, context?: string) {
+    winstonLogger.verbose(String(message), { context: context || this.context });
   }
 }

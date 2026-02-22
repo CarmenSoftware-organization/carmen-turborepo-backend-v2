@@ -77,7 +77,7 @@ export class VendorsService {
   constructor(private readonly tenantService: TenantService) { }
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
       VendorsService.name,
@@ -133,7 +133,7 @@ export class VendorsService {
   }
 
   @TryCatch
-  async findAll(paginate: IPaginate): Promise<Result<any>> {
+  async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate },
       VendorsService.name,
@@ -208,7 +208,7 @@ export class VendorsService {
   }
 
   @TryCatch
-  async findAllById(ids: string[]): Promise<Result<any>> {
+  async findAllById(ids: string[]): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAllById', ids, user_id: this.userId, tenant_id: this.bu_code },
       VendorsService.name,
@@ -227,7 +227,7 @@ export class VendorsService {
   }
 
   @TryCatch
-  async create(data: ICreateVendor): Promise<Result<any>> {
+  async create(data: ICreateVendor): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
       VendorsService.name,
@@ -317,7 +317,7 @@ export class VendorsService {
   }
 
   @TryCatch
-  async update(data: IUpdateVendor): Promise<Result<any>> {
+  async update(data: IUpdateVendor): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code },
       VendorsService.name,
@@ -574,7 +574,7 @@ export class VendorsService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code },
       VendorsService.name,

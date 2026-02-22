@@ -40,7 +40,7 @@ export class PhysicalCountPeriodService {
     id: string,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id, tenant_id },
       PhysicalCountPeriodService.name,
@@ -75,7 +75,7 @@ export class PhysicalCountPeriodService {
     user_id: string,
     tenant_id: string,
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id, tenant_id, paginate },
       PhysicalCountPeriodService.name,
@@ -145,7 +145,7 @@ export class PhysicalCountPeriodService {
   async findNearest(
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findNearest', user_id, tenant_id },
       PhysicalCountPeriodService.name,
@@ -237,7 +237,7 @@ export class PhysicalCountPeriodService {
     data: IPhysicalCountPeriodCreate,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id, tenant_id },
       PhysicalCountPeriodService.name,
@@ -273,7 +273,7 @@ export class PhysicalCountPeriodService {
     data: IPhysicalCountPeriodUpdate,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id, tenant_id },
       PhysicalCountPeriodService.name,
@@ -302,7 +302,7 @@ export class PhysicalCountPeriodService {
 
     const { id, ...updateData } = data;
 
-    const updatePayload: any = {
+    const updatePayload: Record<string, unknown> = {
       updated_by_id: user_id,
       updated_at: new Date(),
     };
@@ -330,7 +330,7 @@ export class PhysicalCountPeriodService {
     id: string,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id, tenant_id },
       PhysicalCountPeriodService.name,

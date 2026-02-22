@@ -3,7 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { firstValueFrom, Observable } from 'rxjs';
 import { IAssignUserApplicationRole, IRemoveUserApplicationRole, IUpdateUserApplicationRole } from './dto/user_application_role.dto';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
 @Injectable()
@@ -27,7 +27,7 @@ export class ConfigUserApplicationRoleService {
       ConfigUserApplicationRoleService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'user_application_role.find-by-user', service: 'user_application_role' },
       {
         user_id: targetUserId,
@@ -59,7 +59,7 @@ export class ConfigUserApplicationRoleService {
       ConfigUserApplicationRoleService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'user_application_role.assign', service: 'user_application_role' },
       {
         data,
@@ -92,7 +92,7 @@ export class ConfigUserApplicationRoleService {
       ConfigUserApplicationRoleService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'user_application_role.update', service: 'user_application_role' },
       {
         data,
@@ -125,7 +125,7 @@ export class ConfigUserApplicationRoleService {
       ConfigUserApplicationRoleService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'user_application_role.remove', service: 'user_application_role' },
       {
         data,

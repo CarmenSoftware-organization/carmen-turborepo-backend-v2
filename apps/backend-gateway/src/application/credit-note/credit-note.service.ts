@@ -4,7 +4,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Inject } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
-import { CreateCreditNoteDto, UpdateCreditNoteDto, Result } from '@/common';
+import { CreateCreditNoteDto, UpdateCreditNoteDto, Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
@@ -24,7 +24,7 @@ export class CreditNoteService {
     user_id: string,
     bu_code: string,
     version: string = 'latest',
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -36,7 +36,7 @@ export class CreditNoteService {
       CreditNoteService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'credit-note.find-one', service: 'credit-note' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -58,7 +58,7 @@ export class CreditNoteService {
     bu_code: string,
     query: IPaginate,
     version: string = 'latest',
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -70,7 +70,7 @@ export class CreditNoteService {
       CreditNoteService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'credit-note.find-all', service: 'credit-note' },
       {
         user_id: user_id,
@@ -97,7 +97,7 @@ export class CreditNoteService {
     user_id: string,
     bu_code: string,
     version: string = 'latest',
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -109,7 +109,7 @@ export class CreditNoteService {
       CreditNoteService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'credit-note.create', service: 'credit-note' },
       {
         data: createDto,
@@ -136,7 +136,7 @@ export class CreditNoteService {
     user_id: string,
     bu_code: string,
     version: string = 'latest',
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -148,7 +148,7 @@ export class CreditNoteService {
       CreditNoteService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'credit-note.update', service: 'credit-note' },
       {
         data: updateDto,
@@ -175,7 +175,7 @@ export class CreditNoteService {
     user_id: string,
     bu_code: string,
     version: string = 'latest',
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'delete',
@@ -187,7 +187,7 @@ export class CreditNoteService {
       CreditNoteService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'credit-note.delete', service: 'credit-note' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );

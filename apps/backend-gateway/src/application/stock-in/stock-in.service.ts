@@ -8,6 +8,7 @@ import {
   IStockInCreate,
   IStockInUpdate,
   Result,
+  MicroserviceResponse,
 } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -26,13 +27,13 @@ export class StockInService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id, tenant_id, version },
       StockInService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in.findOne', service: 'stock-in' },
       { id, user_id, tenant_id, version },
     );
@@ -54,13 +55,13 @@ export class StockInService {
     tenant_id: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id, tenant_id, paginate, version },
       StockInService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in.findAll', service: 'stock-in' },
       { user_id, tenant_id, paginate, version },
     );
@@ -82,13 +83,13 @@ export class StockInService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id, tenant_id, version },
       StockInService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in.create', service: 'stock-in' },
       { data, user_id, tenant_id, version },
     );
@@ -110,13 +111,13 @@ export class StockInService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id, tenant_id, version },
       StockInService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in.update', service: 'stock-in' },
       { data, user_id, tenant_id, version },
     );
@@ -138,13 +139,13 @@ export class StockInService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id, tenant_id, version },
       StockInService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in.delete', service: 'stock-in' },
       { id, user_id, tenant_id, version },
     );
@@ -168,13 +169,13 @@ export class StockInService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findDetailById', detailId, user_id, tenant_id, version },
       StockInService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in-detail.find-by-id', service: 'stock-in' },
       { detail_id: detailId, user_id, tenant_id, version },
     );
@@ -196,13 +197,13 @@ export class StockInService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findDetailsByStockInId', stockInId, user_id, tenant_id, version },
       StockInService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in-detail.find-all', service: 'stock-in' },
       { stock_in_id: stockInId, user_id, tenant_id, version },
     );
@@ -221,17 +222,17 @@ export class StockInService {
 
   async createDetail(
     stockInId: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'createDetail', stockInId, data, user_id, tenant_id, version },
       StockInService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in-detail.create', service: 'stock-in' },
       { stock_in_id: stockInId, data, user_id, tenant_id, version },
     );
@@ -250,17 +251,17 @@ export class StockInService {
 
   async updateDetail(
     detailId: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'updateDetail', detailId, data, user_id, tenant_id, version },
       StockInService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in-detail.update', service: 'stock-in' },
       { detail_id: detailId, data, user_id, tenant_id, version },
     );
@@ -282,13 +283,13 @@ export class StockInService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'deleteDetail', detailId, user_id, tenant_id, version },
       StockInService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in-detail.delete', service: 'stock-in' },
       { detail_id: detailId, user_id, tenant_id, version },
     );

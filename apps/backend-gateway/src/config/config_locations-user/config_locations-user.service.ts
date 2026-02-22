@@ -18,7 +18,7 @@ export class Config_LocationsUserService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'getLocationByUserId',
@@ -32,11 +32,11 @@ export class Config_LocationsUserService {
 
   async managerLocationUser(
     userId: string,
-    updateDto: any,
+    updateDto: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'managerLocationUser',

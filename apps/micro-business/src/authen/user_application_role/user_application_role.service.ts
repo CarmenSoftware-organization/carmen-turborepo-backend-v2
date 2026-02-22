@@ -20,7 +20,7 @@ export class UserApplicationRoleService {
   ) { }
 
   @TryCatch
-  async findByUser(user_id: string, bu_code: string): Promise<Result<any>> {
+  async findByUser(user_id: string, bu_code: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findByUser', user_id, bu_code },
       UserApplicationRoleService.name,
@@ -80,7 +80,7 @@ export class UserApplicationRoleService {
     },
     user_id: string,
     bu_code: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'assign', data, user_id, bu_code },
       UserApplicationRoleService.name,
@@ -155,7 +155,7 @@ export class UserApplicationRoleService {
     },
     requestUserId: string,
     bu_code: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, requestUserId, bu_code },
       UserApplicationRoleService.name,
@@ -245,7 +245,7 @@ export class UserApplicationRoleService {
     data: { user_id: string; application_role_id: string },
     requestUserId: string,
     bu_code: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'remove', data, requestUserId, bu_code },
       UserApplicationRoleService.name,

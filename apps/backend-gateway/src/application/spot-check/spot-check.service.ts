@@ -4,7 +4,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Inject } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { randomInt } from 'crypto';
@@ -22,7 +22,7 @@ export class SpotCheckService {
   async findAllPendingSpotCheckCount(
     user_id: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findAllPendingSpotCheckCount',
@@ -32,7 +32,7 @@ export class SpotCheckService {
       SpotCheckService.name,
     );
 
-    // const res: Observable<any> = this.inventoryService.send(
+    // const res: Observable<MicroserviceResponse> = this.inventoryService.send(
     //   { cmd: 'spot-check.find-all.count', service: 'spot-check' },
     //   {
     //     user_id,
@@ -79,7 +79,7 @@ export class SpotCheckService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -91,7 +91,7 @@ export class SpotCheckService {
       SpotCheckService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.findOne', service: 'spot-check' },
       { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -113,7 +113,7 @@ export class SpotCheckService {
     tenant_id: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -125,7 +125,7 @@ export class SpotCheckService {
       SpotCheckService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.findAll', service: 'spot-check' },
       {
         user_id: user_id,
@@ -148,11 +148,11 @@ export class SpotCheckService {
   }
 
   async create(
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -164,7 +164,7 @@ export class SpotCheckService {
       SpotCheckService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.create', service: 'spot-check' },
       { data: data, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -183,11 +183,11 @@ export class SpotCheckService {
 
   async update(
     id: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -200,7 +200,7 @@ export class SpotCheckService {
       SpotCheckService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.update', service: 'spot-check' },
       { id: id, data: data, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -222,7 +222,7 @@ export class SpotCheckService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'delete',
@@ -234,7 +234,7 @@ export class SpotCheckService {
       SpotCheckService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.delete', service: 'spot-check' },
       { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -258,13 +258,13 @@ export class SpotCheckService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findDetailById', detailId, user_id, tenant_id, version },
       SpotCheckService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check-detail.find-by-id', service: 'spot-check' },
       { detail_id: detailId, user_id, tenant_id, version },
     );
@@ -286,13 +286,13 @@ export class SpotCheckService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findDetailsBySpotCheckId', spotCheckId, user_id, tenant_id, version },
       SpotCheckService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check-detail.find-all', service: 'spot-check' },
       { spot_check_id: spotCheckId, user_id, tenant_id, version },
     );
@@ -311,17 +311,17 @@ export class SpotCheckService {
 
   async createDetail(
     spotCheckId: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'createDetail', spotCheckId, data, user_id, tenant_id, version },
       SpotCheckService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check-detail.create', service: 'spot-check' },
       { spot_check_id: spotCheckId, data, user_id, tenant_id, version },
     );
@@ -340,17 +340,17 @@ export class SpotCheckService {
 
   async updateDetail(
     detailId: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'updateDetail', detailId, data, user_id, tenant_id, version },
       SpotCheckService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check-detail.update', service: 'spot-check' },
       { detail_id: detailId, data, user_id, tenant_id, version },
     );
@@ -372,13 +372,13 @@ export class SpotCheckService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'deleteDetail', detailId, user_id, tenant_id, version },
       SpotCheckService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check-detail.delete', service: 'spot-check' },
       { detail_id: detailId, user_id, tenant_id, version },
     );
@@ -403,13 +403,13 @@ export class SpotCheckService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'saveItems', id, data, user_id, tenant_id, version },
       SpotCheckService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.save-items', service: 'spot-check' },
       { id, data, user_id, tenant_id, version },
     );
@@ -432,13 +432,13 @@ export class SpotCheckService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'reviewItems', id, data, user_id, tenant_id, version },
       SpotCheckService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.review-items', service: 'spot-check' },
       { id, data, user_id, tenant_id, version },
     );
@@ -460,13 +460,13 @@ export class SpotCheckService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'getReview', id, user_id, tenant_id, version },
       SpotCheckService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.get-review', service: 'spot-check' },
       { id, user_id, tenant_id, version },
     );
@@ -488,13 +488,13 @@ export class SpotCheckService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'submit', id, user_id, tenant_id, version },
       SpotCheckService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.submit', service: 'spot-check' },
       { id, user_id, tenant_id, version },
     );
@@ -516,13 +516,13 @@ export class SpotCheckService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'reset', id, user_id, tenant_id, version },
       SpotCheckService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.reset', service: 'spot-check' },
       { id, user_id, tenant_id, version },
     );
@@ -544,13 +544,13 @@ export class SpotCheckService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'getProductsByLocationId', locationId, user_id, tenant_id, version },
       SpotCheckService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.get-products-by-location', service: 'spot-check' },
       { location_id: locationId, user_id, tenant_id, version },
     );

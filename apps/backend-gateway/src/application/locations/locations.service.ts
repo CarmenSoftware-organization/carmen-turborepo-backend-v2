@@ -2,7 +2,7 @@ import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
@@ -24,7 +24,7 @@ export class LocationsService {
     withUser: boolean,
     withProducts: boolean,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -38,7 +38,7 @@ export class LocationsService {
       LocationsService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'locations.findOne', service: 'locations' },
       { id: id, user_id: user_id, bu_code: bu_code, withUser: withUser, withProducts: withProducts, version: version },
     );
@@ -60,7 +60,7 @@ export class LocationsService {
     bu_code: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -72,7 +72,7 @@ export class LocationsService {
       LocationsService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'locations.findAll', service: 'locations' },
       {
         user_id: user_id,
@@ -99,7 +99,7 @@ export class LocationsService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findByUserId',
@@ -110,7 +110,7 @@ export class LocationsService {
       LocationsService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'locations.findAllByUser', service: 'locations' },
       { user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -124,11 +124,10 @@ export class LocationsService {
     }
 
     // return response.data;
-    console.log("response:", response);
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
   // ---------------------------------
-  async getProductInventory(location_id: string, product_id: string, user_id: string, bu_code: string, version: string): Promise<Result<any>> {
+  async getProductInventory(location_id: string, product_id: string, user_id: string, bu_code: string, version: string): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getProductInventory',
@@ -141,7 +140,7 @@ export class LocationsService {
       LocationsService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'locations-product.getProductInventory', service: 'locations-product-inventory' },
       { location_id: location_id, product_id: product_id, user_id: user_id, bu_code: bu_code, version: version },
     );

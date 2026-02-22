@@ -87,7 +87,7 @@ export class ExchangeRateService {
   constructor(private readonly tenantService: TenantService) {}
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -116,7 +116,7 @@ export class ExchangeRateService {
   @TryCatch
   async findAll(
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -169,7 +169,7 @@ export class ExchangeRateService {
   @TryCatch
   async create(
     data: ICreateExchangeRate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -213,7 +213,7 @@ export class ExchangeRateService {
   @TryCatch
   async update(
     data: IUpdateExchangeRate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -259,7 +259,7 @@ export class ExchangeRateService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code },
       ExchangeRateService.name,

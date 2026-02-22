@@ -6,20 +6,21 @@ import * as Sentry from '@sentry/node'
 export class ExceptionFilter {
   private readonly logger = new Logger(ExceptionFilter.name);
 
-  catch(exception: unknown | any, host: ArgumentsHost) {
-    console.log(exception)
+  catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = exception?.error?.message as string || 'Internal server error';
+    let message: string = (exception as Record<string, unknown>)?.error
+      ? String((exception as Record<string, Record<string, unknown>>).error.message)
+      : 'Internal server error';
     try {
       message = JSON.parse(message);
     } catch {
       // Keep original message if parsing fails
     }
-    let errorResponse: any = null;
+    let errorResponse: Record<string, unknown> | null = null;
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
@@ -27,15 +28,12 @@ export class ExceptionFilter {
 
       // Handle different response formats
       if (typeof exceptionResponse === 'string') {
-        console.log('exceptionResponse is string')
         message = exceptionResponse;
       } else if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
-        console.log('exceptionResponse is object')
-        message = (exceptionResponse as any).message || exception.message;
-        errorResponse = exceptionResponse;
+        message = (exceptionResponse as Record<string, unknown>).message as string || exception.message;
+        errorResponse = exceptionResponse as Record<string, unknown>;
       }
     } else if (exception instanceof Error) {
-      console.log('exception is instance of Error')
       message = exception.message;
     }
 

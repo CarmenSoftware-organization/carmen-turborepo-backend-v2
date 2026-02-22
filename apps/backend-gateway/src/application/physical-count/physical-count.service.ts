@@ -4,7 +4,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Inject } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { randomInt } from 'crypto';
@@ -24,7 +24,7 @@ export class PhysicalCountService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -36,7 +36,7 @@ export class PhysicalCountService {
       PhysicalCountService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.findOne', service: 'physical-count' },
       { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -58,7 +58,7 @@ export class PhysicalCountService {
     tenant_id: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -70,7 +70,7 @@ export class PhysicalCountService {
       PhysicalCountService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.findAll', service: 'physical-count' },
       {
         user_id: user_id,
@@ -93,11 +93,11 @@ export class PhysicalCountService {
   }
 
   async create(
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -109,7 +109,7 @@ export class PhysicalCountService {
       PhysicalCountService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.create', service: 'physical-count' },
       { data: data, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -128,11 +128,11 @@ export class PhysicalCountService {
 
   async update(
     id: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -145,7 +145,7 @@ export class PhysicalCountService {
       PhysicalCountService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.update', service: 'physical-count' },
       { id: id, data: data, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -167,7 +167,7 @@ export class PhysicalCountService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'delete',
@@ -179,7 +179,7 @@ export class PhysicalCountService {
       PhysicalCountService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.delete', service: 'physical-count' },
       { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -203,13 +203,13 @@ export class PhysicalCountService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findDetailById', detailId, user_id, tenant_id, version },
       PhysicalCountService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-detail.find-by-id', service: 'physical-count' },
       { detail_id: detailId, user_id, tenant_id, version },
     );
@@ -231,13 +231,13 @@ export class PhysicalCountService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findDetailsByPhysicalCountId', physicalCountId, user_id, tenant_id, version },
       PhysicalCountService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-detail.find-all', service: 'physical-count' },
       { physical_count_id: physicalCountId, user_id, tenant_id, version },
     );
@@ -256,17 +256,17 @@ export class PhysicalCountService {
 
   async createDetail(
     physicalCountId: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'createDetail', physicalCountId, data, user_id, tenant_id, version },
       PhysicalCountService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-detail.create', service: 'physical-count' },
       { physical_count_id: physicalCountId, data, user_id, tenant_id, version },
     );
@@ -285,17 +285,17 @@ export class PhysicalCountService {
 
   async updateDetail(
     detailId: string,
-    data: any,
+    data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'updateDetail', detailId, data, user_id, tenant_id, version },
       PhysicalCountService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-detail.update', service: 'physical-count' },
       { detail_id: detailId, data, user_id, tenant_id, version },
     );
@@ -317,13 +317,13 @@ export class PhysicalCountService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'deleteDetail', detailId, user_id, tenant_id, version },
       PhysicalCountService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-detail.delete', service: 'physical-count' },
       { detail_id: detailId, user_id, tenant_id, version },
     );
@@ -348,13 +348,13 @@ export class PhysicalCountService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'saveItems', id, data, user_id, tenant_id, version },
       PhysicalCountService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.save-items', service: 'physical-count' },
       { id, data, user_id, tenant_id, version },
     );
@@ -377,13 +377,13 @@ export class PhysicalCountService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'reviewItems', id, data, user_id, tenant_id, version },
       PhysicalCountService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.review-items', service: 'physical-count' },
       { id, data, user_id, tenant_id, version },
     );
@@ -405,13 +405,13 @@ export class PhysicalCountService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'getReview', id, user_id, tenant_id, version },
       PhysicalCountService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.get-review', service: 'physical-count' },
       { id, user_id, tenant_id, version },
     );
@@ -433,13 +433,13 @@ export class PhysicalCountService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'submit', id, user_id, tenant_id, version },
       PhysicalCountService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.submit', service: 'physical-count' },
       { id, user_id, tenant_id, version },
     );
@@ -462,13 +462,13 @@ export class PhysicalCountService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'createComment', detailId, data, user_id, tenant_id, version },
       PhysicalCountService.name,
     );
 
-    const res: Observable<any> = this.inventoryService.send(
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-detail.create-comment', service: 'physical-count' },
       { detail_id: detailId, data, user_id, tenant_id, version },
     );
@@ -488,7 +488,7 @@ export class PhysicalCountService {
    async findAllPendingPhysicalCountCount(
     user_id: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findAllPendingPhysicalCountCount',
@@ -498,7 +498,7 @@ export class PhysicalCountService {
       PhysicalCountService.name,
     );
 
-    // const res: Observable<any> = this.inventoryService.send(
+    // const res: Observable<MicroserviceResponse> = this.inventoryService.send(
     //   { cmd: 'physical-count.find-all.count', service: 'physical-count' },
     //   {
     //     user_id,

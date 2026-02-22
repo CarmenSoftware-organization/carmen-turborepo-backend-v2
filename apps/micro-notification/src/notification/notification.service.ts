@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient_SYSTEM_CUSTOM } from '@repo/prisma-shared-schema-platform';
+import type { PrismaClient } from '@repo/prisma-shared-schema-platform';
 
 export interface CreateSystemNotificationData {
   title: string;
   message: string;
   type: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   scheduled_at?: Date;
   userIds?: string[];
 }
@@ -16,7 +17,7 @@ export interface CreateUserNotificationData {
   title: string;
   message: string;
   type: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   scheduled_at?: Date;
 }
 
@@ -26,32 +27,24 @@ export interface CreateBusinessUnitNotificationData {
   title: string;
   message: string;
   type: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   scheduled_at?: Date;
 }
 
 @Injectable()
 export class NotificationService {
-  private prisma: any;
+  private prismaPromise: Promise<PrismaClient>;
 
   constructor() {
-    this.initPrisma();
-  }
-
-  private async initPrisma() {
-    this.prisma = await PrismaClient_SYSTEM_CUSTOM(process.env.SYSTEM_DATABASE_URL!);
+    this.prismaPromise = PrismaClient_SYSTEM_CUSTOM(process.env.SYSTEM_DATABASE_URL!);
   }
 
   private async getPrisma() {
-    if (!this.prisma) {
-      this.prisma = await PrismaClient_SYSTEM_CUSTOM(process.env.SYSTEM_DATABASE_URL!);
-    }
-    return this.prisma;
+    return this.prismaPromise;
   }
 
   async createSystemNotification(data: CreateSystemNotificationData) {
     const prisma = await this.getPrisma();
-    console.log('Creating system notification with data:', data);
 
     let users;
     if (data.userIds && data.userIds.length > 0) {
@@ -60,10 +53,8 @@ export class NotificationService {
           id: { in: data.userIds },
         },
       });
-      console.log(`Sending to ${users.length} specific users`);
     } else {
       users = await prisma.tb_user.findMany();
-      console.log(`Sending to all ${users.length} users`);
     }
 
     const notifications = [];
@@ -89,7 +80,6 @@ export class NotificationService {
 
   async createUserNotification(data: CreateUserNotificationData) {
     const prisma = await this.getPrisma();
-    console.log('Creating user-to-user notification with data:', data);
 
     return await prisma.tb_notification.create({
       data: {
@@ -107,7 +97,6 @@ export class NotificationService {
 
   async getUsersByBusinessUnitCode(bu_code: string) {
     const prisma = await this.getPrisma();
-    console.log('Getting users by business unit code:', bu_code);
 
     const businessUnit = await prisma.tb_business_unit.findFirst({
       where: {
@@ -116,7 +105,6 @@ export class NotificationService {
     });
 
     if (!businessUnit) {
-      console.log('Business unit not found:', bu_code);
       return [];
     }
 
@@ -130,16 +118,14 @@ export class NotificationService {
     });
 
     const users = userBusinessUnits
-      .filter((ub: any) => ub.tb_user_tb_user_tb_business_unit_user_idTotb_user !== null)
-      .map((ub: any) => ub.tb_user_tb_user_tb_business_unit_user_idTotb_user!);
+      .filter((ub) => ub.tb_user_tb_user_tb_business_unit_user_idTotb_user !== null)
+      .map((ub) => ub.tb_user_tb_user_tb_business_unit_user_idTotb_user!);
 
-    console.log(`Found ${users.length} users in business unit ${bu_code}`);
     return users;
   }
 
   async createBusinessUnitNotification(data: CreateBusinessUnitNotificationData) {
     const prisma = await this.getPrisma();
-    console.log('Creating business unit notification with data:', data);
 
     const users = await this.getUsersByBusinessUnitCode(data.bu_code);
     const notifications = [];
@@ -163,7 +149,6 @@ export class NotificationService {
       notifications.push(notification);
     }
 
-    console.log(`Created ${notifications.length} notifications for business unit ${data.bu_code}`);
     return notifications;
   }
 
@@ -267,6 +252,7 @@ export class NotificationService {
     return await prisma.tb_user.update({
       where: { id: user_id },
       data: { is_online: isOnline },
-    }).catch(() => {});
+    }).catch(() => {
+    });
   }
 }

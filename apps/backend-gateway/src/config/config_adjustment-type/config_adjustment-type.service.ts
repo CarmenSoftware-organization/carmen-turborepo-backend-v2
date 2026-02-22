@@ -1,7 +1,7 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
@@ -23,7 +23,7 @@ export class Config_AdjustmentTypeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -32,7 +32,7 @@ export class Config_AdjustmentTypeService {
       },
       Config_AdjustmentTypeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'adjustment-type.findOne', service: 'adjustment-type' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -54,7 +54,7 @@ export class Config_AdjustmentTypeService {
     bu_code: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -65,7 +65,7 @@ export class Config_AdjustmentTypeService {
       },
       Config_AdjustmentTypeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'adjustment-type.findAll', service: 'adjustment-type' },
       {
         user_id: user_id,
@@ -92,7 +92,7 @@ export class Config_AdjustmentTypeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -101,7 +101,7 @@ export class Config_AdjustmentTypeService {
       },
       Config_AdjustmentTypeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'adjustment-type.create', service: 'adjustment-type' },
       {
         data: createDto,
@@ -128,7 +128,7 @@ export class Config_AdjustmentTypeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -137,7 +137,7 @@ export class Config_AdjustmentTypeService {
       },
       Config_AdjustmentTypeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'adjustment-type.update', service: 'adjustment-type' },
       {
         data: updateDto,
@@ -164,7 +164,7 @@ export class Config_AdjustmentTypeService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'delete',
@@ -173,7 +173,7 @@ export class Config_AdjustmentTypeService {
       },
       Config_AdjustmentTypeService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'adjustment-type.delete', service: 'adjustment-type' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );

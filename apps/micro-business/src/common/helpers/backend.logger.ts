@@ -32,9 +32,9 @@ export class BackendLogger extends ConsoleLogger {
 
   // level = 0
   error(
-    message: any,
-    trace?: any,
-    context?: any,
+    message: unknown,
+    trace?: unknown,
+    context?: unknown,
     iam?: IAMInfo,
     meta?: LogMeta,
   ): void {
@@ -65,7 +65,7 @@ export class BackendLogger extends ConsoleLogger {
   }
 
   // level = 1
-  warn(message: any, context?: any, iam?: IAMInfo, meta?: LogMeta): void {
+  warn(message: unknown, context?: unknown, iam?: IAMInfo, meta?: LogMeta): void {
     // ตรวจสอบว่า logMeta มีค่าไหม
     let logMeta = {};
 
@@ -93,7 +93,7 @@ export class BackendLogger extends ConsoleLogger {
   }
 
   // level = 2
-  log(message: any, context?: any, iam?: IAMInfo, meta?: LogMeta): void {
+  log(message: unknown, context?: unknown, iam?: IAMInfo, meta?: LogMeta): void {
     // ตรวจสอบว่า logMeta มีค่าไหม
     let logMeta: LogMeta = {};
 
@@ -121,7 +121,7 @@ export class BackendLogger extends ConsoleLogger {
   }
 
   // level = 3
-  http(message: any, context?: any, iam?: IAMInfo, meta?: LogMeta): void {
+  http(message: unknown, context?: unknown, iam?: IAMInfo, meta?: LogMeta): void {
     // ตรวจสอบว่า logMeta มีค่าไหม
     let logMeta: LogMeta = {};
 
@@ -149,7 +149,7 @@ export class BackendLogger extends ConsoleLogger {
   }
 
   // level = 4
-  verbose(message: any, context?: any, iam?: IAMInfo, meta?: LogMeta): void {
+  verbose(message: unknown, context?: unknown, iam?: IAMInfo, meta?: LogMeta): void {
     // ตรวจสอบว่า logMeta มีค่าไหม
     let logMeta: LogMeta = {};
 
@@ -177,12 +177,12 @@ export class BackendLogger extends ConsoleLogger {
   }
 
   // level = 5
-  debug(message: any, context?: any): void {
+  debug(message: unknown, context?: unknown): void {
     super.debug(message, context);
   }
 
   // level = 6
-  silly(message: any, context?: any, iam?: IAMInfo, meta?: LogMeta): void {
+  silly(message: unknown, context?: unknown, iam?: IAMInfo, meta?: LogMeta): void {
     // ตรวจสอบว่า logMeta มีค่าไหม
     let logMeta: LogMeta = {};
 
@@ -212,8 +212,8 @@ export class BackendLogger extends ConsoleLogger {
   // Log Info Action
   logInfoAction(
     action: string,
-    message?: any,
-    context?: any,
+    message?: unknown,
+    context?: unknown,
     iam?: IAMInfo,
     meta?: LogMeta,
   ): void {
@@ -245,9 +245,9 @@ export class BackendLogger extends ConsoleLogger {
 
   // Custom method for structured logging
   logWithLabels(
-    message: any,
+    message: unknown,
     labels: Record<string, unknown>,
-    context?: any,
+    context?: unknown,
     iam?: IAMInfo,
   ): void {
     // ตรวจสอบว่า logMeta มีค่าไหม
@@ -280,7 +280,7 @@ export class BackendLogger extends ConsoleLogger {
   logPerformance(
     operation: string,
     duration: number,
-    context?: any,
+    context?: unknown,
     iam?: IAMInfo,
     meta?: LogMeta,
   ): void {
@@ -314,7 +314,7 @@ export class BackendLogger extends ConsoleLogger {
   logBusinessEvent(
     event: string,
     data: Record<string, unknown>,
-    context?: any,
+    context?: unknown,
     iam?: IAMInfo,
   ): void {
     // ตรวจสอบว่า logMeta มีค่าไหม

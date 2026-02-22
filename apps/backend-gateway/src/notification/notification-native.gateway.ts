@@ -56,7 +56,7 @@ export class NotificationNativeGateway implements OnModuleInit, OnModuleDestroy 
     this.wss.on('connection', (ws: WebSocket, req: http.IncomingMessage) => {
       this.logger.log(`Client connected from ${req.socket.remoteAddress}`);
 
-      ws.on('message', (data: any) => {
+      ws.on('message', (data: WebSocket.RawData) => {
         try {
           const message = JSON.parse(data.toString());
           this.handleClientMessage(ws, message);
@@ -77,11 +77,11 @@ export class NotificationNativeGateway implements OnModuleInit, OnModuleDestroy 
     this.logger.log('Native WebSocket server attached successfully');
   }
 
-  private handleClientMessage(client: WebSocket, message: any) {
+  private handleClientMessage(client: WebSocket, message: Record<string, unknown>) {
     this.logger.debug('Received from client:', message);
 
     if (message.type === 'register') {
-      const user_id = message.user_id;
+      const user_id = message.user_id as string;
       this.clientConnections.set(client, user_id);
       this.userIdToClient.set(user_id, client);
       this.logger.log(`User registered: ${user_id}`);
@@ -99,7 +99,7 @@ export class NotificationNativeGateway implements OnModuleInit, OnModuleDestroy 
     } else if (message.type === 'markAsRead') {
       // Forward to notification service
       if (this.notificationServiceClient?.connected) {
-        this.notificationServiceClient.emit('markAsRead', { notificationId: message.notificationId });
+        this.notificationServiceClient.emit('markAsRead', { notificationId: message.notificationId as string });
       }
     }
   }
@@ -134,13 +134,14 @@ export class NotificationNativeGateway implements OnModuleInit, OnModuleDestroy 
       this.logger.log('Connected to notification service Socket.IO');
     });
 
-    socket.on('notification', (message: any) => {
+    socket.on('notification', (message: Record<string, unknown>) => {
       this.logger.debug('Received notification from service:', message);
 
       // Forward notification to specific user or broadcast
-      if (message.data?.user_id) {
+      const messageData = message.data as Record<string, unknown> | undefined;
+      if (messageData?.user_id) {
         // Send to specific user
-        const client = this.userIdToClient.get(message.data.user_id);
+        const client = this.userIdToClient.get(messageData.user_id as string);
         if (client && client.readyState === WebSocket.OPEN) {
           client.send(JSON.stringify(message));
         }
@@ -154,7 +155,7 @@ export class NotificationNativeGateway implements OnModuleInit, OnModuleDestroy 
       }
     });
 
-    socket.on('connect_error', (error: any) => {
+    socket.on('connect_error', (error: Error) => {
       this.logger.error('Notification service Socket.IO connection error:', error.message);
     });
 

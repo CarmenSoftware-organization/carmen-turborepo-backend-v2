@@ -6,7 +6,7 @@ import {
 import { PrismaClient } from '@repo/prisma-shared-schema-tenant';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { TenantService } from '@/tenant/tenant.service';
-import { getPattern, GenerateCode } from '@/common/helpers/running-code.helper';
+import { getPattern, GenerateCode, IPattern } from '@/common/helpers/running-code.helper';
 import { RUNNING_CODE_PRESET } from '@/master/running-code/const/running-code.const';
 import { format } from 'date-fns';
 import { TryCatch, Result, ErrorCode } from '@/common';
@@ -39,7 +39,7 @@ export class CheckPriceListService {
   ) { }
 
   @TryCatch
-  async checkPriceList(urlToken: string, decodedToken: any): Promise<Result<any>> {
+  async checkPriceList(urlToken: string, decodedToken: Record<string, any>): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'checkPriceList',
@@ -259,8 +259,8 @@ export class CheckPriceListService {
     const pattern = await this.getRunningPattern('PL');
     const prPatterns = getPattern(pattern);
 
-    let datePattern: any;
-    let runningPattern: any;
+    let datePattern: IPattern | undefined;
+    let runningPattern: IPattern | undefined;
     prPatterns.forEach((p) => {
       if (p.type === 'date') {
         datePattern = p;
@@ -270,7 +270,7 @@ export class CheckPriceListService {
     });
 
     const getDate = new Date(PLDate);
-    const datePatternValue = format(getDate, datePattern.pattern);
+    const datePatternValue = format(getDate, datePattern.pattern as string);
 
     const latestPL = await this.prismaService.tb_pricelist.findFirst({
       where: {

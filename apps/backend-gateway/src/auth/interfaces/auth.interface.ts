@@ -13,7 +13,7 @@ export interface BusinessUnit {
 export interface KeycloakUserInfo {
   sub: string;
   bu?: BusinessUnit[];
-  address?: Record<string, any>;
+  address?: Record<string, unknown>;
   name?: string;
   preferred_username?: string;
   given_name?: string;
@@ -48,8 +48,8 @@ export interface AuthenticatedUser {
  */
 export interface RequestWithUser {
   user: AuthenticatedUser;
-  headers: Record<string, any>;
-  params: Record<string, any>;
-  query: Record<string, any>;
-  body: any;
+  headers: Record<string, unknown>;
+  params: Record<string, unknown>;
+  query: Record<string, unknown>;
+  body: Record<string, unknown>;
 }

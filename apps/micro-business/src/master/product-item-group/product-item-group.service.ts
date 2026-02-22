@@ -80,7 +80,7 @@ export class ProductItemGroupService {
   ) { }
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
       ProductItemGroupService.name,
@@ -133,7 +133,7 @@ export class ProductItemGroupService {
   @TryCatch
   async findAll(
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate },
       ProductItemGroupService.name,
@@ -164,7 +164,7 @@ export class ProductItemGroupService {
       ...pagination,
     });
 
-    const productItemGroups = data.map((item: any) => {
+    const productItemGroups = data.map((item) => {
       const subCategory = item.tb_product_sub_category;
       const category = subCategory.tb_product_category;
       delete item.tb_product_sub_category;
@@ -203,7 +203,7 @@ export class ProductItemGroupService {
   @TryCatch
   async create(
     data: ICreateProductItemGroup,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
       ProductItemGroupService.name,
@@ -243,7 +243,7 @@ export class ProductItemGroupService {
   @TryCatch
   async update(
     data: IUpdateProductItemGroup,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code },
       ProductItemGroupService.name,
@@ -300,7 +300,7 @@ export class ProductItemGroupService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code },
       ProductItemGroupService.name,

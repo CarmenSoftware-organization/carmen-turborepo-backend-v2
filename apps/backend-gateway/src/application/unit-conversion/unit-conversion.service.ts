@@ -1,7 +1,7 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
@@ -20,7 +20,7 @@ export class UnitConversionService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getOrderUnitProduct',
@@ -30,7 +30,7 @@ export class UnitConversionService {
       UnitConversionService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'unit.get-order-unit-by-product-id', service: 'unit-conversion' },
       { productId, user_id, bu_code, version },
     );
@@ -52,7 +52,7 @@ export class UnitConversionService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getIngredientUnitProduct',
@@ -62,7 +62,7 @@ export class UnitConversionService {
       UnitConversionService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'unit.get-ingredient-unit-by-product-id', service: 'unit-conversion' },
       { productId, user_id, bu_code, version },
     );
@@ -84,7 +84,7 @@ export class UnitConversionService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getAvailableUnitProduct',
@@ -94,7 +94,7 @@ export class UnitConversionService {
       UnitConversionService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'unit.get-available-unit-by-product-id', service: 'unit-conversion' },
       { productId, user_id, bu_code, version },
     );

@@ -1,5 +1,5 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { ICreateProduct, IUpdateProduct, Result } from '@/common';
+import { ICreateProduct, IUpdateProduct, Result, MicroserviceResponse } from '@/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
@@ -22,7 +22,7 @@ export class Config_ProductsService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -33,7 +33,7 @@ export class Config_ProductsService {
       },
       Config_ProductsService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'products.findOne', service: 'products' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -55,7 +55,7 @@ export class Config_ProductsService {
     bu_code: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -66,7 +66,7 @@ export class Config_ProductsService {
       },
       Config_ProductsService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'products.findAll', service: 'products' },
       {
         user_id: user_id,
@@ -95,7 +95,7 @@ export class Config_ProductsService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'create',
@@ -106,7 +106,7 @@ export class Config_ProductsService {
       },
       Config_ProductsService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'products.create', service: 'products' },
       {
         data: createDto,
@@ -133,7 +133,7 @@ export class Config_ProductsService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'update',
@@ -144,7 +144,7 @@ export class Config_ProductsService {
       },
       Config_ProductsService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'products.update', service: 'products' },
       {
         data: updateDto,
@@ -171,7 +171,7 @@ export class Config_ProductsService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'delete',
@@ -182,7 +182,7 @@ export class Config_ProductsService {
       },
       Config_ProductsService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'products.delete', service: 'products' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -204,7 +204,7 @@ export class Config_ProductsService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findItemGroup',
@@ -215,7 +215,7 @@ export class Config_ProductsService {
       },
       Config_ProductsService.name,
     );
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'products.findItemGroup', service: 'products' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );

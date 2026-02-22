@@ -78,7 +78,7 @@ export class VendorBusinessTypeService {
   ) { }
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
       VendorBusinessTypeService.name,
@@ -101,7 +101,7 @@ export class VendorBusinessTypeService {
   @TryCatch
   async findAll(
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate },
       VendorBusinessTypeService.name,
@@ -143,7 +143,7 @@ export class VendorBusinessTypeService {
   @TryCatch
   async create(
     data: ICreateVendorBusinessType,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
       VendorBusinessTypeService.name,
@@ -174,7 +174,7 @@ export class VendorBusinessTypeService {
   @TryCatch
   async update(
     data: IUpdateVendorBusinessType,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code },
       VendorBusinessTypeService.name,
@@ -205,7 +205,7 @@ export class VendorBusinessTypeService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code }, VendorBusinessTypeService.name);
 
     const vendorBusinessType = await this.prismaService.tb_vendor_business_type.findFirst({

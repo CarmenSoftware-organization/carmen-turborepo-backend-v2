@@ -36,10 +36,10 @@ export class AdjustmentTypeCreateDto extends createZodDto(AdjustmentTypeCreate) 
   note?: string;
 
   @ApiPropertyOptional({ description: 'Additional info as JSON object' })
-  info?: Record<string, any>;
+  info?: Record<string, unknown>;
 
   @ApiPropertyOptional({ description: 'Dimension data as JSON array' })
-  dimension?: any[];
+  dimension?: unknown[];
 }
 
 export const AdjustmentTypeUpdate = z.object({
@@ -74,8 +74,8 @@ export class AdjustmentTypeUpdateDto extends createZodDto(AdjustmentTypeUpdate) 
   note?: string;
 
   @ApiPropertyOptional({ description: 'Additional info as JSON object' })
-  info?: Record<string, any>;
+  info?: Record<string, unknown>;
 
   @ApiPropertyOptional({ description: 'Dimension data as JSON array' })
-  dimension?: any[];
+  dimension?: unknown[];
 }

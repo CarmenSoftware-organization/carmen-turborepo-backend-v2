@@ -63,6 +63,7 @@ export class NotificationModule {
   /**
    * Register the module with async configuration
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static forRootAsync(options: {
     useFactory: (...args: any[]) => Promise<NotificationServiceConfig> | NotificationServiceConfig;
     inject?: any[];

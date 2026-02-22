@@ -64,7 +64,7 @@ export class DepartmentUserService {
   @TryCatch
   async findAllUserInDepartment(
     department_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     // const prisma = await this.tenantService.prismaTenantInstance(this.bu_code, this.userId);
 
     const res = await this.prismaService.tb_department_user.findMany({

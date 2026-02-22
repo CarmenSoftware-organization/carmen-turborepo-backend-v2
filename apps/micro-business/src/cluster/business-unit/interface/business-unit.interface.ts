@@ -44,5 +44,5 @@ export interface IBusinessUnitConfig {
   key?: string;
   label?: string;
   datatype?: enum_data_type;
-  value?: any;
+  value?: unknown;
 }

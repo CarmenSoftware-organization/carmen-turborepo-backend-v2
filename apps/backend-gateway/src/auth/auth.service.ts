@@ -1,17 +1,15 @@
 import {
   Injectable,
   Inject,
-  ConsoleLogger,
   HttpException,
   HttpStatus,
   NotImplementedException,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom, Observable } from 'rxjs';
 import { IInviteUser, ILogin, IRegisterConfirm, IResetPassword, IForgotPassword, IResetPasswordWithToken } from './dto/auth.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ResponseLib } from 'src/libs/response.lib';
-// import { LoginDto } from './dto/login.dto';
+import { sendToService } from 'src/common/helpers/microservice.helper';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +25,7 @@ export class AuthService {
    * @param version
    * @returns
    */
-  async login(loginDto: ILogin, version: string): Promise<any> {
+  async login(loginDto: ILogin, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'login',
@@ -37,12 +35,11 @@ export class AuthService {
       AuthService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const response = await sendToService(
+      this.authService,
       { cmd: 'login', service: 'auth' },
       { data: loginDto, version: version },
     );
-
-    const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.OK) {
       throw new HttpException(response.response, response.response.status);
@@ -51,7 +48,7 @@ export class AuthService {
     return response.data;
   }
 
-  async logout(logoutDto: any, version: string): Promise<any> {
+  async logout(logoutDto: Record<string, unknown>, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'logout',
@@ -61,13 +58,11 @@ export class AuthService {
       AuthService.name,
     );
 
-
-    const res: Observable<any> = this.authService.send(
+    const response = await sendToService(
+      this.authService,
       { cmd: 'logout', service: 'auth' },
       { data: logoutDto, version: version },
     );
-
-    const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.NO_CONTENT) {
       throw new HttpException(response.response, response.response.status);
@@ -76,7 +71,7 @@ export class AuthService {
     return ResponseLib.success(response.data);
   }
 
-  async register(registerDto: any, version: string): Promise<any> {
+  async register(registerDto: Record<string, unknown>, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'register',
@@ -86,12 +81,11 @@ export class AuthService {
       AuthService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const response = await sendToService(
+      this.authService,
       { cmd: 'register', service: 'auth' },
       { data: registerDto, version: version },
     );
-
-    const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.CREATED) {
       throw new HttpException(response.response, response.response.status);
@@ -100,7 +94,7 @@ export class AuthService {
     return response.data;
   }
 
-  async inviteUser(inviteUserDto: IInviteUser, user_id: string, version: string): Promise<any> {
+  async inviteUser(inviteUserDto: IInviteUser, user_id: string, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'inviteUser',
@@ -111,12 +105,11 @@ export class AuthService {
       AuthService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const response = await sendToService(
+      this.authService,
       { cmd: 'invite-user', service: 'auth' },
       { data: inviteUserDto, user_id, version: version },
     );
-
-    const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.OK) {
       throw new HttpException(response.response, response.response.status);
@@ -128,7 +121,7 @@ export class AuthService {
   async registerConfirm(
     registerConfirmDto: IRegisterConfirm,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'registerConfirm',
@@ -138,12 +131,11 @@ export class AuthService {
       AuthService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const response = await sendToService(
+      this.authService,
       { cmd: 'register-confirm', service: 'auth' },
       { data: registerConfirmDto, version: version },
     );
-
-    const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.CREATED) {
       throw new HttpException(response.response, response.response.status);
@@ -152,7 +144,7 @@ export class AuthService {
     return response.data;
   }
 
-  async refreshToken(refreshTokenDto: any, version: string): Promise<any> {
+  async refreshToken(refreshTokenDto: Record<string, unknown>, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'refreshToken',
@@ -162,12 +154,11 @@ export class AuthService {
       AuthService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const response = await sendToService(
+      this.authService,
       { cmd: 'refresh-token', service: 'auth' },
       { data: refreshTokenDto, version: version },
     );
-
-    const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.OK) {
       throw new HttpException(response.response, response.response.status);
@@ -176,7 +167,7 @@ export class AuthService {
     return response.data;
   }
 
-  async forgotPassword(forgotPasswordDto: IForgotPassword, version: string): Promise<any> {
+  async forgotPassword(forgotPasswordDto: IForgotPassword, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'forgotPassword',
@@ -186,12 +177,11 @@ export class AuthService {
       AuthService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const response = await sendToService(
+      this.authService,
       { cmd: 'forgot-password', service: 'auth' },
       { data: forgotPasswordDto, version: version },
     );
-
-    const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.OK) {
       throw new HttpException(response.response, response.response.status);
@@ -200,7 +190,7 @@ export class AuthService {
     return response;
   }
 
-  async resetPasswordWithToken(resetPasswordWithTokenDto: IResetPasswordWithToken, version: string): Promise<any> {
+  async resetPasswordWithToken(resetPasswordWithTokenDto: IResetPasswordWithToken, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'resetPasswordWithToken',
@@ -210,12 +200,11 @@ export class AuthService {
       AuthService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const response = await sendToService(
+      this.authService,
       { cmd: 'reset-password-with-token', service: 'auth' },
       { data: resetPasswordWithTokenDto, version: version },
     );
-
-    const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.OK) {
       throw new HttpException(response.response, response.response.status);
@@ -224,7 +213,7 @@ export class AuthService {
     return response;
   }
 
-  async resetPassword(resetPasswordDto: IResetPassword, version: string): Promise<any> {
+  async resetPassword(resetPasswordDto: IResetPassword, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'reset-password',
@@ -234,12 +223,11 @@ export class AuthService {
       AuthService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const response = await sendToService(
+      this.authService,
       { cmd: 'reset-password', service: 'auth' },
       { data: resetPasswordDto, version: version },
     );
-
-    const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.OK) {
       throw new HttpException(response.response, response.response.status);
@@ -248,7 +236,7 @@ export class AuthService {
     return response;
   }
 
-  async changePassword(changePasswordDto: any, version: string): Promise<any> {
+  async changePassword(changePasswordDto: Record<string, unknown>, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'changePassword',
@@ -258,12 +246,11 @@ export class AuthService {
       AuthService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const response = await sendToService(
+      this.authService,
       { cmd: 'change-password', service: 'auth' },
       { data: changePasswordDto, version: version },
     );
-
-    const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.OK) {
       throw new HttpException(response.response, response.response.status);
@@ -272,7 +259,7 @@ export class AuthService {
     return ResponseLib.success(response.data);
   }
 
-  async changeEmail(changeEmailDto: any, version: string): Promise<any> {
+  async changeEmail(changeEmailDto: Record<string, unknown>, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'changeEmail',
@@ -285,7 +272,7 @@ export class AuthService {
     throw new NotImplementedException('Not implemented');
   }
 
-  async getByTenant(tenant_id: string, version: string): Promise<any> {
+  async getByTenant(tenant_id: string, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'getByTenant',
@@ -295,12 +282,11 @@ export class AuthService {
       AuthService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const response = await sendToService(
+      this.authService,
       { cmd: 'get-by-tenant', service: 'auth' },
       { data: tenant_id, version: version },
     );
-
-    const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.OK) {
       throw new HttpException(response.response, response.response.status);
@@ -309,68 +295,7 @@ export class AuthService {
     return response.data;
   }
 
-  // async permission_mobile(
-  //   accessToken: string,
-  //   appId: string,
-  //   version: string,
-  // ): Promise<any> {
-  //   this.logger.debug(
-  //     {
-  //       function: 'permission_mobile',
-  //       accessToken,
-  //       appId,
-  //       version,
-  //     },
-  //     AuthService.name,
-  //   );
-
-  //   // throw new NotImplementedException('Not implemented');
-
-  //   return {
-  //     data: ['pr.view', 'sr.view', 'grn.view', 'pc.view', 'spc.view'],
-  //   };
-
-  //   const res: Observable<any> = this.authService.send(
-  //     { cmd: 'permission-mobile', service: 'auth' },
-  //     { data: { accessToken, appId, version }, version: version },
-  //   );
-
-  //   const response = await firstValueFrom(res);
-
-  //   if (response.response.status !== HttpStatus.OK) {
-  //     throw new HttpException(response.response, response.response.status);
-  //   }
-
-  //   return response.data;
-  // }
-
-  // async permission_web(accessToken: string, version: string): Promise<any> {
-  //   this.logger.debug(
-  //     {
-  //       function: 'permission_web',
-  //       accessToken,
-  //       version,
-  //     },
-  //     AuthService.name,
-  //   );
-
-  //   throw new NotImplementedException('Not implemented');
-
-  //   const res: Observable<any> = this.authService.send(
-  //     { cmd: 'permission-web', service: 'auth' },
-  //     { data: { accessToken, version }, version: version },
-  //   );
-
-  //   const response = await firstValueFrom(res);
-
-  //   if (response.response.status !== HttpStatus.OK) {
-  //     throw new HttpException(response.response, response.response.status);
-  //   }
-
-  //   return response.data;
-  // }
-
-  async getAllUsers(version: string): Promise<any> {
+  async getAllUsers(version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'getAllUsers',
@@ -379,12 +304,11 @@ export class AuthService {
       AuthService.name,
     );
 
-    const res: Observable<any> = this.authService.send(
+    const response = await sendToService(
+      this.authService,
       { cmd: 'get-all-users', service: 'auth' },
       { data: {}, version: version },
     );
-
-    const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.OK) {
       throw new HttpException(response.response, response.response.status);

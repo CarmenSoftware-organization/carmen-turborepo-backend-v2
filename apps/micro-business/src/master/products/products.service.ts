@@ -83,7 +83,7 @@ export class ProductsService {
   ) { }
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
       ProductsService.name,
@@ -172,7 +172,7 @@ export class ProductsService {
           tax_profile_id: res.tax_profile_id,
           tax_profile_name: res.tax_profile_name,
           tax_rate: Number(res.tax_rate),
-          info: (res?.info as any)?.attributes ?? [],
+          info: (res?.info as unknown as Record<string, unknown>)?.attributes ?? [],
           product_item_group: productItemGroup
             ? {
               id: productItemGroup.id,
@@ -240,10 +240,10 @@ export class ProductsService {
 
   @TryCatch
   async getByLocationId(
-    location_id: any,
-    paginate: any,
-    version: any,
-  ): Promise<Result<any>> {
+    location_id: string,
+    paginate: IPaginate,
+    version: string,
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getByLocationId',
@@ -262,7 +262,7 @@ export class ProductsService {
       paginate.perpage,
       paginate.search,
       defaultSearchFields,
-      typeof paginate.filter === 'object' && !Array.isArray(paginate.filter) ? paginate.filter : {},
+      typeof paginate.filter === 'object' && !Array.isArray(paginate.filter) ? paginate.filter as any : {},
       paginate.sort,
       paginate.advance,
     );
@@ -326,7 +326,7 @@ export class ProductsService {
   @TryCatch
   async findAll(
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate },
       ProductsService.name,
@@ -434,7 +434,7 @@ export class ProductsService {
   @TryCatch
   async findManyById(
     ids: string[],
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findManyById', ids, user_id: this.userId, tenant_id: this.bu_code },
       ProductsService.name,
@@ -455,7 +455,7 @@ export class ProductsService {
   @TryCatch
   async create(
     data: ICreateProduct,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
       ProductsService.name,
@@ -549,7 +549,7 @@ export class ProductsService {
               to_unit_id: orderUnit.to_unit_id,
               to_unit_name: toUnit.name,
               to_unit_qty: orderUnit.to_unit_qty,
-              unit_type: enum_unit_type.order_unit as any,
+              unit_type: enum_unit_type.order_unit,
               description: orderUnit.description ?? null,
               is_active: true,
               is_default: orderUnit.is_default ?? false,
@@ -586,7 +586,7 @@ export class ProductsService {
               to_unit_id: ingredientUnit.to_unit_id,
               to_unit_name: toUnit.name,
               to_unit_qty: ingredientUnit.to_unit_qty,
-              unit_type: enum_unit_type.ingredient_unit as any,
+              unit_type: enum_unit_type.ingredient_unit,
               description: ingredientUnit.description ?? null,
               is_active: true,
               is_default: ingredientUnit.is_default ?? false,
@@ -609,7 +609,7 @@ export class ProductsService {
   @TryCatch
   async update(
     data: IUpdateProduct,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code },
       ProductsService.name,
@@ -812,7 +812,7 @@ export class ProductsService {
                 to_unit_id: orderUnit.to_unit_id,
                 to_unit_name: toUnit.name,
                 to_unit_qty: orderUnit.to_unit_qty,
-                unit_type: enum_unit_type.order_unit as any,
+                unit_type: enum_unit_type.order_unit,
                 description: orderUnit.description ?? null,
                 is_active: orderUnit.is_active ?? true,
                 is_default: orderUnit.is_default ?? false,
@@ -904,7 +904,7 @@ export class ProductsService {
                 to_unit_id: ingredientUnit.to_unit_id,
                 to_unit_name: toUnit.name,
                 to_unit_qty: ingredientUnit.to_unit_qty,
-                unit_type: enum_unit_type.ingredient_unit as any,
+                unit_type: enum_unit_type.ingredient_unit,
                 description: ingredientUnit.description ?? null,
                 is_active: ingredientUnit.is_active ?? true,
                 is_default: ingredientUnit.is_default ?? false,
@@ -984,7 +984,7 @@ export class ProductsService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code }, ProductsService.name);
 
     const product = await this.prismaService.tb_product.findFirst({
@@ -1031,7 +1031,7 @@ export class ProductsService {
   @TryCatch
   async findItemGroup(
     id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findItemGroup', id, user_id: this.userId, tenant_id: this.bu_code },
       ProductsService.name,

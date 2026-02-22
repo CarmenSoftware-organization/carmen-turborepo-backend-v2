@@ -7,7 +7,7 @@ import {
 } from './dto/business-unit.dto';
 import { firstValueFrom, Observable } from 'rxjs';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
@@ -27,7 +27,7 @@ export class Platform_BusinessUnitService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'createBusinessUnit',
@@ -38,7 +38,7 @@ export class Platform_BusinessUnitService {
       },
       Platform_BusinessUnitService.name,
     );
-    const res: Observable<any> = this.businessUnitService.send(
+    const res: Observable<MicroserviceResponse> = this.businessUnitService.send(
       { cmd: 'business-unit.create', service: 'business-unit' },
       { data: data, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -60,7 +60,7 @@ export class Platform_BusinessUnitService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'updateBusinessUnit',
@@ -71,7 +71,7 @@ export class Platform_BusinessUnitService {
       },
       Platform_BusinessUnitService.name,
     );
-    const res: Observable<any> = this.businessUnitService.send(
+    const res: Observable<MicroserviceResponse> = this.businessUnitService.send(
       { cmd: 'business-unit.update', service: 'business-unit' },
       { data: data, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -93,7 +93,7 @@ export class Platform_BusinessUnitService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'deleteBusinessUnit',
@@ -104,7 +104,7 @@ export class Platform_BusinessUnitService {
       },
       Platform_BusinessUnitService.name,
     );
-    const res: Observable<any> = this.businessUnitService.send(
+    const res: Observable<MicroserviceResponse> = this.businessUnitService.send(
       { cmd: 'business-unit.delete', service: 'business-unit' },
       { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -126,7 +126,7 @@ export class Platform_BusinessUnitService {
     tenant_id: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getBusinessUnitList',
@@ -137,7 +137,7 @@ export class Platform_BusinessUnitService {
       },
       Platform_BusinessUnitService.name,
     );
-    const res: Observable<any> = this.businessUnitService.send(
+    const res: Observable<MicroserviceResponse> = this.businessUnitService.send(
       { cmd: 'business-unit.list', service: 'business-unit' },
       {
         data: null,
@@ -165,7 +165,7 @@ export class Platform_BusinessUnitService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getBusinessUnitById',
@@ -176,7 +176,7 @@ export class Platform_BusinessUnitService {
       },
       Platform_BusinessUnitService.name,
     );
-    const res: Observable<any> = this.businessUnitService.send(
+    const res: Observable<MicroserviceResponse> = this.businessUnitService.send(
       { cmd: 'business-unit.get-by-id', service: 'business-unit' },
       { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -199,7 +199,7 @@ export class Platform_BusinessUnitService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'patchBusinessUnitConfigs',
@@ -211,7 +211,7 @@ export class Platform_BusinessUnitService {
       },
       Platform_BusinessUnitService.name,
     );
-    const res: Observable<any> = this.businessUnitService.send(
+    const res: Observable<MicroserviceResponse> = this.businessUnitService.send(
       { cmd: 'business-unit.patch-configs', service: 'business-unit' },
       {
         bu_code: bu_code,
@@ -240,7 +240,7 @@ export class Platform_BusinessUnitService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getBusinessUnitConfigByKey',
@@ -252,7 +252,7 @@ export class Platform_BusinessUnitService {
       },
       Platform_BusinessUnitService.name,
     );
-    const res: Observable<any> = this.businessUnitService.send(
+    const res: Observable<MicroserviceResponse> = this.businessUnitService.send(
       { cmd: 'business-unit.get-config-by-key', service: 'business-unit' },
       {
         bu_code: bu_code,
@@ -280,7 +280,7 @@ export class Platform_BusinessUnitService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getBusinessUnitConfigs',
@@ -291,7 +291,7 @@ export class Platform_BusinessUnitService {
       },
       Platform_BusinessUnitService.name,
     );
-    const res: Observable<any> = this.businessUnitService.send(
+    const res: Observable<MicroserviceResponse> = this.businessUnitService.send(
       { cmd: 'business-unit.get-configs', service: 'business-unit' },
       { bu_code: bu_code, user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -313,7 +313,7 @@ export class Platform_BusinessUnitService {
     user_id: string,
     // tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getBusinessUnitSystemConfigs',
@@ -324,7 +324,7 @@ export class Platform_BusinessUnitService {
       },
       Platform_BusinessUnitService.name,
     );
-    const res: Observable<any> = this.businessUnitService.send(
+    const res: Observable<MicroserviceResponse> = this.businessUnitService.send(
       { cmd: 'business-unit.get-system-configs', service: 'business-unit' },
       { user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -347,7 +347,7 @@ export class Platform_BusinessUnitService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'putBusinessUnitConfigs',
@@ -359,7 +359,7 @@ export class Platform_BusinessUnitService {
       },
       Platform_BusinessUnitService.name,
     );
-    const res: Observable<any> = this.businessUnitService.send(
+    const res: Observable<MicroserviceResponse> = this.businessUnitService.send(
       { cmd: 'business-unit.put-configs', service: 'business-unit' },
       {
         bu_code: bu_code,
@@ -388,7 +388,7 @@ export class Platform_BusinessUnitService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'deleteBusinessUnitConfigByKey',
@@ -400,7 +400,7 @@ export class Platform_BusinessUnitService {
       },
       Platform_BusinessUnitService.name,
     );
-    const res: Observable<any> = this.businessUnitService.send(
+    const res: Observable<MicroserviceResponse> = this.businessUnitService.send(
       { cmd: 'business-unit.delete-config-by-key', service: 'business-unit' },
       {
         bu_code: bu_code,
@@ -429,7 +429,7 @@ export class Platform_BusinessUnitService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getBusinessUnitConfigByKeyExists',
@@ -441,7 +441,7 @@ export class Platform_BusinessUnitService {
       },
       Platform_BusinessUnitService.name,
     );
-    const res: Observable<any> = this.businessUnitService.send(
+    const res: Observable<MicroserviceResponse> = this.businessUnitService.send(
       {
         cmd: 'business-unit.get-config-by-key-exists',
         service: 'business-unit',

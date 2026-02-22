@@ -17,7 +17,7 @@ export class ZodSerializerInterceptor implements NestInterceptor {
   intercept(
     context: ExecutionContext,
     next: CallHandler,
-  ): Observable<any> {
+  ): Observable<unknown> {
     const schema = this.reflector.get<ZodSchema>(
       SERIALIZER_SCHEMA_KEY,
       context.getHandler(),
@@ -32,7 +32,7 @@ export class ZodSerializerInterceptor implements NestInterceptor {
     );
   }
 
-  private serialize(data: any, schema: ZodSchema) {
+  private serialize(data: Record<string, unknown>, schema: ZodSchema) {
     // Skip serialization for void/undefined responses (manual response handling with @Res())
     if (data === undefined) {
       return data;

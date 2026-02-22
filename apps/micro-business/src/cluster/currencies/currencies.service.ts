@@ -23,7 +23,7 @@ export class CurrenciesService {
     user_id: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<{ paginate: any; data: any[] }>> {
+  ): Promise<Result<{ paginate: unknown; data: unknown[] }>> {
     this.logger.debug(
       {
         function: 'findAllISO',

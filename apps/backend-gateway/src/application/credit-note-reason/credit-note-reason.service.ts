@@ -1,7 +1,7 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -22,8 +22,8 @@ export class CreditNoteReasonService {
     bu_code: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
-    const res: Observable<any> = this.procurementService.send(
+  ): Promise<Result<unknown>> {
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'credit-note-reason.find-all',
         service: 'credit-note-reason',

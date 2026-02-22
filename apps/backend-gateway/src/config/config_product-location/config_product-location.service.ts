@@ -18,7 +18,7 @@ export class Config_ProductLocationService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'getLocationsByProductId',

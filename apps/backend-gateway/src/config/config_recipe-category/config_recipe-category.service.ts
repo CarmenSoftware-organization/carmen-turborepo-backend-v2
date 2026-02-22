@@ -1,7 +1,7 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
@@ -18,9 +18,9 @@ export class Config_RecipeCategoryService {
     private readonly masterService: ClientProxy,
   ) {}
 
-  async findOne(id: string, user_id: string, bu_code: string, version: string): Promise<Result<any>> {
+  async findOne(id: string, user_id: string, bu_code: string, version: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findOne', id, version }, Config_RecipeCategoryService.name);
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-category.findOne', service: 'recipe-category' },
       { id, user_id, bu_code, version },
     );
@@ -31,9 +31,9 @@ export class Config_RecipeCategoryService {
     return Result.ok(response.data);
   }
 
-  async findAll(user_id: string, bu_code: string, paginate: IPaginate, version: string): Promise<Result<any>> {
+  async findAll(user_id: string, bu_code: string, paginate: IPaginate, version: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAll', paginate, version }, Config_RecipeCategoryService.name);
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-category.findAll', service: 'recipe-category' },
       { user_id, paginate, bu_code, version },
     );
@@ -44,9 +44,9 @@ export class Config_RecipeCategoryService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
-  async create(createDto: ICreateRecipeCategory, user_id: string, bu_code: string, version: string): Promise<Result<any>> {
+  async create(createDto: ICreateRecipeCategory, user_id: string, bu_code: string, version: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'create', createDto, version }, Config_RecipeCategoryService.name);
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-category.create', service: 'recipe-category' },
       { data: createDto, user_id, bu_code, version },
     );
@@ -57,9 +57,9 @@ export class Config_RecipeCategoryService {
     return Result.ok(response.data);
   }
 
-  async update(updateDto: IUpdateRecipeCategory, user_id: string, bu_code: string, version: string): Promise<Result<any>> {
+  async update(updateDto: IUpdateRecipeCategory, user_id: string, bu_code: string, version: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'update', updateDto, version }, Config_RecipeCategoryService.name);
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-category.update', service: 'recipe-category' },
       { data: updateDto, user_id, bu_code, version },
     );
@@ -70,9 +70,9 @@ export class Config_RecipeCategoryService {
     return Result.ok(response.data);
   }
 
-  async patch(updateDto: IUpdateRecipeCategory, user_id: string, bu_code: string, version: string): Promise<Result<any>> {
+  async patch(updateDto: IUpdateRecipeCategory, user_id: string, bu_code: string, version: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'patch', updateDto, version }, Config_RecipeCategoryService.name);
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-category.patch', service: 'recipe-category' },
       { data: updateDto, user_id, bu_code, version },
     );
@@ -83,9 +83,9 @@ export class Config_RecipeCategoryService {
     return Result.ok(response.data);
   }
 
-  async delete(id: string, user_id: string, bu_code: string, version: string): Promise<Result<any>> {
+  async delete(id: string, user_id: string, bu_code: string, version: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, version }, Config_RecipeCategoryService.name);
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-category.delete', service: 'recipe-category' },
       { id, user_id, bu_code, version },
     );

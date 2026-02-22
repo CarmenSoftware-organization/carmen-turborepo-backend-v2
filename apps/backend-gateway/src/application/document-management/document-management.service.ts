@@ -1,7 +1,7 @@
 import { Injectable, Inject, HttpStatus } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable, firstValueFrom } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
@@ -23,7 +23,7 @@ export class DocumentManagementService {
     mimeType: string,
     user_id: string,
     bu_code: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'uploadDocument',
@@ -35,7 +35,7 @@ export class DocumentManagementService {
 
     const fileBase64 = fileBuffer.toString('base64');
 
-    const res: Observable<any> = this.fileService.send(
+    const res: Observable<MicroserviceResponse> = this.fileService.send(
       { cmd: 'file.upload', service: 'files' },
       {
         fileName,
@@ -48,10 +48,10 @@ export class DocumentManagementService {
 
     const response = await firstValueFrom(res);
 
-    if (response.response.status !== HttpStatus.OK) {
+    if (!response.success) {
       return Result.error(
-        response.response.message,
-        httpStatusToErrorCode(response.response.status),
+        response.response?.message ?? response.message,
+        httpStatusToErrorCode(response.response?.status),
       );
     }
 
@@ -62,7 +62,7 @@ export class DocumentManagementService {
     fileToken: string,
     user_id: string,
     bu_code: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getDocument',
@@ -72,7 +72,7 @@ export class DocumentManagementService {
       DocumentManagementService.name,
     );
 
-    const res: Observable<any> = this.fileService.send(
+    const res: Observable<MicroserviceResponse> = this.fileService.send(
       { cmd: 'file.get', service: 'files' },
       { fileToken, user_id, bu_code },
     );
@@ -80,7 +80,7 @@ export class DocumentManagementService {
     const response = await firstValueFrom(res);
 
     if (!response.success) {
-      return Result.error(response.message, httpStatusToErrorCode(response.status));
+      return Result.error(response.response?.message ?? response.message, httpStatusToErrorCode(response.response?.status));
     }
 
     return Result.ok(response.data);
@@ -90,7 +90,7 @@ export class DocumentManagementService {
     fileToken: string,
     user_id: string,
     bu_code: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getDocumentInfo',
@@ -100,7 +100,7 @@ export class DocumentManagementService {
       DocumentManagementService.name,
     );
 
-    const res: Observable<any> = this.fileService.send(
+    const res: Observable<MicroserviceResponse> = this.fileService.send(
       { cmd: 'file.info', service: 'files' },
       { fileToken, user_id, bu_code },
     );
@@ -108,7 +108,7 @@ export class DocumentManagementService {
     const response = await firstValueFrom(res);
 
     if (!response.success) {
-      return Result.error(response.message, httpStatusToErrorCode(response.status));
+      return Result.error(response.response?.message ?? response.message, httpStatusToErrorCode(response.response?.status));
     }
 
     return Result.ok(response.data);
@@ -118,7 +118,7 @@ export class DocumentManagementService {
     fileToken: string,
     user_id: string,
     bu_code: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'deleteDocument',
@@ -128,7 +128,7 @@ export class DocumentManagementService {
       DocumentManagementService.name,
     );
 
-    const res: Observable<any> = this.fileService.send(
+    const res: Observable<MicroserviceResponse> = this.fileService.send(
       { cmd: 'file.delete', service: 'files' },
       { fileToken, user_id, bu_code },
     );
@@ -136,7 +136,7 @@ export class DocumentManagementService {
     const response = await firstValueFrom(res);
 
     if (!response.success) {
-      return Result.error(response.message, httpStatusToErrorCode(response.status));
+      return Result.error(response.response?.message ?? response.message, httpStatusToErrorCode(response.response?.status));
     }
 
     return Result.ok(response.data);
@@ -146,7 +146,7 @@ export class DocumentManagementService {
     bu_code: string,
     user_id: string,
     paginate: IPaginate,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'listDocuments',
@@ -156,7 +156,7 @@ export class DocumentManagementService {
       DocumentManagementService.name,
     );
 
-    const res: Observable<any> = this.fileService.send(
+    const res: Observable<MicroserviceResponse> = this.fileService.send(
       { cmd: 'file.list', service: 'files' },
       {
         bu_code,
@@ -174,7 +174,7 @@ export class DocumentManagementService {
     const response = await firstValueFrom(res);
 
     if (!response.success) {
-      return Result.error(response.message, httpStatusToErrorCode(response.status));
+      return Result.error(response.response?.message ?? response.message, httpStatusToErrorCode(response.response?.status));
     }
 
     return Result.ok({ data: response.data, paginate: response.meta });
@@ -185,7 +185,7 @@ export class DocumentManagementService {
     user_id: string,
     bu_code: string,
     expirySeconds?: number,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getPresignedUrl',
@@ -196,7 +196,7 @@ export class DocumentManagementService {
       DocumentManagementService.name,
     );
 
-    const res: Observable<any> = this.fileService.send(
+    const res: Observable<MicroserviceResponse> = this.fileService.send(
       { cmd: 'file.presigned-url', service: 'files' },
       {
         fileToken,
@@ -209,7 +209,7 @@ export class DocumentManagementService {
     const response = await firstValueFrom(res);
 
     if (!response.success) {
-      return Result.error(response.message, httpStatusToErrorCode(response.status));
+      return Result.error(response.response?.message ?? response.message, httpStatusToErrorCode(response.response?.status));
     }
 
     return Result.ok(response.data);

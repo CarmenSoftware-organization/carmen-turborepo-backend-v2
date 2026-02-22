@@ -48,7 +48,7 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
       this.logger.log('Connected to notification service WebSocket');
     });
 
-    ws.on('message', (data: any) => {
+    ws.on('message', (data: WebSocket.RawData) => {
       try {
         const message = JSON.parse(data.toString());
         this.logger.debug('Received from notification service:', message);
@@ -69,7 +69,7 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
       }
     });
 
-    ws.on('error', (error: any) => {
+    ws.on('error', (error: Error) => {
       this.logger.error('Notification service WebSocket error:', error);
     });
 
@@ -147,7 +147,7 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
   }
 
   // Method to send notification to specific user (can be called from controllers)
-  sendToUser(user_id: string, notification: any) {
+  sendToUser(user_id: string, notification: Record<string, unknown>) {
     const socketId = this.userIdToSocketId.get(user_id);
     if (socketId) {
       const client = this.clientConnections.get(socketId);
@@ -156,7 +156,7 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
   }
 
   // Method to broadcast to all users
-  broadcast(notification: any) {
+  broadcast(notification: Record<string, unknown>) {
     this.server.emit('notification', notification);
   }
 }

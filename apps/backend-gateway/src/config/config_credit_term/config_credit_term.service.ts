@@ -6,6 +6,7 @@ import {
   IUpdateCreditTerm,
   Result,
   ErrorCode,
+  MicroserviceResponse,
 } from '@/common';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -27,7 +28,7 @@ export class Config_CreditTermService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -37,7 +38,7 @@ export class Config_CreditTermService {
       Config_CreditTermService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'credit-term.findOne', service: 'credit-term' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -59,7 +60,7 @@ export class Config_CreditTermService {
     bu_code: string,
     query: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -69,7 +70,7 @@ export class Config_CreditTermService {
       Config_CreditTermService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'credit-term.findAll', service: 'credit-term' },
       {
         user_id: user_id,
@@ -96,7 +97,7 @@ export class Config_CreditTermService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -106,7 +107,7 @@ export class Config_CreditTermService {
       Config_CreditTermService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'credit-term.create', service: 'credit-term' },
       {
         data: createDto,
@@ -133,7 +134,7 @@ export class Config_CreditTermService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'update',
@@ -143,7 +144,7 @@ export class Config_CreditTermService {
       Config_CreditTermService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'credit-term.update', service: 'credit-term' },
       {
         data: updateDto,
@@ -170,7 +171,7 @@ export class Config_CreditTermService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'delete',
@@ -180,7 +181,7 @@ export class Config_CreditTermService {
       Config_CreditTermService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'credit-term.delete', service: 'credit-term' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );

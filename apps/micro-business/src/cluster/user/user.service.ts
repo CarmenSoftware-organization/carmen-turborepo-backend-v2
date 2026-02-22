@@ -21,7 +21,7 @@ export class UserService {
   @TryCatch
   async listUsers(
     paginate: IPaginate,
-  ): Promise<Result<{ paginate: any; data: any[] }>> {
+  ): Promise<Result<{ paginate: unknown; data: unknown[] }>> {
     this.logger.debug(
       { function: 'listUsers', paginate: paginate },
       UserService.name,
@@ -43,7 +43,7 @@ export class UserService {
 
     // Check if 'name' sort is requested (maps to profile firstname+middlename+lastname)
     let nameSortDir: 'asc' | 'desc' | null = null;
-    const filteredOrderBy: any[] = [];
+    const filteredOrderBy: Record<string, string>[] = [];
     if (Array.isArray(orderBy)) {
       for (const o of orderBy) {
         const key = Object.keys(o)[0];
@@ -102,14 +102,14 @@ export class UserService {
         },
       })
       .then((data) => {
-        const mapped = data.map((item: any) => {
+        const mapped = data.map((item) => {
           const profile =
             item.tb_user_profile_tb_user_profile_user_idTotb_user?.[0];
           return {
             id: item.id,
             username: item.username,
             email: item.email,
-            alias_name: item.alias_name,
+            alias_name: (item as any).alias_name,
             platform_role: item.platform_role,
             is_active: item.is_active,
             is_online: item.is_online,
@@ -117,7 +117,7 @@ export class UserService {
             lastname: profile?.lastname ?? null,
             middlename: profile?.middlename ?? null,
             business_unit:
-              (item.tb_user_tb_business_unit_tb_user_tb_business_unit_user_idTotb_user || []).map((bu: any) => ({
+              (item.tb_user_tb_business_unit_tb_user_tb_business_unit_user_idTotb_user || []).map((bu) => ({
                 id: bu.id,
                 is_active: bu.is_active,
               })),
@@ -156,7 +156,7 @@ export class UserService {
   }
 
   @TryCatch
-  async getUser(id: string): Promise<Result<any>> {
+  async getUser(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'getUser', id: id }, UserService.name);
     const user = await this.prismaSystem.tb_user.findUnique({
       where: { id },
@@ -200,16 +200,17 @@ export class UserService {
       tb_user_tb_business_unit_tb_user_tb_business_unit_user_idTotb_user,
       tb_cluster_user_tb_cluster_user_user_idTotb_user,
       ...rest
-    } = user as any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } = user as unknown as Record<string, any>;
     const profile = tb_user_profile_tb_user_profile_user_idTotb_user?.[0];
-    const business_units = (tb_user_tb_business_unit_tb_user_tb_business_unit_user_idTotb_user || []).map((ub: any) => ({
+    const business_units = (tb_user_tb_business_unit_tb_user_tb_business_unit_user_idTotb_user || []).map((ub) => ({
       id: ub.id,
       role: ub.role,
       is_default: ub.is_default,
       is_active: ub.is_active,
       business_unit: ub.tb_business_unit || null,
     }));
-    const clusters = (tb_cluster_user_tb_cluster_user_user_idTotb_user || []).map((cu: any) => ({
+    const clusters = (tb_cluster_user_tb_cluster_user_user_idTotb_user || []).map((cu) => ({
       id: cu.id,
       cluster_id: cu.cluster_id,
       role: cu.role,

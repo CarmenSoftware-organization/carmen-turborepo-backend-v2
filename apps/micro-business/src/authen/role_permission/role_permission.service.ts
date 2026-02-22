@@ -24,7 +24,7 @@ export class ApplicationRolePermissionService {
   ) { }
 
   @TryCatch
-  async findOne(id: string, user_id: string, bu_code: string): Promise<Result<any>> {
+  async findOne(id: string, user_id: string, bu_code: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id, bu_code },
       ApplicationRolePermissionService.name,
@@ -70,15 +70,13 @@ export class ApplicationRolePermissionService {
   }
 
   @TryCatch
-  async findAll(paginate: any, user_id: string, bu_code: string): Promise<Result<any>> {
+  async findAll(paginate: any, user_id: string, bu_code: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', paginate: paginate, user_id, bu_code },
       ApplicationRolePermissionService.name,
     );
 
     const defaultSearchFields = ['name', 'description'];
-
-    console.log('Paginate:', paginate);
 
     const q = new QueryParams(
       paginate.page,
@@ -123,13 +121,13 @@ export class ApplicationRolePermissionService {
 
     const roles = await this.prismaSystem.tb_application_role.findMany(prismaParams);
 
-    const roleWithPermissions = roles.map((role: any) => ({
+    const roleWithPermissions = roles.map((role) => ({
       id: role.id,
       business_unit_id: role.business_unit_id,
       name: role.name,
       description: role.description,
       created_at: role.created_at,
-      permissions: role.tb_application_role_tb_permission.map((item: any) => ({
+      permissions: role.tb_application_role_tb_permission.map((item) => ({
         permission_id: item.permission_id,
         action: item.tb_permission.action,
         resource: item.tb_permission.resource,
@@ -157,7 +155,7 @@ export class ApplicationRolePermissionService {
     data: IApplicationRolePermissionCreate,
     user_id: string,
     bu_code: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data: data, user_id, bu_code },
       ApplicationRolePermissionService.name,
@@ -218,7 +216,7 @@ export class ApplicationRolePermissionService {
     data: IApplicationRolePermissionUpdate,
     user_id: string,
     bu_code: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data: data, user_id, bu_code },
       ApplicationRolePermissionService.name,
@@ -294,7 +292,7 @@ export class ApplicationRolePermissionService {
   }
 
   @TryCatch
-  async remove(id: string, user_id: string, bu_code: string): Promise<Result<any>> {
+  async remove(id: string, user_id: string, bu_code: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'remove', id, user_id, bu_code },
       ApplicationRolePermissionService.name,

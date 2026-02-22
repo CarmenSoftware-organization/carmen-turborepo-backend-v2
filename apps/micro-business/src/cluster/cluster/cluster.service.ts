@@ -131,7 +131,7 @@ export class ClusterService {
   }
 
   @TryCatch
-  async listCluster(paginate: IPaginate): Promise<Result<{ paginate: any; data: any[] }>> {
+  async listCluster(paginate: IPaginate): Promise<Result<{ paginate: unknown; data: unknown[] }>> {
     this.logger.debug(
       { function: 'listCluster', paginate: paginate },
       ClusterService.name,
@@ -162,14 +162,14 @@ export class ClusterService {
             tb_business_unit: {
               where: {
                 cluster_id: {
-                  in: q.where().id,
+                  in: q.where().id as string[],
                 },
               },
             },
             tb_cluster_user: {
               where: {
                 cluster_id: {
-                  in: q.where().id,
+                  in: q.where().id as string[],
                 },
               },
             },
@@ -198,7 +198,7 @@ export class ClusterService {
   }
 
   @TryCatch
-  async getClusterById(id: string): Promise<Result<any>> {
+  async getClusterById(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'getClusterById', id: id },
       ClusterService.name,
@@ -429,7 +429,7 @@ export class ClusterService {
   }
 
   @TryCatch
-  async getUserClusterById(cluster_id: string): Promise<Result<any[]>> {
+  async getUserClusterById(cluster_id: string): Promise<Result<unknown[]>> {
     this.logger.debug(
       { function: 'getUserClusterById', cluster_id: cluster_id },
       ClusterService.name,

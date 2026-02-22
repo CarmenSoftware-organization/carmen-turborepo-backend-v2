@@ -1,7 +1,7 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
@@ -24,7 +24,7 @@ export class CurrenciesService {
     bu_code: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAllActive',
@@ -36,7 +36,7 @@ export class CurrenciesService {
       CurrenciesService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'currencies.findAllActive', service: 'currencies' },
       { user_id, bu_code, paginate, version },
     );
@@ -58,7 +58,7 @@ export class CurrenciesService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -70,7 +70,7 @@ export class CurrenciesService {
       CurrenciesService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'currencies.findOne', service: 'currencies' },
       { id, user_id, bu_code, version },
     );
@@ -88,7 +88,7 @@ export class CurrenciesService {
     user_id: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAllISO',
@@ -99,7 +99,7 @@ export class CurrenciesService {
       CurrenciesService.name,
     );
 
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'currencies.findAllISO', service: 'currencies' },
       { user_id, paginate, version },
     );
@@ -121,7 +121,7 @@ export class CurrenciesService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getDefault',
@@ -132,7 +132,7 @@ export class CurrenciesService {
       CurrenciesService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'currencies.getDefault', service: 'currencies' },
       { user_id, bu_code, version },
     );

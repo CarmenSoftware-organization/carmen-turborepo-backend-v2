@@ -7,7 +7,7 @@ import {
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable, of } from 'rxjs';
-import { CreatePurchaseRequestDto, RejectPurchaseRequestDto, Result, SubmitPurchaseRequest } from '@/common';
+import { CreatePurchaseRequestDto, RejectPurchaseRequestDto, Result, SubmitPurchaseRequest, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { ResponseLib } from 'src/libs/response.lib';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -32,10 +32,10 @@ export class PurchaseRequestService {
       bu_id: string;
       bu_code: string;
       role: string;
-      permissions: any;
+      permissions: Record<string, string[]>;
     },
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findById',
@@ -45,7 +45,7 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.find-by-id', service: 'purchase-request' },
       {
         id: id,
@@ -76,10 +76,10 @@ export class PurchaseRequestService {
       bu_id: string;
       bu_code: string;
       role: string;
-      permissions: any;
+      permissions: Record<string, string[]>;
     },
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -92,7 +92,7 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.find-all', service: 'purchase-request' },
       {
         user_id: user_id,
@@ -119,7 +119,7 @@ export class PurchaseRequestService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -130,7 +130,7 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request.find-all-workflow-stages-by-pr',
         service: 'purchase-request',
@@ -159,7 +159,7 @@ export class PurchaseRequestService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'create',
@@ -169,7 +169,7 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request.create',
         service: 'purchase-request',
@@ -199,7 +199,7 @@ export class PurchaseRequestService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'duplicatePr',
@@ -208,7 +208,7 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request.duplicate-pr',
         service: 'purchase-request',
@@ -239,7 +239,7 @@ export class PurchaseRequestService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'splitPr',
@@ -249,7 +249,7 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request.split',
         service: 'purchase-request',
@@ -277,11 +277,11 @@ export class PurchaseRequestService {
 
   async save(
     id: string,
-    updateDto: any,
+    updateDto: Record<string, unknown> | object,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'save',
@@ -292,7 +292,7 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.save', service: 'purchase-request' },
       {
         id,
@@ -321,7 +321,7 @@ export class PurchaseRequestService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'submit',
@@ -331,7 +331,7 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.submit', service: 'purchase-request' },
       { id: id, payload, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -350,11 +350,11 @@ export class PurchaseRequestService {
 
   async approve(
     id: string,
-    payload: any,
+    payload: Record<string, unknown> | object,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'approve',
@@ -365,7 +365,7 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.approve', service: 'purchase-request' },
       {
         id: id,
@@ -394,7 +394,7 @@ export class PurchaseRequestService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'reject',
@@ -404,7 +404,7 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.reject', service: 'purchase-request' },
       { id: id, body, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -423,11 +423,11 @@ export class PurchaseRequestService {
 
   async review(
     id: string,
-    body: any,
+    body: Record<string, unknown> | object,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'review',
@@ -437,7 +437,7 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.review', service: 'purchase-request' },
       { id: id, body, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -459,7 +459,7 @@ export class PurchaseRequestService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'delete',
@@ -469,7 +469,7 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.delete', service: 'purchase-request' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -491,7 +491,7 @@ export class PurchaseRequestService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAllByStatus',
@@ -501,7 +501,7 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request.find-all-by-status',
         service: 'purchase-request',
@@ -605,7 +605,7 @@ export class PurchaseRequestService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findDimensionsByDetailId',
@@ -615,7 +615,7 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request.find-dimensions-by-detail-id',
         service: 'purchase-request',
@@ -645,7 +645,7 @@ export class PurchaseRequestService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findHistoryByDetailId',
@@ -655,7 +655,7 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request.find-history-by-detail-id',
         service: 'purchase-request',
@@ -686,7 +686,7 @@ export class PurchaseRequestService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'getCalculatePriceInfoByDetailId',
@@ -696,7 +696,7 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const res: Observable<any> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
       {
         cmd: 'purchase-request.get-calculate-price-info-by-detail-id',
         service: 'purchase-request',

@@ -6,10 +6,10 @@ export interface ICreateRecipeCategory {
   is_active?: boolean;
   parent_id?: string | null;
   level?: number;
-  default_cost_settings?: any;
-  default_margins?: any;
-  info?: any | null;
-  dimension?: any | null;
+  default_cost_settings?: Record<string, unknown>;
+  default_margins?: Record<string, unknown>;
+  info?: Record<string, unknown> | null;
+  dimension?: unknown[] | null;
 }
 
 export interface IUpdateRecipeCategory {
@@ -21,8 +21,8 @@ export interface IUpdateRecipeCategory {
   is_active?: boolean;
   parent_id?: string | null;
   level?: number;
-  default_cost_settings?: any;
-  default_margins?: any;
-  info?: any | null;
-  dimension?: any | null;
+  default_cost_settings?: Record<string, unknown>;
+  default_margins?: Record<string, unknown>;
+  info?: Record<string, unknown> | null;
+  dimension?: unknown[] | null;
 }

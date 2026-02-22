@@ -119,9 +119,9 @@ export class AuthService {
         },
         AuthService.name,
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Don't fail the auth operation if logging fails
-      this.logger.error(`Failed to log ${action} activity: ${error.message}`, {
+      this.logger.error(`Failed to log ${action} activity: ${error instanceof Error ? error.message : 'Unknown error'}`, {
         file: AuthService.name,
         function: 'logAuthActivity',
         userId,
@@ -199,8 +199,9 @@ export class AuthService {
         },
         response: { status: HttpStatus.OK, message: 'Login successful' },
       };
-    } catch (error: any) {
-      this.logger.error(error.message, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during login';
+      this.logger.error(errorMessage, {
         file: AuthService.name,
         function: this.login.name,
         loginDto: loginDto,
@@ -209,7 +210,7 @@ export class AuthService {
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || 'An error occurred during login',
+          message: errorMessage,
         },
       };
     }
@@ -308,8 +309,9 @@ export class AuthService {
           message: 'Logout successful',
         },
       };
-    } catch (error: any) {
-      this.logger.error(error.message, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during logout';
+      this.logger.error(errorMessage, {
         file: AuthService.name,
         function: this.logout.name,
         logoutDto: logoutDto,
@@ -318,7 +320,7 @@ export class AuthService {
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || 'An error occurred during logout',
+          message: errorMessage,
         },
       };
     }
@@ -558,8 +560,9 @@ export class AuthService {
         data: tx.data,
         response: tx.response,
       };
-    } catch (error: any) {
-      this.logger.error(error.message, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during registration';
+      this.logger.error(errorMessage, {
         file: AuthService.name,
         function: 'register failed',
         registerDto: registerDto,
@@ -568,7 +571,7 @@ export class AuthService {
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || 'An error occurred during registration',
+          message: errorMessage,
         },
       };
     }
@@ -664,8 +667,6 @@ export class AuthService {
           },
         ],
       };
-
-      console.log('before create keycloak user');
 
       const createUserResponse = await firstValueFrom(
         this.keycloakService.send(
@@ -773,8 +774,9 @@ export class AuthService {
         data: tx.data,
         response: tx.response,
       };
-    } catch (error: any) {
-      this.logger.error(error.message, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during registration confirmation';
+      this.logger.error(errorMessage, {
         file: AuthService.name,
         function: 'registerConfirm failed',
         registerConfirmDto: registerConfirmDto,
@@ -783,13 +785,13 @@ export class AuthService {
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || 'An error occurred during logout',
+          message: errorMessage,
         },
       };
     }
   }
 
-  async refreshToken(refreshTokenDto: any, version: string): Promise<any> {
+  async refreshToken(refreshTokenDto: Record<string, unknown>, version: string): Promise<any> {
     this.logger.debug(
       {
         function: 'refreshToken',
@@ -845,8 +847,9 @@ export class AuthService {
           message: 'Token refresh successful',
         },
       };
-    } catch (error: any) {
-      this.logger.error(error.message, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during token refresh';
+      this.logger.error(errorMessage, {
         file: AuthService.name,
         function: this.refreshToken.name,
         refreshTokenDto: refreshTokenDto,
@@ -855,13 +858,13 @@ export class AuthService {
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || 'An error occurred during token refresh',
+          message: errorMessage,
         },
       };
     }
   }
 
-  async validateToken(validateTokenDto: any, version: string): Promise<any> {
+  async validateToken(validateTokenDto: string, version: string): Promise<any> {
     this.logger.debug(
       {
         function: 'validateToken',
@@ -877,9 +880,9 @@ export class AuthService {
         data: payload,
         response: { status: HttpStatus.OK, message: 'Verify token successful' },
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
-        response: { status: HttpStatus.UNAUTHORIZED, message: error.message },
+        response: { status: HttpStatus.UNAUTHORIZED, message: error instanceof Error ? error.message : 'Token validation failed' },
       };
     }
   }
@@ -973,8 +976,9 @@ export class AuthService {
           message: 'Password reset email sent successfully',
         },
       };
-    } catch (error: any) {
-      this.logger.error(error.message, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during forgot password';
+      this.logger.error(errorMessage, {
         file: AuthService.name,
         function: this.forgotPassword.name,
         forgotPasswordDto: forgotPasswordDto,
@@ -983,7 +987,7 @@ export class AuthService {
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || 'An error occurred during forgot password',
+          message: errorMessage,
         },
       };
     }
@@ -1071,8 +1075,9 @@ export class AuthService {
           message: 'Password reset successful',
         },
       };
-    } catch (error: any) {
-      this.logger.error(error.message, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during password reset';
+      this.logger.error(errorMessage, {
         file: AuthService.name,
         function: this.resetPassword.name,
         email: email,
@@ -1081,7 +1086,7 @@ export class AuthService {
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || 'An error occurred during password reset',
+          message: errorMessage,
         },
       };
     }
@@ -1124,7 +1129,7 @@ export class AuthService {
       }
 
       // Verify JWT token
-      let payload: any;
+      let payload: Record<string, unknown>;
       try {
         payload = this.jwtService.verify(resetRecord.token);
       } catch (jwtError) {
@@ -1214,8 +1219,9 @@ export class AuthService {
           message: 'Password reset successful',
         },
       };
-    } catch (error: any) {
-      this.logger.error(error.message, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during password reset';
+      this.logger.error(errorMessage, {
         file: AuthService.name,
         function: 'resetPasswordWithToken',
         token: resetPasswordWithTokenDto.token,
@@ -1224,7 +1230,7 @@ export class AuthService {
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || 'An error occurred during password reset',
+          message: errorMessage,
         },
       };
     }
@@ -1283,8 +1289,9 @@ export class AuthService {
           message: 'Password reset successful',
         },
       };
-    } catch (error: any) {
-      this.logger.error(error.message, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during password reset';
+      this.logger.error(errorMessage, {
         file: AuthService.name,
         function: this.resetPassword.name,
         version: version,
@@ -1292,13 +1299,13 @@ export class AuthService {
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || 'An error occurred during password reset',
+          message: errorMessage,
         },
       };
     }
   }
 
-  async changeEmail(changeEmailDto: any, version: string): Promise<any> {
+  async changeEmail(changeEmailDto: Record<string, unknown>, version: string): Promise<any> {
     this.logger.debug(
       {
         function: 'changeEmail',
@@ -1894,9 +1901,9 @@ export class AuthService {
         message: 'Password reset email sent successfully',
         email,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error(
-        `Failed to send password reset email: ${error.message}`,
+        `Failed to send password reset email: ${error instanceof Error ? error.message : 'Unknown error'}`,
         {
           file: AuthService.name,
           function: 'sendPasswordResetEmail',
@@ -2037,8 +2044,9 @@ export class AuthService {
           message: 'User profile updated successfully',
         },
       };
-    } catch (error: any) {
-      this.logger.error(error.message, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred while updating user profile';
+      this.logger.error(errorMessage, {
         file: AuthService.name,
         function: 'updateUserProfile',
         userId,
@@ -2047,8 +2055,7 @@ export class AuthService {
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message:
-            error.message || 'An error occurred while updating user profile',
+          message: errorMessage,
         },
       };
     }
@@ -2109,8 +2116,9 @@ export class AuthService {
           message: 'Business unit retrieved successfully',
         },
       };
-    } catch (error: any) {
-      this.logger.error(error.message, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred while retrieving business unit';
+      this.logger.error(errorMessage, {
         file: AuthService.name,
         function: 'getBus',
         userId,
@@ -2119,8 +2127,7 @@ export class AuthService {
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message:
-            error.message || 'An error occurred while retrieving business unit',
+          message: errorMessage,
         },
       };
     }
@@ -2152,8 +2159,9 @@ export class AuthService {
           message: 'Roles retrieved successfully',
         },
       };
-    } catch (error: any) {
-      this.logger.error(error.message, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred while retrieving roles';
+      this.logger.error(errorMessage, {
         file: AuthService.name,
         function: 'getRoles',
         userId,
@@ -2161,7 +2169,7 @@ export class AuthService {
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || 'An error occurred while retrieving roles',
+          message: errorMessage,
         },
       };
     }
@@ -2263,8 +2271,9 @@ export class AuthService {
           message: 'Permissions retrieved successfully',
         },
       };
-    } catch (error: any) {
-      this.logger.error(error.message, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred while retrieving permissions';
+      this.logger.error(errorMessage, {
         file: AuthService.name,
         function: 'getPermissions',
         userId,
@@ -2272,8 +2281,7 @@ export class AuthService {
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message:
-            error.message || 'An error occurred while retrieving permissions',
+          message: errorMessage,
         },
       };
     }
@@ -2430,17 +2438,18 @@ export class AuthService {
 
             created++;
           }
-        } catch (userError: any) {
+        } catch (userError: unknown) {
+          const userErrorMessage = userError instanceof Error ? userError.message : 'Unknown error';
           errors.push({
             userId: keycloakUser.id,
             email: keycloakUser.email,
-            error: userError.message,
+            error: userErrorMessage,
           });
           this.logger.error(`Failed to sync user: ${keycloakUser.email}`, {
             file: AuthService.name,
             function: 'syncRealmUsers',
             userId: keycloakUser.id,
-            error: userError.message,
+            error: userErrorMessage,
           });
         }
       }
@@ -2468,8 +2477,9 @@ export class AuthService {
           message: `Sync completed: ${created} created, ${updated} updated, ${skipped} skipped${errors.length > 0 ? `, ${errors.length} errors` : ''}`,
         },
       };
-    } catch (error: any) {
-      this.logger.error(error.message, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during user sync';
+      this.logger.error(errorMessage, {
         file: AuthService.name,
         function: 'syncRealmUsers',
         version,
@@ -2477,7 +2487,7 @@ export class AuthService {
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || 'An error occurred during user sync',
+          message: errorMessage,
         },
       };
     }

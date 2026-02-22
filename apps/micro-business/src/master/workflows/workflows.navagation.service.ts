@@ -63,7 +63,7 @@ export class WorkflowNavigatorService {
    * Navigate forward to next stage based on routing rules
    * If currentStatus is empty, returns the first stage of the workflow
    */
-  navigateForward(requestData: Record<string, any> = {}): NavigateForwardResult {
+  navigateForward(requestData: Record<string, unknown> = {}): NavigateForwardResult {
     const currentStatus = this.getCurrentStage();
     if (!currentStatus) {
       // First stage of workflow - initialize with the first stage
@@ -84,7 +84,6 @@ export class WorkflowNavigatorService {
     }
 
     const navigation = this.getNavigationInfo(currentStatus, requestData);
-    console.log('navigation', navigation);
     if (!navigation.workflow_next_step) {
       throw new Error('No next step available from current stage');
     }
@@ -109,7 +108,7 @@ export class WorkflowNavigatorService {
   /**
    * Navigate back to a specific stage by name (primary method for "Send Back" feature)
    */
-  navigateBackToStage(stageName: string, requestData: Record<string, any> = {}): NavigateBackResult {
+  navigateBackToStage(stageName: string, requestData: Record<string, unknown> = {}): NavigateBackResult {
     const targetIndex = this.findMostRecentStageIndex(stageName);
 
     if (targetIndex === -1) {
@@ -187,7 +186,7 @@ export class WorkflowNavigatorService {
   /**
    * Get navigation info for a specific stage
    */
-  getNavigationInfo(currentStatus: string, requestData: Record<string, any> = {}): NavigationInfo {
+  getNavigationInfo(currentStatus: string, requestData: Record<string, unknown> = {}): NavigationInfo {
     const currentStage = this.findStageByName(currentStatus);
     const currentStageIndex = this.workflowData.stages.findIndex(s => s.name === currentStatus);
 
@@ -211,7 +210,7 @@ export class WorkflowNavigatorService {
   /**
    * Navigate back to a specific index
    */
-  private navigateBackToIndex(historyIndex: number, requestData: Record<string, any> = {}): NavigateBackResult {
+  private navigateBackToIndex(historyIndex: number, requestData: Record<string, unknown> = {}): NavigateBackResult {
     if (historyIndex < 0 || historyIndex >= this.history.length) {
       throw new Error(`Invalid history index: ${historyIndex}`);
     }
@@ -248,7 +247,6 @@ export class WorkflowNavigatorService {
    * Find stage by name
    */
   private findStageByName(stageName: string): Stage {
-    console.log('getPreviousStageNamesByStructure', this.workflowData);
     const stage = this.workflowData.stages.find(s => s.name === stageName);
     if (!stage) {
       throw new Error(`Stage "${stageName}" not found in workflow`);
@@ -272,7 +270,7 @@ export class WorkflowNavigatorService {
   /**
    * Find next step based on routing rules
    */
-  private findNextStep(currentStatus: string, currentStageIndex: number, requestData: Record<string, any>): string | null {
+  private findNextStep(currentStatus: string, currentStageIndex: number, requestData: Record<string, unknown>): string | null {
     // Check routing rules first
     const applicableRules = this.workflowData.routing_rules.filter(
       rule => rule.trigger_stage === currentStatus
@@ -303,7 +301,7 @@ export class WorkflowNavigatorService {
   /**
    * Find third next stage (stage after next stage)
    */
-  private findThirdNextStage(currentStatus: string, currentStageIndex: number, requestData: Record<string, any>): string | null {
+  private findThirdNextStage(currentStatus: string, currentStageIndex: number, requestData: Record<string, unknown>): string | null {
     const nextStep = this.findNextStep(currentStatus, currentStageIndex, requestData);
     if (!nextStep) return null;
 
@@ -316,7 +314,7 @@ export class WorkflowNavigatorService {
   /**
    * Get info for next stage
    */
-  private getNextStageInfo(currentStatus: string, currentStageIndex: number, requestData: Record<string, any>): StageInfo | Record<string, never> {
+  private getNextStageInfo(currentStatus: string, currentStageIndex: number, requestData: Record<string, unknown>): StageInfo | Record<string, never> {
     const nextStep = this.findNextStep(currentStatus, currentStageIndex, requestData);
     if (!nextStep) return {};
 
@@ -345,7 +343,7 @@ export class WorkflowNavigatorService {
 /**
  * Evaluate routing rule condition
  */
-function evaluateCondition(condition: ConditionConfig, requestData: Record<string, any>): boolean {
+function evaluateCondition(condition: ConditionConfig, requestData: Record<string, unknown>): boolean {
   const { field, operator, value } = condition;
   const fieldValue = requestData[field];
 
@@ -354,7 +352,7 @@ function evaluateCondition(condition: ConditionConfig, requestData: Record<strin
   }
 
   const fieldValueStr = String(fieldValue);
-  const numericValue = parseFloat(fieldValue);
+  const numericValue = parseFloat(fieldValue as string);
   const compareValue = parseFloat(value[0]);
 
   switch (operator) {

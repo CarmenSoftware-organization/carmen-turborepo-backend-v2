@@ -1,7 +1,7 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
@@ -19,7 +19,7 @@ export class UserBusinessUnitService {
     user_id: string,
     tenant_id: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'setDefaultTenant',
@@ -30,7 +30,7 @@ export class UserBusinessUnitService {
       UserBusinessUnitService.name,
     );
 
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'business-unit.set-default-tenant', service: 'business-unit' },
       { user_id: user_id, tenant_id: tenant_id, version: version },
     );
@@ -47,7 +47,7 @@ export class UserBusinessUnitService {
     return Result.ok(response.data);
   }
 
-  async getBusinessUnit(user_id: string, version: string): Promise<Result<any>> {
+  async getBusinessUnit(user_id: string, version: string): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getBusinessUnit',
@@ -57,7 +57,7 @@ export class UserBusinessUnitService {
       UserBusinessUnitService.name,
     );
 
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'business-unit.get-by-user-id', service: 'business-unit' },
       { user_id: user_id, version: version },
     );

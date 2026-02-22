@@ -68,7 +68,7 @@ export class RecipeEquipmentService {
   ) {}
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
       RecipeEquipmentService.name,
@@ -99,7 +99,7 @@ export class RecipeEquipmentService {
   }
 
   @TryCatch
-  async findAll(paginate: IPaginate): Promise<Result<any>> {
+  async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, paginate, tenant_id: this.bu_code },
       RecipeEquipmentService.name,
@@ -152,7 +152,7 @@ export class RecipeEquipmentService {
   }
 
   @TryCatch
-  async create(data: ICreateRecipeEquipment): Promise<Result<any>> {
+  async create(data: ICreateRecipeEquipment): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
       RecipeEquipmentService.name,
@@ -220,7 +220,7 @@ export class RecipeEquipmentService {
   }
 
   @TryCatch
-  async update(data: IUpdateRecipeEquipment): Promise<Result<any>> {
+  async update(data: IUpdateRecipeEquipment): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code },
       RecipeEquipmentService.name,
@@ -238,7 +238,7 @@ export class RecipeEquipmentService {
     }
 
     const { id, category_id, last_maintenance_date, next_maintenance_date, ...fields } = data;
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       ...fields,
       updated_by_id: this.userId,
       updated_at: new Date().toISOString(),
@@ -279,7 +279,7 @@ export class RecipeEquipmentService {
   }
 
   @TryCatch
-  async patch(data: IUpdateRecipeEquipment): Promise<Result<any>> {
+  async patch(data: IUpdateRecipeEquipment): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'patch', data, user_id: this.userId, tenant_id: this.bu_code },
       RecipeEquipmentService.name,
@@ -297,7 +297,7 @@ export class RecipeEquipmentService {
     }
 
     const { id, category_id, last_maintenance_date, next_maintenance_date, ...fields } = data;
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       ...fields,
       updated_by_id: this.userId,
       updated_at: new Date().toISOString(),
@@ -336,7 +336,7 @@ export class RecipeEquipmentService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code },
       RecipeEquipmentService.name,

@@ -4,7 +4,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ResponseLib } from 'src/libs/response.lib';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class NewsService {
     user_id: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -31,7 +31,7 @@ export class NewsService {
       NewsService.name,
     );
 
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'news.findAll', service: 'news' },
       { user_id, paginate, version },
     );
@@ -57,7 +57,7 @@ export class NewsService {
     return Result.ok(response.data);
   }
 
-  async findOne(id: string, user_id: string, version: string): Promise<any> {
+  async findOne(id: string, user_id: string, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -68,7 +68,7 @@ export class NewsService {
       NewsService.name,
     );
 
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'news.findOne', service: 'news' },
       { id, user_id, version },
     );
@@ -92,10 +92,10 @@ export class NewsService {
   }
 
   async create(
-    createNewsDto: any,
+    createNewsDto: Record<string, unknown>,
     user_id: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'create',
@@ -106,7 +106,7 @@ export class NewsService {
       NewsService.name,
     );
 
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'news.create', service: 'news' },
       { data: createNewsDto, user_id, version },
     );
@@ -132,10 +132,10 @@ export class NewsService {
 
   async update(
     id: string,
-    updateNewsDto: any,
+    updateNewsDto: Record<string, unknown>,
     user_id: string,
     version: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'update',
@@ -147,7 +147,7 @@ export class NewsService {
       NewsService.name,
     );
 
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'news.update', service: 'news' },
       { id, data: updateNewsDto, user_id, version },
     );
@@ -171,7 +171,7 @@ export class NewsService {
     return Result.ok(response.data);
   }
 
-  async delete(id: string, user_id: string, version: string): Promise<any> {
+  async delete(id: string, user_id: string, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'delete',
@@ -182,7 +182,7 @@ export class NewsService {
       NewsService.name,
     );
 
-    const res: Observable<any> = this.clusterService.send(
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'news.delete', service: 'news' },
       { id, user_id, version },
     );

@@ -68,11 +68,11 @@ async function bootstrap() {
     })
     .build();
 
-  const document_http = SwaggerModule.createDocument(app_http as any, config);
-  const document_https = SwaggerModule.createDocument(app_https as any, config);
+  const document_http = SwaggerModule.createDocument(app_http as unknown as Parameters<typeof SwaggerModule.createDocument>[0], config);
+  const document_https = SwaggerModule.createDocument(app_https as unknown as Parameters<typeof SwaggerModule.createDocument>[0], config);
 
-  // SwaggerModule.setup('swagger', app_http as any, document_http);
-  // SwaggerModule.setup('swagger', app_https as any, document_https);
+  // SwaggerModule.setup('swagger', app_http as unknown as Parameters<typeof SwaggerModule.createDocument>[0], document_http);
+  // SwaggerModule.setup('swagger', app_https as unknown as Parameters<typeof SwaggerModule.createDocument>[0], document_https);
 
   // fs.writeFileSync('./swagger.json', JSON.stringify(document_http));
   // fs.writeFileSync('./swagger_https.json', JSON.stringify(document_https));

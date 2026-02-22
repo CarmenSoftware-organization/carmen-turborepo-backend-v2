@@ -6,12 +6,12 @@ import { StdResponse } from '../std-response/std-response';
 export abstract class BaseHttpController {
   protected respond(
     response: Response,
-    result: Result<any> | any,
+    result: Result<unknown> | unknown,
     customStatus?: HttpStatus,
   ) {
     // Check if result is a Result object (has isOk method)
     if (result && typeof result.isOk === 'function') {
-      const stdResponse = StdResponse.fromResult<any, any>(result);
+      const stdResponse = StdResponse.fromResult<unknown, unknown>(result as Result<unknown, unknown>);
       const status = customStatus ?? stdResponse.status;
       response.status(status).send(stdResponse);
     } else {

@@ -216,7 +216,7 @@ describe('PurchaseRequestService', () => {
     it('should re-sequence details in both original and new PR', async () => {
       mockPrismaClient.tb_purchase_request.findFirst.mockResolvedValue(mockOriginalPr);
 
-      const detailUpdates: any[] = [];
+      const detailUpdates: Record<string, unknown>[] = [];
       mockPrismaClient.$transaction.mockImplementation(async (callback) => {
         const txPrisma = {
           tb_purchase_request: {
@@ -239,15 +239,15 @@ describe('PurchaseRequestService', () => {
       expect(detailUpdates.length).toBe(3);
 
       // New PR details should have sequence_no 1 and 2
-      const newPrUpdates = detailUpdates.filter(u => u.data.purchase_request_id === 'new-pr-123');
-      expect(newPrUpdates.some(u => u.data.sequence_no === 1)).toBe(true);
-      expect(newPrUpdates.some(u => u.data.sequence_no === 2)).toBe(true);
+      const newPrUpdates = detailUpdates.filter(u => (u.data as any).purchase_request_id === 'new-pr-123');
+      expect(newPrUpdates.some(u => (u.data as any).sequence_no === 1)).toBe(true);
+      expect(newPrUpdates.some(u => (u.data as any).sequence_no === 2)).toBe(true);
     });
 
     it('should copy header information from original PR', async () => {
       mockPrismaClient.tb_purchase_request.findFirst.mockResolvedValue(mockOriginalPr);
 
-      let createdPrData: any = null;
+      let createdPrData: Record<string, unknown> | null = null;
       mockPrismaClient.$transaction.mockImplementation(async (callback) => {
         const txPrisma = {
           tb_purchase_request: {
@@ -278,7 +278,7 @@ describe('PurchaseRequestService', () => {
     it('should update original PR doc_version', async () => {
       mockPrismaClient.tb_purchase_request.findFirst.mockResolvedValue(mockOriginalPr);
 
-      let originalPrUpdateData: any = null;
+      let originalPrUpdateData: Record<string, unknown> | null = null;
       mockPrismaClient.$transaction.mockImplementation(async (callback) => {
         const txPrisma = {
           tb_purchase_request: {

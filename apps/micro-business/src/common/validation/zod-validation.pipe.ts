@@ -13,7 +13,7 @@ import { Result, ErrorCode } from '../result';
  * Use this in HTTP controllers
  */
 @Injectable()
-export class ZodValidationPipe<T = any> implements PipeTransform<unknown, T> {
+export class ZodValidationPipe<T = unknown> implements PipeTransform<unknown, T> {
   private readonly logger = new Logger(ZodValidationPipe.name);
 
   constructor(private readonly schema: ZodSchema<T>) {}
@@ -51,14 +51,14 @@ export class ZodValidationPipe<T = any> implements PipeTransform<unknown, T> {
  * Use this in microservice handlers where you want to return Result types
  */
 @Injectable()
-export class ZodValidationResultPipe<T = any>
-  implements PipeTransform<unknown, Result<T, any>>
+export class ZodValidationResultPipe<T = unknown>
+  implements PipeTransform<unknown, Result<T, unknown>>
 {
   private readonly logger = new Logger(ZodValidationResultPipe.name);
 
   constructor(private readonly schema: ZodSchema<T>) {}
 
-  transform(value: unknown, metadata: ArgumentMetadata): Result<T, any> {
+  transform(value: unknown, metadata: ArgumentMetadata): Result<T, unknown> {
     const result = this.schema.safeParse(value);
 
     if (!result.success) {
@@ -118,7 +118,7 @@ export function createZodValidationResultPipe<T>(
 export function validateWithZod<T>(
   schema: ZodSchema<T>,
   data: unknown,
-): Result<T, any> {
+): Result<T, unknown> {
   const result = schema.safeParse(data);
 
   if (!result.success) {

@@ -286,7 +286,7 @@ export function calculatePercentage(value: number, total: number): number {
 /**
  * Safely parses a numeric value, returning default if invalid
  */
-export function safeNumber(value: any, defaultValue: number = 0): number {
+export function safeNumber(value: unknown, defaultValue: number = 0): number {
   const parsed = Number(value);
   return isNaN(parsed) ? defaultValue : parsed;
 }

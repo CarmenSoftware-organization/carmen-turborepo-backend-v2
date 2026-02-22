@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@repo/prisma-shared-schema-tenant';
+import { Prisma, PrismaClient } from '@repo/prisma-shared-schema-tenant';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 
 interface ProductAtLocation {
@@ -16,7 +16,7 @@ export class SpotCheckLogic {
   private readonly logger = new BackendLogger(SpotCheckLogic.name);
 
   async getProductsByLocation(
-    prisma: any,
+    prisma: PrismaClient,
     location_id: string,
   ): Promise<ProductAtLocation[]> {
     // Group inventory transactions by product to get on_hand_qty
@@ -28,12 +28,12 @@ export class SpotCheckLogic {
 
     // Filter products with non-zero stock
     const nonZeroStock = stockGrouped.filter(
-      (g: any) => g._sum.qty && !g._sum.qty.equals(0),
+      (g) => g._sum.qty && !g._sum.qty.equals(0),
     );
 
     if (nonZeroStock.length === 0) return [];
 
-    const productIds = nonZeroStock.map((g: any) => g.product_id);
+    const productIds = nonZeroStock.map((g) => g.product_id);
 
     // Get product details
     const productRecords = await prisma.tb_product.findMany({
@@ -43,11 +43,11 @@ export class SpotCheckLogic {
 
     // Build on_hand_qty map
     const qtyMap = new Map(
-      nonZeroStock.map((g: any) => [g.product_id, g._sum.qty as Prisma.Decimal]),
+      nonZeroStock.map((g) => [g.product_id, g._sum.qty as Prisma.Decimal]),
     );
 
     // Combine product details with on_hand_qty
-    return productRecords.map((p: any) => ({
+    return productRecords.map((p) => ({
       product_id: p.id,
       product_name: p.name,
       product_code: p.code,
@@ -81,6 +81,7 @@ export class SpotCheckLogic {
     products: ProductAtLocation[],
     spotCheckId: string,
     userId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): any[] {
     return products.map((p, index) => ({
       spot_check_id: spotCheckId,

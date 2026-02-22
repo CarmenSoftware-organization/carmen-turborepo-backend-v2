@@ -172,7 +172,7 @@ export class Config_DeliveryPointController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const paginate = PaginateQuery(query) as any;
+    const paginate = PaginateQuery(query) as unknown;
     const result = await this.deliveryPointService.findAll(
       user_id,
       bu_code,

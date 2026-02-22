@@ -80,7 +80,7 @@ export class CreditNoteService {
   ) { }
 
   @TryCatch
-  async findAll(paginate: IPaginate): Promise<Result<any>> {
+  async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate },
       CreditNoteService.name,
@@ -135,7 +135,7 @@ export class CreditNoteService {
   }
 
   @TryCatch
-  async findOne(id: string): Promise<Result<any>> {
+  async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
       CreditNoteService.name,
@@ -182,6 +182,7 @@ export class CreditNoteService {
   }
 
   @TryCatch
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value accessed by logic layer
   async create(data: any): Promise<Result<any>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
@@ -189,7 +190,6 @@ export class CreditNoteService {
     );
 
     const tx = await this.prismaService.$transaction(async (tx) => {
-      console.log('before create ', data)
       const creditNote = await tx.tb_credit_note.create({
         data: JSON.parse(
           JSON.stringify({
@@ -205,7 +205,7 @@ export class CreditNoteService {
 
       if (data.credit_note_detail?.add?.length) {
         await tx.tb_credit_note_detail.createMany({
-          data: data.credit_note_detail.add.map((detail: any) => ({
+          data: data.credit_note_detail.add.map((detail: Record<string, unknown>) => ({
             ...detail,
             sequence_no: seq++,
             credit_note_id: creditNote.id,
@@ -221,7 +221,7 @@ export class CreditNoteService {
   }
 
   @TryCatch
-  async update(data: any): Promise<Result<any>> {
+  async update(data: any): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code },
       CreditNoteService.name,
@@ -244,7 +244,7 @@ export class CreditNoteService {
           where: {
             id: {
               in: data.credit_note_detail.delete.map(
-                (detail: any) => detail.id,
+                (detail: Record<string, unknown>) => detail.id,
               ),
             },
             credit_note_id: data.id,
@@ -265,7 +265,7 @@ export class CreditNoteService {
         let seq = Number(lastCreditNoteDetail?.sequence_no) + 1;
 
         await tx.tb_credit_note_detail.createMany({
-          data: data.credit_note_detail.add.map((detail: any) => ({
+          data: data.credit_note_detail.add.map((detail: Record<string, unknown>) => ({
             ...detail,
             credit_note_id: creditNote.id,
             created_by_id: this.userId,
@@ -293,7 +293,7 @@ export class CreditNoteService {
   }
 
   @TryCatch
-  async delete(id: string): Promise<Result<any>> {
+  async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code },
       CreditNoteService.name,

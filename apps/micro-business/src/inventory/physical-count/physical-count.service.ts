@@ -49,7 +49,7 @@ export class PhysicalCountService {
     id: string,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findOne', id, user_id, tenant_id },
       PhysicalCountService.name,
@@ -100,7 +100,7 @@ export class PhysicalCountService {
     paginate: IPaginate,
     location_ids: string[] = [],
     period_id?: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAll', user_id, tenant_id, paginate, location_ids, period_id },
       PhysicalCountService.name,
@@ -184,7 +184,7 @@ export class PhysicalCountService {
     data: IPhysicalCountCreate,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id, tenant_id },
       PhysicalCountService.name,
@@ -316,7 +316,7 @@ export class PhysicalCountService {
     data: IPhysicalCountSave,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'save', data, user_id, tenant_id },
       PhysicalCountService.name,
@@ -401,7 +401,7 @@ export class PhysicalCountService {
     data: { items: Array<{ id: string; actual_qty: number }> },
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'reviewItems', id, data, user_id, tenant_id },
       PhysicalCountService.name,
@@ -497,7 +497,7 @@ export class PhysicalCountService {
     data: IPhysicalCountSubmit,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'submit', data, user_id, tenant_id },
       PhysicalCountService.name,
@@ -654,7 +654,7 @@ export class PhysicalCountService {
     id: string,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'delete', id, user_id, tenant_id },
       PhysicalCountService.name,
@@ -716,7 +716,7 @@ export class PhysicalCountService {
     physical_count_detail_id: string,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findDetailComments', physical_count_detail_id, user_id, tenant_id },
       PhysicalCountService.name,
@@ -748,7 +748,7 @@ export class PhysicalCountService {
     data: IPhysicalCountDetailCommentCreate,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'createDetailComment', data, user_id, tenant_id },
       PhysicalCountService.name,
@@ -794,7 +794,7 @@ export class PhysicalCountService {
     data: IPhysicalCountDetailCommentUpdate,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'updateDetailComment', data, user_id, tenant_id },
       PhysicalCountService.name,
@@ -840,7 +840,7 @@ export class PhysicalCountService {
     id: string,
     user_id: string,
     tenant_id: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'deleteDetailComment', id, user_id, tenant_id },
       PhysicalCountService.name,
@@ -886,6 +886,7 @@ export class PhysicalCountService {
     user_id: string,
   ): Promise<string> {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
       const res: Observable<any> = this.masterService.send(
         { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
         { type: 'SI', user_id, bu_code },
@@ -893,9 +894,9 @@ export class PhysicalCountService {
       const response = await firstValueFrom(res);
       const patterns = response.data;
 
-      let datePattern: any;
-      let runningPattern: any;
-      patterns.forEach((pattern: any) => {
+      let datePattern: Record<string, unknown> | undefined;
+      let runningPattern: Record<string, unknown> | undefined;
+      patterns.forEach((pattern: Record<string, unknown>) => {
         if (pattern.type === 'date') {
           datePattern = pattern;
         } else if (pattern.type === 'running') {
@@ -905,6 +906,7 @@ export class PhysicalCountService {
 
       const getDate = new Date(siDate);
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
       const generateCodeRes: Observable<any> = this.masterService.send(
         { cmd: 'running-code.generate-code', service: 'running-codes' },
         {
@@ -928,6 +930,7 @@ export class PhysicalCountService {
     user_id: string,
   ): Promise<string> {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
       const res: Observable<any> = this.masterService.send(
         { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
         { type: 'SO', user_id, bu_code },
@@ -935,9 +938,9 @@ export class PhysicalCountService {
       const response = await firstValueFrom(res);
       const patterns = response.data;
 
-      let datePattern: any;
-      let runningPattern: any;
-      patterns.forEach((pattern: any) => {
+      let datePattern: Record<string, unknown> | undefined;
+      let runningPattern: Record<string, unknown> | undefined;
+      patterns.forEach((pattern: Record<string, unknown>) => {
         if (pattern.type === 'date') {
           datePattern = pattern;
         } else if (pattern.type === 'running') {
@@ -947,6 +950,7 @@ export class PhysicalCountService {
 
       const getDate = new Date(soDate);
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
       const generateCodeRes: Observable<any> = this.masterService.send(
         { cmd: 'running-code.generate-code', service: 'running-codes' },
         {

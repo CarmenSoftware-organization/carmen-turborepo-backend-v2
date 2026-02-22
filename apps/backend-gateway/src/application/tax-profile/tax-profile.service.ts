@@ -3,7 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { CreateTaxProfileDto } from './dto/tax-profile.dto';
 import { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
-import { Result } from '@/common';
+import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -23,7 +23,7 @@ export class TaxProfileService {
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -33,7 +33,7 @@ export class TaxProfileService {
       TaxProfileService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'tax-profile.findOne', service: 'tax-profile' },
       { id: id, user_id: user_id, bu_code: bu_code, version: version },
     );
@@ -55,7 +55,7 @@ export class TaxProfileService {
     bu_code: string,
     paginate: IPaginate,
     version: string,
-  ): Promise<Result<any>> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -67,7 +67,7 @@ export class TaxProfileService {
       TaxProfileService.name,
     );
 
-    const res: Observable<any> = this.masterService.send(
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'tax-profile.findAll', service: 'tax-profile' },
       {
         user_id: user_id,

@@ -6,10 +6,10 @@ export interface ICreateRecipeCuisine {
   note?: string | null;
   is_active?: boolean;
   region: enum_cuisine_region;
-  popular_dishes?: any;
-  key_ingredients?: any;
-  info?: any | null;
-  dimension?: any | null;
+  popular_dishes?: string[];
+  key_ingredients?: string[];
+  info?: Record<string, unknown> | null;
+  dimension?: unknown[] | null;
 }
 
 export interface IUpdateRecipeCuisine {
@@ -19,8 +19,8 @@ export interface IUpdateRecipeCuisine {
   note?: string | null;
   is_active?: boolean;
   region?: enum_cuisine_region;
-  popular_dishes?: any;
-  key_ingredients?: any;
-  info?: any | null;
-  dimension?: any | null;
+  popular_dishes?: string[];
+  key_ingredients?: string[];
+  info?: Record<string, unknown> | null;
+  dimension?: unknown[] | null;
 }
