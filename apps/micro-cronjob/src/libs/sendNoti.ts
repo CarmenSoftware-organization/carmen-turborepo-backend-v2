@@ -22,12 +22,9 @@ export async function sendNotification(data: {
     );
 
     if (!response.ok) {
-      console.error('Failed to send notification:', response.statusText);
     } else {
-      console.log('Notification sent successfully');
       return response.json();
     }
   } catch (error) {
-    console.error('Error sending notification:', error);
   }
 }

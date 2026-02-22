@@ -27,7 +27,6 @@ export class DefaultLokiConfig implements LokiConfig {
   format = 'json';
   replaceTimestamp = true;
   onConnectionError = (error: any) => {
-    console.error('Loki connection error:', error);
   };
 }
 

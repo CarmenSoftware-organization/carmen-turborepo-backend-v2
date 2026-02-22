@@ -68,18 +68,13 @@ const app = new Elysia()
 // Initialize dynamic cron job manager
 cronJobManager.loadCronJobs()
 
-console.log(`🌐 API endpoints:`)
-console.log(`   ⏰ CronJobs: http://${service_host}:${service_port}/api/cronjobs`)
-
 // Graceful shutdown
 process.on('SIGINT', () => {
-  console.log('\n🛑 Shutting down server...')
   cronJobManager.stopAllJobs()
   process.exit(0)
 })
 
 process.on('SIGTERM', () => {
-  console.log('\n🛑 Shutting down server...')
   cronJobManager.stopAllJobs()
   process.exit(0)
 })

@@ -7,7 +7,9 @@
   "scripts": {
     "build": "nest build",
     "dev": "nest start --watch",
+    "dev:notification": "nest start --watch",
     "dev:prod": "nest start",
+    "check-types": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -27,7 +29,7 @@
     "@nestjs/platform-express": "^11.0.11",
     "@nestjs/platform-socket.io": "^11.0.11",
     "@nestjs/websockets": "^11.0.11",
-    "@repo/prisma-shared-schema-platform": "workspace:*",
+    "@repo/prisma-shared-schema-platform": "*",
     "@sentry/nestjs": "^10.11.0",
     "dotenv": "^17.0.0",
     "nest-winston": "^1.10.2",

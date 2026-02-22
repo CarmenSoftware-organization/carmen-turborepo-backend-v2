@@ -3,8 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Starting seed process...')
-
   // สร้าง test users
   const user1 = await prisma.user.upsert({
     where: { id: 'user1' },
@@ -44,8 +42,6 @@ async function main() {
       isOnline: false
     }
   })
-
-  console.log('✅ Created/Updated 3 test users')
 
   // System Notifications (ส่งให้ทุกคน)
   const systemMessages = [
@@ -103,8 +99,6 @@ async function main() {
     })
   }
 
-  console.log('✅ Created/Updated 3 default cron jobs')
-
   // สร้างสถิติ
   const totalUsers = await prisma.user.count()
   const totalCronJobs = await prisma.cronJob.count()
@@ -112,26 +106,10 @@ async function main() {
     where: { isActive: true }
   })
 
-  console.log('\n📊 Seed Summary:')
-  console.log(`   👥 Users: ${totalUsers}`)
-  console.log(`   👑 Admin Users: 1 (Alice)`)
-  console.log(`   👤 Regular Users: 2 (Bob, Charlie)`)
-  console.log(`   ⏰ Total Cron Jobs: ${totalCronJobs}`)
-  console.log(`   ✅ Active Cron Jobs: ${activeCronJobs}`)
-  console.log('\n🔐 Test Credentials:')
-  console.log('   Admin: alice@example.com / password123')
-  console.log('   User:  bob@example.com / password456')
-  console.log('   User:  charlie@example.com / password789')
-  console.log('\n⏰ Default Cron Jobs:')
-  console.log('   📝 notification_check: Every minute (active)')
-  console.log('   📋 daily_summary: Daily at 9:00 AM (active)')
-  console.log('   🧹 weekly_cleanup: Weekly on Sunday 2:00 AM (inactive)')
-  console.log('\n🎉 Seed completed successfully!')
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Seed failed:', e)
     process.exit(1)
   })
   .finally(async () => {

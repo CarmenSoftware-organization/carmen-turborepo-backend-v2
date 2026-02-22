@@ -12,18 +12,13 @@ class CronJobManager {
   private readonly jobs: Map<string, CronJobInstance> = new Map()
 
   async loadCronJobs() {
-    console.log('🔄 Loading active cron jobs from database...')
-
     try {
       const activeCronJobs = await cronJobService.getActiveCronJobs()
 
       for (const cronJob of activeCronJobs) {
         await this.addCronJob(cronJob)
       }
-
-      console.log(`✅ Loaded ${activeCronJobs.length} active cron jobs`)
     } catch (error) {
-      console.error('❌ Error loading cron jobs:', error)
     }
   }
 
@@ -36,7 +31,6 @@ class CronJobManager {
 
       // Check if this is a one-time job that has already passed
       if (this.isOneTimeJobExpired(cronJob.cronExpression)) {
-        console.log(`⏰ One-time job ${cronJob.name} already passed, executing immediately`)
         await this.executeJob(cronJob.jobType, cronJob.jobData)
 
         // Mark as inactive since it ran
@@ -45,8 +39,6 @@ class CronJobManager {
       }
 
       const task = cron.schedule(cronJob.cronExpression, async () => {
-        console.log(`⏰ Executing cron job: ${cronJob.name} (${cronJob.jobType})`)
-
         const startTime = new Date()
 
         try {
@@ -58,16 +50,12 @@ class CronJobManager {
           // Update last run time
           await cronJobService.updateLastRun(cronJob.id, startTime, nextRun)
 
-          console.log(`✅ Cron job completed: ${cronJob.name}`)
-
           // If this is a one-time job, deactivate it
           if (this.isOneTimeJob(cronJob.cronExpression)) {
             await cronJobService.update(cronJob.id, { isActive: false })
             this.removeCronJob(cronJob.id)
-            console.log(`🏁 One-time job ${cronJob.name} completed and deactivated`)
           }
         } catch (error) {
-          console.error(`❌ Cron job failed: ${cronJob.name}`, error)
         }
       })
 
@@ -81,9 +69,7 @@ class CronJobManager {
         jobType: cronJob.jobType
       })
 
-      console.log(`✅ Added cron job: ${cronJob.name} (${cronJob.cronExpression})`)
     } catch (error) {
-      console.error(`❌ Error adding cron job ${cronJob.name}:`, error)
     }
   }
 
@@ -109,11 +95,9 @@ class CronJobManager {
         // Use UTC for comparison since cron expressions are in UTC
         const targetDate = new Date(Date.UTC(now.getUTCFullYear(), parseInt(month) - 1, parseInt(day), parseInt(hour), parseInt(min)))
 
-        console.log(`🕐 Checking expiry: Now UTC=${now.toISOString()}, Target UTC=${targetDate.toISOString()}`)
         return targetDate < now
       }
     } catch (error) {
-      console.error('Error checking if one-time job expired:', error)
     }
 
     return false
@@ -125,7 +109,6 @@ class CronJobManager {
       jobInstance.task.stop()
       jobInstance.task.destroy()
       this.jobs.delete(id)
-      console.log(`🗑️ Removed cron job: ${jobInstance.name}`)
     }
   }
 
@@ -151,13 +134,11 @@ class CronJobManager {
         await this.executeCustomJob(jobData)
         break
       default:
-        console.warn(`Unknown job type: ${jobType}`)
     }
   }
 
   // Public method for direct execution (from API)
   async executeJobDirect(jobType: string, jobData?: string) {
-    console.log(`🚀 Direct execution of job type: ${jobType}`)
     await this.executeJob(jobType, jobData)
   }
 
@@ -165,10 +146,8 @@ class CronJobManager {
     try {
       // mock logic: check for scheduled notifications to send
       // todo: integrate with notification service
-      console.log('Checking for scheduled notifications to send...')
 
     } catch (error) {
-      console.error('❌ Error in notification check job:', error)
     }
   }
 
@@ -176,27 +155,22 @@ class CronJobManager {
     try {
       // mock logic: send daily summary to users
       // todo: integrate with notification service
-      console.log('Sending daily summary to users...')
     } catch (error) {
-      console.error('❌ Error in daily summary job:', error)
     }
   }
 
   private async executeCustomJob(jobData?: string) {
     try {
       if (!jobData) {
-        console.log('Custom job executed with no data')
         return
       }
 
       const data = JSON.parse(jobData)
-      console.log('Executing custom job with data:', data)
 
       // Add custom job logic here based on data
       // For example, send custom notifications, cleanup tasks, etc.
 
     } catch (error) {
-      console.error('❌ Error in custom job:', error)
     }
   }
 
@@ -216,7 +190,6 @@ class CronJobManager {
   }
 
   stopAllJobs() {
-    console.log('🛑 Stopping all cron jobs...')
     for (const [id, _] of this.jobs) {
       this.removeCronJob(id)
     }

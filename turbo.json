@@ -26,45 +26,26 @@
     "dev:gateway": {
       "cache": false
     },
-    "dev:authen": {
-      "cache": false
-    },
-    "dev:cluster": {
+    "dev:business": {
       "cache": false
     },
     "dev:file": {
       "cache": false
     },
-    "dev:license": {
-      "cache": false
-    },
     "dev:notification": {
-      "cache": false
-    },
-    "dev:tenant:inventory": {
-      "cache": false
-    },
-    "dev:tenant:master": {
-      "cache": false
-    },
-    "dev:tenant:procurement": {
-      "cache": false
-    },
-    "dev:tenant:recipe": {
       "cache": false
     },
     "dev:keycloak-api": {
       "cache": false
     },
-    "dev:business": {
+    "dev:cronjob": {
       "cache": false
     },
     "dev:base": {
       "dependsOn": [
         "^db:generate",
         "^build:package",
-        "dev:authen",
-        "dev:cluster",
+        "dev:business",
         "dev:gateway",
         "dev:keycloak-api"
       ],
@@ -75,20 +56,9 @@
       "dependsOn": [
         "^db:generate",
         "^build:package",
-        "prod:authen",
-        "prod:cluster",
-        "prod:gateway"
+        "start:prod"
       ],
       "cache": true,
-      "persistent": true
-    },
-    "dev:tenant": {
-      "dependsOn": [
-        "dev:tenant:master",
-        "dev:tenant:inventory",
-        "dev:tenant:procurement"
-      ],
-      "cache": false,
       "persistent": true
     },
     "dev:prod": {

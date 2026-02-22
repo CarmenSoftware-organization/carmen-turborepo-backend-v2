@@ -39,7 +39,6 @@ function validateNotificationJobData(jobData: string): string | null {
 
     return null
   } catch (error) {
-    console.error('JobData validation error:', error)
     return 'jobData must be valid JSON format'
   }
 }
@@ -50,7 +49,6 @@ export const cronJobController = {
       const cronJobs = await cronJobService.getAll()
       return { cronJobs }
     } catch (error) {
-      console.error('Error getting cron jobs:', error)
       ctx.set.status = 500
       return { error: 'Failed to get cron jobs' }
     }
@@ -68,7 +66,6 @@ export const cronJobController = {
 
       return { cronJob }
     } catch (error) {
-      console.error('Error getting cron job:', error)
       ctx.set.status = 500
       return { error: 'Failed to get cron job' }
     }
@@ -117,7 +114,7 @@ export const cronJobController = {
         type: 'info',
         category: 'system',
         userIds: [] // Empty array since we are using recipientRole
-      }).catch(err => console.error('Error sending cron job creation notification:', err))
+      }).catch(() => {})
 
       // Alternatively, if you have a WebSocket function to notify admins:
       //await sendCronJobStatusToAdmins(cronJob.id, 'started', `Cron job "${cronJob.name}" created and ${cronJob.isActive ? 'started' : 'created as inactive'}`)
@@ -125,7 +122,6 @@ export const cronJobController = {
       ctx.set.status = 201
       return { cronJob }
     } catch (error) {
-      console.error('Error creating cron job:', error)
       ctx.set.status = 500
       return { error: 'Failed to create cron job' }
     }
@@ -167,7 +163,6 @@ export const cronJobController = {
 
       return { cronJob }
     } catch (error) {
-      console.error('Error updating cron job:', error)
       ctx.set.status = 500
       return { error: 'Failed to update cron job' }
     }
@@ -191,7 +186,6 @@ export const cronJobController = {
 
       return { message: 'Cron job deleted successfully' }
     } catch (error) {
-      console.error('Error deleting cron job:', error)
       ctx.set.status = 500
       return { error: 'Failed to delete cron job' }
     }
@@ -217,11 +211,10 @@ export const cronJobController = {
         type: 'info',
         category: 'system',
         userIds: [] // Empty array since we are using recipientRole
-      }).catch(err => console.error('Error sending cron job start notification:', err))
+      }).catch(() => {})
 
       return { cronJob, message: 'Cron job started successfully' }
     } catch (error) {
-      console.error('Error starting cron job:', error)
       ctx.set.status = 500
       return { error: 'Failed to start cron job' }
     }
@@ -246,11 +239,10 @@ export const cronJobController = {
         type: 'warning',
         category: 'system',
         userIds: [] // Empty array since we are using recipientRole
-      }).catch(err => console.error('Error sending cron job stop notification:', err))
+      }).catch(() => {})
 
       return { cronJob, message: 'Cron job stopped successfully' }
     } catch (error) {
-      console.error('Error stopping cron job:', error)
       ctx.set.status = 500
       return { error: 'Failed to stop cron job' }
     }
@@ -271,7 +263,6 @@ export const cronJobController = {
 
       return { message: `Cron job "${cronJob.name}" executed successfully` }
     } catch (error) {
-      console.error('Error executing cron job:', error)
       ctx.set.status = 500
       return { error: 'Failed to execute cron job' }
     }
@@ -282,7 +273,6 @@ export const cronJobController = {
       const activeJobs = cronJobManager.getActiveJobs()
       return { activeJobsInMemory: activeJobs }
     } catch (error) {
-      console.error('Error getting active jobs in memory:', error)
       ctx.set.status = 500
       return { error: 'Failed to get active jobs in memory' }
     }
