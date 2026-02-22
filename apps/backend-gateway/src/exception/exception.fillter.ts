@@ -29,7 +29,8 @@ export class ExceptionFilter {
       const zodError = exception.getZodError();
       const fieldErrors = zodError.errors.map((err) => {
         const path = err.path.length > 0 ? err.path.join('.') : '(root)';
-        return `${path}: ${err.message}`;
+        const detail = 'expected' in err ? ` (expected ${err.expected}, received ${err.received})` : '';
+        return `${path}: ${err.message}${detail}`;
       });
       message = fieldErrors;
       errorResponse = {
@@ -39,6 +40,7 @@ export class ExceptionFilter {
           field: err.path.join('.'),
           message: err.message,
           code: err.code,
+          ...('expected' in err ? { expected: err.expected, received: err.received } : {}),
         })),
       };
     } else if (exception instanceof HttpException) {
