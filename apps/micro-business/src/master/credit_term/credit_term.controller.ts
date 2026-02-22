@@ -3,7 +3,7 @@ import { CreditTermService } from './credit_term.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class CreditTermController extends BaseMicroserviceController {
@@ -14,7 +14,7 @@ export class CreditTermController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.bu_code,
       user_id: payload.user_id,
@@ -25,7 +25,7 @@ export class CreditTermController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'credit-term.findOne', service: 'credit-term' })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, CreditTermController.name);
     const { id, version } = payload;
     this.creditTermService.userId = payload.user_id;
@@ -38,7 +38,7 @@ export class CreditTermController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'credit-term.findAll', service: 'credit-term' })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, CreditTermController.name);
     const { paginate, version } = payload;
     this.creditTermService.userId = payload.user_id;
@@ -51,7 +51,7 @@ export class CreditTermController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'credit-term.create', service: 'credit-term' })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, CreditTermController.name);
     const { data, version } = payload;
     this.creditTermService.userId = payload.user_id;
@@ -64,7 +64,7 @@ export class CreditTermController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'credit-term.update', service: 'credit-term' })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, CreditTermController.name);
     const { data, version } = payload;
     this.creditTermService.userId = payload.user_id;
@@ -77,7 +77,7 @@ export class CreditTermController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'credit-term.delete', service: 'credit-term' })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, CreditTermController.name);
     const { id, version } = payload;
     this.creditTermService.userId = payload.user_id;

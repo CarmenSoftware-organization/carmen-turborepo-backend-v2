@@ -7,7 +7,7 @@ import {
 } from './interface/business-unit.interface';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class BusinessUnitController extends BaseMicroserviceController {
@@ -18,7 +18,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -29,7 +29,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'business-unit.create', service: 'business-unit' })
-  async createBusinessUnit(@Payload() payload: any): Promise<any> {
+  async createBusinessUnit(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'createBusinessUnit', payload: payload },
       BusinessUnitController.name,
@@ -50,7 +50,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'business-unit.update', service: 'business-unit' })
-  async updateBusinessUnit(@Payload() payload: any): Promise<any> {
+  async updateBusinessUnit(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'updateBusinessUnit', payload: payload },
       BusinessUnitController.name,
@@ -71,7 +71,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'business-unit.delete', service: 'business-unit' })
-  async deleteBusinessUnit(@Payload() payload: any): Promise<any> {
+  async deleteBusinessUnit(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'deleteBusinessUnit', payload: payload },
       BusinessUnitController.name,
@@ -85,7 +85,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'business-unit.list', service: 'business-unit' })
-  async listBusinessUnit(@Payload() payload: any): Promise<any> {
+  async listBusinessUnit(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'listBusinessUnit', payload: payload },
       BusinessUnitController.name,
@@ -97,7 +97,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'business-unit.get-by-id', service: 'business-unit' })
-  async getBusinessUnitById(@Payload() payload: any): Promise<any> {
+  async getBusinessUnitById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'getBusinessUnitById', payload: payload },
       BusinessUnitController.name,
@@ -113,7 +113,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
     cmd: 'business-unit.get-by-user-id',
     service: 'business-unit',
   })
-  async getBusinessUnitByUserId(@Payload() payload: any): Promise<any> {
+  async getBusinessUnitByUserId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'getBusinessUnitByUserId', payload: payload },
       BusinessUnitController.name,
@@ -129,7 +129,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
     cmd: 'business-unit.set-default-tenant',
     service: 'business-unit',
   })
-  async setDefaultTenant(@Payload() payload: any): Promise<any> {
+  async setDefaultTenant(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'setDefaultTenant', payload: payload },
       BusinessUnitController.name,
@@ -148,7 +148,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
     cmd: 'user-business-unit.findOne',
     service: 'business-unit',
   })
-  async userBusinessUnitFindOne(@Payload() payload: any): Promise<any> {
+  async userBusinessUnitFindOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'userBusinessUnitFindOne', payload: payload },
       BusinessUnitController.name,
@@ -163,7 +163,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
     cmd: 'user-business-unit.findAll',
     service: 'business-unit',
   })
-  async userBusinessUnitFindAll(@Payload() payload: any): Promise<any> {
+  async userBusinessUnitFindAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'userBusinessUnitFindAll', payload: payload },
       BusinessUnitController.name,
@@ -178,7 +178,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
     cmd: 'user-business-unit.create',
     service: 'business-unit',
   })
-  async userBusinessUnitCreate(@Payload() payload: any): Promise<any> {
+  async userBusinessUnitCreate(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'userBusinessUnitCreate', payload: payload },
       BusinessUnitController.name,
@@ -193,7 +193,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
     cmd: 'user-business-unit.update',
     service: 'business-unit',
   })
-  async userBusinessUnitUpdate(@Payload() payload: any): Promise<any> {
+  async userBusinessUnitUpdate(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'userBusinessUnitUpdate', payload: payload },
       BusinessUnitController.name,
@@ -208,7 +208,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
     cmd: 'user-business-unit.delete',
     service: 'business-unit',
   })
-  async userBusinessUnitDelete(@Payload() payload: any): Promise<any> {
+  async userBusinessUnitDelete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'userBusinessUnitDelete', payload: payload },
       BusinessUnitController.name,
@@ -225,7 +225,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
     cmd: 'business-unit.get-config-by-key',
     service: 'business-unit',
   })
-  async getBusinessUnitConfigByKey(@Payload() payload: any): Promise<any> {
+  async getBusinessUnitConfigByKey(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'getBusinessUnitConfigByKey', payload: payload },
       BusinessUnitController.name,
@@ -253,7 +253,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
     cmd: 'business-unit.patch-configs',
     service: 'business-unit',
   })
-  async patchBusinessUnitConfigs(@Payload() payload: any): Promise<any> {
+  async patchBusinessUnitConfigs(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'patchBusinessUnitConfigs', payload: payload },
       BusinessUnitController.name,
@@ -282,7 +282,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
     cmd: 'business-unit.get-system-configs',
     service: 'business-unit',
   })
-  async getSystemBusinessUnitConfigs(@Payload() payload: any): Promise<any> {
+  async getSystemBusinessUnitConfigs(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'getSystemBusinessUnitConfigs', payload: payload },
       BusinessUnitController.name,
@@ -306,7 +306,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
     cmd: 'business-unit.get-configs',
     service: 'business-unit',
   })
-  async getBusinessUnitConfigs(@Payload() payload: any): Promise<any> {
+  async getBusinessUnitConfigs(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'getBusinessUnitConfigs', payload: payload },
       BusinessUnitController.name,
@@ -332,7 +332,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
     cmd: 'business-unit.put-configs',
     service: 'business-unit',
   })
-  async putBusinessUnitConfigs(@Payload() payload: any): Promise<any> {
+  async putBusinessUnitConfigs(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'putBusinessUnitConfigs', payload: payload },
       BusinessUnitController.name,
@@ -360,7 +360,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
     cmd: 'business-unit.post-configs',
     service: 'business-unit',
   })
-  async postBusinessUnitConfigs(@Payload() payload: any): Promise<any> {
+  async postBusinessUnitConfigs(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'postBusinessUnitConfigs', payload: payload },
       BusinessUnitController.name,
@@ -388,7 +388,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
     cmd: 'business-unit.delete-config-by-key',
     service: 'business-unit',
   })
-  async deleteBusinessUnitConfigByKey(@Payload() payload: any): Promise<any> {
+  async deleteBusinessUnitConfigByKey(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'deleteBusinessUnitConfigByKey', payload: payload },
       BusinessUnitController.name,
@@ -417,8 +417,8 @@ export class BusinessUnitController extends BaseMicroserviceController {
     service: 'business-unit',
   })
   async getBusinessUnitConfigByKeyExists(
-    @Payload() payload: any,
-  ): Promise<any> {
+    @Payload() payload: MicroservicePayload,
+  ): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'getBusinessUnitConfigByKeyExists', payload: payload },
       BusinessUnitController.name,
@@ -446,7 +446,7 @@ export class BusinessUnitController extends BaseMicroserviceController {
     cmd: 'business-unit.find-current-tenant-config-by-key',
     service: 'business-unit',
   })
-  async findCurrentTenantConfigByKey(@Payload() payload: any): Promise<any> {
+  async findCurrentTenantConfigByKey(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findCurrentTenantConfigByKey', payload: payload },
       BusinessUnitController.name,

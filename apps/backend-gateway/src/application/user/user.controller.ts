@@ -12,7 +12,7 @@ import {
   Put,
   Body,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { UserService } from './user.service';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -125,7 +125,7 @@ export class UserController extends BaseHttpController {
     },
   })
   async getPermission(
-    @Req() req: any,
+    @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
   ) {

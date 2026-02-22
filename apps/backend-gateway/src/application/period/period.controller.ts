@@ -100,7 +100,7 @@ export class PeriodController extends BaseHttpController {
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
   async create(
-    @Body() createDto: any,
+    @Body() createDto: Record<string, unknown>,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -124,7 +124,7 @@ export class PeriodController extends BaseHttpController {
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() updateDto: any,
+    @Body() updateDto: Record<string, unknown>,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',

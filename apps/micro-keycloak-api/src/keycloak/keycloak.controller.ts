@@ -4,7 +4,7 @@ import { KeycloakService } from './keycloak.service';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { CreateKeycloakUserDto, UpdateKeycloakUserDto } from './interface/keycloak.interface';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController, Result, ErrorCode } from '@/common';
+import { BaseMicroserviceController, Result, ErrorCode, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class KeycloakController extends BaseMicroserviceController {
@@ -16,7 +16,7 @@ export class KeycloakController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code || payload.realm,
       user_id: payload.user_id || payload.userId,
@@ -29,7 +29,7 @@ export class KeycloakController extends BaseMicroserviceController {
   // ==================== Authentication ====================
 
   @MessagePattern({ cmd: 'keycloak.auth.login', service: 'keycloak' })
-  async handleLogin(@Payload() payload: any): Promise<any> {
+  async handleLogin(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'handleLogin', email: payload.email },
       KeycloakController.name,
@@ -47,14 +47,14 @@ export class KeycloakController extends BaseMicroserviceController {
         token_type: tokenResponse.token_type,
       });
       return this.handleResult(result);
-    } catch (error: any) {
-      const result = Result.error(error.message || 'Authentication failed', ErrorCode.UNAUTHENTICATED);
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Authentication failed', ErrorCode.UNAUTHENTICATED);
       return this.handleResult(result);
     }
   }
 
   @MessagePattern({ cmd: 'keycloak.auth.logout', service: 'keycloak' })
-  async handleLogout(@Payload() payload: any): Promise<any> {
+  async handleLogout(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'handleLogout' },
       KeycloakController.name,
@@ -67,14 +67,14 @@ export class KeycloakController extends BaseMicroserviceController {
       );
       const result = Result.ok({ message: 'Logout successful' });
       return this.handleResult(result);
-    } catch (error: any) {
-      const result = Result.error(error.message || 'Logout failed', ErrorCode.INTERNAL);
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Logout failed', ErrorCode.INTERNAL);
       return this.handleResult(result);
     }
   }
 
   @MessagePattern({ cmd: 'keycloak.auth.logoutById', service: 'keycloak' })
-  async handleLogoutById(@Payload() payload: any): Promise<any> {
+  async handleLogoutById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'handleLogoutById' },
       KeycloakController.name,
@@ -85,17 +85,16 @@ export class KeycloakController extends BaseMicroserviceController {
       await runWithAuditContext(auditContext, () =>
         this.keycloakService.logoutUserById(user_id, realm)
       );
-      return { success: true };
-    } catch (error: any) {
-      return {
-        success: false,
-        error: error.message || 'Logout failed',
-      };
+      const result = Result.ok({ success: true });
+      return this.handleResult(result);
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Logout failed', ErrorCode.INTERNAL);
+      return this.handleResult(result);
     }
   }
 
   @MessagePattern({ cmd: 'keycloak.auth.refresh', service: 'keycloak' })
-  async handleRefreshToken(@Payload() payload: any): Promise<any> {
+  async handleRefreshToken(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'handleRefreshToken' },
       KeycloakController.name,
@@ -113,14 +112,14 @@ export class KeycloakController extends BaseMicroserviceController {
         token_type: tokenResponse.token_type,
       });
       return this.handleResult(result);
-    } catch (error: any) {
-      const result = Result.error(error.message || 'Token refresh failed', ErrorCode.UNAUTHENTICATED);
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Token refresh failed', ErrorCode.UNAUTHENTICATED);
       return this.handleResult(result);
     }
   }
 
   @MessagePattern({ cmd: 'keycloak.auth.getUserInfo', service: 'keycloak' })
-  async handleGetUserInfo(@Payload() payload: any): Promise<any> {
+  async handleGetUserInfo(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'handleGetUserInfo' },
       KeycloakController.name,
@@ -133,8 +132,8 @@ export class KeycloakController extends BaseMicroserviceController {
       );
       const result = Result.ok(userInfo);
       return this.handleResult(result);
-    } catch (error: any) {
-      const result = Result.error(error.message || 'Failed to get user info', ErrorCode.INTERNAL);
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Failed to get user info', ErrorCode.INTERNAL);
       return this.handleResult(result);
     }
   }
@@ -142,7 +141,7 @@ export class KeycloakController extends BaseMicroserviceController {
   // ==================== User Management ====================
 
   @MessagePattern({ cmd: 'keycloak.users.create', service: 'keycloak' })
-  async handleCreateUser(@Payload() payload: any): Promise<any> {
+  async handleCreateUser(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'handleCreateUser', payload },
       KeycloakController.name,
@@ -156,14 +155,14 @@ export class KeycloakController extends BaseMicroserviceController {
       );
       const result = Result.ok({ userId });
       return this.handleResult(result, HttpStatus.CREATED);
-    } catch (error: any) {
-      const result = Result.error(error.message || 'Failed to create user', ErrorCode.INTERNAL);
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Failed to create user', ErrorCode.INTERNAL);
       return this.handleResult(result);
     }
   }
 
   @MessagePattern({ cmd: 'keycloak.users.getByEmail', service: 'keycloak' })
-  async handleGetUserByEmail(@Payload() payload: any): Promise<any> {
+  async handleGetUserByEmail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'handleGetUserByEmail', payload },
       KeycloakController.name,
@@ -180,8 +179,8 @@ export class KeycloakController extends BaseMicroserviceController {
       }
       const result = Result.ok(user);
       return this.handleResult(result);
-    } catch (error: any) {
-      const result = Result.error(error.message || 'Failed to get user', ErrorCode.INTERNAL);
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Failed to get user', ErrorCode.INTERNAL);
       return this.handleResult(result);
     }
   }
@@ -194,7 +193,7 @@ export class KeycloakController extends BaseMicroserviceController {
    *   - realm?: string
    */
   @MessagePattern({ cmd: 'keycloak.users.update', service: 'keycloak' })
-  async handleUpdateUser(@Payload() payload: any): Promise<any> {
+  async handleUpdateUser(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'handleUpdateUser', payload },
       KeycloakController.name,
@@ -208,14 +207,14 @@ export class KeycloakController extends BaseMicroserviceController {
       );
       const result = Result.ok({ message: 'User updated successfully' });
       return this.handleResult(result);
-    } catch (error: any) {
-      const result = Result.error(error.message || 'Failed to update user', ErrorCode.INTERNAL);
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Failed to update user', ErrorCode.INTERNAL);
       return this.handleResult(result);
     }
   }
 
   @MessagePattern({ cmd: 'keycloak.users.resetPassword', service: 'keycloak' })
-  async handleResetPassword(@Payload() payload: any): Promise<any> {
+  async handleResetPassword(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'handleResetPassword', payload },
       KeycloakController.name,
@@ -228,8 +227,8 @@ export class KeycloakController extends BaseMicroserviceController {
       );
       const result = Result.ok({ message: 'Password reset successfully' });
       return this.handleResult(result);
-    } catch (error: any) {
-      const result = Result.error(error.message || 'Failed to reset password', ErrorCode.INTERNAL);
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Failed to reset password', ErrorCode.INTERNAL);
       return this.handleResult(result);
     }
   }
@@ -249,7 +248,7 @@ export class KeycloakController extends BaseMicroserviceController {
    *   { userId: 'xxx', action: 'remove', bu: { bu_id: '...' } }
    */
   @MessagePattern({ cmd: 'keycloak.users.manageBu', service: 'keycloak' })
-  async handleManageUserBu(@Payload() payload: any): Promise<any> {
+  async handleManageUserBu(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'handleManageUserBu', payload },
       KeycloakController.name,
@@ -262,8 +261,8 @@ export class KeycloakController extends BaseMicroserviceController {
       );
       const result = Result.ok({ message: 'User BU managed successfully' });
       return this.handleResult(result);
-    } catch (error: any) {
-      const result = Result.error(error.message || 'Failed to manage user BU', ErrorCode.INTERNAL);
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Failed to manage user BU', ErrorCode.INTERNAL);
       return this.handleResult(result);
     }
   }
@@ -275,7 +274,7 @@ export class KeycloakController extends BaseMicroserviceController {
    *   - realm?: string
    */
   @MessagePattern({ cmd: 'keycloak.users.getBuList', service: 'keycloak' })
-  async handleGetUserBuList(@Payload() payload: any): Promise<any> {
+  async handleGetUserBuList(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'handleGetUserBuList', payload },
       KeycloakController.name,
@@ -288,8 +287,8 @@ export class KeycloakController extends BaseMicroserviceController {
       );
       const result = Result.ok(buList);
       return this.handleResult(result);
-    } catch (error: any) {
-      const result = Result.error(error.message || 'Failed to get user BU list', ErrorCode.INTERNAL);
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Failed to get user BU list', ErrorCode.INTERNAL);
       return this.handleResult(result);
     }
   }
@@ -300,7 +299,7 @@ export class KeycloakController extends BaseMicroserviceController {
    *   - realm?: string
    */
   @MessagePattern({ cmd: 'keycloak.users.getAll', service: 'keycloak' })
-  async handleGetAllUsers(@Payload() payload: any): Promise<any> {
+  async handleGetAllUsers(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'handleGetAllUsers', payload },
       KeycloakController.name,
@@ -313,8 +312,8 @@ export class KeycloakController extends BaseMicroserviceController {
       );
       const result = Result.ok(users);
       return this.handleResult(result);
-    } catch (error: any) {
-      const result = Result.error(error.message || 'Failed to get users', ErrorCode.INTERNAL);
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Failed to get users', ErrorCode.INTERNAL);
       return this.handleResult(result);
     }
   }
@@ -322,7 +321,7 @@ export class KeycloakController extends BaseMicroserviceController {
   // ==================== Health Check ====================
 
   @MessagePattern({ cmd: 'keycloak.health', service: 'keycloak' })
-  async handleHealthCheck(): Promise<any> {
+  async handleHealthCheck(): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'handleHealthCheck' },
       KeycloakController.name,
@@ -335,8 +334,8 @@ export class KeycloakController extends BaseMicroserviceController {
       const healthStatus = await runWithAuditContext(auditContext, () => this.keycloakService.healthCheck());
       const result = Result.ok(healthStatus);
       return this.handleResult(result);
-    } catch (error: any) {
-      const result = Result.error(error.message || 'Health check failed', ErrorCode.INTERNAL);
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Health check failed', ErrorCode.INTERNAL);
       return this.handleResult(result);
     }
   }

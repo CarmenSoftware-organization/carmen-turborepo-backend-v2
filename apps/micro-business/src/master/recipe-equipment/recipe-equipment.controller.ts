@@ -3,7 +3,7 @@ import { RecipeEquipmentService } from './recipe-equipment.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class RecipeEquipmentController extends BaseMicroserviceController {
@@ -15,7 +15,7 @@ export class RecipeEquipmentController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.bu_code,
       user_id: payload.user_id,
@@ -26,7 +26,7 @@ export class RecipeEquipmentController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'recipe-equipment.findOne', service: 'recipe-equipment' })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, RecipeEquipmentController.name);
     const id = payload.id;
     this.recipeEquipmentService.userId = payload.user_id;
@@ -39,7 +39,7 @@ export class RecipeEquipmentController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'recipe-equipment.findAll', service: 'recipe-equipment' })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, RecipeEquipmentController.name);
     this.recipeEquipmentService.userId = payload.user_id;
     this.recipeEquipmentService.bu_code = payload.bu_code;
@@ -52,7 +52,7 @@ export class RecipeEquipmentController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'recipe-equipment.create', service: 'recipe-equipment' })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, RecipeEquipmentController.name);
     const data = payload.data;
     this.recipeEquipmentService.userId = payload.user_id;
@@ -65,7 +65,7 @@ export class RecipeEquipmentController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'recipe-equipment.update', service: 'recipe-equipment' })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, RecipeEquipmentController.name);
     const data = payload.data;
     this.recipeEquipmentService.userId = payload.user_id;
@@ -78,7 +78,7 @@ export class RecipeEquipmentController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'recipe-equipment.patch', service: 'recipe-equipment' })
-  async patch(@Payload() payload: any): Promise<any> {
+  async patch(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'patch', payload }, RecipeEquipmentController.name);
     const data = payload.data;
     this.recipeEquipmentService.userId = payload.user_id;
@@ -91,7 +91,7 @@ export class RecipeEquipmentController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'recipe-equipment.delete', service: 'recipe-equipment' })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, RecipeEquipmentController.name);
     const id = payload.id;
     this.recipeEquipmentService.userId = payload.user_id;

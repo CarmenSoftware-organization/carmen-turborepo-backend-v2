@@ -9,6 +9,7 @@ import {
   UpdatePurchaseRequestCommentSchema,
   AttachmentSchema,
 } from './dto/purchase-request-comment.dto';
+import { MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @UseFilters(new AllExceptionsFilter())
 @Controller()
@@ -21,7 +22,7 @@ export class PurchaseRequestCommentController {
     private readonly purchaseRequestCommentService: PurchaseRequestCommentService,
   ) {}
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -35,7 +36,7 @@ export class PurchaseRequestCommentController {
     cmd: 'purchase-request-comment.find-by-id',
     service: 'purchase-request-comment',
   })
-  async findById(@Body() payload: any): Promise<any> {
+  async findById(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findById', payload },
       PurchaseRequestCommentController.name,
@@ -57,7 +58,7 @@ export class PurchaseRequestCommentController {
     cmd: 'purchase-request-comment.find-all-by-purchase-request-id',
     service: 'purchase-request-comment',
   })
-  async findAllByPurchaseRequestId(@Body() payload: any): Promise<any> {
+  async findAllByPurchaseRequestId(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findAllByPurchaseRequestId', payload },
       PurchaseRequestCommentController.name,
@@ -82,7 +83,7 @@ export class PurchaseRequestCommentController {
     cmd: 'purchase-request-comment.create',
     service: 'purchase-request-comment',
   })
-  async create(@Body() payload: any): Promise<any> {
+  async create(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'create', payload },
       PurchaseRequestCommentController.name,
@@ -107,7 +108,7 @@ export class PurchaseRequestCommentController {
     cmd: 'purchase-request-comment.update',
     service: 'purchase-request-comment',
   })
-  async update(@Body() payload: any): Promise<any> {
+  async update(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'update', payload },
       PurchaseRequestCommentController.name,
@@ -132,7 +133,7 @@ export class PurchaseRequestCommentController {
     cmd: 'purchase-request-comment.delete',
     service: 'purchase-request-comment',
   })
-  async delete(@Body() payload: any): Promise<any> {
+  async delete(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'delete', payload },
       PurchaseRequestCommentController.name,
@@ -154,7 +155,7 @@ export class PurchaseRequestCommentController {
     cmd: 'purchase-request-comment.add-attachment',
     service: 'purchase-request-comment',
   })
-  async addAttachment(@Body() payload: any): Promise<any> {
+  async addAttachment(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'addAttachment', payload },
       PurchaseRequestCommentController.name,
@@ -179,7 +180,7 @@ export class PurchaseRequestCommentController {
     cmd: 'purchase-request-comment.remove-attachment',
     service: 'purchase-request-comment',
   })
-  async removeAttachment(@Body() payload: any): Promise<any> {
+  async removeAttachment(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'removeAttachment', payload },
       PurchaseRequestCommentController.name,

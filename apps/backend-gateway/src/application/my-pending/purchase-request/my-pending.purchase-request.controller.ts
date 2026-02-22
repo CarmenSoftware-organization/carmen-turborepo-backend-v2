@@ -534,8 +534,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     let approvePayload;
     try {
       approvePayload = ApproveByStateRoleSchema2.parse(payload);
-    } catch (e: any) {
-      console.log(e);
+    } catch (e: unknown) {
       throw new BadRequestException(e);
     }
 

@@ -7,7 +7,7 @@ import {
 } from './interface/good-received-note.interface';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class GoodReceivedNoteController extends BaseMicroserviceController {
@@ -18,7 +18,7 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -32,7 +32,7 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     cmd: 'good-received-note.findOne',
     service: 'good-received-note',
   })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload: payload }, GoodReceivedNoteController.name);
     const id = payload.id;
     const user_id = payload.user_id;
@@ -48,7 +48,7 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     cmd: 'good-received-note.findAll',
     service: 'good-received-note',
   })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload: payload }, GoodReceivedNoteController.name);
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
@@ -64,7 +64,7 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     cmd: 'good-received-note.create',
     service: 'good-received-note',
   })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload: payload }, GoodReceivedNoteController.name);
     const data: IGoodReceivedNoteCreate = payload.data;
     const user_id = payload.user_id;
@@ -103,7 +103,7 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     cmd: 'good-received-note.update',
     service: 'good-received-note',
   })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload: payload }, GoodReceivedNoteController.name);
     const data: IGoodReceivedNoteUpdate = payload.updateGoodReceivedNoteDto;
     const user_id = payload.user_id;
@@ -119,7 +119,7 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     cmd: 'good-received-note.delete',
     service: 'good-received-note',
   })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload: payload }, GoodReceivedNoteController.name);
     const id = payload.id;
     const user_id = payload.user_id;
@@ -135,7 +135,7 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     cmd: 'good-received-note.export',
     service: 'good-received-note',
   })
-  async exportToExcel(@Payload() payload: any): Promise<any> {
+  async exportToExcel(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'exportToExcel', payload: payload }, GoodReceivedNoteController.name);
     const id = payload.id;
     const user_id = payload.user_id;
@@ -151,7 +151,7 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     cmd: 'good-received-note.reject',
     service: 'good-received-note',
   })
-  async reject(@Payload() payload: any): Promise<any> {
+  async reject(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'reject', payload: payload }, GoodReceivedNoteController.name);
     const id = payload.id;
     const reason = payload.reason || '';
@@ -170,7 +170,7 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     cmd: 'good-received-note-detail.find-by-id',
     service: 'good-received-note',
   })
-  async getDetailById(@Payload() payload: any): Promise<any> {
+  async getDetailById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'getDetailById', payload: payload }, GoodReceivedNoteController.name);
     const detailId = payload.detail_id;
     const user_id = payload.user_id;
@@ -186,7 +186,7 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     cmd: 'good-received-note-detail.find-all',
     service: 'good-received-note',
   })
-  async getDetailsByGrnId(@Payload() payload: any): Promise<any> {
+  async getDetailsByGrnId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'getDetailsByGrnId', payload: payload }, GoodReceivedNoteController.name);
     const grnId = payload.grn_id;
     const user_id = payload.user_id;
@@ -202,7 +202,7 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     cmd: 'good-received-note-detail.create',
     service: 'good-received-note',
   })
-  async createDetail(@Payload() payload: any): Promise<any> {
+  async createDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'createDetail', payload: payload }, GoodReceivedNoteController.name);
     const grnId = payload.grn_id;
     const data = payload.data;
@@ -219,7 +219,7 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     cmd: 'good-received-note-detail.update',
     service: 'good-received-note',
   })
-  async updateDetail(@Payload() payload: any): Promise<any> {
+  async updateDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'updateDetail', payload: payload }, GoodReceivedNoteController.name);
     const detailId = payload.detail_id;
     const data = payload.data;
@@ -236,7 +236,7 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     cmd: 'good-received-note-detail.delete',
     service: 'good-received-note',
   })
-  async deleteDetail(@Payload() payload: any): Promise<any> {
+  async deleteDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'deleteDetail', payload: payload }, GoodReceivedNoteController.name);
     const detailId = payload.detail_id;
     const user_id = payload.user_id;

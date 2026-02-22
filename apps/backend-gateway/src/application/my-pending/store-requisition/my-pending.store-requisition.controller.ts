@@ -409,7 +409,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   async create(
     @Req() req: Request,
     @Res() res: Response,
-    @Body() body: any, // CreateStoreRequisitionDto,
+    @Body() body: Record<string, unknown>, // CreateStoreRequisitionDto,
     @Param('bu_code') bu_code: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
@@ -459,7 +459,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   async update(
     @Req() req: Request,
     @Res() res: Response,
-    @Body() body: any, // UpdateStoreRequisitionDto,
+    @Body() body: Record<string, unknown>, // UpdateStoreRequisitionDto,
     @Param('bu_code') bu_code: string,
     @Param('id') id: string,
     @Query('version') version: string = 'latest',

@@ -3,7 +3,7 @@ import { NewsService } from './news.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class NewsController extends BaseMicroserviceController {
@@ -15,7 +15,7 @@ export class NewsController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -26,7 +26,7 @@ export class NewsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'news.findAll', service: 'news' })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findAll', payload: payload },
       NewsController.name,
@@ -50,7 +50,7 @@ export class NewsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'news.findOne', service: 'news' })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findOne', payload: payload },
       NewsController.name,
@@ -69,7 +69,7 @@ export class NewsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'news.create', service: 'news' })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'create', payload: payload },
       NewsController.name,
@@ -88,7 +88,7 @@ export class NewsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'news.update', service: 'news' })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'update', payload: payload },
       NewsController.name,
@@ -108,7 +108,7 @@ export class NewsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'news.delete', service: 'news' })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'delete', payload: payload },
       NewsController.name,

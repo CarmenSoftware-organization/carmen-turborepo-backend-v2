@@ -68,7 +68,7 @@ export class PurchaseRequestCommentController {
     @Req() req: Request,
     @Query() query: IPaginateQuery,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findAllByPurchaseRequestId',
@@ -114,7 +114,7 @@ export class PurchaseRequestCommentController {
     @Param('id') id: string,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findById',
@@ -161,7 +161,7 @@ export class PurchaseRequestCommentController {
     @Body() createDto: CreatePurchaseRequestCommentDto,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'create',
@@ -212,7 +212,7 @@ export class PurchaseRequestCommentController {
     @Body() updateDto: UpdatePurchaseRequestCommentDto,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'update',
@@ -260,7 +260,7 @@ export class PurchaseRequestCommentController {
     @Param('id') id: string,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'delete',
@@ -312,7 +312,7 @@ export class PurchaseRequestCommentController {
     @Body() attachment: AddAttachmentDto,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'addAttachment',
@@ -362,7 +362,7 @@ export class PurchaseRequestCommentController {
     @Param('fileToken') fileToken: string,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'removeAttachment',

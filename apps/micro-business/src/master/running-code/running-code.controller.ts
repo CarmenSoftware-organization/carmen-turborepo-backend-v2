@@ -6,6 +6,7 @@ import { ICommonResponse } from '@/common/interface/common.interface';
 import { IPattern } from '@/common/helpers/running-code.helper';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
+import { MicroservicePayload } from '@/common';
 
 @Controller()
 export class RunningCodeController {
@@ -14,7 +15,7 @@ export class RunningCodeController {
   );
   constructor(private readonly runningCodeService: RunningCodeService) {}
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.bu_code,
       user_id: payload.user_id,
@@ -25,7 +26,7 @@ export class RunningCodeController {
   }
 
   @MessagePattern({ cmd: 'running-code.findOne', service: 'running-codes' })
-  async findOne(@Payload() payload: any) : Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload) : Promise<ICommonResponse<unknown>> {
     this.logger.debug({ function: 'findOne', payload }, RunningCodeController.name);
     const id = payload.id;
     this.runningCodeService.userId = payload.user_id;
@@ -37,7 +38,7 @@ export class RunningCodeController {
   }
 
   @MessagePattern({ cmd: 'running-code.findAll', service: 'running-codes' })
-  async findAll(@Payload() payload: any) : Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload) : Promise<ICommonResponse<unknown>> {
     this.logger.debug({ function: 'findAll', payload }, RunningCodeController.name);
     this.runningCodeService.userId = payload.user_id;
     this.runningCodeService.bu_code = payload.bu_code;
@@ -52,7 +53,7 @@ export class RunningCodeController {
     cmd: 'running-code.find-by-type',
     service: 'running-codes',
   })
-  async findByType(@Payload() payload: any) : Promise<any> {
+  async findByType(@Payload() payload: MicroservicePayload) : Promise<ICommonResponse<unknown>> {
     this.logger.debug({ function: 'findByType', payload }, RunningCodeController.name);
     const type = payload.type;
     this.runningCodeService.userId = payload.user_id;
@@ -64,7 +65,7 @@ export class RunningCodeController {
   }
 
   @MessagePattern({ cmd: 'running-code.create', service: 'running-codes' })
-  async create(@Payload() payload: any) : Promise<any> {
+  async create(@Payload() payload: MicroservicePayload) : Promise<ICommonResponse<unknown>> {
     this.logger.debug({ function: 'create', payload }, RunningCodeController.name);
     const data = payload.data;
     this.runningCodeService.userId = payload.user_id;
@@ -76,7 +77,7 @@ export class RunningCodeController {
   }
 
   @MessagePattern({ cmd: 'running-code.update', service: 'running-codes' })
-  async update(@Payload() payload: any) : Promise<any> {
+  async update(@Payload() payload: MicroservicePayload) : Promise<ICommonResponse<unknown>> {
     this.logger.debug({ function: 'update', payload }, RunningCodeController.name);
     const data = payload.data;
     this.runningCodeService.userId = payload.user_id;
@@ -88,7 +89,7 @@ export class RunningCodeController {
   }
 
   @MessagePattern({ cmd: 'running-code.delete', service: 'running-codes' })
-  async delete(@Payload() payload: any) : Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload) : Promise<ICommonResponse<unknown>> {
     this.logger.debug({ function: 'delete', payload }, RunningCodeController.name);
     const id = payload.id;
     this.runningCodeService.userId = payload.user_id;
@@ -103,7 +104,7 @@ export class RunningCodeController {
     cmd: 'running-code.generate-code',
     service: 'running-codes',
   })
-  async generateCode(@Payload() payload: any) : Promise<any> {
+  async generateCode(@Payload() payload: MicroservicePayload) : Promise<ICommonResponse<unknown>> {
     this.logger.debug({ function: 'generateCode', payload }, RunningCodeController.name);
     const type = payload.type;
     const issueDate = payload.issueDate;
@@ -125,7 +126,7 @@ export class RunningCodeController {
     service: 'running-codes',
   })
   async getRunningPatternByType(
-    @Payload() payload: any,
+    @Payload() payload: MicroservicePayload,
   ): Promise<ICommonResponse<IPattern[]>> {
     this.logger.debug(
       { function: 'getRunningPatternByType', payload },

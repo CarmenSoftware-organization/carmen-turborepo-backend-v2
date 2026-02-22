@@ -3,7 +3,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { ActivityLogService } from './activity-log.service';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class ActivityLogController extends BaseMicroserviceController {
@@ -15,7 +15,7 @@ export class ActivityLogController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -26,7 +26,7 @@ export class ActivityLogController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'activity-log.findAll', service: 'activity-log' })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findAll', payload },
       ActivityLogController.name,
@@ -51,7 +51,7 @@ export class ActivityLogController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'activity-log.findOne', service: 'activity-log' })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findOne', payload },
       ActivityLogController.name,
@@ -73,7 +73,7 @@ export class ActivityLogController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'activity-log.delete', service: 'activity-log' })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'delete', payload },
       ActivityLogController.name,
@@ -95,7 +95,7 @@ export class ActivityLogController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'activity-log.deleteMany', service: 'activity-log' })
-  async deleteMany(@Payload() payload: any): Promise<any> {
+  async deleteMany(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'deleteMany', payload },
       ActivityLogController.name,
@@ -117,7 +117,7 @@ export class ActivityLogController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'activity-log.hardDelete', service: 'activity-log' })
-  async hardDelete(@Payload() payload: any): Promise<any> {
+  async hardDelete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'hardDelete', payload },
       ActivityLogController.name,
@@ -139,7 +139,7 @@ export class ActivityLogController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'activity-log.hardDeleteMany', service: 'activity-log' })
-  async hardDeleteMany(@Payload() payload: any): Promise<any> {
+  async hardDeleteMany(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'hardDeleteMany', payload },
       ActivityLogController.name,

@@ -46,7 +46,7 @@ export class Config_ProductLocationController {
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'getLocationsByProductId',

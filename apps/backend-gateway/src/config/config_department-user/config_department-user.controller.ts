@@ -196,7 +196,7 @@ export class Config_DepartmentUserController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Body() createDto: any,
+    @Body() createDto: Record<string, unknown>,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
@@ -251,7 +251,7 @@ export class Config_DepartmentUserController extends BaseHttpController {
     @Res() res: Response,
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() updateDto: any,
+    @Body() updateDto: Record<string, unknown>,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(

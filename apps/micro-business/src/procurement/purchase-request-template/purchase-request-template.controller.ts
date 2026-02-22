@@ -4,7 +4,7 @@ import { PurchaseRequestTemplateLogic } from './purchase-request-template.logic'
 import { PurchaseRequestTemplateService } from './purchase-request-template.service';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class PurchaseRequestTemplateController extends BaseMicroserviceController {
@@ -18,7 +18,7 @@ export class PurchaseRequestTemplateController extends BaseMicroserviceControlle
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -32,7 +32,7 @@ export class PurchaseRequestTemplateController extends BaseMicroserviceControlle
     cmd: 'purchase-request-template.find-one',
     service: 'purchase-request-template',
   })
-  async findOne(@Body() payload: any): Promise<any> {
+  async findOne(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, PurchaseRequestTemplateController.name);
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
@@ -50,7 +50,7 @@ export class PurchaseRequestTemplateController extends BaseMicroserviceControlle
     cmd: 'purchase-request-template.find-all',
     service: 'purchase-request-template',
   })
-  async findAll(@Body() payload: any): Promise<any> {
+  async findAll(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, PurchaseRequestTemplateController.name);
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
@@ -68,7 +68,7 @@ export class PurchaseRequestTemplateController extends BaseMicroserviceControlle
     cmd: 'purchase-request-template.create',
     service: 'purchase-request-template',
   })
-  async create(@Body() payload: any): Promise<any> {
+  async create(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, PurchaseRequestTemplateController.name);
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
@@ -88,7 +88,7 @@ export class PurchaseRequestTemplateController extends BaseMicroserviceControlle
     cmd: 'purchase-request-template.update',
     service: 'purchase-request-template',
   })
-  async update(@Body() payload: any): Promise<any> {
+  async update(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, PurchaseRequestTemplateController.name);
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
@@ -108,7 +108,7 @@ export class PurchaseRequestTemplateController extends BaseMicroserviceControlle
     cmd: 'purchase-request-template.delete',
     service: 'purchase-request-template',
   })
-  async delete(@Body() payload: any): Promise<any> {
+  async delete(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, PurchaseRequestTemplateController.name);
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;

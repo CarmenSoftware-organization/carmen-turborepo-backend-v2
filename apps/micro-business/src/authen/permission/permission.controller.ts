@@ -7,7 +7,7 @@ import {
   IPermissionUpdate,
 } from './interface/permission.interface';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class PermissionController extends BaseMicroserviceController {
@@ -17,7 +17,7 @@ export class PermissionController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -28,7 +28,7 @@ export class PermissionController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'permission.findOne', service: 'permission' })
-  async findOne(@Payload() payload: any) {
+  async findOne(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'findOne', payload: payload },
       PermissionController.name,
@@ -43,7 +43,7 @@ export class PermissionController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'permission.findAll', service: 'permission' })
-  async findAll(@Payload() payload: any) {
+  async findAll(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'findAll', payload: payload },
       PermissionController.name,
@@ -58,7 +58,7 @@ export class PermissionController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'permission.create', service: 'permission' })
-  async create(@Payload() payload: any) {
+  async create(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'create', payload: payload },
       PermissionController.name,
@@ -73,7 +73,7 @@ export class PermissionController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'permission.update', service: 'permission' })
-  async update(@Payload() payload: any) {
+  async update(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'update', payload: payload },
       PermissionController.name,
@@ -88,7 +88,7 @@ export class PermissionController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'permission.remove', service: 'permission' })
-  async remove(@Payload() payload: any) {
+  async remove(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'delete', payload: payload },
       PermissionController.name,

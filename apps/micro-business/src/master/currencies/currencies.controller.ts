@@ -3,7 +3,7 @@ import { CurrenciesService } from './currencies.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class CurrenciesController extends BaseMicroserviceController {
@@ -14,7 +14,7 @@ export class CurrenciesController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.bu_code,
       user_id: payload.user_id,
@@ -25,7 +25,7 @@ export class CurrenciesController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'currencies.findOne', service: 'currencies' })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, CurrenciesController.name);
     const id = payload.id;
     this.currenciesService.userId = payload.user_id;
@@ -38,7 +38,7 @@ export class CurrenciesController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'currencies.findAll', service: 'currencies' })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, CurrenciesController.name);
     this.currenciesService.userId = payload.user_id;
     this.currenciesService.bu_code = payload.bu_code;
@@ -51,7 +51,7 @@ export class CurrenciesController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'currencies.findAllActive', service: 'currencies' })
-  async findAllActive(@Payload() payload: any): Promise<any> {
+  async findAllActive(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAllActive', payload }, CurrenciesController.name);
     this.currenciesService.userId = payload.user_id;
     this.currenciesService.bu_code = payload.bu_code;
@@ -64,7 +64,7 @@ export class CurrenciesController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'currencies.find-all-by-id', service: 'currencies' })
-  async findAllById(@Payload() payload: any): Promise<any> {
+  async findAllById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAllById', payload }, CurrenciesController.name);
     const ids = payload.ids;
     this.currenciesService.userId = payload.user_id;
@@ -77,7 +77,7 @@ export class CurrenciesController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'currencies.create', service: 'currencies' })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, CurrenciesController.name);
     const data = payload.data;
     this.currenciesService.userId = payload.user_id;
@@ -90,7 +90,7 @@ export class CurrenciesController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'currencies.update', service: 'currencies' })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, CurrenciesController.name);
     const data = payload.data;
     this.currenciesService.userId = payload.user_id;
@@ -103,7 +103,7 @@ export class CurrenciesController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'currencies.patch', service: 'currencies' })
-  async patch(@Payload() payload: any): Promise<any> {
+  async patch(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'patch', payload }, CurrenciesController.name);
     const data = payload.data;
     this.currenciesService.userId = payload.user_id;
@@ -116,7 +116,7 @@ export class CurrenciesController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'currencies.delete', service: 'currencies' })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, CurrenciesController.name);
     const id = payload.id;
     this.currenciesService.userId = payload.user_id;
@@ -129,7 +129,7 @@ export class CurrenciesController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'currencies.getDefault', service: 'currencies' })
-  async getDefault(@Payload() payload: any): Promise<any> {
+  async getDefault(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'getDefault', payload }, CurrenciesController.name);
     this.currenciesService.userId = payload.user_id;
     this.currenciesService.bu_code = payload.bu_code;

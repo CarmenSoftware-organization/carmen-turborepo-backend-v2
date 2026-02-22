@@ -3,7 +3,7 @@ import { IssueService } from "./issue.service";
 import { MessagePattern } from "@nestjs/microservices";
 import { BackendLogger } from "@/common/helpers/backend.logger";
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class IssueController extends BaseMicroserviceController {
@@ -12,7 +12,7 @@ export class IssueController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -26,7 +26,7 @@ export class IssueController extends BaseMicroserviceController {
     cmd: 'issue.find-all',
     service: 'issue',
   })
-  async findAll(@Body() payload: any): Promise<any> {
+  async findAll(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, IssueController.name);
     await this.issueService.initializePrismaService(payload.tenant_id || payload.bu_code, payload.user_id);
     const auditContext = this.createAuditContext(payload);
@@ -38,7 +38,7 @@ export class IssueController extends BaseMicroserviceController {
     cmd: 'issue.find-one',
     service: 'issue',
   })
-  async findOne(@Body() payload: any): Promise<any> {
+  async findOne(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, IssueController.name);
     await this.issueService.initializePrismaService(payload.tenant_id || payload.bu_code, payload.user_id);
     const auditContext = this.createAuditContext(payload);
@@ -50,7 +50,7 @@ export class IssueController extends BaseMicroserviceController {
     cmd: 'issue.create',
     service: 'issue',
   })
-  async create(@Body() payload: any): Promise<any> {
+  async create(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, IssueController.name);
     await this.issueService.initializePrismaService(payload.tenant_id || payload.bu_code, payload.user_id);
     const auditContext = this.createAuditContext(payload);
@@ -62,7 +62,7 @@ export class IssueController extends BaseMicroserviceController {
     cmd: 'issue.update',
     service: 'issue',
   })
-  async update(@Body() payload: any): Promise<any> {
+  async update(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, IssueController.name);
     await this.issueService.initializePrismaService(payload.tenant_id || payload.bu_code, payload.user_id);
     const auditContext = this.createAuditContext(payload);
@@ -74,7 +74,7 @@ export class IssueController extends BaseMicroserviceController {
     cmd: 'issue.delete',
     service: 'issue',
   })
-  async delete(@Body() payload: any): Promise<any> {
+  async delete(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, IssueController.name);
     await this.issueService.initializePrismaService(payload.tenant_id || payload.bu_code, payload.user_id);
     const auditContext = this.createAuditContext(payload);

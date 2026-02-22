@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { UserService } from './user.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class UserController extends BaseMicroserviceController {
@@ -15,7 +15,7 @@ export class UserController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'user.list', service: 'user' })
-  async listUsers(@Payload() payload: any): Promise<any> {
+  async listUsers(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'listUsers', payload: payload },
       UserController.name,
@@ -26,7 +26,7 @@ export class UserController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'user.get', service: 'user' })
-  async getUser(@Payload() payload: any): Promise<any> {
+  async getUser(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'getUser', payload: payload },
       UserController.name,
@@ -37,7 +37,7 @@ export class UserController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'user.create', service: 'user' })
-  async createUser(@Payload() payload: any): Promise<any> {
+  async createUser(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'createUser', payload: payload },
       UserController.name,
@@ -48,7 +48,7 @@ export class UserController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'user.update', service: 'user' })
-  async updateUser(@Payload() payload: any): Promise<any> {
+  async updateUser(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'updateUser', payload: payload },
       UserController.name,
@@ -59,7 +59,7 @@ export class UserController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'user.delete', service: 'user' })
-  async deleteUser(@Payload() payload: any): Promise<any> {
+  async deleteUser(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'deleteUser', payload: payload },
       UserController.name,

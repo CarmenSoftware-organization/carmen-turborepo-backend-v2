@@ -3,7 +3,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { SpotCheckService } from './spot-check.service';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class SpotCheckController extends BaseMicroserviceController {
@@ -13,7 +13,7 @@ export class SpotCheckController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -24,7 +24,7 @@ export class SpotCheckController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'spot-check.findOne', service: 'spot-check' })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findOne', payload },
       SpotCheckController.name,
@@ -39,7 +39,7 @@ export class SpotCheckController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'spot-check.findAll', service: 'spot-check' })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findAll', payload },
       SpotCheckController.name,
@@ -54,7 +54,7 @@ export class SpotCheckController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'spot-check.create', service: 'spot-check' })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'create', payload },
       SpotCheckController.name,
@@ -69,7 +69,7 @@ export class SpotCheckController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'spot-check.delete', service: 'spot-check' })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'delete', payload },
       SpotCheckController.name,

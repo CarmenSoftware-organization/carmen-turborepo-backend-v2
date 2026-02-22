@@ -4,7 +4,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { ICreateDepartments } from './interface/departments.interface';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class DepartmentsController extends BaseMicroserviceController {
@@ -15,7 +15,7 @@ export class DepartmentsController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.bu_code,
       user_id: payload.user_id,
@@ -26,7 +26,7 @@ export class DepartmentsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'departments.findOne', service: 'departments' })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, DepartmentsController.name);
     const id = payload.id;
     const withUsers = payload?.withUsers ?? false;
@@ -42,7 +42,7 @@ export class DepartmentsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'departments.findAll', service: 'departments' })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, DepartmentsController.name);
     this.departmentsService.userId = payload.user_id;
     this.departmentsService.bu_code = payload.bu_code;
@@ -57,7 +57,7 @@ export class DepartmentsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'departments.create', service: 'departments' })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, DepartmentsController.name);
     const data: ICreateDepartments = payload.data;
     this.departmentsService.userId = payload.user_id;
@@ -72,7 +72,7 @@ export class DepartmentsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'departments.update', service: 'departments' })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, DepartmentsController.name);
     const data = payload.data;
     this.departmentsService.userId = payload.user_id;
@@ -87,7 +87,7 @@ export class DepartmentsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'departments.delete', service: 'departments' })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, DepartmentsController.name);
     const id = payload.id;
     this.departmentsService.userId = payload.user_id;

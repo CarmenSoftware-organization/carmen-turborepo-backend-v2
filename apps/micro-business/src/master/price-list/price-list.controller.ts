@@ -4,7 +4,7 @@ import { Payload } from '@nestjs/microservices';
 import { MessagePattern } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class PriceListController extends BaseMicroserviceController {
@@ -15,7 +15,7 @@ export class PriceListController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.bu_code,
       user_id: payload.user_id,
@@ -26,7 +26,7 @@ export class PriceListController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'price-list.findOne', service: 'price-list' })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, PriceListController.name);
     this.priceListService.userId = payload.user_id;
     this.priceListService.bu_code = payload.bu_code;
@@ -39,7 +39,7 @@ export class PriceListController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'price-list.findAll', service: 'price-list' })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, PriceListController.name);
     this.priceListService.userId = payload.user_id;
     this.priceListService.bu_code = payload.bu_code;
@@ -52,7 +52,7 @@ export class PriceListController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'price-list.find-all-by-id', service: 'price-list' })
-  async findAllById(@Payload() payload: any): Promise<any> {
+  async findAllById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAllById', payload }, PriceListController.name);
     this.priceListService.userId = payload.user_id;
     this.priceListService.bu_code = payload.bu_code;
@@ -66,7 +66,7 @@ export class PriceListController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'price-list.price-compare', service: 'price-list' })
-  async priceCompare(@Payload() payload: any): Promise<any> {
+  async priceCompare(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'priceCompare', payload }, PriceListController.name);
     this.priceListService.userId = payload.user_id;
     this.priceListService.bu_code = payload.bu_code;
@@ -79,7 +79,7 @@ export class PriceListController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'price-list.create', service: 'price-list' })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, PriceListController.name);
     this.priceListService.userId = payload.user_id;
     this.priceListService.bu_code = payload.bu_code;
@@ -92,7 +92,7 @@ export class PriceListController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'price-list.update', service: 'price-list' })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, PriceListController.name);
     this.priceListService.userId = payload.user_id;
     this.priceListService.bu_code = payload.bu_code;
@@ -105,7 +105,7 @@ export class PriceListController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'price-list.remove', service: 'price-list' })
-  async remove(@Payload() payload: any): Promise<any> {
+  async remove(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'remove', payload }, PriceListController.name);
     this.priceListService.userId = payload.user_id;
     this.priceListService.bu_code = payload.bu_code;
@@ -118,7 +118,7 @@ export class PriceListController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'price-list.uploadExcel', service: 'price-list' })
-  async uploadExcel(@Payload() payload: any): Promise<any> {
+  async uploadExcel(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'uploadExcel', payload }, PriceListController.name);
     this.priceListService.userId = payload.user_id;
     this.priceListService.bu_code = payload.bu_code;
@@ -131,7 +131,7 @@ export class PriceListController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'price-list.downloadExcel', service: 'price-list' })
-  async downloadExcel(@Payload() payload: any): Promise<any> {
+  async downloadExcel(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'downloadExcel', payload }, PriceListController.name);
     this.priceListService.userId = payload.user_id;
     this.priceListService.bu_code = payload.bu_code;
@@ -144,7 +144,7 @@ export class PriceListController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'price-list.find-all-by-detail-id', service: 'price-list' })
-  async findAllByDetailId(@Payload() payload: any): Promise<any> {
+  async findAllByDetailId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAllByDetailId', payload }, PriceListController.name);
     this.priceListService.userId = payload.user_id;
     this.priceListService.bu_code = payload.bu_code;
@@ -157,7 +157,7 @@ export class PriceListController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'price-list.importCsv', service: 'price-list' })
-  async importCsv(@Payload() payload: any): Promise<any> {
+  async importCsv(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'importCsv', payload: { ...payload, csvContent: payload.csvContent?.substring(0, 100) + '...' } }, PriceListController.name);
     this.priceListService.userId = payload.user_id;
     this.priceListService.bu_code = payload.bu_code;

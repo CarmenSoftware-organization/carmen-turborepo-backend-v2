@@ -4,7 +4,7 @@ import { ApplicationRoleService } from './role.service';
 import { IApplicationRoleCreate, IApplicationRoleUpdate } from './interface/role.interface';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class ApplicationRoleController extends BaseMicroserviceController {
@@ -14,7 +14,7 @@ export class ApplicationRoleController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -25,7 +25,7 @@ export class ApplicationRoleController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'role.findOne', service: 'role' })
-  async findOne(@Payload() payload: any) {
+  async findOne(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'findOne', payload: payload },
       ApplicationRoleController.name,
@@ -40,7 +40,7 @@ export class ApplicationRoleController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'role.findAll', service: 'role' })
-  async findAll(@Payload() payload: any) {
+  async findAll(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'findAll', payload: payload },
       ApplicationRoleController.name,
@@ -55,7 +55,7 @@ export class ApplicationRoleController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'role.create', service: 'role' })
-  async create(@Payload() payload: any) {
+  async create(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'create', payload: payload },
       ApplicationRoleController.name,
@@ -70,7 +70,7 @@ export class ApplicationRoleController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'role.update', service: 'role' })
-  async update(@Payload() payload: any) {
+  async update(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'update', payload: payload },
       ApplicationRoleController.name,
@@ -85,7 +85,7 @@ export class ApplicationRoleController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'role.remove', service: 'role' })
-  async remove(@Payload() payload: any) {
+  async remove(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'delete', payload: payload },
       ApplicationRoleController.name,

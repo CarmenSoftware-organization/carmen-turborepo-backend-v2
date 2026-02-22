@@ -188,7 +188,7 @@ export class PriceListTemplateController extends BaseHttpController {
     },
   })
   async create(
-    @Body() data: any,
+    @Body() data: Record<string, unknown>,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -242,7 +242,7 @@ export class PriceListTemplateController extends BaseHttpController {
   })
   async update(
     @Param('id') id: string,
-    @Body() data: any,
+    @Body() data: Record<string, unknown>,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

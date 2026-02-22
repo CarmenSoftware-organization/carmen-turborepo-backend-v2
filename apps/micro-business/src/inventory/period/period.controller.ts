@@ -4,7 +4,7 @@ import { PeriodService } from './period.service';
 import { ICreatePeriod, IUpdatePeriod } from './interface/period.interface';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class PeriodController extends BaseMicroserviceController {
@@ -14,7 +14,7 @@ export class PeriodController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -25,7 +25,7 @@ export class PeriodController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'inventory-period.findOne', service: 'inventory-period' })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, PeriodController.name);
     const id = payload.id;
     const user_id = payload.user_id;
@@ -38,7 +38,7 @@ export class PeriodController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'inventory-period.findAll', service: 'inventory-period' })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, PeriodController.name);
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
@@ -51,7 +51,7 @@ export class PeriodController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'inventory-period.create', service: 'inventory-period' })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, PeriodController.name);
     const data: ICreatePeriod = payload.data;
     const user_id = payload.user_id;
@@ -64,7 +64,7 @@ export class PeriodController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'inventory-period.update', service: 'inventory-period' })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, PeriodController.name);
     const data: IUpdatePeriod = { id: payload.id, ...payload.data };
     const user_id = payload.user_id;
@@ -77,7 +77,7 @@ export class PeriodController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'inventory-period.delete', service: 'inventory-period' })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, PeriodController.name);
     const id = payload.id;
     const user_id = payload.user_id;

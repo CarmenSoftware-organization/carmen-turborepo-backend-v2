@@ -10,7 +10,7 @@ import {
 } from './interface/physical-count.interface';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class PhysicalCountController extends BaseMicroserviceController {
@@ -20,7 +20,7 @@ export class PhysicalCountController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -31,7 +31,7 @@ export class PhysicalCountController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'physical-count.findOne', service: 'physical-count' })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, PhysicalCountController.name);
     const id = payload.id;
     const user_id = payload.user_id;
@@ -44,7 +44,7 @@ export class PhysicalCountController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'physical-count.findAll', service: 'physical-count' })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, PhysicalCountController.name);
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
@@ -59,7 +59,7 @@ export class PhysicalCountController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'physical-count.create', service: 'physical-count' })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, PhysicalCountController.name);
     const data: IPhysicalCountCreate = payload.data;
     const user_id = payload.user_id;
@@ -72,7 +72,7 @@ export class PhysicalCountController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'physical-count.save', service: 'physical-count' })
-  async save(@Payload() payload: any): Promise<any> {
+  async save(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'save', payload }, PhysicalCountController.name);
     const data: IPhysicalCountSave = { id: payload.id, ...payload.data };
     const user_id = payload.user_id;
@@ -85,7 +85,7 @@ export class PhysicalCountController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'physical-count.review-items', service: 'physical-count' })
-  async reviewItems(@Payload() payload: any): Promise<any> {
+  async reviewItems(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'reviewItems', payload }, PhysicalCountController.name);
     const id = payload.id;
     const data = payload.data;
@@ -99,7 +99,7 @@ export class PhysicalCountController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'physical-count.get-review', service: 'physical-count' })
-  async getReview(@Payload() payload: any): Promise<any> {
+  async getReview(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'getReview', payload }, PhysicalCountController.name);
     const id = payload.id;
     const user_id = payload.user_id;
@@ -112,7 +112,7 @@ export class PhysicalCountController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'physical-count.submit', service: 'physical-count' })
-  async submit(@Payload() payload: any): Promise<any> {
+  async submit(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'submit', payload }, PhysicalCountController.name);
     const data: IPhysicalCountSubmit = { id: payload.id };
     const user_id = payload.user_id;
@@ -125,7 +125,7 @@ export class PhysicalCountController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'physical-count.delete', service: 'physical-count' })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, PhysicalCountController.name);
     const id = payload.id;
     const user_id = payload.user_id;
@@ -140,7 +140,7 @@ export class PhysicalCountController extends BaseMicroserviceController {
   // ==================== Detail Comment Endpoints ====================
 
   @MessagePattern({ cmd: 'physical-count-detail-comment.findAll', service: 'physical-count' })
-  async findDetailComments(@Payload() payload: any): Promise<any> {
+  async findDetailComments(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findDetailComments', payload }, PhysicalCountController.name);
     const physical_count_detail_id = payload.physical_count_detail_id;
     const user_id = payload.user_id;
@@ -153,7 +153,7 @@ export class PhysicalCountController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'physical-count-detail-comment.create', service: 'physical-count' })
-  async createDetailComment(@Payload() payload: any): Promise<any> {
+  async createDetailComment(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'createDetailComment', payload }, PhysicalCountController.name);
     const data: IPhysicalCountDetailCommentCreate = payload.data;
     const user_id = payload.user_id;
@@ -166,7 +166,7 @@ export class PhysicalCountController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'physical-count-detail-comment.update', service: 'physical-count' })
-  async updateDetailComment(@Payload() payload: any): Promise<any> {
+  async updateDetailComment(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'updateDetailComment', payload }, PhysicalCountController.name);
     const data: IPhysicalCountDetailCommentUpdate = { id: payload.id, ...payload.data };
     const user_id = payload.user_id;
@@ -179,7 +179,7 @@ export class PhysicalCountController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'physical-count-detail-comment.delete', service: 'physical-count' })
-  async deleteDetailComment(@Payload() payload: any): Promise<any> {
+  async deleteDetailComment(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'deleteDetailComment', payload }, PhysicalCountController.name);
     const id = payload.id;
     const user_id = payload.user_id;

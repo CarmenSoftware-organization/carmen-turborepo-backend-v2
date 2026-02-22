@@ -3,7 +3,7 @@ import { ExtraCostTypeService } from './extra_cost_type.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class ExtraCostTypeController extends BaseMicroserviceController {
@@ -14,7 +14,7 @@ export class ExtraCostTypeController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.bu_code,
       user_id: payload.user_id,
@@ -28,7 +28,7 @@ export class ExtraCostTypeController extends BaseMicroserviceController {
     cmd: 'extra-cost-type.findOne',
     service: 'extra-cost-type',
   })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, ExtraCostTypeController.name);
     const id = payload.id;
     this.extraCostTypeService.userId = payload.user_id;
@@ -44,7 +44,7 @@ export class ExtraCostTypeController extends BaseMicroserviceController {
     cmd: 'extra-cost-type.findAll',
     service: 'extra-cost-type',
   })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, ExtraCostTypeController.name);
     this.extraCostTypeService.userId = payload.user_id;
     this.extraCostTypeService.bu_code = payload.bu_code;
@@ -57,7 +57,7 @@ export class ExtraCostTypeController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'extra-cost-type.create', service: 'extra-cost-type' })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, ExtraCostTypeController.name);
     const data = payload.data;
     this.extraCostTypeService.userId = payload.user_id;
@@ -70,7 +70,7 @@ export class ExtraCostTypeController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'extra-cost-type.update', service: 'extra-cost-type' })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, ExtraCostTypeController.name);
     const data = payload.data;
     this.extraCostTypeService.userId = payload.user_id;
@@ -83,7 +83,7 @@ export class ExtraCostTypeController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'extra-cost-type.delete', service: 'extra-cost-type' })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, ExtraCostTypeController.name);
     const id = payload.id;
     this.extraCostTypeService.userId = payload.user_id;

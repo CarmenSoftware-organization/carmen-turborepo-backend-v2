@@ -3,6 +3,19 @@ import { MessagePattern } from '@nestjs/microservices';
 import { NotificationService, CreateSystemNotificationData, CreateUserNotificationData, CreateBusinessUnitNotificationData } from './notification.service';
 import { NotificationGateway } from './notification.gateway';
 
+interface CreateNotificationPayload {
+  category: string;
+  title: string;
+  message: string;
+  type: string;
+  metadata?: Record<string, unknown>;
+  scheduled_at?: string;
+  userIds?: string[];
+  to_user_id?: string;
+  from_user_id?: string;
+  bu_code?: string;
+}
+
 @Controller()
 export class NotificationController {
   constructor(
@@ -11,10 +24,8 @@ export class NotificationController {
   ) {}
 
   @MessagePattern({ cmd: 'notification.create', service: 'notification' })
-  async create(data: any) {
+  async create(data: CreateNotificationPayload) {
     try {
-      console.log('Received notification data:', data);
-
       if (data.category === 'system') {
         const systemData: CreateSystemNotificationData = {
           title: data.title,
@@ -91,7 +102,6 @@ export class NotificationController {
         };
       }
     } catch (error) {
-      console.error('Error creating notification:', error);
       return {
         status: 500,
         error: 'Failed to create notification',
@@ -106,7 +116,6 @@ export class NotificationController {
       const notifications = await this.notificationService.getUnreadNotifications(data.user_id);
       return { status: 200, data: { notifications } };
     } catch (error) {
-      console.error('Error getting user notifications:', error);
       return { status: 500, error: 'Failed to get notifications' };
     }
   }
@@ -117,7 +126,6 @@ export class NotificationController {
       const notifications = await this.notificationService.getAllNotifications(data.user_id);
       return { status: 200, data: { notifications } };
     } catch (error) {
-      console.error('Error getting user notifications:', error);
       return { status: 500, error: 'Failed to get notifications' };
     }
   }
@@ -128,7 +136,6 @@ export class NotificationController {
       const notification = await this.notificationService.markNotificationAsRead(data.id);
       return { status: 200, data: { notification } };
     } catch (error) {
-      console.error('Error marking notification as read:', error);
       return { status: 500, error: 'Failed to mark notification as read' };
     }
   }
@@ -145,7 +152,6 @@ export class NotificationController {
         },
       };
     } catch (error) {
-      console.error('Error marking all notifications as read:', error);
       return { status: 500, error: 'Failed to mark all notifications as read' };
     }
   }

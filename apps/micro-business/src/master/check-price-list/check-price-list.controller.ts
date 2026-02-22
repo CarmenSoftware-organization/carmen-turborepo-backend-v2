@@ -2,7 +2,7 @@ import { Controller, HttpStatus } from '@nestjs/common';
 import { CheckPriceListService } from './check-price-list.service';
 import { Payload, MessagePattern } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class CheckPriceListController extends BaseMicroserviceController {
@@ -15,7 +15,7 @@ export class CheckPriceListController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'check-price-list.check', service: 'check-price-list' })
-  async checkPriceList(@Payload() payload: any): Promise<any> {
+  async checkPriceList(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'checkPriceList', payload },
       CheckPriceListController.name,

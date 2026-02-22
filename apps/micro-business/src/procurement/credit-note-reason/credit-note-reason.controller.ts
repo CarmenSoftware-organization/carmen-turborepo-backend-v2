@@ -3,7 +3,7 @@ import { CreditNoteReasonService } from "./credit-note-reason.service";
 import { MessagePattern } from "@nestjs/microservices";
 import { BackendLogger } from "@/common/helpers/backend.logger";
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class CreditNoteReasonController extends BaseMicroserviceController {
@@ -12,7 +12,7 @@ export class CreditNoteReasonController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -26,7 +26,7 @@ export class CreditNoteReasonController extends BaseMicroserviceController {
     cmd: 'credit-note-reason.find-all',
     service: 'credit-note-reason',
   })
-  async findAll(@Body() payload: any): Promise<any> {
+  async findAll(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, CreditNoteReasonController.name);
     await this.creditNoteReasonService.initializePrismaService(payload.tenant_id || payload.bu_code, payload.user_id);
     const auditContext = this.createAuditContext(payload);

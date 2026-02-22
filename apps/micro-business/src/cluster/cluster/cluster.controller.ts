@@ -9,7 +9,7 @@ import {
 } from './interface/cluster.interface';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class ClusterController extends BaseMicroserviceController {
@@ -20,7 +20,7 @@ export class ClusterController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -31,7 +31,7 @@ export class ClusterController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'cluster.create', service: 'cluster' })
-  async createCluster(@Payload() payload: any): Promise<any> {
+  async createCluster(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'createCluster', payload: payload },
       ClusterController.name,
@@ -47,7 +47,7 @@ export class ClusterController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'cluster.update', service: 'cluster' })
-  async updateCluster(@Payload() payload: any): Promise<any> {
+  async updateCluster(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'updateCluster', payload: payload },
       ClusterController.name,
@@ -63,7 +63,7 @@ export class ClusterController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'cluster.delete', service: 'cluster' })
-  async deleteCluster(@Payload() payload: any): Promise<any> {
+  async deleteCluster(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'deleteCluster', payload: payload },
       ClusterController.name,
@@ -77,7 +77,7 @@ export class ClusterController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'cluster.list', service: 'cluster' })
-  async listCluster(@Payload() payload: any): Promise<any> {
+  async listCluster(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'listCluster', payload: payload },
       ClusterController.name,
@@ -89,7 +89,7 @@ export class ClusterController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'cluster.get-by-id', service: 'cluster' })
-  async getClusterById(@Payload() payload: any): Promise<any> {
+  async getClusterById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'getClusterById', payload: payload },
       ClusterController.name,
@@ -102,7 +102,7 @@ export class ClusterController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'cluster.get-user-by-id', service: 'cluster' })
-  async getUserClusterById(@Payload() payload: any): Promise<any> {
+  async getUserClusterById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'getUserClusterById', payload: payload },
       ClusterController.name,
@@ -115,7 +115,7 @@ export class ClusterController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'cluster.get-all-user', service: 'cluster' })
-  async getAllUserCluster(@Payload() payload: any): Promise<any> {
+  async getAllUserCluster(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'getAllUserCluster', payload: payload },
       ClusterController.name,
@@ -127,7 +127,7 @@ export class ClusterController extends BaseMicroserviceController {
 
 
   @MessagePattern({ cmd: 'cluster.create-user', service: 'cluster' })
-  async createUserCluster(@Payload() payload: any): Promise<any> {
+  async createUserCluster(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'createUserCluster', payload: payload },
       ClusterController.name,
@@ -142,7 +142,7 @@ export class ClusterController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'cluster.update-user', service: 'cluster' })
-  async updateUserCluster(@Payload() payload: any): Promise<any> {
+  async updateUserCluster(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'updateUserCluster', payload: payload },
       ClusterController.name,
@@ -157,7 +157,7 @@ export class ClusterController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'cluster.delete-user', service: 'cluster' })
-  async deleteUserCluster(@Payload() payload: any): Promise<any> {
+  async deleteUserCluster(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'deleteUserCluster', payload: payload },
       ClusterController.name,
@@ -171,7 +171,7 @@ export class ClusterController extends BaseMicroserviceController {
   }
 
   // @MessagePattern({ cmd: 'cluster.set-default-tenant', service: 'cluster' })
-  // async setDefaultTenant(@Payload() payload: any) {
+  // async setDefaultTenant(@Payload() payload: MicroservicePayload) {
   //   const user_id = payload.user_id;
   //   const tenant_id = payload.tenant_id || payload.bu_code;
 

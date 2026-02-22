@@ -3,7 +3,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { UserApplicationRoleService } from './user_application_role.service';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class UserApplicationRoleController extends BaseMicroserviceController {
@@ -17,7 +17,7 @@ export class UserApplicationRoleController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -28,7 +28,7 @@ export class UserApplicationRoleController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'user_application_role.find-by-user', service: 'user_application_role' })
-  async findByUser(@Payload() payload: any) {
+  async findByUser(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'findByUser', payload },
       UserApplicationRoleController.name,
@@ -43,7 +43,7 @@ export class UserApplicationRoleController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'user_application_role.assign', service: 'user_application_role' })
-  async assign(@Payload() payload: any) {
+  async assign(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'assign', payload },
       UserApplicationRoleController.name,
@@ -63,7 +63,7 @@ export class UserApplicationRoleController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'user_application_role.update', service: 'user_application_role' })
-  async update(@Payload() payload: any) {
+  async update(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'update', payload },
       UserApplicationRoleController.name,
@@ -85,7 +85,7 @@ export class UserApplicationRoleController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'user_application_role.remove', service: 'user_application_role' })
-  async remove(@Payload() payload: any) {
+  async remove(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'remove', payload },
       UserApplicationRoleController.name,

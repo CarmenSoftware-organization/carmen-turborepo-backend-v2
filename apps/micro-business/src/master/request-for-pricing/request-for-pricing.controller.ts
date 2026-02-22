@@ -4,7 +4,7 @@ import { Payload } from '@nestjs/microservices';
 import { MessagePattern } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class RequestForPricingController extends BaseMicroserviceController {
@@ -17,7 +17,7 @@ export class RequestForPricingController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.bu_code,
       user_id: payload.user_id,
@@ -31,7 +31,7 @@ export class RequestForPricingController extends BaseMicroserviceController {
     cmd: 'request-for-pricing.findOne',
     service: 'request-for-pricing',
   })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findOne', payload },
       RequestForPricingController.name,
@@ -50,7 +50,7 @@ export class RequestForPricingController extends BaseMicroserviceController {
     cmd: 'request-for-pricing.findAll',
     service: 'request-for-pricing',
   })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findAll', payload },
       RequestForPricingController.name,
@@ -69,7 +69,7 @@ export class RequestForPricingController extends BaseMicroserviceController {
     cmd: 'request-for-pricing.create',
     service: 'request-for-pricing',
   })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'create', payload },
       RequestForPricingController.name,
@@ -88,7 +88,7 @@ export class RequestForPricingController extends BaseMicroserviceController {
     cmd: 'request-for-pricing.update',
     service: 'request-for-pricing',
   })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'update', payload },
       RequestForPricingController.name,
@@ -107,7 +107,7 @@ export class RequestForPricingController extends BaseMicroserviceController {
     cmd: 'request-for-pricing.remove',
     service: 'request-for-pricing',
   })
-  async remove(@Payload() payload: any): Promise<any> {
+  async remove(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'remove', payload },
       RequestForPricingController.name,

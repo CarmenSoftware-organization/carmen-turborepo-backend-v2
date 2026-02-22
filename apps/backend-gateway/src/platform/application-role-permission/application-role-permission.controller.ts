@@ -93,7 +93,7 @@ export class ApplicationRolePermissionController {
   async getPermissionsByRole(
     @Param('roleId') roleId: string,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'getPermissionsByRole',
@@ -158,7 +158,7 @@ export class ApplicationRolePermissionController {
   async getRolesByPermission(
     @Param('permissionId') permissionId: string,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'getRolesByPermission',
@@ -216,7 +216,7 @@ export class ApplicationRolePermissionController {
   async assignPermissionsToRole(
     @Body() assignPermissionsDto: AssignPermissionsToRoleDto,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'assignPermissionsToRole',
@@ -274,7 +274,7 @@ export class ApplicationRolePermissionController {
   async assignPermissionToRole(
     @Body() assignPermissionDto: AssignPermissionToRoleDto,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'assignPermissionToRole',
@@ -332,7 +332,7 @@ export class ApplicationRolePermissionController {
   async removePermissionsFromRole(
     @Body() removePermissionsDto: RemovePermissionsFromRoleDto,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'removePermissionsFromRole',
@@ -390,7 +390,7 @@ export class ApplicationRolePermissionController {
   async removePermissionFromRole(
     @Body() removePermissionDto: RemovePermissionFromRoleDto,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'removePermissionFromRole',

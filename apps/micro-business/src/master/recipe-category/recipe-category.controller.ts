@@ -3,7 +3,7 @@ import { RecipeCategoryService } from './recipe-category.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class RecipeCategoryController extends BaseMicroserviceController {
@@ -15,7 +15,7 @@ export class RecipeCategoryController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.bu_code,
       user_id: payload.user_id,
@@ -26,7 +26,7 @@ export class RecipeCategoryController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'recipe-category.findOne', service: 'recipe-category' })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, RecipeCategoryController.name);
     const id = payload.id;
     this.recipeCategoryService.userId = payload.user_id;
@@ -39,7 +39,7 @@ export class RecipeCategoryController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'recipe-category.findAll', service: 'recipe-category' })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, RecipeCategoryController.name);
     this.recipeCategoryService.userId = payload.user_id;
     this.recipeCategoryService.bu_code = payload.bu_code;
@@ -52,7 +52,7 @@ export class RecipeCategoryController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'recipe-category.create', service: 'recipe-category' })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, RecipeCategoryController.name);
     const data = payload.data;
     this.recipeCategoryService.userId = payload.user_id;
@@ -65,7 +65,7 @@ export class RecipeCategoryController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'recipe-category.update', service: 'recipe-category' })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, RecipeCategoryController.name);
     const data = payload.data;
     this.recipeCategoryService.userId = payload.user_id;
@@ -78,7 +78,7 @@ export class RecipeCategoryController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'recipe-category.patch', service: 'recipe-category' })
-  async patch(@Payload() payload: any): Promise<any> {
+  async patch(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'patch', payload }, RecipeCategoryController.name);
     const data = payload.data;
     this.recipeCategoryService.userId = payload.user_id;
@@ -91,7 +91,7 @@ export class RecipeCategoryController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'recipe-category.delete', service: 'recipe-category' })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, RecipeCategoryController.name);
     const id = payload.id;
     this.recipeCategoryService.userId = payload.user_id;

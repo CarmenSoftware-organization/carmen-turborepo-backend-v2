@@ -7,7 +7,7 @@ import {
 } from './interface/role_permission.interface';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class ApplicationRolePermissionController extends BaseMicroserviceController {
@@ -21,7 +21,7 @@ export class ApplicationRolePermissionController extends BaseMicroserviceControl
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -32,7 +32,7 @@ export class ApplicationRolePermissionController extends BaseMicroserviceControl
   }
 
   @MessagePattern({ cmd: 'role_permission.find-one', service: 'role_permission' })
-  async findOne(@Payload() payload: any) {
+  async findOne(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'findOne', payload: payload },
       ApplicationRolePermissionController.name,
@@ -47,7 +47,7 @@ export class ApplicationRolePermissionController extends BaseMicroserviceControl
   }
 
   @MessagePattern({ cmd: 'role_permission.find-all', service: 'role_permission' })
-  async findAll(@Payload() payload: any) {
+  async findAll(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'findAll', payload: payload },
       ApplicationRolePermissionController.name,
@@ -62,7 +62,7 @@ export class ApplicationRolePermissionController extends BaseMicroserviceControl
   }
 
   @MessagePattern({ cmd: 'role_permission.create', service: 'role_permission' })
-  async create(@Payload() payload: any) {
+  async create(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'create', payload: payload },
       ApplicationRolePermissionController.name,
@@ -77,7 +77,7 @@ export class ApplicationRolePermissionController extends BaseMicroserviceControl
   }
 
   @MessagePattern({ cmd: 'role_permission.update', service: 'role_permission' })
-  async update(@Payload() payload: any) {
+  async update(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'update', payload: payload },
       ApplicationRolePermissionController.name,
@@ -92,7 +92,7 @@ export class ApplicationRolePermissionController extends BaseMicroserviceControl
   }
 
   @MessagePattern({ cmd: 'role_permission.remove', service: 'role_permission' })
-  async remove(@Payload() payload: any) {
+  async remove(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
       { function: 'delete', payload: payload },
       ApplicationRolePermissionController.name,

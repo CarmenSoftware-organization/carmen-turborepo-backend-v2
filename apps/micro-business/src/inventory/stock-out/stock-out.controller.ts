@@ -4,7 +4,7 @@ import { StockOutService } from './stock-out.service';
 import { IStockOutCreate, IStockOutUpdate } from './interface/stock-out.interface';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class StockOutController extends BaseMicroserviceController {
@@ -14,7 +14,7 @@ export class StockOutController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -25,7 +25,7 @@ export class StockOutController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'stock-out.findOne', service: 'stock-out' })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, StockOutController.name);
     const id = payload.id;
     const user_id = payload.user_id;
@@ -38,7 +38,7 @@ export class StockOutController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'stock-out.findAll', service: 'stock-out' })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, StockOutController.name);
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
@@ -51,7 +51,7 @@ export class StockOutController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'stock-out.create', service: 'stock-out' })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, StockOutController.name);
     const data: IStockOutCreate = payload.data;
     const user_id = payload.user_id;
@@ -64,7 +64,7 @@ export class StockOutController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'stock-out.update', service: 'stock-out' })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, StockOutController.name);
     const data: IStockOutUpdate = payload.data;
     const user_id = payload.user_id;
@@ -77,7 +77,7 @@ export class StockOutController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'stock-out.delete', service: 'stock-out' })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, StockOutController.name);
     const id = payload.id;
     const user_id = payload.user_id;
@@ -92,7 +92,7 @@ export class StockOutController extends BaseMicroserviceController {
   // ==================== Stock Out Detail CRUD ====================
 
   @MessagePattern({ cmd: 'stock-out-detail.find-by-id', service: 'stock-out' })
-  async getDetailById(@Payload() payload: any): Promise<any> {
+  async getDetailById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'getDetailById', payload }, StockOutController.name);
     const detailId = payload.detail_id;
     const user_id = payload.user_id;
@@ -105,7 +105,7 @@ export class StockOutController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'stock-out-detail.find-all', service: 'stock-out' })
-  async getDetailsByStockOutId(@Payload() payload: any): Promise<any> {
+  async getDetailsByStockOutId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'getDetailsByStockOutId', payload }, StockOutController.name);
     const stockOutId = payload.stock_out_id;
     const user_id = payload.user_id;
@@ -118,7 +118,7 @@ export class StockOutController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'stock-out-detail.create', service: 'stock-out' })
-  async createDetail(@Payload() payload: any): Promise<any> {
+  async createDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'createDetail', payload }, StockOutController.name);
     const stockOutId = payload.stock_out_id;
     const data = payload.data;
@@ -132,7 +132,7 @@ export class StockOutController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'stock-out-detail.update', service: 'stock-out' })
-  async updateDetail(@Payload() payload: any): Promise<any> {
+  async updateDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'updateDetail', payload }, StockOutController.name);
     const detailId = payload.detail_id;
     const data = payload.data;
@@ -146,7 +146,7 @@ export class StockOutController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'stock-out-detail.delete', service: 'stock-out' })
-  async deleteDetail(@Payload() payload: any): Promise<any> {
+  async deleteDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'deleteDetail', payload }, StockOutController.name);
     const detailId = payload.detail_id;
     const user_id = payload.user_id;
@@ -161,7 +161,7 @@ export class StockOutController extends BaseMicroserviceController {
   // ==================== Standalone Stock Out Detail API ====================
 
   @MessagePattern({ cmd: 'stock-out-detail.findAll', service: 'stock-out-detail' })
-  async findAllDetails(@Payload() payload: any): Promise<any> {
+  async findAllDetails(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAllDetails', payload }, StockOutController.name);
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
@@ -174,7 +174,7 @@ export class StockOutController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'stock-out-detail.findOne', service: 'stock-out-detail' })
-  async findOneDetail(@Payload() payload: any): Promise<any> {
+  async findOneDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOneDetail', payload }, StockOutController.name);
     const detailId = payload.id;
     const user_id = payload.user_id;
@@ -187,7 +187,7 @@ export class StockOutController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'stock-out-detail.createStandalone', service: 'stock-out-detail' })
-  async createStandaloneDetail(@Payload() payload: any): Promise<any> {
+  async createStandaloneDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'createStandaloneDetail', payload }, StockOutController.name);
     const data = payload.data;
     const user_id = payload.user_id;
@@ -200,7 +200,7 @@ export class StockOutController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'stock-out-detail.updateStandalone', service: 'stock-out-detail' })
-  async updateStandaloneDetail(@Payload() payload: any): Promise<any> {
+  async updateStandaloneDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'updateStandaloneDetail', payload }, StockOutController.name);
     const detailId = payload.id;
     const data = payload.data;
@@ -214,7 +214,7 @@ export class StockOutController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'stock-out-detail.deleteStandalone', service: 'stock-out-detail' })
-  async deleteStandaloneDetail(@Payload() payload: any): Promise<any> {
+  async deleteStandaloneDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'deleteStandaloneDetail', payload }, StockOutController.name);
     const detailId = payload.id;
     const user_id = payload.user_id;

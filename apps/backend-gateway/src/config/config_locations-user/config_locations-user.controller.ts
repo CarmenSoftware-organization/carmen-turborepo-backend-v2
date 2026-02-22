@@ -45,7 +45,7 @@ export class Config_LocationsUserController {
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'getLocationByUserId',
@@ -70,10 +70,10 @@ export class Config_LocationsUserController {
   async managerLocationUser(
     @Param('userId') userId: string,
     @Param('bu_code') bu_code: string,
-    @Body() updateDto: any,
+    @Body() updateDto: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'managerLocationUser',

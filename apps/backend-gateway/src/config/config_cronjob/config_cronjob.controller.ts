@@ -23,7 +23,6 @@ export class ConfigCronjobController extends BaseHttpController {
   @ApiResponse({ status: 503, description: 'Failed to connect to cronjob service' })
   async getAll(@Res() res: Response): Promise<void> {
     // Call the getAll method from the configCronjobService
-    console.log('Fetching all cron jobs');
     const result = await this.configCronjobService.getAll();
     this.respond(res, result);
   }

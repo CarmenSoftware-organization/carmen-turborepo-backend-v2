@@ -3,7 +3,7 @@ import { ProductCategoryService } from './product-category.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class ProductCategoryController extends BaseMicroserviceController {
@@ -16,7 +16,7 @@ export class ProductCategoryController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.bu_code,
       user_id: payload.user_id,
@@ -30,7 +30,7 @@ export class ProductCategoryController extends BaseMicroserviceController {
     cmd: 'product-category.findOne',
     service: 'product-category',
   })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, ProductCategoryController.name);
     const id = payload.id;
     this.productCategoryService.userId = payload.user_id;
@@ -46,7 +46,7 @@ export class ProductCategoryController extends BaseMicroserviceController {
     cmd: 'product-category.findAll',
     service: 'product-category',
   })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, ProductCategoryController.name);
     this.productCategoryService.userId = payload.user_id;
     this.productCategoryService.bu_code = payload.bu_code;
@@ -62,7 +62,7 @@ export class ProductCategoryController extends BaseMicroserviceController {
     cmd: 'product-category.create',
     service: 'product-category',
   })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, ProductCategoryController.name);
     const data = payload.data;
     this.productCategoryService.userId = payload.user_id;
@@ -78,7 +78,7 @@ export class ProductCategoryController extends BaseMicroserviceController {
     cmd: 'product-category.update',
     service: 'product-category',
   })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, ProductCategoryController.name);
     const data = payload.data;
     this.productCategoryService.userId = payload.user_id;
@@ -94,7 +94,7 @@ export class ProductCategoryController extends BaseMicroserviceController {
     cmd: 'product-category.delete',
     service: 'product-category',
   })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, ProductCategoryController.name);
     const id = payload.id;
     this.productCategoryService.userId = payload.user_id;

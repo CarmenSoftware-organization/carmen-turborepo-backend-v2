@@ -4,7 +4,7 @@ import { Payload } from '@nestjs/microservices';
 import { MessagePattern } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class ProductsController extends BaseMicroserviceController {
@@ -15,7 +15,7 @@ export class ProductsController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.bu_code,
       user_id: payload.user_id,
@@ -26,7 +26,7 @@ export class ProductsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'products.findOne', service: 'products' })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, ProductsController.name);
     const id = payload.id;
     this.productsService.userId = payload.user_id;
@@ -39,7 +39,7 @@ export class ProductsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'products.findAll', service: 'products' })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, ProductsController.name);
     this.productsService.userId = payload.user_id;
     this.productsService.bu_code = payload.bu_code;
@@ -52,7 +52,7 @@ export class ProductsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'products.find-many-by-id', service: 'products' })
-  async findManyById(@Payload() payload: any): Promise<any> {
+  async findManyById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findManyById', payload }, ProductsController.name);
     const ids = payload.ids;
     this.productsService.userId = payload.user_id;
@@ -65,7 +65,7 @@ export class ProductsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'products.create', service: 'products' })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, ProductsController.name);
     const data = payload.data;
     this.productsService.userId = payload.user_id;
@@ -78,7 +78,7 @@ export class ProductsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'products.update', service: 'products' })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, ProductsController.name);
     const data = payload.data;
     this.productsService.userId = payload.user_id;
@@ -91,7 +91,7 @@ export class ProductsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'products.delete', service: 'products' })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, ProductsController.name);
     const id = payload.id;
     this.productsService.userId = payload.user_id;
@@ -104,7 +104,7 @@ export class ProductsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'products.findItemGroup', service: 'products' })
-  async findItemGroup(@Payload() payload: any): Promise<any> {
+  async findItemGroup(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findItemGroup', payload }, ProductsController.name);
     const id = payload.id;
     this.productsService.userId = payload.user_id;
@@ -117,7 +117,7 @@ export class ProductsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'products.getByLocationId', service: 'products' })
-  async getByLocationId(@Payload() payload: any): Promise<any> {
+  async getByLocationId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'getByLocationId', payload },
       ProductsController.name,

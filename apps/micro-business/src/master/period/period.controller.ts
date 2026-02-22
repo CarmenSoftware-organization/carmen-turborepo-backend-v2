@@ -3,7 +3,7 @@ import { PeriodService } from './period.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class PeriodController extends BaseMicroserviceController {
@@ -15,7 +15,7 @@ export class PeriodController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.bu_code,
       user_id: payload.user_id,
@@ -26,7 +26,7 @@ export class PeriodController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'period.findOne', service: 'period' })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, PeriodController.name);
     const id = payload.id;
     this.periodService.userId = payload.user_id;
@@ -39,7 +39,7 @@ export class PeriodController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'period.findAll', service: 'period' })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, PeriodController.name);
     this.periodService.userId = payload.user_id;
     this.periodService.bu_code = payload.bu_code;
@@ -52,7 +52,7 @@ export class PeriodController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'period.create', service: 'period' })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, PeriodController.name);
     const data = payload.data;
     this.periodService.userId = payload.user_id;
@@ -65,7 +65,7 @@ export class PeriodController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'period.update', service: 'period' })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, PeriodController.name);
     const data = payload.data;
     this.periodService.userId = payload.user_id;
@@ -78,7 +78,7 @@ export class PeriodController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'period.patch', service: 'period' })
-  async patch(@Payload() payload: any): Promise<any> {
+  async patch(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'patch', payload }, PeriodController.name);
     const data = payload.data;
     this.periodService.userId = payload.user_id;
@@ -91,7 +91,7 @@ export class PeriodController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'period.delete', service: 'period' })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, PeriodController.name);
     const id = payload.id;
     this.periodService.userId = payload.user_id;

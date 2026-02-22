@@ -167,7 +167,7 @@ export class PlatformUserController extends BaseHttpController {
   async createUser(
     @Req() req: Request,
     @Res() res: Response,
-    @Body() data: any,
+    @Body() data: Record<string, unknown>,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
@@ -196,7 +196,7 @@ export class PlatformUserController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('id') id: string,
-    @Body() data: any,
+    @Body() data: Record<string, unknown>,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(

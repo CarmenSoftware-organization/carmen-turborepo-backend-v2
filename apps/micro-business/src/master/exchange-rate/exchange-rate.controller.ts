@@ -4,7 +4,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
 import { ICreateExchangeRate } from './interface/exchange-rate.interface';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class ExchangeRateController extends BaseMicroserviceController {
@@ -15,7 +15,7 @@ export class ExchangeRateController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.bu_code,
       user_id: payload.user_id,
@@ -26,7 +26,7 @@ export class ExchangeRateController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'exchange-rate.findOne', service: 'exchange-rate' })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, ExchangeRateController.name);
     const id = payload.id;
     this.exchangeRateService.userId = payload.user_id;
@@ -39,7 +39,7 @@ export class ExchangeRateController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'exchange-rate.findAll', service: 'exchange-rate' })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, ExchangeRateController.name);
     this.exchangeRateService.userId = payload.user_id;
     this.exchangeRateService.bu_code = payload.bu_code;
@@ -52,7 +52,7 @@ export class ExchangeRateController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'exchange-rate.create', service: 'exchange-rate' })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, ExchangeRateController.name);
     const data: ICreateExchangeRate = payload.data;
     this.exchangeRateService.userId = payload.user_id;
@@ -65,7 +65,7 @@ export class ExchangeRateController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'exchange-rate.update', service: 'exchange-rate' })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, ExchangeRateController.name);
     const data = payload.data;
     this.exchangeRateService.userId = payload.user_id;
@@ -78,7 +78,7 @@ export class ExchangeRateController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'exchange-rate.delete', service: 'exchange-rate' })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, ExchangeRateController.name);
     const id = payload.id;
     this.exchangeRateService.userId = payload.user_id;

@@ -100,7 +100,7 @@ export class AuthController {
   async login(
     @Body() loginDto: LoginDto,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'login',
@@ -147,9 +147,9 @@ export class AuthController {
   })
   async logout(
     @Query('version') version: string = 'latest',
-    @Body() body: any,
+    @Body() body: Record<string, unknown>,
     @Req() req: Request,
-  ): Promise<any> {
+  ): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
 
     const logoutDto = { user_id: user_id, ...body };
@@ -223,7 +223,7 @@ export class AuthController {
   async register(
     @Body() registerDto: RegisterDto,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'register',
@@ -271,7 +271,7 @@ export class AuthController {
     @Body() inviteUserDto: InviteUserDto,
     @Query('version') version: string = 'latest',
     @Req() req: Request,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'inviteUser',
@@ -316,7 +316,7 @@ export class AuthController {
   async registerConfirm(
     @Body() registerConfirmDto: RegisterConfirmDto,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'registerConfirm',
@@ -369,9 +369,9 @@ export class AuthController {
     },
   })
   async refreshToken(
-    @Body() refreshTokenDto: any,
+    @Body() refreshTokenDto: Record<string, unknown>,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'refreshToken',
@@ -424,7 +424,7 @@ export class AuthController {
   async forgotPassword(
     @Body() forgotPasswordDto: ForgotPasswordDto,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'forgotPassword',
@@ -481,7 +481,7 @@ export class AuthController {
   async resetPasswordWithToken(
     @Body() resetPasswordWithTokenDto: ResetPasswordWithTokenDto,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'resetPasswordWithToken',
@@ -559,7 +559,7 @@ export class AuthController {
   async resetPassword(
     @Body() resetPasswordDto: ResetPasswordDto,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'resetPassword',
@@ -615,8 +615,8 @@ export class AuthController {
     },
   })
   async changePassword(
-    @Body() changePasswordDto: any,
-    @Req() req: any,
+    @Body() changePasswordDto: Record<string, unknown>,
+    @Req() req: Request,
     @Query('version') version: string,
   ) {
     this.logger.log({

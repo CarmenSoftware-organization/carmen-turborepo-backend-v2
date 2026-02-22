@@ -3,7 +3,7 @@ import { Controller, HttpStatus } from '@nestjs/common'
 import { DepartmentUserService } from './department-user.service'
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class DepartmentUserController extends BaseMicroserviceController {
@@ -14,7 +14,7 @@ export class DepartmentUserController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.bu_code,
       user_id: payload.user_id,
@@ -25,7 +25,7 @@ export class DepartmentUserController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'department-users.find-by-department', service: 'department-users' })
-  async findAllUserInDepartment(@Payload() payload: any): Promise<any> {
+  async findAllUserInDepartment(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, DepartmentUserController.name);
     const department_id = payload.department_id;
     this.departmentUserService.userId = payload.user_id;
@@ -38,7 +38,7 @@ export class DepartmentUserController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'department-users.has-hod-in-department', service: 'department-users' })
-  async hasHodInDepartment(@Payload() payload: any): Promise<any> {
+  async hasHodInDepartment(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'hasHodInDepartment', payload }, DepartmentUserController.name);
     const department_id = payload.department_id;
     this.departmentUserService.userId = payload.user_id;
@@ -51,7 +51,7 @@ export class DepartmentUserController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'department-users.get-hod-in-department', service: 'department-users' })
-  async getHodInDepartment(@Payload() payload: any): Promise<any> {
+  async getHodInDepartment(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'getHodInDepartment', payload }, DepartmentUserController.name);
     const department_id = payload.department_id;
     this.departmentUserService.userId = payload.user_id;

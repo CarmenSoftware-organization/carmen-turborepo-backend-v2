@@ -543,8 +543,7 @@ export class PurchaseRequestController extends BaseHttpController {
     let approvePayload
     try {
       approvePayload = ApproveByStateRoleSchema2.parse(payload)
-    } catch (e: any) {
-      console.log(e)
+    } catch (e: unknown) {
       throw new BadRequestException(e);
     }
 
@@ -669,8 +668,7 @@ export class PurchaseRequestController extends BaseHttpController {
     let savePayload
     try {
       savePayload = SavePurchaseRequestSchema.parse(updateDto)
-    } catch (e: any) {
-      console.log(e)
+    } catch (e: unknown) {
       throw new BadRequestException(e);
     }
 
@@ -855,7 +853,7 @@ export class PurchaseRequestController extends BaseHttpController {
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findDimensionsByDetailId',
@@ -888,7 +886,7 @@ export class PurchaseRequestController extends BaseHttpController {
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findHistoryByDetailId',
@@ -922,7 +920,7 @@ export class PurchaseRequestController extends BaseHttpController {
     @Req() req: Request,
     @Body() data: CalculatePurchaseRequestDetail,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'getCalculatePriceInfoByDetailId',

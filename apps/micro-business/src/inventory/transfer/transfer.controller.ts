@@ -4,7 +4,7 @@ import { TransferService } from './transfer.service';
 import { ITransferCreate, ITransferUpdate } from './interface/transfer.interface';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class TransferController extends BaseMicroserviceController {
@@ -14,7 +14,7 @@ export class TransferController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -25,7 +25,7 @@ export class TransferController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'transfer.findOne', service: 'transfer' })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, TransferController.name);
     const id = payload.id;
     const user_id = payload.user_id;
@@ -38,7 +38,7 @@ export class TransferController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'transfer.findAll', service: 'transfer' })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, TransferController.name);
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
@@ -51,7 +51,7 @@ export class TransferController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'transfer.create', service: 'transfer' })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, TransferController.name);
     const data: ITransferCreate = payload.data;
     const user_id = payload.user_id;
@@ -64,7 +64,7 @@ export class TransferController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'transfer.update', service: 'transfer' })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, TransferController.name);
     const data: ITransferUpdate = payload.data;
     const user_id = payload.user_id;
@@ -77,7 +77,7 @@ export class TransferController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'transfer.delete', service: 'transfer' })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, TransferController.name);
     const id = payload.id;
     const user_id = payload.user_id;
@@ -92,7 +92,7 @@ export class TransferController extends BaseMicroserviceController {
   // ==================== Transfer Detail CRUD ====================
 
   @MessagePattern({ cmd: 'transfer-detail.find-by-id', service: 'transfer' })
-  async getDetailById(@Payload() payload: any): Promise<any> {
+  async getDetailById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'getDetailById', payload }, TransferController.name);
     const detailId = payload.detail_id;
     const user_id = payload.user_id;
@@ -105,7 +105,7 @@ export class TransferController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'transfer-detail.find-all', service: 'transfer' })
-  async getDetailsByTransferId(@Payload() payload: any): Promise<any> {
+  async getDetailsByTransferId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'getDetailsByTransferId', payload }, TransferController.name);
     const transferId = payload.transfer_id;
     const user_id = payload.user_id;
@@ -118,7 +118,7 @@ export class TransferController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'transfer-detail.create', service: 'transfer' })
-  async createDetail(@Payload() payload: any): Promise<any> {
+  async createDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'createDetail', payload }, TransferController.name);
     const transferId = payload.transfer_id;
     const data = payload.data;
@@ -132,7 +132,7 @@ export class TransferController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'transfer-detail.update', service: 'transfer' })
-  async updateDetail(@Payload() payload: any): Promise<any> {
+  async updateDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'updateDetail', payload }, TransferController.name);
     const detailId = payload.detail_id;
     const data = payload.data;
@@ -146,7 +146,7 @@ export class TransferController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'transfer-detail.delete', service: 'transfer' })
-  async deleteDetail(@Payload() payload: any): Promise<any> {
+  async deleteDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'deleteDetail', payload }, TransferController.name);
     const detailId = payload.detail_id;
     const user_id = payload.user_id;
@@ -161,7 +161,7 @@ export class TransferController extends BaseMicroserviceController {
   // ==================== Standalone Transfer Detail API ====================
 
   @MessagePattern({ cmd: 'transfer-detail.findAll', service: 'transfer-detail' })
-  async findAllDetails(@Payload() payload: any): Promise<any> {
+  async findAllDetails(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAllDetails', payload }, TransferController.name);
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
@@ -174,7 +174,7 @@ export class TransferController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'transfer-detail.findOne', service: 'transfer-detail' })
-  async findOneDetail(@Payload() payload: any): Promise<any> {
+  async findOneDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOneDetail', payload }, TransferController.name);
     const detailId = payload.id;
     const user_id = payload.user_id;
@@ -187,7 +187,7 @@ export class TransferController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'transfer-detail.createStandalone', service: 'transfer-detail' })
-  async createStandaloneDetail(@Payload() payload: any): Promise<any> {
+  async createStandaloneDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'createStandaloneDetail', payload }, TransferController.name);
     const data = payload.data;
     const user_id = payload.user_id;
@@ -200,7 +200,7 @@ export class TransferController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'transfer-detail.updateStandalone', service: 'transfer-detail' })
-  async updateStandaloneDetail(@Payload() payload: any): Promise<any> {
+  async updateStandaloneDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'updateStandaloneDetail', payload }, TransferController.name);
     const detailId = payload.id;
     const data = payload.data;
@@ -214,7 +214,7 @@ export class TransferController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'transfer-detail.deleteStandalone', service: 'transfer-detail' })
-  async deleteStandaloneDetail(@Payload() payload: any): Promise<any> {
+  async deleteStandaloneDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'deleteStandaloneDetail', payload }, TransferController.name);
     const detailId = payload.id;
     const user_id = payload.user_id;

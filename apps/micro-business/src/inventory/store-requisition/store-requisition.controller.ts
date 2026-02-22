@@ -2,11 +2,7 @@ import { Body, Controller, HttpStatus, UseFilters } from '@nestjs/common';
 import { StoreRequisitionService } from './store-requisition.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
-import {
-  RejectStoreRequisitionDto,
-  ReviewStoreRequisitionDto,
-  BaseMicroserviceController,
-} from '@/common';
+import { RejectStoreRequisitionDto, ReviewStoreRequisitionDto, BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 import { StoreRequisitionLogic } from './logic/store-requisition.logic';
 import { AllExceptionsFilter } from '@/common/exception/global.filter';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
@@ -24,7 +20,7 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -38,7 +34,7 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     cmd: 'store-requisition.find-by-id',
     service: 'store-requisition',
   })
-  async getById(@Payload() payload: any): Promise<any> {
+  async getById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'getById', payload },
       StoreRequisitionController.name,
@@ -60,13 +56,13 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     cmd: 'store-requisition.find-all',
     service: 'store-requisition',
   })
-  async getAll(@Payload() payload: any): Promise<any> {
+  async getAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'getAll', payload },
       StoreRequisitionController.name,
     );
     const user_id = payload.user_id;
-    const bu_code = payload.bu_code;
+    const bu_code = payload.bu_code as unknown as string[];
     const paginate = payload.paginate;
     const userDatas = payload.userDatas;
 
@@ -87,7 +83,7 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     cmd: 'store-requisition.create',
     service: 'store-requisition',
   })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'create', payload },
       StoreRequisitionController.name,
@@ -106,7 +102,7 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     cmd: 'store-requisition.submit',
     service: 'store-requisition',
   })
-  async submit(@Payload() payload: any): Promise<any> {
+  async submit(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'submit', payload },
       StoreRequisitionController.name,
@@ -129,14 +125,8 @@ export class StoreRequisitionController extends BaseMicroserviceController {
   })
   async approve(
     @Payload()
-    payload: {
-      id: string;
-      body: any;
-      user_id: string;
-      bu_code: string;
-      version: string;
-    },
-  ): Promise<any> {
+    payload: MicroservicePayload,
+  ): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'approve', payload },
       StoreRequisitionController.name,
@@ -163,14 +153,11 @@ export class StoreRequisitionController extends BaseMicroserviceController {
   })
   async reject(
     @Payload()
-    payload: {
+    payload: MicroservicePayload & {
       id: string;
-      body: any;
-      user_id: string;
-      bu_code: string;
-      version: string;
+      body: RejectStoreRequisitionDto;
     },
-  ): Promise<any> {
+  ): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'reject', payload },
       StoreRequisitionController.name,
@@ -194,14 +181,11 @@ export class StoreRequisitionController extends BaseMicroserviceController {
   })
   async review(
     @Payload()
-    payload: {
+    payload: MicroservicePayload & {
       id: string;
-      body: any;
-      user_id: string;
-      bu_code: string;
-      version: string;
+      body: ReviewStoreRequisitionDto;
     },
-  ): Promise<any> {
+  ): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'review', payload },
       StoreRequisitionController.name,
@@ -223,7 +207,7 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     cmd: 'store-requisition.save',
     service: 'store-requisition',
   })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'update', payload },
       StoreRequisitionController.name,
@@ -244,7 +228,7 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     cmd: 'store-requisition.delete',
     service: 'store-requisition',
   })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'delete', payload },
       StoreRequisitionController.name,
@@ -264,7 +248,7 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     cmd: 'store-requisition.find-all-by-status',
     service: 'store-requisition',
   })
-  async findAllByStatus(@Payload() payload: any): Promise<any> {
+  async findAllByStatus(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findAllByStatus', payload },
       StoreRequisitionController.name,
@@ -286,7 +270,7 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     cmd: 'my-pending.store-requisition.find-all.count',
     service: 'my-pending',
   })
-  async findAllMyPendingCount(@Body() payload: any): Promise<any> {
+  async findAllMyPendingCount(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findAllMyPendingCount', payload },
       StoreRequisitionController.name,

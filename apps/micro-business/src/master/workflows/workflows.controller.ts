@@ -3,7 +3,7 @@ import { WorkflowsService } from './workflows.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { WorkflowNavigatorService } from './workflows.navagation.service';
-import { GlobalApiReturn, NavigateForwardResult, NavigationHistory, NavigationInfo, Stage, WorkflowData, BaseMicroserviceController } from '@/common';
+import { GlobalApiReturn, NavigateForwardResult, NavigationHistory, NavigationInfo, Stage, WorkflowData, BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
 
 @Controller()
@@ -17,7 +17,7 @@ export class WorkflowsController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.bu_code,
       user_id: payload.user_id,
@@ -28,12 +28,11 @@ export class WorkflowsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'workflows.findOne', service: 'workflows' })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, WorkflowsController.name);
     const id = payload.id;
     this.workflowsService.userId = payload.user_id;
     this.workflowsService.bu_code = payload.bu_code;
-    console.log('payload', payload.bu_code);
     await this.workflowsService.initializePrismaService(payload.bu_code, payload.user_id);
 
     const auditContext = this.createAuditContext(payload);
@@ -42,7 +41,7 @@ export class WorkflowsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'workflows.findAll', service: 'workflows' })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, WorkflowsController.name);
     this.workflowsService.userId = payload.user_id;
     this.workflowsService.bu_code = payload.bu_code;
@@ -55,7 +54,7 @@ export class WorkflowsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'workflows.find-by-type', service: 'workflows' })
-  async findByType(@Payload() payload: any): Promise<any> {
+  async findByType(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findByType', payload }, WorkflowsController.name);
     const type = payload.type;
     const user_id = payload.user_id;
@@ -69,7 +68,7 @@ export class WorkflowsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'workflows.create', service: 'workflows' })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, WorkflowsController.name);
     const data = payload.data;
     this.workflowsService.userId = payload.user_id;
@@ -82,7 +81,7 @@ export class WorkflowsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'workflows.update', service: 'workflows' })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, WorkflowsController.name);
     const data = payload.data;
     this.workflowsService.userId = payload.user_id;
@@ -95,7 +94,7 @@ export class WorkflowsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'workflows.delete', service: 'workflows' })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, WorkflowsController.name);
     const id = payload.id;
     this.workflowsService.userId = payload.user_id;
@@ -108,7 +107,7 @@ export class WorkflowsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'workflows.get-workflow-navigation', service: 'workflows' })
-  async getWorkflowNavigation(@Payload() payload: any): Promise<NavigateForwardResult> {
+  async getWorkflowNavigation(@Payload() payload: MicroservicePayload): Promise<NavigateForwardResult> {
     this.logger.debug({ function: 'getWorkflowNavigation', payload }, WorkflowsController.name);
     const workflowData = payload.workflowData;
     const currentStatus = payload.currentStatus;
@@ -125,7 +124,7 @@ export class WorkflowsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'workflows.navigate-back-to-stage', service: 'workflows' })
-  async navigateBackToStage(@Payload() payload: any): Promise<GlobalApiReturn<{
+  async navigateBackToStage(@Payload() payload: MicroservicePayload): Promise<GlobalApiReturn<{
     previous_stage: string;
     current_stage: string;
     navigation_info: NavigationInfo;
@@ -171,7 +170,7 @@ export class WorkflowsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'workflows.get-previous-stages', service: 'workflows' })
-  async getPreviousStages(@Payload() payload: any): Promise<GlobalApiReturn<string[]>> {
+  async getPreviousStages(@Payload() payload: MicroservicePayload): Promise<GlobalApiReturn<string[]>> {
     this.logger.debug({ function: 'getPreviousStages', payload }, WorkflowsController.name);
     const workflow_id = payload.workflow_id;
     const stage = payload.stage;
@@ -199,7 +198,7 @@ export class WorkflowsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'workflows.get-workflow-stage-detail', service: 'workflows' })
-  async getWorkflowStageDetail(@Payload() payload: any): Promise<GlobalApiReturn<Stage | null>> {
+  async getWorkflowStageDetail(@Payload() payload: MicroservicePayload): Promise<GlobalApiReturn<Stage | null>> {
     this.logger.debug({ function: 'getWorkflowStageDetail', payload }, WorkflowsController.name);
     const workflow_id = payload.workflow_id;
     const stage = payload.stage;
@@ -225,7 +224,7 @@ export class WorkflowsController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'workflows.get-all-workflows-stages', service: 'workflows' })
-  async getAllWorkflowStages(@Payload() payload: any) {
+  async getAllWorkflowStages(@Payload() payload: MicroservicePayload) {
     this.logger.debug({ function: 'getAllWorkflowStages', payload }, WorkflowsController.name);
     const workflow_ids = payload.workflow_ids
     const user_id = payload.user_id;

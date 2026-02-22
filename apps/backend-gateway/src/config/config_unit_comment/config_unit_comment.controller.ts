@@ -111,7 +111,7 @@ export class Config_UnitCommentController extends BaseHttpController {
   @ApiVersionMinRequest()
   async create(
     @Param('bu_code') bu_code: string,
-    @Body() createDto: any,
+    @Body() createDto: Record<string, unknown>,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -141,7 +141,7 @@ export class Config_UnitCommentController extends BaseHttpController {
   async update(
     @Param('bu_code') bu_code: string,
     @Param('id') id: string,
-    @Body() updateDto: any,
+    @Body() updateDto: Record<string, unknown>,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',

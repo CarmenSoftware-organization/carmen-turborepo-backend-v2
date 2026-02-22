@@ -3,7 +3,7 @@ import { VendorBusinessTypeService } from './vendor_business_type.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class VendorBusinessTypeController extends BaseMicroserviceController {
@@ -16,7 +16,7 @@ export class VendorBusinessTypeController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.bu_code,
       user_id: payload.user_id,
@@ -30,7 +30,7 @@ export class VendorBusinessTypeController extends BaseMicroserviceController {
     cmd: 'vendor-business-type.findOne',
     service: 'vendor-business-type',
   })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findOne', payload },
       VendorBusinessTypeController.name,
@@ -49,7 +49,7 @@ export class VendorBusinessTypeController extends BaseMicroserviceController {
     cmd: 'vendor-business-type.findAll',
     service: 'vendor-business-type',
   })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findAll', payload },
       VendorBusinessTypeController.name,
@@ -68,7 +68,7 @@ export class VendorBusinessTypeController extends BaseMicroserviceController {
     cmd: 'vendor-business-type.create',
     service: 'vendor-business-type',
   })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'create', payload },
       VendorBusinessTypeController.name,
@@ -87,7 +87,7 @@ export class VendorBusinessTypeController extends BaseMicroserviceController {
     cmd: 'vendor-business-type.update',
     service: 'vendor-business-type',
   })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'update', payload },
       VendorBusinessTypeController.name,
@@ -106,7 +106,7 @@ export class VendorBusinessTypeController extends BaseMicroserviceController {
     cmd: 'vendor-business-type.delete',
     service: 'vendor-business-type',
   })
-  async delete(@Payload() payload: any): Promise<any> {
+  async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'delete', payload },
       VendorBusinessTypeController.name,

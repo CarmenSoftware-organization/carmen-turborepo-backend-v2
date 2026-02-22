@@ -262,7 +262,7 @@ export class PurchaseOrderController extends BaseHttpController {
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() updateDto: any,
+    @Body() updateDto: Record<string, unknown>,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -380,7 +380,7 @@ export class PurchaseOrderController extends BaseHttpController {
   async approve(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() data: any,
+    @Body() data: Record<string, unknown>,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -907,7 +907,7 @@ export class PurchaseOrderController extends BaseHttpController {
   async createDetail(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() body: any,
+    @Body() body: Record<string, unknown>,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -948,7 +948,7 @@ export class PurchaseOrderController extends BaseHttpController {
     @Param('id') id: string,
     @Param('detail_id') detailId: string,
     @Param('bu_code') bu_code: string,
-    @Body() body: any,
+    @Body() body: Record<string, unknown>,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',

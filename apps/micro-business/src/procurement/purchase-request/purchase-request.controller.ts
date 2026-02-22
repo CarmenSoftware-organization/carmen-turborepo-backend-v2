@@ -2,11 +2,7 @@ import { Body, Controller, HttpStatus, UseFilters } from '@nestjs/common';
 import { PurchaseRequestService } from './purchase-request.service';
 import { MessagePattern } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
-import {
-  RejectPurchaseRequestDto,
-  ReviewPurchaseRequestDto,
-  BaseMicroserviceController,
-} from '@/common';
+import { RejectPurchaseRequestDto, ReviewPurchaseRequestDto, BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 import { PurchaseRequestLogic } from './logic/purchase-request.logic';
 import { AllExceptionsFilter } from '@/common/exception/global.filter';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
@@ -25,7 +21,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -39,7 +35,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'purchase-request.find-by-id',
     service: 'purchase-request',
   })
-  async getById(@Body() payload: any): Promise<any> {
+  async getById(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'getById', payload },
       PurchaseRequestController.name,
@@ -61,19 +57,19 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'purchase-request.find-all',
     service: 'purchase-request',
   })
-  async getAll(@Body() payload: any): Promise<any> {
+  async getAll(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'getAll', payload },
       PurchaseRequestController.name,
     );
     const user_id = payload.user_id;
-    const bu_code = payload.bu_code;
+    const bu_code = payload.bu_code as unknown as string[];
     const paginate = payload.paginate;
     const userDatas: {
       bu_id: string;
       bu_code: string;
       role: string;
-      permissions: any;
+      permissions: Record<string, unknown>;
     }[] = payload.userDatas;
 
     const auditContext = this.createAuditContext(payload);
@@ -93,7 +89,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'my-pending.purchase-request.find-all',
     service: 'my-pending',
   })
-  async findAllMyPending(@Body() payload: any): Promise<any> {
+  async findAllMyPending(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findAllMyPending', payload },
       PurchaseRequestController.name,
@@ -114,7 +110,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'my-pending.purchase-request.find-all.count',
     service: 'my-pending',
   })
-  async findAllMyPendingCount(@Body() payload: any): Promise<any> {
+  async findAllMyPendingCount(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findAllMyPendingCount', payload },
       PurchaseRequestController.name,
@@ -134,7 +130,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'purchase-request.create',
     service: 'purchase-request',
   })
-  async create(@Body() payload: any): Promise<any> {
+  async create(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'create', payload },
       PurchaseRequestController.name,
@@ -153,7 +149,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'purchase-request.submit',
     service: 'purchase-request',
   })
-  async submit(@Body() payload: any): Promise<any> {
+  async submit(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'submit', payload },
       PurchaseRequestController.name,
@@ -176,14 +172,8 @@ export class PurchaseRequestController extends BaseMicroserviceController {
   })
   async approve(
     @Body()
-    payload: {
-      id: string;
-      body: any;
-      user_id: string;
-      bu_code: string;
-      version: string;
-    },
-  ): Promise<any> {
+    payload: MicroservicePayload,
+  ): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'approve', payload },
       PurchaseRequestController.name,
@@ -217,7 +207,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
       bu_code: string;
       version: string;
     },
-  ): Promise<any> {
+  ): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'review', payload },
       PurchaseRequestController.name,
@@ -244,14 +234,11 @@ export class PurchaseRequestController extends BaseMicroserviceController {
   })
   async reject(
     @Body()
-    payload: {
+    payload: MicroservicePayload & {
       id: string;
-      body: any;
-      user_id: string;
-      bu_code: string;
-      version: string;
+      body: RejectPurchaseRequestDto;
     },
-  ): Promise<any> {
+  ): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'reject', payload },
       PurchaseRequestController.name,
@@ -273,7 +260,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'purchase-request.save',
     service: 'purchase-request',
   })
-  async update(@Body() payload: any): Promise<any> {
+  async update(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'update', payload },
       PurchaseRequestController.name,
@@ -294,7 +281,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'purchase-request.duplicate-pr',
     service: 'purchase-request',
   })
-  async duplicatePr(@Body() payload: any): Promise<any> {
+  async duplicatePr(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'duplicatePr', payload },
       PurchaseRequestController.name,
@@ -314,7 +301,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'purchase-request.split',
     service: 'purchase-request',
   })
-  async splitPr(@Body() payload: any): Promise<any> {
+  async splitPr(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'splitPr', payload },
       PurchaseRequestController.name,
@@ -335,7 +322,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'purchase-request.delete',
     service: 'purchase-request',
   })
-  async delete(@Body() payload: any): Promise<any> {
+  async delete(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'delete', payload },
       PurchaseRequestController.name,
@@ -355,7 +342,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'purchase-request.find-all-by-status',
     service: 'purchase-request',
   })
-  async findAllByStatus(@Body() payload: any): Promise<any> {
+  async findAllByStatus(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findAllByStatus', payload },
       PurchaseRequestController.name,
@@ -377,7 +364,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'purchase-request.find-all-workflow-stages-by-pr',
     service: 'purchase-request',
   })
-  async findAllWorkflowStagesByPr(@Body() payload: any): Promise<any> {
+  async findAllWorkflowStagesByPr(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findAllWorkflowStagesByPr', payload },
       PurchaseRequestController.name,
@@ -396,7 +383,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'purchase-request.find-all-my-pending-stages',
     service: 'purchase-request',
   })
-  async findAllMyPendingStages(@Body() payload: any): Promise<any> {
+  async findAllMyPendingStages(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findAllMyPendingStages', payload },
       PurchaseRequestController.name,
@@ -416,7 +403,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'purchase-request.export',
     service: 'purchase-request',
   })
-  async exportToExcel(@Body() payload: any): Promise<any> {
+  async exportToExcel(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'exportToExcel', payload },
       PurchaseRequestController.name,
@@ -437,7 +424,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'purchase-request.print',
     service: 'purchase-request',
   })
-  async printToPdf(@Body() payload: any): Promise<any> {
+  async printToPdf(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'printToPdf', payload },
       PurchaseRequestController.name,
@@ -458,7 +445,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'purchase-request.find-dimensions-by-detail-id',
     service: 'purchase-request',
   })
-  async findDimensionsByDetailId(@Body() payload: any): Promise<any> {
+  async findDimensionsByDetailId(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findDimensionsByDetailId', payload },
       PurchaseRequestController.name,
@@ -479,7 +466,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'purchase-request.find-history-by-detail-id',
     service: 'purchase-request',
   })
-  async findHistoryByDetailId(@Body() payload: any): Promise<any> {
+  async findHistoryByDetailId(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findHistoryByDetailId', payload },
       PurchaseRequestController.name,
@@ -500,7 +487,7 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     cmd: 'purchase-request.get-calculate-price-info-by-detail-id',
     service: 'purchase-request',
   })
-  async findCalculatePriceInfoByDetailId(@Body() payload: any): Promise<any> {
+  async findCalculatePriceInfoByDetailId(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findCalculatePriceInfoByDetailId', payload },
       PurchaseRequestController.name,

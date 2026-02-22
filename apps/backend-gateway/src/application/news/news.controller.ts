@@ -1,7 +1,5 @@
 import {
   Body,
-  Request,
-  Response,
   Controller,
   Delete,
   Get,
@@ -15,6 +13,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { NewsService } from './news.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
@@ -59,7 +58,7 @@ export class NewsController extends BaseHttpController {
     @Res() res: Response,
     @Query() query: IPaginateQuery,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -90,7 +89,7 @@ export class NewsController extends BaseHttpController {
     @Res() res: Response,
     @Param('id') id: string,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -117,9 +116,9 @@ export class NewsController extends BaseHttpController {
   async create(
     @Req() req: Request,
     @Res() res: Response,
-    @Body() createNewsDto: any,
+    @Body() createNewsDto: Record<string, unknown>,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'create',
@@ -151,9 +150,9 @@ export class NewsController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('id') id: string,
-    @Body() updateNewsDto: any,
+    @Body() updateNewsDto: Record<string, unknown>,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'update',
@@ -188,7 +187,7 @@ export class NewsController extends BaseHttpController {
     @Res() res: Response,
     @Param('id') id: string,
     @Query('version') version: string = 'latest',
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.debug(
       {
         function: 'delete',

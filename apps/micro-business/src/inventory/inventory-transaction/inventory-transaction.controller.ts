@@ -3,7 +3,7 @@ import { MessagePattern } from '@nestjs/microservices';
 import { InventoryTransactionService } from './inventory-transaction.service';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class InventoryTransactionController extends BaseMicroserviceController {
@@ -16,7 +16,7 @@ export class InventoryTransactionController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -30,7 +30,7 @@ export class InventoryTransactionController extends BaseMicroserviceController {
     cmd: 'inventory-transaction.find-all-by-ids',
     service: 'inventory-transaction',
   })
-  async findAllByIds(@Body() body: any): Promise<any> {
+  async findAllByIds(@Body() body: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAllByIds', body }, InventoryTransactionController.name);
     const auditContext = this.createAuditContext(body);
     const result = await runWithAuditContext(auditContext, () =>

@@ -3,7 +3,7 @@ import { CurrenciesService } from './currencies.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController } from '@/common';
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class CurrenciesController extends BaseMicroserviceController {
@@ -14,7 +14,7 @@ export class CurrenciesController extends BaseMicroserviceController {
     super();
   }
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,
@@ -25,7 +25,7 @@ export class CurrenciesController extends BaseMicroserviceController {
   }
 
   @MessagePattern({ cmd: 'currencies.findAllISO', service: 'currencies' })
-  async findAllISO(@Payload() payload: any): Promise<any> {
+  async findAllISO(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findAllISO', payload: payload },
       CurrenciesController.name,

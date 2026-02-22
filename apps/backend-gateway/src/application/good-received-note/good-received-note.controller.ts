@@ -223,7 +223,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
   async create(
-    @Body() createDto: any ,//GoodReceivedNoteCreateDto,
+    @Body() createDto: Record<string, unknown>, //GoodReceivedNoteCreateDto,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -555,7 +555,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
   async createDetail(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() data: any,
+    @Body() data: Record<string, unknown>,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -597,7 +597,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
     @Param('id') id: string,
     @Param('detail_id') detailId: string,
     @Param('bu_code') bu_code: string,
-    @Body() data: any,
+    @Body() data: Record<string, unknown>,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -719,7 +719,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
   async confirm(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() data: any,
+    @Body() data: Record<string, unknown>,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',

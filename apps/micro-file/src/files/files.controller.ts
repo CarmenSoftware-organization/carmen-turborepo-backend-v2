@@ -95,6 +95,15 @@ interface FileInfoPayload {
   user_agent?: string;
 }
 
+interface AuditPayload {
+  user_id?: string;
+  tenant_id?: string;
+  bu_code?: string;
+  request_id?: string;
+  ip_address?: string;
+  user_agent?: string;
+}
+
 interface MinioError extends Error {
   code?: string;
 }
@@ -105,7 +114,7 @@ export class FilesController {
 
   constructor(private readonly filesService: FilesService) {}
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: AuditPayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
       user_id: payload.user_id,

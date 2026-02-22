@@ -102,7 +102,6 @@ export class CreditNoteController extends BaseHttpController {
     @Query('version') version: string = 'latest',
   ): Promise<void> {
 
-    console.log('this is header:', req.headers);
     this.logger.debug(
       {
         function: 'findAll',

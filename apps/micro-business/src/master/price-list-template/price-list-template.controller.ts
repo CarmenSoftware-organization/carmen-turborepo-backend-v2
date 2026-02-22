@@ -4,6 +4,7 @@ import { Payload } from '@nestjs/microservices';
 import { MessagePattern } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
+import { MicroservicePayload, MicroserviceResponse } from '@/common';
 
 @Controller()
 export class PriceListTemplateController {
@@ -14,7 +15,7 @@ export class PriceListTemplateController {
     private readonly priceListTemplateService: PriceListTemplateService,
   ) {}
 
-  private createAuditContext(payload: any): AuditContext {
+  private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.bu_code,
       user_id: payload.user_id,
@@ -28,7 +29,7 @@ export class PriceListTemplateController {
     cmd: 'price-list-template.findOne',
     service: 'price-list-template',
   })
-  async findOne(@Payload() payload: any): Promise<any> {
+  async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findOne', payload },
       PriceListTemplateController.name,
@@ -46,7 +47,7 @@ export class PriceListTemplateController {
     cmd: 'price-list-template.findAll',
     service: 'price-list-template',
   })
-  async findAll(@Payload() payload: any): Promise<any> {
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'findAll', payload },
       PriceListTemplateController.name,
@@ -64,7 +65,7 @@ export class PriceListTemplateController {
     cmd: 'price-list-template.create',
     service: 'price-list-template',
   })
-  async create(@Payload() payload: any): Promise<any> {
+  async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'create', payload },
       PriceListTemplateController.name,
@@ -82,7 +83,7 @@ export class PriceListTemplateController {
     cmd: 'price-list-template.update',
     service: 'price-list-template',
   })
-  async update(@Payload() payload: any): Promise<any> {
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'update', payload },
       PriceListTemplateController.name,
@@ -100,7 +101,7 @@ export class PriceListTemplateController {
     cmd: 'price-list-template.remove',
     service: 'price-list-template',
   })
-  async remove(@Payload() payload: any): Promise<any> {
+  async remove(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'remove', payload },
       PriceListTemplateController.name,
@@ -118,7 +119,7 @@ export class PriceListTemplateController {
     cmd: 'price-list-template.updateStatus',
     service: 'price-list-template',
   })
-  async updateStatus(@Payload() payload: any): Promise<any> {
+  async updateStatus(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
       { function: 'updateStatus', payload },
       PriceListTemplateController.name,
