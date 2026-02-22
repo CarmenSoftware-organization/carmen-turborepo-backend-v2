@@ -30,7 +30,7 @@ export class PeriodService {
     );
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
-      { cmd: 'period.findOne', service: 'period' },
+      { cmd: 'inventory-period.findOne', service: 'inventory-period' },
       { id, user_id, tenant_id, version },
     );
 
@@ -58,7 +58,7 @@ export class PeriodService {
     );
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
-      { cmd: 'period.findAll', service: 'period' },
+      { cmd: 'inventory-period.findAll', service: 'inventory-period' },
       { user_id, tenant_id, paginate, version },
     );
 
@@ -86,7 +86,7 @@ export class PeriodService {
     );
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
-      { cmd: 'period.create', service: 'period' },
+      { cmd: 'inventory-period.create', service: 'inventory-period' },
       { data, user_id, tenant_id, version },
     );
 
@@ -115,7 +115,7 @@ export class PeriodService {
     );
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
-      { cmd: 'period.update', service: 'period' },
+      { cmd: 'inventory-period.update', service: 'inventory-period' },
       { id, data, user_id, tenant_id, version },
     );
 
@@ -143,7 +143,7 @@ export class PeriodService {
     );
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
-      { cmd: 'period.delete', service: 'period' },
+      { cmd: 'inventory-period.delete', service: 'inventory-period' },
       { id, user_id, tenant_id, version },
     );
 

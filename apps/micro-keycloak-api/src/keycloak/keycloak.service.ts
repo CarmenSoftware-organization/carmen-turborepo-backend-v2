@@ -143,6 +143,7 @@ export class KeycloakService {
       body: params.toString(),
     });
 
+    console.log('getUserToken response status:', response);
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       this.logger.error(`Failed to get user token: ${JSON.stringify(error)}`);

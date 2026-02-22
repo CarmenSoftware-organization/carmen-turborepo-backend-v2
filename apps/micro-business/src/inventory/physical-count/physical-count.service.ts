@@ -148,8 +148,10 @@ export class PhysicalCountService {
     };
 
     const physicalCountList = await prisma.tb_physical_count.findMany({
-      ...q.findMany(),
       where: whereClause,
+      orderBy: q.orderBy(),
+      skip: (q.page - 1) * q.perpage,
+      ...(q.perpage >= 0 ? { take: q.perpage } : {}),
       select: {
         id: true,
         period_id: true,

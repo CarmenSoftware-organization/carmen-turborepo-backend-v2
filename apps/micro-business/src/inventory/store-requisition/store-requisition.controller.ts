@@ -267,6 +267,27 @@ export class StoreRequisitionController extends BaseMicroserviceController {
   }
 
   @MessagePattern({
+    cmd: 'my-pending.store-requisition.find-all',
+    service: 'my-pending',
+  })
+  async findAllMyPending(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'findAllMyPending', payload },
+      StoreRequisitionController.name,
+    );
+    const user_id = payload.user_id;
+    const bu_code = payload.bu_code;
+    const paginate = payload.paginate;
+
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.storeRequisitionService.findAllMyPending(user_id, bu_code, paginate),
+    );
+
+    return this.handlePaginatedResult(result);
+  }
+
+  @MessagePattern({
     cmd: 'my-pending.store-requisition.find-all.count',
     service: 'my-pending',
   })

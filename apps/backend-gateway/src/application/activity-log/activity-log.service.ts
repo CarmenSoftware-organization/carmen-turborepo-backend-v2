@@ -57,11 +57,14 @@ export class ActivityLogService {
 
     const response = await firstValueFrom(res);
 
-    if (!response.success) {
-      return Result.error(response.message, httpStatusToErrorCode(response.status));
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
     }
 
-    return Result.ok({ data: response.data, paginate: response.meta });
+    return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
   async findOne(
@@ -86,8 +89,11 @@ export class ActivityLogService {
 
     const response = await firstValueFrom(res);
 
-    if (!response.success) {
-      return Result.error(response.message, httpStatusToErrorCode(response.status));
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
     }
 
     return Result.ok(response.data);
@@ -115,11 +121,14 @@ export class ActivityLogService {
 
     const response = await firstValueFrom(res);
 
-    if (!response.success) {
-      return Result.error(response.message, httpStatusToErrorCode(response.status));
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
     }
 
-    return Result.ok(response);
+    return Result.ok(response.data);
   }
 
   async deleteMany(
@@ -144,11 +153,14 @@ export class ActivityLogService {
 
     const response = await firstValueFrom(res);
 
-    if (!response.success) {
-      return Result.error(response.message, httpStatusToErrorCode(response.status));
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
     }
 
-    return Result.ok(response);
+    return Result.ok(response.data);
   }
 
   async hardDelete(
@@ -173,11 +185,14 @@ export class ActivityLogService {
 
     const response = await firstValueFrom(res);
 
-    if (!response.success) {
-      return Result.error(response.message, httpStatusToErrorCode(response.status));
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
     }
 
-    return Result.ok(response);
+    return Result.ok(response.data);
   }
 
   async hardDeleteMany(
@@ -202,10 +217,13 @@ export class ActivityLogService {
 
     const response = await firstValueFrom(res);
 
-    if (!response.success) {
-      return Result.error(response.message, httpStatusToErrorCode(response.status));
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
     }
 
-    return Result.ok(response);
+    return Result.ok(response.data);
   }
 }

@@ -345,7 +345,6 @@ export class CurrenciesService {
     const currency = await this.prismaService.tb_currency.findFirst({
       where: {
         id: id,
-        is_active: true,
       },
     });
 

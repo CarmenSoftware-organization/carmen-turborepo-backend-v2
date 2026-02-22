@@ -35,7 +35,7 @@ export class ApplicationPermissionService {
     );
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
-      { cmd: 'get-all-application-permissions', service: 'auth' },
+      { cmd: 'permission.findAll', service: 'permission' },
       { version },
     );
 
@@ -68,7 +68,7 @@ export class ApplicationPermissionService {
     );
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
-      { cmd: 'get-application-permission-by-id', service: 'auth' },
+      { cmd: 'permission.findOne', service: 'permission' },
       { id, version },
     );
 
@@ -104,7 +104,7 @@ export class ApplicationPermissionService {
     );
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
-      { cmd: 'create-application-permission', service: 'auth' },
+      { cmd: 'permission.create', service: 'permission' },
       { data: createApplicationPermissionDto, version },
     );
 
@@ -143,7 +143,7 @@ export class ApplicationPermissionService {
     );
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
-      { cmd: 'update-application-permission', service: 'auth' },
+      { cmd: 'permission.update', service: 'permission' },
       { id, data: updateApplicationPermissionDto, version },
     );
 
@@ -176,7 +176,7 @@ export class ApplicationPermissionService {
     );
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
-      { cmd: 'delete-application-permission', service: 'auth' },
+      { cmd: 'permission.remove', service: 'permission' },
       { id, version },
     );
 

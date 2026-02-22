@@ -536,7 +536,8 @@ async function main() {
     console.log("\n📦 Level 7: User Related Data");
     await seedTable("tb_department_user", prisma.tb_department_user);
     await seedTable("tb_user_location", prisma.tb_user_location);
-    await seedTable("tb_user_profile", prisma.tb_user_profile);
+    // tb_user_profile was removed in migration 20260123032056_remove_tb_user_profile
+    // await seedTable("tb_user_profile", prisma.tb_user_profile);
 
     // Level 8: Configuration
     console.log("\n📦 Level 8: System Configuration");

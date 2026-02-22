@@ -108,11 +108,13 @@ export class PhysicalCountPeriodService {
     );
 
     const periodList = await prisma.tb_physical_count_period.findMany({
-      ...q.findMany(),
       where: {
         ...q.where(),
         deleted_at: null,
       },
+      orderBy: q.orderBy(),
+      skip: (q.page - 1) * q.perpage,
+      ...(q.perpage >= 0 ? { take: q.perpage } : {}),
       select: {
         id: true,
         counting_period_from_date: true,

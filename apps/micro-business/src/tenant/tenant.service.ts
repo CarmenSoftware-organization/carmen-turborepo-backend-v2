@@ -226,11 +226,16 @@ export class TenantService {
       TenantService.name,
     );
 
+    // Detect if tenantId is a UUID or a bu_code and build the where clause accordingly
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tenantId);
+
     const tenant = await this.prismaSystem.tb_user_tb_business_unit
       .findFirst({
         where: {
           user_id: user_id,
-          business_unit_id: tenantId,
+          ...(isUUID
+            ? { business_unit_id: tenantId }
+            : { tb_business_unit: { code: tenantId } }),
         },
         select: {
           tb_business_unit: {

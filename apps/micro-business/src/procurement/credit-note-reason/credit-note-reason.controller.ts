@@ -29,6 +29,8 @@ export class CreditNoteReasonController extends BaseMicroserviceController {
   async findAll(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, CreditNoteReasonController.name);
     await this.creditNoteReasonService.initializePrismaService(payload.tenant_id || payload.bu_code, payload.user_id);
+    this.creditNoteReasonService.bu_code = payload.tenant_id || payload.bu_code;
+    this.creditNoteReasonService.userId = payload.user_id;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () => this.creditNoteReasonService.findAll(payload.paginate));
     return this.handlePaginatedResult(result);

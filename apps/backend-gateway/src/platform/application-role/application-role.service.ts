@@ -35,7 +35,7 @@ export class ApplicationRoleService {
     );
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
-      { cmd: 'get-all-application-roles', service: 'auth' },
+      { cmd: 'role.findAll', service: 'role' },
       { version },
     );
 
@@ -68,7 +68,7 @@ export class ApplicationRoleService {
     );
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
-      { cmd: 'get-application-role-by-id', service: 'auth' },
+      { cmd: 'role.findOne', service: 'role' },
       { id, version },
     );
 
@@ -104,7 +104,7 @@ export class ApplicationRoleService {
     );
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
-      { cmd: 'create-application-role', service: 'auth' },
+      { cmd: 'role.create', service: 'role' },
       { data: createApplicationRoleDto, version },
     );
 
@@ -143,7 +143,7 @@ export class ApplicationRoleService {
     );
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
-      { cmd: 'update-application-role', service: 'auth' },
+      { cmd: 'role.update', service: 'role' },
       { id, data: updateApplicationRoleDto, version },
     );
 
@@ -176,7 +176,7 @@ export class ApplicationRoleService {
     );
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
-      { cmd: 'delete-application-role', service: 'auth' },
+      { cmd: 'role.remove', service: 'role' },
       { id, version },
     );
 

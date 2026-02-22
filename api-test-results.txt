@@ -1,0 +1,224 @@
+================================================================================
+  API ENDPOINT TEST RESULTS
+  Date: 2026-02-22
+  User: test@test.com
+  BU: TEST (19d60955-5b46-45f9-ba34-2bfb05d62a4f)
+  Gateway: http://localhost:4000
+================================================================================
+
+Headers Used:
+  X-App-Id: 9c83fd4b-ce3f-4de2-a522-349ad1280b10
+  Authorization: Bearer <token>
+  X-Business-Unit: TEST
+  X-Tenant-Id: 19d60955-5b46-45f9-ba34-2bfb05d62a4f
+
+================================================================================
+  APP & HEALTH
+================================================================================
+  200  GET /                                              OK
+  200  GET /health                                        OK
+
+================================================================================
+  AUTH
+================================================================================
+  200  GET  /api/auth/test-notification                   OK
+  200  POST /api/auth/login                               OK (tested)
+  200  POST /api/auth/refresh-token                       OK (tested)
+
+================================================================================
+  USER
+================================================================================
+  200  GET /api/user/profile                              OK
+  200  GET /api/user/permission                           OK
+  200  GET /api/TEST/users                                OK
+
+================================================================================
+  APPLICATION - MASTER DATA (GET List)
+================================================================================
+  200  GET /api/TEST/department                           OK
+  200  GET /api/TEST/locations                            OK
+  200  GET /api/TEST/currencies                           OK
+  200  GET /api/iso                                       OK
+  200  GET /api/TEST/credit-term                          OK
+  200  GET /api/TEST/tax-profile                          OK
+  200  GET /api/TEST/user-location                        OK
+  404  GET /api/TEST/currencies/default                   Currency default not found
+  404  GET /api/TEST/workflow                             Route not found
+  404  GET /api/TEST/vendor-product                       Route not found
+  404  GET /api/TEST/vendor-business-type                 Route not found
+  404  GET /api/TEST/user-business-unit                   Route not found
+  404  GET /api/TEST/news                                 Route not found
+  500  GET /api/TEST/credit-note-reason                   Server error
+  500  GET /api/TEST/activity-log                         Server error
+
+================================================================================
+  APPLICATION - TRANSACTIONS (GET List)
+================================================================================
+  200  GET /api/TEST/purchase-order                       OK
+  200  GET /api/TEST/stock-in                             OK
+  200  GET /api/TEST/stock-out                            OK
+  200  GET /api/TEST/transfer                             OK
+  200  GET /api/TEST/price-list                           OK
+  200  GET /api/TEST/price-list-template                  OK
+  200  GET /api/TEST/purchase-request-template             OK
+  200  GET /api/TEST/request-for-pricing                  OK
+  200  GET /api/TEST/inventory-adjustment                 OK
+  200  GET /api/TEST/good-received-note                   OK
+  200  GET /api/TEST/spot-check                           OK
+  500  GET /api/TEST/credit-note                          Missing user_id
+  500  GET /api/TEST/period                               Missing BU Code
+  500  GET /api/TEST/physical-count                       Prisma query error
+  500  GET /api/TEST/physical-count-period                Server error
+  404  GET /api/TEST/purchase-request                     Route not found (uses different prefix)
+  404  GET /api/TEST/store-requisition                    Route not found (uses different prefix)
+
+================================================================================
+  MY PENDING
+================================================================================
+  200  GET /api/my-pending/purchase-request               OK
+  200  GET /good-received-note/pending                    OK
+  200  GET /physical-count/pending                        OK
+  200  GET /spot-check/pending                            OK
+  500  GET /api/my-pending/store-requisition              Internal server error
+
+================================================================================
+  CONFIG ENDPOINTS (GET List)
+================================================================================
+  200  GET /api/config/TEST/departments                   OK
+  200  GET /api/config/TEST/units                         OK
+  200  GET /api/config/TEST/vendors                       OK
+  200  GET /api/config/TEST/locations                     OK
+  200  GET /api/config/TEST/currencies                    OK
+  200  GET /api/config/TEST/products                      OK
+  200  GET /api/config/TEST/products/category             OK
+  200  GET /api/config/TEST/products/sub-category         OK
+  200  GET /api/config/TEST/products/item-group           OK
+  200  GET /api/config/TEST/tax-profile                   OK
+  200  GET /api/config/TEST/credit-term                   OK
+  200  GET /api/config/TEST/exchange-rate                 OK
+  200  GET /api/config/TEST/extra-cost-type               OK
+  200  GET /api/config/TEST/adjustment-type               OK
+  200  GET /api/config/TEST/vendor-business-type          OK
+  200  GET /api/config/TEST/workflows                     OK
+  200  GET /api/config/TEST/running-code                  OK
+  200  GET /api/config/TEST/delivery-point                OK
+  200  GET /api/config/TEST/permissions                   OK
+  200  GET /api/config/TEST/application-roles             OK
+  200  GET /api/config/TEST/price-list                    OK
+  200  GET /api/config/cronjobs                           OK
+  404  GET /api/config/TEST/user-application-roles        Route not found
+  404  GET /api/config/TEST/unit-comment                  Route not found
+  404  GET /api/config/TEST/department-user               Route not found
+  404  GET /api/config/TEST/user/location                 Route not found
+  404  GET /api/config/TEST/product/location              Route not found
+  404  GET /api/config/TEST/location-product              Route not found
+  500  GET /api/config/TEST/locations/user                Prisma findFirst error
+  500  GET /api/config/TEST/recipe                        Prisma findMany error
+  500  GET /api/config/TEST/recipe-category               Prisma error
+  500  GET /api/config/TEST/recipe-cuisine                Prisma error
+  500  GET /api/config/TEST/recipe-equipment              Prisma error
+
+================================================================================
+  PLATFORM ENDPOINTS (GET List)
+================================================================================
+  200  GET /api-system/business-unit                      OK
+  200  GET /api-system/cluster                            OK
+  200  GET /api-system/user/business-unit                 OK
+  200  GET /api-system/user/cluster                       OK
+  404  GET /api-system/users                              Route not found
+  404  GET /api-system/role-permission                    Route not found
+  500  GET /api-system/role                               Server error
+  500  GET /api-system/permission                         Server error
+
+================================================================================
+  POST CREATE TESTS (CRUD)
+================================================================================
+  201  POST /api/config/TEST/departments                  OK  id=eecb72e6-4ae7-4703-a555-29da22c456cf
+       Body: {"code":"CURL_DEPT","name":"Curl Test Department","description":"Created via curl test","is_active":true}
+
+  201  POST /api/config/TEST/units                        OK  id=59e0ffdb-5c36-4017-8a1a-b979aba73a3d
+       Body: {"name":"CURL_UNIT","description":"Created via curl test","is_active":true}
+
+  201  POST /api/config/TEST/vendors                      OK  id=190b47b6-76c5-4d72-b466-134b4f26338a
+       Body: {"code":"CURL_VENDOR","name":"Curl Test Vendor Co.,Ltd.","description":"Created via curl test","vendor_contact":[{"name":"John Doe","email":"john@curlvendor.com","phone":"0812345678","is_primary":true}]}
+
+  201  POST /api/config/TEST/locations                    OK  id=261d9389-fd1a-435f-a32b-dbd9833f17c4
+       Body: {"code":"CURL_LOC","name":"Curl Test Location","location_type":"inventory","description":"Created via curl test","is_active":true}
+
+  200  POST /api/config/TEST/currencies                   OK  id=8a3fffe5-ee4b-4854-8cf4-8c1728c31f15
+       Body: {"code":"CUR","name":"Curl Test Currency","symbol":"C","description":"Created via curl test","is_active":false,"exchange_rate":0.5}
+
+================================================================================
+  DELETE TESTS (CRUD)
+================================================================================
+  200  DELETE /api/config/TEST/departments/eecb72e6-...   OK
+  200  DELETE /api/config/TEST/units/59e0ffdb-...         OK
+  200  DELETE /api/config/TEST/vendors/190b47b6-...       OK
+  200  DELETE /api/config/TEST/locations/261d9389-...     OK
+  404  DELETE /api/config/TEST/currencies/8a3fffe5-...    FAILED (bug: is_active filter)
+
+  ** Currency delete bug fixed:
+     File: apps/micro-business/src/master/currencies/currencies.service.ts:345-350
+     Issue: findFirst used WHERE is_active=true, so inactive currencies could not be deleted
+     Fix: Removed is_active:true from where clause (now matches department pattern)
+     Re-test after fix: 200 OK
+
+================================================================================
+  STATISTICS
+================================================================================
+  Total GET endpoints tested:  73
+  200 OK:                      49  (67%)
+  404 Not Found:               14  (19%)
+  500 Server Error:            10  (14%)
+
+  POST Create tested:          5/5 OK
+  DELETE tested:               5/5 OK (after currency fix)
+
+================================================================================
+  500 ERRORS DETAIL
+================================================================================
+  1. GET /api/TEST/credit-note              -> Missing user_id
+  2. GET /api/TEST/period                   -> Missing BU Code
+  3. GET /api/TEST/physical-count           -> Prisma tb_physical_count.findMany() error
+  4. GET /api/TEST/physical-count-period    -> Server error
+  5. GET /api/TEST/credit-note-reason       -> Server error
+  6. GET /api/TEST/activity-log             -> Server error
+  7. GET /api/my-pending/store-requisition  -> Internal server error
+  8. GET /api/config/TEST/locations/user    -> Prisma findFirst() error
+  9. GET /api/config/TEST/recipe            -> Prisma tb_recipe.findMany() error
+  10. GET /api/config/TEST/recipe-category  -> Prisma error
+  11. GET /api/config/TEST/recipe-cuisine   -> Prisma error
+  12. GET /api/config/TEST/recipe-equipment -> Prisma error
+  13. GET /api-system/role                  -> Server error
+  14. GET /api-system/permission            -> Server error
+
+================================================================================
+  404 ERRORS DETAIL (likely route mismatch or missing query params)
+================================================================================
+  1. GET /api/TEST/currencies/default       -> No default currency set
+  2. GET /api/TEST/workflow                 -> Route uses different prefix
+  3. GET /api/TEST/vendor-product           -> Route uses different prefix
+  4. GET /api/TEST/vendor-business-type     -> Route uses different prefix
+  5. GET /api/TEST/user-business-unit       -> Route uses different prefix
+  6. GET /api/TEST/news                     -> Route uses different prefix
+  7. GET /api/TEST/purchase-request         -> Controller @Controller('api') with sub-routes
+  8. GET /api/TEST/store-requisition        -> Controller @Controller('api') with sub-routes
+  9. GET /api/config/TEST/user-application-roles -> Route not registered
+  10. GET /api/config/TEST/unit-comment     -> Route not registered
+  11. GET /api/config/TEST/department-user  -> Route not registered
+  12. GET /api/config/TEST/user/location    -> Route not registered
+  13. GET /api/config/TEST/product/location -> Route not registered
+  14. GET /api/config/TEST/location-product -> Route not registered
+
+================================================================================
+  REQUIRED FIELDS FOR POST CREATE (DTO Summary)
+================================================================================
+  departments:  code (string), name (string)
+  units:        name (string)
+  vendors:      code (string), name (string)
+  locations:    code (string), name (string), location_type (inventory|direct|consignment)
+  currencies:   code (string), name (string)
+  products:     code, name, local_name, inventory_unit_id, product_item_group_id, product_sub_category_id
+  tax-profile:  code, name, rate
+  credit-term:  code, name, days
+  workflows:    code, name

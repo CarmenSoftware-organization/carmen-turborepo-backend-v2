@@ -152,6 +152,7 @@ export class LocationsService {
         },
       })
       .then(async (res) => {
+        if (!res) return null;
         const user_location = [];
         const product_location = [];
 
@@ -220,11 +221,13 @@ export class LocationsService {
           info: res.info,
           user_location,
           product_location,
-          delivery_point: {
-            id: res.tb_delivery_point.id,
-            name: res.tb_delivery_point.name,
-            is_active: res.tb_delivery_point.is_active,
-          },
+          delivery_point: res.tb_delivery_point
+            ? {
+                id: res.tb_delivery_point.id,
+                name: res.tb_delivery_point.name,
+                is_active: res.tb_delivery_point.is_active,
+              }
+            : null,
         };
       });
 

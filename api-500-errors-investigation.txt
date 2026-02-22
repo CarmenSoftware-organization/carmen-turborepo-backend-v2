@@ -1,0 +1,281 @@
+================================================================================
+  500 ERRORS INVESTIGATION REPORT
+  Date: 2026-02-22
+  Total: 14 errors
+================================================================================
+
+================================================================================
+  ERROR 1: GET /api/TEST/credit-note → "Missing user_id"
+================================================================================
+  Type:     CODE BUG
+  Severity: HIGH
+
+  Code Path:
+    gateway:  apps/backend-gateway/src/application/credit-note/credit-note.controller.ts:114
+    gateway:  apps/backend-gateway/src/application/credit-note/credit-note.service.ts:73-81
+    helper:   apps/backend-gateway/src/common/helpers/extract_header.ts:8
+    micro:    apps/micro-business/src/procurement/credit-note/credit-note.service.ts:36-44
+
+  Root Cause:
+    extract_header.ts:8 → req['user'].user_id
+    The ExtractRequestHeader function accesses req['user'].user_id but req['user']
+    may be undefined. The Keycloak Guard or auth middleware isn't properly
+    populating user_id in the request object before reaching the controller.
+
+  Fix:
+    Add safe optional chaining in extract_header.ts:
+    const user_id = req?.['user']?.user_id ?? null;
+
+================================================================================
+  ERROR 2: GET /api/TEST/period → "Missing BU Code"
+================================================================================
+  Type:     CODE BUG - Message Pattern Mismatch
+  Severity: HIGH
+
+  Code Path:
+    gateway:  apps/backend-gateway/src/application/period/period.controller.ts:91
+    gateway:  apps/backend-gateway/src/application/period/period.service.ts:60-62
+    micro:    apps/micro-business/src/inventory/period/period.controller.ts:40-50
+
+  Root Cause:
+    Gateway sends:     { cmd: 'period.findAll',            service: 'period' }
+    Micro-biz expects: { cmd: 'inventory-period.findAll',  service: 'inventory-period' }
+    The message pattern names don't match → message never reaches handler → timeout.
+
+  Fix:
+    Change ALL 5 methods in gateway period.service.ts:
+    Line 33:  'period.findOne'  → 'inventory-period.findOne'
+    Line 61:  'period.findAll'  → 'inventory-period.findAll'
+    Line 89:  'period.create'   → 'inventory-period.create'
+    Line 118: 'period.update'   → 'inventory-period.update'
+    Line 146: 'period.delete'   → 'inventory-period.delete'
+    Also change service name from 'period' to 'inventory-period' in all 5 calls.
+
+================================================================================
+  ERROR 3: GET /api/TEST/credit-note-reason → Server error
+================================================================================
+  Type:     CODE BUG - Missing Property Assignment
+  Severity: MEDIUM
+
+  Code Path:
+    gateway:  apps/backend-gateway/src/application/credit-note-reason/credit-note-reason.controller.ts:72
+    gateway:  apps/backend-gateway/src/application/credit-note-reason/credit-note-reason.service.ts:26-37
+    micro:    apps/micro-business/src/procurement/credit-note-reason/credit-note-reason.controller.ts:29-34
+    micro:    apps/micro-business/src/procurement/credit-note-reason/credit-note-reason.service.ts:76-77
+
+  Root Cause:
+    The micro-business controller initializes Prisma service but does NOT set
+    userId and bu_code properties on the service before calling findAll().
+    Service tries to access this.userId which throws HttpException "Missing user_id".
+
+  Fix:
+    In credit-note-reason.controller.ts line 31, add after initializePrismaService:
+    this.creditNoteReasonService.bu_code = payload.tenant_id || payload.bu_code;
+    this.creditNoteReasonService.userId = payload.user_id;
+
+================================================================================
+  ERROR 4: GET /api/TEST/activity-log → Server error
+================================================================================
+  Type:     CODE BUG - Response Format Mismatch
+  Severity: MEDIUM
+
+  Code Path:
+    gateway:  apps/backend-gateway/src/application/activity-log/activity-log.controller.ts:77
+    gateway:  apps/backend-gateway/src/application/activity-log/activity-log.service.ts:48-56
+    micro:    apps/micro-business/src/log/activity-log/activity-log.controller.ts:35-43
+    micro:    apps/micro-business/src/log/activity-log/activity-log.service.ts:53-56
+
+  Root Cause:
+    Gateway service checks response.success but micro-business returns a different
+    format. The error-check logic at gateway line 60 uses wrong property path.
+    Also: micro returns 'meta' but gateway expects 'paginate'.
+
+  Fix:
+    Align response format between gateway and micro-business activity-log service.
+
+================================================================================
+  ERROR 5: GET /api/my-pending/store-requisition → "Internal server error"
+================================================================================
+  Type:     CODE BUG - Missing Message Handler
+  Severity: HIGH
+
+  Code Path:
+    gateway:  apps/backend-gateway/src/application/my-pending/store-requisition/my-pending.store-requisition.controller.ts:343
+    gateway:  apps/backend-gateway/src/application/my-pending/store-requisition/my-pending.store-requisition.service.ts:80-88
+    micro:    MISSING HANDLER
+
+  Root Cause:
+    Gateway sends:     { cmd: 'my-pending.store-requisition.find-all', service: 'my-pending' }
+    Micro-biz defines: Only 'my-pending.store-requisition.find-all.count' (with .count suffix)
+    No @MessagePattern handler exists for 'my-pending.store-requisition.find-all' → timeout.
+
+  Fix:
+    Add a new @MessagePattern handler in:
+    apps/micro-business/src/inventory/store-requisition/store-requisition.controller.ts
+    for pattern: { cmd: 'my-pending.store-requisition.find-all', service: 'my-pending' }
+
+================================================================================
+  ERROR 6: GET /api/TEST/physical-count → Prisma query error
+================================================================================
+  Type:     CODE BUG - Prisma Query Composition
+  Severity: MEDIUM
+
+  Code Path:
+    gateway:  apps/backend-gateway/src/application/physical-count/physical-count.controller.ts:117-142
+    micro:    apps/micro-business/src/inventory/physical-count/physical-count.service.ts:150
+
+  Root Cause:
+    Line 150: prisma.tb_physical_count.findMany({ ...q.findMany(), select: {...} })
+    Spreading q.findMany() conflicts with the explicit select clause.
+    The spread operator may include its own select/include that overrides or
+    conflicts with the manually defined select.
+
+  Fix:
+    Don't spread q.findMany(). Instead use individual properties:
+    { where: whereClause, select: {...}, skip: q.skip, take: q.take, orderBy: q.orderBy() }
+
+================================================================================
+  ERROR 7: GET /api/TEST/physical-count-period → Server error
+================================================================================
+  Type:     CODE BUG - Prisma Query Composition
+  Severity: MEDIUM
+
+  Code Path:
+    gateway:  apps/backend-gateway/src/application/physical-count-period/physical-count-period.controller.ts:94-116
+    micro:    apps/micro-business/src/inventory/physical-count-period/physical-count-period.service.ts:110
+
+  Root Cause:
+    Same pattern as Error 6. Line 110 spreads q.findMany() with explicit select.
+
+  Fix:
+    Same as Error 6 — don't spread q.findMany(), use individual properties.
+
+================================================================================
+  ERROR 8: GET /api/config/TEST/locations/user → Prisma findFirst() error
+================================================================================
+  Type:     CODE BUG - Invalid Prisma Query
+  Severity: MEDIUM
+
+  Code Path:
+    gateway:  apps/backend-gateway/src/config/config_locations-user/config_locations-user.controller.ts:40-65
+    micro:    apps/micro-business/src/master/locations/locations.service.ts:132-153
+
+  Root Cause:
+    Line 132-153: findFirst() with select clause that spreads ...specialQuery
+    (containing tb_user_location/tb_product_location relations) alongside
+    tb_delivery_point nested select. The combination creates an invalid
+    Prisma select syntax.
+
+  Fix:
+    Separate the delivery_point fetch from the main query, or restructure
+    the select clause to avoid conflicting relation queries.
+
+================================================================================
+  ERROR 9-12: GET /api/config/TEST/recipe* → Prisma errors
+================================================================================
+  Type:     CONFIG/DATA ISSUE - Tenant DB Connection
+  Severity: MEDIUM
+
+  Affected Endpoints:
+    9.  GET /api/config/TEST/recipe
+    10. GET /api/config/TEST/recipe-category
+    11. GET /api/config/TEST/recipe-cuisine
+    12. GET /api/config/TEST/recipe-equipment
+
+  Code Paths:
+    9.  micro: apps/micro-business/src/master/recipe/recipe.service.ts:161
+    10. micro: apps/micro-business/src/master/recipe-category/recipe-category.service.ts:124
+    11. micro: apps/micro-business/src/master/recipe-cuisine/recipe-cuisine.service.ts:112
+    12. micro: apps/micro-business/src/master/recipe-equipment/recipe-equipment.service.ts:122
+
+  Root Cause:
+    All 4 recipe tables exist in the Prisma schema (tb_recipe, tb_recipe_category,
+    tb_recipe_cuisines, tb_recipe_equipment) but the Prisma findMany() calls fail.
+    Likely cause: tenant database for "TEST" BU doesn't have these tables migrated,
+    or the Prisma client initialization fails for recipe-related queries.
+
+  Fix:
+    Verify that the TEST tenant database has recipe tables migrated.
+    Run: npx prisma db push or npx prisma migrate deploy for tenant schema.
+
+================================================================================
+  ERROR 13: GET /api-system/role → Server error
+================================================================================
+  Type:     CODE BUG - Message Pattern Mismatch
+  Severity: HIGH
+
+  Code Path:
+    gateway:  apps/backend-gateway/src/platform/application-role/application-role.service.ts:37-39
+    micro:    apps/micro-business/src/authen/role/role.controller.ts:42
+
+  Root Cause:
+    Gateway sends:     { cmd: 'get-all-application-roles', service: 'auth' }
+    Micro-biz expects: { cmd: 'role.findAll',               service: 'role' }
+    Message pattern mismatch → handler never receives message → timeout.
+
+  Fix:
+    Change gateway application-role.service.ts line 37-39:
+    { cmd: 'role.findAll', service: 'role' }
+
+================================================================================
+  ERROR 14: GET /api-system/permission → Server error
+================================================================================
+  Type:     CODE BUG - Message Pattern Mismatch
+  Severity: HIGH
+
+  Code Path:
+    gateway:  apps/backend-gateway/src/platform/application-permission/application-permission.service.ts:37-39
+    micro:    apps/micro-business/src/authen/permission/permission.controller.ts:45
+
+  Root Cause:
+    Gateway sends:     { cmd: 'get-all-application-permissions', service: 'auth' }
+    Micro-biz expects: { cmd: 'permission.findAll',              service: 'permission' }
+    Message pattern mismatch → handler never receives message → timeout.
+
+  Fix:
+    Change gateway application-permission.service.ts line 37-39:
+    { cmd: 'permission.findAll', service: 'permission' }
+
+================================================================================
+  SUMMARY BY ERROR TYPE
+================================================================================
+
+  Message Pattern Mismatch (4 errors):
+    - Error 2:  period → inventory-period
+    - Error 5:  my-pending.store-requisition.find-all (handler missing)
+    - Error 13: get-all-application-roles → role.findAll
+    - Error 14: get-all-application-permissions → permission.findAll
+
+  Prisma Query Bug (3 errors):
+    - Error 6:  physical-count — q.findMany() spread conflicts with select
+    - Error 7:  physical-count-period — same pattern as Error 6
+    - Error 8:  locations/user — specialQuery spread conflicts with relations
+
+  Missing Property / Unsafe Access (3 errors):
+    - Error 1:  credit-note — req['user'].user_id undefined
+    - Error 3:  credit-note-reason — userId/bu_code not set before service call
+    - Error 4:  activity-log — response format mismatch
+
+  Tenant DB / Migration Issue (4 errors):
+    - Error 9-12: recipe* tables — likely not migrated in TEST tenant DB
+
+================================================================================
+  PRIORITY RANKING
+================================================================================
+
+  HIGH (fix first):
+    1. Error 2  - period message pattern mismatch (all CRUD broken)
+    2. Error 13 - api-system/role message pattern mismatch
+    3. Error 14 - api-system/permission message pattern mismatch
+    4. Error 5  - store-requisition my-pending handler missing
+    5. Error 1  - credit-note missing user_id
+
+  MEDIUM (fix next):
+    6. Error 3  - credit-note-reason missing property assignment
+    7. Error 4  - activity-log response format mismatch
+    8. Error 6  - physical-count Prisma query
+    9. Error 7  - physical-count-period Prisma query
+    10. Error 8 - locations/user Prisma query
+
+  LOW (config/migration):
+    11-14. Errors 9-12 - recipe* tables need migration
