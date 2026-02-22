@@ -117,13 +117,66 @@ jobs:
         run: |
           IMAGE_TAG=$(echo "${{ github.sha }}" | cut -c1-7)
 
+          # Build SSM command parameters using jq for proper JSON encoding
+          PARAMS=$(jq -n \
+            --arg ssm_region "$SSM_REGION" \
+            --arg ecr_registry "$ECR_REGISTRY" \
+            --arg image_prefix "$IMAGE_PREFIX" \
+            --arg image_tag "$IMAGE_TAG" \
+            --arg gh_token "$GH_TOKEN_SECRET" \
+            --arg repo "${{ github.repository }}" \
+            '{commands: [
+              "#!/bin/bash",
+              "set -e",
+              "export HOME=/root",
+              "export PATH=/usr/local/bin:/usr/bin:/bin:$PATH",
+              ("export AWS_DEFAULT_REGION=" + $ssm_region),
+              ("export ECR_REGISTRY=" + $ecr_registry),
+              ("export IMAGE_PREFIX=" + $image_prefix),
+              ("export IMAGE_TAG=" + $image_tag),
+              "",
+              "echo \"=== [1/7] ECR Login ===\"",
+              "aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY 2>/dev/null",
+              "echo \"Login successful\"",
+              "",
+              "echo \"=== [2/7] Git Update ===\"",
+              "PROJECT_DIR=/home/ec2-user/carmen-turborepo-backend-v2",
+              "git config --global --add safe.directory $PROJECT_DIR",
+              ("if [ ! -d $PROJECT_DIR ]; then git clone https://" + $gh_token + "@github.com/" + $repo + ".git $PROJECT_DIR; fi"),
+              "cd $PROJECT_DIR",
+              ("git remote set-url origin https://" + $gh_token + "@github.com/" + $repo + ".git"),
+              "git fetch origin main",
+              "git reset --hard origin/main",
+              "",
+              "echo \"=== [3/7] Stop Containers ===\"",
+              "docker-compose down --remove-orphans",
+              "",
+              "echo \"=== [4/7] Cleanup Old Images ===\"",
+              "echo \"Disk before cleanup:\" && df -h / | tail -1",
+              "docker image prune -af 2>/dev/null || true",
+              "docker builder prune -af 2>/dev/null || true",
+              "echo \"Disk after cleanup:\" && df -h / | tail -1",
+              "",
+              "echo \"=== [5/7] Pull Images ===\"",
+              "docker-compose pull --quiet",
+              "",
+              "echo \"=== [6/7] Start Containers ===\"",
+              "docker-compose up -d",
+              "",
+              "echo \"=== [7/7] Post-deploy Cleanup ===\"",
+              "docker image prune -f 2>/dev/null || true",
+              "",
+              ("echo \"=== Deployment Complete: " + $image_tag + " ===\""),
+              "docker-compose ps"
+            ]}')
+
           COMMAND_ID=$(aws ssm send-command \
             --region "$SSM_REGION" \
             --instance-ids "$INSTANCE_ID" \
             --document-name "AWS-RunShellScript" \
             --timeout-seconds 1800 \
             --comment "Deploy SHA: $IMAGE_TAG" \
-            --parameters '{"commands":["#!/bin/bash","set -e","export HOME=/root","export PATH=/usr/local/bin:/usr/bin:/bin:$PATH","export AWS_DEFAULT_REGION='"$SSM_REGION"'","export ECR_REGISTRY='"$ECR_REGISTRY"'","export IMAGE_PREFIX='"$IMAGE_PREFIX"'","export IMAGE_TAG='"$IMAGE_TAG"'","aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY","PROJECT_DIR=/home/ec2-user/carmen-turborepo-backend-v2","git config --global --add safe.directory $PROJECT_DIR","if [ ! -d $PROJECT_DIR ]; then git clone https://'"$GH_TOKEN_SECRET"'@github.com/${{ github.repository }}.git $PROJECT_DIR; fi","cd $PROJECT_DIR","git remote set-url origin https://'"$GH_TOKEN_SECRET"'@github.com/${{ github.repository }}.git","git fetch origin main","git reset --hard origin/main","docker-compose down --remove-orphans","docker-compose pull","docker-compose up -d","docker image prune -f","echo Deployment Complete for SHA: '"$IMAGE_TAG"'","docker-compose ps"]}' \
+            --parameters "$PARAMS" \
             --query 'Command.CommandId' --output text)
 
           echo "SSM Command ID: $COMMAND_ID"
@@ -142,6 +195,7 @@ jobs:
 
             if [ "$STATUS" = "Success" ]; then
               echo "Deployment completed successfully!"
+              echo "=== Deploy Output ==="
               aws ssm get-command-invocation \
                 --region "$SSM_REGION" \
                 --command-id "$COMMAND_ID" \
@@ -150,11 +204,19 @@ jobs:
               exit 0
             elif [ "$STATUS" = "Failed" ] || [ "$STATUS" = "Cancelled" ] || [ "$STATUS" = "TimedOut" ]; then
               echo "::error::Deployment failed with status: $STATUS"
+              echo "=== Deploy Output (stdout) ==="
               aws ssm get-command-invocation \
                 --region "$SSM_REGION" \
                 --command-id "$COMMAND_ID" \
                 --instance-id "$INSTANCE_ID" \
-                --query 'StandardErrorContent' --output text
+                --query 'StandardOutputContent' --output text
+              echo ""
+              echo "=== Deploy Errors (stderr, last 50 lines) ==="
+              aws ssm get-command-invocation \
+                --region "$SSM_REGION" \
+                --command-id "$COMMAND_ID" \
+                --instance-id "$INSTANCE_ID" \
+                --query 'StandardErrorContent' --output text | tail -50
               exit 1
             fi
           done
