@@ -58,7 +58,7 @@ export class NewsController extends BaseHttpController {
     @Res() res: Response,
     @Query() query: IPaginateQuery,
     @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
+  ): Promise<void> {
     this.logger.debug(
       {
         function: 'findAll',
@@ -89,7 +89,7 @@ export class NewsController extends BaseHttpController {
     @Res() res: Response,
     @Param('id') id: string,
     @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
+  ): Promise<void> {
     this.logger.debug(
       {
         function: 'findOne',
@@ -118,7 +118,7 @@ export class NewsController extends BaseHttpController {
     @Res() res: Response,
     @Body() createNewsDto: Record<string, unknown>,
     @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
+  ): Promise<void> {
     this.logger.debug(
       {
         function: 'create',
@@ -152,7 +152,7 @@ export class NewsController extends BaseHttpController {
     @Param('id') id: string,
     @Body() updateNewsDto: Record<string, unknown>,
     @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
+  ): Promise<void> {
     this.logger.debug(
       {
         function: 'update',
@@ -187,7 +187,7 @@ export class NewsController extends BaseHttpController {
     @Res() res: Response,
     @Param('id') id: string,
     @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
+  ): Promise<void> {
     this.logger.debug(
       {
         function: 'delete',
