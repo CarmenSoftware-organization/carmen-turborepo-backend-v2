@@ -11,8 +11,9 @@ export abstract class BaseHttpController {
   ) {
     // Check if result is a Result object (has isOk method)
     if (result && typeof result.isOk === 'function') {
-      const stdResponse = StdResponse.fromResult<unknown, unknown>(result as Result<unknown, unknown>);
-      const status = customStatus ?? stdResponse.status;
+      const typedResult = result as Result<unknown, unknown>;
+      const stdResponse = StdResponse.fromResult<unknown, unknown>(typedResult);
+      const status = typedResult.isOk() ? (customStatus ?? stdResponse.status) : stdResponse.status;
       response.status(status).send(stdResponse);
     } else {
       // Handle plain response objects (legacy ResponseLib format)
