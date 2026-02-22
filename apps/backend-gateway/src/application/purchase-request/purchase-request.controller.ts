@@ -48,7 +48,7 @@ import {
 } from '@/common';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
-import { ApproveByStateRoleSchema2, SavePurchaseRequestSchema } from './dto/state-change.dto';
+import { ApproveByStateRoleDto2, SavePurchaseRequestDto } from './dto/state-change.dto';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { Permission } from 'src/auth/decorators/permission.decorator';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
@@ -529,7 +529,7 @@ export class PurchaseRequestController extends BaseHttpController {
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
-    @Body() payload: typeof ApproveByStateRoleSchema2,
+    @Body() payload: ApproveByStateRoleDto2,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
@@ -540,15 +540,9 @@ export class PurchaseRequestController extends BaseHttpController {
       },
       PurchaseRequestController.name,
     );
-    let approvePayload
-    try {
-      approvePayload = ApproveByStateRoleSchema2.parse(payload)
-    } catch (e: unknown) {
-      throw new BadRequestException(e);
-    }
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.purchaseRequestService.approve(id, approvePayload, user_id, bu_code, version);
+    const result = await this.purchaseRequestService.approve(id, payload, user_id, bu_code, version);
     this.respond(res, result);
   }
 
@@ -598,7 +592,7 @@ export class PurchaseRequestController extends BaseHttpController {
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
-    @Body() payload: typeof ReviewPurchaseRequestDto,
+    @Body() payload: ReviewPurchaseRequestDto,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
@@ -650,7 +644,7 @@ export class PurchaseRequestController extends BaseHttpController {
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() updateDto: typeof SavePurchaseRequestSchema,
+    @Body() updateDto: SavePurchaseRequestDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -664,13 +658,6 @@ export class PurchaseRequestController extends BaseHttpController {
       },
       PurchaseRequestController.name,
     );
-
-    let savePayload
-    try {
-      savePayload = SavePurchaseRequestSchema.parse(updateDto)
-    } catch (e: unknown) {
-      throw new BadRequestException(e);
-    }
 
     const { user_id } = ExtractRequestHeader(req);
 

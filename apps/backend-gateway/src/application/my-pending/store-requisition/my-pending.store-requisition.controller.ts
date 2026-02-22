@@ -37,6 +37,8 @@ import {
 import {
   IGetAllResponse,
   IPurchaseRequest,
+  CreateStoreRequisitionDto,
+  UpdateStoreRequisitionDto,
 } from '@/common';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
@@ -409,7 +411,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   async create(
     @Req() req: Request,
     @Res() res: Response,
-    @Body() body: Record<string, unknown>, // CreateStoreRequisitionDto,
+    @Body() body: CreateStoreRequisitionDto,
     @Param('bu_code') bu_code: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
@@ -459,7 +461,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   async update(
     @Req() req: Request,
     @Res() res: Response,
-    @Body() body: Record<string, unknown>, // UpdateStoreRequisitionDto,
+    @Body() body: UpdateStoreRequisitionDto,
     @Param('bu_code') bu_code: string,
     @Param('id') id: string,
     @Query('version') version: string = 'latest',

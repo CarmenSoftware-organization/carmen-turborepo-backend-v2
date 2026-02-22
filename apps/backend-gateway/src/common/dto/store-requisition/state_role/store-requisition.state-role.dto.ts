@@ -72,6 +72,7 @@ export type RejectStoreRequisition = z.infer<typeof RejectStoreRequisitionSchema
 // DTOs
 // ============================================================================
 
+export class ApproveStoreRequisitionByStateRoleDto extends createZodDto(ApproveStoreRequisitionByStateRoleSchema) {}
 export class SubmitStoreRequisitionDto extends createZodDto(SubmitStoreRequisitionSchema) {}
 export class ReviewStoreRequisitionDto extends createZodDto(ReviewStoreRequisitionSchema) {}
 export class RejectStoreRequisitionDto extends createZodDto(RejectStoreRequisitionSchema) {}

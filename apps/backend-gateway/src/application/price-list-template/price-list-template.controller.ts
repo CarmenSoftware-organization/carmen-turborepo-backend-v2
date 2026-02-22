@@ -35,6 +35,8 @@ import {
   PriceListTemplateDetailResponseSchema,
   PriceListTemplateListItemResponseSchema,
   PriceListTemplateMutationResponseSchema,
+  PriceListTemplateCreateDto,
+  PriceListTemplateUpdateDto,
   Serialize,
 } from '@/common';
 
@@ -188,7 +190,7 @@ export class PriceListTemplateController extends BaseHttpController {
     },
   })
   async create(
-    @Body() data: Record<string, unknown>,
+    @Body() data: PriceListTemplateCreateDto,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -242,7 +244,7 @@ export class PriceListTemplateController extends BaseHttpController {
   })
   async update(
     @Param('id') id: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: PriceListTemplateUpdateDto,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

@@ -29,6 +29,8 @@ import {
   StockInMutationResponseSchema,
   StockInCreateDto,
   StockInUpdateDto,
+  StockInDetailCreateDto,
+  StockInDetailUpdateDto,
   IStockInUpdate,
 } from '@/common';
 import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
@@ -256,7 +258,7 @@ export class StockInController extends BaseHttpController {
   async createDetail(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: StockInDetailCreateDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -295,7 +297,7 @@ export class StockInController extends BaseHttpController {
     @Param('id') id: string,
     @Param('detail_id') detailId: string,
     @Param('bu_code') bu_code: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: StockInDetailUpdateDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',

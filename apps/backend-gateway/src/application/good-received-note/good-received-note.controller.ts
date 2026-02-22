@@ -223,7 +223,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
   async create(
-    @Body() createDto: Record<string, unknown>, //GoodReceivedNoteCreateDto,
+    @Body() createDto: GoodReceivedNoteCreateDto,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

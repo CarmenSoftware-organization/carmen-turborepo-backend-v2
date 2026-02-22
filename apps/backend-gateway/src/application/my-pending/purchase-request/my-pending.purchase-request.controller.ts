@@ -12,7 +12,6 @@ import {
   HttpCode,
   HttpStatus,
   Patch,
-  BadRequestException,
   UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -47,7 +46,7 @@ import {
   EXAMPLE_PURCHASE_REQUEST,
   MOCK_PURCHASE_REQUEST_LIST,
 } from './example/my-pending.purchase-request.example';
-import { ApproveByStateRoleSchema2 } from './dto/state-change.dto';
+import { ApproveByStateRoleDto2 } from './dto/state-change.dto';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/my-pending/purchase-request')
@@ -519,7 +518,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
-    @Body() payload: typeof ApproveByStateRoleSchema2,
+    @Body() payload: ApproveByStateRoleDto2,
     @Param('bu_code') bu_code: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
@@ -531,17 +530,11 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
       },
       MyPendingPurchaseRequestController.name,
     );
-    let approvePayload;
-    try {
-      approvePayload = ApproveByStateRoleSchema2.parse(payload);
-    } catch (e: unknown) {
-      throw new BadRequestException(e);
-    }
 
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.myPendingPurchaseRequestService.approve(
       id,
-      approvePayload,
+      payload,
       user_id,
       bu_code,
       version,
@@ -595,7 +588,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
-    @Body() payload: typeof ReviewPurchaseRequestDto,
+    @Body() payload: ReviewPurchaseRequestDto,
     @Param('bu_code') bu_code: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {

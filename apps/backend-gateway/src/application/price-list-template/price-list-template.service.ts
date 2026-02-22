@@ -2,7 +2,7 @@ import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { Observable } from 'rxjs';
-import { Result, MicroserviceResponse } from '@/common';
+import { Result, MicroserviceResponse, PriceListTemplateCreateDto, PriceListTemplateUpdateDto } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -90,7 +90,7 @@ export class PriceListTemplateService {
   }
 
   async create(
-    data: Record<string, unknown>,
+    data: PriceListTemplateCreateDto,
     user_id: string,
     bu_code: string,
     version: string,
@@ -123,7 +123,7 @@ export class PriceListTemplateService {
   }
 
   async update(
-    data: Record<string, unknown>,
+    data: PriceListTemplateUpdateDto,
     user_id: string,
     bu_code: string,
     version: string,

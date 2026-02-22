@@ -1,6 +1,7 @@
 import { enum_stage_role } from '@repo/prisma-shared-schema-tenant';
 import { ApproveQuantityAndUnitSchema, CreatePurchaseRequestDetailSchema, EmbeddedCurrencySchema, EmbeddedDepartmentSchema, EmbeddedDiscountSchema, EmbeddedTaxSchema, EmbeddedVendorSchema, EmbeddedWorkflowSchema, FocSchema, PriceSchema, state_status } from '@/common'
 import { z } from 'zod'
+import { createZodDto } from 'nestjs-zod'
 
 /* For some reason it's seem union type validate won't work with builded data so I have to duplicate it in PR's folder and fix it later */
 
@@ -61,3 +62,6 @@ export const SavePurchaseRequestSchema = z.discriminatedUnion('state_role', [
     details: z.array(PurchaseRoleApprovePurchaseRequestDetailSchema.omit({ state_status: true, state_message: true }))
   })
 ])
+
+export class ApproveByStateRoleDto2 extends createZodDto(ApproveByStateRoleSchema2) {}
+export class SavePurchaseRequestDto extends createZodDto(SavePurchaseRequestSchema) {}

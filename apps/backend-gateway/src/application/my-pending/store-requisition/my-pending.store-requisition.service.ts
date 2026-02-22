@@ -9,6 +9,8 @@ import { firstValueFrom, Observable } from 'rxjs';
 import {
   Result,
   MicroserviceResponse,
+  CreateStoreRequisitionDto,
+  UpdateStoreRequisitionDto,
 } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -98,7 +100,7 @@ export class MyPendingStoreRequisitionService {
   }
 
   async create(
-    body: Record<string, unknown>,
+    body: CreateStoreRequisitionDto,
     user_id: string,
     bu_code: string,
     version: string,
@@ -133,7 +135,7 @@ export class MyPendingStoreRequisitionService {
 
   async update(
     id: string,
-    body: Record<string, unknown>,
+    body: UpdateStoreRequisitionDto,
     user_id: string,
     bu_code: string,
     version: string,

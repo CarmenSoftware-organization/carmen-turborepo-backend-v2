@@ -4,7 +4,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Inject } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
-import { Result, MicroserviceResponse } from '@/common';
+import { Result, MicroserviceResponse, TransferDetailCreateDto, TransferDetailUpdateDto } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
@@ -74,7 +74,7 @@ export class TransferDetailService {
   }
 
   async create(
-    data: Record<string, unknown>,
+    data: TransferDetailCreateDto,
     user_id: string,
     tenant_id: string,
     version: string,
@@ -103,7 +103,7 @@ export class TransferDetailService {
 
   async update(
     id: string,
-    data: Record<string, unknown>,
+    data: TransferDetailUpdateDto,
     user_id: string,
     tenant_id: string,
     version: string,

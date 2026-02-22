@@ -39,6 +39,7 @@ import {
   PurchaseOrderDetailResponseSchema,
   PurchaseOrderListItemResponseSchema,
   PurchaseOrderMutationResponseSchema,
+  PurchaseOrderUpdateDto,
 } from '@/common';
 
 @Controller('api/:bu_code/purchase-order')
@@ -262,7 +263,7 @@ export class PurchaseOrderController extends BaseHttpController {
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() updateDto: Record<string, unknown>,
+    @Body() updateDto: PurchaseOrderUpdateDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',

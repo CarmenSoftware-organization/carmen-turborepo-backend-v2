@@ -9,6 +9,8 @@ import {
   IStockOutUpdate,
   Result,
   MicroserviceResponse,
+  StockOutDetailCreateDto,
+  StockOutDetailUpdateDto,
 } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -222,7 +224,7 @@ export class StockOutService {
 
   async createDetail(
     stockOutId: string,
-    data: Record<string, unknown>,
+    data: StockOutDetailCreateDto,
     user_id: string,
     tenant_id: string,
     version: string,
@@ -251,7 +253,7 @@ export class StockOutService {
 
   async updateDetail(
     detailId: string,
-    data: Record<string, unknown>,
+    data: StockOutDetailUpdateDto,
     user_id: string,
     tenant_id: string,
     version: string,

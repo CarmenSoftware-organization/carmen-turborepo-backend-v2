@@ -1,5 +1,6 @@
 import { ApproveQuantityAndUnitSchema, EmbeddedCurrencySchema, EmbeddedDiscountSchema, EmbeddedTaxSchema, EmbeddedVendorSchema, FocSchema, PriceSchema, state_status } from '@/common'
 import { z } from 'zod'
+import { createZodDto } from 'nestjs-zod'
 
 /* For some reason it's seem union type validate won't work with builded data so I have to duplicate it in PR's folder and fix it later */
 
@@ -30,3 +31,5 @@ export const ApproveByStateRoleSchema2 = z.discriminatedUnion('state_role', [
     state_role: z.literal('purchase')
   })
 ]);
+
+export class ApproveByStateRoleDto2 extends createZodDto(ApproveByStateRoleSchema2) {}

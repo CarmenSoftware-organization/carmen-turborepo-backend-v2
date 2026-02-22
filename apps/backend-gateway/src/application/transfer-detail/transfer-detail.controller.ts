@@ -24,6 +24,8 @@ import {
   BaseHttpController,
   Serialize,
   TransferMutationResponseSchema,
+  TransferDetailCreateDto,
+  TransferDetailUpdateDto,
 } from '@/common';
 import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
@@ -129,7 +131,7 @@ export class TransferDetailController extends BaseHttpController {
     },
   })
   async create(
-    @Body() createDto: Record<string, unknown>,
+    @Body() createDto: TransferDetailCreateDto,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -165,7 +167,7 @@ export class TransferDetailController extends BaseHttpController {
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() updateDto: Record<string, unknown>,
+    @Body() updateDto: TransferDetailUpdateDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',

@@ -92,3 +92,7 @@ export const StockOutUpdate = z.object({
 export type IStockOutUpdate = z.infer<typeof StockOutUpdate> & { id: string };
 
 export class StockOutUpdateDto extends createZodDto(StockOutUpdate) {}
+
+// Stock Out Detail DTOs (for standalone detail CRUD endpoints)
+export class StockOutDetailCreateDto extends createZodDto(StockOutDetailCreate) {}
+export class StockOutDetailUpdateDto extends createZodDto(StockOutDetailUpdate) {}

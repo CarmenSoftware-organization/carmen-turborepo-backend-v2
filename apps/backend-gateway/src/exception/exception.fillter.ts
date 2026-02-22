@@ -1,5 +1,6 @@
 import { ArgumentsHost, Catch, HttpException, HttpStatus, Logger } from '@nestjs/common'
 import { Response, Request } from 'express'
+import { ZodValidationException } from 'nestjs-zod'
 import * as Sentry from '@sentry/node'
 
 @Catch()
@@ -12,17 +13,35 @@ export class ExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message: string = (exception as Record<string, unknown>)?.error
+    let message: string | string[] = (exception as Record<string, unknown>)?.error
       ? String((exception as Record<string, Record<string, unknown>>).error.message)
       : 'Internal server error';
     try {
-      message = JSON.parse(message);
+      message = JSON.parse(message as string);
     } catch {
       // Keep original message if parsing fails
     }
     let errorResponse: Record<string, unknown> | null = null;
 
-    if (exception instanceof HttpException) {
+    // Handle Zod validation errors with detailed field-level messages
+    if (exception instanceof ZodValidationException) {
+      status = exception.getStatus();
+      const zodError = exception.getZodError();
+      const fieldErrors = zodError.errors.map((err) => {
+        const path = err.path.length > 0 ? err.path.join('.') : '(root)';
+        return `${path}: ${err.message}`;
+      });
+      message = fieldErrors;
+      errorResponse = {
+        statusCode: status,
+        error: 'Validation failed',
+        errors: zodError.errors.map((err) => ({
+          field: err.path.join('.'),
+          message: err.message,
+          code: err.code,
+        })),
+      };
+    } else if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
 
