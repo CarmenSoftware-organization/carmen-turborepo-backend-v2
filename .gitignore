@@ -91,3 +91,6 @@ Thumbs.db
 
 # Sensitive documentation
 SETUP_GUIDE.md
+
+# Environment config exports
+folder-env/
