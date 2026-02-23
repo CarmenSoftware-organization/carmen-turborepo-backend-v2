@@ -1,0 +1,187 @@
+import {
+  Controller,
+  Get,
+  Query,
+  Req,
+  Res,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
+import { Response } from 'express';
+import { MyApproveService } from './my-approve.service';
+import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
+import { BaseHttpController } from '@/common';
+import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
+import { ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator';
+import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
+import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
+import { BackendLogger } from 'src/common/helpers/backend.logger';
+import { AppIdGuard } from 'src/common/guard/app-id.guard';
+import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
+
+@Controller('api/my-approve')
+@ApiTags('Application - My Approve')
+@ApiHeaderRequiredXAppId()
+@UseGuards(KeycloakGuard)
+@ApiBearerAuth()
+export class MyApproveController extends BaseHttpController {
+  private readonly logger: BackendLogger = new BackendLogger(
+    MyApproveController.name,
+  );
+
+  constructor(private readonly myApproveService: MyApproveService) {
+    super();
+  }
+
+  @Get('pending')
+  @UseGuards(new AppIdGuard('my-approve.findAllPending.count'))
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get combined count of all pending approvals (SR + PR + PO)',
+    description:
+      'Retrieves the total count of pending store requisitions, purchase requests, and purchase orders',
+    operationId: 'findAllPendingApprovalsCount',
+    tags: ['Application - My Approve', '[Method] Get'],
+    deprecated: false,
+    parameters: [
+      {
+        name: 'version',
+        in: 'query',
+        required: false,
+      },
+    ],
+    responses: {
+      200: {
+        description: 'The pending counts were successfully retrieved',
+        content: {
+          'application/json': {
+            examples: {
+              default: {
+                value: {
+                  data: {
+                    total: 15,
+                    sr: 5,
+                    pr: 10,
+                    po: 0,
+                  },
+                  message: 'Success',
+                  status: 200,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @HttpCode(HttpStatus.OK)
+  async findAllPendingCount(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      {
+        function: 'findAllPendingCount',
+        version,
+      },
+      MyApproveController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.myApproveService.findAllMyApproveCount(
+      user_id,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  @Get()
+  @UseGuards(new AppIdGuard('my-approve.findAll'))
+  @ApiVersionMinRequest()
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get all pending approvals (SR + PR + PO) grouped by type',
+    description:
+      'Retrieves all pending store requisitions, purchase requests, and purchase orders, grouped by document type',
+    operationId: 'findAllPendingApprovals',
+    tags: ['Application - My Approve', '[Method] Get'],
+    deprecated: false,
+    parameters: [
+      {
+        name: 'version',
+        in: 'query',
+        required: false,
+      },
+      {
+        name: 'page',
+        in: 'query',
+        required: false,
+      },
+      {
+        name: 'perpage',
+        in: 'query',
+        required: false,
+      },
+      {
+        name: 'search',
+        in: 'query',
+        required: false,
+      },
+      {
+        name: 'bu_code',
+        in: 'query',
+        required: false,
+      },
+    ],
+    responses: {
+      200: {
+        description: 'The pending approvals were successfully retrieved',
+        content: {
+          'application/json': {
+            examples: {
+              default: {
+                value: {
+                  data: {
+                    store_requisitions: [],
+                    purchase_requests: [],
+                    purchase_orders: [],
+                  },
+                  message: 'Success',
+                  status: 200,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @HttpCode(HttpStatus.OK)
+  async findAll(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query() query: IPaginateQuery,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      {
+        function: 'findAll',
+        query,
+        version,
+      },
+      MyApproveController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
+    const result = await this.myApproveService.findAll(
+      user_id,
+      paginate.bu_code,
+      paginate,
+      version,
+    );
+    this.respond(res, result);
+  }
+}
