@@ -6,6 +6,7 @@ import {
   RejectStoreRequisitionDto,
   ReviewStoreRequisitionDto,
   BaseMicroserviceController,
+  Result,
 } from '@/common';
 import { StoreRequisitionLogic } from './logic/store-requisition.logic';
 import { AllExceptionsFilter } from '@/common/exception/global.filter';
@@ -300,5 +301,32 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     );
 
     return this.handleResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'my-pending.store-requisition.find-all',
+    service: 'my-pending',
+  })
+  async findAllMyPending(@Body() payload: any): Promise<any> {
+    this.logger.debug(
+      { function: 'findAllMyPending', payload },
+      StoreRequisitionController.name,
+    );
+    const user_id = payload.user_id;
+    const bu_code = payload.bu_code;
+    const paginate = payload.paginate;
+
+    const results = [];
+    for (const code of bu_code) {
+      const auditContext = this.createAuditContext({ ...payload, bu_code: code });
+      const result = await runWithAuditContext(auditContext, () =>
+        this.storeRequisitionService.findAllMyPending(user_id, code, paginate),
+      );
+      if (result.isOk()) {
+        results.push(result.value);
+      }
+    }
+
+    return this.handleResult(Result.ok(results));
   }
 }

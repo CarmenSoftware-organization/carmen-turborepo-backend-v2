@@ -389,4 +389,41 @@ export class PurchaseOrderController extends BaseMicroserviceController {
     const result = await runWithAuditContext(auditContext, () => this.purchaseOrderService.deleteDetail(detailId));
     return this.handleResult(result);
   }
+
+  @MessagePattern({
+    cmd: 'my-pending.purchase-order.find-all',
+    service: 'my-pending',
+  })
+  async findAllMyPending(@Payload() payload: any): Promise<any> {
+    this.logger.debug(
+      { function: 'findAllMyPending', payload },
+      PurchaseOrderController.name,
+    );
+    const user_id = payload.user_id;
+    const bu_code = payload.bu_code;
+    const paginate = payload.paginate;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.purchaseOrderService.findAllMyPending(user_id, bu_code, paginate),
+    );
+    return this.handleMultiPaginatedResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'my-pending.purchase-order.find-all.count',
+    service: 'my-pending',
+  })
+  async findAllMyPendingCount(@Payload() payload: any): Promise<any> {
+    this.logger.debug(
+      { function: 'findAllMyPendingCount', payload },
+      PurchaseOrderController.name,
+    );
+    const user_id = payload.user_id;
+    const bu_code = payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.purchaseOrderService.findAllMyPendingCount(user_id, bu_code),
+    );
+    return this.handleResult(result);
+  }
 }
