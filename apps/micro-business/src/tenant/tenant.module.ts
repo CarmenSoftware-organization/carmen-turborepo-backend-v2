@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TenantService } from './tenant.service';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
-import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant/dist';
+import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { envConfig } from '@/libs/config.env';
 

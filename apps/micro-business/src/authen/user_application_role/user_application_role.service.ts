@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import { BackendLogger } from '@/common/helpers/backend.logger';
-import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant/dist';
+import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
 import { TenantService } from '@/tenant/tenant.service';
 import { TryCatch, Result, ErrorCode } from '@/common';
 

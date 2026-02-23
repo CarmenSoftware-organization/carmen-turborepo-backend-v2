@@ -21,7 +21,7 @@ import {
 } from './dto/forgotpassword.dto';
 import { JwtService } from '@nestjs/jwt';
 import { BackendLogger } from '@/common/helpers/backend.logger';
-import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant/dist';
+import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
 import { TenantService } from '@/tenant/tenant.service';
 import { addHours } from 'date-fns';
 import { ChangePasswordDto } from './dto/changepassword';

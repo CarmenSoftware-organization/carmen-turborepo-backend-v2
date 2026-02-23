@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
-import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant/dist';
+import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
 import QueryParams from 'src/libs/paginate.query';
 // import { IPaginate } from 'src/shared-interface/paginate.interface';
 import { BackendLogger } from '@/common/helpers/backend.logger';
