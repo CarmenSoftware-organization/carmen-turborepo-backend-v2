@@ -19,7 +19,7 @@ export interface MicroserviceResponse<T = any> {
 }
 
 export abstract class BaseMicroserviceController {
-  protected handleResultCrate<T>(
+  protected handleResultCreate<T>(
     result: Result<T, any>,
     successStatus: HttpStatus = HttpStatus.CREATED,
   ): MicroserviceResponse<T> {
