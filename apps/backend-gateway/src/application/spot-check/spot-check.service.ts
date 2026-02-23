@@ -7,6 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
+import { ISpotCheckCreate, ISpotCheckUpdate } from 'src/common/dto/spot-check/spot-check.dto';
 import { randomInt } from 'crypto';
 
 @Injectable()
@@ -148,7 +149,7 @@ export class SpotCheckService {
   }
 
   async create(
-    data: Record<string, unknown>,
+    data: ISpotCheckCreate,
     user_id: string,
     tenant_id: string,
     version: string,
@@ -183,7 +184,7 @@ export class SpotCheckService {
 
   async update(
     id: string,
-    data: Record<string, unknown>,
+    data: ISpotCheckUpdate,
     user_id: string,
     tenant_id: string,
     version: string,

@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
-import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
+import { PrismaClient_TENANT, enum_spot_check_method } from '@repo/prisma-shared-schema-tenant';
 import { TenantService } from '@/tenant/tenant.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
@@ -124,7 +124,14 @@ export class SpotCheckService {
 
   @TryCatch
   async create(
-    data: any,
+    data: {
+      location_id: string;
+      method?: enum_spot_check_method;
+      items?: number;
+      product_id?: string[];
+      description?: string;
+      note?: string;
+    },
     user_id: string,
     tenant_id: string,
   ): Promise<Result<unknown>> {
@@ -159,7 +166,7 @@ export class SpotCheckService {
 
     let selectedProducts;
     const method = data.method || 'random';
-    const productCount = data.product_count || productTotal;
+    const productCount = data.items || productTotal;
 
     switch (method) {
       case 'random': {
@@ -172,16 +179,16 @@ export class SpotCheckService {
       }
       case 'manual': {
         if (
-          !data.products ||
-          !Array.isArray(data.products) ||
-          data.products.length === 0
+          !data.product_id ||
+          !Array.isArray(data.product_id) ||
+          data.product_id.length === 0
         ) {
           return Result.error(
-            'Products are required for manual selection',
+            'product_id is required for manual selection',
             ErrorCode.INVALID_ARGUMENT,
           );
         }
-        const manualIds = data.products.map((p: Record<string, unknown>) => p.product_id);
+        const manualIds = data.product_id;
         selectedProducts = this.spotCheckLogic.selectManual(
           allProducts,
           manualIds,
@@ -238,6 +245,51 @@ export class SpotCheckService {
     }
 
     return Result.ok({ id: spotCheck.id });
+  }
+
+  @TryCatch
+  async update(
+    id: string,
+    data: {
+      description?: string;
+      note?: string;
+    },
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'update', id, data, user_id, tenant_id },
+      SpotCheckService.name,
+    );
+
+    const prisma = await this.getPrisma(user_id, tenant_id);
+    if (!prisma) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+
+    const spotCheck = await prisma.tb_spot_check.findFirst({
+      where: { id, deleted_at: null },
+    });
+    if (!spotCheck) {
+      return Result.error('Spot check not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (spotCheck.doc_status !== 'pending') {
+      return Result.error(
+        'Only pending spot checks can be updated',
+        ErrorCode.INVALID_ARGUMENT,
+      );
+    }
+
+    const updated = await prisma.tb_spot_check.update({
+      where: { id },
+      data: {
+        description: data.description,
+        note: data.note,
+        updated_by_id: user_id,
+        updated_at: new Date(),
+      },
+    });
+
+    return Result.ok(updated);
   }
 
   @TryCatch

@@ -24,6 +24,7 @@ import {
 import {
   BaseHttpController,
 } from '@/common';
+import { SpotCheckCreateDto, SpotCheckUpdateDto } from 'src/common/dto/spot-check/spot-check.dto';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -143,7 +144,7 @@ export class SpotCheckController extends BaseHttpController {
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
   async create(
-    @Body() createDto: Record<string, unknown>,
+    @Body() createDto: SpotCheckCreateDto,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -175,7 +176,7 @@ export class SpotCheckController extends BaseHttpController {
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() updateDto: Record<string, unknown>,
+    @Body() updateDto: SpotCheckUpdateDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',

@@ -68,6 +68,21 @@ export class SpotCheckController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  @MessagePattern({ cmd: 'spot-check.update', service: 'spot-check' })
+  async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'update', payload },
+      SpotCheckController.name,
+    );
+    const { id, data, user_id } = payload;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.spotCheckService.update(id, data, user_id, tenant_id),
+    );
+    return this.handleResult(result);
+  }
+
   @MessagePattern({ cmd: 'spot-check.delete', service: 'spot-check' })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
