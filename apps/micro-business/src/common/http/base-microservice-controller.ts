@@ -19,9 +19,8 @@ export interface MicroserviceResponse<T = unknown> {
 }
 
 export abstract class BaseMicroserviceController {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected handleResultCrate<T>(
-    result: Result<any, any>,
+  protected handleResultCreate<T>(
+    result: Result<T, any>,
     successStatus: HttpStatus = HttpStatus.CREATED,
   ): MicroserviceResponse<T> {
     if (result.isOk()) {

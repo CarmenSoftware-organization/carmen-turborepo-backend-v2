@@ -1,0 +1,407 @@
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { IPaginate } from 'src/shared-dto/paginate.dto';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom, Observable } from 'rxjs';
+import { Result } from '@/common';
+import { BackendLogger } from 'src/common/helpers/backend.logger';
+
+@Injectable()
+export class MyApproveService {
+  private readonly logger: BackendLogger = new BackendLogger(
+    MyApproveService.name,
+  );
+
+  constructor(
+    @Inject('INVENTORY_SERVICE')
+    private readonly inventoryService: ClientProxy,
+    @Inject('PROCUREMENT_SERVICE')
+    private readonly procurementService: ClientProxy,
+  ) {}
+
+  async findAllMyApproveCount(
+    user_id: string,
+    version: string,
+  ): Promise<Result<any>> {
+    this.logger.debug(
+      {
+        function: 'findAllMyApproveCount',
+        user_id,
+        version,
+      },
+      MyApproveService.name,
+    );
+
+    const [srResult, prResult, poResult] = await Promise.all([
+      this.getSRCount(user_id, version),
+      this.getPRCount(user_id, version),
+      this.getPOCount(user_id, version),
+    ]);
+
+    return Result.ok({
+      total: srResult.pending + prResult.pending + poResult.pending,
+      sr: srResult.pending,
+      pr: prResult.pending,
+      po: poResult.pending,
+    });
+  }
+
+  async findAll(
+    user_id: string,
+    bu_code: string[],
+    paginate: IPaginate,
+    version: string,
+  ): Promise<Result<any>> {
+    this.logger.debug(
+      {
+        function: 'findAll',
+        user_id,
+        bu_code,
+        paginate,
+        version,
+      },
+      MyApproveService.name,
+    );
+
+    const [srResult, prResult, poResult] = await Promise.all([
+      this.getSRList(user_id, bu_code, paginate, version),
+      this.getPRList(user_id, bu_code, paginate, version),
+      this.getPOList(user_id, bu_code, paginate, version),
+    ]);
+
+    return Result.ok({
+      store_requisitions: srResult,
+      purchase_requests: prResult,
+      purchase_orders: poResult,
+    });
+  }
+
+  private async getSRCount(
+    user_id: string,
+    version: string,
+  ): Promise<{ pending: number }> {
+    this.logger.debug(
+      {
+        function: 'getSRCount',
+        user_id,
+        version,
+      },
+      MyApproveService.name,
+    );
+
+    try {
+      const res: Observable<any> = this.inventoryService.send(
+        {
+          cmd: 'my-pending.store-requisition.find-all.count',
+          service: 'my-pending',
+        },
+        {
+          user_id,
+          version,
+        },
+      );
+
+      const response = await firstValueFrom(res);
+
+      if (response.response.status !== HttpStatus.OK) {
+        this.logger.warn(
+          {
+            function: 'getSRCount',
+            message: 'Failed to get SR count',
+            response,
+          },
+          MyApproveService.name,
+        );
+        return { pending: 0 };
+      }
+
+      return { pending: response.data?.pending || 0 };
+    } catch (error) {
+      this.logger.error(
+        {
+          function: 'getSRCount',
+          error: error.message,
+        },
+        MyApproveService.name,
+      );
+      return { pending: 0 };
+    }
+  }
+
+  private async getPRCount(
+    user_id: string,
+    version: string,
+  ): Promise<{ pending: number }> {
+    this.logger.debug(
+      {
+        function: 'getPRCount',
+        user_id,
+        version,
+      },
+      MyApproveService.name,
+    );
+
+    try {
+      const res: Observable<any> = this.procurementService.send(
+        {
+          cmd: 'my-pending.purchase-request.find-all.count',
+          service: 'my-pending',
+        },
+        {
+          user_id,
+          version,
+        },
+      );
+
+      const response = await firstValueFrom(res);
+
+      if (response.response.status !== HttpStatus.OK) {
+        this.logger.warn(
+          {
+            function: 'getPRCount',
+            message: 'Failed to get PR count',
+            response,
+          },
+          MyApproveService.name,
+        );
+        return { pending: 0 };
+      }
+
+      return { pending: response.data?.pending || 0 };
+    } catch (error) {
+      this.logger.error(
+        {
+          function: 'getPRCount',
+          error: error.message,
+        },
+        MyApproveService.name,
+      );
+      return { pending: 0 };
+    }
+  }
+
+  private async getSRList(
+    user_id: string,
+    bu_code: string[],
+    paginate: IPaginate,
+    version: string,
+  ): Promise<any[]> {
+    this.logger.debug(
+      {
+        function: 'getSRList',
+        user_id,
+        bu_code,
+        paginate,
+        version,
+      },
+      MyApproveService.name,
+    );
+
+    try {
+      const res: Observable<any> = this.inventoryService.send(
+        {
+          cmd: 'my-pending.store-requisition.find-all',
+          service: 'my-pending',
+        },
+        {
+          user_id,
+          bu_code,
+          paginate,
+          version,
+        },
+      );
+
+      const response = await firstValueFrom(res);
+
+      if (response.response.status !== HttpStatus.OK) {
+        this.logger.warn(
+          {
+            function: 'getSRList',
+            message: 'Failed to get SR list',
+            response,
+          },
+          MyApproveService.name,
+        );
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      this.logger.error(
+        {
+          function: 'getSRList',
+          error: error.message,
+        },
+        MyApproveService.name,
+      );
+      return [];
+    }
+  }
+
+  private async getPRList(
+    user_id: string,
+    bu_code: string[],
+    paginate: IPaginate,
+    version: string,
+  ): Promise<any[]> {
+    this.logger.debug(
+      {
+        function: 'getPRList',
+        user_id,
+        bu_code,
+        paginate,
+        version,
+      },
+      MyApproveService.name,
+    );
+
+    try {
+      const res: Observable<any> = this.procurementService.send(
+        {
+          cmd: 'my-pending.purchase-request.find-all',
+          service: 'my-pending',
+        },
+        {
+          user_id,
+          bu_code,
+          paginate,
+          version,
+        },
+      );
+
+      const response = await firstValueFrom(res);
+
+      if (response.response.status !== HttpStatus.OK) {
+        this.logger.warn(
+          {
+            function: 'getPRList',
+            message: 'Failed to get PR list',
+            response,
+          },
+          MyApproveService.name,
+        );
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      this.logger.error(
+        {
+          function: 'getPRList',
+          error: error.message,
+        },
+        MyApproveService.name,
+      );
+      return [];
+    }
+  }
+
+  private async getPOCount(
+    user_id: string,
+    version: string,
+  ): Promise<{ pending: number }> {
+    this.logger.debug(
+      {
+        function: 'getPOCount',
+        user_id,
+        version,
+      },
+      MyApproveService.name,
+    );
+
+    try {
+      const res: Observable<any> = this.procurementService.send(
+        {
+          cmd: 'my-pending.purchase-order.find-all.count',
+          service: 'my-pending',
+        },
+        {
+          user_id,
+          version,
+        },
+      );
+
+      const response = await firstValueFrom(res);
+
+      if (response.response.status !== HttpStatus.OK) {
+        this.logger.warn(
+          {
+            function: 'getPOCount',
+            message: 'Failed to get PO count',
+            response,
+          },
+          MyApproveService.name,
+        );
+        return { pending: 0 };
+      }
+
+      return { pending: response.data?.pending || 0 };
+    } catch (error) {
+      this.logger.error(
+        {
+          function: 'getPOCount',
+          error: error.message,
+        },
+        MyApproveService.name,
+      );
+      return { pending: 0 };
+    }
+  }
+
+  private async getPOList(
+    user_id: string,
+    bu_code: string[],
+    paginate: IPaginate,
+    version: string,
+  ): Promise<any[]> {
+    this.logger.debug(
+      {
+        function: 'getPOList',
+        user_id,
+        bu_code,
+        paginate,
+        version,
+      },
+      MyApproveService.name,
+    );
+
+    try {
+      const res: Observable<any> = this.procurementService.send(
+        {
+          cmd: 'my-pending.purchase-order.find-all',
+          service: 'my-pending',
+        },
+        {
+          user_id,
+          bu_code,
+          paginate,
+          version,
+        },
+      );
+
+      const response = await firstValueFrom(res);
+
+      if (response.response.status !== HttpStatus.OK) {
+        this.logger.warn(
+          {
+            function: 'getPOList',
+            message: 'Failed to get PO list',
+            response,
+          },
+          MyApproveService.name,
+        );
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      this.logger.error(
+        {
+          function: 'getPOList',
+          error: error.message,
+        },
+        MyApproveService.name,
+      );
+      return [];
+    }
+  }
+}

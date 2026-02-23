@@ -3,7 +3,7 @@ import { EmbeddedDepartmentSchema, EmbeddedWorkflowSchema } from '../embedded.dt
 import { ProductCreate } from '../product/product.dto';
 import { CreatePurchaseRequestDetailSchema } from './purchase-request-detail.dto';
 import { createZodDto } from 'nestjs-zod';
-import { enum_stage_role, PrismaClient } from '@repo/prisma-shared-schema-tenant/dist';
+import { enum_stage_role, PrismaClient } from '@repo/prisma-shared-schema-tenant';
 
 // Import validate functions
 import {

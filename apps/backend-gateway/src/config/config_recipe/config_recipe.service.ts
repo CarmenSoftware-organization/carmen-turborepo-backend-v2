@@ -16,7 +16,7 @@ export class Config_RecipeService {
   constructor(
     @Inject('MASTER_SERVICE')
     private readonly masterService: ClientProxy,
-  ) {}
+  ) { }
 
   async findOne(
     id: string,

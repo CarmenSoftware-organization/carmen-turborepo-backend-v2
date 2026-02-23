@@ -1,6 +1,8 @@
-import { HttpStatus, HttpException, Injectable } from '@nestjs/common';
+import { HttpStatus, HttpException, Inject, Injectable } from '@nestjs/common';
 import { isUUID } from 'class-validator';
 import { TenantService } from '@/tenant/tenant.service';
+import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
+import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
 import {
   enum_purchase_order_doc_status,
   enum_purchase_request_doc_status,
@@ -88,6 +90,10 @@ export class PurchaseOrderService {
   }
 
   constructor(
+    @Inject('PRISMA_SYSTEM')
+    private readonly prismaSystem: typeof PrismaClient_SYSTEM,
+    @Inject('PRISMA_TENANT')
+    private readonly prismaTenant: typeof PrismaClient_TENANT,
     private readonly tenantService: TenantService,
     private readonly commonLogic: CommonLogic,
     private readonly notificationService: NotificationService,
@@ -2881,6 +2887,268 @@ export class PurchaseOrderService {
     } catch (error) {
       this.logger.error('Failed to send close PO notification:', error);
     }
+  }
+
+  @TryCatch
+  async findAllMyPending(
+    user_id: string,
+    bu_code: string,
+    paginate: IPaginate,
+  ): Promise<Result<any>> {
+    this.logger.debug(
+      { function: 'findAllMyPending', user_id, bu_code, paginate },
+      PurchaseOrderService.name,
+    );
+    const defaultSearchFields = ['po_no', 'description'];
+
+    const q = new QueryParams(
+      paginate.page,
+      paginate.perpage,
+      paginate.search,
+      paginate.searchfields,
+      defaultSearchFields,
+      typeof paginate.filter === 'object' && !Array.isArray(paginate.filter)
+        ? paginate.filter
+        : {},
+      paginate.sort,
+      paginate.advance,
+    );
+    const results = [];
+
+    let bu_codes: any = '';
+
+    if (bu_code == '' || bu_code == undefined || bu_code == null) {
+      const bus = await this.prismaSystem.tb_user_tb_business_unit.findMany({
+        where: { user_id, is_active: true },
+        include: { tb_business_unit: true },
+      });
+      bu_codes = bus.map((b) => b.tb_business_unit.code);
+    } else {
+      bu_codes = bu_code;
+    }
+
+    for (const code of bu_codes) {
+      const tenant = await this.tenantService.getdb_connection(user_id, code);
+
+      if (!tenant) {
+        return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+      }
+
+      const prisma = await this.prismaTenant(
+        tenant.tenant_id,
+        tenant.db_connection,
+      );
+
+      const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
+        where: { code: code },
+      });
+
+      if (!bu_detail) {
+        return Result.error(
+          `Business unit ${code} not found`,
+          ErrorCode.NOT_FOUND,
+        );
+      }
+
+      const standardQuery = q.findMany();
+
+      const purchaseOrders = await prisma.tb_purchase_order
+        .findMany({
+          ...standardQuery,
+          where: {
+            ...standardQuery.where,
+            OR: [
+              {
+                user_action: {
+                  path: ['execute'],
+                  array_contains: [{ user_id: user_id }],
+                },
+              },
+              {
+                po_status: enum_purchase_order_doc_status.draft,
+                buyer_id: user_id,
+              },
+            ],
+          },
+          include: {
+            tb_purchase_order_detail: true,
+          },
+        })
+        .then((res) => {
+          return res.map((po) => {
+            const purchase_order_detail = po['tb_purchase_order_detail'];
+            delete po['tb_purchase_order_detail'];
+
+            return {
+              id: po.id,
+              po_no: po.po_no,
+              order_date: po.order_date,
+              delivery_date: po.delivery_date,
+              description: po.description,
+              po_status: po.po_status,
+              vendor_name: po.vendor_name,
+              buyer_name: po.buyer_name,
+              workflow_name: po.workflow_name,
+              created_at: po.created_at,
+              purchase_order_detail: purchase_order_detail.map((d) => ({
+                qty: Number(d.qty),
+                price: Number(d.price),
+                total_price: Number(d.total_price),
+              })),
+              total_amount: Number(po.total_amount),
+              workflow_current_stage: po.workflow_current_stage,
+              workflow_next_stage: po.workflow_next_stage,
+              workflow_previous_stage: po.workflow_previous_stage,
+              last_action: po.last_action,
+            };
+          });
+        });
+
+      const total = await prisma.tb_purchase_order.count({
+        where: {
+          ...standardQuery.where,
+          OR: [
+            {
+              user_action: {
+                path: ['execute'],
+                array_contains: [{ user_id: user_id }],
+              },
+            },
+            {
+              po_status: enum_purchase_order_doc_status.draft,
+              buyer_id: user_id,
+            },
+          ],
+        },
+      });
+
+      const serializedPurchaseOrders = purchaseOrders.map((item) =>
+        PurchaseOrderListItemResponseSchema.parse(item),
+      );
+
+      results.push({
+        bu_code: code,
+        bu_name: bu_detail.name,
+        bu_alias_name: bu_detail.alias_name,
+        paginate: {
+          total: total,
+          page: Number(paginate.page),
+          perpage: Number(paginate.perpage),
+          pages: total == 0 ? 1 : Math.ceil(total / Number(paginate.perpage)),
+        },
+        data: serializedPurchaseOrders,
+      });
+    }
+
+    return Result.ok(results);
+  }
+
+  async findAllMyPendingCount(user_id: string, bu_code: string): Promise<any> {
+    this.logger.debug(
+      { function: 'findAllMyPendingCount', user_id, bu_code },
+      PurchaseOrderService.name,
+    );
+
+    const paginate: IPaginate = {
+      page: 1,
+      perpage: 1,
+      search: '',
+      searchfields: ['po_no', 'description'],
+      filter: {},
+      sort: [],
+      advance: {},
+    };
+    const defaultSearchFields = ['po_no', 'description'];
+
+    const q = new QueryParams(
+      paginate.page,
+      paginate.perpage,
+      paginate.search,
+      paginate.searchfields,
+      defaultSearchFields,
+      typeof paginate.filter === 'object' && !Array.isArray(paginate.filter)
+        ? paginate.filter
+        : {},
+      paginate.sort,
+      paginate.advance,
+    );
+    const results = [];
+
+    let bu_codes: any = '';
+
+    if (bu_code == '' || bu_code == undefined || bu_code == null) {
+      const bus = await this.prismaSystem.tb_user_tb_business_unit.findMany({
+        where: { user_id, is_active: true },
+        include: { tb_business_unit: true },
+      });
+      bu_codes = bus.map((b) => b.tb_business_unit.code);
+    } else {
+      bu_codes = bu_code;
+    }
+
+    for (const code of bu_codes) {
+      const tenant = await this.tenantService.getdb_connection(user_id, code);
+
+      if (!tenant) {
+        return {
+          response: {
+            status: HttpStatus.NO_CONTENT,
+            message: 'Tenant not found',
+          },
+        };
+      }
+
+      const prisma = await this.prismaTenant(
+        tenant.tenant_id,
+        tenant.db_connection,
+      );
+
+      const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
+        where: { code: code },
+      });
+
+      if (!bu_detail) {
+        return {
+          response: {
+            status: HttpStatus.NO_CONTENT,
+            message: `Business unit ${code} not found`,
+          },
+        };
+      }
+
+      const standardQuery = q.findMany();
+
+      const total = await prisma.tb_purchase_order.count({
+        where: {
+          ...standardQuery.where,
+          OR: [
+            {
+              user_action: {
+                path: ['execute'],
+                array_contains: [{ user_id: user_id }],
+              },
+            },
+            {
+              po_status: enum_purchase_order_doc_status.draft,
+              buyer_id: user_id,
+            },
+          ],
+        },
+      });
+
+      results.push({
+        total: total,
+      });
+    }
+
+    const total = results.reduce((acc, curr) => acc + curr.total, 0);
+    this.logger.debug({
+      function: 'findAllMyPendingCount',
+      user_id,
+      total,
+    });
+
+    return Result.ok({ pending: total });
   }
 }
 

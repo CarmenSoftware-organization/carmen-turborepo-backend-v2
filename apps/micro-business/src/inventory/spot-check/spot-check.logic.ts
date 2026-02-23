@@ -81,7 +81,7 @@ export class SpotCheckLogic {
     products: ProductAtLocation[],
     spotCheckId: string,
     userId: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): any[] {
     return products.map((p, index) => ({
       spot_check_id: spotCheckId,

@@ -7,6 +7,8 @@ import { CommonModule } from '@/common/common.module';
 import { NotificationModule } from '@/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { envConfig } from '@/libs/config.env';
+import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
+import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
 
 @Module({
   imports: [
@@ -36,6 +38,17 @@ import { envConfig } from '@/libs/config.env';
     }),
   ],
   controllers: [PurchaseOrderController],
-  providers: [PurchaseOrderService, PurchaseOrderLogic],
+  providers: [
+    PurchaseOrderService,
+    PurchaseOrderLogic,
+    {
+      provide: 'PRISMA_TENANT',
+      useValue: PrismaClient_TENANT,
+    },
+    {
+      provide: 'PRISMA_SYSTEM',
+      useValue: PrismaClient_SYSTEM,
+    },
+  ],
 })
 export class PurchaseOrderModule {}
