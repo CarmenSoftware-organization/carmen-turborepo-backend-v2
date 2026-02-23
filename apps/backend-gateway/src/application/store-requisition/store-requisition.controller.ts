@@ -42,7 +42,7 @@ import {
   SubmitStoreRequisitionDto,
   RejectStoreRequisitionDto,
   ReviewStoreRequisitionDto,
-  ApproveStoreRequisitionByStateRoleDto,
+  ApproveStoreRequisitionByStageRoleDto,
 } from '@/common';
 
 @Controller('api')
@@ -365,7 +365,7 @@ export class StoreRequisitionController extends BaseHttpController {
   async approve(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() payload: ApproveStoreRequisitionByStateRoleDto,
+    @Body() payload: ApproveStoreRequisitionByStageRoleDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',

@@ -65,7 +65,7 @@ export class RecipeEquipmentService {
 
   constructor(
     private readonly tenantService: TenantService,
-  ) {}
+  ) { }
 
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {

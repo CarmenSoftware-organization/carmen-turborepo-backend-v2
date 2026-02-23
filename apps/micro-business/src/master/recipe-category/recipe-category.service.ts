@@ -65,7 +65,7 @@ export class RecipeCategoryService {
 
   constructor(
     private readonly tenantService: TenantService,
-  ) {}
+  ) { }
 
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
@@ -134,9 +134,9 @@ export class RecipeCategoryService {
     const parentIds = [...new Set(data.map((d) => d.parent_id).filter(Boolean))] as string[];
     const parents = parentIds.length > 0
       ? await this.prismaService.tb_recipe_category.findMany({
-          where: { id: { in: parentIds } },
-          select: { id: true, name: true },
-        })
+        where: { id: { in: parentIds } },
+        select: { id: true, name: true },
+      })
       : [];
 
     const enrichedData = data.map((item) => {

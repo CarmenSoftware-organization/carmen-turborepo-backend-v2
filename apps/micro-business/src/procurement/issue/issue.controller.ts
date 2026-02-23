@@ -55,7 +55,7 @@ export class IssueController extends BaseMicroserviceController {
     await this.issueService.initializePrismaService(payload.tenant_id || payload.bu_code, payload.user_id);
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () => this.issueService.create(payload.data));
-    return this.handleResultCrate(result);
+    return this.handleResultCreate(result);
   }
 
   @MessagePattern({

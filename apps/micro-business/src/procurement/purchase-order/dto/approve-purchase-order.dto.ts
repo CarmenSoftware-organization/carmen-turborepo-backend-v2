@@ -50,7 +50,7 @@ export const ApprovePurchaseOrderDetailSchema = z.object({
 
 // Approve PO schema
 export const ApprovePurchaseOrderSchema = z.object({
-  state_role: z.nativeEnum(enum_stage_role),
+  stage_role: z.nativeEnum(enum_stage_role),
   details: z.array(ApprovePurchaseOrderDetailSchema).min(1),
 });
 

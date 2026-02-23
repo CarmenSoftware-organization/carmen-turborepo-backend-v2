@@ -13,9 +13,9 @@ const EmbeddedToLocationSchema = z.object({
   to_location_id: ValidateSchema.shape.uuid.optional(),
 });
 
-// Create Store Requisition Schema (with state_role like PR)
+// Create Store Requisition Schema (with stage_role like PR)
 export const CreateStoreRequisitionSchema = z.object({
-  state_role: z.literal(enum_stage_role.create),
+  stage_role: z.literal(enum_stage_role.create),
   details: z.object({
     sr_date: z.string().datetime().pipe(z.coerce.date()),
     expected_date: z.string().datetime().pipe(z.coerce.date()).optional(),

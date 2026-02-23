@@ -125,15 +125,11 @@ main() {
     
     # รายการ microservices ที่จะ build
     MICROSERVICES=(
-        "micro-authen"
-        "micro-cluster"
+        "micro-business"
         "micro-file"
-        "micro-license"
         "micro-notification"
-        "micro-tenant-inventory"
-        "micro-tenant-master"
-        "micro-tenant-procurement"
-        "micro-tenant-recipe"
+        "micro-keycloak-api"
+        "micro-cronjob"
         "backend-gateway"
     )
     

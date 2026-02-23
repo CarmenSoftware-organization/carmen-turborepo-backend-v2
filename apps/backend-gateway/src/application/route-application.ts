@@ -21,6 +21,8 @@ import { TaxProfileModule } from './tax-profile/tax-profile.module';
 import { UnitConversionModule } from './unit-conversion/unit-conversion.module';
 import { MyPendingStoreRequisitionModule } from './my-pending/store-requisition/my-pending.store-requisition.module';
 import { MyPendingPurchaseRequestModule } from './my-pending/purchase-request/my-pending.purchase-request.module';
+import { MyPendingPurchaseOrderModule } from './my-pending/purchase-order/my-pending.purchase-order.module';
+import { MyApproveModule } from './my-pending/my-approve/my-approve.module';
 import { ApplicationRoleModule } from '../platform/application-role/application-role.module';
 import { ApplicationPermissionModule } from '../platform/application-permission/application-permission.module';
 import { ApplicationRolePermissionModule } from '../platform/application-role-permission/application-role-permission.module';
@@ -47,6 +49,8 @@ import { PhysicalCountPeriodModule } from './physical-count-period/physical-coun
     BusinessUnitModule,
     MyPendingStoreRequisitionModule,
     MyPendingPurchaseRequestModule,
+    MyPendingPurchaseOrderModule,
+    MyApproveModule,
     CreditNoteModule,
     CreditTermModule,
     GoodReceivedNoteModule,

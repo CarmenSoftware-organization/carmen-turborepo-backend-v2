@@ -12,29 +12,29 @@ export enum state_status {
   review = 'review',
 }
 
-const ApproveByStateRoleApproveSchema = z.object({
-  state_role: z.literal(enum_stage_role.approve),
+const ApproveByStageRoleApproveSchema = z.object({
+  stage_role: z.literal(enum_stage_role.approve),
   details: z.array(ApprovePurchaseRequestDetailSchema)
 })
 
-const ApproveByStateRolePurchaseSchema = z.object({
-  state_role: z.literal(enum_stage_role.purchase),
+const ApproveByStageRolePurchaseSchema = z.object({
+  stage_role: z.literal(enum_stage_role.purchase),
   details: z.array(PurchaseRoleApprovePurchaseRequestDetailSchema)
 })
 
-export const ApproveByStateRoleSchema = z.discriminatedUnion('state_role', [
+export const ApproveByStageRoleSchema = z.discriminatedUnion('stage_role', [
   z.object({
-    state_role: z.literal(enum_stage_role.approve),
+    stage_role: z.literal(enum_stage_role.approve),
     details: z.array(ApprovePurchaseRequestDetailSchema)
   }),
   z.object({
-    state_role: z.literal(enum_stage_role.purchase),
+    stage_role: z.literal(enum_stage_role.purchase),
     details: z.array(PurchaseRoleApprovePurchaseRequestDetailSchema)
   })
 ]);
 
 const ReviewPurchaseRequestSchema = z.object({
-  state_role: z.nativeEnum(enum_stage_role),
+  stage_role: z.nativeEnum(enum_stage_role),
   des_stage: z.string().nullable(),
   details: z.array(
     z.object({
@@ -46,7 +46,7 @@ const ReviewPurchaseRequestSchema = z.object({
 })
 
 const RejectPurchaseRequestSchema = z.object({
-  state_role: z.nativeEnum(enum_stage_role),
+  stage_role: z.nativeEnum(enum_stage_role),
   details: z.array(
     z.object({
       id: ValidateSchema.shape.uuid,
@@ -57,7 +57,7 @@ const RejectPurchaseRequestSchema = z.object({
 })
 
 const SubmitPurchaseRequestSchema = z.object({
-  state_role: z.nativeEnum(enum_stage_role),
+  stage_role: z.nativeEnum(enum_stage_role),
   details: z.array(
     z.object({
       id: ValidateSchema.shape.uuid,
@@ -67,8 +67,8 @@ const SubmitPurchaseRequestSchema = z.object({
   )
 })
 
-export type ApproveByStateRoleApprove = z.infer<typeof ApproveByStateRoleApproveSchema>
-export type ApproveByStateRolePurchase = z.infer<typeof ApproveByStateRolePurchaseSchema>
+export type ApproveByStageRoleApprove = z.infer<typeof ApproveByStageRoleApproveSchema>
+export type ApproveByStageRolePurchase = z.infer<typeof ApproveByStageRolePurchaseSchema>
 export type SubmitPurchaseRequest = z.infer<typeof SubmitPurchaseRequestSchema>
 
 

@@ -25,20 +25,20 @@ export const PurchaseRoleApprovePurchaseRequestDetailSchema = ApprovePurchaseReq
   .merge(PriceSchema)
   .merge(FocSchema)
 
-export const ApproveByStateRoleSchema2 = z.discriminatedUnion('state_role', [
+export const ApproveByStageRoleSchema2 = z.discriminatedUnion('stage_role', [
   z.object({
-    state_role: z.literal(enum_stage_role.approve),
+    stage_role: z.literal(enum_stage_role.approve),
     details: z.array(ApprovePurchaseRequestDetailSchema)
   }),
   z.object({
-    state_role: z.literal(enum_stage_role.purchase),
+    stage_role: z.literal(enum_stage_role.purchase),
     details: z.array(PurchaseRoleApprovePurchaseRequestDetailSchema)
   })
 ]);
 
-export const SavePurchaseRequestSchema = z.discriminatedUnion('state_role', [
+export const SavePurchaseRequestSchema = z.discriminatedUnion('stage_role', [
   z.object({
-    state_role: z.literal(enum_stage_role.create),
+    stage_role: z.literal(enum_stage_role.create),
     details: z.object({
       description: z.string().optional().nullable(),
       requestor_id: z.string().uuid().optional(),
@@ -54,14 +54,14 @@ export const SavePurchaseRequestSchema = z.discriminatedUnion('state_role', [
       })
   }),
   z.object({
-    state_role: z.literal(enum_stage_role.approve),
+    stage_role: z.literal(enum_stage_role.approve),
     details: z.array(ApprovePurchaseRequestDetailSchema.omit({ state_status: true, state_message: true })),
   }),
   z.object({
-    state_role: z.literal(enum_stage_role.purchase),
+    stage_role: z.literal(enum_stage_role.purchase),
     details: z.array(PurchaseRoleApprovePurchaseRequestDetailSchema.omit({ state_status: true, state_message: true }))
   })
 ])
 
-export class ApproveByStateRoleDto2 extends createZodDto(ApproveByStateRoleSchema2) {}
+export class ApproveByStageRoleDto2 extends createZodDto(ApproveByStageRoleSchema2) {}
 export class SavePurchaseRequestDto extends createZodDto(SavePurchaseRequestSchema) {}

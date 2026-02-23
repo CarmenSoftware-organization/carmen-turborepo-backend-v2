@@ -53,7 +53,7 @@ export * from '@/inventory/stock-out/dto/index';
 export * from '@/inventory/store-requisition/dto/store-requisition.dto';
 export * from '@/inventory/store-requisition/dto/store-requisition-detail.dto';
 export * from '@/inventory/store-requisition/dto/store-requisition.serializer';
-export * from '@/inventory/store-requisition/dto/state_role/store-requisition.state-role.dto';
+export * from '@/inventory/store-requisition/dto/stage_role/store-requisition.stage-role.dto';
 export * from '@/inventory/transfer/dto/index';
 
 // Procurement
@@ -68,7 +68,7 @@ export * from '@/procurement/purchase-order/dto/purchase-order.serializer';
 export * from '@/procurement/purchase-request/dto/purchase-request.dto';
 export * from '@/procurement/purchase-request/dto/purchase-request-detail.dto';
 export * from '@/procurement/purchase-request/dto/purchase-request.serializer';
-export * from '@/procurement/purchase-request/dto/state_role/purchase-request.state-role.dto';
+export * from '@/procurement/purchase-request/dto/stage_role/purchase-request.stage-role.dto';
 export * from '@/procurement/purchase-request-template/dto/purchase-request-template.serializer';
 
 // Notification

@@ -46,7 +46,7 @@ import {
   EXAMPLE_PURCHASE_REQUEST,
   MOCK_PURCHASE_REQUEST_LIST,
 } from './example/my-pending.purchase-request.example';
-import { ApproveByStateRoleDto2 } from './dto/state-change.dto';
+import { ApproveByStageRoleDto2 } from './dto/state-change.dto';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/my-pending/purchase-request')
@@ -518,7 +518,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
-    @Body() payload: ApproveByStateRoleDto2,
+    @Body() payload: ApproveByStageRoleDto2,
     @Param('bu_code') bu_code: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {

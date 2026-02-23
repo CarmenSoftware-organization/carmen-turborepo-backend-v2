@@ -1,6 +1,8 @@
-import { HttpStatus, HttpException, Injectable } from '@nestjs/common';
+import { HttpStatus, HttpException, Inject, Injectable } from '@nestjs/common';
 import { isUUID } from 'class-validator';
 import { TenantService } from '@/tenant/tenant.service';
+import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
+import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
 import {
   enum_purchase_order_doc_status,
   enum_purchase_request_doc_status,
@@ -88,10 +90,14 @@ export class PurchaseOrderService {
   }
 
   constructor(
+    @Inject('PRISMA_SYSTEM')
+    private readonly prismaSystem: typeof PrismaClient_SYSTEM,
+    @Inject('PRISMA_TENANT')
+    private readonly prismaTenant: typeof PrismaClient_TENANT,
     private readonly tenantService: TenantService,
     private readonly commonLogic: CommonLogic,
     private readonly notificationService: NotificationService,
-  ) {}
+  ) { }
 
   @TryCatch
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value accessed by logic layer
@@ -382,7 +388,7 @@ export class PurchaseOrderService {
       doc_version: po.doc_version,
     }));
 
-    const serializedPurchaseOrders = transformedData.map((item) => PurchaseOrderListItemResponseSchema.parse(item));    
+    const serializedPurchaseOrders = transformedData.map((item) => PurchaseOrderListItemResponseSchema.parse(item));
 
     return Result.ok({
       paginate: {
@@ -1408,124 +1414,124 @@ export class PurchaseOrderService {
     const createdPOs: Record<string, unknown>[] = [];
 
     await this.prismaService.$transaction(async (prismatx) => {
-        for (const group of groups) {
-          // Generate PO number
-          const orderDate = new Date();
-          const poNo = await this.generatePONo(orderDate.toISOString());
+      for (const group of groups) {
+        // Generate PO number
+        const orderDate = new Date();
+        const poNo = await this.generatePONo(orderDate.toISOString());
 
-          // Create PO header
-          const po = await prismatx.tb_purchase_order.create({
+        // Create PO header
+        const po = await prismatx.tb_purchase_order.create({
+          data: {
+            po_no: poNo,
+            po_status: enum_purchase_order_doc_status.draft,
+            description: `PO from PR confirmation`,
+            order_date: orderDate.toISOString(),
+            delivery_date: group.delivery_date instanceof Date ? group.delivery_date.toISOString() : orderDate.toISOString(),
+            vendor_id: group.vendor_id,
+            vendor_name: group.vendor_name,
+            currency_id: group.currency_id,
+            currency_name: group.currency_name,
+            exchange_rate: group.exchange_rate,
+            total_qty: group.total_qty,
+            total_price: group.total_price,
+            total_tax: group.total_tax,
+            total_amount: group.total_amount,
+            is_active: true,
+            doc_version: 1,
+            created_by_id: this.userId,
+          },
+        });
+
+        // Create PO details
+        for (const item of group.items) {
+          const poDetail = await prismatx.tb_purchase_order_detail.create({
             data: {
-              po_no: poNo,
-              po_status: enum_purchase_order_doc_status.draft,
-              description: `PO from PR confirmation`,
-              order_date: orderDate.toISOString(),
-              delivery_date: group.delivery_date instanceof Date ? group.delivery_date.toISOString() : orderDate.toISOString(),
-              vendor_id: group.vendor_id,
-              vendor_name: group.vendor_name,
-              currency_id: group.currency_id,
-              currency_name: group.currency_name,
-              exchange_rate: group.exchange_rate,
-              total_qty: group.total_qty,
-              total_price: group.total_price,
-              total_tax: group.total_tax,
-              total_amount: group.total_amount,
+              purchase_order_id: po.id,
+              sequence_no: item.sequence,
+              description: item.product_name,
+              order_qty: item.order_qty,
+              order_unit_id: item.order_unit_id || undefined,
+              order_unit_name: item.order_unit_name,
+              order_unit_conversion_factor: item.order_unit_conversion_factor,
+              base_qty: item.base_qty,
+              base_unit_id: item.base_unit_id || undefined,
+              base_unit_name: item.base_unit_name,
+              is_foc: item.is_foc || false,
+              price: item.price,
+              sub_total_price: item.sub_total_price,
+              net_amount: item.net_amount,
+              total_price: item.total_price,
+              tax_profile_id: item.tax_profile_id || undefined,
+              tax_profile_name: item.tax_profile_name,
+              tax_rate: item.tax_rate,
+              tax_amount: item.tax_amount,
+              is_tax_adjustment: item.is_tax_adjustment,
+              discount_rate: item.discount_rate,
+              discount_amount: item.discount_amount,
+              is_discount_adjustment: item.is_discount_adjustment,
+              info: {
+                product_id: item.product_id,
+                product_name: item.product_name,
+                product_local_name: item.product_local_name,
+                pricelist_detail_id: item.pricelist_detail_id,
+                pricelist_no: item.pricelist_no,
+              },
               is_active: true,
               doc_version: 1,
               created_by_id: this.userId,
             },
           });
 
-          // Create PO details
-          for (const item of group.items) {
-            const poDetail = await prismatx.tb_purchase_order_detail.create({
+          // Create PR detail linkages
+          for (const prDetail of item.pr_details) {
+            // Skip if required fields are missing
+            if (!prDetail.pr_detail_id || !prDetail.order_unit_id) {
+              continue;
+            }
+            await prismatx.tb_purchase_order_detail_tb_purchase_request_detail.create({
               data: {
-                purchase_order_id: po.id,
-                sequence_no: item.sequence,
-                description: item.product_name,
-                order_qty: item.order_qty,
-                order_unit_id: item.order_unit_id || undefined,
-                order_unit_name: item.order_unit_name,
-                order_unit_conversion_factor: item.order_unit_conversion_factor,
-                base_qty: item.base_qty,
-                base_unit_id: item.base_unit_id || undefined,
-                base_unit_name: item.base_unit_name,
-                is_foc: item.is_foc || false,
-                price: item.price,
-                sub_total_price: item.sub_total_price,
-                net_amount: item.net_amount,
-                total_price: item.total_price,
-                tax_profile_id: item.tax_profile_id || undefined,
-                tax_profile_name: item.tax_profile_name,
-                tax_rate: item.tax_rate,
-                tax_amount: item.tax_amount,
-                is_tax_adjustment: item.is_tax_adjustment,
-                discount_rate: item.discount_rate,
-                discount_amount: item.discount_amount,
-                is_discount_adjustment: item.is_discount_adjustment,
-                info: {
-                  product_id: item.product_id,
-                  product_name: item.product_name,
-                  product_local_name: item.product_local_name,
-                  pricelist_detail_id: item.pricelist_detail_id,
-                  pricelist_no: item.pricelist_no,
-                },
-                is_active: true,
-                doc_version: 1,
+                po_detail_id: poDetail.id,
+                pr_detail_id: prDetail.pr_detail_id,
+                pr_detail_order_unit_id: prDetail.order_unit_id,
+                pr_detail_order_unit_name: prDetail.order_unit_name || '',
+                pr_detail_qty: prDetail.order_qty,
+                pr_detail_base_qty: prDetail.order_base_qty,
+                pr_detail_base_unit_id: prDetail.order_base_unit_id || undefined,
+                pr_detail_base_unit_name: prDetail.order_base_unit_name,
                 created_by_id: this.userId,
               },
             });
-
-            // Create PR detail linkages
-            for (const prDetail of item.pr_details) {
-              // Skip if required fields are missing
-              if (!prDetail.pr_detail_id || !prDetail.order_unit_id) {
-                continue;
-              }
-              await prismatx.tb_purchase_order_detail_tb_purchase_request_detail.create({
-                data: {
-                  po_detail_id: poDetail.id,
-                  pr_detail_id: prDetail.pr_detail_id,
-                  pr_detail_order_unit_id: prDetail.order_unit_id,
-                  pr_detail_order_unit_name: prDetail.order_unit_name || '',
-                  pr_detail_qty: prDetail.order_qty,
-                  pr_detail_base_qty: prDetail.order_base_qty,
-                  pr_detail_base_unit_id: prDetail.order_base_unit_id || undefined,
-                  pr_detail_base_unit_name: prDetail.order_base_unit_name,
-                  created_by_id: this.userId,
-                },
-              });
-            }
           }
-
-          createdPOs.push({
-            id: po.id,
-            po_no: po.po_no,
-            vendor_id: po.vendor_id,
-            vendor_name: po.vendor_name,
-            delivery_date: po.delivery_date,
-            currency_id: po.currency_id,
-            currency_name: po.currency_name,
-            total_qty: Number(po.total_qty),
-            total_price: Number(po.total_price),
-            total_tax: Number(po.total_tax),
-            total_amount: Number(po.total_amount),
-            items_count: group.items.length,
-          });
         }
 
-        // Update PR status to completed after creating all POs
-        await prismatx.tb_purchase_request.updateMany({
-          where: {
-            id: { in: pr_ids },
-          },
-          data: {
-            pr_status: enum_purchase_request_doc_status.completed,
-            updated_by_id: this.userId,
-            updated_at: new Date(),
-          },
+        createdPOs.push({
+          id: po.id,
+          po_no: po.po_no,
+          vendor_id: po.vendor_id,
+          vendor_name: po.vendor_name,
+          delivery_date: po.delivery_date,
+          currency_id: po.currency_id,
+          currency_name: po.currency_name,
+          total_qty: Number(po.total_qty),
+          total_price: Number(po.total_price),
+          total_tax: Number(po.total_tax),
+          total_amount: Number(po.total_amount),
+          items_count: group.items.length,
         });
+      }
+
+      // Update PR status to completed after creating all POs
+      await prismatx.tb_purchase_request.updateMany({
+        where: {
+          id: { in: pr_ids },
+        },
+        data: {
+          pr_status: enum_purchase_request_doc_status.completed,
+          updated_by_id: this.userId,
+          updated_at: new Date(),
+        },
       });
+    });
 
     // Send notifications for PO creation from PR confirmation
     this.sendPOFromPRNotification(createdPOs, prDetails);
@@ -2194,11 +2200,11 @@ export class PurchaseOrderService {
         // Description
         ...(purchaseOrder.description
           ? [
-              {
-                text: [{ text: 'Description: ', bold: true }, purchaseOrder.description],
-                margin: [0, 0, 0, 15] as [number, number, number, number],
-              } as Content,
-            ]
+            {
+              text: [{ text: 'Description: ', bold: true }, purchaseOrder.description],
+              margin: [0, 0, 0, 15] as [number, number, number, number],
+            } as Content,
+          ]
           : []),
 
         // Detail table
@@ -2254,11 +2260,11 @@ export class PurchaseOrderService {
         // Remarks
         ...(purchaseOrder.remarks
           ? [
-              {
-                text: [{ text: 'Remarks: ', bold: true }, purchaseOrder.remarks],
-                margin: [0, 20, 0, 0] as [number, number, number, number],
-              } as Content,
-            ]
+            {
+              text: [{ text: 'Remarks: ', bold: true }, purchaseOrder.remarks],
+              margin: [0, 20, 0, 0] as [number, number, number, number],
+            } as Content,
+          ]
           : []),
       ],
 
@@ -2881,6 +2887,269 @@ export class PurchaseOrderService {
     } catch (error) {
       this.logger.error('Failed to send close PO notification:', error);
     }
+  }
+
+  @TryCatch
+  async findAllMyPending(
+    user_id: string,
+    bu_code: string,
+    paginate: IPaginate,
+  ): Promise<Result<any>> {
+    this.logger.debug(
+      { function: 'findAllMyPending', user_id, bu_code, paginate },
+      PurchaseOrderService.name,
+    );
+    const defaultSearchFields = ['po_no', 'description'];
+
+    const q = new QueryParams(
+      paginate.page,
+      paginate.perpage,
+      paginate.search,
+      paginate.searchfields,
+      defaultSearchFields,
+      typeof paginate.filter === 'object' && !Array.isArray(paginate.filter)
+        ? paginate.filter
+        : {},
+      paginate.sort,
+      paginate.advance,
+    );
+    const results = [];
+
+    let bu_codes: any = '';
+
+    if (bu_code == '' || bu_code == undefined || bu_code == null) {
+      const bus = await this.prismaSystem.tb_user_tb_business_unit.findMany({
+        where: { user_id, is_active: true },
+        include: { tb_business_unit: true },
+      });
+      bu_codes = bus.map((b) => b.tb_business_unit.code);
+    } else {
+      bu_codes = bu_code;
+    }
+
+    for (const code of bu_codes) {
+      const tenant = await this.tenantService.getdb_connection(user_id, code);
+
+      if (!tenant) {
+        return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+      }
+
+      const prisma = await this.prismaTenant(
+        tenant.tenant_id,
+        tenant.db_connection,
+      );
+
+      const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
+        where: { code: code },
+      });
+
+      if (!bu_detail) {
+        return Result.error(
+          `Business unit ${code} not found`,
+          ErrorCode.NOT_FOUND,
+        );
+      }
+
+      const standardQuery = q.findMany();
+
+      const purchaseOrders = await prisma.tb_purchase_order
+        .findMany({
+          ...standardQuery,
+          where: {
+            ...standardQuery.where,
+            OR: [
+              {
+                user_action: {
+                  path: ['execute'],
+                  array_contains: [{ user_id: user_id }],
+                },
+              },
+              {
+                po_status: enum_purchase_order_doc_status.draft,
+                buyer_id: user_id,
+              },
+            ],
+          },
+          include: {
+            tb_purchase_order_detail: true,
+          },
+        })
+        .then((res) => {
+          return res.map((po) => {
+            const purchase_order_detail = po['tb_purchase_order_detail'];
+            delete po['tb_purchase_order_detail'];
+
+            return {
+              id: po.id,
+              po_no: po.po_no,
+              order_date: po.order_date,
+              delivery_date: po.delivery_date,
+              description: po.description,
+              po_status: po.po_status,
+              vendor_name: po.vendor_name,
+              buyer_name: po.buyer_name,
+              workflow_name: po.workflow_name,
+              created_at: po.created_at,
+              purchase_order_detail: purchase_order_detail.map((d) => ({
+                base_qty: Number(d.base_qty),
+                receive_qty: Number(d.received_qty),
+                price: Number(d.price),
+                total_price: Number(d.total_price),
+              })),
+              total_amount: Number(po.total_amount),
+              workflow_current_stage: po.workflow_current_stage,
+              workflow_next_stage: po.workflow_next_stage,
+              workflow_previous_stage: po.workflow_previous_stage,
+              last_action: po.last_action,
+            };
+          });
+        });
+
+      const total = await prisma.tb_purchase_order.count({
+        where: {
+          ...standardQuery.where,
+          OR: [
+            {
+              user_action: {
+                path: ['execute'],
+                array_contains: [{ user_id: user_id }],
+              },
+            },
+            {
+              po_status: enum_purchase_order_doc_status.draft,
+              buyer_id: user_id,
+            },
+          ],
+        },
+      });
+
+      const serializedPurchaseOrders = purchaseOrders.map((item) =>
+        PurchaseOrderListItemResponseSchema.parse(item),
+      );
+
+      results.push({
+        bu_code: code,
+        bu_name: bu_detail.name,
+        bu_alias_name: bu_detail.alias_name,
+        paginate: {
+          total: total,
+          page: Number(paginate.page),
+          perpage: Number(paginate.perpage),
+          pages: total == 0 ? 1 : Math.ceil(total / Number(paginate.perpage)),
+        },
+        data: serializedPurchaseOrders,
+      });
+    }
+
+    return Result.ok(results);
+  }
+
+  async findAllMyPendingCount(user_id: string, bu_code: string): Promise<any> {
+    this.logger.debug(
+      { function: 'findAllMyPendingCount', user_id, bu_code },
+      PurchaseOrderService.name,
+    );
+
+    const paginate: IPaginate = {
+      page: 1,
+      perpage: 1,
+      search: '',
+      searchfields: ['po_no', 'description'],
+      filter: {},
+      sort: [],
+      advance: {},
+    };
+    const defaultSearchFields = ['po_no', 'description'];
+
+    const q = new QueryParams(
+      paginate.page,
+      paginate.perpage,
+      paginate.search,
+      paginate.searchfields,
+      defaultSearchFields,
+      typeof paginate.filter === 'object' && !Array.isArray(paginate.filter)
+        ? paginate.filter
+        : {},
+      paginate.sort,
+      paginate.advance,
+    );
+    const results = [];
+
+    let bu_codes: any = '';
+
+    if (bu_code == '' || bu_code == undefined || bu_code == null) {
+      const bus = await this.prismaSystem.tb_user_tb_business_unit.findMany({
+        where: { user_id, is_active: true },
+        include: { tb_business_unit: true },
+      });
+      bu_codes = bus.map((b) => b.tb_business_unit.code);
+    } else {
+      bu_codes = bu_code;
+    }
+
+    for (const code of bu_codes) {
+      const tenant = await this.tenantService.getdb_connection(user_id, code);
+
+      if (!tenant) {
+        return {
+          response: {
+            status: HttpStatus.NO_CONTENT,
+            message: 'Tenant not found',
+          },
+        };
+      }
+
+      const prisma = await this.prismaTenant(
+        tenant.tenant_id,
+        tenant.db_connection,
+      );
+
+      const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
+        where: { code: code },
+      });
+
+      if (!bu_detail) {
+        return {
+          response: {
+            status: HttpStatus.NO_CONTENT,
+            message: `Business unit ${code} not found`,
+          },
+        };
+      }
+
+      const standardQuery = q.findMany();
+
+      const total = await prisma.tb_purchase_order.count({
+        where: {
+          ...standardQuery.where,
+          OR: [
+            {
+              user_action: {
+                path: ['execute'],
+                array_contains: [{ user_id: user_id }],
+              },
+            },
+            {
+              po_status: enum_purchase_order_doc_status.draft,
+              buyer_id: user_id,
+            },
+          ],
+        },
+      });
+
+      results.push({
+        total: total,
+      });
+    }
+
+    const total = results.reduce((acc, curr) => acc + curr.total, 0);
+    this.logger.debug({
+      function: 'findAllMyPendingCount',
+      user_id,
+      total,
+    });
+
+    return Result.ok({ pending: total });
   }
 }
 

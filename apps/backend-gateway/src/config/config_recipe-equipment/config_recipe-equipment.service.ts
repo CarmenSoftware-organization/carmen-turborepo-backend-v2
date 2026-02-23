@@ -14,7 +14,7 @@ export class Config_RecipeEquipmentService {
   constructor(
     @Inject('MASTER_SERVICE')
     private readonly masterService: ClientProxy,
-  ) {}
+  ) { }
 
   async findOne(id: string, user_id: string, bu_code: string, version: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findOne', id, version }, Config_RecipeEquipmentService.name);

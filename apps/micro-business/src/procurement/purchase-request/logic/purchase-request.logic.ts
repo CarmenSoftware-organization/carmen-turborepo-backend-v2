@@ -122,8 +122,8 @@ export class PurchaseRequestLogic {
 
   async save(
     id,
-    { state_role, details: data }: {
-      state_role: enum_stage_role,
+    { stage_role, details: data }: {
+      stage_role: enum_stage_role,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       details: any
     },
@@ -134,7 +134,7 @@ export class PurchaseRequestLogic {
     let updatePR = {}
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let updatePRDetail: any = {}
-    if (state_role === enum_stage_role.create) {
+    if (stage_role === enum_stage_role.create) {
       const extractId = this.populateData(data)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractId, user_id, tenant_id)
@@ -278,7 +278,7 @@ export class PurchaseRequestLogic {
       if (data?.purchase_request_detail?.remove && data?.purchase_request_detail?.remove.length > 0) {
         updatePRDetail.purchase_request_detail.remove = data?.purchase_request_detail?.remove
       }
-    } else if (state_role === enum_stage_role.purchase || state_role === enum_stage_role.approve) {
+    } else if (stage_role === enum_stage_role.purchase || stage_role === enum_stage_role.approve) {
       const extractIds = this.populateDetail(data)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id)
@@ -405,11 +405,11 @@ export class PurchaseRequestLogic {
   async approve(
     id: string,
     {
-      state_role,
+      stage_role,
       details
     }:
       {
-        state_role: enum_stage_role,
+        stage_role: enum_stage_role,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       details: any[]
       },
@@ -523,7 +523,7 @@ export class PurchaseRequestLogic {
       }
     }
 
-    this.logger.debug({ function: 'approve', id, state_role, details, user_id, tenant_id }, PurchaseRequestLogic.name);
+    this.logger.debug({ function: 'approve', id, stage_role, details, user_id, tenant_id }, PurchaseRequestLogic.name);
     const result = await this.purchaseRequestService.approve(id, workflow, updatePRDetail)
 
     // Send notification for approval

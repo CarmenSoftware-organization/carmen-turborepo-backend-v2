@@ -42,7 +42,7 @@ export class PhysicalCountService {
     @Inject('MASTER_SERVICE')
     private readonly masterService: ClientProxy,
     private readonly tenantService: TenantService,
-  ) {}
+  ) { }
 
   @TryCatch
   async findOne(
@@ -256,9 +256,9 @@ export class PhysicalCountService {
     // Get product details
     const products = productIdsWithStock.length > 0
       ? await prisma.tb_product.findMany({
-          where: { id: { in: productIdsWithStock }, deleted_at: null },
-          select: { id: true, name: true, code: true, sku: true, inventory_unit_id: true },
-        })
+        where: { id: { in: productIdsWithStock }, deleted_at: null },
+        select: { id: true, name: true, code: true, sku: true, inventory_unit_id: true },
+      })
       : [];
 
     const stockByProduct = products.map((p) => ({
