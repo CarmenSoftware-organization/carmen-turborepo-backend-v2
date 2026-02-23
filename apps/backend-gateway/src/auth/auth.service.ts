@@ -4,6 +4,7 @@ import {
   HttpException,
   HttpStatus,
   NotImplementedException,
+  OnModuleInit,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { IInviteUser, ILogin, IRegisterConfirm, IResetPassword, IForgotPassword, IResetPasswordWithToken } from './dto/auth.dto';
@@ -12,12 +13,21 @@ import { ResponseLib } from 'src/libs/response.lib';
 import { sendToService } from 'src/common/helpers/microservice.helper';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit {
   private readonly logger: BackendLogger = new BackendLogger(AuthService.name);
 
   constructor(
     @Inject('AUTH_SERVICE') private readonly authService: ClientProxy,
   ) { }
+
+  async onModuleInit() {
+    try {
+      await this.authService.connect();
+      this.logger.log('AUTH_SERVICE TCP client connected');
+    } catch (error) {
+      this.logger.error(`Failed to connect AUTH_SERVICE: ${error instanceof Error ? error.message : error}`);
+    }
+  }
 
   /**
    * Login function

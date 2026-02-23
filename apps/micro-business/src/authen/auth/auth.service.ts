@@ -170,25 +170,27 @@ export class AuthService {
         };
       }
 
-      // Log successful login activity
-      try {
-        // Look up user by email to get user_id
-        const user = await this.prismaSystem.tb_user.findFirst({
-          where: { email: loginDto.email },
-          select: { id: true },
-        });
+      // Log successful login activity (fire-and-forget to not block login response)
+      this.prismaSystem.tb_user.findFirst({
+        where: { email: loginDto.email },
+        select: { id: true },
+      }).then((user) => {
         if (user?.id) {
-          await this.logAuthActivity('login', user.id, loginDto.email, {
+          this.logAuthActivity('login', user.id, loginDto.email, {
             login_time: new Date().toISOString(),
+          }).catch((logError) => {
+            this.logger.error(`Failed to log login activity: ${logError}`, {
+              file: AuthService.name,
+              function: this.login.name,
+            });
           });
         }
-      } catch (logError) {
-        // Don't fail login if activity logging fails
+      }).catch((logError) => {
         this.logger.error(`Failed to log login activity: ${logError}`, {
           file: AuthService.name,
           function: this.login.name,
         });
-      }
+      });
 
       return {
         data: {
@@ -288,19 +290,16 @@ export class AuthService {
         };
       }
 
-      // Log successful logout activity
+      // Log successful logout activity (fire-and-forget to not block logout response)
       if (userId && userEmail) {
-        try {
-          await this.logAuthActivity('logout', userId, userEmail, {
-            logout_time: new Date().toISOString(),
-          });
-        } catch (logError) {
-          // Don't fail logout if activity logging fails
+        this.logAuthActivity('logout', userId, userEmail, {
+          logout_time: new Date().toISOString(),
+        }).catch((logError) => {
           this.logger.error(`Failed to log logout activity: ${logError}`, {
             file: AuthService.name,
             function: this.logout.name,
           });
-        }
+        });
       }
 
       return {
