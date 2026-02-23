@@ -81,7 +81,7 @@ export class KeycloakService {
 
     this.logger.debug('Fetching new admin token from Keycloak');
 
-    const tokenUrl = `${this.config.baseUrl}/realms/${this.config.realm}/protocol/openid-connect/token`;
+    const tokenUrl = `${this.config.baseUrl}/realms/master/protocol/openid-connect/token`;
 
     const params = new URLSearchParams();
     params.append('grant_type', 'password');
