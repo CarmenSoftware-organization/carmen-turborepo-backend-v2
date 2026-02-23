@@ -9,6 +9,14 @@ import {
 	LogEventsConfig,
 } from '@repo/log-events-library';
 
+const DEFAULT_CONNECTION_LIMIT = 10;
+
+function ensureConnectionLimit(url: string): string {
+	if (url.includes('connection_limit')) return url;
+	const separator = url.includes('?') ? '&' : '?';
+	return `${url}${separator}connection_limit=${DEFAULT_CONNECTION_LIMIT}`;
+}
+
 const clients: {
 	[key: string]: { client: PrismaClient; datasourceURL: string } | null;
 } = {};
@@ -142,7 +150,7 @@ export const PrismaClient_TENANT = async (tenantId: string, datasourceURL: strin
 		const baseClient = new PrismaClient({
 			datasources: {
 				db: {
-					url: datasourceURL,
+					url: ensureConnectionLimit(datasourceURL),
 				},
 			},
 			// log: [
