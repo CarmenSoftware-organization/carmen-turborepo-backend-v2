@@ -62,14 +62,14 @@ export class PurchaseOrderLogic {
 
   async approve(
     id: string,
-    { state_role, details }: ApprovePurchaseOrderDto,
+    { stage_role, details }: ApprovePurchaseOrderDto,
     user_id: string,
     tenant_id: string,
   ) {
     await this.purchaseOrderService.initializePrismaService(tenant_id, user_id);
 
-    // Validate user's role matches the payload's state_role
-    await this.validateUserStateRole(id, state_role);
+    // Validate user's role matches the payload's stage_role
+    await this.validateUserStageRole(id, stage_role);
 
     // Enrich detail data with foreign values
     const extractIds = this.populateDetail(details);
@@ -179,7 +179,7 @@ export class PurchaseOrderLogic {
     }
 
     this.logger.debug(
-      { function: 'approve', id, state_role, details, user_id, tenant_id },
+      { function: 'approve', id, stage_role, details, user_id, tenant_id },
       PurchaseOrderLogic.name,
     );
     const result = await this.purchaseOrderService.approve(id, workflow, updatePODetail);
@@ -237,7 +237,7 @@ export class PurchaseOrderLogic {
     return arr.find((item) => item.id === id);
   }
 
-  private async validateUserStateRole(
+  private async validateUserStageRole(
     id: string,
     payloadStateRole: enum_stage_role,
   ): Promise<void> {
@@ -257,7 +257,7 @@ export class PurchaseOrderLogic {
 
     if (payloadStateRole !== userActualRole) {
       throw new BadRequestException(
-        `Invalid state_role. Expected: ${userActualRole}, Received: ${payloadStateRole}`,
+        `Invalid stage_role. Expected: ${userActualRole}, Received: ${payloadStateRole}`,
       );
     }
   }

@@ -1,5 +1,83 @@
 # กฎการเขียนโค้ดของโปรเจค Cursor
 
+## ภาพรวมโปรเจค
+
+Carmen เป็น Multi-tenant SaaS ERP backend สำหรับการจัดการโรงแรม/procurement สร้างด้วย NestJS microservices ใน Turborepo monorepo โดยใช้ Bun เป็น package manager
+
+## คำสั่งที่ใช้บ่อย
+
+```bash
+# Setup (install + build shared packages)
+bun run setup
+
+# Development
+bun run dev                 # ทุก service
+bun run dev:base            # Gateway + Business + Keycloak API (ใช้บ่อยที่สุด)
+bun run dev:business        # Business service อย่างเดียว
+
+# Build
+bun run build               # Build ทั้งหมด
+bun run build:package       # Build shared packages เท่านั้น
+
+# Code quality
+bun run lint                # ESLint
+bun run format              # Prettier
+bun run check-types         # TypeScript type checking
+
+# Database (ทำงานข้ามทั้ง platform และ tenant schemas)
+bun run db:generate         # Generate Prisma clients (จำเป็นหลังเปลี่ยน schema)
+bun run db:migrate          # Run migrations
+```
+
+## สถาปัตยกรรมระบบ
+
+### Service Topology
+
+ระบบใช้ **API Gateway pattern** กับการสื่อสาร TCP-based microservice:
+
+- **backend-gateway** (HTTP:4000, HTTPS:4001) — จุดเข้าเดียว ส่ง request ไปยัง microservices ผ่าน NestJS TCP clients จัดการ auth (JWT/Keycloak), Swagger docs ที่ `/swagger`, WebSocket ที่ `/ws`
+- **micro-business** (TCP:5020, HTTP:6020) — Service รวมที่มี business logic ส่วนใหญ่: auth, clusters, inventory, master data, procurement, recipes, logging, notifications
+- **micro-file** (TCP:5007, HTTP:6007) — จัดเก็บไฟล์
+- **micro-notification** (TCP:5006, HTTP:6006) — Real-time notifications ผ่าน Socket.io
+- **micro-keycloak-api** (TCP:5013, HTTP:6013) — Keycloak integration
+- **micro-cronjob** (TCP:5012, HTTP:6012) — Scheduled tasks (ใช้ Elysia/Bun ไม่ใช่ NestJS)
+
+แต่ละ NestJS microservice รัน 2 port: TCP สำหรับ inter-service RPC (`@MessagePattern()`) และ HTTP สำหรับ direct access/health checks
+
+### Multi-Tenancy ผ่าน Dual Prisma Schemas
+
+Prisma schema สองตัวแยกกัน แต่ละตัว generate client ของตัวเอง:
+
+- **prisma-shared-schema-platform** (`SYSTEM_DATABASE_URL`) — ข้อมูลระดับระบบ: users, clusters, business units, roles, permissions, subscriptions Import เป็น `@repo/prisma-shared-schema-platform`
+- **prisma-shared-schema-tenant** — ข้อมูลธุรกิจของแต่ละ tenant: products, inventory, procurement, recipes, vendors, locations Import เป็น `@repo/prisma-shared-schema-tenant`
+
+ทั้งสองใช้ UUID PKs (`gen_random_uuid()`), soft deletes (`deleted_at`), และ audit fields (`created_at`, `created_by_id`, `updated_at`, `updated_by_id`)
+
+### Gateway Routing Pattern
+
+Gateway จัดเส้นทาง route เป็น domain modules ภายใต้ `src/config/`, `src/application/`, และ `src/platform/` แต่ละ route module ลงทะเบียน controller ที่ส่ง request ไปยัง microservice ผ่าน TCP โดยใช้ `ClientsModule.register()` Gateway ใช้ global exception filters, Zod validation pipes, และ auth guards
+
+### Authentication
+
+Dual strategy ผ่าน Passport.js:
+- **JWT**: Bearer token ตรวจสอบด้วย `SUPABASE_JWT_SECRET`
+- **Keycloak**: Bearer token ส่งไปยัง micro-keycloak-api ผ่าน TCP เพื่อตรวจสอบ
+
+Guards ใช้ที่ route level: `KeycloakGuard` → `PermissionGuard` (ลำดับสำคัญ — PermissionGuard ต้องการ user context ที่ตั้งค่าโดย KeycloakGuard)
+
+### Shared Packages
+
+- **@repo/eslint-config** — Shared ESLint configs (`base`, `nestjs`, `next-js`, `react-internal`)
+- **@repo/log-events-library** — Audit logging พร้อม interceptors, Zod schemas, file-based writers
+- **@repo/prisma-shared-schema-platform** — Platform Prisma client + generated types
+- **@repo/prisma-shared-schema-tenant** — Tenant Prisma client + generated types
+
+Shared packages ต้อง build ก่อน apps จัดการโดย Turborepo task dependencies (`build:package` รันก่อน `dev` และ `build`)
+
+### Path Aliases
+
+TypeScript path alias `@repo/*` map ไปยัง `packages/*/src` แต่ละ service ใช้ `src/*` aliases ที่ตั้งค่าใน tsconfig ของตัวเอง
+
 ## แนวทางการใช้ TypeScript ทั่วไป
 
 ### หลักการพื้นฐาน
@@ -17,9 +95,9 @@
 - ใช้ kebab-case สำหรับชื่อไฟล์และโฟลเดอร์
 - ใช้ตัวพิมพ์ใหญ่ทั้งหมด (UPPERCASE) สำหรับ environment variable
 - หลีกเลี่ยง magic number และกำหนดเป็นค่าคงที่
-- ชื่อฟังก์ชันต้องขึ้นต้นด้วยคำกริยา
-- ตัวแปร boolean ต้องใช้คำกริยา (เช่น isLoading, hasError, canDelete)
-- ใช้คำเต็มแทนการย่อ ยกเว้นตัวย่อมาตรฐานหรือที่รู้จักดี (i, j, err, ctx, req, res, next)
+- ชื่อฟังก์ชันต้องขึ้นต้นด้วยคำกริยา (เช่น `getUserById`, `validateToken`)
+- ตัวแปร boolean ต้องใช้คำนำหน้า is/has/can (เช่น `isActive`, `hasError`, `canDelete`)
+- ใช้คำเต็มแทนการย่อ ยกเว้นตัวย่อมาตรฐาน (i, j, err, ctx, req, res, next)
 
 ### ฟังก์ชัน
 - เขียนฟังก์ชันสั้น ๆ ที่มีวัตถุประสงค์เดียว (ไม่เกิน 20 คำสั่ง)
@@ -53,7 +131,6 @@
 - ตั้งชื่อตัวแปรใน test ให้ชัดเจน (inputX, mockX, actualX, expectedX)
 - เขียน unit test สำหรับ public function ทุกตัว (mock dependency)
 - เขียน acceptance test สำหรับแต่ละ module (Given-When-Then)
-- เพิ่มเมธอด admin/test ในแต่ละ controller สำหรับ smoke test
 
 ## แนวทางเฉพาะสำหรับ NestJS
 
@@ -61,18 +138,36 @@
 - ใช้สถาปัตยกรรมแบบโมดูลาร์
 - แยก API เป็นโมดูล (หนึ่งโมดูลต่อหนึ่งโดเมน/route หลัก)
 - หนึ่ง controller ต่อ route หลัก และ controller เพิ่มเติมสำหรับ route รอง
-- ใช้โฟลเดอร์ models สำหรับชนิดข้อมูล (DTO ตรวจสอบด้วย zod validator สำหรับ input, ชนิดข้อมูลง่าย ๆ สำหรับ output)
-- โมดูล service สำหรับ business logic และ persistence (entity ด้วย MikroORM, หนึ่ง service ต่อหนึ่ง entity)
+- ใช้โฟลเดอร์ models สำหรับชนิดข้อมูล (DTO ตรวจสอบด้วย Zod schemas จาก `nestjs-zod` สำหรับ input, TypeScript types ง่าย ๆ สำหรับ output)
+- โมดูล service สำหรับ business logic และ persistence (ใช้ Prisma ORM, หนึ่ง service ต่อหนึ่ง entity)
+
+### Validation Pattern
+- ใช้ Zod schemas กับ `nestjs-zod` สำหรับ input DTOs
+- ใช้ `z.discriminatedUnion('stage_role', [...])` สำหรับ workflow state management schemas
+- ใช้ `enum_stage_role` จาก `@repo/prisma-shared-schema-tenant` สำหรับ workflow role enums
+- ใช้ `createZodDto()` จาก `nestjs-zod` เพื่อสร้าง NestJS-compatible DTO classes จาก Zod schemas
 
 ### Common Module
-- สร้าง common module (เช่น @app/common) สำหรับโค้ดที่ใช้ซ้ำ
+- สร้าง common module (เช่น @/common) สำหรับโค้ดที่ใช้ซ้ำ
 - ประกอบด้วย: config, decorator, DTO, guard, interceptor, notification, service, type, util, validator
+- re-export ทั้งหมดผ่าน `src/common/dto/index.ts`
 
 ### Core Module Functionalities
 - กรองข้อยกเว้น (exception) ระดับ global
 - มิดเดิลแวร์ระดับ global สำหรับจัดการ request
-- guard สำหรับจัดการ permission
+- guard สำหรับจัดการ permission (`KeycloakGuard` → `PermissionGuard`)
 - interceptor สำหรับประมวลผล request/response
+
+## Build Dependencies
+
+Turborepo pipeline บังคับลำดับ: `db:generate` → `build:package` → `build`/`dev` ถ้า Prisma clients หายไป ให้รัน `bun run db:generate` ถ้า shared packages resolve ไม่ได้ ให้รัน `bun run build:package`
+
+## Environment Setup
+
+แต่ละ service ต้องมีไฟล์ `.env` (copy จาก `.env.example`) ตัวแปรสำคัญ:
+- `SYSTEM_DATABASE_URL` / `SYSTEM_DIRECT_URL` — Platform PostgreSQL connection
+- `SUPABASE_JWT_SECRET` — JWT validation secret
+- Service host/port pairs สำหรับ inter-service discovery (เช่น `BUSINESS_SERVICE_HOST`, `BUSINESS_SERVICE_PORT`)
 
 ## แนวทางการใช้ agent ai
 - ใช้ agent ai สำหรับการสร้างโค้ดและเอกสาร

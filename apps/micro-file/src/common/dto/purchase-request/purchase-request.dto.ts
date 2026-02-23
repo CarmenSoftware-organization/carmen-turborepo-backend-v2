@@ -51,7 +51,7 @@ const ProductSchema = z.object({
 })
 
 export const CreatePurchaseRequestSchema = z.object({
-  state_role: z.literal(enum_stage_role.create),
+  stage_role: z.literal(enum_stage_role.create),
   details: z.object({
     pr_date: z.string().datetime().pipe(z.coerce.date()),
     description: z.string().optional().nullable(),

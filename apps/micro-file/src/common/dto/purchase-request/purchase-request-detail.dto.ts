@@ -1,6 +1,6 @@
 import { ApproveQuantityAndUnitSchema, EmbeddedCurrencySchema, EmbeddedDiscountSchema, EmbeddedInventorySchema, EmbeddedLocationSchema, EmbeddedPriceListSchema, EmbeddedProductSchema, EmbeddedTaxSchema, EmbeddedVendorSchema, FocSchema, PriceSchema, RequestedQuantityAndUnitSchema, ValidateSchema } from '../embedded.dto';
 import { z } from 'zod'
-import { state_status } from './state_role/purchase-request.state-role.dto';
+import { state_status } from './stage_role/purchase-request.stage-role.dto';
 import { PrismaClient } from '@repo/prisma-shared-schema-tenant';
 
 // Import validate functions

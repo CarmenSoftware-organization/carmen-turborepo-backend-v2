@@ -8,25 +8,25 @@ import {
 } from '../store-requisition-detail.dto';
 
 // ============================================================================
-// Approve Action - Discriminated Union by state_role (approve, issue)
+// Approve Action - Discriminated Union by stage_role (approve, issue)
 // ============================================================================
 
-// Approve by State Role - Approve (sets approved_qty)
-const ApproveByStateRoleApproveSchema = z.object({
-  state_role: z.literal(enum_stage_role.approve),
+// Approve by Stage Role - Approve (sets approved_qty)
+const ApproveByStageRoleApproveSchema = z.object({
+  stage_role: z.literal(enum_stage_role.approve),
   details: z.array(ApproveRoleApproveStoreRequisitionDetailSchema),
 });
 
-// Approve by State Role - Issue (sets issued_qty)
-const ApproveByStateRoleIssueSchema = z.object({
-  state_role: z.literal(enum_stage_role.issue),
+// Approve by Stage Role - Issue (sets issued_qty)
+const ApproveByStageRoleIssueSchema = z.object({
+  stage_role: z.literal(enum_stage_role.issue),
   details: z.array(IssueRoleApproveStoreRequisitionDetailSchema),
 });
 
 // Discriminated Union for Approve Action
-export const ApproveStoreRequisitionByStateRoleSchema = z.discriminatedUnion('state_role', [
-  ApproveByStateRoleApproveSchema,
-  ApproveByStateRoleIssueSchema,
+export const ApproveStoreRequisitionByStageRoleSchema = z.discriminatedUnion('stage_role', [
+  ApproveByStageRoleApproveSchema,
+  ApproveByStageRoleIssueSchema,
 ]);
 
 // ============================================================================
@@ -34,7 +34,7 @@ export const ApproveStoreRequisitionByStateRoleSchema = z.discriminatedUnion('st
 // ============================================================================
 
 const ReviewStoreRequisitionSchema = z.object({
-  state_role: z.nativeEnum(enum_stage_role),
+  stage_role: z.nativeEnum(enum_stage_role),
   des_stage: z.string().nullable(),
   details: z.array(StoreRequisitionStateChangeSchema),
 });
@@ -44,7 +44,7 @@ const ReviewStoreRequisitionSchema = z.object({
 // ============================================================================
 
 const RejectStoreRequisitionSchema = z.object({
-  state_role: z.nativeEnum(enum_stage_role),
+  stage_role: z.nativeEnum(enum_stage_role),
   details: z.array(StoreRequisitionStateChangeSchema),
 });
 
@@ -53,7 +53,7 @@ const RejectStoreRequisitionSchema = z.object({
 // ============================================================================
 
 const SubmitStoreRequisitionSchema = z.object({
-  state_role: z.nativeEnum(enum_stage_role),
+  stage_role: z.nativeEnum(enum_stage_role),
   details: z.array(StoreRequisitionStateChangeSchema),
 });
 
@@ -61,9 +61,9 @@ const SubmitStoreRequisitionSchema = z.object({
 // Types
 // ============================================================================
 
-export type ApproveStoreRequisitionByStateRoleApprove = z.infer<typeof ApproveByStateRoleApproveSchema>;
-export type ApproveStoreRequisitionByStateRoleIssue = z.infer<typeof ApproveByStateRoleIssueSchema>;
-export type ApproveStoreRequisitionByStateRole = z.infer<typeof ApproveStoreRequisitionByStateRoleSchema>;
+export type ApproveStoreRequisitionByStageRoleApprove = z.infer<typeof ApproveByStageRoleApproveSchema>;
+export type ApproveStoreRequisitionByStageRoleIssue = z.infer<typeof ApproveByStageRoleIssueSchema>;
+export type ApproveStoreRequisitionByStageRole = z.infer<typeof ApproveStoreRequisitionByStageRoleSchema>;
 export type SubmitStoreRequisition = z.infer<typeof SubmitStoreRequisitionSchema>;
 export type ReviewStoreRequisition = z.infer<typeof ReviewStoreRequisitionSchema>;
 export type RejectStoreRequisition = z.infer<typeof RejectStoreRequisitionSchema>;
@@ -72,7 +72,7 @@ export type RejectStoreRequisition = z.infer<typeof RejectStoreRequisitionSchema
 // DTOs
 // ============================================================================
 
-export class ApproveStoreRequisitionByStateRoleDto extends createZodDto(ApproveStoreRequisitionByStateRoleSchema) {}
+export class ApproveStoreRequisitionByStageRoleDto extends createZodDto(ApproveStoreRequisitionByStageRoleSchema) {}
 export class SubmitStoreRequisitionDto extends createZodDto(SubmitStoreRequisitionSchema) {}
 export class ReviewStoreRequisitionDto extends createZodDto(ReviewStoreRequisitionSchema) {}
 export class RejectStoreRequisitionDto extends createZodDto(RejectStoreRequisitionSchema) {}

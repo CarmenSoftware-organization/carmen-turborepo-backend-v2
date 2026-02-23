@@ -370,7 +370,7 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'The purchase order was successfully approved',
       },
       400: {
-        description: 'Invalid state_role or user does not have permission',
+        description: 'Invalid stage_role or user does not have permission',
       },
       404: {
         description: 'The purchase order was not found',

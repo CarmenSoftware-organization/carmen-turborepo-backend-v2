@@ -23,13 +23,13 @@ export const PurchaseRoleApprovePurchaseRequestDetailSchema = ApprovePurchaseReq
 .merge(PriceSchema)
 .merge(FocSchema)
 
-export const ApproveByStateRoleSchema2 = z.discriminatedUnion('state_role', [
+export const ApproveByStageRoleSchema2 = z.discriminatedUnion('stage_role', [
   ApprovePurchaseRequestDetailSchema.extend({
-    state_role: z.literal('approve')
+    stage_role: z.literal('approve')
   }),
   PurchaseRoleApprovePurchaseRequestDetailSchema.extend({
-    state_role: z.literal('purchase')
+    stage_role: z.literal('purchase')
   })
 ]);
 
-export class ApproveByStateRoleDto2 extends createZodDto(ApproveByStateRoleSchema2) {}
+export class ApproveByStageRoleDto2 extends createZodDto(ApproveByStageRoleSchema2) {}

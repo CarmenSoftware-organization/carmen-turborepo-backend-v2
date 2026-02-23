@@ -42,13 +42,13 @@ import {
   // IPurchaseRequest,
   UpdatePurchaseRequestDto,
   ReviewPurchaseRequestDto,
-  ApproveByStateRoleSchema,
+  ApproveByStageRoleSchema,
   RejectPurchaseRequestDto,
   SubmitPurchaseRequestDto
 } from '@/common';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
-import { ApproveByStateRoleDto2, SavePurchaseRequestDto } from './dto/state-change.dto';
+import { ApproveByStageRoleDto2, SavePurchaseRequestDto } from './dto/state-change.dto';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { Permission } from 'src/auth/decorators/permission.decorator';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
@@ -529,7 +529,7 @@ export class PurchaseRequestController extends BaseHttpController {
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
-    @Body() payload: ApproveByStateRoleDto2,
+    @Body() payload: ApproveByStageRoleDto2,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(

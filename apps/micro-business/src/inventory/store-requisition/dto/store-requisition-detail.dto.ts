@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { EmbeddedProductSchema, ValidateSchema } from '@/common/dto/embedded.dto';
-import { state_status } from '@/procurement/purchase-request/dto/state_role/purchase-request.state-role.dto';
+import { state_status } from '@/procurement/purchase-request/dto/stage_role/purchase-request.stage-role.dto';
 
 // Create Store Requisition Detail Schema
 export const CreateStoreRequisitionDetailSchema = z.object({
