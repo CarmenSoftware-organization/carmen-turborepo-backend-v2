@@ -4,7 +4,6 @@ import {
   Param,
   Post,
   Body,
-  Put,
   Delete,
   UseGuards,
   Req,
@@ -34,6 +33,7 @@ import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
+import { PhysicalCountCreateDto, PhysicalCountUpdateDto } from 'src/common/dto/physical-count/physical-count.dto';
 
 @Controller('api')
 @ApiTags('Application - Physical Count')
@@ -143,7 +143,7 @@ export class PhysicalCountController extends BaseHttpController {
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
   async create(
-    @Body() createDto: Record<string, unknown>,
+    @Body() createDto: PhysicalCountCreateDto,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -175,7 +175,7 @@ export class PhysicalCountController extends BaseHttpController {
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() updateDto: Record<string, unknown>,
+    @Body() updateDto: PhysicalCountUpdateDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -299,84 +299,6 @@ export class PhysicalCountController extends BaseHttpController {
 
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.physicalCountService.findDetailById(detailId, user_id, bu_code, version);
-    this.respond(res, result);
-  }
-
-  @Post(':bu_code/physical-count/:id/details')
-  @UseGuards(new AppIdGuard('physicalCount.update'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Create a new Physical Count detail',
-    description: 'Creates a new line item/detail for a Physical Count. Only works for Physical Counts in draft status.',
-    operationId: 'createPhysicalCountDetail',
-    tags: ['[Method] Post', 'Physical Count Detail'],
-    deprecated: false,
-    security: [{ bearerAuth: [] }],
-    parameters: [
-      { name: 'id', in: 'path', required: true, description: 'Physical Count ID' },
-    ],
-    responses: {
-      201: { description: 'Physical Count detail created successfully' },
-      400: { description: 'Cannot add detail to non-draft Physical Count' },
-      404: { description: 'Physical Count not found' },
-    },
-  })
-  @HttpCode(HttpStatus.CREATED)
-  async createDetail(
-    @Param('id') id: string,
-    @Param('bu_code') bu_code: string,
-    @Body() data: Record<string, unknown>,
-    @Req() req: Request,
-    @Res() res: Response,
-    @Query('version') version: string = 'latest',
-  ): Promise<void> {
-    this.logger.debug(
-      { function: 'createDetail', id, data, version },
-      PhysicalCountController.name,
-    );
-
-    const { user_id } = ExtractRequestHeader(req);
-    const result = await this.physicalCountService.createDetail(id, data, user_id, bu_code, version);
-    this.respond(res, result, HttpStatus.CREATED);
-  }
-
-  @Put(':bu_code/physical-count/:id/details/:detail_id')
-  @UseGuards(new AppIdGuard('physicalCount.update'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Update a Physical Count detail',
-    description: 'Updates an existing Physical Count detail/line item. Only works for Physical Counts in draft status.',
-    operationId: 'updatePhysicalCountDetail',
-    tags: ['[Method] Put', 'Physical Count Detail'],
-    deprecated: false,
-    security: [{ bearerAuth: [] }],
-    parameters: [
-      { name: 'id', in: 'path', required: true, description: 'Physical Count ID' },
-      { name: 'detail_id', in: 'path', required: true, description: 'Physical Count Detail ID' },
-    ],
-    responses: {
-      200: { description: 'Physical Count detail updated successfully' },
-      400: { description: 'Cannot update detail of non-draft Physical Count' },
-      404: { description: 'Physical Count detail not found' },
-    },
-  })
-  @HttpCode(HttpStatus.OK)
-  async updateDetail(
-    @Param('id') id: string,
-    @Param('detail_id') detailId: string,
-    @Param('bu_code') bu_code: string,
-    @Body() data: Record<string, unknown>,
-    @Req() req: Request,
-    @Res() res: Response,
-    @Query('version') version: string = 'latest',
-  ): Promise<void> {
-    this.logger.debug(
-      { function: 'updateDetail', id, detailId, data, version },
-      PhysicalCountController.name,
-    );
-
-    const { user_id } = ExtractRequestHeader(req);
-    const result = await this.physicalCountService.updateDetail(detailId, data, user_id, bu_code, version);
     this.respond(res, result);
   }
 

@@ -29,6 +29,7 @@ import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
+import { UnitCommentCreateDto, UnitCommentUpdateDto } from 'src/common/dto/unit-comment/unit-comment.dto';
 
 @Controller('api/config/:bu_code/unit-comment')
 @ApiTags('Application - Unit Comment')
@@ -110,7 +111,7 @@ export class Config_UnitCommentController extends BaseHttpController {
   @ApiVersionMinRequest()
   async create(
     @Param('bu_code') bu_code: string,
-    @Body() createDto: Record<string, unknown>,
+    @Body() createDto: UnitCommentCreateDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -140,7 +141,7 @@ export class Config_UnitCommentController extends BaseHttpController {
   async update(
     @Param('bu_code') bu_code: string,
     @Param('id') id: string,
-    @Body() updateDto: Record<string, unknown>,
+    @Body() updateDto: UnitCommentUpdateDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',

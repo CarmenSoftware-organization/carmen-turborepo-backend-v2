@@ -559,47 +559,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
-  @Put(':bu_code/good-received-note/:id/details/:detail_id')
-  @UseGuards(new AppIdGuard('goodReceivedNote.update'))
-  @Serialize(GoodReceivedNoteMutationResponseSchema)
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Update a GRN detail',
-    description: 'Updates an existing GRN detail/line item. Only works for GRNs in draft status.',
-    operationId: 'updateGRNDetail',
-    tags: ['[Method] Put', 'GRN Detail'],
-    deprecated: false,
-    security: [{ bearerAuth: [] }],
-    parameters: [
-      { name: 'id', in: 'path', required: true, description: 'Good Received Note ID' },
-      { name: 'detail_id', in: 'path', required: true, description: 'GRN Detail ID' },
-    ],
-    responses: {
-      200: { description: 'GRN detail updated successfully' },
-      400: { description: 'Cannot update detail of non-draft GRN' },
-      404: { description: 'GRN detail not found' },
-    },
-  })
-  @HttpCode(HttpStatus.OK)
-  async updateDetail(
-    @Param('id') id: string,
-    @Param('detail_id') detailId: string,
-    @Param('bu_code') bu_code: string,
-    @Body() data: Record<string, unknown>,
-    @Req() req: Request,
-    @Res() res: Response,
-    @Query('version') version: string = 'latest',
-  ): Promise<void> {
-    this.logger.debug(
-      { function: 'updateDetail', id, detailId, data, version },
-      GoodReceivedNoteController.name,
-    );
-
-    const { user_id } = ExtractRequestHeader(req);
-    const result = await this.goodReceivedNoteService.updateDetail(detailId, data, user_id, bu_code, version);
-    this.respond(res, result);
-  }
-
   @Delete(':bu_code/good-received-note/:id/details/:detail_id')
   @UseGuards(new AppIdGuard('goodReceivedNote.update'))
   @Serialize(GoodReceivedNoteMutationResponseSchema)

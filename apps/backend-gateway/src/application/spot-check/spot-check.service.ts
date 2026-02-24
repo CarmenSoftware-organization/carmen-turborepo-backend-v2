@@ -310,64 +310,6 @@ export class SpotCheckService {
     return Result.ok(response.data);
   }
 
-  async createDetail(
-    spotCheckId: string,
-    data: Record<string, unknown>,
-    user_id: string,
-    tenant_id: string,
-    version: string,
-  ): Promise<Result<unknown>> {
-    this.logger.debug(
-      { function: 'createDetail', spotCheckId, data, user_id, tenant_id, version },
-      SpotCheckService.name,
-    );
-
-    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
-      { cmd: 'spot-check-detail.create', service: 'spot-check' },
-      { spot_check_id: spotCheckId, data, user_id, tenant_id, version },
-    );
-
-    const response = await firstValueFrom(res);
-
-    if (response.response.status !== HttpStatus.CREATED) {
-      return Result.error(
-        response.response.message,
-        httpStatusToErrorCode(response.response.status),
-      );
-    }
-
-    return Result.ok(response.data);
-  }
-
-  async updateDetail(
-    detailId: string,
-    data: Record<string, unknown>,
-    user_id: string,
-    tenant_id: string,
-    version: string,
-  ): Promise<Result<unknown>> {
-    this.logger.debug(
-      { function: 'updateDetail', detailId, data, user_id, tenant_id, version },
-      SpotCheckService.name,
-    );
-
-    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
-      { cmd: 'spot-check-detail.update', service: 'spot-check' },
-      { detail_id: detailId, data, user_id, tenant_id, version },
-    );
-
-    const response = await firstValueFrom(res);
-
-    if (response.response.status !== HttpStatus.OK) {
-      return Result.error(
-        response.response.message,
-        httpStatusToErrorCode(response.response.status),
-      );
-    }
-
-    return Result.ok(response.data);
-  }
-
   async deleteDetail(
     detailId: string,
     user_id: string,

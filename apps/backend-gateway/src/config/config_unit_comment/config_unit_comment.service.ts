@@ -8,6 +8,7 @@ import { IPaginate, IPaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ClientProxy } from '@nestjs/microservices';
 import { Result } from '@/common';
+import { IUnitCommentCreate, IUnitCommentUpdate } from 'src/common/dto/unit-comment/unit-comment.dto';
 
 @Injectable()
 export class Config_UnitCommentService {
@@ -57,7 +58,7 @@ export class Config_UnitCommentService {
   }
 
   async create(
-    createDto: Record<string, unknown>,
+    createDto: IUnitCommentCreate,
     user_id: string,
     bu_code: string,
     version: string,
@@ -75,7 +76,7 @@ export class Config_UnitCommentService {
 
   async update(
     id: string,
-    updateDto: Record<string, unknown>,
+    updateDto: IUnitCommentUpdate,
     user_id: string,
     bu_code: string,
     version: string,

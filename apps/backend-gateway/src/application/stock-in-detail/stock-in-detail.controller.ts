@@ -36,6 +36,7 @@ import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
+import { StockInDetailCreateDto, StockInDetailUpdateDto } from 'src/common/dto/stock-in/stock-in.dto';
 
 @Controller('api/:bu_code/stock-in-detail')
 @ApiTags('Application - Stock In Detail')
@@ -126,7 +127,7 @@ export class StockInDetailController extends BaseHttpController {
     },
   })
   async create(
-    @Body() createDto: Record<string, unknown>,
+    @Body() createDto: StockInDetailCreateDto,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -161,7 +162,7 @@ export class StockInDetailController extends BaseHttpController {
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() updateDto: Record<string, unknown>,
+    @Body() updateDto: StockInDetailUpdateDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',

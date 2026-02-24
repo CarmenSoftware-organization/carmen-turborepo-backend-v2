@@ -7,6 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
+import { IPeriodCreate, IPeriodUpdate } from 'src/common/dto/period/period.dto';
 
 @Injectable()
 export class PeriodService {
@@ -75,7 +76,7 @@ export class PeriodService {
   }
 
   async create(
-    data: Record<string, unknown>,
+    data: IPeriodCreate,
     user_id: string,
     tenant_id: string,
     version: string,
@@ -104,7 +105,7 @@ export class PeriodService {
 
   async update(
     id: string,
-    data: Record<string, unknown>,
+    data: IPeriodUpdate,
     user_id: string,
     tenant_id: string,
     version: string,

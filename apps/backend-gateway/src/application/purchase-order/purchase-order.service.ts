@@ -476,64 +476,6 @@ export class PurchaseOrderService {
     return Result.ok(response.data);
   }
 
-  async createDetail(
-    purchaseOrderId: string,
-    data: Record<string, unknown>,
-    user_id: string,
-    bu_code: string,
-    version: string,
-  ): Promise<Result<unknown>> {
-    this.logger.debug(
-      { function: 'createDetail', purchaseOrderId, data, version },
-      PurchaseOrderService.name,
-    );
-
-    const response = await firstValueFrom(
-      this.procurementService.send(
-        { cmd: 'purchase-order-detail.create', service: 'purchase-order' },
-        { purchase_order_id: purchaseOrderId, data, user_id, bu_code, version },
-      ),
-    );
-
-    if (response.response.status !== HttpStatus.CREATED) {
-      return Result.error(
-        response.response.message,
-        httpStatusToErrorCode(response.response.status),
-      );
-    }
-
-    return Result.ok(response.data);
-  }
-
-  async updateDetail(
-    detailId: string,
-    data: Record<string, unknown>,
-    user_id: string,
-    bu_code: string,
-    version: string,
-  ): Promise<Result<unknown>> {
-    this.logger.debug(
-      { function: 'updateDetail', detailId, data, version },
-      PurchaseOrderService.name,
-    );
-
-    const response = await firstValueFrom(
-      this.procurementService.send(
-        { cmd: 'purchase-order-detail.update', service: 'purchase-order' },
-        { detail_id: detailId, data, user_id, bu_code, version },
-      ),
-    );
-
-    if (response.response.status !== HttpStatus.OK) {
-      return Result.error(
-        response.response.message,
-        httpStatusToErrorCode(response.response.status),
-      );
-    }
-
-    return Result.ok(response.data);
-  }
-
   async deleteDetail(
     detailId: string,
     user_id: string,

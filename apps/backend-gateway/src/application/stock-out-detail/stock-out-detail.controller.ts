@@ -36,6 +36,7 @@ import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
+import { StockOutDetailCreateDto, StockOutDetailUpdateDto } from 'src/common/dto/stock-out/stock-out.dto';
 
 @Controller('api/:bu_code/stock-out-detail')
 @ApiTags('Application - Stock Out Detail')
@@ -126,7 +127,7 @@ export class StockOutDetailController extends BaseHttpController {
     },
   })
   async create(
-    @Body() createDto: Record<string, unknown>,
+    @Body() createDto: StockOutDetailCreateDto,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -161,7 +162,7 @@ export class StockOutDetailController extends BaseHttpController {
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() updateDto: Record<string, unknown>,
+    @Body() updateDto: StockOutDetailUpdateDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',

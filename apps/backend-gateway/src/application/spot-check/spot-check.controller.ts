@@ -4,7 +4,6 @@ import {
   Param,
   Post,
   Body,
-  Put,
   Delete,
   UseGuards,
   Req,
@@ -300,84 +299,6 @@ export class SpotCheckController extends BaseHttpController {
 
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.spotCheckService.findDetailById(detailId, user_id, bu_code, version);
-    this.respond(res, result);
-  }
-
-  @Post(':bu_code/spot-check/:id/details')
-  @UseGuards(new AppIdGuard('spotCheck.update'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Create a new Spot Check detail',
-    description: 'Creates a new line item/detail for a Spot Check. Only works for Spot Checks in draft status.',
-    operationId: 'createSpotCheckDetail',
-    tags: ['[Method] Post', 'Spot Check Detail'],
-    deprecated: false,
-    security: [{ bearerAuth: [] }],
-    parameters: [
-      { name: 'id', in: 'path', required: true, description: 'Spot Check ID' },
-    ],
-    responses: {
-      201: { description: 'Spot Check detail created successfully' },
-      400: { description: 'Cannot add detail to non-draft Spot Check' },
-      404: { description: 'Spot Check not found' },
-    },
-  })
-  @HttpCode(HttpStatus.CREATED)
-  async createDetail(
-    @Param('id') id: string,
-    @Param('bu_code') bu_code: string,
-    @Body() data: Record<string, unknown>,
-    @Req() req: Request,
-    @Res() res: Response,
-    @Query('version') version: string = 'latest',
-  ): Promise<void> {
-    this.logger.debug(
-      { function: 'createDetail', id, data, version },
-      SpotCheckController.name,
-    );
-
-    const { user_id } = ExtractRequestHeader(req);
-    const result = await this.spotCheckService.createDetail(id, data, user_id, bu_code, version);
-    this.respond(res, result, HttpStatus.CREATED);
-  }
-
-  @Put(':bu_code/spot-check/:id/details/:detail_id')
-  @UseGuards(new AppIdGuard('spotCheck.update'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Update a Spot Check detail',
-    description: 'Updates an existing Spot Check detail/line item. Only works for Spot Checks in draft status.',
-    operationId: 'updateSpotCheckDetail',
-    tags: ['[Method] Put', 'Spot Check Detail'],
-    deprecated: false,
-    security: [{ bearerAuth: [] }],
-    parameters: [
-      { name: 'id', in: 'path', required: true, description: 'Spot Check ID' },
-      { name: 'detail_id', in: 'path', required: true, description: 'Spot Check Detail ID' },
-    ],
-    responses: {
-      200: { description: 'Spot Check detail updated successfully' },
-      400: { description: 'Cannot update detail of non-draft Spot Check' },
-      404: { description: 'Spot Check detail not found' },
-    },
-  })
-  @HttpCode(HttpStatus.OK)
-  async updateDetail(
-    @Param('id') id: string,
-    @Param('detail_id') detailId: string,
-    @Param('bu_code') bu_code: string,
-    @Body() data: Record<string, unknown>,
-    @Req() req: Request,
-    @Res() res: Response,
-    @Query('version') version: string = 'latest',
-  ): Promise<void> {
-    this.logger.debug(
-      { function: 'updateDetail', id, detailId, data, version },
-      SpotCheckController.name,
-    );
-
-    const { user_id } = ExtractRequestHeader(req);
-    const result = await this.spotCheckService.updateDetail(detailId, data, user_id, bu_code, version);
     this.respond(res, result);
   }
 

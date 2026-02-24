@@ -30,6 +30,7 @@ import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
+import { PhysicalCountPeriodCreateDto, PhysicalCountPeriodUpdateDto } from 'src/common/dto/physical-count-period/physical-count-period.dto';
 
 @Controller('api')
 @ApiTags('Application - Physical Count Period')
@@ -116,7 +117,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
   async create(
-    @Body() createDto: Record<string, unknown>,
+    @Body() createDto: PhysicalCountPeriodCreateDto,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -139,7 +140,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() updateDto: Record<string, unknown>,
+    @Body() updateDto: PhysicalCountPeriodUpdateDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
