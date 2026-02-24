@@ -179,3 +179,4 @@ services:
 networks:
   carmen-network:
     driver: bridge
+    name: carmen-network
