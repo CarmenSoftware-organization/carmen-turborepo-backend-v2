@@ -23,7 +23,6 @@ import {
   BaseHttpController,
   ZodSerializerInterceptor,
 } from '@/common';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
@@ -34,7 +33,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @Controller('api/:bu_code/activity-log')
 @ApiTags('Application - Activity Log')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class ActivityLogController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

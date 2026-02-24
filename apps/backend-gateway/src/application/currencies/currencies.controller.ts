@@ -22,7 +22,6 @@ import {
 } from '@/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -36,7 +35,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @Controller('api')
 @ApiTags('Application - Currencies')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class CurrenciesController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

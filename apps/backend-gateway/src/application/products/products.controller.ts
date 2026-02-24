@@ -20,7 +20,6 @@ import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -36,7 +35,7 @@ import {
 @Controller('api')
 @ApiTags('Application - Products')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class ProductsController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

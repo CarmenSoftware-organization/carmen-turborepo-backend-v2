@@ -24,7 +24,6 @@ import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
@@ -39,7 +38,7 @@ import {
 @Controller('api/config/:bu_code/recipe')
 @ApiTags('Config - Recipe')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class Config_RecipeController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

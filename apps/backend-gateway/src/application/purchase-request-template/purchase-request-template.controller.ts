@@ -26,7 +26,6 @@ import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
@@ -40,7 +39,7 @@ import {
 @Controller('api/:bu_code/purchase-request-template')
 @ApiTags('Application - Purchase Request Template')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class PurchaseRequestTemplateController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

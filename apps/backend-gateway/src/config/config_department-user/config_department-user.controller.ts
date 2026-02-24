@@ -24,7 +24,6 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import {
   ApiVersionMinRequest,
   ApiUserFilterQueries,
@@ -41,7 +40,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @Controller('api/config/:bu_code/department-user')
 @ApiTags('Application - User Department')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class Config_DepartmentUserController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

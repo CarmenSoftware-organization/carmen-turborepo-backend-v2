@@ -2,7 +2,6 @@ import { Controller, Get, Param, Query, Req, Res, UseGuards, UseInterceptors, Ht
 import { Response } from 'express';
 import { ApiBearerAuth } from '@nestjs/swagger'
 import { KeycloakGuard } from '../../auth/guards/keycloak.guard'
-import { TenantHeaderGuard } from '../../common/guard/tenant-header.guard'
 import { ConfigPermissionService } from './config_permission.service'
 import { ZodSerializerInterceptor, BaseHttpController } from '@/common'
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto'
@@ -15,7 +14,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @ApiTags('Config - Permissions')
 @ApiHeaderRequiredXAppId()
 @ApiBearerAuth()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @Controller('api/config/:bu_code/permissions')
 export class ConfigPermissionController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

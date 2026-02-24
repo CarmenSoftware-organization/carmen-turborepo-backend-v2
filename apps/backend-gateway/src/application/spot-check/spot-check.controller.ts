@@ -24,7 +24,6 @@ import {
 import {
   BaseHttpController,
 } from '@/common';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -78,7 +77,6 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   @Get(':bu_code/spot-check/:id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('spotCheck.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
@@ -110,7 +108,6 @@ export class SpotCheckController extends BaseHttpController {
 
   @Get(':bu_code/spot-check/')
   @UseGuards(new AppIdGuard('spotCheck.findAll'))
-  @UseGuards(TenantHeaderGuard)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @HttpCode(HttpStatus.OK)
@@ -142,7 +139,6 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   @Post(':bu_code/spot-check')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('spotCheck.create'))
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
@@ -173,7 +169,6 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   @Patch(':bu_code/spot-check/:id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('spotCheck.update'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
@@ -207,7 +202,6 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   @Delete(':bu_code/spot-check/:id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('spotCheck.delete'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
@@ -235,7 +229,6 @@ export class SpotCheckController extends BaseHttpController {
   // ==================== Spot Check Detail CRUD ====================
 
   @Get(':bu_code/spot-check/:id/details')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('spotCheck.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -272,7 +265,6 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   @Get(':bu_code/spot-check/:id/details/:detail_id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('spotCheck.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -311,7 +303,6 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   @Post(':bu_code/spot-check/:id/details')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('spotCheck.update'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -350,7 +341,6 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   @Put(':bu_code/spot-check/:id/details/:detail_id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('spotCheck.update'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -391,7 +381,6 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   @Delete(':bu_code/spot-check/:id/details/:detail_id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('spotCheck.update'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -433,7 +422,6 @@ export class SpotCheckController extends BaseHttpController {
   // ==================== Mobile-specific endpoints ====================
 
   @Patch(':bu_code/spot-check/:id/save')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('spotCheck.save'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -473,7 +461,6 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   @Patch(':bu_code/spot-check/:id/review')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('spotCheck.review'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -513,7 +500,6 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   @Get(':bu_code/spot-check/:id/review')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('spotCheck.getReview'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -551,7 +537,6 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   @Patch(':bu_code/spot-check/:id/submit')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('spotCheck.submit'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -590,7 +575,6 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   @Post(':bu_code/spot-check/:id/reset')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('spotCheck.reset'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -629,7 +613,6 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   @Get(':bu_code/locations/:location_id/products')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('spotCheck.getProductsByLocation'))
   @ApiVersionMinRequest()
   @ApiOperation({

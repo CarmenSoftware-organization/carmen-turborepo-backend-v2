@@ -6,7 +6,6 @@ import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { UnitConversionService } from './unit-conversion.service';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
@@ -21,7 +20,7 @@ import {
 @ApiTags('Config - Tax Profile')
 @ApiHeaderRequiredXAppId()
 @ApiBearerAuth()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 export class UnitConversionController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(
     UnitConversionController.name,

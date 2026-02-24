@@ -35,7 +35,6 @@ import {
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { ApiBearerAuth, ApiTags, ApiConsumes, ApiBody, ApiOperation } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -47,7 +46,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @Controller('api/config/:bu_code/price-list')
 @ApiTags('Config - Price List')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class Config_PriceListController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

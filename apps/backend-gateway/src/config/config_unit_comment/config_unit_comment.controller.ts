@@ -19,7 +19,6 @@ import { Response } from 'express';
 import { Config_UnitCommentService as Config_UnitCommentService } from './config_unit_comment.service';
 import { ZodSerializerInterceptor, BaseHttpController } from '@/common';
 import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -34,7 +33,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @Controller('api/config/:bu_code/unit-comment')
 @ApiTags('Application - Unit Comment')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class Config_UnitCommentController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

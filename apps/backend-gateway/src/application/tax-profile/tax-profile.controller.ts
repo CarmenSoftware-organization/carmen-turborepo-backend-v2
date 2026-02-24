@@ -16,7 +16,6 @@ import { Response } from 'express';
 import { TaxProfileService } from './tax-profile.service';
 import { CreateTaxProfileDto } from './dto/tax-profile.dto';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import {
   IPaginate,
@@ -44,7 +43,7 @@ import {
 @ApiTags('Config - Tax Profile')
 @ApiHeaderRequiredXAppId()
 @ApiBearerAuth()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 export class TaxProfileController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(
     TaxProfileController.name,

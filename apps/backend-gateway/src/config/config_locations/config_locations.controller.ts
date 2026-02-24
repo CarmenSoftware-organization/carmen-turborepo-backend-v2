@@ -35,7 +35,6 @@ import {
   LocationListItemResponseSchema,
   LocationMutationResponseSchema,
 } from '@/common';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -50,7 +49,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @Controller('api/config/:bu_code/locations')
 @ApiTags('Config - Locations')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class Config_LocationsController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

@@ -23,7 +23,6 @@ import {
 } from 'src/common/decorator/userfilter.decorator';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
@@ -34,7 +33,7 @@ import { ApiTags } from '@nestjs/swagger';
 @Controller('api/:bu_code/credit-note-reason')
 @ApiTags('Application - Credit Note Reason')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 @Controller('api/:bu_code/credit-note-reason')
 export class CreditNoteReasonController extends BaseHttpController {

@@ -17,7 +17,6 @@ import { Response } from 'express';
 import { NewsService } from './news.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -32,7 +31,7 @@ import { BaseHttpController } from '@/common';
 @Controller('/api/news')
 @ApiTags('Application - News')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class NewsController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

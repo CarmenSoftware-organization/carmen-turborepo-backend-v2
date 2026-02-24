@@ -3,7 +3,6 @@ import { Response } from 'express';
 import { BusinessUnitService } from './business-unit.service';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { ApiTags } from '@nestjs/swagger';
 import {
   BaseHttpController,
@@ -25,7 +24,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @Controller('/api/:bu_code/business-unit')
 @ApiTags('Application - business unit')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class BusinessUnitController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

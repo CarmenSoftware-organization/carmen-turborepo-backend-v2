@@ -18,7 +18,6 @@ import {
 import { Response } from 'express';
 import { PurchaseRequestService } from './purchase-request.service';
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -58,7 +57,7 @@ import { CalculatePurchaseRequestDetail } from './dto/CalculatePurchaseRequestDe
 @Controller('api')
 @ApiTags('Application - Purchase Request')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, PermissionGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()
 export class PurchaseRequestController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

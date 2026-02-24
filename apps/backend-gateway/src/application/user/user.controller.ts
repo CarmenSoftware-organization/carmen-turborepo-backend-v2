@@ -21,7 +21,6 @@ import {
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { UpdateUserProfileDto } from 'src/auth/dto/auth.dto';
@@ -98,7 +97,7 @@ export class UserController extends BaseHttpController {
   }
 
   @Get('/api/user/permission')
-  @UseGuards(KeycloakGuard, TenantHeaderGuard)
+  @UseGuards(KeycloakGuard)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -150,7 +149,7 @@ export class UserController extends BaseHttpController {
   @UseGuards(new AppIdGuard('user.getAllUserInTenant'))
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
-  @UseGuards(KeycloakGuard, TenantHeaderGuard)
+  @UseGuards(KeycloakGuard)
   @Serialize(UserListItemResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({

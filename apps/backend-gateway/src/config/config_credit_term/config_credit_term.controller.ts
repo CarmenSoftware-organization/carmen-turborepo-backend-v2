@@ -32,7 +32,6 @@ import {
   CreditTermListItemResponseSchema,
   CreditTermMutationResponseSchema,
 } from '@/common';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -47,7 +46,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @ApiTags('Config - Credit Term')
 @ApiHeaderRequiredXAppId()
 @Controller('api/config/:bu_code/credit-term')
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class Config_CreditTermController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

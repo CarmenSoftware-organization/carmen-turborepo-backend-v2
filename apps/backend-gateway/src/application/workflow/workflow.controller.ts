@@ -10,7 +10,6 @@ import {
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { WorkflowTypeParamDto } from './dto/workflow.dto';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
@@ -22,7 +21,7 @@ import {
 } from '@/common';
 
 @Controller('api/:bu_code/workflow')
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiTags('Application - Workflow')
 @ApiHeaderRequiredXAppId()
 @ApiBearerAuth()
@@ -69,7 +68,7 @@ export class WorkflowController extends BaseHttpController {
   }
 
   @Get(':workflow_id/previous_stages')
-  @UseGuards(KeycloakGuard, TenantHeaderGuard)
+  @UseGuards(KeycloakGuard)
   @Serialize(WorkflowListItemResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()

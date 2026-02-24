@@ -33,7 +33,6 @@ import {
   StockInDetailUpdateDto,
   IStockInUpdate,
 } from '@/common';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -58,7 +57,6 @@ export class StockInController extends BaseHttpController {
   }
 
   @Get(':id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('stockIn.findOne'))
   @Serialize(StockInDetailResponseSchema)
   @HttpCode(HttpStatus.OK)
@@ -79,7 +77,6 @@ export class StockInController extends BaseHttpController {
 
   @Get()
   @UseGuards(new AppIdGuard('stockIn.findAll'))
-  @UseGuards(TenantHeaderGuard)
   @Serialize(StockInListItemResponseSchema)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
@@ -100,7 +97,6 @@ export class StockInController extends BaseHttpController {
   }
 
   @Post()
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('stockIn.create'))
   @Serialize(StockInMutationResponseSchema)
   @HttpCode(HttpStatus.CREATED)
@@ -120,7 +116,6 @@ export class StockInController extends BaseHttpController {
   }
 
   @Patch(':id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('stockIn.update'))
   @Serialize(StockInMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
@@ -142,7 +137,6 @@ export class StockInController extends BaseHttpController {
   }
 
   @Delete(':id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('stockIn.delete'))
   @Serialize(StockInMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
@@ -164,7 +158,6 @@ export class StockInController extends BaseHttpController {
   // ==================== Stock In Detail CRUD ====================
 
   @Get(':id/details')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('stockIn.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -198,7 +191,6 @@ export class StockInController extends BaseHttpController {
   }
 
   @Get(':id/details/:detail_id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('stockIn.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -234,7 +226,6 @@ export class StockInController extends BaseHttpController {
   }
 
   @Post(':id/details')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('stockIn.update'))
   @Serialize(StockInMutationResponseSchema)
   @ApiVersionMinRequest()
@@ -271,7 +262,6 @@ export class StockInController extends BaseHttpController {
   }
 
   @Put(':id/details/:detail_id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('stockIn.update'))
   @Serialize(StockInMutationResponseSchema)
   @ApiVersionMinRequest()
@@ -310,7 +300,6 @@ export class StockInController extends BaseHttpController {
   }
 
   @Delete(':id/details/:detail_id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('stockIn.update'))
   @Serialize(StockInMutationResponseSchema)
   @ApiVersionMinRequest()

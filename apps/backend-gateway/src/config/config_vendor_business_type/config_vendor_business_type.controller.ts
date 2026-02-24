@@ -31,7 +31,6 @@ import {
   VendorBusinessTypeUpdateDto,
   IUpdateVendorBusinessType,
 } from './dto/vendor_business_type.dto';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -46,7 +45,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @Controller('api/config/:bu_code/vendor-business-type')
 @ApiTags('Config - Vendor Business Type')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class Config_VendorBusinessTypeController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

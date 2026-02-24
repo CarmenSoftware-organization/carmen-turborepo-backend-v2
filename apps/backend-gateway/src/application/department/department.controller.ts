@@ -21,7 +21,6 @@ import {
   DepartmentListItemResponseSchema,
 } from '@/common';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import {
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
@@ -39,7 +38,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @Controller('api/:bu_code/department')
 @ApiTags('Application - Department')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class DepartmentController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

@@ -18,7 +18,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { BaseHttpController } from '@/common';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -44,7 +43,6 @@ export class InventoryAdjustmentController extends BaseHttpController {
 
   @Get()
   @UseGuards(new AppIdGuard('inventoryAdjustment.findAll'))
-  @UseGuards(TenantHeaderGuard)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @ApiQuery({
@@ -82,7 +80,6 @@ export class InventoryAdjustmentController extends BaseHttpController {
   }
 
   @Get(':id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('inventoryAdjustment.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()

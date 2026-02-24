@@ -30,7 +30,6 @@ import {
   ProductItemGroupListItemResponseSchema,
   ProductItemGroupMutationResponseSchema,
 } from '@/common';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -45,7 +44,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @Controller('api/config/:bu_code/products/item-group')
 @ApiTags('Config - Product Item Group')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class Config_ProductItemGroupController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

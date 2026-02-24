@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res, UseGuards, UseInterceptors, HttpCode, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 import { KeycloakGuard } from 'src/auth';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { ConfigUserApplicationRoleService } from './config_user_application_role.service';
 import { ZodSerializerInterceptor, BaseHttpController } from '@/common';
 import { AssignUserApplicationRoleDto, RemoveUserApplicationRoleDto, UpdateUserApplicationRoleDto } from './dto/user_application_role.dto';
@@ -13,7 +12,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @Controller('api/config/:bu_code/user-application-roles')
 @ApiTags('Config - User Application Roles')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 export class ConfigUserApplicationRoleController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(
     ConfigUserApplicationRoleController.name,

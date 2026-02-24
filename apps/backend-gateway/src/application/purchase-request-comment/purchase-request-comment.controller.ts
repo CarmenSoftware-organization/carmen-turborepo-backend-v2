@@ -14,7 +14,6 @@ import {
 } from '@nestjs/common';
 import { PurchaseRequestCommentService } from './purchase-request-comment.service';
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
@@ -32,7 +31,7 @@ import {
 @Controller('api')
 @ApiTags('Application - Purchase Request Comment')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, PermissionGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()
 export class PurchaseRequestCommentController {
   private readonly logger: BackendLogger = new BackendLogger(

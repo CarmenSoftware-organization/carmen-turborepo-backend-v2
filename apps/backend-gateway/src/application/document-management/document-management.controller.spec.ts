@@ -19,9 +19,7 @@ const mockDocumentManagementService = {
 };
 
 const mockRequest = {
-  headers: {
-    'x-tenant-id': 'tenant-123',
-  },
+  headers: {},
   user: {
     user_id: 'user-123',
   },

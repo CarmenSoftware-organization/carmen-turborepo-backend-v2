@@ -31,7 +31,6 @@ import {
   TransferUpdateDto,
   ITransferUpdate,
 } from '@/common';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -56,7 +55,6 @@ export class TransferController extends BaseHttpController {
   }
 
   @Get(':id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('transfer.findOne'))
   @Serialize(TransferDetailResponseSchema)
   @HttpCode(HttpStatus.OK)
@@ -77,7 +75,6 @@ export class TransferController extends BaseHttpController {
 
   @Get()
   @UseGuards(new AppIdGuard('transfer.findAll'))
-  @UseGuards(TenantHeaderGuard)
   @Serialize(TransferListItemResponseSchema)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
@@ -98,7 +95,6 @@ export class TransferController extends BaseHttpController {
   }
 
   @Post()
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('transfer.create'))
   @Serialize(TransferMutationResponseSchema)
   @HttpCode(HttpStatus.CREATED)
@@ -118,7 +114,6 @@ export class TransferController extends BaseHttpController {
   }
 
   @Patch(':id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('transfer.update'))
   @Serialize(TransferMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
@@ -140,7 +135,6 @@ export class TransferController extends BaseHttpController {
   }
 
   @Delete(':id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('transfer.delete'))
   @Serialize(TransferMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
@@ -162,7 +156,6 @@ export class TransferController extends BaseHttpController {
   // ==================== Transfer Detail CRUD ====================
 
   @Get(':id/details')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('transfer.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -196,7 +189,6 @@ export class TransferController extends BaseHttpController {
   }
 
   @Get(':id/details/:detail_id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('transfer.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -232,7 +224,6 @@ export class TransferController extends BaseHttpController {
   }
 
   @Post(':id/details')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('transfer.update'))
   @Serialize(TransferMutationResponseSchema)
   @ApiVersionMinRequest()
@@ -269,7 +260,6 @@ export class TransferController extends BaseHttpController {
   }
 
   @Put(':id/details/:detail_id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('transfer.update'))
   @Serialize(TransferMutationResponseSchema)
   @ApiVersionMinRequest()
@@ -308,7 +298,6 @@ export class TransferController extends BaseHttpController {
   }
 
   @Delete(':id/details/:detail_id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('transfer.update'))
   @Serialize(TransferMutationResponseSchema)
   @ApiVersionMinRequest()

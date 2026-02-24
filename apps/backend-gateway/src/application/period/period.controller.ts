@@ -20,7 +20,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { BaseHttpController } from '@/common';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -49,7 +48,6 @@ export class PeriodController extends BaseHttpController {
   }
 
   @Get(':bu_code/period/:id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('period.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
@@ -72,7 +70,6 @@ export class PeriodController extends BaseHttpController {
 
   @Get(':bu_code/period/')
   @UseGuards(new AppIdGuard('period.findAll'))
-  @UseGuards(TenantHeaderGuard)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @HttpCode(HttpStatus.OK)
@@ -95,7 +92,6 @@ export class PeriodController extends BaseHttpController {
   }
 
   @Post(':bu_code/period')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('period.create'))
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
@@ -117,7 +113,6 @@ export class PeriodController extends BaseHttpController {
   }
 
   @Patch(':bu_code/period/:id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('period.update'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
@@ -140,7 +135,6 @@ export class PeriodController extends BaseHttpController {
   }
 
   @Delete(':bu_code/period/:id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('period.delete'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()

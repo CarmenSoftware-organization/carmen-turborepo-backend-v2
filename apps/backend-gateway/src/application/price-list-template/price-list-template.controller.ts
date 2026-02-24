@@ -17,7 +17,6 @@ import {
 import { Response } from 'express';
 import { PriceListTemplateService } from './price-list-template.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -43,7 +42,7 @@ import {
 @Controller('api/:bu_code/price-list-template')
 @ApiTags('Application - Price List Template')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class PriceListTemplateController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

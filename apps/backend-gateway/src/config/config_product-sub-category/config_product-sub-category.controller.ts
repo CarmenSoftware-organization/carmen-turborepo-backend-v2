@@ -30,7 +30,6 @@ import {
   ProductSubCategoryListItemResponseSchema,
   ProductSubCategoryMutationResponseSchema,
 } from '@/common';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -45,7 +44,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @Controller('api/config/:bu_code/products/sub-category')
 @ApiTags('Config - Product Sub Category')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class Config_ProductSubCategoryController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

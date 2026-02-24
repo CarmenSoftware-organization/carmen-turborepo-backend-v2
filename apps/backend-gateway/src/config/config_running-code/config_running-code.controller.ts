@@ -20,7 +20,6 @@ import { Config_RunningCodeService } from './config_running-code.service';
 import { ZodSerializerInterceptor, BaseHttpController } from '@/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { PaginateQuery } from 'src/shared-dto/paginate.dto';
 import {
@@ -40,7 +39,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @Controller('api/config/:bu_code/running-code')
 @ApiTags('Config - Running Code')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class Config_RunningCodeController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

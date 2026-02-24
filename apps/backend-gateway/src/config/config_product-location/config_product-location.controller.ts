@@ -12,7 +12,6 @@ import {
 import { Config_ProductLocationService } from './config_product-location.service';
 import { ZodSerializerInterceptor } from '@/common';
 import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -26,7 +25,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @Controller('api/config/:bu_code/product/location')
 @ApiTags('Config - Product Location')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class Config_ProductLocationController {
   private readonly logger: BackendLogger = new BackendLogger(

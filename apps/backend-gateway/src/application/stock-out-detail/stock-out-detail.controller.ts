@@ -26,7 +26,6 @@ import {
   Serialize,
   StockOutMutationResponseSchema,
 } from '@/common';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -52,7 +51,6 @@ export class StockOutDetailController extends BaseHttpController {
 
   @Get()
   @UseGuards(new AppIdGuard('stockOutDetail.findAll'))
-  @UseGuards(TenantHeaderGuard)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @HttpCode(HttpStatus.OK)
@@ -81,7 +79,6 @@ export class StockOutDetailController extends BaseHttpController {
   }
 
   @Get(':id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('stockOutDetail.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
@@ -113,7 +110,6 @@ export class StockOutDetailController extends BaseHttpController {
   }
 
   @Post()
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('stockOutDetail.create'))
   @Serialize(StockOutMutationResponseSchema)
   @HttpCode(HttpStatus.CREATED)
@@ -144,7 +140,6 @@ export class StockOutDetailController extends BaseHttpController {
   }
 
   @Patch(':id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('stockOutDetail.update'))
   @Serialize(StockOutMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
@@ -179,7 +174,6 @@ export class StockOutDetailController extends BaseHttpController {
   }
 
   @Delete(':id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('stockOutDetail.delete'))
   @Serialize(StockOutMutationResponseSchema)
   @HttpCode(HttpStatus.OK)

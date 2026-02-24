@@ -33,7 +33,6 @@ import {
   DepartmentListItemResponseSchema,
   DepartmentMutationResponseSchema,
 } from '@/common';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import {
   ApiVersionMinRequest,
   ApiUserFilterQueries,
@@ -48,7 +47,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @Controller('api/config/:bu_code/departments')
 @ApiTags('Config - Departments')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class Config_DepartmentsController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

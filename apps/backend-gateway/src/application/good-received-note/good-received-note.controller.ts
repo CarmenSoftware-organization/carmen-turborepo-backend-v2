@@ -33,7 +33,6 @@ import {
   GoodReceivedNoteListItemResponseSchema,
   GoodReceivedNoteMutationResponseSchema,
 } from '@/common';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -94,7 +93,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   @Get(':bu_code/good-received-note/:id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('goodReceivedNote.findOne'))
   @Serialize(GoodReceivedNoteDetailResponseSchema)
   @HttpCode(HttpStatus.OK)
@@ -127,7 +125,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
 
   @Get(":bu_code/good-received-note/")
   @UseGuards(new AppIdGuard('goodReceivedNote.findAll'))
-  @UseGuards(TenantHeaderGuard)
   @Serialize(GoodReceivedNoteListItemResponseSchema)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
@@ -217,7 +214,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   @Post(":bu_code/good-received-note")
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('goodReceivedNote.create'))
   @Serialize(GoodReceivedNoteMutationResponseSchema)
   @HttpCode(HttpStatus.CREATED)
@@ -249,7 +245,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   @Patch(':bu_code/good-received-note/:id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('goodReceivedNote.update'))
   @Serialize(GoodReceivedNoteMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
@@ -287,7 +282,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   @Delete(':bu_code/good-received-note/:id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('goodReceivedNote.delete'))
   @Serialize(GoodReceivedNoteMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
@@ -314,7 +308,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   @Get(':bu_code/good-received-note/:id/export')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('goodReceivedNote.export'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -387,7 +380,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   @Post(':bu_code/good-received-note/:id/reject')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('goodReceivedNote.reject'))
   @Serialize(GoodReceivedNoteMutationResponseSchema)
   @ApiVersionMinRequest()
@@ -455,7 +447,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
   // ==================== Good Received Note Detail CRUD ====================
 
   @Get(':bu_code/good-received-note/:id/details')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('goodReceivedNote.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -492,7 +483,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   @Get(':bu_code/good-received-note/:id/details/:detail_id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('goodReceivedNote.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -531,7 +521,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   @Post(':bu_code/good-received-note/:id/details')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('goodReceivedNote.update'))
   @Serialize(GoodReceivedNoteMutationResponseSchema)
   @ApiVersionMinRequest()
@@ -571,7 +560,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   @Put(':bu_code/good-received-note/:id/details/:detail_id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('goodReceivedNote.update'))
   @Serialize(GoodReceivedNoteMutationResponseSchema)
   @ApiVersionMinRequest()
@@ -613,7 +601,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   @Delete(':bu_code/good-received-note/:id/details/:detail_id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('goodReceivedNote.update'))
   @Serialize(GoodReceivedNoteMutationResponseSchema)
   @ApiVersionMinRequest()
@@ -656,7 +643,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
   // ==================== Mobile-specific endpoints ====================
 
   @Get(':bu_code/good-received-note/manual-po/:po_no')
-  @UseGuards(TenantHeaderGuard)
   @Serialize(GoodReceivedNoteDetailResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -694,7 +680,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   @Patch(':bu_code/good-received-note/:id/confirm')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('goodReceivedNote.confirm'))
   @Serialize(GoodReceivedNoteMutationResponseSchema)
   @ApiVersionMinRequest()
@@ -735,7 +720,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   @Get(':bu_code/good-received-note/:id/comments')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('goodReceivedNote.getComments'))
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -773,7 +757,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   @Post(':bu_code/good-received-note/:id/comments')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('goodReceivedNote.createComment'))
   @ApiVersionMinRequest()
   @ApiOperation({

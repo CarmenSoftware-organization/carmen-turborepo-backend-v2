@@ -35,7 +35,6 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { KeycloakGuard } from './guards/keycloak.guard';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { Glob } from 'bun';
 import { ExceptionFilter } from 'src/exception/exception.fillter';
 import { IgnoreGuards } from './decorators/ignore-guard.decorator';
@@ -116,7 +115,7 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @UseGuards(KeycloakGuard, TenantHeaderGuard)
+  @UseGuards(KeycloakGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Logout',
@@ -167,7 +166,7 @@ export class AuthController {
   }
 
   @Post('register')
-  // @UseGuards(KeycloakGuard, TenantHeaderGuard)
+  // @UseGuards(KeycloakGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiBearerAuth()
   @ApiVersionMinRequest()
@@ -237,7 +236,7 @@ export class AuthController {
   }
 
   @Post('invite-user')
-  @UseGuards(KeycloakGuard, TenantHeaderGuard)
+  @UseGuards(KeycloakGuard)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -514,7 +513,7 @@ export class AuthController {
   // }
 
   @Post('reset-password')
-  @UseGuards(KeycloakGuard, TenantHeaderGuard)
+  @UseGuards(KeycloakGuard)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiHideProperty()
@@ -573,7 +572,7 @@ export class AuthController {
   }
 
   @Post('change-password')
-  @UseGuards(KeycloakGuard, TenantHeaderGuard)
+  @UseGuards(KeycloakGuard)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiBody({

@@ -21,7 +21,6 @@ import {
   ApiBearerAuth,
   ApiOperation,
 } from '@nestjs/swagger';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import {
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
@@ -48,7 +47,7 @@ import {
 @Controller('api')
 @ApiTags('Config - Store Requisition')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class StoreRequisitionController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

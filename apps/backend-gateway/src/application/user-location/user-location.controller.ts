@@ -8,7 +8,6 @@ import {
 } from 'src/common/decorator/userfilter.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
@@ -22,7 +21,7 @@ import {
 @ApiTags('Config - Tax Type Inventory')
 @ApiHeaderRequiredXAppId()
 @ApiBearerAuth()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 export class UserLocationController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(
     UserLocationController.name,

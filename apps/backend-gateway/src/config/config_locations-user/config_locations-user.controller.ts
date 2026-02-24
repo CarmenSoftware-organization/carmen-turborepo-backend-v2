@@ -12,7 +12,6 @@ import {
 import { Config_LocationsUserService } from './config_locations-user.service';
 import { ZodSerializerInterceptor } from '@/common';
 import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -26,7 +25,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @Controller('api/config/:bu_code/locations/user')
 @ApiTags('Config - Location User')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class Config_LocationsUserController {
   private readonly logger: BackendLogger = new BackendLogger(

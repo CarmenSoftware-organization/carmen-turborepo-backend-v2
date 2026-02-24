@@ -15,7 +15,7 @@ export class AuditContextInterceptor implements NestInterceptor {
 		if (contextType === 'http') {
 			const request = context.switchToHttp().getRequest();
 			auditContext = {
-				tenant_id: request.params?.bu_code || request.headers?.['x-tenant-id'] || 'unknown',
+				tenant_id: request.params?.bu_code || 'unknown',
 				user_id: request.user?.user_id || request.headers?.['x-user-id'] || 'anonymous',
 				request_id: request.headers?.['x-request-id'] || uuidv4(),
 				ip_address: request.ip || request.headers?.['x-forwarded-for'],

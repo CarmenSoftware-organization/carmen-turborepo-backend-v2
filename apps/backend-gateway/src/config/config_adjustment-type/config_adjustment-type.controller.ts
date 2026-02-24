@@ -18,7 +18,6 @@ import { Config_AdjustmentTypeService } from './config_adjustment-type.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { BaseHttpController } from '@/common';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -38,7 +37,7 @@ import {
 @Controller('api/config/:bu_code/adjustment-type')
 @ApiTags('Config - Adjustment Type')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class Config_AdjustmentTypeController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

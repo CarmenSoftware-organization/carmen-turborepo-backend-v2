@@ -20,7 +20,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { BaseHttpController } from '@/common';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -49,7 +48,6 @@ export class PhysicalCountPeriodController extends BaseHttpController {
   }
 
   @Get(':bu_code/physical-count-period/nearest')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('physicalCountPeriod.nearest'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
@@ -70,7 +68,6 @@ export class PhysicalCountPeriodController extends BaseHttpController {
   }
 
   @Get(':bu_code/physical-count-period/:id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('physicalCountPeriod.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
@@ -93,7 +90,6 @@ export class PhysicalCountPeriodController extends BaseHttpController {
 
   @Get(':bu_code/physical-count-period/')
   @UseGuards(new AppIdGuard('physicalCountPeriod.findAll'))
-  @UseGuards(TenantHeaderGuard)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @HttpCode(HttpStatus.OK)
@@ -116,7 +112,6 @@ export class PhysicalCountPeriodController extends BaseHttpController {
   }
 
   @Post(':bu_code/physical-count-period')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('physicalCountPeriod.create'))
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
@@ -138,7 +133,6 @@ export class PhysicalCountPeriodController extends BaseHttpController {
   }
 
   @Patch(':bu_code/physical-count-period/:id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('physicalCountPeriod.update'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
@@ -161,7 +155,6 @@ export class PhysicalCountPeriodController extends BaseHttpController {
   }
 
   @Delete(':bu_code/physical-count-period/:id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('physicalCountPeriod.delete'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()

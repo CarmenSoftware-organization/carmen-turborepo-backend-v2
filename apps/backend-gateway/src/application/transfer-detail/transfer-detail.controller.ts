@@ -27,7 +27,6 @@ import {
   TransferDetailCreateDto,
   TransferDetailUpdateDto,
 } from '@/common';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -53,7 +52,6 @@ export class TransferDetailController extends BaseHttpController {
 
   @Get()
   @UseGuards(new AppIdGuard('transferDetail.findAll'))
-  @UseGuards(TenantHeaderGuard)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @HttpCode(HttpStatus.OK)
@@ -82,7 +80,6 @@ export class TransferDetailController extends BaseHttpController {
   }
 
   @Get(':id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('transferDetail.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
@@ -114,7 +111,6 @@ export class TransferDetailController extends BaseHttpController {
   }
 
   @Post()
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('transferDetail.create'))
   @Serialize(TransferMutationResponseSchema)
   @HttpCode(HttpStatus.CREATED)
@@ -145,7 +141,6 @@ export class TransferDetailController extends BaseHttpController {
   }
 
   @Patch(':id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('transferDetail.update'))
   @Serialize(TransferMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
@@ -180,7 +175,6 @@ export class TransferDetailController extends BaseHttpController {
   }
 
   @Delete(':id')
-  @UseGuards(TenantHeaderGuard)
   @UseGuards(new AppIdGuard('transferDetail.delete'))
   @Serialize(TransferMutationResponseSchema)
   @HttpCode(HttpStatus.OK)

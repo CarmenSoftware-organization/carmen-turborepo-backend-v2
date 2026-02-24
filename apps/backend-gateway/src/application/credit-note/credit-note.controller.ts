@@ -35,7 +35,6 @@ import {
   CreditNoteListItemResponseSchema,
   CreditNoteMutationResponseSchema,
 } from '@/common';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -51,7 +50,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @Controller('api/:bu_code/credit-note')
 @ApiTags('Application - Credit Note')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class CreditNoteController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(

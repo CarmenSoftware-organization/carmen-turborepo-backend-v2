@@ -17,10 +17,8 @@ import {
 import { Response } from 'express';
 import { RequestForPricingService } from './request-for-pricing.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
-  ApiHeaderRequestTenantId,
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
@@ -37,9 +35,8 @@ import {
 @Controller('api/:bu_code/request-for-pricing')
 @ApiTags('Application - Request For Pricing')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard)
 @ApiBearerAuth()
-@ApiHeaderRequestTenantId()
 export class RequestForPricingController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(
     RequestForPricingController.name,

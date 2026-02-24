@@ -22,7 +22,6 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { TenantHeaderGuard } from 'src/common/guard/tenant-header.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
@@ -45,7 +44,7 @@ import {
 @Controller('api/:bu_code/purchase-order')
 @ApiTags('Application - Purchase Order')
 @ApiHeaderRequiredXAppId()
-@UseGuards(KeycloakGuard, PermissionGuard, TenantHeaderGuard)
+@UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()
 export class PurchaseOrderController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(
