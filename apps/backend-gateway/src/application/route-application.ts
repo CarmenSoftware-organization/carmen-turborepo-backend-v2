@@ -39,6 +39,7 @@ import { StockOutDetailModule } from './stock-out-detail/stock-out-detail.module
 import { TransferModule } from './transfer/transfer.module';
 import { TransferDetailModule } from './transfer-detail/transfer-detail.module';
 import { InventoryAdjustmentModule } from './inventory-adjustment/inventory-adjustment.module';
+import { InventoryTransactionModule } from './inventory-transaction/inventory-transaction.module'; // ⚠️ TEST ONLY — DELETE when GRN approve integration is verified
 import { PeriodModule } from './period/period.module';
 import { PhysicalCountPeriodModule } from './physical-count-period/physical-count-period.module';
 @Module({
@@ -83,6 +84,7 @@ import { PhysicalCountPeriodModule } from './physical-count-period/physical-coun
     TransferModule,
     TransferDetailModule,
     InventoryAdjustmentModule,
+    InventoryTransactionModule, // ⚠️ TEST ONLY — DELETE when GRN approve integration is verified
     PeriodModule,
     PhysicalCountPeriodModule,
   ],

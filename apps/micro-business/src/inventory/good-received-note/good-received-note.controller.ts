@@ -164,6 +164,22 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  @MessagePattern({
+    cmd: 'good-received-note.approve',
+    service: 'good-received-note',
+  })
+  async approve(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'approve', payload: payload }, GoodReceivedNoteController.name);
+    const id = payload.id;
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.goodReceivedNoteService.approve(id, user_id, tenant_id)
+    );
+    return this.handleResult(result);
+  }
+
   // ==================== Good Received Note Detail CRUD ====================
 
   @MessagePattern({

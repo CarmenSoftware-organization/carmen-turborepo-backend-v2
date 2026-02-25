@@ -13,6 +13,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { Injectable, Inject, HttpStatus } from '@nestjs/common';
 import { enum_doc_status, enum_good_received_note_status } from '@repo/prisma-shared-schema-tenant';
+import { InventoryTransactionService, ICreateFromGrnDetailItem } from '@/inventory/inventory-transaction/inventory-transaction.service';
 import { format } from 'date-fns';
 import * as ExcelJS from 'exceljs';
 import { Observable } from 'rxjs';
@@ -42,6 +43,7 @@ export class GoodReceivedNoteService {
     private readonly masterService: ClientProxy,
     private readonly tenantService: TenantService,
     private readonly notificationService: NotificationService,
+    private readonly inventoryTransactionService: InventoryTransactionService,
   ) { }
 
   @TryCatch
@@ -1757,6 +1759,103 @@ export class GoodReceivedNoteService {
     } catch (error) {
       this.logger.error('Failed to send GRN rejected notification:', error);
     }
+  }
+
+  // ==================== Approve (Commit) Good Received Note ====================
+
+  /**
+   * Approve a Good Received Note — changes status to committed and creates
+   * inventory transactions with FIFO cost layers via InventoryTransactionService.
+   */
+  @TryCatch
+  async approve(
+    id: string,
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'approve', id, user_id, tenant_id },
+      GoodReceivedNoteService.name,
+    );
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) {
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+    }
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    // Find the GRN with all details and detail items
+    const grn = await prisma.tb_good_received_note.findFirst({
+      where: {
+        id,
+        deleted_at: null,
+      },
+      include: {
+        tb_good_received_note_detail: {
+          include: {
+            tb_good_received_note_detail_item: true,
+          },
+        },
+      },
+    });
+
+    if (!grn) {
+      return Result.error('Good Received Note not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Validate status — only allow approval from saved status
+    if (grn.doc_status !== enum_good_received_note_status.saved) {
+      return Result.error(
+        `Cannot approve GRN with status '${grn.doc_status}'. Only saved GRNs can be approved.`,
+        ErrorCode.INVALID_ARGUMENT,
+      );
+    }
+
+    // Flatten detail items for the inventory transaction service
+    const detailItems: ICreateFromGrnDetailItem[] = [];
+    for (const detail of grn.tb_good_received_note_detail) {
+      for (const item of detail.tb_good_received_note_detail_item) {
+        detailItems.push({
+          detail_item_id: item.id,
+          product_id: detail.product_id,
+          location_id: detail.location_id,
+          location_code: detail.location_code || null,
+          received_base_qty: Number(item.received_base_qty) || 0,
+          base_net_amount: Number(item.base_net_amount) || 0,
+        });
+      }
+    }
+
+    if (detailItems.length === 0) {
+      return Result.error(
+        'Cannot approve GRN without detail items.',
+        ErrorCode.INVALID_ARGUMENT,
+      );
+    }
+
+    await prisma.$transaction(async (tx) => {
+      // 1. Create inventory transaction + details + FIFO cost layers
+      await this.inventoryTransactionService.createFromGoodReceivedNote(tx, {
+        grn_id: grn.id,
+        grn_no: grn.grn_no,
+        grn_date: grn.grn_date || new Date(),
+        detail_items: detailItems,
+        user_id,
+      });
+
+      // 2. Update GRN status to committed
+      await tx.tb_good_received_note.update({
+        where: { id },
+        data: {
+          doc_status: enum_good_received_note_status.committed,
+          updated_by_id: user_id,
+          updated_at: new Date(),
+        },
+      });
+    });
+
+    return Result.ok({ id, message: 'Good Received Note approved successfully' });
   }
 
   // ==================== Good Received Note Detail CRUD ====================

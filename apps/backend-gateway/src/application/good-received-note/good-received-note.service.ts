@@ -275,6 +275,40 @@ export class GoodReceivedNoteService {
     return Result.ok(response.data);
   }
 
+  async approve(
+    id: string,
+    user_id: string,
+    tenant_id: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      {
+        function: 'approve',
+        id,
+        user_id,
+        tenant_id,
+        version,
+      },
+      GoodReceivedNoteService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      { cmd: 'good-received-note.approve', service: 'good-received-note' },
+      { id, user_id, tenant_id, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
   // ==================== Good Received Note Detail CRUD ====================
 
   async findDetailById(

@@ -444,6 +444,68 @@ export class GoodReceivedNoteController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  @Post(':bu_code/good-received-note/:id/approve')
+  @UseGuards(new AppIdGuard('goodReceivedNote.approve'))
+  @Serialize(GoodReceivedNoteMutationResponseSchema)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Approve a Good Received Note',
+    description:
+      'Approves an existing Good Received Note. Only GRNs with status saved can be approved. Sets status to committed and creates inventory transactions with FIFO cost layers.',
+    operationId: 'approveGoodReceivedNote',
+    tags: ['[Method] Post'],
+    deprecated: false,
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
+    parameters: [
+      {
+        name: 'id',
+        in: 'path',
+        required: true,
+      },
+    ],
+    responses: {
+      200: {
+        description: 'The Good Received Note was successfully approved',
+      },
+      400: {
+        description: 'The Good Received Note cannot be approved due to invalid status or missing details',
+      },
+      404: {
+        description: 'The Good Received Note was not found',
+      },
+    },
+  })
+  @HttpCode(HttpStatus.OK)
+  async approve(
+    @Param('id') id: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      {
+        function: 'approve',
+        id,
+        version,
+      },
+      GoodReceivedNoteController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.goodReceivedNoteService.approve(
+      id,
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
   // ==================== Good Received Note Detail CRUD ====================
 
   @Get(':bu_code/good-received-note/:id/details')
