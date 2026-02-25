@@ -127,6 +127,60 @@ export class ActivityLogService {
   }
 
   @TryCatch
+  async findByEntity(
+    entityType: string,
+    paginate: IPaginate,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findByEntity', entityType, paginate },
+      ActivityLogService.name,
+    );
+
+    const page = paginate?.page || 1;
+    const limit = paginate?.limit || 20;
+    const skip = (page - 1) * limit;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const where: Record<string, any> = {
+      deleted_at: null,
+      entity_type: { contains: entityType, mode: 'insensitive' },
+    };
+
+    if (paginate?.search) {
+      where.OR = [
+        { description: { contains: paginate.search, mode: 'insensitive' } },
+      ];
+    }
+
+    const orderBy: Record<string, unknown> = {};
+    if (paginate?.sortBy) {
+      orderBy[paginate.sortBy] = paginate.sortOrder || 'desc';
+    } else {
+      orderBy.created_at = 'desc';
+    }
+
+    const [data, total] = await Promise.all([
+      this.prismaService.tb_activity.findMany({
+        where,
+        orderBy,
+        skip,
+        take: limit,
+      }),
+      this.prismaService.tb_activity.count({ where }),
+    ]);
+
+    return Result.ok({
+      paginate: {
+        total,
+        page,
+        perpage: limit,
+        pages: total === 0 ? 1 : Math.ceil(total / limit),
+      },
+      data,
+    });
+  }
+
+  @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findOne', id }, ActivityLogService.name);
 

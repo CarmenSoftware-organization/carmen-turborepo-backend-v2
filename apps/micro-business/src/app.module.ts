@@ -3,7 +3,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BackendLogger } from '@/common/helpers/backend.logger';
-import { AuditContextInterceptor } from '@repo/log-events-library';
+import { AuditContextInterceptor, LogEventsModule } from '@repo/log-events-library';
 import { SentryModule } from '@sentry/nestjs/setup';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
@@ -87,6 +87,19 @@ import { CommonModule } from './common/common.module';
   imports: [
     // Sentry for error tracking
     SentryModule.forRoot(),
+
+    // Log events module for manual audit logging (login/logout, etc.)
+    LogEventsModule.forRoot({
+      logDirectory: process.env.AUDIT_LOG_DIR || './logs/audit',
+      filePrefix: 'business-audit',
+      rotationStrategy: 'daily',
+      bufferSize: 100,
+      flushIntervalMs: 5000,
+      excludeModels: ['_prisma_migrations', 'tb_activity'],
+      sensitiveFields: ['password', 'hash', 'token', 'secret', 'api_key'],
+      saveToDatabase: false,
+      saveToFile: true,
+    }),
 
     // Shared modules
     TenantModule,

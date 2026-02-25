@@ -107,9 +107,7 @@ const trimStringValues = (data: any): any => {
 	return data;
 };
 
-const beforeCreate = (tenantId: string, model: string, args: any) => {
-	console.log(`[Tenant:${tenantId}] Before create on model: ${model}`);
-
+const beforeCreate = (_tenantId: string, _model: string, args: any) => {
 	if (args.data) {
 		args.data = trimStringValues(args.data);
 	}
@@ -117,9 +115,7 @@ const beforeCreate = (tenantId: string, model: string, args: any) => {
 	return args;
 };
 
-const beforeUpdate = (tenantId: string, model: string, args: any) => {
-	console.log(`[Tenant:${tenantId}] Before update on model: ${model}`);
-
+const beforeUpdate = (_tenantId: string, _model: string, args: any) => {
 	if (args.data) {
 		args.data = trimStringValues(args.data);
 	}
@@ -131,22 +127,17 @@ const beforeUpdate = (tenantId: string, model: string, args: any) => {
 export const PrismaClient_TENANT = async (tenantId: string, datasourceURL: string) => {
 	let clientData = clients[tenantId];
 
-	console.log(`[PrismaClient_TENANT] tenantId=${tenantId} cached=${!!clientData}`);
-
 	if (clientData) {
 		if (clientData.datasourceURL !== datasourceURL) {
-			console.log(`[PrismaClient_TENANT] datasourceURL changed, recreating client`);
 			await clientData.client.$disconnect();
 			clientData = null;
 		} else {
-			console.log(`[PrismaClient_TENANT] returning cached client`);
 			await clientData.client.$connect();
 			return clientData.client;
 		}
 	}
 
 	if (!clientData) {
-		console.log(`[PrismaClient_TENANT] creating new client with audit extension`);
 		const baseClient = new PrismaClient({
 			datasources: {
 				db: {
@@ -225,27 +216,19 @@ export const PrismaClient_TENANT = async (tenantId: string, datasourceURL: strin
 					},
 					async create({ model, args, query }) {
 						const modifiedArgs = beforeCreate(tenantId, model, args);
-						const result = await query(modifiedArgs);
-						console.log(`[Tenant:${tenantId}] After create on model: ${model}`);
-						return result;
+						return query(modifiedArgs);
 					},
 					async update({ model, args, query }) {
 						const modifiedArgs = beforeUpdate(tenantId, model, args);
-						const result = await query(modifiedArgs);
-						console.log(`[Tenant:${tenantId}] After update on model: ${model}`);
-						return result;
+						return query(modifiedArgs);
 					},
 					async updateMany({ model, args, query }) {
 						const modifiedArgs = beforeUpdate(tenantId, model, args);
-						const result = await query(modifiedArgs);
-						console.log(`[Tenant:${tenantId}] After updateMany on model: ${model}`);
-						return result;
+						return query(modifiedArgs);
 					},
 					async createMany({ model, args, query }) {
 						const modifiedArgs = beforeCreate(tenantId, model, args);
-						const result = await query(modifiedArgs);
-						console.log(`[Tenant:${tenantId}] After createMany on model: ${model}`);
-						return result;
+						return query(modifiedArgs);
 					},
 					async upsert({ model, args, query }) {
 						const modifiedArgs = {
@@ -253,10 +236,7 @@ export const PrismaClient_TENANT = async (tenantId: string, datasourceURL: strin
 							create: args.create ? trimStringValues(args.create) : args.create,
 							update: args.update ? trimStringValues(args.update) : args.update,
 						};
-						console.log(`[Tenant:${tenantId}] Before upsert on model: ${model}`);
-						const result = await query(modifiedArgs);
-						console.log(`[Tenant:${tenantId}] After upsert on model: ${model}`);
-						return result;
+						return query(modifiedArgs);
 					},
 				},
 			},
