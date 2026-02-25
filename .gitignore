@@ -44,6 +44,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 dev-prod.log
+business.log
+gateway.log
+keycloak.log
 
 # Misc
 .DS_Store
