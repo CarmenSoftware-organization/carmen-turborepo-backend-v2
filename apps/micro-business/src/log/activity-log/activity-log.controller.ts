@@ -50,6 +50,30 @@ export class ActivityLogController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  @MessagePattern({ cmd: 'activity-log.findByEntity', service: 'activity-log' })
+  async findByEntity(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'findByEntity', payload },
+      ActivityLogController.name,
+    );
+
+    this.activityLogService.userId = payload.user_id;
+    this.activityLogService.bu_code = payload.bu_code;
+    await this.activityLogService.initializePrismaService(
+      payload.bu_code,
+      payload.user_id,
+    );
+
+    const paginate = payload.paginate || {};
+
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.activityLogService.findByEntity(payload.entity_type, paginate),
+    );
+
+    return this.handlePaginatedResult(result);
+  }
+
   @MessagePattern({ cmd: 'activity-log.findOne', service: 'activity-log' })
   async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(

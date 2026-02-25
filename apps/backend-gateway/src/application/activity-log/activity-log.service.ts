@@ -67,6 +67,45 @@ export class ActivityLogService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  async findByEntity(
+    entity_type: string,
+    user_id: string,
+    bu_code: string,
+    paginate: IPaginate,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      {
+        function: 'findByEntity',
+        entity_type,
+        user_id,
+        bu_code,
+        paginate,
+      },
+      ActivityLogService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.logService.send(
+      { cmd: 'activity-log.findByEntity', service: 'activity-log' },
+      {
+        entity_type,
+        user_id,
+        bu_code,
+        paginate,
+      },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok({ data: response.data, paginate: response.paginate });
+  }
+
   async findOne(
     id: string,
     user_id: string,

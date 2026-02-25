@@ -44,7 +44,6 @@ export function createAuditPrismaExtension(
 		if (excludeModels.has(model)) return;
 
 		const context = getAuditContext();
-		console.log(`[AuditLog] action=${action} model=${model} context=${JSON.stringify(context)}`);
 
 		const entry: LogEventEntry = {
 			id: uuidv4(),
@@ -83,28 +82,6 @@ export function createAuditPrismaExtension(
 						count: result.count,
 						data: args.data,
 					});
-					return result;
-				},
-
-				async findUnique({ model, args, query }: any) {
-					const result = await query(args);
-					if (result) {
-						await logEvent('access', model, extractRecordId(result), null, null);
-					}
-					return result;
-				},
-
-				async findFirst({ model, args, query }: any) {
-					const result = await query(args);
-					if (result) {
-						await logEvent('access', model, extractRecordId(result), null, null);
-					}
-					return result;
-				},
-
-				async findMany({ model, args, query }: any) {
-					const result = await query(args);
-					await logEvent('access', model, null, null, { count: result.length });
 					return result;
 				},
 

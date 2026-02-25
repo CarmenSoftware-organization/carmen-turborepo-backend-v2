@@ -88,6 +88,37 @@ export class ActivityLogController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  @Get('entity/:entity_type')
+  @UseGuards(new AppIdGuard('activityLog.findAll'))
+  @HttpCode(HttpStatus.OK)
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({ name: 'sortBy', required: false, type: String })
+  @ApiQuery({ name: 'sortOrder', required: false, type: String })
+  async findByEntity(
+    @Param('entity_type') entity_type: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query() query: IPaginateQuery,
+  ): Promise<void> {
+    this.logger.debug(
+      {
+        function: 'findByEntity',
+        entity_type,
+        query,
+      },
+      ActivityLogController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
+
+    const result = await this.activityLogService.findByEntity(entity_type, user_id, bu_code, paginate);
+    this.respond(res, result);
+  }
+
   @Get(':id')
   @UseGuards(new AppIdGuard('activityLog.findOne'))
   @HttpCode(HttpStatus.OK)
