@@ -71,6 +71,11 @@ model tb_application_role_tb_permission {
   @@unique([application_role_id, permission_id, deleted_at], map: "applicationrole_permission_role_permission_deleted_at_u")
 }
 
+enum enum_calculation_method {
+  average
+  fifo
+}
+
 model tb_business_unit {
   id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   cluster_id  String  @db.Uuid
@@ -80,10 +85,11 @@ model tb_business_unit {
   description String?
   info        Json?
 
-  is_hq         Boolean? @default(true)
-  is_active     Boolean? @default(true)
-  db_connection Json?
-  config        Json?
+  is_hq              Boolean?               @default(true)
+  is_active          Boolean?               @default(true)
+  db_connection      Json?
+  config             Json?
+  calculation_method enum_calculation_method @default(average)
 
   created_at    DateTime? @default(now()) @db.Timestamptz(6)
   created_by_id String?   @db.Uuid

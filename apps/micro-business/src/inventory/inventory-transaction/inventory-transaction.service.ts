@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { TenantService } from '@/tenant/tenant.service';
+import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import { PrismaClient_TENANT, enum_inventory_doc_type, enum_transaction_type } from '@repo/prisma-shared-schema-tenant';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { format } from 'date-fns';
@@ -33,6 +34,7 @@ export interface ICreateFromGrnDetailItem {
  * Input payload for creating inventory transactions from a GRN.
  */
 export interface ICreateFromGrnPayload {
+  bu_code: string;
   grn_id: string;
   grn_no: string | null;
   grn_date: Date;
@@ -46,11 +48,26 @@ export class InventoryTransactionService {
     InventoryTransactionService.name,
   );
   constructor(
+    @Inject('PRISMA_SYSTEM')
+    private readonly prismaSystem: typeof PrismaClient_SYSTEM,
     @Inject('PRISMA_TENANT')
     private readonly prismaTenant: typeof PrismaClient_TENANT,
 
     private readonly tenantService: TenantService,
-  ) {}
+  ) { }
+
+  /**
+   * Read the calculation_method from tb_business_unit (platform DB).
+   * Returns 'fifo' or 'average'. Defaults to 'fifo' if not found.
+   */
+  async getCalculationMethod(bu_code: string): Promise<string> {
+    const businessUnit = await this.prismaSystem.tb_business_unit.findFirst({
+      where: { code: bu_code, deleted_at: null },
+      select: { calculation_method: true },
+    });
+
+    return businessUnit?.calculation_method || 'fifo';
+  }
 
   @TryCatch
   async findAllByIds(
@@ -125,10 +142,8 @@ export class InventoryTransactionService {
   }
 
   /**
-   * Create inventory transaction + details + FIFO cost layers from an approved GRN.
-   *
-   * Accepts a Prisma transaction client (`tx`) so the caller can wrap this
-   * inside a larger `$transaction` to keep everything atomic.
+   * Create inventory transaction from an approved GRN.
+   * Routes to the correct handler based on the BU's calculation_method.
    *
    * @param tx - Prisma transaction client from the caller's `$transaction`
    * @param payload - GRN header info + flattened detail items
@@ -139,11 +154,30 @@ export class InventoryTransactionService {
     tx: any,
     payload: ICreateFromGrnPayload,
   ): Promise<string> {
+    const method = await this.getCalculationMethod(payload.bu_code);
+
     this.logger.debug(
-      { function: 'createFromGoodReceivedNote', grn_id: payload.grn_id },
+      { function: 'createFromGoodReceivedNote', grn_id: payload.grn_id, calculation_method: method },
       InventoryTransactionService.name,
     );
 
+    switch (method) {
+      case 'fifo':
+        return this.createFifoTransaction(tx, payload);
+      case 'average':
+        throw new Error('Average calculation method is not yet supported');
+      default:
+        throw new Error(`Unknown calculation method: ${method}`);
+    }
+  }
+
+  /**
+   * FIFO: Create inventory transaction + details + cost layers from an approved GRN.
+   */
+  private async createFifoTransaction(
+    tx: any,
+    payload: ICreateFromGrnPayload,
+  ): Promise<string> {
     const now = new Date();
     const grnDate = payload.grn_date;
     const year = grnDate.getFullYear().toString();

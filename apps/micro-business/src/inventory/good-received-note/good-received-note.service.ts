@@ -1837,6 +1837,7 @@ export class GoodReceivedNoteService {
     await prisma.$transaction(async (tx) => {
       // 1. Create inventory transaction + details + FIFO cost layers
       await this.inventoryTransactionService.createFromGoodReceivedNote(tx, {
+        bu_code: tenant_id,
         grn_id: grn.id,
         grn_no: grn.grn_no,
         grn_date: grn.grn_date || new Date(),

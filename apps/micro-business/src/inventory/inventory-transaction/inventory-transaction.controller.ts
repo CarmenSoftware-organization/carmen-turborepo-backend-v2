@@ -59,6 +59,7 @@ export class InventoryTransactionController extends BaseMicroserviceController {
     const result = await runWithAuditContext(auditContext, () =>
       this.inventoryTransactionService.testCreateFromGrn(
         {
+          bu_code: tenant_id,
           grn_id: data.grn_id,
           grn_no: data.grn_no || null,
           grn_date: data.grn_date ? new Date(data.grn_date) : new Date(),
