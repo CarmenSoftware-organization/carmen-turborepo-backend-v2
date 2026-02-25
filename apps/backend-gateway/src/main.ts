@@ -60,7 +60,8 @@ async function bootstrap() {
       `https://dev.blueledgers.com:${gatewayPortHttps}`,
       'dev environment',
     )
-    .addServer(`https://carmen-api.semapru.com`, 'production environment')
+    .addServer(`https://carmen-api.semapru.com`, 'TEST environment')
+    .addServer('https://43.209.126.252', 'UAT environment')
     .addBearerAuth({
       type: 'http',
       scheme: 'bearer',
@@ -68,8 +69,14 @@ async function bootstrap() {
     })
     .build();
 
-  const document_http = SwaggerModule.createDocument(app_http as unknown as Parameters<typeof SwaggerModule.createDocument>[0], config);
-  const document_https = SwaggerModule.createDocument(app_https as unknown as Parameters<typeof SwaggerModule.createDocument>[0], config);
+  const document_http = SwaggerModule.createDocument(
+    app_http as unknown as Parameters<typeof SwaggerModule.createDocument>[0],
+    config,
+  );
+  const document_https = SwaggerModule.createDocument(
+    app_https as unknown as Parameters<typeof SwaggerModule.createDocument>[0],
+    config,
+  );
 
   // SwaggerModule.setup('swagger', app_http as unknown as Parameters<typeof SwaggerModule.createDocument>[0], document_http);
   // SwaggerModule.setup('swagger', app_https as unknown as Parameters<typeof SwaggerModule.createDocument>[0], document_https);

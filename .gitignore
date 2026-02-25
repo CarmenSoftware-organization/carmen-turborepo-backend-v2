@@ -62,6 +62,8 @@ swagger-spec.json
 .env.local
 .env.production
 .env.development
+.env.dev
+.env.uat
 
 # Backup files
 backups/
