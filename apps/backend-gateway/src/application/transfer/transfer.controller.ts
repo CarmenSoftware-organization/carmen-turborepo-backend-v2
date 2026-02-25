@@ -29,6 +29,8 @@ import {
   TransferMutationResponseSchema,
   TransferCreateDto,
   TransferUpdateDto,
+  TransferDetailCreateDto,
+  TransferDetailUpdateDto,
   ITransferUpdate,
 } from '@/common';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
@@ -247,7 +249,7 @@ export class TransferController extends BaseHttpController {
   async createDetail(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: TransferDetailCreateDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -285,7 +287,7 @@ export class TransferController extends BaseHttpController {
     @Param('id') id: string,
     @Param('detail_id') detailId: string,
     @Param('bu_code') bu_code: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: TransferDetailUpdateDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',

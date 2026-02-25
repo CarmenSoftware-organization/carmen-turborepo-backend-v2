@@ -333,35 +333,6 @@ export class GoodReceivedNoteService {
     return Result.ok(response.data);
   }
 
-  async createDetail(
-    grnId: string,
-    data: Record<string, unknown>,
-    user_id: string,
-    tenant_id: string,
-    version: string,
-  ): Promise<Result<unknown>> {
-    this.logger.debug(
-      { function: 'createDetail', grnId, data, user_id, tenant_id, version },
-      GoodReceivedNoteService.name,
-    );
-
-    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
-      { cmd: 'good-received-note-detail.create', service: 'good-received-note' },
-      { grn_id: grnId, data, user_id, tenant_id, version },
-    );
-
-    const response = await firstValueFrom(res);
-
-    if (response.response.status !== HttpStatus.CREATED) {
-      return Result.error(
-        response.response.message,
-        httpStatusToErrorCode(response.response.status),
-      );
-    }
-
-    return Result.ok(response.data);
-  }
-
   async deleteDetail(
     detailId: string,
     user_id: string,

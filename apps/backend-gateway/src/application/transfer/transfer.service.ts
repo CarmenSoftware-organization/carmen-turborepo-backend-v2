@@ -7,6 +7,8 @@ import { firstValueFrom } from 'rxjs';
 import {
   ITransferCreate,
   ITransferUpdate,
+  ITransferDetailCreate,
+  ITransferDetailUpdate,
   Result,
   MicroserviceResponse,
 } from '@/common';
@@ -222,7 +224,7 @@ export class TransferService {
 
   async createDetail(
     transferId: string,
-    data: Record<string, unknown>,
+    data: ITransferDetailCreate,
     user_id: string,
     tenant_id: string,
     version: string,
@@ -251,7 +253,7 @@ export class TransferService {
 
   async updateDetail(
     detailId: string,
-    data: Record<string, unknown>,
+    data: ITransferDetailUpdate,
     user_id: string,
     tenant_id: string,
     version: string,
