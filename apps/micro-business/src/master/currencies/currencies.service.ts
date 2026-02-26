@@ -1,6 +1,5 @@
 import { HttpStatus, Injectable, HttpException, Inject } from '@nestjs/common';
 import {
-  IBusinessUnitConfig,
   ICreateCurrencies,
   IUpdateCurrencies,
 } from './interface/currencies.interface';
@@ -381,18 +380,13 @@ export class CurrenciesService {
       return Result.error('Business unit not found', ErrorCode.NOT_FOUND);
     }
 
-
-    const configs = (businessUnit.config as IBusinessUnitConfig[]) ?? [];
-
-    const config = configs.filter((item) => item.key === "currency_base")[0] ?? {};
-
-    if (!config.value) {
+    if (!businessUnit.default_currency_id) {
       return Result.error('Currency not found', ErrorCode.NOT_FOUND);
-    };
+    }
 
     const currency = await this.prismaService.tb_currency.findFirst({
       where: {
-        id: (config.value as any).currency_id,
+        id: businessUnit.default_currency_id,
         is_active: true,
       },
     });

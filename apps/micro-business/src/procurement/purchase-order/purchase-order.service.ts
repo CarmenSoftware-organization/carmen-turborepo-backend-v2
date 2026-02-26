@@ -131,7 +131,7 @@ export class PurchaseOrderService {
         vendor_id: true,
         vendor_name: true,
         currency_id: true,
-        currency_name: true,
+        currency_code: true,
         exchange_rate: true,
         approval_date: true,
         email: true,
@@ -323,7 +323,7 @@ export class PurchaseOrderService {
       vendor_id: true,
       vendor_name: true,
       currency_id: true,
-      currency_name: true,
+      currency_code: true,
       exchange_rate: true,
       buyer_id: true,
       buyer_name: true,
@@ -464,7 +464,7 @@ export class PurchaseOrderService {
           vendor_id: data.vendor_id,
           vendor_name: data.vendor_name || vendor.name,
           currency_id: data.currency_id,
-          currency_name: data.currency_name || currency.name,
+          currency_code: data.currency_code || currency.code,
           exchange_rate: data.exchange_rate || 1,
           email: data.email,
           buyer_id: data.buyer_id,
@@ -614,7 +614,7 @@ export class PurchaseOrderService {
       if (!currency) {
         return Result.error('Currency not found', ErrorCode.INVALID_ARGUMENT);
       }
-      data.currency_name = data.currency_name || currency.name;
+      data.currency_code = data.currency_code || currency.code;
     }
 
     // Update the main purchase order record
@@ -629,7 +629,7 @@ export class PurchaseOrderService {
         vendor_id: data.vendor_id,
         vendor_name: data.vendor_name,
         currency_id: data.currency_id,
-        currency_name: data.currency_name,
+        currency_code: data.currency_code,
         exchange_rate: data.exchange_rate,
         email: data.email,
         buyer_id: data.buyer_id,
@@ -1058,7 +1058,7 @@ export class PurchaseOrderService {
         vendor_id: true,
         vendor_name: true,
         currency_id: true,
-        currency_name: true,
+        currency_code: true,
         exchange_rate: true,
         approved_qty: true,
         pricelist_price: true,
@@ -1079,7 +1079,7 @@ export class PurchaseOrderService {
         tb_currency: {
           select: {
             id: true,
-            name: true,
+            code: true,
           },
         },
         tb_product: {
@@ -1119,7 +1119,7 @@ export class PurchaseOrderService {
           delivery_date: deliveryDateStr,
           vendor_name: prDetail.vendor_name || prDetail.tb_vendor?.name || '',
           currency_id: prDetail.currency_id,
-          currency_name: prDetail.currency_name || prDetail.tb_currency?.name || '',
+          currency_code: prDetail.currency_code || prDetail.tb_currency?.code || '',
           exchange_rate: Number(prDetail.exchange_rate) || 1,
           total_price: 0,
           base_price: 0,
@@ -1173,7 +1173,7 @@ export class PurchaseOrderService {
         po_no: `#${String(draftCounter).padStart(2, '0')}`,
         delivery_date: group.delivery_date,
         vendor_name: group.vendor_name,
-        currency_name: group.currency_name,
+        currency_code: group.currency_code,
         exchange_rate: group.exchange_rate,
         total_price: group.total_price,
         base_price: group.base_price,
@@ -1235,7 +1235,7 @@ export class PurchaseOrderService {
         pricelist_unit: true,
         pricelist_price: true,
         currency_id: true,
-        currency_name: true,
+        currency_code: true,
         exchange_rate: true,
         approved_qty: true,
         approved_unit_id: true,
@@ -1317,7 +1317,7 @@ export class PurchaseOrderService {
           vendor_name: prDetail.vendor_name || prDetail.tb_vendor?.name,
           delivery_date: deliveryDate,
           currency_id: prDetail.currency_id,
-          currency_name: prDetail.currency_name || prDetail.tb_currency?.name,
+          currency_code: prDetail.currency_code || prDetail.tb_currency?.code,
           exchange_rate: Number(prDetail.exchange_rate) || 1,
           items: [],
           total_qty: 0,
@@ -1430,7 +1430,7 @@ export class PurchaseOrderService {
             vendor_id: group.vendor_id,
             vendor_name: group.vendor_name,
             currency_id: group.currency_id,
-            currency_name: group.currency_name,
+            currency_code: group.currency_code,
             exchange_rate: group.exchange_rate,
             total_qty: group.total_qty,
             total_price: group.total_price,
@@ -1511,7 +1511,7 @@ export class PurchaseOrderService {
           vendor_name: po.vendor_name,
           delivery_date: po.delivery_date,
           currency_id: po.currency_id,
-          currency_name: po.currency_name,
+          currency_code: po.currency_code,
           total_qty: Number(po.total_qty),
           total_price: Number(po.total_price),
           total_tax: Number(po.total_tax),
@@ -1674,7 +1674,7 @@ export class PurchaseOrderService {
         vendor_id: true,
         vendor_name: true,
         currency_id: true,
-        currency_name: true,
+        currency_code: true,
         exchange_rate: true,
         approval_date: true,
         email: true,
@@ -1850,7 +1850,7 @@ export class PurchaseOrderService {
     const currency = purchaseOrder.tb_currency_tb_purchase_order_currency_idTotb_currency;
     worksheet.getCell(`C${currentRow}`).value = currency
       ? `${currency.name} (${currency.code})`
-      : purchaseOrder.currency_name || '';
+      : purchaseOrder.currency_code || '';
 
     worksheet.getCell(`F${currentRow}`).value = 'Delivery Date:';
     worksheet.getCell(`F${currentRow}`).style = labelStyle;
@@ -2042,7 +2042,7 @@ export class PurchaseOrderService {
         vendor_id: true,
         vendor_name: true,
         currency_id: true,
-        currency_name: true,
+        currency_code: true,
         exchange_rate: true,
         approval_date: true,
         email: true,
@@ -2120,7 +2120,7 @@ export class PurchaseOrderService {
 
     const currency = purchaseOrder.tb_currency_tb_purchase_order_currency_idTotb_currency;
     const currencySymbol = currency?.symbol || '';
-    const currencyCode = currency?.code || purchaseOrder.currency_name || '';
+    const currencyCode = currency?.code || purchaseOrder.currency_code || '';
 
     // Format number with thousand separator
     const formatNumber = (num: number): string => {
@@ -2339,7 +2339,7 @@ export class PurchaseOrderService {
             po_no: true,
             po_status: true,
             vendor_name: true,
-            currency_name: true,
+            currency_code: true,
           },
         },
         tb_unit_tb_purchase_order_detail_order_unit_idTotb_unit: {

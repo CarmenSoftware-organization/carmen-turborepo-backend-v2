@@ -97,7 +97,7 @@ export interface IPurchaseOrder {
 
   // Currency
   currency_id?: string;
-  currency_name?: string;
+  currency_code?: string;
   exchange_rate?: number;
 
   approval_date?: Date | string;
@@ -134,7 +134,7 @@ export interface ICreatePurchaseOrder {
   vendor_name?: string;
   delivery_date: string;
   currency_id: string;
-  currency_name?: string;
+  currency_code?: string;
   exchange_rate?: number;
   description?: string;
   order_date?: string;

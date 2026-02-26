@@ -22,7 +22,7 @@ export interface IPurchaseRequestDetail {
   pricelist_unit?: string
   pricelist_price?: number
   currency_id?: string
-  currency_name?: string
+  currency_code?: string
   exchange_rate?: number
   exchange_rate_date?: Date
   requested_qty?: number

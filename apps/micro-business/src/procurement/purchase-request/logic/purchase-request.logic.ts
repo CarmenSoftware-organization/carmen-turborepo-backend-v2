@@ -108,7 +108,7 @@ export class PurchaseRequestLogic {
         location_code: location?.code,
         delivery_point_id: deliveryPoint?.id,
         delivery_point_name: deliveryPoint?.name,
-        currency_name: currency?.name,
+        currency_code: currency?.code,
         exchange_rate: currency?.exchange_rate,
         exchange_rate_date: currency?.exchange_rate_at,
         foc_unit_name: focUnit?.name,
@@ -223,7 +223,7 @@ export class PurchaseRequestLogic {
             detail.inventory_unit_name = foreignValue?.unit_ids?.find((unit) => unit?.id === detail?.inventory_unit_id)?.name
           }
           if (detail?.currency_id) {
-            detail.currency_name = foreignValue?.currency_ids?.find((currency) => currency?.id === detail?.currency_id)?.name
+            detail.currency_code = foreignValue?.currency_ids?.find((currency) => currency?.id === detail?.currency_id)?.code
             detail.exchange_rate = foreignValue?.currency_ids?.find((currency) => currency?.id === detail?.currency_id)?.exchange_rate
             detail.exchange_rate_date = foreignValue?.currency_ids?.find((currency) => currency?.id === detail?.currency_id)?.exchange_rate_at
           }
@@ -262,7 +262,7 @@ export class PurchaseRequestLogic {
             detail.inventory_unit_name = foreignValue?.unit_ids?.find((unit) => unit?.id === detail?.inventory_unit_id)?.name
           }
           if (detail?.currency_id) {
-            detail.currency_name = foreignValue?.currency_ids?.find((currency) => currency?.id === detail?.currency_id)?.name
+            detail.currency_code = foreignValue?.currency_ids?.find((currency) => currency?.id === detail?.currency_id)?.code
             detail.exchange_rate = foreignValue?.currency_ids?.find((currency) => currency?.id === detail?.currency_id)?.exchange_rate
             detail.exchange_rate_date = foreignValue?.currency_ids?.find((currency) => currency?.id === detail?.currency_id)?.exchange_rate_at
           }
@@ -291,7 +291,7 @@ export class PurchaseRequestLogic {
               vendor_name: foreignValue?.vendor_ids?.find((vendor) => vendor?.id === detail?.vendor_id)?.name,
               foc_unit_name: foreignValue?.unit_ids?.find((unit) => unit?.id === detail?.foc_unit_id)?.name,
               approved_unit_name: foreignValue?.unit_ids?.find((unit) => unit?.id === detail?.approved_unit_id)?.name,
-              currency_name: foreignValue?.currency_ids?.find((currency) => currency?.id === detail?.currency_id)?.name,
+              currency_code: foreignValue?.currency_ids?.find((currency) => currency?.id === detail?.currency_id)?.code,
               tax_profile_name: foreignValue?.tax_profile_ids?.find((tp) => tp?.id === detail?.tax_profile_id)?.name,
               pricelist_no: foreignValue?.pricelist_detail_ids?.find((priceListDetail) => priceListDetail?.id === detail?.pricelist_detail_id)?.tb_pricelist.pricelist_no
             }))
@@ -429,7 +429,7 @@ export class PurchaseRequestLogic {
             vendor_name: foreignValue?.vendor_ids?.find((vendor) => vendor?.id === detail?.vendor_id)?.name,
             foc_unit_name: foreignValue?.unit_ids?.find((unit) => unit?.id === detail?.foc_unit_id)?.name,
             approved_unit_name: foreignValue?.unit_ids?.find((unit) => unit?.id === detail?.approved_unit_id)?.name,
-            currency_name: foreignValue?.currency_ids?.find((currency) => currency?.id === detail?.currency_id)?.name,
+            currency_code: foreignValue?.currency_ids?.find((currency) => currency?.id === detail?.currency_id)?.code,
             tax_profile_name: foreignValue?.tax_profile_ids?.find((tp) => tp?.id === detail?.tax_profile_id)?.name,
             pricelist_no: foreignValue?.pricelist_detail_ids?.find((priceListDetail) => priceListDetail?.id === detail?.pricelist_detail_id)?.tb_pricelist.pricelist_no
           }))

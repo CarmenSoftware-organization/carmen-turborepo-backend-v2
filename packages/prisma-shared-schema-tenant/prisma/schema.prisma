@@ -1797,7 +1797,7 @@ model tb_purchase_order {
   vendor_id     String?   @db.Uuid
   vendor_name   String?   @db.VarChar
   currency_id   String?   @db.Uuid
-  currency_name String?   @db.VarChar
+  currency_code String?   @db.VarChar
   exchange_rate Decimal?  @default(1) @db.Decimal(15, 5)
   approval_date DateTime? @db.Timestamptz(6)
 
@@ -2144,7 +2144,7 @@ model tb_purchase_request_detail {
   pricelist_type      enum_pricelist_compare_type? @default(automatic)
 
   currency_id        String?   @db.Uuid
-  currency_name      String?   @db.VarChar
+  currency_code      String?   @db.VarChar
   exchange_rate      Decimal?  @default(1) @db.Decimal(15, 5)
   exchange_rate_date DateTime? @db.Timestamptz(6)
 

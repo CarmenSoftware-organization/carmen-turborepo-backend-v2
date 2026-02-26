@@ -39,7 +39,7 @@ const PurchaseRequestDetailEmbeddedSchema = z.object({
 
   // Currency
   currency_id: z.string().nullable().optional(),
-  currency_name: z.string().nullable().optional(),
+  currency_code: z.string().nullable().optional(),
   exchange_rate: z.coerce.number().nullable().optional(),
   exchange_rate_date: z.coerce.date().nullable().optional(),
 

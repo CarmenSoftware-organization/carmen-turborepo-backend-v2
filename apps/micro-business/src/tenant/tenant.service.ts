@@ -138,45 +138,6 @@ export class TenantService {
     return tenant;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async getSystemBusinessUnitConfig(userId: string, tenantId: string): Promise<any> {
-    this.logger.debug(
-      { function: 'getSystemBusinessUnitConfig', userId, tenantId },
-      TenantService.name,
-    );
-
-    const tenant = await this.getdb_connection(userId, tenantId);
-
-    if (!tenant) {
-      return {
-        response: {
-          status: HttpStatus.NO_CONTENT,
-          message: 'Tenant not found',
-        },
-      };
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const res: Observable<any> = this.clusterService.send(
-      {
-        cmd: 'business-unit.get-system-configs',
-        service: 'business-unit',
-      },
-      { user_id: userId, bu_code: tenant.bu_code, version: 'latest' },
-    );
-
-    const response = await firstValueFrom(res);
-
-    this.logger.debug(
-      { function: 'getSystemBusinessUnitConfig', response },
-      TenantService.name,
-    );
-
-    return {
-      data: response.data
-    };
-  }
-
   async getdbConnectionByCode(user_id: string, tenantId: string): Promise<TenantConnection> {
     this.logger.debug(
       { function: 'getdb_connection', user_id, tenantId },

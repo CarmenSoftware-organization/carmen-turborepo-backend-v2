@@ -231,7 +231,7 @@ export class PurchaseRequestTemplateLogic {
         requested_unit_name: requestedUnit?.name,
         foc_unit_name: focUnit?.name,
         inventory_unit_name: inventoryUnit?.name,
-        currency_name: currency?.name,
+        currency_code: currency?.code,
         exchange_rate: currency?.exchange_rate,
         exchange_rate_date: currency?.exchange_rate_at,
         location_name: location?.name,

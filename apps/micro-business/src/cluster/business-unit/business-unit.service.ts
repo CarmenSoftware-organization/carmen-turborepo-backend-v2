@@ -3,22 +3,19 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
-import { enum_business_unit_config_key, PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
+import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { v4 as uuidv4 } from 'uuid';
 import {
-  IBusinessUnitConfig,
   IBusinessUnitCreate,
   IBusinessUnitUpdate,
   IUserBusinessUnitCreate,
   IUserBusinessUnitUpdate,
 } from './interface/business-unit.interface';
-// import { IPaginate } from 'src/shared-interface/paginate.interface';
 import QueryParams from 'src/libs/paginate.query';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { TenantService } from '@/tenant/tenant.service';
-import { DefaultCurrencyObject as DefaultCurrencyObjectSchema, IDefaultCurrencyObject, IPaginate, Result, ErrorCode, TryCatch } from '@/common';
+import { IPaginate, Result, ErrorCode, TryCatch } from '@/common';
 
 @Injectable()
 export class BusinessUnitService {
@@ -77,7 +74,7 @@ export class BusinessUnitService {
         code: data.code,
         name: data.name,
         alias_name: data.alias_name,
-        config: data.config as unknown as Record<string, unknown>,
+        default_currency_id: data.default_currency_id,
         is_hq: data.is_hq,
         is_active: data.is_active,
         created_by_id: user_id,
@@ -143,7 +140,7 @@ export class BusinessUnitService {
         code: data.code,
         name: data.name,
         alias_name: data.alias_name,
-        config: data.config as unknown as Record<string, unknown>,
+        default_currency_id: data.default_currency_id,
         is_hq: data.is_hq,
         is_active: data.is_active,
         updated_by_id: user_id,
@@ -323,6 +320,7 @@ export class BusinessUnitService {
               name: true,
               code: true,
               alias_name: true,
+              default_currency_id: true,
             },
           },
         },
@@ -331,13 +329,8 @@ export class BusinessUnitService {
 
         const data = [];
 
-        for (const item of res) { 
+        for (const item of res) {
           const user_department = await this.tenantService.getUserDepartment(
-            user_id,
-            item.tb_business_unit.id,
-          );
-
-          const businessUnitConfig = await this.tenantService.getSystemBusinessUnitConfig(
             user_id,
             item.tb_business_unit.id,
           );
@@ -349,7 +342,7 @@ export class BusinessUnitService {
             alias_name: item.tb_business_unit.alias_name || '',
             is_default: item.is_default,
             department: user_department,
-            config: businessUnitConfig.data,
+            default_currency_id: item.tb_business_unit.default_currency_id,
           });
 
         }
@@ -633,463 +626,4 @@ export class BusinessUnitService {
     return Result.ok(null);
   }
 
-  // Business Unit Config
-
-  @TryCatch
-  async getBusinessUnitConfigs(
-    bu_code: string,
-    user_id: string,
-    tenant_id: string,
-    version: string,
-  ): Promise<Result<unknown>> {
-    this.logger.debug(
-      {
-        function: 'getBusinessUnitConfigs',
-        bu_code: bu_code,
-        user_id: user_id,
-        tenant_id: tenant_id,
-        version: version,
-      },
-      BusinessUnitService.name,
-    );
-    const businessUnit = await this.prismaSystem.tb_business_unit.findFirst({
-      where: { code: bu_code },
-    });
-
-    const businessUnitConfig = businessUnit?.config || [];
-
-    return Result.ok(businessUnitConfig);
-  }
-
-  @TryCatch
-  async putBusinessUnitConfigs(
-    bu_code: string,
-    data: IBusinessUnitConfig[],
-    user_id: string,
-    tenant_id: string,
-    version: string,
-  ): Promise<Result<{ id: string }>> {
-    this.logger.debug(
-      {
-        function: 'putBusinessUnitConfigs',
-        bu_code: bu_code,
-        data: data,
-        user_id: user_id,
-        tenant_id: tenant_id,
-        version: version,
-      },
-      BusinessUnitService.name,
-    );
-    const businessUnit = await this.prismaSystem.tb_business_unit.findFirst({
-      where: { code: bu_code },
-    });
-
-    if (!businessUnit) {
-      return Result.error('Business unit not found', ErrorCode.NOT_FOUND);
-    }
-
-    const validationResults = data.map((item: IBusinessUnitConfig) => {
-      const { error, message } = BusinessUnitService.validateValueByDataType(
-        item.value,
-        item.datatype,
-      );
-      if (error) {
-        return message;
-      }
-      return null;
-    });
-
-    const errorResult = validationResults.find((result) => result !== null);
-    if (errorResult) {
-      return Result.error(errorResult, ErrorCode.VALIDATION_FAILURE);
-    }
-
-    await this.prismaSystem.tb_business_unit.update({
-      where: { id: businessUnit.id },
-      data: { config: data as unknown as Record<string, unknown> },
-    });
-
-    return Result.ok({ id: businessUnit.id });
-  }
-
-  @TryCatch
-  async postBusinessUnitConfigs(
-    bu_code: string,
-    data: IBusinessUnitConfig[],
-    user_id: string,
-    tenant_id: string,
-    version: string,
-  ): Promise<Result<{ id: string }>> {
-    this.logger.debug(
-      {
-        function: 'postBusinessUnitConfigs',
-        bu_code: bu_code,
-        data: data,
-        user_id: user_id,
-        tenant_id: tenant_id,
-        version: version,
-      },
-      BusinessUnitService.name,
-    );
-    const businessUnit = await this.prismaSystem.tb_business_unit.findFirst({
-      where: { code: bu_code },
-    });
-
-    if (!businessUnit) {
-      return Result.error('Business unit not found', ErrorCode.NOT_FOUND);
-    }
-
-    if (data.length > 0) {
-      const validationResults = data.map((item: IBusinessUnitConfig) => {
-        const { error, message } = BusinessUnitService.validateValueByDataType(
-          item.value,
-          item.datatype,
-        );
-        if (error) {
-          return message;
-        }
-        return null;
-      });
-
-      const errorResult = validationResults.find((result) => result !== null);
-      if (errorResult) {
-        return Result.error(errorResult, ErrorCode.VALIDATION_FAILURE);
-      }
-    }
-
-    await this.prismaSystem.tb_business_unit.update({
-      where: { id: businessUnit.id },
-      data: { config: data as unknown as Record<string, unknown> },
-    });
-
-    return Result.ok({ id: businessUnit.id });
-  }
-
-  @TryCatch
-  async deleteBusinessUnitConfigByKey(
-    bu_code: string,
-    key: string,
-    user_id: string,
-    tenant_id: string,
-    version: string,
-  ): Promise<Result<{ id: string }>> {
-    this.logger.debug(
-      {
-        function: 'deleteBusinessUnitConfigByKey',
-        bu_code: bu_code,
-        key: key,
-        user_id: user_id,
-        tenant_id: tenant_id,
-        version: version,
-      },
-      BusinessUnitService.name,
-    );
-    const businessUnit = await this.prismaSystem.tb_business_unit.findFirst({
-      where: { code: bu_code },
-    });
-
-    if (!businessUnit) {
-      return Result.error('Business unit not found', ErrorCode.NOT_FOUND);
-    }
-
-    const updatedConfig = {
-      ...(businessUnit.config as IBusinessUnitConfig[]),
-    } as unknown as Record<string, unknown>;
-    delete updatedConfig[key];
-
-    await this.prismaSystem.tb_business_unit.update({
-      where: { id: businessUnit.id },
-      data: { config: updatedConfig },
-    });
-
-    return Result.ok({ id: businessUnit.id });
-  }
-
-  @TryCatch
-  async getBusinessUnitConfigByKeyExists(
-    bu_code: string,
-    key: string,
-    user_id: string,
-    tenant_id: string,
-    version: string,
-  ): Promise<Result<{ exists: boolean }>> {
-    this.logger.debug(
-      {
-        function: 'getBusinessUnitConfigByKeyExists',
-        bu_code: bu_code,
-        key: key,
-        user_id: user_id,
-        tenant_id: tenant_id,
-        version: version,
-      },
-      BusinessUnitService.name,
-    );
-    const businessUnit = await this.prismaSystem.tb_business_unit.findFirst({
-      where: { code: bu_code },
-    });
-
-    if (!businessUnit) {
-      return Result.error('Business unit not found', ErrorCode.NOT_FOUND);
-    }
-
-    return Result.ok({ exists: businessUnit.config[key] !== undefined });
-  }
-
-  @TryCatch
-  async getBusinessUnitConfigByKey(
-    bu_code: string,
-    key: string,
-    user_id: string,
-    tenant_id: string,
-    version: string,
-  ): Promise<Result<IBusinessUnitConfig | null>> {
-    this.logger.debug(
-      {
-        function: 'getBusinessUnitConfigByKey',
-        bu_code: bu_code,
-        key: key,
-        user_id: user_id,
-        tenant_id: tenant_id,
-        version: version,
-      },
-      BusinessUnitService.name,
-    );
-    const businessUnit = await this.prismaSystem.tb_business_unit.findFirst({
-      where: { code: bu_code },
-    });
-
-    if (!businessUnit) {
-      return Result.error('Business unit not found', ErrorCode.NOT_FOUND);
-    }
-
-    const configs = (businessUnit.config as IBusinessUnitConfig[]) ?? [];
-
-    const config = configs.filter((item) => item.key === key)[0] ?? null;
-
-    return Result.ok(config);
-  }
-
-  @TryCatch
-  async patchBusinessUnitConfigs(
-    bu_code: string,
-    data: IBusinessUnitConfig,
-    user_id: string,
-    tenant_id: string,
-    version: string,
-  ): Promise<Result<{ id: string }>> {
-    this.logger.debug(
-      {
-        function: 'patchBusinessUnitConfigs',
-        bu_code: bu_code,
-        data: data,
-        user_id: user_id,
-        tenant_id: tenant_id,
-        version: version,
-      },
-      BusinessUnitService.name,
-    );
-
-    const { error, message } = BusinessUnitService.validateValueByDataType(
-      data.value,
-      data.datatype,
-    );
-
-    if (error) {
-      return Result.error(message, ErrorCode.VALIDATION_FAILURE);
-    }
-
-    const businessUnit = await this.prismaSystem.tb_business_unit.findFirst({
-      where: { code: bu_code },
-    });
-
-    if (!businessUnit) {
-      return Result.error('Business unit not found', ErrorCode.NOT_FOUND);
-    }
-
-    // get config
-    const configs = (businessUnit.config as IBusinessUnitConfig[]) ?? [];
-
-    const configIndex = configs.findIndex((item) => item.key === data.key);
-
-    let new_id = uuidv4();
-
-    if (configIndex === -1) {
-      const obj: IBusinessUnitConfig = {
-        ...data,
-        id: new_id,
-      }
-      configs.push(obj);
-    } else {
-
-      new_id = configs[configIndex].id;
-
-      configs[configIndex] = {
-        ...configs[configIndex],
-        ...data,
-        id: new_id,
-      } as IBusinessUnitConfig;
-    }
-
-    // update business unit config
-    await this.prismaSystem.tb_business_unit.update({
-      where: { id: businessUnit.id },
-      data: {
-        config: configs as unknown as Record<string, unknown>,
-      },
-    });
-
-    return Result.ok({ id: new_id });
-  }
-
-  @TryCatch
-  async getSystemBusinessUnitConfigs(
-    bu_code: string,
-    user_id: string,
-    // tenant_id: string,
-    version: string,
-  ): Promise<Result<unknown>> {
-    this.logger.debug(
-      {
-        function: 'getSystemBusinessUnitConfigs',
-        bu_code: bu_code,
-        user_id: user_id,
-        // tenant_id: tenant_id,
-        version: version,
-      },
-      BusinessUnitService.name,
-    );
-
-    const businessUnit = await this.prismaSystem.tb_business_unit.findFirst({
-      where: { code: bu_code },
-    });
-
-    if (!businessUnit) {
-      return Result.error('Business unit config not found', ErrorCode.NOT_FOUND);
-    }
-
-    const configs : IBusinessUnitConfig[] = businessUnit.config as IBusinessUnitConfig[] ?? null  ;
-
-    // for (const key in enum_business_unit_config_key) {
-    //   const config = (businessUnit.config as IBusinessUnitConfig[])?.find((item) => item.key === key) ?? null;
-    //   if (config) {
-    //     // configs.push(config);
-    //     configs[key] = config.value;
-    //   }
-    // }
-
-    return Result.ok(configs);
-  }
-
-  @TryCatch
-  async findCurrentTenantConfigByKey(
-    bu_code: string,
-    key: string,
-    user_id: string,
-    tenant_id: string,
-    version: string,
-  ): Promise<Result<IBusinessUnitConfig>> {
-    this.logger.debug(
-      {
-        function: 'findCurrentTenantConfigByKey',
-        bu_code: bu_code,
-        key: key,
-        user_id: user_id,
-        tenant_id: tenant_id,
-        version: version,
-      },
-      BusinessUnitService.name,
-    );
-    const businessUnit = await this.prismaSystem.tb_business_unit.findFirst({
-      where: { code: bu_code },
-    });
-
-    if (!businessUnit) {
-      return Result.error('Business unit config not found', ErrorCode.NOT_FOUND);
-    }
-
-    const configs = (businessUnit.config as IBusinessUnitConfig[]) ?? [];
-
-    const config = configs.filter((item) => item.key === key)[0] ?? {};
-
-    return Result.ok(config as IBusinessUnitConfig);
-  }
-
-  static validateValueByDataType(
-    value: unknown,
-    datatype: string,
-  ): { error: boolean; message: string } {
-    let error = false;
-    let message = '';
-    switch (datatype) {
-      case 'string':
-        if (typeof value !== 'string') {
-          error = true;
-          message = `Value must be a string for datatype 'string'`;
-        }
-        break;
-      case 'number':
-        if (typeof value !== 'number' || isNaN(value)) {
-          error = true;
-          message = `Value must be a number for datatype 'number'`;
-        }
-        break;
-      case 'boolean':
-      case 'bool':
-        if (typeof value !== 'boolean') {
-          error = true;
-          message = `Value must be a boolean for datatype 'boolean'`;
-        }
-        break;
-      case 'array':
-        if (!Array.isArray(value)) {
-          error = true;
-          message = `Value must be an array for datatype 'array'`;
-        }
-        break;
-      case 'object':
-        if (
-          typeof value !== 'object' ||
-          value === null ||
-          Array.isArray(value)
-        ) {
-          error = true;
-          message = `Value must be an object for datatype 'object'`;
-        }
-        break;
-      case 'date':
-      case 'datetime':
-        if (!BusinessUnitService.isValidDate(value)) {
-          error = true;
-          message = `Value must be a valid date string or Date object for datatype '${datatype}'`;
-        }
-        break;
-
-      case 'default_currency': {
-        const result = DefaultCurrencyObjectSchema.parse(value);
-        if (!result) {
-          error = true;
-          message = `Value must be a valid default currency object for datatype 'default_currency' ${value}`;
-        }
-        break;
-      }
-
-      default:
-        error = true;
-        message = `Unsupported datatype: ${datatype}`;
-        break;
-    }
-
-    return { error, message };
-  }
-
-  static isValidDate(value: unknown): boolean {
-    if (value instanceof Date) {
-      return !isNaN(value.getTime());
-    }
-    if (typeof value === 'string') {
-      const date = new Date(value);
-      return !isNaN(date.getTime());
-    }
-    return false;
-  }
 }
