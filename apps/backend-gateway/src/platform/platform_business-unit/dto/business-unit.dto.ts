@@ -1,22 +1,5 @@
-import { enum_data_type } from "@repo/prisma-shared-schema-tenant";
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
-
-
-export const BusinessUnitConfigSchema = z.object({
-  key: z.string({
-    required_error: 'key field is required',
-  }),
-  label: z.string({
-    required_error: 'label field is required',
-  }),
-  datatype: z.nativeEnum(enum_data_type).optional(),
-  value: z.any({
-    required_error: 'value field is required',
-  }).optional(),
-});
-export type IBusinessUnitConfig = z.infer<typeof BusinessUnitConfigSchema>;
-export class BusinessUnitConfigDto extends createZodDto(BusinessUnitConfigSchema) {}
 
 export const BusinessUnitCreateSchema = z
   .object({
@@ -41,7 +24,7 @@ export const BusinessUnitCreateSchema = z
       })
       .min(3, 'alias_name must be at least 3 characters')
       .optional(),
-    config: z.array(BusinessUnitConfigSchema).optional(),
+    default_currency_id: z.string().uuid().optional(),
     is_hq: z.boolean({
       required_error: 'is_hq field is required',
     }),
@@ -79,7 +62,7 @@ export const BusinessUnitUpdateSchema = z.object({
       })
       .min(3, 'alias_name must be at least 3 characters')
       .optional(),
-    config: z.array(BusinessUnitConfigSchema).optional(),
+    default_currency_id: z.string().uuid().optional(),
     is_hq: z
       .boolean({
         required_error: 'is_hq field is required',
@@ -94,8 +77,3 @@ export const BusinessUnitUpdateSchema = z.object({
 
 export type IBusinessUnitUpdate = z.infer<typeof BusinessUnitUpdateSchema>;
 export class BusinessUnitUpdateDto extends createZodDto(BusinessUnitUpdateSchema) {}
-
-
-
-
-

@@ -1550,6 +1550,7 @@ export class AuthService {
               name: true,
               code: true,
               alias_name: true,
+              default_currency_id: true,
             },
           },
         },
@@ -1563,12 +1564,6 @@ export class AuthService {
             item.tb_business_unit.id,
           );
 
-          const businessUnitConfig =
-            await this.tenantService.getSystemBusinessUnitConfig(
-              id,
-              item.tb_business_unit.id,
-            );
-
           data.push({
             id: item.tb_business_unit.id,
             name: item.tb_business_unit.name,
@@ -1576,7 +1571,7 @@ export class AuthService {
             alias_name: item.tb_business_unit.alias_name,
             is_default: item.is_default,
             department: user_department,
-            config: businessUnitConfig.data,
+            default_currency_id: item.tb_business_unit.default_currency_id,
           });
         }
 

@@ -54,7 +54,7 @@ export const CreatePurchaseOrderSchema = z.object({
   vendor_name: z.string().optional(),
   delivery_date: z.string().datetime().or(z.string()),
   currency_id: z.string().uuid(),
-  currency_name: z.string().optional(),
+  currency_code: z.string().optional(),
   exchange_rate: z.number().positive().optional().default(1),
   // Optional header fields
   description: z.string().optional(),

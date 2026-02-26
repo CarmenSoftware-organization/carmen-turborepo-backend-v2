@@ -32,7 +32,6 @@ import {
   ReviewPurchaseRequestDto,
   SubmitPurchaseRequest,
   GlobalApiReturn,
-  IDefaultCurrencyObject,
   PurchaseRequestDetailResponseSchema,
   PurchaseRequestListItemResponseSchema,
   TryCatch,
@@ -343,14 +342,10 @@ export class PurchaseRequestService {
         decimal_places: null,
       };
 
-      const defaultCurrencyObj: IDefaultCurrencyObject = (
-        bu_detail.config as { value: IDefaultCurrencyObject; key: string }[]
-      )?.find((c) => c?.key === 'currency_base').value;
-
-      if (defaultCurrencyObj) {
+      if (bu_detail.default_currency_id) {
         const currency = await prisma.tb_currency.findFirst({
           where: {
-            id: defaultCurrencyObj.currency_id,
+            id: bu_detail.default_currency_id,
           },
         });
 
@@ -646,13 +641,10 @@ export class PurchaseRequestService {
         decimal_places: null,
       };
 
-      const defaultCurrencyObj: IDefaultCurrencyObject = (
-        bu_detail.config as { value: IDefaultCurrencyObject; key: string }[]
-      )?.find((c) => c?.key === 'currency_base')?.value;
-      if (defaultCurrencyObj) {
+      if (bu_detail.default_currency_id) {
         const currency = await prisma.tb_currency.findFirst({
           where: {
-            id: defaultCurrencyObj.currency_id,
+            id: bu_detail.default_currency_id,
           },
         });
 

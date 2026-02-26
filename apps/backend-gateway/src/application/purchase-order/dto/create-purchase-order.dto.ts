@@ -125,8 +125,8 @@ export class CreatePurchaseOrderDto {
   @ApiProperty({ description: 'Currency ID', format: 'uuid' })
   currency_id: string;
 
-  @ApiPropertyOptional({ description: 'Currency name' })
-  currency_name?: string;
+  @ApiPropertyOptional({ description: 'Currency code' })
+  currency_code?: string;
 
   @ApiPropertyOptional({ description: 'Exchange rate', default: 1 })
   exchange_rate?: number;

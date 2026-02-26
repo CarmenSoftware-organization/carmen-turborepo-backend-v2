@@ -111,7 +111,7 @@ export interface PurchaseRequestDetail {
   approved_unit_id?: string;
   approved_unit_name?: string;
   currency_id?: string;
-  currency_name?: string;
+  currency_code?: string;
   exchange_rate?: number;
   exchange_rate_date?: string;
   foc_qty?: number;
@@ -238,7 +238,7 @@ export interface IPurchaseRequestDetail {
   price_list_id?: string
   description?: string
   currency_id?: string
-  currency_name?: string
+  currency_code?: string
   exchange_rate?: number
   price?: number
   total_price?: number
