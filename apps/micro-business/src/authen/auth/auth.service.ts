@@ -1511,6 +1511,7 @@ export class AuthService {
       select: {
         id: true,
         email: true,
+        platform_role: true,
       },
     });
 
@@ -1544,15 +1545,9 @@ export class AuthService {
         },
         select: {
           is_default: true,
-          tb_business_unit: {
-            select: {
-              id: true,
-              name: true,
-              code: true,
-              alias_name: true,
-              default_currency_id: true,
-            },
-          },
+          is_active: true,
+          role: true,
+          tb_business_unit: true,
         },
       })
       .then(async (res) => {
@@ -1564,14 +1559,85 @@ export class AuthService {
             item.tb_business_unit.id,
           );
 
+          const hod_department = await this.tenantService.getUserHodDepartment(
+            id,
+            item.tb_business_unit.id,
+          );
+
+          let default_currency = undefined;
+
+          if (item.tb_business_unit.default_currency_id) {
+            const tenant = await this.tenantService.getdb_connection(
+              id,
+              item.tb_business_unit.id,
+            );
+
+            const prismaTenant = await this.prismaTenant(
+              tenant.tenant_id,
+              tenant.db_connection,
+            );
+
+            const currency = await prismaTenant.tb_currency.findFirst({
+              where: {
+                id: item.tb_business_unit.default_currency_id,
+              },
+              select: {
+                code: true,
+                name: true,
+                symbol: true,
+                description: true,
+                decimal_places: true,
+              },
+            });
+
+            default_currency = currency;
+          }
+
           data.push({
             id: item.tb_business_unit.id,
             name: item.tb_business_unit.name,
             code: item.tb_business_unit.code,
             alias_name: item.tb_business_unit.alias_name,
             is_default: item.is_default,
+            system_level: item.role,
+            is_active: item.is_active,
             department: user_department,
-            default_currency_id: item.tb_business_unit.default_currency_id,
+            hod_department: hod_department,
+            config: {
+              calculation_method: item.tb_business_unit.calculation_method,
+              default_currency_id: item.tb_business_unit.default_currency_id,
+              default_currency: default_currency,
+              hotel: {
+                name: item.tb_business_unit.hotel_name,
+                tel: item.tb_business_unit.hotel_tel,
+                email: item.tb_business_unit.hotel_email,
+                address: item.tb_business_unit.hotel_address,
+                zip_code: item.tb_business_unit.hotel_zip_code,
+              },
+              company: {
+                name: item.tb_business_unit.company_name,
+                tel: item.tb_business_unit.company_tel,
+                email: item.tb_business_unit.company_email,
+                address: item.tb_business_unit.company_address,
+                zip_code: item.tb_business_unit.company_zip_code,
+              },
+              tax_no: item.tb_business_unit.tax_no,
+              branch_no: item.tb_business_unit.branch_no,
+              date_format: item.tb_business_unit.date_format,
+              time_format: item.tb_business_unit.time_format,
+              date_time_format: item.tb_business_unit.date_time_format,
+              long_time_format: item.tb_business_unit.long_time_format,
+              short_time_format: item.tb_business_unit.short_time_format,
+              timezone: item.tb_business_unit.timezone,
+              perpage_format: item.tb_business_unit.perpage_format,
+              amount_format: item.tb_business_unit.amount_format,
+              quantity_format: item.tb_business_unit.quantity_format,
+              recipe_format: item.tb_business_unit.recipe_format,
+              description: item.tb_business_unit.description,
+              info: item.tb_business_unit.info,
+              is_hq: item.tb_business_unit.is_hq,
+              is_active: item.tb_business_unit.is_active,
+            },
           });
         }
 
@@ -1582,6 +1648,7 @@ export class AuthService {
       data: {
         id: user.id,
         email: user.email,
+        platform_role: user.platform_role,
         user_info: userInfo,
         business_unit: userBusinessUnit,
       },

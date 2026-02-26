@@ -119,6 +119,71 @@ export class TenantService {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async getUserHodDepartment(userId: string, tenantId: string): Promise<any> {
+    this.logger.debug(
+      { function: 'getUserHodDepartment', userId, tenantId },
+      TenantService.name,
+    );
+
+    const tenant = await this.getdb_connection(userId, tenantId);
+
+    if (!tenant) {
+      return {
+        response: {
+          status: HttpStatus.NO_CONTENT,
+          message: 'Tenant not found',
+        },
+      };
+    }
+
+    const prisma = await this.prismaTenant(
+      tenant.tenant_id,
+      tenant.db_connection,
+    );
+
+    try {
+      const departments = await prisma.tb_department_user.findFirst({
+        where: {
+          user_id: userId,
+          is_hod: true,
+        },
+        select: {
+          user_id: true,
+          department_id: true,
+          is_hod: true,
+        },
+      }).then(async (res) => {
+        if (!res) {
+          return null;
+        }
+
+        const department = await prisma.tb_department.findFirst({
+          where: {
+            id: res.department_id,
+          },
+          select: {
+            name: true,
+          },
+        });
+
+        return {
+          is_hod: res.is_hod ?? false,
+          id: res.department_id ?? null,
+          name: department?.name ?? null,
+        };
+      });
+
+      return departments;
+    } catch (error) {
+      this.logger.error(
+        { function: 'getUserHodDepartment', error },
+        TenantService.name,
+      );
+      return null;
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getTenantByCode(bu_code: string, user_id: string): Promise<any> {
     this.logger.debug(
       { function: 'getTenantByCode', bu_code },
