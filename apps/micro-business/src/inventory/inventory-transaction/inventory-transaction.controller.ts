@@ -1,5 +1,5 @@
 import { Body, Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { InventoryTransactionService } from './inventory-transaction.service';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
@@ -38,6 +38,36 @@ export class InventoryTransactionController extends BaseMicroserviceController {
         body.ids,
         body.user_id,
         body.tenant_id,
+      )
+    );
+    return this.handleResult(result);
+  }
+
+  /**
+   * ⚠️ TEST ONLY — DELETE when GRN approve integration is verified.
+   */
+  @MessagePattern({
+    cmd: 'inventory-transaction.test-create-from-grn',
+    service: 'inventory-transaction',
+  })
+  async testCreateFromGrn(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'testCreateFromGrn', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const data = payload.data || {};
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.testCreateFromGrn(
+        {
+          bu_code: tenant_id,
+          grn_id: data.grn_id,
+          grn_no: data.grn_no || null,
+          grn_date: data.grn_date ? new Date(data.grn_date) : new Date(),
+          detail_items: data.detail_items || [],
+          user_id,
+        },
+        user_id,
+        tenant_id,
       )
     );
     return this.handleResult(result);
