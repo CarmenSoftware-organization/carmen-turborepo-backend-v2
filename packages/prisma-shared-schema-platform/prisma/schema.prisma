@@ -85,11 +85,40 @@ model tb_business_unit {
   description String?
   info        Json?
 
-  is_hq              Boolean?               @default(true)
-  is_active          Boolean?               @default(true)
-  db_connection      Json?
-  config             Json?
-  calculation_method enum_calculation_method @default(average)
+  is_hq               Boolean?               @default(true)
+  is_active           Boolean?               @default(true)
+  db_connection       Json?
+  config              Json?
+  default_currency_id String?                @db.Uuid
+  calculation_method  enum_calculation_method @default(average)
+
+  // Company info
+  branch_no        String?
+  company_name     String?
+  company_address  String?
+  company_email    String?
+  company_tel      String?
+  company_zip_code String?
+  tax_no           String?
+
+  // Hotel info
+  hotel_name     String?
+  hotel_address  String?
+  hotel_email    String?
+  hotel_tel      String?
+  hotel_zip_code String?
+
+  // Format settings
+  date_format      String? @default("yyyy-MM-dd")
+  date_time_format String? @default("yyyy-MM-dd HH:mm:ss")
+  time_format      String? @default("HH:mm:ss")
+  short_time_format String? @default("HH:mm")
+  long_time_format  String? @default("HH:mm:ss")
+  timezone         String? @default("Asia/Bangkok")
+  amount_format    Json?
+  quantity_format  Json?
+  perpage_format   Json?
+  recipe_format    Json?
 
   created_at    DateTime? @default(now()) @db.Timestamptz(6)
   created_by_id String?   @db.Uuid
