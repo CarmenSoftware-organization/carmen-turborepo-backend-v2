@@ -26,7 +26,7 @@ import { BackendLogger } from '@/common/helpers/backend.logger';
 import {
   IPurchaseRequestDetail,
   IPurchaseRequest,
-  state_status,
+  stage_status,
   RejectPurchaseRequestDto,
   Stage,
   ReviewPurchaseRequestDto,
@@ -872,10 +872,10 @@ export class PurchaseRequestService {
         const history: any[] = (detail.history as any[]) || [];
         const latestStageStatus = stages_status[stages_status.length - 1];
 
-        if (findDetails.stage_status === state_status.approve) {
+        if (findDetails.stage_status === stage_status.approve) {
           continue;
         } else if (
-          findDetails.stage_status === state_status.submit
+          findDetails.stage_status === stage_status.submit
         ) /* 1st time this detail is being submitted */ {
           stages_status.push({
             seq: 1,
@@ -884,7 +884,7 @@ export class PurchaseRequestService {
             message: findDetails?.stage_message || 'submit for approval',
           });
         } else if (
-          latestStageStatus.status === state_status.pending &&
+          latestStageStatus.status === stage_status.pending &&
           latestStageStatus.name === workflowHeader.workflow_previous_stage
         ) {
           stages_status[stages_status.length - 1] = {
@@ -1423,38 +1423,38 @@ export class PurchaseRequestService {
         const stages_status: StageStatus[] = findPRDoc?.stages_status as unknown as StageStatus[];
         const history: Record<string, unknown>[] = (findPRDoc?.history as unknown as Record<string, unknown>[]) || [];
 
-        if (latestStageStatus.status === state_status.reject) {
+        if (latestStageStatus.status === stage_status.reject) {
           continue;
         } else if (
-          latestStageStatus.status === state_status.pending &&
+          latestStageStatus.status === stage_status.pending &&
           latestStageStatus.name === workflow.workflow_previous_stage
         ) {
           stages_status[stages_status.length - 1] = {
             ...latestStageStatus,
-            status: detail.state_status || '',
-            message: detail.state_message || '',
+            status: detail.stage_status || '',
+            message: detail.stage_message || '',
           };
         } else {
           stages_status.push({
             seq: stages_status.length + 1,
-            status: detail.state_status || '',
+            status: detail.stage_status || '',
             name: workflow.workflow_previous_stage,
-            message: detail.state_message || '',
+            message: detail.stage_message || '',
           });
         }
 
         history.push({
           seq: history.length + 1,
-          status: detail.state_status || '',
+          status: detail.stage_status || '',
           name: workflow.workflow_previous_stage,
-          message: detail.state_message || '',
+          message: detail.stage_message || '',
           user: {
             id: this.userId,
           },
         });
 
-        delete detail.state_message;
-        delete detail.state_status;
+        delete detail.stage_message;
+        delete detail.stage_status;
         delete detail.purchase_request_id;
 
         const updateDto = JSON.parse(
@@ -1523,7 +1523,7 @@ export class PurchaseRequestService {
 
       for (const detail of prDetail) {
         const payloadDetail = payload.details.find((d) => d.id === detail.id);
-        if (payloadDetail.stage_status === state_status.approve) {
+        if (payloadDetail.stage_status === stage_status.approve) {
           continue;
         }
 
@@ -1532,7 +1532,7 @@ export class PurchaseRequestService {
 
         history.push({
           seq: history.length + 1,
-          status: state_status.review,
+          status: stage_status.review,
           name: workflow.workflow_previous_stage,
           message: payloadDetail.stage_message || '',
           user: {
@@ -1544,7 +1544,7 @@ export class PurchaseRequestService {
           if (stagesStatus[index].name === payload.des_stage) {
             stagesStatus[index] = {
               ...stagesStatus[index],
-              status: state_status.pending,
+              status: stage_status.pending,
             };
 
             break;
@@ -1617,7 +1617,7 @@ export class PurchaseRequestService {
         stages_status = stages_status.map((stage) => {
           return {
             ...stage,
-            status: state_status.reject,
+            status: stage_status.reject,
           };
         });
 

@@ -1,6 +1,6 @@
 import { ApproveQuantityAndUnitSchema, EmbeddedCurrencySchema, EmbeddedDiscountSchema, EmbeddedInventorySchema, EmbeddedLocationSchema, EmbeddedPriceListSchema, EmbeddedProductSchema, EmbeddedTaxSchema, EmbeddedVendorSchema, FocSchema, PriceSchema, RequestedQuantityAndUnitSchema, ValidateSchema } from '../embedded.dto';
 import { z } from 'zod'
-import { state_status } from './stage_role/purchase-request.stage-role.dto';
+import { stage_status } from './stage_role/purchase-request.stage-role.dto';
 import { PrismaClient } from '@repo/prisma-shared-schema-tenant';
 
 // Import validate functions
@@ -69,7 +69,7 @@ export {
 export const CreatePurchaseRequestDetailSchema = z.object({
   description: z.string().optional().nullable(),
   comment: z.string().optional().nullable(),
-  current_stage_status: z.nativeEnum(state_status).optional(),
+  current_stage_status: z.nativeEnum(stage_status).optional(),
 })
   .merge(EmbeddedProductSchema)
   .merge(EmbeddedLocationSchema.extend({
@@ -88,9 +88,9 @@ export const CreatePurchaseRequestDetailSchema = z.object({
 export const ApprovePurchaseRequestDetailSchema = z.object({
   id: ValidateSchema.shape.uuid,
   description: z.string().optional().nullable(),
-  stage_status: z.nativeEnum(state_status),
+  stage_status: z.nativeEnum(stage_status),
   stage_message: z.string().nullable(),
-  current_stage_status: z.nativeEnum(state_status).optional(),
+  current_stage_status: z.nativeEnum(stage_status).optional(),
 })
   .merge(ApproveQuantityAndUnitSchema)
 
@@ -110,7 +110,7 @@ export const PurchaseRoleApprovePurchaseRequestDetailSchema = ApprovePurchaseReq
 */
 export const StateChangeSchema = z.object({
   id: ValidateSchema.shape.uuid,
-  stage_status: z.nativeEnum(state_status),
+  stage_status: z.nativeEnum(stage_status),
   stage_message: z.string().nullable(),
 })
 

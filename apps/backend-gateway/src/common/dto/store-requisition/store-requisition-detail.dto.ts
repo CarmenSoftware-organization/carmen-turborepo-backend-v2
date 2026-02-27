@@ -1,11 +1,11 @@
 import { z } from 'zod';
 import { EmbeddedProductSchema, ValidateSchema } from '../embedded.dto';
-import { state_status } from '../purchase-request/stage_role/purchase-request.stage-role.dto';
+import { stage_status } from '../purchase-request/stage_role/purchase-request.stage-role.dto';
 
 // Create Store Requisition Detail Schema
 export const CreateStoreRequisitionDetailSchema = z.object({
   description: z.string().optional().nullable(),
-  current_stage_status: z.nativeEnum(state_status).optional(),
+  current_stage_status: z.nativeEnum(stage_status).optional(),
 })
   .merge(EmbeddedProductSchema.extend({
     product_id: ValidateSchema.shape.uuid,
@@ -24,7 +24,7 @@ export const UpdateStoreRequisitionDetailSchema = CreateStoreRequisitionDetailSc
 // Base detail schema for state changes
 const BaseStateChangeDetailSchema = z.object({
   id: ValidateSchema.shape.uuid,
-  stage_status: z.nativeEnum(state_status),
+  stage_status: z.nativeEnum(stage_status),
   stage_message: z.string().nullable(),
 });
 

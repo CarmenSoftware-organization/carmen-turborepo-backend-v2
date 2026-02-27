@@ -7,7 +7,7 @@ import { randomUUID } from 'crypto';
 import {
   IPurchaseRequestDetail,
   IPurchaseRequest,
-  state_status,
+  stage_status,
   RejectPurchaseRequestDto,
   Stage,
   ReviewPurchaseRequestDto,

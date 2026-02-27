@@ -1,4 +1,4 @@
-import { ApproveQuantityAndUnitSchema, EmbeddedCurrencySchema, EmbeddedDiscountSchema, EmbeddedTaxSchema, EmbeddedVendorSchema, FocSchema, PriceSchema, state_status } from '@/common'
+import { ApproveQuantityAndUnitSchema, EmbeddedCurrencySchema, EmbeddedDiscountSchema, EmbeddedTaxSchema, EmbeddedVendorSchema, FocSchema, PriceSchema, stage_status } from '@/common'
 import { z } from 'zod'
 import { createZodDto } from 'nestjs-zod'
 
@@ -8,8 +8,8 @@ export const ApprovePurchaseRequestDetailSchema = z.object({
   id: z.string().uuid(),
   description: z.string().optional().nullable(),
   purchase_reuqest_id: z.string().uuid(),
-  state_status: z.nativeEnum(state_status),
-  state_message: z.string().nullable(),
+  stage_status: z.nativeEnum(stage_status),
+  stage_message: z.string().nullable(),
 })
 .merge(ApproveQuantityAndUnitSchema)
 

@@ -3,7 +3,7 @@ import { createZodDto } from 'nestjs-zod';
 
 // ==================== Enums ====================
 
-enum state_status {
+enum stage_status {
   submit = 'submit',
   pending = 'pending',
   approve = 'approve',
@@ -23,7 +23,7 @@ enum stage_role {
 
 export const ApprovePurchaseOrderDetailSchema = z.object({
   id: z.string().uuid(),
-  stage_status: z.nativeEnum(state_status),
+  stage_status: z.nativeEnum(stage_status),
 });
 
 export const ApprovePurchaseOrderSchema = z.object({
@@ -37,7 +37,7 @@ export class ApprovePurchaseOrderDto extends createZodDto(ApprovePurchaseOrderSc
 
 export const SavePurchaseOrderDetailSchema = z.object({
   id: z.string().uuid(),
-  stage_status: z.nativeEnum(state_status),
+  stage_status: z.nativeEnum(stage_status),
 
   // Order quantities
   order_qty: z.number().nonnegative().optional(),
@@ -93,7 +93,7 @@ export class SavePurchaseOrderDto extends createZodDto(SavePurchaseOrderSchema) 
 
 export const RejectPurchaseOrderDetailSchema = z.object({
   id: z.string().uuid(),
-  stage_status: z.nativeEnum(state_status),
+  stage_status: z.nativeEnum(stage_status),
   stage_message: z.string().nullable(),
 });
 
@@ -108,7 +108,7 @@ export class RejectPurchaseOrderDto extends createZodDto(RejectPurchaseOrderSche
 
 export const ReviewPurchaseOrderDetailSchema = z.object({
   id: z.string().uuid(),
-  stage_status: z.nativeEnum(state_status),
+  stage_status: z.nativeEnum(stage_status),
   stage_message: z.string().nullable(),
 });
 

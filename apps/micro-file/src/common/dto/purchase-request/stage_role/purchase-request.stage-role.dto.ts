@@ -4,7 +4,7 @@ import { ApprovePurchaseRequestDetailSchema, PurchaseRoleApprovePurchaseRequestD
 import { ValidateSchema } from '../../embedded.dto'
 import { createZodDto } from 'nestjs-zod';
 
-export enum state_status {
+export enum stage_status {
   submit = 'submit',
   pending = 'pending',
   approve = 'approve',
@@ -39,7 +39,7 @@ const ReviewPurchaseRequestSchema = z.object({
   details: z.array(
     z.object({
       id: ValidateSchema.shape.uuid,
-      stage_status: z.nativeEnum(state_status),
+      stage_status: z.nativeEnum(stage_status),
       stage_message: z.string().nullable(),
     })
   )
@@ -50,7 +50,7 @@ const RejectPurchaseRequestSchema = z.object({
   details: z.array(
     z.object({
       id: ValidateSchema.shape.uuid,
-      stage_status: z.nativeEnum(state_status),
+      stage_status: z.nativeEnum(stage_status),
       stage_message: z.string().nullable(),
     })
   )
@@ -61,7 +61,7 @@ const SubmitPurchaseRequestSchema = z.object({
   details: z.array(
     z.object({
       id: ValidateSchema.shape.uuid,
-      stage_status: z.nativeEnum(state_status),
+      stage_status: z.nativeEnum(stage_status),
       stage_message: z.string().nullable(),
     })
   )

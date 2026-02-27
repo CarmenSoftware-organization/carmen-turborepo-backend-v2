@@ -25,7 +25,7 @@ import {
   IStoreRequisition,
 } from './interface/store-requisition.interface';
 import {
-  state_status,
+  stage_status,
   RejectStoreRequisitionDto,
   ReviewStoreRequisitionDto,
   Stage,
@@ -502,9 +502,9 @@ export class StoreRequisitionService {
         const history = (detail.history as unknown as unknown[]) || [];
         const latestStageStatus = stages_status[stages_status.length - 1];
 
-        if (findDetails.stage_status === state_status.approve) {
+        if (findDetails.stage_status === stage_status.approve) {
           continue;
-        } else if (findDetails.stage_status === state_status.submit) {
+        } else if (findDetails.stage_status === stage_status.submit) {
           stages_status.push({
             seq: 1,
             status: findDetails.stage_status,
@@ -512,7 +512,7 @@ export class StoreRequisitionService {
             message: findDetails?.stage_message || 'submit for approval',
           });
         } else if (
-          latestStageStatus?.status === state_status.pending &&
+          latestStageStatus?.status === stage_status.pending &&
           latestStageStatus?.name === workflowHeader.workflow_previous_stage
         ) {
           stages_status[stages_status.length - 1] = {
@@ -784,38 +784,38 @@ export class StoreRequisitionService {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const history: any[] = (findSRDoc?.history as unknown as any[]) || [];
 
-        if (latestStageStatus.status === state_status.reject) {
+        if (latestStageStatus.status === stage_status.reject) {
           continue;
         } else if (
-          latestStageStatus.status === state_status.pending &&
+          latestStageStatus.status === stage_status.pending &&
           latestStageStatus.name === workflow.workflow_previous_stage
         ) {
           stages_status[stages_status.length - 1] = {
             ...latestStageStatus,
-            status: detail.state_status || '',
-            message: detail.state_message || '',
+            status: detail.stage_status || '',
+            message: detail.stage_message || '',
           };
         } else {
           stages_status.push({
             seq: stages_status.length + 1,
-            status: detail.state_status || '',
+            status: detail.stage_status || '',
             name: workflow.workflow_previous_stage,
-            message: detail.state_message || '',
+            message: detail.stage_message || '',
           });
         }
 
         history.push({
           seq: history.length + 1,
-          status: detail.state_status || '',
+          status: detail.stage_status || '',
           name: workflow.workflow_previous_stage,
-          message: detail.state_message || '',
+          message: detail.stage_message || '',
           user: {
             id: this.userId,
           },
         });
 
-        delete detail.state_message;
-        delete detail.state_status;
+        delete detail.stage_message;
+        delete detail.stage_status;
         delete detail.store_requisition_id;
 
         const updateDto = JSON.parse(
@@ -883,7 +883,7 @@ export class StoreRequisitionService {
         stages_status = stages_status.map((stage) => {
           return {
             ...stage,
-            status: state_status.reject,
+            status: stage_status.reject,
           };
         });
 

@@ -1,4 +1,4 @@
-import { state_status } from '@/common';
+import { stage_status } from '@/common';
 import { enum_last_action } from '@repo/prisma-shared-schema-tenant';
 
 export interface WorkflowHeader {
@@ -26,7 +26,7 @@ interface WorkflowHistory {
 
 export interface StageStatus {
   seq: number;
-  status: state_status;
+  status: stage_status;
   name: string;
   message: string;
 }

@@ -1,12 +1,12 @@
 import { z } from 'zod';
 import { enum_stage_role } from '@repo/prisma-shared-schema-tenant';
-import { state_status } from '@/procurement/purchase-request/dto/purchase-request-detail.dto';
+import { stage_status } from '@/procurement/purchase-request/dto/purchase-request-detail.dto';
 import { createZodDto } from 'nestjs-zod';
 
 // Approve PO Detail schema
 export const ApprovePurchaseOrderDetailSchema = z.object({
   id: z.string().uuid(),
-  stage_status: z.nativeEnum(state_status),
+  stage_status: z.nativeEnum(stage_status),
 });
 
 // Approve PO schema
@@ -23,7 +23,7 @@ export class ApprovePurchaseOrderDtoClass extends createZodDto(ApprovePurchaseOr
 // Save PO Detail schema - with qty/price changes
 export const SavePurchaseOrderDetailSchema = z.object({
   id: z.string().uuid(),
-  stage_status: z.nativeEnum(state_status),
+  stage_status: z.nativeEnum(stage_status),
 
   // Order quantities
   order_qty: z.number().nonnegative().optional(),
@@ -81,7 +81,7 @@ export class SavePurchaseOrderDtoClass extends createZodDto(SavePurchaseOrderSch
 // Reject PO Detail schema
 export const RejectPurchaseOrderDetailSchema = z.object({
   id: z.string().uuid(),
-  stage_status: z.nativeEnum(state_status),
+  stage_status: z.nativeEnum(stage_status),
   stage_message: z.string().nullable(),
 });
 
@@ -99,7 +99,7 @@ export class RejectPurchaseOrderDtoClass extends createZodDto(RejectPurchaseOrde
 // Review PO Detail schema
 export const ReviewPurchaseOrderDetailSchema = z.object({
   id: z.string().uuid(),
-  stage_status: z.nativeEnum(state_status),
+  stage_status: z.nativeEnum(stage_status),
   stage_message: z.string().nullable(),
 });
 

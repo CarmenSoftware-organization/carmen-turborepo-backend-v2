@@ -1,11 +1,11 @@
 import { enum_stage_role } from '@repo/prisma-shared-schema-tenant'
 import { z } from 'zod'
-import { ApprovePurchaseRequestDetailSchema, PurchaseRoleApprovePurchaseRequestDetailSchema, state_status } from '../purchase-request-detail.dto'
+import { ApprovePurchaseRequestDetailSchema, PurchaseRoleApprovePurchaseRequestDetailSchema, stage_status } from '../purchase-request-detail.dto'
 import { ValidateSchema } from '@/common/dto/embedded.dto'
 import { createZodDto } from 'nestjs-zod';
 
-// Re-export state_status for backward compatibility
-export { state_status };
+// Re-export stage_status for backward compatibility
+export { stage_status };
 
 const ApproveByStageRoleApproveSchema = z.object({
   stage_role: z.literal(enum_stage_role.approve),
@@ -34,7 +34,7 @@ const ReviewPurchaseRequestSchema = z.object({
   details: z.array(
     z.object({
       id: ValidateSchema.shape.uuid,
-      stage_status: z.nativeEnum(state_status),
+      stage_status: z.nativeEnum(stage_status),
       stage_message: z.string().nullable(),
     })
   )
@@ -45,7 +45,7 @@ const RejectPurchaseRequestSchema = z.object({
   details: z.array(
     z.object({
       id: ValidateSchema.shape.uuid,
-      stage_status: z.nativeEnum(state_status),
+      stage_status: z.nativeEnum(stage_status),
       stage_message: z.string().nullable(),
     })
   )
@@ -56,7 +56,7 @@ const SubmitPurchaseRequestSchema = z.object({
   details: z.array(
     z.object({
       id: ValidateSchema.shape.uuid,
-      stage_status: z.nativeEnum(state_status),
+      stage_status: z.nativeEnum(stage_status),
       stage_message: z.string().nullable(),
     })
   )

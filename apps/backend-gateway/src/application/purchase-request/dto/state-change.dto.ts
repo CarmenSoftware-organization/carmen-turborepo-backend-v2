@@ -1,5 +1,5 @@
 import { enum_stage_role } from '@repo/prisma-shared-schema-tenant';
-import { ApproveQuantityAndUnitSchema, CreatePurchaseRequestDetailSchema, EmbeddedCurrencySchema, EmbeddedDepartmentSchema, EmbeddedDiscountSchema, EmbeddedTaxSchema, EmbeddedVendorSchema, EmbeddedWorkflowSchema, FocSchema, PriceSchema, state_status } from '@/common'
+import { ApproveQuantityAndUnitSchema, CreatePurchaseRequestDetailSchema, EmbeddedCurrencySchema, EmbeddedDepartmentSchema, EmbeddedDiscountSchema, EmbeddedTaxSchema, EmbeddedVendorSchema, EmbeddedWorkflowSchema, FocSchema, PriceSchema, stage_status } from '@/common'
 import { z } from 'zod'
 import { createZodDto } from 'nestjs-zod'
 
@@ -9,9 +9,9 @@ export const ApprovePurchaseRequestDetailSchema = z.object({
   id: z.string().uuid(),
   description: z.string().optional().nullable(),
   purchase_request_id: z.string().uuid(),
-  state_status: z.nativeEnum(state_status),
-  state_message: z.string().nullable(),
-  current_stage_status: z.nativeEnum(state_status).optional(),
+  stage_status: z.nativeEnum(stage_status),
+  stage_message: z.string().nullable(),
+  current_stage_status: z.nativeEnum(stage_status).optional(),
 })
   .merge(ApproveQuantityAndUnitSchema)
 
@@ -55,11 +55,11 @@ export const SavePurchaseRequestSchema = z.discriminatedUnion('stage_role', [
   }),
   z.object({
     stage_role: z.literal(enum_stage_role.approve),
-    details: z.array(ApprovePurchaseRequestDetailSchema.omit({ state_status: true, state_message: true })),
+    details: z.array(ApprovePurchaseRequestDetailSchema.omit({ stage_status: true, stage_message: true })),
   }),
   z.object({
     stage_role: z.literal(enum_stage_role.purchase),
-    details: z.array(PurchaseRoleApprovePurchaseRequestDetailSchema.omit({ state_status: true, state_message: true }))
+    details: z.array(PurchaseRoleApprovePurchaseRequestDetailSchema.omit({ stage_status: true, stage_message: true }))
   })
 ])
 
