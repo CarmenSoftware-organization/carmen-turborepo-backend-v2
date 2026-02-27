@@ -5,6 +5,12 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { Result, PurchaseOrderUpdateDto } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
+import {
+  ApprovePurchaseOrderDto,
+  SavePurchaseOrderDto,
+  RejectPurchaseOrderDto,
+  ReviewPurchaseOrderDto,
+} from './dto/state-change.dto';
 
 @Injectable()
 export class PurchaseOrderService {
@@ -387,7 +393,7 @@ export class PurchaseOrderService {
 
   async save(
     id: string,
-    data: Record<string, unknown>,
+    data: SavePurchaseOrderDto,
     user_id: string,
     bu_code: string,
     version: string,
@@ -420,7 +426,7 @@ export class PurchaseOrderService {
 
   async approve(
     id: string,
-    data: Record<string, unknown>,
+    data: ApprovePurchaseOrderDto,
     user_id: string,
     bu_code: string,
     version: string,
@@ -453,7 +459,7 @@ export class PurchaseOrderService {
 
   async reject(
     id: string,
-    data: Record<string, unknown>,
+    data: RejectPurchaseOrderDto,
     user_id: string,
     bu_code: string,
     version: string,
@@ -486,7 +492,7 @@ export class PurchaseOrderService {
 
   async review(
     id: string,
-    data: Record<string, unknown>,
+    data: ReviewPurchaseOrderDto,
     user_id: string,
     bu_code: string,
     version: string,

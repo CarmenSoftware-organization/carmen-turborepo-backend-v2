@@ -6,7 +6,16 @@ import { creatorAccess, NavigateForwardResult, NotificationService, Notification
 import { enum_last_action, enum_purchase_order_doc_status, enum_stage_role } from '@repo/prisma-shared-schema-tenant';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
-import { ApprovePurchaseOrderDto, RejectPurchaseOrderDto, ReviewPurchaseOrderDto, SavePurchaseOrderDto } from './dto/approve-purchase-order.dto';
+import {
+  ApprovePurchaseOrderDto,
+  ApprovePurchaseOrderDetailDto,
+  RejectPurchaseOrderDto,
+  RejectPurchaseOrderDetailDto,
+  ReviewPurchaseOrderDto,
+  ReviewPurchaseOrderDetailDto,
+  SavePurchaseOrderDto,
+  SavePurchaseOrderDetailDto,
+} from './dto/approve-purchase-order.dto';
 
 export interface UserActionProfile {
   user_id: string;
@@ -377,37 +386,35 @@ export class PurchaseOrderLogic {
     return result;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private populateDetail(details: any[]) {
-    const unit_ids = [];
-    const tax_profile_ids = [];
+  private populateDetail(details: SavePurchaseOrderDetailDto[]) {
+    const unit_ids: string[] = [];
+    const tax_profile_ids: string[] = [];
     for (const detail of details) {
-      if (detail?.order_unit_id) unit_ids.push(detail.order_unit_id);
-      if (detail?.base_unit_id) unit_ids.push(detail.base_unit_id);
-      if (detail?.tax_profile_id) tax_profile_ids.push(detail.tax_profile_id);
+      if (detail.order_unit_id) unit_ids.push(detail.order_unit_id);
+      if (detail.base_unit_id) unit_ids.push(detail.base_unit_id);
+      if (detail.tax_profile_id) tax_profile_ids.push(detail.tax_profile_id);
     }
     return { unit_ids, tax_profile_ids };
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private enrichSaveDetail(detail: any, foreignValue: Record<string, any>) {
+  private enrichSaveDetail(detail: SavePurchaseOrderDetailDto, foreignValue: Record<string, any>): SavePurchaseOrderDetailDto {
     return JSON.parse(
       JSON.stringify({
         ...detail,
         order_unit_name:
-          this.findByIdInArray(foreignValue?.unit_ids, detail?.order_unit_id)?.name || detail?.order_unit_name,
+          this.findByIdInArray(foreignValue?.unit_ids, detail.order_unit_id)?.name || detail.order_unit_name,
         base_unit_name:
-          this.findByIdInArray(foreignValue?.unit_ids, detail?.base_unit_id)?.name || detail?.base_unit_name,
+          this.findByIdInArray(foreignValue?.unit_ids, detail.base_unit_id)?.name || detail.base_unit_name,
         tax_profile_name:
-          this.findByIdInArray(foreignValue?.tax_profile_ids, detail?.tax_profile_id)?.name || detail?.tax_profile_name,
+          this.findByIdInArray(foreignValue?.tax_profile_ids, detail.tax_profile_id)?.name || detail.tax_profile_name,
       }),
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private findByIdInArray(arr: any[] | undefined, id: string | undefined): any | null {
+  private findByIdInArray(arr: { id: string; name?: string }[] | undefined, id: string | undefined): { id: string; name?: string } | null {
     if (!arr || !id) return null;
-    return arr.find((item) => item.id === id);
+    return arr.find((item) => item.id === id) || null;
   }
 
   private async validateUserStageRole(

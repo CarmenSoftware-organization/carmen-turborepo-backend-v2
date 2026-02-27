@@ -29,6 +29,12 @@ import {
   Result,
   ErrorCode,
 } from '@/common';
+import {
+  SavePurchaseOrderDetailDto,
+  ApprovePurchaseOrderDetailDto,
+  RejectPurchaseOrderDetailDto,
+  ReviewPurchaseOrderDetailDto,
+} from './dto/approve-purchase-order.dto';
 import * as ExcelJS from 'exceljs';
 import type { TDocumentDefinitions, Content, TableCell } from 'pdfmake/interfaces';
 
@@ -800,8 +806,7 @@ export class PurchaseOrderService {
   }
 
   @TryCatch
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async save(id: string, payload: any[]): Promise<Result<unknown>> {
+  async save(id: string, payload: SavePurchaseOrderDetailDto[]): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'save',
@@ -908,8 +913,7 @@ export class PurchaseOrderService {
   }
 
   @TryCatch
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async approve(id: string, workflow: any, payload: any[]): Promise<Result<unknown>> {
+  async approve(id: string, workflow: Record<string, unknown>, payload: ApprovePurchaseOrderDetailDto[]): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'approve',
@@ -990,8 +994,7 @@ export class PurchaseOrderService {
   }
 
   @TryCatch
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async reject(id: string, workflow: any, payload: any[]): Promise<Result<unknown>> {
+  async reject(id: string, workflow: Record<string, unknown>, payload: RejectPurchaseOrderDetailDto[]): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'reject',
@@ -1073,8 +1076,7 @@ export class PurchaseOrderService {
   }
 
   @TryCatch
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async review(id: string, workflow: any, payload: any[]): Promise<Result<unknown>> {
+  async review(id: string, workflow: Record<string, unknown>, payload: ReviewPurchaseOrderDetailDto[]): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'review',

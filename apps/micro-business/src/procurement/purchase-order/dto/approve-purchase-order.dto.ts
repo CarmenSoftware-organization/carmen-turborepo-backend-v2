@@ -18,6 +18,8 @@ export const ApprovePurchaseOrderSchema = z.object({
 export type ApprovePurchaseOrderDto = z.infer<typeof ApprovePurchaseOrderSchema>;
 export type ApprovePurchaseOrderDetailDto = z.infer<typeof ApprovePurchaseOrderDetailSchema>;
 
+export class ApprovePurchaseOrderDtoClass extends createZodDto(ApprovePurchaseOrderSchema) {}
+
 // Save PO Detail schema - with qty/price changes
 export const SavePurchaseOrderDetailSchema = z.object({
   id: z.string().uuid(),
@@ -74,6 +76,8 @@ export const SavePurchaseOrderSchema = z.object({
 export type SavePurchaseOrderDto = z.infer<typeof SavePurchaseOrderSchema>;
 export type SavePurchaseOrderDetailDto = z.infer<typeof SavePurchaseOrderDetailSchema>;
 
+export class SavePurchaseOrderDtoClass extends createZodDto(SavePurchaseOrderSchema) {}
+
 // Reject PO Detail schema
 export const RejectPurchaseOrderDetailSchema = z.object({
   id: z.string().uuid(),
@@ -88,6 +92,7 @@ export const RejectPurchaseOrderSchema = z.object({
 });
 
 export type RejectPurchaseOrderDto = z.infer<typeof RejectPurchaseOrderSchema>;
+export type RejectPurchaseOrderDetailDto = z.infer<typeof RejectPurchaseOrderDetailSchema>;
 
 export class RejectPurchaseOrderDtoClass extends createZodDto(RejectPurchaseOrderSchema) {}
 
@@ -106,5 +111,6 @@ export const ReviewPurchaseOrderSchema = z.object({
 });
 
 export type ReviewPurchaseOrderDto = z.infer<typeof ReviewPurchaseOrderSchema>;
+export type ReviewPurchaseOrderDetailDto = z.infer<typeof ReviewPurchaseOrderDetailSchema>;
 
 export class ReviewPurchaseOrderDtoClass extends createZodDto(ReviewPurchaseOrderSchema) {}

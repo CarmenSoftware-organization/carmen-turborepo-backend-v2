@@ -30,6 +30,16 @@ import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
+import {
+  ApprovePurchaseOrderDto,
+  SavePurchaseOrderDto,
+  RejectPurchaseOrderDto,
+  ReviewPurchaseOrderDto,
+  EXAMPLE_APPROVE_PO,
+  EXAMPLE_SAVE_PO,
+  EXAMPLE_REJECT_PO,
+  EXAMPLE_REVIEW_PO,
+} from './dto/state-change.dto';
 import { PermissionGuard } from 'src/auth';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
@@ -377,11 +387,21 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({
+    type: SavePurchaseOrderDto,
+    description: 'Save purchase order detail changes (qty, price, tax, discount)',
+    examples: {
+      save: {
+        value: EXAMPLE_SAVE_PO,
+        summary: 'Save PO detail with qty/price changes',
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   async save(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: SavePurchaseOrderDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -441,11 +461,21 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({
+    type: ApprovePurchaseOrderDto,
+    description: 'Approve purchase order payload',
+    examples: {
+      approve: {
+        value: EXAMPLE_APPROVE_PO,
+        summary: 'Approve PO at current workflow stage',
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   async approve(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: ApprovePurchaseOrderDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -505,11 +535,21 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({
+    type: RejectPurchaseOrderDto,
+    description: 'Reject purchase order payload',
+    examples: {
+      reject: {
+        value: EXAMPLE_REJECT_PO,
+        summary: 'Reject PO with message',
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   async reject(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: RejectPurchaseOrderDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -569,11 +609,21 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({
+    type: ReviewPurchaseOrderDto,
+    description: 'Review purchase order payload',
+    examples: {
+      review: {
+        value: EXAMPLE_REVIEW_PO,
+        summary: 'Send PO back to previous stage for review',
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   async review(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: ReviewPurchaseOrderDto,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
