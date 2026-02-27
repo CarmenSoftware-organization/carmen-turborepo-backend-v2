@@ -261,6 +261,27 @@ export class PurchaseOrderController extends BaseMicroserviceController {
   }
 
   @MessagePattern({
+    cmd: 'purchase-order.save',
+    service: 'purchase-order',
+  })
+  async save(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'save', payload },
+      PurchaseOrderController.name,
+    );
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.purchaseOrderLogic.save(
+        payload.id,
+        payload.data,
+        payload.user_id,
+        payload.tenant_id || payload.bu_code,
+      ),
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
     cmd: 'purchase-order.approve',
     service: 'purchase-order',
   })
@@ -272,6 +293,48 @@ export class PurchaseOrderController extends BaseMicroserviceController {
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
       this.purchaseOrderLogic.approve(
+        payload.id,
+        payload.data,
+        payload.user_id,
+        payload.tenant_id || payload.bu_code,
+      ),
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'purchase-order.reject',
+    service: 'purchase-order',
+  })
+  async reject(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'reject', payload },
+      PurchaseOrderController.name,
+    );
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.purchaseOrderLogic.reject(
+        payload.id,
+        payload.data,
+        payload.user_id,
+        payload.tenant_id || payload.bu_code,
+      ),
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'purchase-order.review',
+    service: 'purchase-order',
+  })
+  async review(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'review', payload },
+      PurchaseOrderController.name,
+    );
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.purchaseOrderLogic.review(
         payload.id,
         payload.data,
         payload.user_id,

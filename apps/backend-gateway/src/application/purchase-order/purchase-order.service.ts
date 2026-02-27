@@ -385,6 +385,39 @@ export class PurchaseOrderService {
     return Result.ok(data);
   }
 
+  async save(
+    id: string,
+    data: Record<string, unknown>,
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      {
+        function: 'save',
+        id,
+        version,
+      },
+      PurchaseOrderService.name,
+    );
+
+    const response = await firstValueFrom(
+      this.procurementService.send(
+        { cmd: 'purchase-order.save', service: 'purchase-order' },
+        { id, data, user_id, bu_code, version },
+      ),
+    );
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
   async approve(
     id: string,
     data: Record<string, unknown>,
@@ -404,6 +437,72 @@ export class PurchaseOrderService {
     const response = await firstValueFrom(
       this.procurementService.send(
         { cmd: 'purchase-order.approve', service: 'purchase-order' },
+        { id, data, user_id, bu_code, version },
+      ),
+    );
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
+  async reject(
+    id: string,
+    data: Record<string, unknown>,
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      {
+        function: 'reject',
+        id,
+        version,
+      },
+      PurchaseOrderService.name,
+    );
+
+    const response = await firstValueFrom(
+      this.procurementService.send(
+        { cmd: 'purchase-order.reject', service: 'purchase-order' },
+        { id, data, user_id, bu_code, version },
+      ),
+    );
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
+  async review(
+    id: string,
+    data: Record<string, unknown>,
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      {
+        function: 'review',
+        id,
+        version,
+      },
+      PurchaseOrderService.name,
+    );
+
+    const response = await firstValueFrom(
+      this.procurementService.send(
+        { cmd: 'purchase-order.review', service: 'purchase-order' },
         { id, data, user_id, bu_code, version },
       ),
     );

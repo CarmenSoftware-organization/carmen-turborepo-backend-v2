@@ -801,6 +801,114 @@ export class PurchaseOrderService {
 
   @TryCatch
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async save(id: string, payload: any[]): Promise<Result<unknown>> {
+    this.logger.debug(
+      {
+        function: 'save',
+        id,
+        user_id: this.userId,
+        tenant_id: this.bu_code,
+      },
+      PurchaseOrderService.name,
+    );
+
+    const purchaseOrder = await this.prismaService.tb_purchase_order.findFirst({
+      where: {
+        id: id,
+        po_status: enum_purchase_order_doc_status.in_progress,
+      },
+    });
+
+    if (!purchaseOrder) {
+      return Result.error('Purchase order not found or not in progress', ErrorCode.NOT_FOUND);
+    }
+
+    await this.prismaService.$transaction(async (txp) => {
+      let totalQty = 0;
+      let totalPrice = 0;
+      let totalTax = 0;
+      let totalAmount = 0;
+
+      for (const detail of payload) {
+        const history: Record<string, unknown>[] = [];
+
+        history.push({
+          seq: 1,
+          action: 'saved',
+          status: detail.stage_status,
+          user: {
+            id: this.userId,
+          },
+          at: new Date().toISOString(),
+        });
+
+        await txp.tb_purchase_order_detail.update({
+          where: {
+            id: detail.id,
+          },
+          data: {
+            order_qty: detail.order_qty,
+            order_unit_id: detail.order_unit_id,
+            order_unit_name: detail.order_unit_name,
+            order_unit_conversion_factor: detail.order_unit_conversion_factor,
+            base_qty: detail.base_qty,
+            base_unit_id: detail.base_unit_id,
+            base_unit_name: detail.base_unit_name,
+            price: detail.price,
+            sub_total_price: detail.sub_total_price,
+            net_amount: detail.net_amount,
+            total_price: detail.total_price,
+            base_price: detail.base_price,
+            base_sub_total_price: detail.base_sub_total_price,
+            base_net_amount: detail.base_net_amount,
+            base_total_price: detail.base_total_price,
+            tax_profile_id: detail.tax_profile_id,
+            tax_profile_name: detail.tax_profile_name,
+            tax_rate: detail.tax_rate,
+            tax_amount: detail.tax_amount,
+            base_tax_amount: detail.base_tax_amount,
+            is_tax_adjustment: detail.is_tax_adjustment,
+            discount_rate: detail.discount_rate,
+            discount_amount: detail.discount_amount,
+            base_discount_amount: detail.base_discount_amount,
+            is_discount_adjustment: detail.is_discount_adjustment,
+            is_foc: detail.is_foc,
+            description: detail.description,
+            note: detail.note,
+            doc_version: { increment: 1 },
+            history: history,
+            updated_by_id: this.userId,
+          },
+        });
+
+        totalQty += Number(detail.order_qty || 0);
+        totalPrice += Number(detail.sub_total_price || 0);
+        totalTax += Number(detail.tax_amount || 0);
+        totalAmount += Number(detail.total_price || 0);
+      }
+
+      await txp.tb_purchase_order.update({
+        where: {
+          id,
+        },
+        data: {
+          total_qty: totalQty,
+          total_price: totalPrice,
+          total_tax: totalTax,
+          total_amount: totalAmount,
+          doc_version: { increment: 1 },
+          updated_by_id: this.userId,
+        },
+      });
+
+      return id;
+    });
+
+    return Result.ok({ id: purchaseOrder.id });
+  }
+
+  @TryCatch
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async approve(id: string, workflow: any, payload: any[]): Promise<Result<unknown>> {
     this.logger.debug(
       {
@@ -834,12 +942,6 @@ export class PurchaseOrderService {
     });
 
     await this.prismaService.$transaction(async (txp) => {
-      // Calculate totals from details
-      let total_qty = 0;
-      let total_price = 0;
-      let total_tax = 0;
-      let total_amount = 0;
-
       for (const detail of payload) {
         const findPODoc = PODetailDocs.find((d) => d.id === detail.id);
         if (!findPODoc) {
@@ -848,31 +950,21 @@ export class PurchaseOrderService {
 
         const history: Record<string, unknown>[] = (findPODoc?.history as unknown as Record<string, unknown>[]) || [];
 
-        // Record approval in history
         history.push({
           seq: history.length + 1,
           action: 'approved',
+          status: detail.stage_status,
           user: {
             id: this.userId,
           },
           at: new Date().toISOString(),
         });
 
-        // Prepare update data - remove non-updatable fields
-        const { id: detailId, purchase_order_id, ...updateFields } = detail;
-
-        // Accumulate totals
-        total_qty += Number(updateFields.order_qty) || 0;
-        total_price += Number(updateFields.sub_total_price) || 0;
-        total_tax += Number(updateFields.tax_amount) || 0;
-        total_amount += Number(updateFields.total_price) || 0;
-
         await txp.tb_purchase_order_detail.update({
           where: {
             id: detail.id,
           },
           data: {
-            ...updateFields,
             doc_version: { increment: 1 },
             history: history,
             updated_by_id: this.userId,
@@ -880,18 +972,178 @@ export class PurchaseOrderService {
         });
       }
 
-      // Update PO header with workflow data
       await txp.tb_purchase_order.update({
         where: {
           id,
         },
         data: {
           ...workflow,
-          total_qty: total_qty,
-          total_price: total_price,
-          total_tax: total_tax,
-          total_amount: total_amount,
           doc_version: { increment: 1 },
+          updated_by_id: this.userId,
+        },
+      });
+
+      return id;
+    });
+
+    return Result.ok({ id: purchaseOrder.id });
+  }
+
+  @TryCatch
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async reject(id: string, workflow: any, payload: any[]): Promise<Result<unknown>> {
+    this.logger.debug(
+      {
+        function: 'reject',
+        id,
+        user_id: this.userId,
+        tenant_id: this.bu_code,
+      },
+      PurchaseOrderService.name,
+    );
+
+    const purchaseOrder = await this.prismaService.tb_purchase_order.findFirst({
+      where: {
+        id: id,
+        po_status: enum_purchase_order_doc_status.in_progress,
+      },
+    });
+
+    if (!purchaseOrder) {
+      return Result.error('Purchase order not found or not in progress', ErrorCode.NOT_FOUND);
+    }
+
+    const PODetailDocs = await this.prismaService.tb_purchase_order_detail.findMany({
+      where: {
+        purchase_order_id: id,
+      },
+      select: {
+        id: true,
+        history: true,
+      },
+    });
+
+    await this.prismaService.$transaction(async (txp) => {
+      for (const detail of payload) {
+        const findPODoc = PODetailDocs.find((d) => d.id === detail.id);
+        if (!findPODoc) {
+          continue;
+        }
+
+        const history: Record<string, unknown>[] = (findPODoc?.history as unknown as Record<string, unknown>[]) || [];
+
+        history.push({
+          seq: history.length + 1,
+          action: 'rejected',
+          status: detail.stage_status,
+          message: detail.stage_message || '',
+          user: {
+            id: this.userId,
+          },
+          at: new Date().toISOString(),
+        });
+
+        await txp.tb_purchase_order_detail.update({
+          where: {
+            id: detail.id,
+          },
+          data: {
+            doc_version: { increment: 1 },
+            history: history,
+            updated_by_id: this.userId,
+          },
+        });
+      }
+
+      await txp.tb_purchase_order.update({
+        where: {
+          id,
+        },
+        data: {
+          ...workflow,
+          po_status: enum_purchase_order_doc_status.closed,
+          updated_by_id: this.userId,
+        },
+      });
+
+      return id;
+    });
+
+    return Result.ok({ id: purchaseOrder.id });
+  }
+
+  @TryCatch
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async review(id: string, workflow: any, payload: any[]): Promise<Result<unknown>> {
+    this.logger.debug(
+      {
+        function: 'review',
+        id,
+        user_id: this.userId,
+        tenant_id: this.bu_code,
+      },
+      PurchaseOrderService.name,
+    );
+
+    const purchaseOrder = await this.prismaService.tb_purchase_order.findFirst({
+      where: {
+        id: id,
+        po_status: enum_purchase_order_doc_status.in_progress,
+      },
+    });
+
+    if (!purchaseOrder) {
+      return Result.error('Purchase order not found or not in progress', ErrorCode.NOT_FOUND);
+    }
+
+    const PODetailDocs = await this.prismaService.tb_purchase_order_detail.findMany({
+      where: {
+        purchase_order_id: id,
+      },
+      select: {
+        id: true,
+        history: true,
+      },
+    });
+
+    await this.prismaService.$transaction(async (txp) => {
+      for (const detail of payload) {
+        const findPODoc = PODetailDocs.find((d) => d.id === detail.id);
+        if (!findPODoc) {
+          continue;
+        }
+
+        const history: Record<string, unknown>[] = (findPODoc?.history as unknown as Record<string, unknown>[]) || [];
+
+        history.push({
+          seq: history.length + 1,
+          action: 'reviewed',
+          status: detail.stage_status,
+          message: detail.stage_message || '',
+          user: {
+            id: this.userId,
+          },
+          at: new Date().toISOString(),
+        });
+
+        await txp.tb_purchase_order_detail.update({
+          where: {
+            id: detail.id,
+          },
+          data: {
+            doc_version: { increment: 1 },
+            history: history,
+            updated_by_id: this.userId,
+          },
+        });
+      }
+
+      await txp.tb_purchase_order.update({
+        where: {
+          id,
+        },
+        data: {
+          ...workflow,
           updated_by_id: this.userId,
         },
       });

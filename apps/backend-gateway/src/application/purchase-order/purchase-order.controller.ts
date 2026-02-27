@@ -3,6 +3,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -341,7 +342,71 @@ export class PurchaseOrderController extends BaseHttpController {
     this.respond(res, result);
   }
 
-  @Post(':id/approve')
+  @Patch(':id/save')
+  @UseGuards(new AppIdGuard('purchaseOrder.save'))
+  @Serialize(PurchaseOrderMutationResponseSchema)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Save purchase order detail changes',
+    description:
+      'Saves qty/price/tax/discount changes to purchase order details during the approval workflow.',
+    operationId: 'savePurchaseOrder',
+    tags: ['[Method] Patch'],
+    deprecated: false,
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
+    parameters: [
+      {
+        name: 'id',
+        in: 'path',
+        required: true,
+      },
+    ],
+    responses: {
+      200: {
+        description: 'The purchase order details were successfully saved',
+      },
+      400: {
+        description: 'Invalid stage_role or user does not have permission',
+      },
+      404: {
+        description: 'The purchase order was not found',
+      },
+    },
+  })
+  @HttpCode(HttpStatus.OK)
+  async save(
+    @Param('id') id: string,
+    @Param('bu_code') bu_code: string,
+    @Body() data: Record<string, unknown>,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      {
+        function: 'save',
+        id,
+        version,
+      },
+      PurchaseOrderController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.purchaseOrderService.save(
+      id,
+      data,
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  @Patch(':id/approve')
   @UseGuards(new AppIdGuard('purchaseOrder.approve'))
   @Serialize(PurchaseOrderMutationResponseSchema)
   @ApiVersionMinRequest()
@@ -350,7 +415,7 @@ export class PurchaseOrderController extends BaseHttpController {
     description:
       'Approves a purchase order at the current workflow stage. Validates user role and advances the workflow.',
     operationId: 'approvePurchaseOrder',
-    tags: ['[Method] Post'],
+    tags: ['[Method] Patch'],
     deprecated: false,
     security: [
       {
@@ -396,6 +461,134 @@ export class PurchaseOrderController extends BaseHttpController {
 
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.purchaseOrderService.approve(
+      id,
+      data,
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  @Patch(':id/reject')
+  @UseGuards(new AppIdGuard('purchaseOrder.reject'))
+  @Serialize(PurchaseOrderMutationResponseSchema)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Reject a purchase order',
+    description:
+      'Rejects a purchase order at the current workflow stage. Sets status to closed.',
+    operationId: 'rejectPurchaseOrder',
+    tags: ['[Method] Patch'],
+    deprecated: false,
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
+    parameters: [
+      {
+        name: 'id',
+        in: 'path',
+        required: true,
+      },
+    ],
+    responses: {
+      200: {
+        description: 'The purchase order was successfully rejected',
+      },
+      400: {
+        description: 'Invalid stage_role or user does not have permission',
+      },
+      404: {
+        description: 'The purchase order was not found',
+      },
+    },
+  })
+  @HttpCode(HttpStatus.OK)
+  async reject(
+    @Param('id') id: string,
+    @Param('bu_code') bu_code: string,
+    @Body() data: Record<string, unknown>,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      {
+        function: 'reject',
+        id,
+        version,
+      },
+      PurchaseOrderController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.purchaseOrderService.reject(
+      id,
+      data,
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  @Patch(':id/review')
+  @UseGuards(new AppIdGuard('purchaseOrder.review'))
+  @Serialize(PurchaseOrderMutationResponseSchema)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Review a purchase order',
+    description:
+      'Sends a purchase order back to a previous workflow stage for review.',
+    operationId: 'reviewPurchaseOrder',
+    tags: ['[Method] Patch'],
+    deprecated: false,
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
+    parameters: [
+      {
+        name: 'id',
+        in: 'path',
+        required: true,
+      },
+    ],
+    responses: {
+      200: {
+        description: 'The purchase order was successfully sent back for review',
+      },
+      400: {
+        description: 'Invalid stage_role or user does not have permission',
+      },
+      404: {
+        description: 'The purchase order was not found',
+      },
+    },
+  })
+  @HttpCode(HttpStatus.OK)
+  async review(
+    @Param('id') id: string,
+    @Param('bu_code') bu_code: string,
+    @Body() data: Record<string, unknown>,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      {
+        function: 'review',
+        id,
+        version,
+      },
+      PurchaseOrderController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.purchaseOrderService.review(
       id,
       data,
       user_id,

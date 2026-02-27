@@ -1,12 +1,12 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { PurchaseOrderService } from './purchase-order.service';
 import { MapperLogic } from '@/common/mapper/mapper.logic';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { creatorAccess, NavigateForwardResult, NotificationService, NotificationType } from '@/common';
 import { enum_last_action, enum_purchase_order_doc_status, enum_stage_role } from '@repo/prisma-shared-schema-tenant';
 import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
-import { ApprovePurchaseOrderDto } from './dto/approve-purchase-order.dto';
+import { firstValueFrom, Observable } from 'rxjs';
+import { ApprovePurchaseOrderDto, RejectPurchaseOrderDto, ReviewPurchaseOrderDto, SavePurchaseOrderDto } from './dto/approve-purchase-order.dto';
 
 export interface UserActionProfile {
   user_id: string;
@@ -60,9 +60,9 @@ export class PurchaseOrderLogic {
     private readonly notificationService: NotificationService,
   ) {}
 
-  async approve(
+  async save(
     id: string,
-    { stage_role, details }: ApprovePurchaseOrderDto,
+    { stage_role, details }: SavePurchaseOrderDto,
     user_id: string,
     tenant_id: string,
   ) {
@@ -73,12 +73,31 @@ export class PurchaseOrderLogic {
 
     // Enrich detail data with foreign values
     const extractIds = this.populateDetail(details);
-    const foreignValue: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id);
-    const updatePODetail = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id);
+    const savePODetail = [];
     for (const detail of details) {
-      updatePODetail.push(this.enrichApproveDetail(detail, foreignValue));
+      savePODetail.push(this.enrichSaveDetail(detail, foreignValue));
     }
+
+    this.logger.debug(
+      { function: 'save', id, stage_role, details, user_id, tenant_id },
+      PurchaseOrderLogic.name,
+    );
+
+    return this.purchaseOrderService.save(id, savePODetail);
+  }
+
+  async approve(
+    id: string,
+    { stage_role, details }: ApprovePurchaseOrderDto,
+    user_id: string,
+    tenant_id: string,
+  ) {
+    await this.purchaseOrderService.initializePrismaService(tenant_id, user_id);
+
+    // Validate user's role matches the payload's stage_role
+    await this.validateUserStageRole(id, stage_role);
 
     /* Workflow Station */
     const purchaseOrderResult = await this.purchaseOrderService.findById(id);
@@ -182,7 +201,7 @@ export class PurchaseOrderLogic {
       { function: 'approve', id, stage_role, details, user_id, tenant_id },
       PurchaseOrderLogic.name,
     );
-    const result = await this.purchaseOrderService.approve(id, workflow, updatePODetail);
+    const result = await this.purchaseOrderService.approve(id, workflow, details);
 
     // Send notification for approval
     this.sendApproveNotification(
@@ -196,50 +215,204 @@ export class PurchaseOrderLogic {
     return result;
   }
 
+  async reject(
+    id: string,
+    { stage_role, details }: RejectPurchaseOrderDto,
+    user_id: string,
+    tenant_id: string,
+  ) {
+    await this.purchaseOrderService.initializePrismaService(tenant_id, user_id);
+
+    // Validate user's role matches the payload's stage_role
+    await this.validateUserStageRole(id, stage_role);
+
+    const purchaseOrderResult = await this.purchaseOrderService.findById(id);
+    if (purchaseOrderResult.isError()) {
+      throw new Error('Purchase Order not found');
+    }
+    const purchaseOrderData = purchaseOrderResult.value;
+
+    const populateData: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Record<string, any> = await this.mapperLogic.populate(
+      { user_id: user_id },
+      user_id,
+      tenant_id,
+    );
+
+    const workflow_history = purchaseOrderData?.workflow_history || [];
+    const lastActionAtDate = new Date();
+
+    workflow_history.push({
+      action: enum_last_action.rejected,
+      datetime: lastActionAtDate,
+      user: {
+        id: user_id,
+        name: populateData?.user_id?.name,
+      },
+      current_stage: purchaseOrderData?.workflow_current_stage,
+      next_stage: '-',
+    });
+
+    const workflow = {
+      workflow_previous_stage: purchaseOrderData?.workflow_current_stage,
+      workflow_current_stage: purchaseOrderData?.workflow_current_stage,
+      workflow_next_stage: '-',
+      user_action: [],
+      last_action: enum_last_action.rejected,
+      last_action_at_date: lastActionAtDate.toISOString(),
+      last_action_by_id: user_id,
+      last_action_by_name: populateData?.user_id?.name,
+      workflow_history: workflow_history,
+    };
+
+    this.logger.debug(
+      { function: 'reject', id, stage_role, details, user_id, tenant_id },
+      PurchaseOrderLogic.name,
+    );
+    const result = await this.purchaseOrderService.reject(id, workflow, details);
+
+    // Send notification for rejection
+    this.sendRejectNotification(
+      purchaseOrderData,
+      user_id,
+      populateData?.user_id?.name,
+      tenant_id,
+    );
+
+    return result;
+  }
+
+  async review(
+    id: string,
+    body: ReviewPurchaseOrderDto,
+    user_id: string,
+    tenant_id: string,
+  ) {
+    await this.purchaseOrderService.initializePrismaService(tenant_id, user_id);
+
+    // Validate user's role matches the payload's stage_role
+    await this.validateUserStageRole(id, body.stage_role);
+
+    const purchaseOrderResult = await this.purchaseOrderService.findById(id);
+    if (purchaseOrderResult.isError()) {
+      throw new Error('Purchase Order not found');
+    }
+    const purchaseOrderData = purchaseOrderResult.value;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const userRes: Observable<any> = this.authService.send(
+      { cmd: 'get-user-by-id', service: 'auth' },
+      { id: user_id },
+    );
+    const userResponse = await firstValueFrom(userRes);
+
+    const total_amount = purchaseOrderData?.tb_purchase_order_detail?.reduce(
+      (curr, acc) => curr + Number(acc.total_price || 0),
+      0,
+    );
+
+    const workflowNavRes = this.masterService.send(
+      { cmd: 'workflows.navigate-back-to-stage', service: 'workflows' },
+      {
+        workflow_id: purchaseOrderData.workflow_id,
+        user_id: user_id,
+        bu_code: tenant_id,
+        stage: body.des_stage,
+        current_stage: purchaseOrderData.workflow_current_stage,
+        requestData: {
+          amount: total_amount,
+        },
+      },
+    );
+    const backToStageRes = await firstValueFrom(workflowNavRes);
+    const workflowHeader: NavigateForwardResult = backToStageRes.data;
+
+    const workflow_history = purchaseOrderData?.workflow_history || [];
+    const lastActionAtDate = new Date();
+
+    workflow_history.push({
+      action: enum_last_action.reviewed,
+      datetime: lastActionAtDate,
+      user: {
+        id: user_id,
+        name: userResponse?.data?.name,
+      },
+      current_stage: purchaseOrderData?.workflow_current_stage,
+      next_stage: workflowHeader.navigation_info.workflow_next_step,
+    });
+
+    const userAction = await this.buildUserAction(
+      workflowHeader.navigation_info.current_stage_info,
+      user_id,
+      tenant_id,
+    );
+
+    const workflow = {
+      workflow_previous_stage: purchaseOrderData.workflow_current_stage,
+      workflow_current_stage: workflowHeader.navigation_info.current_stage_info.name,
+      workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
+      user_action: userAction,
+      last_action: enum_last_action.reviewed,
+      last_action_at_date: lastActionAtDate.toISOString(),
+      last_action_by_id: user_id,
+      last_action_by_name: userResponse?.data?.name,
+      workflow_history: workflow_history,
+    };
+
+    this.logger.debug(
+      { function: 'review', id, body, user_id, tenant_id },
+      PurchaseOrderLogic.name,
+    );
+    const result = await this.purchaseOrderService.review(id, workflow, body.details);
+
+    // Send notification for review
+    this.sendReviewNotification(
+      purchaseOrderData,
+      workflow as WorkflowHeader,
+      user_id,
+      userResponse?.data?.name,
+      tenant_id,
+    );
+
+    return result;
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private populateDetail(details: any[]) {
     const unit_ids = [];
     const tax_profile_ids = [];
-
     for (const detail of details) {
-      if (detail?.order_unit_id) {
-        unit_ids.push(detail?.order_unit_id);
-      }
-      if (detail?.base_unit_id) {
-        unit_ids.push(detail?.base_unit_id);
-      }
-      if (detail?.tax_profile_id) {
-        tax_profile_ids.push(detail?.tax_profile_id);
-      }
+      if (detail?.order_unit_id) unit_ids.push(detail.order_unit_id);
+      if (detail?.base_unit_id) unit_ids.push(detail.base_unit_id);
+      if (detail?.tax_profile_id) tax_profile_ids.push(detail.tax_profile_id);
     }
-
-    return {
-      unit_ids,
-      tax_profile_ids,
-    };
+    return { unit_ids, tax_profile_ids };
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private enrichApproveDetail(detail: Record<string, any>, foreignValue: Record<string, any>): Record<string, any> {
+  private enrichSaveDetail(detail: any, foreignValue: Record<string, any>) {
     return JSON.parse(
       JSON.stringify({
         ...detail,
-        order_unit_name: this.findById(foreignValue?.unit_ids, detail?.order_unit_id)?.name || detail?.order_unit_name,
-        base_unit_name: this.findById(foreignValue?.unit_ids, detail?.base_unit_id)?.name || detail?.base_unit_name,
-        tax_profile_name: this.findById(foreignValue?.tax_profile_ids, detail?.tax_profile_id)?.name || detail?.tax_profile_name,
+        order_unit_name:
+          this.findByIdInArray(foreignValue?.unit_ids, detail?.order_unit_id)?.name || detail?.order_unit_name,
+        base_unit_name:
+          this.findByIdInArray(foreignValue?.unit_ids, detail?.base_unit_id)?.name || detail?.base_unit_name,
+        tax_profile_name:
+          this.findByIdInArray(foreignValue?.tax_profile_ids, detail?.tax_profile_id)?.name || detail?.tax_profile_name,
       }),
     );
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private findById(arr: any[], id: string): any | null {
+  private findByIdInArray(arr: any[] | undefined, id: string | undefined): any | null {
     if (!arr || !id) return null;
     return arr.find((item) => item.id === id);
   }
 
   private async validateUserStageRole(
     id: string,
-    payloadStateRole: enum_stage_role,
+    payloadStageRole: enum_stage_role,
   ): Promise<void> {
     const purchaseOrderResult = await this.purchaseOrderService.findById(id);
     if (purchaseOrderResult.isError()) {
@@ -255,9 +428,9 @@ export class PurchaseOrderLogic {
       );
     }
 
-    if (payloadStateRole !== userActualRole) {
+    if (payloadStageRole !== userActualRole) {
       throw new BadRequestException(
-        `Invalid stage_role. Expected: ${userActualRole}, Received: ${payloadStateRole}`,
+        `Invalid stage_role. Expected: ${userActualRole}, Received: ${payloadStageRole}`,
       );
     }
   }
@@ -284,7 +457,6 @@ export class PurchaseOrderLogic {
     // Add all users in department if creator_access flag is set
     if (currentStageInfo?.creator_access === creatorAccess.ALL_PEOPLE_IN_DEPARTMENT_CAN_ACTION) {
       // For PO, we don't have department_id in the same way as PR
-      // This might need adjustment based on your business logic
     }
 
     if (userIdsToAssign.length === 0) {
@@ -313,12 +485,10 @@ export class PurchaseOrderLogic {
     bu_code: string,
   ): Promise<void> {
     try {
-      // Determine if this is final approval
       const isFinalApproval = workflow.workflow_next_stage === '-';
       const poNo = purchaseOrder.po_no;
 
       if (isFinalApproval) {
-        // Send notification to buyer/creator that PO is approved
         const recipientId = purchaseOrder.buyer_id || purchaseOrder.created_by_id;
         if (recipientId) {
           await this.notificationService.sendToUsers({
@@ -336,7 +506,6 @@ export class PurchaseOrderLogic {
           });
         }
       } else {
-        // Send notification to next approvers
         const nextApproverIds = workflow.user_action?.execute?.map((u) => u.user_id) || [];
         if (nextApproverIds.length > 0) {
           await this.notificationService.sendToUsers({
@@ -359,6 +528,97 @@ export class PurchaseOrderLogic {
     } catch (error) {
       this.logger.error(
         { function: 'sendApproveNotification', error: (error as Error).message },
+        PurchaseOrderLogic.name,
+      );
+    }
+  }
+
+  private async sendRejectNotification(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    purchaseOrder: Record<string, any>,
+    user_id: string,
+    user_name: string,
+    bu_code: string,
+  ): Promise<void> {
+    try {
+      const poNo = purchaseOrder.po_no;
+      const recipientId = purchaseOrder.buyer_id || purchaseOrder.created_by_id;
+      if (recipientId) {
+        await this.notificationService.sendToUsers({
+          to_user_ids: [recipientId],
+          from_user_id: user_id,
+          title: `Purchase Order Rejected: ${poNo}`,
+          message: `PO ${poNo} has been rejected by ${user_name}`,
+          type: NotificationType.PO,
+          metadata: {
+            type: 'purchase-order',
+            id: purchaseOrder.id,
+            bu_code: bu_code,
+            action: 'rejected',
+          },
+        });
+      }
+
+      this.logger.log(`Reject notification sent for PO ${poNo}`);
+    } catch (error) {
+      this.logger.error(
+        { function: 'sendRejectNotification', error: (error as Error).message },
+        PurchaseOrderLogic.name,
+      );
+    }
+  }
+
+  private async sendReviewNotification(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    purchaseOrder: Record<string, any>,
+    workflow: WorkflowHeader,
+    user_id: string,
+    user_name: string,
+    bu_code: string,
+  ): Promise<void> {
+    try {
+      const poNo = purchaseOrder.po_no;
+
+      // Notify buyer/creator that PO was sent back for review
+      const recipientId = purchaseOrder.buyer_id || purchaseOrder.created_by_id;
+      if (recipientId) {
+        await this.notificationService.sendToUsers({
+          to_user_ids: [recipientId],
+          from_user_id: user_id,
+          title: `Purchase Order Reviewed: ${poNo}`,
+          message: `PO ${poNo} has been sent back for review by ${user_name}`,
+          type: NotificationType.PO,
+          metadata: {
+            type: 'purchase-order',
+            id: purchaseOrder.id,
+            bu_code: bu_code,
+            action: 'reviewed',
+          },
+        });
+      }
+
+      // Notify users at the target stage
+      const actionUserIds = workflow.user_action?.execute?.map((u) => u.user_id) || [];
+      if (actionUserIds.length > 0) {
+        await this.notificationService.sendToUsers({
+          to_user_ids: actionUserIds,
+          from_user_id: user_id,
+          title: `Purchase Order Requires Action: ${poNo}`,
+          message: `PO ${poNo} has been sent back to stage: ${workflow.workflow_current_stage}`,
+          type: NotificationType.PO,
+          metadata: {
+            type: 'purchase-order',
+            id: purchaseOrder.id,
+            bu_code: bu_code,
+            action: 'review_action_required',
+          },
+        });
+      }
+
+      this.logger.log(`Review notification sent for PO ${poNo}`);
+    } catch (error) {
+      this.logger.error(
+        { function: 'sendReviewNotification', error: (error as Error).message },
         PurchaseOrderLogic.name,
       );
     }
