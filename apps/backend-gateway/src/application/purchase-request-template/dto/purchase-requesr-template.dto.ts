@@ -37,12 +37,11 @@ const CreatePurchaseRequestTemplateDetailSchema = z.object({
 });
 
 // Schema for tb_purchase_request_template (create)
-// Note: workflow_name and department_name are populated by mapper from their corresponding *_id fields
+// Note: workflow_name is populated by mapper from workflow_id
 const CreatePurchaseRequestTemplateSchema = z.object({
   name: z.string(),
   description: z.string().optional().nullable(),
   workflow_id: z.string().uuid().optional().nullable(),
-  department_id: z.string().uuid().optional().nullable(),
   is_active: z.boolean().optional().default(true),
   note: z.string().optional().nullable(),
   info: z.any().optional().default({}),

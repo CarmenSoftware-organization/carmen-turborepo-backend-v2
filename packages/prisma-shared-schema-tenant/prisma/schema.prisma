@@ -2298,9 +2298,6 @@ model tb_purchase_request_template {
   workflow_id   String? @db.Uuid
   workflow_name String? @db.VarChar
 
-  department_id   String? @db.Uuid
-  department_name String? @db.VarChar
-
   is_active Boolean? @default(true)
 
   note      String? @db.VarChar
@@ -2387,7 +2384,7 @@ model tb_purchase_request_template_detail {
   // pricelist_price     Decimal?  @db.Decimal(15, 5)
 
   currency_id        String?   @db.Uuid
-  currency_name      String?   @db.VarChar
+  currency_code      String?   @db.VarChar
   exchange_rate      Decimal?  @default(1) @db.Decimal(15, 5)
   exchange_rate_date DateTime? @db.Timestamptz(6)
 

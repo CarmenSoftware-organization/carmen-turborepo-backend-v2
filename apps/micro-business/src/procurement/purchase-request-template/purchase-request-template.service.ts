@@ -201,8 +201,6 @@ export class PurchaseRequestTemplateService {
           data: {
             name: data.name || 'Purchase Request Template',
             description: data.description,
-            department_id: data.department_id,
-            department_name: data.department_name,
             workflow_id: data.workflow_id as never,
             workflow_name: data.workflow_name,
             note: data.note,
@@ -248,8 +246,6 @@ export class PurchaseRequestTemplateService {
           data: JSON.parse(
             JSON.stringify({
               name: data.name,
-              department_id: data.department_id,
-              department_name: data.department_name,
               workflow_id: data.workflow_id,
               workflow_name: data.workflow_name,
               updated_by_id: this.userId,

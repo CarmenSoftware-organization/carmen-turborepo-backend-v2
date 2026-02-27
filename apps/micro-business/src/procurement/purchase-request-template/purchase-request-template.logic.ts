@@ -28,13 +28,11 @@ export class PurchaseRequestTemplateLogic {
     const populateData: // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Record<string, any> = await this.populateData(data, user_id, bu_code);
     const purchaseRequestTemplate: Partial<CreatePurchaseRequestTemplate> = {
-      department_id: populateData?.department_id?.id,
-      department_name: populateData?.department_id?.name,
       workflow_id: populateData?.workflow_id?.id,
       workflow_name: populateData?.workflow_id?.name
     };
 
-    // Always merge the populated department/workflow names
+    // Always merge the populated workflow names
     data = {
       ...data,
       ...JSON.parse(JSON.stringify(purchaseRequestTemplate)),
@@ -75,13 +73,11 @@ export class PurchaseRequestTemplateLogic {
     const populateData: // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Record<string, any> = await this.populateData(data, user_id, bu_code);
     const purchaseRequestTemplate: Partial<UpdatePurchaseRequestTemplate> = {
-      department_id: populateData?.department_id?.id,
-      department_name: populateData?.department_id?.name,
       workflow_id: populateData?.workflow_id?.id,
       workflow_name: populateData?.workflow_id?.name,
     };
 
-    // Always merge the populated department/workflow names
+    // Always merge the populated workflow names
     data = {
       ...data,
       ...JSON.parse(JSON.stringify(purchaseRequestTemplate)),
@@ -121,7 +117,6 @@ export class PurchaseRequestTemplateLogic {
     const delivery_point_ids = [];
 
     const populateLiast = {
-      department_id: data.department_id,
       workflow_id: data.workflow_id,
     };
 
