@@ -756,6 +756,7 @@ export class PurchaseRequestLogic {
     const currency_ids = []
     const delivery_point_ids = []
     const tax_profile_ids = []
+    const pricelist_detail_ids = []
 
     for (const detail of data) {
       if (detail?.vendor_id) {
@@ -773,6 +774,9 @@ export class PurchaseRequestLogic {
       if (detail?.tax_profile_id) {
         tax_profile_ids.push(detail?.tax_profile_id)
       }
+      if (detail?.pricelist_detail_id) {
+        pricelist_detail_ids.push(detail?.pricelist_detail_id)
+      }
     }
 
     return {
@@ -782,7 +786,8 @@ export class PurchaseRequestLogic {
       unit_ids,
       currency_ids,
       delivery_point_ids,
-      tax_profile_ids
+      tax_profile_ids,
+      pricelist_detail_ids,
     }
   }
 

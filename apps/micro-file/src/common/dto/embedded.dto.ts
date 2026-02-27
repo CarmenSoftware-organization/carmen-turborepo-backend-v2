@@ -140,8 +140,8 @@ export const InfoSchema = z.object({
 })
 
 export const EmbeddedPriceListSchema = z.object({
-  pricelist_detail_id: z.string().uuid(),
-  pricelist_no: z.string().optional(),
+  pricelist_detail_id: z.string().uuid().nullable(),
+  pricelist_no: z.string().nullable(),
   pricelist_price: ValidateSchema.shape.price.optional(),
   pricelist_type: z.nativeEnum(enum_pricelist_compare_type).optional(),
 })

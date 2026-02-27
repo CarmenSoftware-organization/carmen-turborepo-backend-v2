@@ -64,5 +64,5 @@ export const SavePurchaseRequestSchema = z.discriminatedUnion('stage_role', [
   })
 ])
 
-export class ApproveByStageRoleDto2 extends createZodDto(ApproveByStageRoleSchema2) {}
-export class SavePurchaseRequestDto extends createZodDto(SavePurchaseRequestSchema) {}
+export class ApproveByStageRoleDto2 extends createZodDto(ApproveByStageRoleSchema2) { }
+export class SavePurchaseRequestDto extends createZodDto(SavePurchaseRequestSchema) { }
