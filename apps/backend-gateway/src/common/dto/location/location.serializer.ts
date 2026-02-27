@@ -66,6 +66,7 @@ export const LocationByUserResponseSchema = z.object({
   physical_count_type: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   is_active: z.boolean().optional(),
+  delivery_point: DeliveryPointEmbeddedSchema.nullable().optional(),
 });
 
 export type LocationByUserResponse = z.infer<typeof LocationByUserResponseSchema>;

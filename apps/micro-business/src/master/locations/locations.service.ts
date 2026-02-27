@@ -365,11 +365,35 @@ export class LocationsService {
         physical_count_type: true,
         description: true,
         is_active: true,
+        tb_delivery_point: {
+          select: {
+            id: true,
+            name: true,
+            is_active: true,
+          },
+        },
       },
     });
 
+    const transformed = locations.map((location) => ({
+      id: location.id,
+      code: location.code,
+      name: location.name,
+      location_type: location.location_type,
+      physical_count_type: location.physical_count_type,
+      description: location.description,
+      is_active: location.is_active,
+      delivery_point: location.tb_delivery_point
+        ? {
+            id: location.tb_delivery_point.id,
+            name: location.tb_delivery_point.name,
+            is_active: location.tb_delivery_point.is_active,
+          }
+        : null,
+    }));
+
     // Serialize response data
-    const serializedLocations = locations.map((location) => LocationByUserResponseSchema.parse(location));
+    const serializedLocations = transformed.map((location) => LocationByUserResponseSchema.parse(location));
 
     return Result.ok(serializedLocations);
   }
