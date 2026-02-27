@@ -73,7 +73,7 @@ export const CurrencySchema = z.object({
   approved_conversion_rate: z.number().optional(),
   requested_conversion_rate: z.number().optional(),
   currency_id: z.string().uuid().optional(),
-  currency_name: z.string().optional(),
+  currency_code: z.string().optional(),
   exchange_rate: z.number().optional(),
 })
 

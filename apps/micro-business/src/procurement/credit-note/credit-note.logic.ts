@@ -36,7 +36,7 @@ export class CreditNoteLogic implements IClassLogic {
       cn_reason_name: populatedData.cn_reason_id?.name,
       cn_reason_description: populatedData.cn_reason_id?.description,
       // workflow_obj: populatedData.workflow_id?.workflow_obj,
-      currency_name: populatedData.currency_ids[0]?.name,
+      currency_code: populatedData.currency_ids[0]?.code,
     };
 
     if (createCreditNote.credit_note_detail?.add?.length) {
@@ -103,7 +103,7 @@ export class CreditNoteLogic implements IClassLogic {
     const updateCreditNote = {
       ...data,
       vendor_name: populatedData.vendor_ids[0]?.name,
-      currency_name: populatedData.currency_ids[0]?.name,
+      currency_code: populatedData.currency_ids[0]?.code,
       grn_no: populatedData.grn_id?.grn_no,
       grn_date: populatedData.grn_id?.grn_date,
       cn_reason_name: populatedData.cn_reason_id?.name,

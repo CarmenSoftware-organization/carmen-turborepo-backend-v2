@@ -312,7 +312,7 @@ model tb_credit_note {
   pricelist_price     Decimal? @default(0) @db.Decimal(20, 5)
 
   currency_id        String?   @db.Uuid
-  currency_name      String?   @db.VarChar
+  currency_code      String?   @db.VarChar
   exchange_rate      Decimal?  @default(1) @db.Decimal(15, 5)
   exchange_rate_date DateTime? @db.Timestamptz(6)
 
@@ -790,7 +790,7 @@ model tb_good_received_note {
   vendor_name String? @db.VarChar
 
   currency_id        String    @db.Uuid
-  currency_name      String?   @db.VarChar
+  currency_code      String?   @db.VarChar
   exchange_rate      Decimal?  @default(1) @db.Decimal(15, 5)
   exchange_rate_date DateTime? @db.Timestamptz(6)
 
@@ -3851,7 +3851,7 @@ model tb_pricelist_template {
 
   // Currency and validity
   currency_id     String? @db.Uuid
-  currency_name   String? @db.VarChar
+  currency_code   String? @db.VarChar
   validity_period Int? // number of days
 
   // Notification settings
@@ -4172,7 +4172,7 @@ model tb_pricelist {
   effective_to_date   DateTime? @db.Timestamptz(6)
 
   currency_id   String? @db.Uuid
-  currency_name String? @db.VarChar
+  currency_code String? @db.VarChar
 
   submission_method pricelist_submission_method? @default(online)
   submitted_at      DateTime?                    @db.Timestamptz(6)

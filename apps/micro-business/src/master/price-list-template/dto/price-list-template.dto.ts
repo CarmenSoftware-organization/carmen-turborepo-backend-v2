@@ -40,7 +40,7 @@ export const PriceListTemplateSchema = z.object({
 
   // Currency and validity
   currency_id: z.string().uuid().optional().nullable(),
-  currency_name: z.string().optional().nullable(),
+  currency_code: z.string().optional().nullable(),
   validity_period: z.number().int().optional().nullable(), // number of days
 
   // Vendor instructions

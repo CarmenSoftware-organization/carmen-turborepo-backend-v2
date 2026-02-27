@@ -259,7 +259,7 @@ export class GoodReceivedNoteService {
       if (!data.currency_rate) {
         data.currency_rate = Number(currency.exchange_rate);
       }
-      data.currency_name = currency.name;
+      data.currency_code = currency.code;
     }
 
     // if (data.workflow_id) {
@@ -646,7 +646,7 @@ export class GoodReceivedNoteService {
         if (!data.currency_rate) {
           data.currency_rate = Number(foundCurrency.exchange_rate);
         }
-        data.currency_name = foundCurrency.name;
+        data.currency_code = foundCurrency.code;
       }
     }
 
@@ -1593,7 +1593,7 @@ export class GoodReceivedNoteService {
     worksheet.addRow(['GRN No:', grn.grn_no || 'N/A', '', 'GRN Date:', grn.grn_date ? format(new Date(grn.grn_date), 'yyyy-MM-dd') : 'N/A']);
     worksheet.addRow(['Vendor:', grn.vendor_name || grn.tb_vendor?.name || 'N/A', '', 'Status:', grn.doc_status]);
     worksheet.addRow(['Invoice No:', grn.invoice_no || 'N/A', '', 'Invoice Date:', grn.invoice_date ? format(new Date(grn.invoice_date), 'yyyy-MM-dd') : 'N/A']);
-    worksheet.addRow(['Currency:', grn.currency_name || grn.tb_currency?.name || 'N/A', '', 'Exchange Rate:', Number(grn.exchange_rate) || 1]);
+    worksheet.addRow(['Currency:', grn.currency_code || grn.tb_currency?.code || 'N/A', '', 'Exchange Rate:', Number(grn.exchange_rate) || 1]);
     worksheet.addRow(['Description:', grn.description || 'N/A']);
     worksheet.addRow([]);
 

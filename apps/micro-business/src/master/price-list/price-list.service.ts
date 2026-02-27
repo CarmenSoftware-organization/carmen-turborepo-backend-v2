@@ -608,7 +608,7 @@ export class PriceListService {
 
     const currency = await this.prismaService.tb_currency.findFirst({
       where: { id: data.currency_id },
-      select: { name: true },
+      select: { code: true },
     });
 
     const priceListNo = await this.generatePLNo(new Date().toISOString());
@@ -621,7 +621,7 @@ export class PriceListService {
         description: data.description,
         status: data.status,
         tb_currency: { connect: { id: data.currency_id } },
-        currency_name: currency.name,
+        currency_code: currency.code,
         effective_from_date: data.effective_from_date,
         effective_to_date: data.effective_to_date,
         created_by_id: this.userId,
@@ -682,13 +682,13 @@ export class PriceListService {
       data.vendor_name = vendor?.name;
     }
 
-    // Get currency name for denormalization if currency_id provided
+    // Get currency code for denormalization if currency_id provided
     if (data.currency_id) {
       const currency = await this.prismaService.tb_currency.findFirst({
         where: { id: data.currency_id },
-        select: { name: true },
+        select: { code: true },
       });
-      data.currency_name = currency?.name;
+      data.currency_code = currency?.code;
     }
 
     // Update the main price list record
@@ -702,7 +702,7 @@ export class PriceListService {
         vendor_id: data.vendor_id,
         vendor_name: data.vendor_name,
         currency_id: data.currency_id,
-        currency_name: data.currency_name,
+        currency_code: data.currency_code,
         effective_from_date: data.effective_from_date,
         effective_to_date: data.effective_to_date,
         info: data.info,
@@ -1079,7 +1079,7 @@ export class PriceListService {
       throw new Error(`Validation failed with ${errors.length} errors`);
     }
 
-    // Get vendor and currency names for denormalization
+    // Get vendor and currency for denormalization
     const vendor = await this.prismaService.tb_vendor.findFirst({
       where: { id: firstRow.vendor_id },
       select: { name: true },
@@ -1087,7 +1087,7 @@ export class PriceListService {
 
     const currency = await this.prismaService.tb_currency.findFirst({
       where: { id: firstRow.currency_id },
-      select: { name: true },
+      select: { code: true },
     });
 
     // Prepare detail items
@@ -1145,7 +1145,7 @@ export class PriceListService {
           vendor_id: firstRow.vendor_id,
           vendor_name: vendor?.name,
           currency_id: firstRow.currency_id,
-          currency_name: currency?.name,
+          currency_code: currency?.code,
           effective_from_date: firstRow.effective_from_date
             ? new Date(firstRow.effective_from_date)
             : existingPriceList.effective_from_date,
@@ -1187,7 +1187,7 @@ export class PriceListService {
           vendor_id: firstRow.vendor_id,
           vendor_name: vendor?.name,
           currency_id: firstRow.currency_id,
-          currency_name: currency?.name,
+          currency_code: currency?.code,
           effective_from_date: firstRow.effective_from_date
             ? new Date(firstRow.effective_from_date)
             : new Date(),

@@ -87,7 +87,7 @@ export interface IGoodReceivedNoteCreate {
   vendor_name?: string;
 
   currency_id: string;
-  currency_name?: string;
+  currency_code?: string;
   currency_rate?: number;
 
   // workflow_id?: string;
@@ -213,7 +213,7 @@ export interface IGoodReceivedNoteUpdate {
   vendor_name?: string;
 
   currency_id?: string;
-  currency_name?: string;
+  currency_code?: string;
   currency_rate?: number;
 
   // workflow_id?: string;

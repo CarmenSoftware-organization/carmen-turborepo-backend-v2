@@ -336,13 +336,13 @@ export class PriceListTemplateService {
       };
     }
 
-    // Get currency name for denormalization
+    // Get currency code for denormalization
     if (data.currency_id) {
       const currency = await this.prismaService.tb_currency.findFirst({
         where: { id: data.currency_id },
-        select: { name: true },
+        select: { code: true },
       });
-      data.currency_name = currency?.name;
+      data.currency_code = currency?.code;
     }
 
     // Validate and get product names for template details
@@ -376,7 +376,7 @@ export class PriceListTemplateService {
         note: data.note,
         status: data.status || 'draft',
         currency_id: data.currency_id,
-        currency_name: data.currency_name,
+        currency_code: data.currency_code,
         validity_period: data.validity_period,
         vendor_instructions: data.vendor_instructions,
         send_reminders: data.send_reminders,
@@ -447,13 +447,13 @@ export class PriceListTemplateService {
       };
     }
 
-    // Get currency name for denormalization
+    // Get currency code for denormalization
     if (data.currency_id) {
       const currency = await this.prismaService.tb_currency.findFirst({
         where: { id: data.currency_id },
-        select: { name: true },
+        select: { code: true },
       });
-      data.currency_name = currency?.name;
+      data.currency_code = currency?.code;
     }
 
     const updatedTemplate = await this.prismaService.tb_pricelist_template.update({
@@ -464,7 +464,7 @@ export class PriceListTemplateService {
         note: data.note,
         status: data.status,
         currency_id: data.currency_id,
-        currency_name: data.currency_name,
+        currency_code: data.currency_code,
         validity_period: data.validity_period,
         vendor_instructions: data.vendor_instructions,
         send_reminders: data.send_reminders,

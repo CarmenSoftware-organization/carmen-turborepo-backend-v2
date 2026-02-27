@@ -168,7 +168,7 @@ export class RequestForPricingService {
               name: true,
               status: true,
               currency_id: true,
-              currency_name: true,
+              currency_code: true,
               validity_period: true,
               vendor_instructions: true,
               tb_currency: {
