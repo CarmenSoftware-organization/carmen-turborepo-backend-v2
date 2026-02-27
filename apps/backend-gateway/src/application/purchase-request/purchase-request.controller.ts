@@ -29,6 +29,7 @@ import {
   PaginateQuery,
 } from 'src/shared-dto/paginate.dto';
 import { EXAMPLE_PURCHASE_REQUEST } from './example/purchase-request.example';
+import { EXAMPLE_APPROVE_BY_APPROVE_ROLE, EXAMPLE_APPROVE_BY_PURCHASE_ROLE } from './example/approve-purchase-request.example';
 import {
   BaseHttpController,
   Serialize,
@@ -519,8 +520,21 @@ export class PurchaseRequestController extends BaseHttpController {
   @Serialize(PurchaseRequestMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Submit a purchase request',
-    description: 'Submits an existing purchase request',
+    summary: 'Approve a purchase request',
+    description: 'Approves an existing purchase request. Use stage_role "approve" for approval role, or "purchase" for purchase role (includes pricelist, vendor, tax, discount fields).',
+  })
+  @ApiBody({
+    description: 'Approve purchase request payload. Use stage_role to determine which role is approving.',
+    examples: {
+      'Approve Role': {
+        summary: 'Approve by approve role',
+        value: EXAMPLE_APPROVE_BY_APPROVE_ROLE,
+      },
+      'Purchase Role': {
+        summary: 'Approve by purchase role (with pricelist_type, vendor, tax, discount)',
+        value: EXAMPLE_APPROVE_BY_PURCHASE_ROLE,
+      },
+    },
   })
   @HttpCode(HttpStatus.OK)
   async approve(

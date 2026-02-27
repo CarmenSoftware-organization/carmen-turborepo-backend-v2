@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { PrismaClient } from '@repo/prisma-shared-schema-tenant';
+import { PrismaClient, enum_pricelist_compare_type } from '@repo/prisma-shared-schema-tenant';
 
 // Import validate functions
 import {
@@ -142,7 +142,8 @@ export const InfoSchema = z.object({
 export const EmbeddedPriceListSchema = z.object({
   pricelist_detail_id: z.string().uuid(),
   pricelist_no: z.string().optional(),
-  pricelist_price: ValidateSchema.shape.price.optional()
+  pricelist_price: ValidateSchema.shape.price.optional(),
+  pricelist_type: z.nativeEnum(enum_pricelist_compare_type).optional(),
 })
 
 export const FocSchema = z.object({

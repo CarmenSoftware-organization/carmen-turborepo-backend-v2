@@ -1,5 +1,5 @@
 import { enum_stage_role } from '@repo/prisma-shared-schema-tenant';
-import { ApproveQuantityAndUnitSchema, CreatePurchaseRequestDetailSchema, EmbeddedCurrencySchema, EmbeddedDepartmentSchema, EmbeddedDiscountSchema, EmbeddedTaxSchema, EmbeddedVendorSchema, EmbeddedWorkflowSchema, FocSchema, PriceSchema, stage_status } from '@/common'
+import { ApproveQuantityAndUnitSchema, CreatePurchaseRequestDetailSchema, EmbeddedCurrencySchema, EmbeddedDepartmentSchema, EmbeddedDiscountSchema, EmbeddedPriceListSchema, EmbeddedTaxSchema, EmbeddedVendorSchema, EmbeddedWorkflowSchema, FocSchema, PriceSchema, stage_status } from '@/common'
 import { z } from 'zod'
 import { createZodDto } from 'nestjs-zod'
 
@@ -24,6 +24,7 @@ export const PurchaseRoleApprovePurchaseRequestDetailSchema = ApprovePurchaseReq
   .merge(EmbeddedVendorSchema)
   .merge(PriceSchema)
   .merge(FocSchema)
+  .merge(EmbeddedPriceListSchema)
 
 export const ApproveByStageRoleSchema2 = z.discriminatedUnion('stage_role', [
   z.object({
