@@ -2295,6 +2295,9 @@ model tb_purchase_request_template {
   name        String  @db.VarChar
   description String? @db.VarChar
 
+  department_id   String? @db.Uuid
+  department_name String? @db.VarChar
+
   workflow_id   String? @db.Uuid
   workflow_name String? @db.VarChar
 
