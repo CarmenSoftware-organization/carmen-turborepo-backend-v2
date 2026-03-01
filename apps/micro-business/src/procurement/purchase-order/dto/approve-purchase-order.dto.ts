@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { enum_stage_role } from '@repo/prisma-shared-schema-tenant';
 import { stage_status } from '@/procurement/purchase-request/dto/purchase-request-detail.dto';
 import { createZodDto } from 'nestjs-zod';
+import { PurchaseOrderDetailSchema } from './create-purchase-order.dto';
 
 // Approve PO Detail schema
 export const ApprovePurchaseOrderDetailSchema = z.object({
@@ -20,61 +21,41 @@ export type ApprovePurchaseOrderDetailDto = z.infer<typeof ApprovePurchaseOrderD
 
 export class ApprovePurchaseOrderDtoClass extends createZodDto(ApprovePurchaseOrderSchema) {}
 
-// Save PO Detail schema - with qty/price changes
-export const SavePurchaseOrderDetailSchema = z.object({
+// Save PO Detail schema - reuses create detail schema
+const UpdateSavePurchaseOrderDetailSchema = PurchaseOrderDetailSchema.extend({
   id: z.string().uuid(),
-  stage_status: z.nativeEnum(stage_status),
-
-  // Order quantities
-  order_qty: z.number().nonnegative().optional(),
-  order_unit_id: z.string().uuid().optional(),
-  order_unit_name: z.string().optional(),
-  order_unit_conversion_factor: z.number().optional(),
-
-  // Base quantities
-  base_qty: z.number().nonnegative().optional(),
-  base_unit_id: z.string().uuid().optional(),
-  base_unit_name: z.string().optional(),
-
-  // Pricing
-  price: z.number().nonnegative().optional(),
-  sub_total_price: z.number().nonnegative().optional(),
-  net_amount: z.number().nonnegative().optional(),
-  total_price: z.number().nonnegative().optional(),
-  base_price: z.number().nonnegative().optional(),
-  base_sub_total_price: z.number().nonnegative().optional(),
-  base_net_amount: z.number().nonnegative().optional(),
-  base_total_price: z.number().nonnegative().optional(),
-
-  // Tax
-  tax_profile_id: z.string().uuid().optional(),
-  tax_profile_name: z.string().optional(),
-  tax_rate: z.number().nonnegative().optional(),
-  tax_amount: z.number().nonnegative().optional(),
-  base_tax_amount: z.number().nonnegative().optional(),
-  is_tax_adjustment: z.boolean().optional(),
-
-  // Discount
-  discount_rate: z.number().nonnegative().optional(),
-  discount_amount: z.number().nonnegative().optional(),
-  base_discount_amount: z.number().nonnegative().optional(),
-  is_discount_adjustment: z.boolean().optional(),
-
-  // FOC
-  is_foc: z.boolean().optional(),
-
-  // Optional fields
-  description: z.string().optional(),
-  note: z.string().optional(),
 });
 
+// Save PO schema - header fields (all optional) + details with add/update/remove
 export const SavePurchaseOrderSchema = z.object({
-  stage_role: z.nativeEnum(enum_stage_role),
-  details: z.array(SavePurchaseOrderDetailSchema).min(1),
+  // Header fields (all optional for save)
+  vendor_id: z.string().uuid().optional(),
+  vendor_name: z.string().optional(),
+  delivery_date: z.string().optional(),
+  currency_id: z.string().uuid().optional(),
+  currency_code: z.string().optional(),
+  exchange_rate: z.number().positive().optional(),
+  description: z.string().optional(),
+  order_date: z.string().optional(),
+  credit_term_id: z.string().uuid().optional(),
+  credit_term_name: z.string().optional(),
+  credit_term_value: z.number().int().nonnegative().optional(),
+  buyer_id: z.string().uuid().optional(),
+  buyer_name: z.string().optional(),
+  email: z.string().email().optional(),
+  remarks: z.string().optional(),
+  note: z.string().optional(),
+
+  // Details with add/update/remove
+  details: z.object({
+    add: z.array(PurchaseOrderDetailSchema).optional(),
+    update: z.array(UpdateSavePurchaseOrderDetailSchema).optional(),
+    remove: z.array(z.object({ id: z.string().uuid() })).optional(),
+  }).optional(),
 });
 
 export type SavePurchaseOrderDto = z.infer<typeof SavePurchaseOrderSchema>;
-export type SavePurchaseOrderDetailDto = z.infer<typeof SavePurchaseOrderDetailSchema>;
+export type SavePurchaseOrderDetailDto = z.infer<typeof PurchaseOrderDetailSchema>;
 
 export class SavePurchaseOrderDtoClass extends createZodDto(SavePurchaseOrderSchema) {}
 

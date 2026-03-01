@@ -357,9 +357,9 @@ export class PurchaseOrderController extends BaseHttpController {
   @Serialize(PurchaseOrderMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Save purchase order detail changes',
+    summary: 'Save purchase order changes (add/update/remove details)',
     description:
-      'Saves qty/price/tax/discount changes to purchase order details during the approval workflow.',
+      'Saves changes to a purchase order while it is in progress. Supports updating header fields and adding, updating, or removing detail line items.',
     operationId: 'savePurchaseOrder',
     tags: ['[Method] Patch'],
     deprecated: false,
@@ -377,23 +377,23 @@ export class PurchaseOrderController extends BaseHttpController {
     ],
     responses: {
       200: {
-        description: 'The purchase order details were successfully saved',
+        description: 'The purchase order was successfully saved',
       },
       400: {
-        description: 'Invalid stage_role or user does not have permission',
+        description: 'Invalid data or user does not have permission',
       },
       404: {
-        description: 'The purchase order was not found',
+        description: 'The purchase order was not found or not in progress',
       },
     },
   })
   @ApiBody({
     type: SavePurchaseOrderDto,
-    description: 'Save purchase order detail changes (qty, price, tax, discount)',
+    description: 'Save purchase order with header changes and detail add/update/remove',
     examples: {
       save: {
         value: EXAMPLE_SAVE_PO,
-        summary: 'Save PO detail with qty/price changes',
+        summary: 'Save PO with add/update/remove details',
       },
     },
   })

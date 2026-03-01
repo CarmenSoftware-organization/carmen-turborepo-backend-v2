@@ -30,7 +30,6 @@ import {
   ErrorCode,
 } from '@/common';
 import {
-  SavePurchaseOrderDetailDto,
   ApprovePurchaseOrderDetailDto,
   RejectPurchaseOrderDetailDto,
   ReviewPurchaseOrderDetailDto,
@@ -806,7 +805,8 @@ export class PurchaseOrderService {
   }
 
   @TryCatch
-  async save(id: string, payload: SavePurchaseOrderDetailDto[]): Promise<Result<unknown>> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async save(id: string, header: Record<string, any>, details: Record<string, any>): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'save',
@@ -829,78 +829,168 @@ export class PurchaseOrderService {
     }
 
     await this.prismaService.$transaction(async (txp) => {
-      let totalQty = 0;
-      let totalPrice = 0;
-      let totalTax = 0;
-      let totalAmount = 0;
-
-      for (const detail of payload) {
-        const history: Record<string, unknown>[] = [];
-
-        history.push({
-          seq: 1,
-          action: 'saved',
-          status: detail.stage_status,
-          user: {
-            id: this.userId,
-          },
-          at: new Date().toISOString(),
-        });
-
-        await txp.tb_purchase_order_detail.update({
-          where: {
-            id: detail.id,
-          },
+      // 1. Update PO header if any header fields provided
+      if (Object.keys(header).length > 0) {
+        await txp.tb_purchase_order.update({
+          where: { id },
           data: {
-            order_qty: detail.order_qty,
-            order_unit_id: detail.order_unit_id,
-            order_unit_name: detail.order_unit_name,
-            order_unit_conversion_factor: detail.order_unit_conversion_factor,
-            base_qty: detail.base_qty,
-            base_unit_id: detail.base_unit_id,
-            base_unit_name: detail.base_unit_name,
-            price: detail.price,
-            sub_total_price: detail.sub_total_price,
-            net_amount: detail.net_amount,
-            total_price: detail.total_price,
-            base_price: detail.base_price,
-            base_sub_total_price: detail.base_sub_total_price,
-            base_net_amount: detail.base_net_amount,
-            base_total_price: detail.base_total_price,
-            tax_profile_id: detail.tax_profile_id,
-            tax_profile_name: detail.tax_profile_name,
-            tax_rate: detail.tax_rate,
-            tax_amount: detail.tax_amount,
-            base_tax_amount: detail.base_tax_amount,
-            is_tax_adjustment: detail.is_tax_adjustment,
-            discount_rate: detail.discount_rate,
-            discount_amount: detail.discount_amount,
-            base_discount_amount: detail.base_discount_amount,
-            is_discount_adjustment: detail.is_discount_adjustment,
-            is_foc: detail.is_foc,
-            description: detail.description,
-            note: detail.note,
-            doc_version: { increment: 1 },
-            history: history,
+            ...header,
+            delivery_date: header.delivery_date
+              ? new Date(header.delivery_date as string).toISOString()
+              : undefined,
+            order_date: header.order_date
+              ? new Date(header.order_date as string).toISOString()
+              : undefined,
             updated_by_id: this.userId,
           },
         });
+      }
 
-        totalQty += Number(detail.order_qty || 0);
-        totalPrice += Number(detail.sub_total_price || 0);
-        totalTax += Number(detail.tax_amount || 0);
-        totalAmount += Number(detail.total_price || 0);
+      // 2. Remove details
+      if (details?.remove?.length > 0) {
+        for (const item of details.remove) {
+          // Delete junction records first
+          await txp.tb_purchase_order_detail_tb_purchase_request_detail.deleteMany({
+            where: { po_detail_id: item.id },
+          });
+          // Then delete the detail
+          await txp.tb_purchase_order_detail.delete({
+            where: { id: item.id },
+          });
+        }
+      }
+
+      // 3. Add new details
+      if (details?.add?.length > 0) {
+        for (const detail of details.add) {
+          const base_qty =
+            detail.base_qty ||
+            detail.order_qty * (detail.order_unit_conversion_factor || 1);
+
+          const poDetail = await txp.tb_purchase_order_detail.create({
+            data: {
+              purchase_order_id: id,
+              sequence_no: detail.sequence,
+              description: detail.description,
+              order_qty: detail.order_qty,
+              order_unit_id: detail.order_unit_id || undefined,
+              order_unit_name: detail.order_unit_name,
+              order_unit_conversion_factor: detail.order_unit_conversion_factor || 1,
+              base_qty: base_qty,
+              base_unit_id: detail.base_unit_id || undefined,
+              base_unit_name: detail.base_unit_name,
+              is_foc: detail.is_foc || false,
+              price: detail.price || 0,
+              sub_total_price: detail.sub_total_price || 0,
+              net_amount: detail.net_amount || 0,
+              total_price: detail.total_price || 0,
+              tax_profile_id: detail.tax_profile_id || undefined,
+              tax_profile_name: detail.tax_profile_name,
+              tax_rate: detail.tax_rate || 0,
+              tax_amount: detail.tax_amount || 0,
+              is_tax_adjustment: detail.is_tax_adjustment || false,
+              discount_rate: detail.discount_rate || 0,
+              discount_amount: detail.discount_amount || 0,
+              is_discount_adjustment: detail.is_discount_adjustment || false,
+              note: detail.note,
+              info: {
+                product_id: detail.product_id,
+                product_name: detail.product_name,
+                product_local_name: detail.product_local_name,
+              },
+              is_active: true,
+              doc_version: 1,
+              created_by_id: this.userId,
+            },
+          });
+
+          // Create PR detail linkages
+          if (detail.pr_detail?.length > 0) {
+            for (const prDetail of detail.pr_detail) {
+              if (!prDetail.pr_detail_id || !prDetail.order_unit_id) continue;
+              await txp.tb_purchase_order_detail_tb_purchase_request_detail.create({
+                data: {
+                  po_detail_id: poDetail.id,
+                  pr_detail_id: prDetail.pr_detail_id,
+                  pr_detail_order_unit_id: prDetail.order_unit_id,
+                  pr_detail_order_unit_name: prDetail.order_unit_name || '',
+                  pr_detail_qty: prDetail.order_qty,
+                  pr_detail_base_qty: prDetail.order_base_qty,
+                  pr_detail_base_unit_id: prDetail.order_base_unit_id || undefined,
+                  pr_detail_base_unit_name: prDetail.order_base_unit_name,
+                  created_by_id: this.userId,
+                },
+              });
+            }
+          }
+        }
+      }
+
+      // 4. Update existing details
+      if (details?.update?.length > 0) {
+        for (const detail of details.update) {
+          await txp.tb_purchase_order_detail.update({
+            where: { id: detail.id },
+            data: {
+              sequence_no: detail.sequence,
+              description: detail.description,
+              order_qty: detail.order_qty,
+              order_unit_id: detail.order_unit_id || undefined,
+              order_unit_name: detail.order_unit_name,
+              order_unit_conversion_factor: detail.order_unit_conversion_factor,
+              base_qty: detail.base_qty,
+              base_unit_id: detail.base_unit_id || undefined,
+              base_unit_name: detail.base_unit_name,
+              is_foc: detail.is_foc,
+              tax_profile_id: detail.tax_profile_id || undefined,
+              tax_profile_name: detail.tax_profile_name,
+              tax_rate: detail.tax_rate,
+              tax_amount: detail.tax_amount,
+              is_tax_adjustment: detail.is_tax_adjustment,
+              discount_rate: detail.discount_rate,
+              discount_amount: detail.discount_amount,
+              is_discount_adjustment: detail.is_discount_adjustment,
+              price: detail.price,
+              sub_total_price: detail.sub_total_price,
+              net_amount: detail.net_amount,
+              total_price: detail.total_price,
+              note: detail.note,
+              info: {
+                product_id: detail.product_id,
+                product_name: detail.product_name,
+                product_local_name: detail.product_local_name,
+              },
+              doc_version: { increment: 1 },
+              updated_by_id: this.userId,
+            },
+          });
+        }
+      }
+
+      // 5. Recalculate totals
+      const allDetails = await txp.tb_purchase_order_detail.findMany({
+        where: { purchase_order_id: id },
+      });
+
+      let total_qty = 0;
+      let total_price = 0;
+      let total_tax = 0;
+      let total_amount = 0;
+
+      for (const d of allDetails) {
+        total_qty += Number(d.order_qty) || 0;
+        total_price += Number(d.sub_total_price) || 0;
+        total_tax += Number(d.tax_amount) || 0;
+        total_amount += Number(d.total_price) || 0;
       }
 
       await txp.tb_purchase_order.update({
-        where: {
-          id,
-        },
+        where: { id },
         data: {
-          total_qty: totalQty,
-          total_price: totalPrice,
-          total_tax: totalTax,
-          total_amount: totalAmount,
+          total_qty,
+          total_price,
+          total_tax,
+          total_amount,
           doc_version: { increment: 1 },
           updated_by_id: this.userId,
         },

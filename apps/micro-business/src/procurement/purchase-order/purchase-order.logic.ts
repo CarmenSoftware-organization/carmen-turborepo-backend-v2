@@ -1,4 +1,4 @@
-import { BadRequestException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { PurchaseOrderService } from './purchase-order.service';
 import { MapperLogic } from '@/common/mapper/mapper.logic';
 import { BackendLogger } from '@/common/helpers/backend.logger';
@@ -8,13 +8,9 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
 import {
   ApprovePurchaseOrderDto,
-  ApprovePurchaseOrderDetailDto,
   RejectPurchaseOrderDto,
-  RejectPurchaseOrderDetailDto,
   ReviewPurchaseOrderDto,
-  ReviewPurchaseOrderDetailDto,
   SavePurchaseOrderDto,
-  SavePurchaseOrderDetailDto,
 } from './dto/approve-purchase-order.dto';
 
 export interface UserActionProfile {
@@ -71,30 +67,42 @@ export class PurchaseOrderLogic {
 
   async save(
     id: string,
-    { stage_role, details }: SavePurchaseOrderDto,
+    data: SavePurchaseOrderDto,
     user_id: string,
     tenant_id: string,
   ) {
     await this.purchaseOrderService.initializePrismaService(tenant_id, user_id);
 
-    // Validate user's role matches the payload's stage_role
-    await this.validateUserStageRole(id, stage_role);
-
-    // Enrich detail data with foreign values
-    const extractIds = this.populateDetail(details);
+    // Extract IDs from add/update details for bulk population
+    const extractIds = this.populateSaveData(data);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id);
-    const savePODetail = [];
-    for (const detail of details) {
-      savePODetail.push(this.enrichSaveDetail(detail, foreignValue));
+
+    // Enrich header with foreign values
+    const header = this.enrichSaveHeader(data, foreignValue);
+
+    // Enrich details
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const details: Record<string, any> = {};
+    if (data.details?.add) {
+      details.add = data.details.add.map((d) => this.enrichSaveDetail(d, foreignValue));
+    }
+    if (data.details?.update) {
+      details.update = data.details.update.map((d) => ({
+        ...this.enrichSaveDetail(d, foreignValue),
+        id: (d as { id: string }).id,
+      }));
+    }
+    if (data.details?.remove) {
+      details.remove = data.details.remove;
     }
 
     this.logger.debug(
-      { function: 'save', id, stage_role, details, user_id, tenant_id },
+      { function: 'save', id, header, details, user_id, tenant_id },
       PurchaseOrderLogic.name,
     );
 
-    return this.purchaseOrderService.save(id, savePODetail);
+    return this.purchaseOrderService.save(id, header, details);
   }
 
   async approve(
@@ -386,22 +394,63 @@ export class PurchaseOrderLogic {
     return result;
   }
 
-  private populateDetail(details: SavePurchaseOrderDetailDto[]) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private populateSaveData(data: SavePurchaseOrderDto): Record<string, any> {
     const unit_ids: string[] = [];
     const tax_profile_ids: string[] = [];
-    for (const detail of details) {
+    const product_ids: string[] = [];
+    const vendor_ids: string[] = [];
+    const currency_ids: string[] = [];
+
+    // Header IDs
+    if (data.vendor_id) vendor_ids.push(data.vendor_id);
+    if (data.currency_id) currency_ids.push(data.currency_id);
+
+    // Collect IDs from add and update details
+    const allDetails = [...(data.details?.add || []), ...(data.details?.update || [])];
+    for (const detail of allDetails) {
+      if (detail.product_id) product_ids.push(detail.product_id);
       if (detail.order_unit_id) unit_ids.push(detail.order_unit_id);
       if (detail.base_unit_id) unit_ids.push(detail.base_unit_id);
       if (detail.tax_profile_id) tax_profile_ids.push(detail.tax_profile_id);
     }
-    return { unit_ids, tax_profile_ids };
+
+    return { unit_ids, tax_profile_ids, product_ids, vendor_ids, currency_ids };
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private enrichSaveDetail(detail: SavePurchaseOrderDetailDto, foreignValue: Record<string, any>): SavePurchaseOrderDetailDto {
+  private enrichSaveHeader(data: SavePurchaseOrderDto, foreignValue: Record<string, any>): Partial<SavePurchaseOrderDto> {
+    const header: Record<string, unknown> = {};
+    if (data.vendor_id !== undefined) header.vendor_id = data.vendor_id;
+    if (data.vendor_id) {
+      header.vendor_name = this.findByIdInArray(foreignValue?.vendor_ids, data.vendor_id)?.name || data.vendor_name;
+    }
+    if (data.delivery_date !== undefined) header.delivery_date = data.delivery_date;
+    if (data.currency_id !== undefined) header.currency_id = data.currency_id;
+    if (data.currency_id) {
+      header.currency_code = this.findByIdInArray(foreignValue?.currency_ids, data.currency_id)?.code || data.currency_code;
+    }
+    if (data.exchange_rate !== undefined) header.exchange_rate = data.exchange_rate;
+    if (data.description !== undefined) header.description = data.description;
+    if (data.order_date !== undefined) header.order_date = data.order_date;
+    if (data.credit_term_id !== undefined) header.credit_term_id = data.credit_term_id;
+    if (data.credit_term_name !== undefined) header.credit_term_name = data.credit_term_name;
+    if (data.credit_term_value !== undefined) header.credit_term_value = data.credit_term_value;
+    if (data.buyer_id !== undefined) header.buyer_id = data.buyer_id;
+    if (data.buyer_name !== undefined) header.buyer_name = data.buyer_name;
+    if (data.email !== undefined) header.email = data.email;
+    if (data.remarks !== undefined) header.remarks = data.remarks;
+    if (data.note !== undefined) header.note = data.note;
+    return header;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private enrichSaveDetail(detail: Record<string, any>, foreignValue: Record<string, any>): Record<string, any> {
     return JSON.parse(
       JSON.stringify({
         ...detail,
+        product_name:
+          this.findByIdInArray(foreignValue?.product_ids, detail.product_id)?.name || detail.product_name,
         order_unit_name:
           this.findByIdInArray(foreignValue?.unit_ids, detail.order_unit_id)?.name || detail.order_unit_name,
         base_unit_name:
@@ -412,7 +461,8 @@ export class PurchaseOrderLogic {
     );
   }
 
-  private findByIdInArray(arr: { id: string; name?: string }[] | undefined, id: string | undefined): { id: string; name?: string } | null {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private findByIdInArray(arr: Record<string, any>[] | undefined, id: string | undefined): Record<string, any> | null {
     if (!arr || !id) return null;
     return arr.find((item) => item.id === id) || null;
   }
