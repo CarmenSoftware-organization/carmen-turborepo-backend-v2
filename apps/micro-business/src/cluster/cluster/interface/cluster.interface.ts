@@ -3,14 +3,20 @@ import { enum_cluster_user_role, enum_platform_role } from "@repo/prisma-shared-
 export interface IClusterCreate {
   code: string;
   name: string;
+  alias_name?: string | null;
+  logo_url?: string | null;
   is_active: boolean;
+  info?: any | null;
 }
 
 export interface IClusterUpdate {
   id: string;
   code?: string;
   name?: string;
+  alias_name?: string | null;
+  logo_url?: string | null;
   is_active?: boolean;
+  info?: any | null;
 }
 
 export interface IUserCluster {

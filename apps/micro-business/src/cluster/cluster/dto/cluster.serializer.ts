@@ -27,6 +27,8 @@ export const ClusterDetailResponseSchema = z.object({
   id: z.string(),
   name: z.string().nullable().optional(),
   code: z.string().nullable().optional(),
+  alias_name: z.string().nullable().optional(),
+  logo_url: z.string().nullable().optional(),
   is_active: z.boolean().nullable().optional(),
   info: z.any().nullable().optional(),
   tb_business_unit: z.array(ClusterBusinessUnitSchema).nullable().optional(),
@@ -37,6 +39,8 @@ export const ClusterListItemResponseSchema = z.object({
   id: z.string(),
   name: z.string().nullable().optional(),
   code: z.string().nullable().optional(),
+  alias_name: z.string().nullable().optional(),
+  logo_url: z.string().nullable().optional(),
   is_active: z.boolean().nullable().optional(),
   info: z.any().nullable().optional(),
   _count: z.object({

@@ -294,6 +294,99 @@ export class KeycloakController extends BaseMicroserviceController {
   }
 
   /**
+   * Manage user Cluster attribute (add or remove)
+   * Payload:
+   *   - userId: string (Keycloak user ID)
+   *   - action: 'add' | 'remove'
+   *   - cluster: { cluster_id: string, cluster_code?: string, role?: string }
+   *   - realm?: string
+   */
+  @MessagePattern({ cmd: 'keycloak.users.manageCluster', service: 'keycloak' })
+  async handleManageUserCluster(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'handleManageUserCluster', payload },
+      KeycloakController.name,
+    );
+    try {
+      const { userId, action, cluster, realm } = payload;
+      const auditContext = this.createAuditContext(payload);
+      await runWithAuditContext(auditContext, () =>
+        this.keycloakService.manageUserCluster(userId, action, cluster, realm)
+      );
+      const result = Result.ok({ message: 'User Cluster managed successfully' });
+      return this.handleResult(result);
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Failed to manage user Cluster', ErrorCode.INTERNAL);
+      return this.handleResult(result);
+    }
+  }
+
+  /**
+   * Get user's Cluster list
+   * Payload:
+   *   - userId: string (Keycloak user ID)
+   *   - realm?: string
+   */
+  @MessagePattern({ cmd: 'keycloak.users.getClusterList', service: 'keycloak' })
+  async handleGetUserClusterList(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'handleGetUserClusterList', payload },
+      KeycloakController.name,
+    );
+    try {
+      const { userId, realm } = payload;
+      const auditContext = this.createAuditContext(payload);
+      const clusterList = await runWithAuditContext(auditContext, () =>
+        this.keycloakService.getUserClusterList(userId, realm)
+      );
+      const result = Result.ok(clusterList);
+      return this.handleResult(result);
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Failed to get user Cluster list', ErrorCode.INTERNAL);
+      return this.handleResult(result);
+    }
+  }
+
+  /**
+   * Manage user Keycloak group for Cluster (add/remove user from group)
+   * Payload:
+   *   - userId: string (Keycloak user ID)
+   *   - groupId: string (Keycloak group ID)
+   *   - action: 'add' | 'remove'
+   *   - realm?: string
+   */
+  @MessagePattern({ cmd: 'keycloak.users.manageClusterGroup', service: 'keycloak' })
+  async handleManageClusterGroup(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'handleManageClusterGroup', payload },
+      KeycloakController.name,
+    );
+    try {
+      const { userId, groupId, action, realm } = payload;
+      const auditContext = this.createAuditContext(payload);
+
+      if (action === 'add') {
+        await runWithAuditContext(auditContext, () =>
+          this.keycloakService.addUserToGroup(userId, groupId, realm)
+        );
+      } else if (action === 'remove') {
+        await runWithAuditContext(auditContext, () =>
+          this.keycloakService.removeUserFromGroup(userId, groupId, realm)
+        );
+      } else {
+        const result = Result.error(`Invalid action: ${action}`, ErrorCode.INVALID_ARGUMENT);
+        return this.handleResult(result);
+      }
+
+      const result = Result.ok({ message: `User ${action === 'add' ? 'added to' : 'removed from'} cluster group successfully` });
+      return this.handleResult(result);
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Failed to manage cluster group', ErrorCode.INTERNAL);
+      return this.handleResult(result);
+    }
+  }
+
+  /**
    * Get all users from Keycloak realm
    * Payload:
    *   - realm?: string

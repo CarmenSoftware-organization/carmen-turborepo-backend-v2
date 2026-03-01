@@ -499,6 +499,152 @@ export class KeycloakService {
     }
   }
 
+  // ==================== User Cluster Attribute Management (Admin Token Required) ====================
+
+  /**
+   * Cluster attribute structure:
+   * { cluster_id: string, cluster_code: string, role: string }
+   *
+   * Keycloak stores attributes as Record<string, string[]>
+   * Each Cluster is stored as a JSON string in the array
+   */
+
+  /**
+   * Add a Cluster to user's Cluster attribute
+   * If Cluster with same cluster_id exists, it will be updated
+   *
+   * Strategy: GET full user → modify Cluster attribute → PUT full user back
+   */
+  async addUserCluster(
+    userId: string,
+    cluster: { cluster_id: string; cluster_code: string; role: string },
+    realm?: string,
+  ): Promise<void> {
+    this.logger.log(`Adding Cluster '${cluster.cluster_code}' to user: ${userId}`);
+
+    const user = await this.getUserById(userId, realm);
+
+    const attributes = user.attributes || {};
+    let clusterList: { cluster_id: string; cluster_code: string; role: string }[] = [];
+
+    if (attributes['Cluster'] && attributes['Cluster'].length > 0) {
+      try {
+        clusterList = attributes['Cluster'].map((item: string) => JSON.parse(item));
+      } catch {
+        this.logger.warn('Failed to parse existing Cluster attribute, resetting');
+        clusterList = [];
+      }
+    }
+
+    const existingIndex = clusterList.findIndex((c) => c.cluster_id === cluster.cluster_id);
+    if (existingIndex >= 0) {
+      clusterList[existingIndex] = cluster;
+      this.logger.log(`Updated existing Cluster '${cluster.cluster_code}' for user: ${userId}`);
+    } else {
+      clusterList.push(cluster);
+      this.logger.log(`Added new Cluster '${cluster.cluster_code}' to user: ${userId}`);
+    }
+
+    user.attributes = user.attributes || {};
+    user.attributes['Cluster'] = clusterList.map((c) => JSON.stringify(c));
+
+    const { id, createdTimestamp, ...updatePayload } = user as unknown as Record<string, unknown>;
+    await this.request<void>('PUT', `/users/${userId}`, updatePayload, realm);
+  }
+
+  /**
+   * Remove a Cluster from user's Cluster attribute by cluster_id
+   *
+   * Strategy: GET full user → modify Cluster attribute → PUT full user back
+   */
+  async removeUserCluster(
+    userId: string,
+    clusterId: string,
+    realm?: string,
+  ): Promise<void> {
+    this.logger.log(`Removing Cluster '${clusterId}' from user: ${userId}`);
+
+    const user = await this.getUserById(userId, realm);
+
+    if (!user.attributes || !user.attributes['Cluster'] || user.attributes['Cluster'].length === 0) {
+      this.logger.log(`No Cluster attribute found on user: ${userId}`);
+      return;
+    }
+
+    let clusterList: { cluster_id: string; cluster_code: string; role: string }[] = [];
+    try {
+      clusterList = user.attributes['Cluster'].map((item: string) => JSON.parse(item));
+    } catch {
+      this.logger.warn('Failed to parse Cluster attribute');
+      return;
+    }
+
+    const filteredList = clusterList.filter((c) => c.cluster_id !== clusterId);
+
+    if (filteredList.length === clusterList.length) {
+      this.logger.log(`Cluster '${clusterId}' not found on user: ${userId}`);
+      return;
+    }
+
+    if (filteredList.length === 0) {
+      delete user.attributes['Cluster'];
+    } else {
+      user.attributes['Cluster'] = filteredList.map((c) => JSON.stringify(c));
+    }
+
+    const { id, createdTimestamp, ...updatePayload } = user as unknown as Record<string, unknown>;
+    await this.request<void>('PUT', `/users/${userId}`, updatePayload, realm);
+    this.logger.log(`Cluster '${clusterId}' removed from user: ${userId}`);
+  }
+
+  /**
+   * Get user's Cluster list
+   */
+  async getUserClusterList(
+    userId: string,
+    realm?: string,
+  ): Promise<{ cluster_id: string; cluster_code: string; role: string }[]> {
+    const user = await this.getUserById(userId, realm);
+
+    if (!user.attributes || !user.attributes['Cluster'] || user.attributes['Cluster'].length === 0) {
+      return [];
+    }
+
+    try {
+      return user.attributes['Cluster'].map((item: string) => JSON.parse(item));
+    } catch {
+      this.logger.warn('Failed to parse Cluster attribute');
+      return [];
+    }
+  }
+
+  /**
+   * Manage user Cluster attribute (add or remove)
+   * @param action 'add' | 'remove'
+   * @param cluster For 'add': { cluster_id, cluster_code, role }, For 'remove': { cluster_id }
+   */
+  async manageUserCluster(
+    userId: string,
+    action: 'add' | 'remove',
+    cluster: { cluster_id: string; cluster_code?: string; role?: string },
+    realm?: string,
+  ): Promise<void> {
+    if (action === 'add') {
+      if (!cluster.cluster_code || !cluster.role) {
+        throw new Error('cluster_code and role are required for add action');
+      }
+      await this.addUserCluster(
+        userId,
+        { cluster_id: cluster.cluster_id, cluster_code: cluster.cluster_code, role: cluster.role },
+        realm,
+      );
+    } else if (action === 'remove') {
+      await this.removeUserCluster(userId, cluster.cluster_id, realm);
+    } else {
+      throw new Error(`Invalid action: ${action}`);
+    }
+  }
+
   // ==================== Role Management (Admin Token Required) ====================
 
   async getRealmRoles(realm?: string): Promise<KeycloakRole[]> {

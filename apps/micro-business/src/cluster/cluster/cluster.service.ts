@@ -1,4 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
 import {
@@ -21,14 +23,14 @@ import {
   TryCatch,
 } from '@/common';
 
-
-
 @Injectable()
 export class ClusterService {
   private readonly logger: BackendLogger = new BackendLogger(
     ClusterService.name,
   );
   constructor(
+    @Inject('KEYCLOAK_SERVICE')
+    private readonly keycloakService: ClientProxy,
     @Inject('PRISMA_SYSTEM')
     private readonly prismaSystem: typeof PrismaClient_SYSTEM,
     @Inject('PRISMA_TENANT')
@@ -155,6 +157,8 @@ export class ClusterService {
         id: true,
         name: true,
         code: true,
+        alias_name: true,
+        logo_url: true,
         is_active: true,
         info: true,
         _count: {
@@ -209,6 +213,8 @@ export class ClusterService {
         id: true,
         name: true,
         code: true,
+        alias_name: true,
+        logo_url: true,
         is_active: true,
         info: true,
         tb_business_unit: {
@@ -512,6 +518,66 @@ export class ClusterService {
       },
     });
 
+    // Add Cluster to user in Keycloak
+    try {
+      const keycloakResponse = await firstValueFrom(
+        this.keycloakService.send(
+          { cmd: 'keycloak.users.manageCluster', service: 'keycloak' },
+          {
+            userId: data.user_id,
+            action: 'add',
+            cluster: {
+              cluster_id: findCluster.id,
+              cluster_code: findCluster.code,
+              role: data.role || 'user',
+            },
+          },
+        ),
+      );
+
+      if (!keycloakResponse.success) {
+        this.logger.warn(
+          `Failed to add Cluster to Keycloak for user ${data.user_id}: ${keycloakResponse.error}`,
+          ClusterService.name,
+        );
+      }
+    } catch (error: unknown) {
+      this.logger.error(
+        `Error calling Keycloak service: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        ClusterService.name,
+      );
+    }
+
+    // Add user to Keycloak group if cluster has keycloak_group_id
+    const clusterInfo = findCluster.info as Record<string, unknown> | null;
+    const keycloakGroupId = clusterInfo?.keycloak_group_id as string | undefined;
+    if (keycloakGroupId) {
+      try {
+        const groupResponse = await firstValueFrom(
+          this.keycloakService.send(
+            { cmd: 'keycloak.users.manageClusterGroup', service: 'keycloak' },
+            {
+              userId: data.user_id,
+              groupId: keycloakGroupId,
+              action: 'add',
+            },
+          ),
+        );
+
+        if (!groupResponse.success) {
+          this.logger.warn(
+            `Failed to add user to Keycloak group for cluster ${findCluster.code}: ${groupResponse.error}`,
+            ClusterService.name,
+          );
+        }
+      } catch (error: unknown) {
+        this.logger.error(
+          `Error calling Keycloak group service: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          ClusterService.name,
+        );
+      }
+    }
+
     return Result.ok({ id: createUserCluster.id });
   }
 
@@ -565,6 +631,9 @@ export class ClusterService {
     );
     const findUserCluster = await this.prismaSystem.tb_cluster_user.findFirst({
       where: { id },
+      include: {
+        tb_cluster: true,
+      },
     });
 
     if (!findUserCluster) {
@@ -579,6 +648,64 @@ export class ClusterService {
         updated_by_id: user_id,
       },
     });
+
+    // Remove Cluster from user in Keycloak
+    try {
+      const keycloakResponse = await firstValueFrom(
+        this.keycloakService.send(
+          { cmd: 'keycloak.users.manageCluster', service: 'keycloak' },
+          {
+            userId: findUserCluster.user_id,
+            action: 'remove',
+            cluster: {
+              cluster_id: findUserCluster.cluster_id,
+            },
+          },
+        ),
+      );
+
+      if (!keycloakResponse.success) {
+        this.logger.warn(
+          `Failed to remove Cluster from Keycloak for user ${findUserCluster.user_id}: ${keycloakResponse.error}`,
+          ClusterService.name,
+        );
+      }
+    } catch (error: unknown) {
+      this.logger.error(
+        `Error calling Keycloak service: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        ClusterService.name,
+      );
+    }
+
+    // Remove user from Keycloak group if cluster has keycloak_group_id
+    const clusterInfo = findUserCluster.tb_cluster.info as Record<string, unknown> | null;
+    const keycloakGroupId = clusterInfo?.keycloak_group_id as string | undefined;
+    if (keycloakGroupId) {
+      try {
+        const groupResponse = await firstValueFrom(
+          this.keycloakService.send(
+            { cmd: 'keycloak.users.manageClusterGroup', service: 'keycloak' },
+            {
+              userId: findUserCluster.user_id,
+              groupId: keycloakGroupId,
+              action: 'remove',
+            },
+          ),
+        );
+
+        if (!groupResponse.success) {
+          this.logger.warn(
+            `Failed to remove user from Keycloak group for cluster ${findUserCluster.tb_cluster.code}: ${groupResponse.error}`,
+            ClusterService.name,
+          );
+        }
+      } catch (error: unknown) {
+        this.logger.error(
+          `Error calling Keycloak group service: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          ClusterService.name,
+        );
+      }
+    }
 
     return Result.ok(null);
   }
