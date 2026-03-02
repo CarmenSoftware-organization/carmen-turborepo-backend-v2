@@ -1,4 +1,7 @@
 import { PrismaClient } from "@repo/prisma-shared-schema-platform";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 const prisma_platform = new PrismaClient({
   datasources: {

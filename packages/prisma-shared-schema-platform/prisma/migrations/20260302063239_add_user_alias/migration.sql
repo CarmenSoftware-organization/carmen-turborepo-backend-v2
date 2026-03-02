@@ -1,4 +1,7 @@
 -- CreateEnum
+CREATE TYPE "enum_calculation_method" AS ENUM ('average', 'fifo');
+
+-- CreateEnum
 CREATE TYPE "enum_cluster_user_role" AS ENUM ('admin', 'user');
 
 -- CreateEnum
@@ -59,6 +62,30 @@ CREATE TABLE "tb_business_unit" (
     "is_active" BOOLEAN DEFAULT true,
     "db_connection" JSONB,
     "config" JSONB,
+    "default_currency_id" UUID,
+    "calculation_method" "enum_calculation_method" NOT NULL DEFAULT 'average',
+    "branch_no" TEXT,
+    "company_name" TEXT,
+    "company_address" TEXT,
+    "company_email" TEXT,
+    "company_tel" TEXT,
+    "company_zip_code" TEXT,
+    "tax_no" TEXT,
+    "hotel_name" TEXT,
+    "hotel_address" TEXT,
+    "hotel_email" TEXT,
+    "hotel_tel" TEXT,
+    "hotel_zip_code" TEXT,
+    "date_format" TEXT DEFAULT 'yyyy-MM-dd',
+    "date_time_format" TEXT DEFAULT 'yyyy-MM-dd HH:mm:ss',
+    "time_format" TEXT DEFAULT 'HH:mm:ss',
+    "short_time_format" TEXT DEFAULT 'HH:mm',
+    "long_time_format" TEXT DEFAULT 'HH:mm:ss',
+    "timezone" TEXT DEFAULT 'Asia/Bangkok',
+    "amount_format" JSONB,
+    "quantity_format" JSONB,
+    "perpage_format" JSONB,
+    "recipe_format" JSONB,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -168,11 +195,11 @@ CREATE TABLE "tb_notification" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "from_user_id" UUID,
     "to_user_id" UUID,
-    "type" VARCHAR(255) NOT NULL DEFAULT 'info',
-    "category" TEXT NOT NULL,
+    "type" VARCHAR(255) NOT NULL DEFAULT 'SYS_INFO',
+    "category" VARCHAR(255) NOT NULL DEFAULT 'system',
     "title" TEXT,
     "message" TEXT,
-    "object" JSONB,
+    "metadata" JSONB,
     "is_read" BOOLEAN DEFAULT false,
     "is_sent" BOOLEAN DEFAULT false,
     "scheduled_at" TIMESTAMP(3),
@@ -360,6 +387,23 @@ CREATE TABLE "tb_temp_bu_user" (
     "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "tb_temp_bu_user_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_news" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "title" VARCHAR NOT NULL,
+    "contents" VARCHAR,
+    "url" VARCHAR,
+    "image" VARCHAR,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_news_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
