@@ -383,6 +383,7 @@ model tb_user {
   id            String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username      String             @db.VarChar
   email         String             @db.VarChar
+  alias_name    String?            @db.VarChar
   platform_role enum_platform_role @default(user)
   is_active     Boolean?           @default(false)
   is_consent    Boolean?           @default(false)

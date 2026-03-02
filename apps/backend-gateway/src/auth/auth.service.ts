@@ -11,6 +11,7 @@ import { IInviteUser, ILogin, IRegisterConfirm, IResetPassword, IForgotPassword,
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ResponseLib } from 'src/libs/response.lib';
 import { sendToService } from 'src/common/helpers/microservice.helper';
+import { MicroserviceResponse } from '@/common';
 
 @Injectable()
 export class AuthService implements OnModuleInit {
@@ -57,7 +58,7 @@ export class AuthService implements OnModuleInit {
       AuthService.name,
     );
 
-    const response = await sendToService(
+    const response = await sendToService<MicroserviceResponse>(
       this.authService,
       { cmd: 'login', service: 'auth' },
       { data: loginDto, version: version },
@@ -67,7 +68,7 @@ export class AuthService implements OnModuleInit {
       throw new HttpException(response.response, response.response.status);
     }
 
-    return response.data;
+    return ResponseLib.success(response.data);
   }
 
   async logout(logoutDto: Record<string, unknown>, version: string): Promise<unknown> {
@@ -80,7 +81,7 @@ export class AuthService implements OnModuleInit {
       AuthService.name,
     );
 
-    const response = await sendToService(
+    const response = await sendToService<MicroserviceResponse>(
       this.authService,
       { cmd: 'logout', service: 'auth' },
       { data: logoutDto, version: version },
@@ -103,7 +104,7 @@ export class AuthService implements OnModuleInit {
       AuthService.name,
     );
 
-    const response = await sendToService(
+    const response = await sendToService<MicroserviceResponse>(
       this.authService,
       { cmd: 'register', service: 'auth' },
       { data: registerDto, version: version },
@@ -113,7 +114,7 @@ export class AuthService implements OnModuleInit {
       throw new HttpException(response.response, response.response.status);
     }
 
-    return response.data;
+    return ResponseLib.created(response.data);
   }
 
   async inviteUser(inviteUserDto: IInviteUser, user_id: string, version: string): Promise<unknown> {
@@ -127,7 +128,7 @@ export class AuthService implements OnModuleInit {
       AuthService.name,
     );
 
-    const response = await sendToService(
+    const response = await sendToService<MicroserviceResponse>(
       this.authService,
       { cmd: 'invite-user', service: 'auth' },
       { data: inviteUserDto, user_id, version: version },
@@ -137,7 +138,7 @@ export class AuthService implements OnModuleInit {
       throw new HttpException(response.response, response.response.status);
     }
 
-    return response.data;
+    return ResponseLib.success(response.data);
   }
 
   async registerConfirm(
@@ -153,7 +154,7 @@ export class AuthService implements OnModuleInit {
       AuthService.name,
     );
 
-    const response = await sendToService(
+    const response = await sendToService<MicroserviceResponse>(
       this.authService,
       { cmd: 'register-confirm', service: 'auth' },
       { data: registerConfirmDto, version: version },
@@ -163,7 +164,7 @@ export class AuthService implements OnModuleInit {
       throw new HttpException(response.response, response.response.status);
     }
 
-    return response.data;
+    return ResponseLib.created(response.data);
   }
 
   async refreshToken(refreshTokenDto: Record<string, unknown>, version: string): Promise<unknown> {
@@ -176,7 +177,7 @@ export class AuthService implements OnModuleInit {
       AuthService.name,
     );
 
-    const response = await sendToService(
+    const response = await sendToService<MicroserviceResponse>(
       this.authService,
       { cmd: 'refresh-token', service: 'auth' },
       { data: refreshTokenDto, version: version },
@@ -186,7 +187,7 @@ export class AuthService implements OnModuleInit {
       throw new HttpException(response.response, response.response.status);
     }
 
-    return response.data;
+    return ResponseLib.success(response.data);
   }
 
   async forgotPassword(forgotPasswordDto: IForgotPassword, version: string): Promise<unknown> {
@@ -199,7 +200,7 @@ export class AuthService implements OnModuleInit {
       AuthService.name,
     );
 
-    const response = await sendToService(
+    const response = await sendToService<MicroserviceResponse>(
       this.authService,
       { cmd: 'forgot-password', service: 'auth' },
       { data: forgotPasswordDto, version: version },
@@ -209,7 +210,7 @@ export class AuthService implements OnModuleInit {
       throw new HttpException(response.response, response.response.status);
     }
 
-    return response;
+    return ResponseLib.success(response.data);
   }
 
   async resetPasswordWithToken(resetPasswordWithTokenDto: IResetPasswordWithToken, version: string): Promise<unknown> {
@@ -222,7 +223,7 @@ export class AuthService implements OnModuleInit {
       AuthService.name,
     );
 
-    const response = await sendToService(
+    const response = await sendToService<MicroserviceResponse>(
       this.authService,
       { cmd: 'reset-password-with-token', service: 'auth' },
       { data: resetPasswordWithTokenDto, version: version },
@@ -232,7 +233,7 @@ export class AuthService implements OnModuleInit {
       throw new HttpException(response.response, response.response.status);
     }
 
-    return response;
+    return ResponseLib.success(response.data);
   }
 
   async resetPassword(resetPasswordDto: IResetPassword, version: string): Promise<unknown> {
@@ -245,7 +246,7 @@ export class AuthService implements OnModuleInit {
       AuthService.name,
     );
 
-    const response = await sendToService(
+    const response = await sendToService<MicroserviceResponse>(
       this.authService,
       { cmd: 'reset-password', service: 'auth' },
       { data: resetPasswordDto, version: version },
@@ -255,7 +256,7 @@ export class AuthService implements OnModuleInit {
       throw new HttpException(response.response, response.response.status);
     }
 
-    return response;
+    return ResponseLib.success(response.data);
   }
 
   async changePassword(changePasswordDto: Record<string, unknown>, version: string): Promise<unknown> {
@@ -268,7 +269,7 @@ export class AuthService implements OnModuleInit {
       AuthService.name,
     );
 
-    const response = await sendToService(
+    const response = await sendToService<MicroserviceResponse>(
       this.authService,
       { cmd: 'change-password', service: 'auth' },
       { data: changePasswordDto, version: version },
@@ -304,7 +305,7 @@ export class AuthService implements OnModuleInit {
       AuthService.name,
     );
 
-    const response = await sendToService(
+    const response = await sendToService<MicroserviceResponse>(
       this.authService,
       { cmd: 'get-by-tenant', service: 'auth' },
       { data: tenant_id, version: version },
@@ -314,7 +315,7 @@ export class AuthService implements OnModuleInit {
       throw new HttpException(response.response, response.response.status);
     }
 
-    return response.data;
+    return ResponseLib.success(response.data);
   }
 
   async getAllUsers(version: string): Promise<unknown> {
@@ -326,7 +327,7 @@ export class AuthService implements OnModuleInit {
       AuthService.name,
     );
 
-    const response = await sendToService(
+    const response = await sendToService<MicroserviceResponse>(
       this.authService,
       { cmd: 'get-all-users', service: 'auth' },
       { data: {}, version: version },
@@ -336,6 +337,6 @@ export class AuthService implements OnModuleInit {
       throw new HttpException(response.response, response.response.status);
     }
 
-    return response.data;
+    return ResponseLib.success(response.data);
   }
 }

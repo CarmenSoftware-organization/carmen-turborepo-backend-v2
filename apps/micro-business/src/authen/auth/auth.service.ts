@@ -170,27 +170,39 @@ export class AuthService {
         };
       }
 
-      // Log successful login activity (fire-and-forget to not block login response)
-      this.prismaSystem.tb_user.findFirst({
+      const user = await this.prismaSystem.tb_user.findFirst({
         where: { email: loginDto.email },
-        select: { id: true },
-      }).then((user) => {
+        select: { id: true, email: true, platform_role: true },
+      });
+
+      if (!user) {
+        this.logger.error('User not found', {
+          file: AuthService.name,
+          function: this.login.name,
+          loginDto: loginDto,
+          version: version,
+        });
+        return {
+          response: {
+            status: HttpStatus.UNAUTHORIZED,
+            message: 'User not found',
+          },
+        };
+      }
+
+      // Log successful login activity
+      try {
         if (user?.id) {
-          this.logAuthActivity('login', user.id, loginDto.email, {
+          await this.logAuthActivity('login', user.id, loginDto.email, {
             login_time: new Date().toISOString(),
-          }).catch((logError) => {
-            this.logger.error(`Failed to log login activity: ${logError}`, {
-              file: AuthService.name,
-              function: this.login.name,
-            });
           });
         }
-      }).catch((logError) => {
+      } catch (logError) {
         this.logger.error(`Failed to log login activity: ${logError}`, {
           file: AuthService.name,
           function: this.login.name,
         });
-      });
+      }
 
       return {
         data: {
@@ -198,6 +210,7 @@ export class AuthService {
           refresh_token: response.data.refresh_token,
           expires_in: response.data.expires_in,
           token_type: response.data.token_type,
+          platform_role: user?.platform_role,
         },
         response: { status: HttpStatus.OK, message: 'Login successful' },
       };
@@ -290,16 +303,19 @@ export class AuthService {
         };
       }
 
-      // Log successful logout activity (fire-and-forget to not block logout response)
+      // Log successful logout activity
       if (userId && userEmail) {
-        this.logAuthActivity('logout', userId, userEmail, {
-          logout_time: new Date().toISOString(),
-        }).catch((logError) => {
+        try {
+          await this.logAuthActivity('logout', userId, userEmail, {
+            logout_time: new Date().toISOString(),
+          });
+        } catch (logError) {
+          // Don't fail logout if activity logging fails
           this.logger.error(`Failed to log logout activity: ${logError}`, {
             file: AuthService.name,
             function: this.logout.name,
           });
-        });
+        }
       }
 
       return {
@@ -1406,6 +1422,7 @@ export class AuthService {
       select: {
         id: true,
         email: true,
+        alias_name: true,
       },
     });
 
@@ -1433,6 +1450,7 @@ export class AuthService {
       return {
         user_id: user.id,
         email: user.email,
+        alias_name: user.alias_name,
         firstname: profile?.firstname || '',
         middlename: profile?.middlename || '',
         lastname: profile?.lastname || '',
@@ -1511,6 +1529,7 @@ export class AuthService {
       select: {
         id: true,
         email: true,
+        alias_name: true,
         platform_role: true,
       },
     });
@@ -1648,6 +1667,7 @@ export class AuthService {
       data: {
         id: user.id,
         email: user.email,
+        alias_name: user.alias_name,
         platform_role: user.platform_role,
         user_info: userInfo,
         business_unit: userBusinessUnit,
@@ -1706,6 +1726,7 @@ export class AuthService {
             select: {
               id: true,
               email: true,
+              alias_name: true,
             },
           },
         },
@@ -1715,6 +1736,8 @@ export class AuthService {
           return {
             user_id: item.user_id,
             email: item.tb_user_tb_user_tb_business_unit_user_idTotb_user.email,
+            alias_name:
+              item.tb_user_tb_user_tb_business_unit_user_idTotb_user.alias_name,
           };
         });
 
@@ -1809,6 +1832,9 @@ export class AuthService {
               ?.user_id,
             email: user_current.find((user) => user.user_id === item.user_id)
               ?.email,
+            alias_name: user_current.find(
+              (user) => user.user_id === item.user_id,
+            )?.alias_name,
             department: {
               id: d?.department_id,
               name: d?.tb_department?.name,
@@ -1978,6 +2004,7 @@ export class AuthService {
   async updateUserProfile(
     userId: string,
     updateData: {
+      alias_name?: string;
       firstname?: string;
       middlename?: string;
       lastname?: string;
@@ -2064,6 +2091,17 @@ export class AuthService {
         }
       }
 
+      // Separate alias_name (belongs to tb_user) from profile fields
+      const { alias_name, ...profileData } = updateData;
+
+      // Update alias_name on tb_user if provided
+      if (alias_name !== undefined) {
+        await this.prismaSystem.tb_user.update({
+          where: { id: userId },
+          data: { alias_name },
+        });
+      }
+
       // Update database user profile
       const existingProfile = await this.prismaSystem.tb_user_profile.findFirst(
         {
@@ -2082,7 +2120,7 @@ export class AuthService {
 
       const updatedProfile = await this.prismaSystem.tb_user_profile.update({
         where: { id: existingProfile.id },
-        data: updateData,
+        data: profileData,
       });
 
       this.logger.log({
@@ -2095,6 +2133,7 @@ export class AuthService {
       return {
         data: {
           user_id: userId,
+          alias_name: alias_name ?? existingUser.alias_name,
           firstname: updatedProfile.firstname,
           middlename: updatedProfile.middlename,
           lastname: updatedProfile.lastname,
