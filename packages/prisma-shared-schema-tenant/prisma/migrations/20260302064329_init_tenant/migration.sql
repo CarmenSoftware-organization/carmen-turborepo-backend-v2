@@ -41,9 +41,6 @@ CREATE TYPE "enum_product_status_type" AS ENUM ('active', 'inactive');
 CREATE TYPE "enum_dimension_display_in" AS ENUM ('currency', 'exchange_rate', 'delivery_point', 'department', 'product_category', 'product_sub_category', 'product_item_group', 'product', 'location', 'vendor', 'pricelist', 'unit', 'purchase_request_header', 'purchase_request_detail', 'purchase_order_header', 'purchase_order_detail', 'goods_received_note_header', 'goods_received_note_detail', 'transfer_header', 'transfer_detail', 'stock_in_header', 'stock_in_detail', 'stock_out_header', 'stock_out_detail');
 
 -- CreateEnum
-CREATE TYPE "enum_activity_entity_type" AS ENUM ('user', 'business_unit', 'product', 'location', 'department', 'unit', 'currency', 'exchange_rate', 'menu', 'delivery_point', 'purchase_request', 'purchase_request_item', 'purchase_order', 'purchase_order_item', 'good_received_note', 'good_received_note_item', 'inventory_transaction', 'inventory_adjustment', 'store_requisition', 'store_requisition_item', 'stock_in', 'stock_out', 'stock_adjustment', 'stock_transfer', 'stock_count', 'other');
-
--- CreateEnum
 CREATE TYPE "enum_doc_status" AS ENUM ('draft', 'in_progress', 'completed', 'cancelled', 'voided');
 
 -- CreateEnum
@@ -74,13 +71,13 @@ CREATE TYPE "enum_unit_type" AS ENUM ('order_unit', 'ingredient_unit');
 CREATE TYPE "enum_vendor_address_type" AS ENUM ('contact_address', 'mailing_address', 'register_address');
 
 -- CreateEnum
-CREATE TYPE "enum_workflow_type" AS ENUM ('purchase_request_workflow', 'store_requisition_workflow');
+CREATE TYPE "enum_workflow_type" AS ENUM ('purchase_request_workflow', 'store_requisition_workflow', 'purchase_order_workflow');
 
 -- CreateEnum
 CREATE TYPE "enum_pricelist_compare_type" AS ENUM ('automatic', 'manual_select', 'manual_input');
 
 -- CreateEnum
-CREATE TYPE "enum_transaction_type" AS ENUM ('good_received_note', 'transfer_in', 'transfer_out', 'issue', 'adjustment', 'credit_note', 'close_period', 'open_period');
+CREATE TYPE "enum_transaction_type" AS ENUM ('good_received_note', 'transfer_in', 'transfer_out', 'issue', 'adjustment_in', 'adjustment_out', 'credit_note_amount', 'credit_note_quantity', 'close_period', 'open_period');
 
 -- CreateEnum
 CREATE TYPE "enum_period_status" AS ENUM ('open', 'closed', 'locked');
@@ -90,6 +87,9 @@ CREATE TYPE "enum_stage_role" AS ENUM ('create', 'approve', 'purchase', 'issue',
 
 -- CreateEnum
 CREATE TYPE "enum_last_action" AS ENUM ('submitted', 'approved', 'reviewed', 'rejected');
+
+-- CreateEnum
+CREATE TYPE "enum_adjustment_type" AS ENUM ('STOCK_IN', 'STOCK_OUT');
 
 -- CreateEnum
 CREATE TYPE "enum_spot_check_status" AS ENUM ('pending', 'in_progress', 'void', 'completed');
@@ -106,11 +106,38 @@ CREATE TYPE "enum_pricelist_status" AS ENUM ('draft', 'active', 'inactive', 'exp
 -- CreateEnum
 CREATE TYPE "pricelist_submission_method" AS ENUM ('online', 'email', 'portal', 'manual');
 
+-- CreateEnum
+CREATE TYPE "enum_issue_status" AS ENUM ('open', 'in_progress', 'resolved', 'closed');
+
+-- CreateEnum
+CREATE TYPE "enum_issue_priority" AS ENUM ('low', 'medium', 'high', 'critical');
+
+-- CreateEnum
+CREATE TYPE "enum_physical_count_period_status" AS ENUM ('draft', 'counting', 'completed');
+
+-- CreateEnum
+CREATE TYPE "enum_physical_count_status" AS ENUM ('pending', 'in_progress', 'completed');
+
+-- CreateEnum
+CREATE TYPE "enum_cuisine_region" AS ENUM ('ASIA', 'EUROPE', 'AMERICAS', 'AFRICA', 'MIDDLE_EAST', 'OCEANIA');
+
+-- CreateEnum
+CREATE TYPE "enum_recipe_difficulty" AS ENUM ('EASY', 'MEDIUM', 'HARD');
+
+-- CreateEnum
+CREATE TYPE "enum_recipe_status" AS ENUM ('DRAFT', 'PUBLISHED', 'ARCHIVED');
+
+-- CreateEnum
+CREATE TYPE "enum_ingredient_type" AS ENUM ('product', 'recipe');
+
+-- CreateEnum
+CREATE TYPE "enum_temperature_unit" AS ENUM ('c', 'f');
+
 -- CreateTable
 CREATE TABLE "tb_activity" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "action" "enum_activity_action",
-    "entity_type" "enum_activity_entity_type",
+    "entity_type" TEXT,
     "entity_id" UUID,
     "actor_id" UUID,
     "meta_data" JSONB DEFAULT '{}',
@@ -136,7 +163,7 @@ CREATE TABLE "tb_credit_note_reason" (
     "description" VARCHAR,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -161,7 +188,7 @@ CREATE TABLE "tb_credit_note" (
     "pricelist_unit" VARCHAR,
     "pricelist_price" DECIMAL(20,5) DEFAULT 0,
     "currency_id" UUID,
-    "currency_name" VARCHAR,
+    "currency_code" VARCHAR,
     "exchange_rate" DECIMAL(15,5) DEFAULT 1,
     "exchange_rate_date" TIMESTAMPTZ(6),
     "grn_id" UUID,
@@ -188,7 +215,7 @@ CREATE TABLE "tb_credit_note" (
     "last_action_by_id" UUID,
     "last_action_by_name" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -260,7 +287,7 @@ CREATE TABLE "tb_credit_note_detail" (
     "base_net_amount" DECIMAL(20,5) DEFAULT 0,
     "base_total_price" DECIMAL(20,5) DEFAULT 0,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -303,7 +330,7 @@ CREATE TABLE "tb_currency" (
     "exchange_rate_at" TIMESTAMPTZ(6),
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -339,7 +366,7 @@ CREATE TABLE "tb_delivery_point" (
     "is_active" BOOLEAN DEFAULT true,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -377,7 +404,7 @@ CREATE TABLE "tb_department" (
     "is_active" BOOLEAN DEFAULT true,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -416,7 +443,7 @@ CREATE TABLE "tb_exchange_rate" (
     "exchange_rate" DECIMAL(15,5) DEFAULT 1,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -458,7 +485,7 @@ CREATE TABLE "tb_good_received_note" (
     "vendor_id" UUID,
     "vendor_name" VARCHAR,
     "currency_id" UUID NOT NULL,
-    "currency_name" VARCHAR,
+    "currency_code" VARCHAR,
     "exchange_rate" DECIMAL(15,5) DEFAULT 1,
     "exchange_rate_date" TIMESTAMPTZ(6),
     "workflow_id" UUID,
@@ -485,7 +512,7 @@ CREATE TABLE "tb_good_received_note" (
     "is_active" BOOLEAN DEFAULT true,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -606,7 +633,7 @@ CREATE TABLE "tb_inventory_transaction" (
     "inventory_doc_no" UUID NOT NULL,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -631,7 +658,7 @@ CREATE TABLE "tb_inventory_transaction_detail" (
     "total_cost" DECIMAL(20,5) DEFAULT 0,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -663,7 +690,7 @@ CREATE TABLE "tb_inventory_transaction_cost_layer" (
     "average_cost_per_unit" DECIMAL(20,5) DEFAULT 0,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -685,7 +712,7 @@ CREATE TABLE "tb_period" (
     "status" "enum_period_status" NOT NULL DEFAULT 'open',
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -743,7 +770,7 @@ CREATE TABLE "tb_period_snapshot" (
     "diff_amount" DECIMAL(20,5) DEFAULT 0,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -767,7 +794,7 @@ CREATE TABLE "tb_location" (
     "is_active" BOOLEAN DEFAULT true,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -825,7 +852,7 @@ CREATE TABLE "tb_tax_profile" (
     "description" VARCHAR,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -877,7 +904,7 @@ CREATE TABLE "tb_product" (
     "is_active" BOOLEAN DEFAULT true,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "certification" JSONB DEFAULT '{}',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -923,7 +950,7 @@ CREATE TABLE "tb_product_category" (
     "tax_rate" DECIMAL(15,5) DEFAULT 0,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -969,7 +996,7 @@ CREATE TABLE "tb_product_item_group" (
     "tax_rate" DECIMAL(15,5) DEFAULT 0,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -1015,7 +1042,7 @@ CREATE TABLE "tb_product_sub_category" (
     "tax_rate" DECIMAL(15,5) DEFAULT 0,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -1056,7 +1083,7 @@ CREATE TABLE "tb_product_tb_vendor" (
     "is_active" BOOLEAN DEFAULT true,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -1089,7 +1116,7 @@ CREATE TABLE "tb_purchase_order" (
     "vendor_id" UUID,
     "vendor_name" VARCHAR,
     "currency_id" UUID,
-    "currency_name" VARCHAR,
+    "currency_code" VARCHAR,
     "exchange_rate" DECIMAL(15,5) DEFAULT 1,
     "approval_date" TIMESTAMPTZ(6),
     "email" VARCHAR,
@@ -1107,7 +1134,7 @@ CREATE TABLE "tb_purchase_order" (
     "is_active" BOOLEAN DEFAULT true,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -1175,7 +1202,7 @@ CREATE TABLE "tb_purchase_order_detail" (
     "history" JSONB DEFAULT '[]',
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -1252,7 +1279,7 @@ CREATE TABLE "tb_purchase_request" (
     "department_name" VARCHAR,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -1308,7 +1335,7 @@ CREATE TABLE "tb_purchase_request_detail" (
     "pricelist_price" DECIMAL(20,5) DEFAULT 0,
     "pricelist_type" "enum_pricelist_compare_type" DEFAULT 'automatic',
     "currency_id" UUID,
-    "currency_name" VARCHAR,
+    "currency_code" VARCHAR,
     "exchange_rate" DECIMAL(15,5) DEFAULT 1,
     "exchange_rate_date" TIMESTAMPTZ(6),
     "requested_qty" DECIMAL(20,5) DEFAULT 0,
@@ -1347,7 +1374,7 @@ CREATE TABLE "tb_purchase_request_detail" (
     "stages_status" JSONB DEFAULT '{}',
     "current_stage_status" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -1384,12 +1411,10 @@ CREATE TABLE "tb_purchase_request_template" (
     "description" VARCHAR,
     "workflow_id" UUID,
     "workflow_name" VARCHAR,
-    "department_id" UUID,
-    "department_name" VARCHAR,
     "is_active" BOOLEAN DEFAULT true,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -1435,7 +1460,7 @@ CREATE TABLE "tb_purchase_request_template_detail" (
     "description" VARCHAR,
     "comment" VARCHAR,
     "currency_id" UUID,
-    "currency_name" VARCHAR,
+    "currency_code" VARCHAR,
     "exchange_rate" DECIMAL(15,5) DEFAULT 1,
     "exchange_rate_date" TIMESTAMPTZ(6),
     "requested_qty" DECIMAL(20,5) DEFAULT 0,
@@ -1460,7 +1485,7 @@ CREATE TABLE "tb_purchase_request_template_detail" (
     "is_discount_adjustment" BOOLEAN DEFAULT false,
     "is_active" BOOLEAN DEFAULT true,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -1473,10 +1498,33 @@ CREATE TABLE "tb_purchase_request_template_detail" (
 );
 
 -- CreateTable
+CREATE TABLE "tb_adjustment_type" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "code" VARCHAR NOT NULL,
+    "name" VARCHAR NOT NULL,
+    "type" "enum_adjustment_type" NOT NULL,
+    "description" VARCHAR,
+    "is_active" BOOLEAN DEFAULT true,
+    "note" VARCHAR,
+    "info" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_adjustment_type_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "tb_stock_in" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "si_no" VARCHAR,
     "description" VARCHAR,
+    "adjustment_type_id" UUID,
+    "adjustment_type_code" VARCHAR,
     "doc_status" "enum_doc_status" NOT NULL DEFAULT 'draft',
     "workflow_id" UUID,
     "workflow_name" VARCHAR,
@@ -1491,7 +1539,7 @@ CREATE TABLE "tb_stock_in" (
     "last_action_by_name" VARCHAR,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -1539,7 +1587,7 @@ CREATE TABLE "tb_stock_in_detail" (
     "total_cost" DECIMAL(20,5) DEFAULT 0,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -1574,6 +1622,8 @@ CREATE TABLE "tb_stock_out" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "so_no" VARCHAR,
     "description" VARCHAR,
+    "adjustment_type_id" UUID,
+    "adjustment_type_code" VARCHAR,
     "doc_status" "enum_doc_status" NOT NULL DEFAULT 'draft',
     "workflow_id" UUID,
     "workflow_name" VARCHAR,
@@ -1588,7 +1638,7 @@ CREATE TABLE "tb_stock_out" (
     "last_action_by_name" VARCHAR,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -1634,7 +1684,7 @@ CREATE TABLE "tb_stock_out_detail" (
     "qty" DECIMAL(20,5) DEFAULT 0,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -1662,6 +1712,107 @@ CREATE TABLE "tb_stock_out_detail_comment" (
     "deleted_by_id" UUID,
 
     CONSTRAINT "tb_stock_out_detail_comment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_transfer" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "tr_no" VARCHAR,
+    "tr_date" TIMESTAMPTZ(6),
+    "description" VARCHAR,
+    "doc_status" "enum_doc_status" NOT NULL DEFAULT 'draft',
+    "from_location_id" UUID,
+    "from_location_code" VARCHAR,
+    "from_location_name" VARCHAR,
+    "to_location_id" UUID,
+    "to_location_code" VARCHAR,
+    "to_location_name" VARCHAR,
+    "workflow_id" UUID,
+    "workflow_name" VARCHAR,
+    "workflow_history" JSONB DEFAULT '{}',
+    "workflow_current_stage" VARCHAR,
+    "workflow_previous_stage" VARCHAR,
+    "workflow_next_stage" VARCHAR,
+    "user_action" JSONB DEFAULT '{}',
+    "last_action" "enum_last_action" DEFAULT 'submitted',
+    "last_action_at_date" TIMESTAMPTZ(6),
+    "last_action_by_id" UUID,
+    "last_action_by_name" VARCHAR,
+    "note" VARCHAR,
+    "info" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
+    "doc_version" INTEGER NOT NULL DEFAULT 0,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_transfer_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_transfer_comment" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "transfer_id" UUID NOT NULL,
+    "type" "enum_comment_type" NOT NULL DEFAULT 'user',
+    "user_id" UUID,
+    "message" TEXT,
+    "attachments" JSONB DEFAULT '[]',
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_transfer_comment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_transfer_detail" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "inventory_transaction_id" UUID,
+    "transfer_id" UUID NOT NULL,
+    "sequence_no" INTEGER DEFAULT 1,
+    "description" VARCHAR,
+    "product_id" UUID NOT NULL,
+    "product_name" VARCHAR,
+    "product_local_name" VARCHAR,
+    "qty" DECIMAL(20,5) DEFAULT 0,
+    "cost_per_unit" DECIMAL(20,5) DEFAULT 0,
+    "total_cost" DECIMAL(20,5) DEFAULT 0,
+    "note" VARCHAR,
+    "info" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
+    "doc_version" INTEGER NOT NULL DEFAULT 0,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_transfer_detail_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_transfer_detail_comment" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "transfer_detail_id" UUID NOT NULL,
+    "type" "enum_comment_type" NOT NULL DEFAULT 'user',
+    "user_id" UUID,
+    "message" TEXT,
+    "attachments" JSONB DEFAULT '[]',
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_transfer_detail_comment_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -1694,7 +1845,7 @@ CREATE TABLE "tb_store_requisition" (
     "department_id" UUID,
     "department_name" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -1753,7 +1904,7 @@ CREATE TABLE "tb_store_requisition_detail" (
     "stages_status" JSONB DEFAULT '{}',
     "current_stage_status" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -1791,7 +1942,7 @@ CREATE TABLE "tb_unit" (
     "is_active" BOOLEAN DEFAULT true,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -1836,7 +1987,7 @@ CREATE TABLE "tb_unit_conversion" (
     "is_active" BOOLEAN DEFAULT true,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -1860,7 +2011,7 @@ CREATE TABLE "tb_vendor" (
     "tax_rate" DECIMAL(15,5) DEFAULT 0,
     "is_active" BOOLEAN DEFAULT true,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -1899,7 +2050,7 @@ CREATE TABLE "tb_vendor_address" (
     "description" VARCHAR,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -1922,7 +2073,7 @@ CREATE TABLE "tb_vendor_contact" (
     "description" VARCHAR,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -1943,7 +2094,7 @@ CREATE TABLE "tb_workflow" (
     "description" VARCHAR,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
     "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
@@ -1985,7 +2136,7 @@ CREATE TABLE "tb_count_stock" (
     "description" VARCHAR,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -2026,7 +2177,7 @@ CREATE TABLE "tb_count_stock_detail" (
     "description" VARCHAR,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -2071,7 +2222,7 @@ CREATE TABLE "tb_spot_check" (
     "description" VARCHAR,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -2112,7 +2263,7 @@ CREATE TABLE "tb_spot_check_detail" (
     "description" VARCHAR,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -2161,7 +2312,7 @@ CREATE TABLE "tb_jv_detail" (
     "description" VARCHAR,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -2199,7 +2350,7 @@ CREATE TABLE "tb_jv_header" (
     "last_action_by_id" UUID,
     "last_action_by_name" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -2220,13 +2371,13 @@ CREATE TABLE "tb_pricelist_template" (
     "note" VARCHAR,
     "vendor_instructions" TEXT,
     "currency_id" UUID,
-    "currency_name" VARCHAR,
+    "currency_code" VARCHAR,
     "validity_period" INTEGER,
     "send_reminders" BOOLEAN DEFAULT true,
     "reminder_days" JSONB DEFAULT '[]',
     "escalation_after_days" INTEGER DEFAULT 0,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -2267,7 +2418,7 @@ CREATE TABLE "tb_pricelist_template_detail" (
     "inventory_unit_name" VARCHAR,
     "order_unit_obj" JSONB DEFAULT '{}',
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -2307,7 +2458,7 @@ CREATE TABLE "tb_request_for_pricing" (
     "custom_message" TEXT,
     "email_template_id" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -2351,7 +2502,7 @@ CREATE TABLE "tb_request_for_pricing_detail" (
     "pricelist_no" VARCHAR,
     "pricelist_url_token" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -2393,13 +2544,13 @@ CREATE TABLE "tb_pricelist" (
     "effective_from_date" TIMESTAMPTZ(6),
     "effective_to_date" TIMESTAMPTZ(6),
     "currency_id" UUID,
-    "currency_name" VARCHAR,
+    "currency_code" VARCHAR,
     "submission_method" "pricelist_submission_method" DEFAULT 'online',
     "submitted_at" TIMESTAMPTZ(6),
     "description" VARCHAR,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -2452,7 +2603,7 @@ CREATE TABLE "tb_pricelist_detail" (
     "description" VARCHAR,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -2496,7 +2647,7 @@ CREATE TABLE "tb_product_location" (
     "par_qty" DECIMAL(20,5) DEFAULT 0,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -2516,7 +2667,7 @@ CREATE TABLE "tb_department_user" (
     "is_hod" BOOLEAN DEFAULT false,
     "note" VARCHAR,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -2565,19 +2716,6 @@ CREATE TABLE "tb_user_location" (
     "deleted_by_id" UUID,
 
     CONSTRAINT "tb_user_location_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "tb_user_profile" (
-    "user_id" UUID NOT NULL,
-    "firstname" VARCHAR(100) NOT NULL DEFAULT '',
-    "middlename" VARCHAR(100) DEFAULT '',
-    "lastname" VARCHAR(100) DEFAULT '',
-    "telephone" VARCHAR(50) DEFAULT '',
-    "bio" JSONB DEFAULT '{}',
-    "info" JSONB DEFAULT '{}',
-
-    CONSTRAINT "tb_user_profile_pkey" PRIMARY KEY ("user_id")
 );
 
 -- CreateTable
@@ -2767,7 +2905,7 @@ CREATE TABLE "tb_extra_cost_detail" (
     "tax_amount" DECIMAL(20,5) DEFAULT 0,
     "is_tax_adjustment" BOOLEAN DEFAULT false,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -2805,7 +2943,7 @@ CREATE TABLE "tb_extra_cost_type" (
     "note" VARCHAR,
     "is_active" BOOLEAN DEFAULT true,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -2825,7 +2963,7 @@ CREATE TABLE "tb_vendor_business_type" (
     "note" VARCHAR,
     "is_active" BOOLEAN DEFAULT true,
     "info" JSONB DEFAULT '{}',
-    "dimension" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
     "doc_version" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
     "created_by_id" UUID,
@@ -2884,6 +3022,433 @@ CREATE TABLE "tb_application_user_config" (
     "deleted_by_id" UUID,
 
     CONSTRAINT "tb_application_user_config_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_issue" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "name" VARCHAR NOT NULL,
+    "description" VARCHAR,
+    "status" "enum_issue_status" NOT NULL DEFAULT 'open',
+    "priority" "enum_issue_priority" NOT NULL DEFAULT 'medium',
+    "assigned_to_id" UUID,
+    "due_date" TIMESTAMPTZ(6),
+    "category" VARCHAR,
+    "tags" VARCHAR[] DEFAULT ARRAY[]::VARCHAR[],
+    "resolution" VARCHAR,
+    "note" VARCHAR,
+    "info" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_issue_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_physical_count_period" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "counting_period_from_date" TIMESTAMPTZ(6) NOT NULL,
+    "counting_period_to_date" TIMESTAMPTZ(6) NOT NULL,
+    "status" "enum_physical_count_period_status" NOT NULL DEFAULT 'draft',
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_physical_count_period_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_physical_count_period_comment" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "physical_count_period_id" UUID NOT NULL,
+    "type" "enum_comment_type" NOT NULL DEFAULT 'user',
+    "user_id" UUID,
+    "message" TEXT,
+    "attachments" JSONB DEFAULT '[]',
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_physical_count_period_comment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_physical_count" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "period_id" UUID NOT NULL,
+    "location_id" UUID NOT NULL,
+    "location_code" VARCHAR,
+    "location_name" VARCHAR,
+    "physical_count_type" "enum_physical_count_type" NOT NULL DEFAULT 'yes',
+    "description" TEXT,
+    "status" "enum_physical_count_status" NOT NULL DEFAULT 'pending',
+    "start_counting_at" TIMESTAMPTZ(6),
+    "start_counting_by_id" UUID,
+    "completed_at" TIMESTAMPTZ(6),
+    "completed_by_id" UUID,
+    "product_counted" INTEGER NOT NULL DEFAULT 0,
+    "product_total" INTEGER NOT NULL DEFAULT 0,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_physical_count_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_physical_count_comment" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "physical_count_id" UUID NOT NULL,
+    "type" "enum_comment_type" NOT NULL DEFAULT 'user',
+    "user_id" UUID,
+    "message" TEXT,
+    "attachments" JSONB DEFAULT '[]',
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_physical_count_comment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_physical_count_detail" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "physical_count_id" UUID NOT NULL,
+    "product_id" UUID NOT NULL,
+    "product_name" VARCHAR NOT NULL,
+    "product_code" VARCHAR NOT NULL,
+    "product_sku" VARCHAR NOT NULL,
+    "inventory_unit_id" UUID NOT NULL,
+    "on_hand_qty" DECIMAL(20,5) NOT NULL,
+    "counted_qty" DECIMAL(20,5) NOT NULL,
+    "diff_qty" DECIMAL(20,5) NOT NULL,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_physical_count_detail_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_physical_count_detail_comment" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "physical_count_detail_id" UUID NOT NULL,
+    "type" "enum_comment_type" NOT NULL DEFAULT 'user',
+    "user_id" UUID,
+    "message" TEXT,
+    "attachments" JSONB DEFAULT '[]',
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_physical_count_detail_comment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_recipe_cuisines" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "name" VARCHAR NOT NULL,
+    "description" VARCHAR,
+    "note" VARCHAR,
+    "is_active" BOOLEAN DEFAULT true,
+    "region" "enum_cuisine_region" NOT NULL,
+    "popular_dishes" JSONB NOT NULL DEFAULT '[]',
+    "key_ingredients" JSONB NOT NULL DEFAULT '[]',
+    "info" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
+    "doc_version" INTEGER NOT NULL DEFAULT 0,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_recipe_cuisines_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_recipe_equipment_category" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "name" VARCHAR NOT NULL,
+    "description" VARCHAR,
+    "note" VARCHAR,
+    "is_active" BOOLEAN DEFAULT true,
+    "info" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
+    "doc_version" INTEGER NOT NULL DEFAULT 0,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_recipe_equipment_category_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_recipe_equipment" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "code" VARCHAR NOT NULL,
+    "name" VARCHAR NOT NULL,
+    "description" VARCHAR,
+    "category_id" UUID,
+    "category_name" VARCHAR,
+    "brand" VARCHAR,
+    "model" VARCHAR,
+    "serial_no" VARCHAR,
+    "capacity" VARCHAR,
+    "power_rating" VARCHAR,
+    "station" VARCHAR,
+    "operation_instructions" VARCHAR,
+    "safety_notes" VARCHAR,
+    "cleaning_instructions" VARCHAR,
+    "maintenance_schedule" VARCHAR,
+    "last_maintenance_date" TIMESTAMPTZ(6),
+    "next_maintenance_date" TIMESTAMPTZ(6),
+    "note" VARCHAR,
+    "is_active" BOOLEAN DEFAULT true,
+    "is_poolable" BOOLEAN DEFAULT false,
+    "available_qty" INTEGER DEFAULT 0,
+    "total_qty" INTEGER DEFAULT 0,
+    "usage_count" INTEGER DEFAULT 0,
+    "average_usage_time" DECIMAL(20,5) DEFAULT 0,
+    "attachments" JSONB DEFAULT '[]',
+    "manuals_urls" JSONB DEFAULT '[]',
+    "info" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
+    "doc_version" INTEGER NOT NULL DEFAULT 0,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_recipe_equipment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_recipe_category" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "code" VARCHAR NOT NULL,
+    "name" VARCHAR NOT NULL,
+    "description" VARCHAR,
+    "note" VARCHAR,
+    "is_active" BOOLEAN DEFAULT true,
+    "parent_id" UUID,
+    "level" INTEGER NOT NULL DEFAULT 1,
+    "default_cost_settings" JSONB NOT NULL DEFAULT '{}',
+    "default_margins" JSONB NOT NULL DEFAULT '{}',
+    "info" JSONB DEFAULT '{}',
+    "dimension" JSONB DEFAULT '[]',
+    "doc_version" INTEGER NOT NULL DEFAULT 0,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_recipe_category_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_recipe" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "code" VARCHAR NOT NULL,
+    "name" VARCHAR NOT NULL,
+    "description" VARCHAR,
+    "note" VARCHAR,
+    "is_active" BOOLEAN DEFAULT true,
+    "images" JSONB DEFAULT '[]',
+    "category_id" UUID NOT NULL,
+    "cuisine_id" UUID NOT NULL,
+    "difficulty" "enum_recipe_difficulty" NOT NULL DEFAULT 'MEDIUM',
+    "base_yield" DECIMAL(20,5) NOT NULL,
+    "base_yield_unit" VARCHAR NOT NULL,
+    "default_variant_id" UUID,
+    "prep_time" INTEGER NOT NULL DEFAULT 0,
+    "cook_time" INTEGER NOT NULL DEFAULT 0,
+    "total_ingredient_cost" DECIMAL(20,5) NOT NULL DEFAULT 0,
+    "labor_cost" DECIMAL(20,5) NOT NULL DEFAULT 0,
+    "overhead_cost" DECIMAL(20,5) NOT NULL DEFAULT 0,
+    "cost_per_portion" DECIMAL(20,5) NOT NULL DEFAULT 0,
+    "suggested_price" DECIMAL(20,5),
+    "selling_price" DECIMAL(20,5),
+    "target_food_cost_percentage" DECIMAL(20,5) DEFAULT 33.00,
+    "actual_food_cost_percentage" DECIMAL(20,5),
+    "gross_margin" DECIMAL(20,5),
+    "gross_margin_percentage" DECIMAL(20,5),
+    "labor_cost_percentage" DECIMAL(20,5) DEFAULT 30.00,
+    "overhead_percentage" DECIMAL(20,5) DEFAULT 20.00,
+    "carbon_footprint" DECIMAL(20,5) DEFAULT 0,
+    "deduct_from_stock" BOOLEAN NOT NULL DEFAULT true,
+    "status" "enum_recipe_status" NOT NULL DEFAULT 'DRAFT',
+    "tags" JSONB NOT NULL DEFAULT '[]',
+    "allergens" JSONB NOT NULL DEFAULT '[]',
+    "published_at" TIMESTAMP(3),
+    "archived_at" TIMESTAMP(3),
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_recipe_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_recipe_ingredient" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "sequence_no" INTEGER DEFAULT 1,
+    "name" VARCHAR NOT NULL,
+    "note" VARCHAR,
+    "recipe_id" UUID NOT NULL,
+    "ingredient_type" "enum_ingredient_type" NOT NULL,
+    "product_id" UUID,
+    "sub_recipe_id" UUID,
+    "qty" DECIMAL(20,5) NOT NULL,
+    "ingredient_unit_id" UUID NOT NULL,
+    "inventory_qty" DECIMAL(20,5),
+    "inventory_unit_id" UUID,
+    "conversion_factor" DECIMAL(20,5),
+    "cost_per_unit" DECIMAL(20,5) NOT NULL DEFAULT 0,
+    "wastage_percentage" DECIMAL(20,5) NOT NULL DEFAULT 0,
+    "net_cost" DECIMAL(20,5) NOT NULL DEFAULT 0,
+    "wastage_cost" DECIMAL(20,5) NOT NULL DEFAULT 0,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+    "tb_recipe_yield_variantId" UUID,
+
+    CONSTRAINT "tb_recipe_ingredient_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_recipe_preparation_step" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "recipe_id" UUID NOT NULL,
+    "sequence_no" INTEGER NOT NULL,
+    "title" VARCHAR,
+    "description" TEXT NOT NULL,
+    "images" JSONB DEFAULT '[]',
+    "videos" JSONB DEFAULT '[]',
+    "duration" INTEGER,
+    "temperature" DECIMAL(20,5),
+    "temperature_unit" "enum_temperature_unit" DEFAULT 'c',
+    "equipment" JSONB NOT NULL DEFAULT '[]',
+    "techniques" JSONB NOT NULL DEFAULT '[]',
+    "chef_notes" TEXT,
+    "safety_warnings" TEXT,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_recipe_preparation_step_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_recipe_version" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "recipe_id" UUID NOT NULL,
+    "version_number" INTEGER NOT NULL,
+    "recipe_data" JSONB NOT NULL,
+    "ingredients_data" JSONB NOT NULL,
+    "steps_data" JSONB NOT NULL,
+    "variants_data" JSONB NOT NULL,
+    "change_summary" TEXT,
+    "published" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_recipe_version_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_recipe_pricing_history" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "recipe_id" UUID NOT NULL,
+    "variant_id" UUID,
+    "cost_per_portion" DECIMAL(20,5) NOT NULL,
+    "selling_price" DECIMAL(20,5) NOT NULL,
+    "food_cost_percentage" DECIMAL(20,5) NOT NULL,
+    "gross_margin" DECIMAL(20,5) NOT NULL,
+    "competitor_avg_price" DECIMAL(20,5),
+    "competitor_min_price" DECIMAL(20,5),
+    "competitor_max_price" DECIMAL(20,5),
+    "change_reason" VARCHAR,
+    "effective_date" TIMESTAMPTZ(6) NOT NULL,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_recipe_pricing_history_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tb_recipe_yield_variant" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "recipe_id" UUID NOT NULL,
+    "variant_name" VARCHAR NOT NULL,
+    "variant_unit" VARCHAR NOT NULL,
+    "variant_quantity" DECIMAL(20,5) NOT NULL,
+    "conversion_rate" DECIMAL(20,5) NOT NULL,
+    "cost_per_unit" DECIMAL(20,5),
+    "selling_price" DECIMAL(20,5),
+    "food_cost_percentage" DECIMAL(20,5),
+    "gross_margin" DECIMAL(20,5),
+    "is_default" BOOLEAN NOT NULL DEFAULT false,
+    "shelf_life" INTEGER,
+    "wastage_rate" DECIMAL(20,5),
+    "min_order_quantity" INTEGER,
+    "max_order_quantity" INTEGER,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_recipe_yield_variant_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -3133,6 +3698,12 @@ CREATE INDEX "PRT2_purchase_request_template_idx" ON "tb_purchase_request_templa
 CREATE UNIQUE INDEX "PRT1_purchase_request_template_product_location_dimension_u" ON "tb_purchase_request_template_detail"("purchase_request_template_id", "product_id", "location_id", "dimension", "deleted_at");
 
 -- CreateIndex
+CREATE INDEX "AT1_code_idx" ON "tb_adjustment_type"("code");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AT1_code_u" ON "tb_adjustment_type"("code", "deleted_at");
+
+-- CreateIndex
 CREATE INDEX "SI0_si_no_idx" ON "tb_stock_in"("si_no");
 
 -- CreateIndex
@@ -3161,6 +3732,21 @@ CREATE INDEX "SOT2_stock_out_idx" ON "tb_stock_out_detail"("stock_out_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "SOT1_stock_out_product_location_dimension_u" ON "tb_stock_out_detail"("stock_out_id", "product_id", "location_id", "dimension", "deleted_at");
+
+-- CreateIndex
+CREATE INDEX "TR0_tr_no_idx" ON "tb_transfer"("tr_no");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "TR1_tr_no_u" ON "tb_transfer"("tr_no", "deleted_at");
+
+-- CreateIndex
+CREATE INDEX "TRT2_transfer_product_idx" ON "tb_transfer_detail"("transfer_id", "product_id");
+
+-- CreateIndex
+CREATE INDEX "TRT2_transfer_idx" ON "tb_transfer_detail"("transfer_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "TRT1_transfer_product_dimension_u" ON "tb_transfer_detail"("transfer_id", "product_id", "dimension", "deleted_at");
 
 -- CreateIndex
 CREATE INDEX "sr_no_idx" ON "tb_store_requisition"("sr_no");
@@ -3352,12 +3938,6 @@ CREATE INDEX "user_location_user_id_location_id_idx" ON "tb_user_location"("user
 CREATE UNIQUE INDEX "user_location_user_id_location_id_u" ON "tb_user_location"("user_id", "location_id", "deleted_at");
 
 -- CreateIndex
-CREATE INDEX "user_profile_user_id_idx" ON "tb_user_profile"("user_id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "user_profile_user_id_u" ON "tb_user_profile"("user_id");
-
--- CreateIndex
 CREATE INDEX "config_running_code_type_idx" ON "tb_config_running_code"("type");
 
 -- CreateIndex
@@ -3413,6 +3993,75 @@ CREATE INDEX "application_user_config_idx" ON "tb_application_user_config"("user
 
 -- CreateIndex
 CREATE UNIQUE INDEX "application_user_config_u" ON "tb_application_user_config"("user_id", "key", "deleted_at");
+
+-- CreateIndex
+CREATE INDEX "issue_name_idx" ON "tb_issue"("name");
+
+-- CreateIndex
+CREATE INDEX "issue_status_idx" ON "tb_issue"("status");
+
+-- CreateIndex
+CREATE INDEX "issue_priority_idx" ON "tb_issue"("priority");
+
+-- CreateIndex
+CREATE INDEX "issue_assigned_to_idx" ON "tb_issue"("assigned_to_id");
+
+-- CreateIndex
+CREATE INDEX "issue_category_idx" ON "tb_issue"("category");
+
+-- CreateIndex
+CREATE INDEX "tb_physical_count_period_counting_period_from_date_counting_idx" ON "tb_physical_count_period"("counting_period_from_date", "counting_period_to_date");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "physical_count_period_delete_at_u" ON "tb_physical_count_period"("counting_period_from_date", "counting_period_to_date", "deleted_at");
+
+-- CreateIndex
+CREATE INDEX "tb_physical_count_period_id_location_id_idx" ON "tb_physical_count"("period_id", "location_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "physical_count_delete_at_u" ON "tb_physical_count"("period_id", "location_id", "deleted_at");
+
+-- CreateIndex
+CREATE INDEX "tb_physical_count_detail_physical_count_id_product_id_idx" ON "tb_physical_count_detail"("physical_count_id", "product_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "physical_count_detail_delete_at_u" ON "tb_physical_count_detail"("physical_count_id", "product_id", "deleted_at");
+
+-- CreateIndex
+CREATE INDEX "tb_recipe_cuisines_region_idx" ON "tb_recipe_cuisines"("region");
+
+-- CreateIndex
+CREATE INDEX "recipe_cuisines_name_idx" ON "tb_recipe_cuisines"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "recipe_cuisines_name_u" ON "tb_recipe_cuisines"("name", "deleted_at");
+
+-- CreateIndex
+CREATE INDEX "recipe_equipment_category_name_idx" ON "tb_recipe_equipment_category"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "recipe_equipment_category_name_u" ON "tb_recipe_equipment_category"("name", "deleted_at");
+
+-- CreateIndex
+CREATE INDEX "recipe_equipment_code_name_idx" ON "tb_recipe_equipment"("code", "name");
+
+-- CreateIndex
+CREATE INDEX "recipe_equipment_name_idx" ON "tb_recipe_equipment"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "recipe_equipment_code_name_u" ON "tb_recipe_equipment"("code", "name", "deleted_at");
+
+-- CreateIndex
+CREATE INDEX "recipe_code_idx" ON "tb_recipe"("code");
+
+-- CreateIndex
+CREATE INDEX "recipe_name_idx" ON "tb_recipe"("name");
+
+-- CreateIndex
+CREATE INDEX "recipe_code_name_idx" ON "tb_recipe"("code", "name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "recipe_code_name_u" ON "tb_recipe"("code", "name", "deleted_at");
 
 -- AddForeignKey
 ALTER TABLE "tb_credit_note" ADD CONSTRAINT "tb_credit_note_vendor_id_fkey" FOREIGN KEY ("vendor_id") REFERENCES "tb_vendor"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -3667,6 +4316,9 @@ ALTER TABLE "tb_purchase_request_template_detail" ADD CONSTRAINT "tb_purchase_re
 ALTER TABLE "tb_purchase_request_template_detail" ADD CONSTRAINT "tb_purchase_request_template_detail_tax_profile_id_fkey" FOREIGN KEY ("tax_profile_id") REFERENCES "tb_tax_profile"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
+ALTER TABLE "tb_stock_in" ADD CONSTRAINT "tb_stock_in_adjustment_type_id_fkey" FOREIGN KEY ("adjustment_type_id") REFERENCES "tb_adjustment_type"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
 ALTER TABLE "tb_stock_in_comment" ADD CONSTRAINT "tb_stock_in_comment_stock_in_id_fkey" FOREIGN KEY ("stock_in_id") REFERENCES "tb_stock_in"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
@@ -3685,6 +4337,9 @@ ALTER TABLE "tb_stock_in_detail" ADD CONSTRAINT "tb_stock_in_detail_location_id_
 ALTER TABLE "tb_stock_in_detail_comment" ADD CONSTRAINT "tb_stock_in_detail_comment_stock_in_detail_id_fkey" FOREIGN KEY ("stock_in_detail_id") REFERENCES "tb_stock_in_detail"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
+ALTER TABLE "tb_stock_out" ADD CONSTRAINT "tb_stock_out_adjustment_type_id_fkey" FOREIGN KEY ("adjustment_type_id") REFERENCES "tb_adjustment_type"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
 ALTER TABLE "tb_stock_out_comment" ADD CONSTRAINT "tb_stock_out_comment_stock_out_id_fkey" FOREIGN KEY ("stock_out_id") REFERENCES "tb_stock_out"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
@@ -3701,6 +4356,27 @@ ALTER TABLE "tb_stock_out_detail" ADD CONSTRAINT "tb_stock_out_detail_location_i
 
 -- AddForeignKey
 ALTER TABLE "tb_stock_out_detail_comment" ADD CONSTRAINT "tb_stock_out_detail_comment_stock_out_detail_id_fkey" FOREIGN KEY ("stock_out_detail_id") REFERENCES "tb_stock_out_detail"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_transfer" ADD CONSTRAINT "tb_transfer_from_location_id_fkey" FOREIGN KEY ("from_location_id") REFERENCES "tb_location"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_transfer" ADD CONSTRAINT "tb_transfer_to_location_id_fkey" FOREIGN KEY ("to_location_id") REFERENCES "tb_location"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_transfer_comment" ADD CONSTRAINT "tb_transfer_comment_transfer_id_fkey" FOREIGN KEY ("transfer_id") REFERENCES "tb_transfer"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_transfer_detail" ADD CONSTRAINT "tb_transfer_detail_inventory_transaction_id_fkey" FOREIGN KEY ("inventory_transaction_id") REFERENCES "tb_inventory_transaction"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_transfer_detail" ADD CONSTRAINT "tb_transfer_detail_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "tb_product"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_transfer_detail" ADD CONSTRAINT "tb_transfer_detail_transfer_id_fkey" FOREIGN KEY ("transfer_id") REFERENCES "tb_transfer"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_transfer_detail_comment" ADD CONSTRAINT "tb_transfer_detail_comment_transfer_detail_id_fkey" FOREIGN KEY ("transfer_detail_id") REFERENCES "tb_transfer_detail"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "tb_store_requisition" ADD CONSTRAINT "tb_store_requisition_from_location_id_fkey" FOREIGN KEY ("from_location_id") REFERENCES "tb_location"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -3899,3 +4575,75 @@ ALTER TABLE "tb_extra_cost_detail_comment" ADD CONSTRAINT "tb_extra_cost_detail_
 
 -- AddForeignKey
 ALTER TABLE "tb_vendor_business_type_comment" ADD CONSTRAINT "tb_vendor_business_type_comment_vendor_business_type_id_fkey" FOREIGN KEY ("vendor_business_type_id") REFERENCES "tb_vendor_business_type"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_physical_count_period_comment" ADD CONSTRAINT "tb_physical_count_period_comment_physical_count_period_id_fkey" FOREIGN KEY ("physical_count_period_id") REFERENCES "tb_physical_count_period"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_physical_count" ADD CONSTRAINT "tb_physical_count_period_id_fkey" FOREIGN KEY ("period_id") REFERENCES "tb_physical_count_period"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_physical_count" ADD CONSTRAINT "tb_physical_count_location_id_fkey" FOREIGN KEY ("location_id") REFERENCES "tb_location"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_physical_count_comment" ADD CONSTRAINT "tb_physical_count_comment_physical_count_id_fkey" FOREIGN KEY ("physical_count_id") REFERENCES "tb_physical_count"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_physical_count_detail" ADD CONSTRAINT "tb_physical_count_detail_physical_count_id_fkey" FOREIGN KEY ("physical_count_id") REFERENCES "tb_physical_count"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_physical_count_detail" ADD CONSTRAINT "tb_physical_count_detail_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "tb_product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_physical_count_detail" ADD CONSTRAINT "tb_physical_count_detail_inventory_unit_id_fkey" FOREIGN KEY ("inventory_unit_id") REFERENCES "tb_unit"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_physical_count_detail_comment" ADD CONSTRAINT "tb_physical_count_detail_comment_physical_count_detail_id_fkey" FOREIGN KEY ("physical_count_detail_id") REFERENCES "tb_physical_count_detail"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_recipe_equipment" ADD CONSTRAINT "tb_recipe_equipment_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "tb_recipe_equipment_category"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "tb_recipe_category" ADD CONSTRAINT "tb_recipe_category_parent_id_fkey" FOREIGN KEY ("parent_id") REFERENCES "tb_recipe_category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_recipe" ADD CONSTRAINT "tb_recipe_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "tb_recipe_category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_recipe" ADD CONSTRAINT "tb_recipe_cuisine_id_fkey" FOREIGN KEY ("cuisine_id") REFERENCES "tb_recipe_cuisines"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_recipe" ADD CONSTRAINT "tb_recipe_default_variant_id_fkey" FOREIGN KEY ("default_variant_id") REFERENCES "tb_recipe_yield_variant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_recipe_ingredient" ADD CONSTRAINT "tb_recipe_ingredient_recipe_id_fkey" FOREIGN KEY ("recipe_id") REFERENCES "tb_recipe"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_recipe_ingredient" ADD CONSTRAINT "tb_recipe_ingredient_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "tb_product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_recipe_ingredient" ADD CONSTRAINT "tb_recipe_ingredient_sub_recipe_id_fkey" FOREIGN KEY ("sub_recipe_id") REFERENCES "tb_recipe"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_recipe_ingredient" ADD CONSTRAINT "tb_recipe_ingredient_ingredient_unit_id_fkey" FOREIGN KEY ("ingredient_unit_id") REFERENCES "tb_unit"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_recipe_ingredient" ADD CONSTRAINT "tb_recipe_ingredient_inventory_unit_id_fkey" FOREIGN KEY ("inventory_unit_id") REFERENCES "tb_unit"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_recipe_ingredient" ADD CONSTRAINT "tb_recipe_ingredient_tb_recipe_yield_variantId_fkey" FOREIGN KEY ("tb_recipe_yield_variantId") REFERENCES "tb_recipe_yield_variant"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_recipe_preparation_step" ADD CONSTRAINT "tb_recipe_preparation_step_recipe_id_fkey" FOREIGN KEY ("recipe_id") REFERENCES "tb_recipe"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_recipe_version" ADD CONSTRAINT "tb_recipe_version_recipe_id_fkey" FOREIGN KEY ("recipe_id") REFERENCES "tb_recipe"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_recipe_pricing_history" ADD CONSTRAINT "tb_recipe_pricing_history_recipe_id_fkey" FOREIGN KEY ("recipe_id") REFERENCES "tb_recipe"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_recipe_pricing_history" ADD CONSTRAINT "tb_recipe_pricing_history_variant_id_fkey" FOREIGN KEY ("variant_id") REFERENCES "tb_recipe_yield_variant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tb_recipe_yield_variant" ADD CONSTRAINT "tb_recipe_yield_variant_recipe_id_fkey" FOREIGN KEY ("recipe_id") REFERENCES "tb_recipe"("id") ON DELETE CASCADE ON UPDATE CASCADE;
