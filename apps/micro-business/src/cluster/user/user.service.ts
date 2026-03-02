@@ -26,13 +26,21 @@ export class UserService {
       { function: 'listUsers', paginate: paginate },
       UserService.name,
     );
+    const profileFields = ['firstname', 'lastname', 'middlename'];
     const defaultSearchFields = ['username', 'email'];
+
+    // Separate profile fields from direct tb_user fields
+    const rawSearchFields = Array.isArray(paginate.searchfields) && paginate.searchfields.length > 0
+      ? paginate.searchfields.flatMap((f: string) => f.split(',')).map((f: string) => f.trim()).filter(Boolean)
+      : defaultSearchFields;
+    const directFields = rawSearchFields.filter((f: string) => !profileFields.includes(f.split('|')[0]));
+    const relatedProfileFields = rawSearchFields.filter((f: string) => profileFields.includes(f.split('|')[0]));
 
     const q = new QueryParams(
       paginate.page,
       paginate.perpage,
       paginate.search,
-      paginate.searchfields,
+      directFields.length > 0 ? directFields : undefined,
       defaultSearchFields,
       paginate.filter,
       paginate.sort,
@@ -40,6 +48,23 @@ export class UserService {
     );
 
     const { where, orderBy, skip, take } = q.findMany();
+
+    // Add profile field search conditions to the OR clause
+    if (paginate.search && relatedProfileFields.length > 0) {
+      const profileOrConditions = relatedProfileFields.map((field: string) => ({
+        tb_user_profile_tb_user_profile_user_idTotb_user: {
+          some: {
+            [field.split('|')[0]]: { contains: paginate.search, mode: 'insensitive' as const },
+          },
+        },
+      }));
+
+      if (!where.OR) {
+        where.OR = profileOrConditions;
+      } else {
+        where.OR = [...where.OR, ...profileOrConditions];
+      }
+    }
 
     // Check if 'name' sort is requested (maps to profile firstname+middlename+lastname)
     let nameSortDir: 'asc' | 'desc' | null = null;
@@ -141,7 +166,7 @@ export class UserService {
       });
 
     const total = await this.prismaSystem.tb_user.count({
-      where: q.where(),
+      where,
     });
 
     return Result.ok({
