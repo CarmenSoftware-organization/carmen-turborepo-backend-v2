@@ -25,6 +25,7 @@
     "db:seed": "ts-node -r tsconfig-paths/register prisma/seed.ts",
     "db:seed:reset": "prisma migrate reset --force && ts-node -r tsconfig-paths/register prisma/seed.ts",
     "db:seed.permission": "ts-node -r tsconfig-paths/register prisma/seed.permission.ts",
+    "db:seed.role-permission": "ts-node -r tsconfig-paths/register prisma/seed.role-permission.ts",
     "db:mock": "ts-node -r tsconfig-paths/register prisma/seed.ts && ts-node -r tsconfig-paths/register prisma/mock.ts",
     "db:mock:reset": "prisma migrate reset --force && ts-node -r tsconfig-paths/register prisma/seed.ts && ts-node -r tsconfig-paths/register prisma/mock.ts"
   },
