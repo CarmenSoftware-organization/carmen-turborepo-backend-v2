@@ -43,21 +43,18 @@ export class InventoryTransactionController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
-  /**
-   * ⚠️ TEST ONLY — DELETE when GRN approve integration is verified.
-   */
   @MessagePattern({
-    cmd: 'inventory-transaction.test-create-from-grn',
+    cmd: 'inventory-transaction.create-from-grn',
     service: 'inventory-transaction',
   })
-  async testCreateFromGrn(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'testCreateFromGrn', payload }, InventoryTransactionController.name);
+  async createFromGrn(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'createFromGrn', payload }, InventoryTransactionController.name);
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const data = payload.data || {};
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.inventoryTransactionService.testCreateFromGrn(
+      this.inventoryTransactionService.createFromGrn(
         {
           bu_code: tenant_id,
           grn_id: data.grn_id,

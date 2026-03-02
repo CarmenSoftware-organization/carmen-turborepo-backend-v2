@@ -1072,8 +1072,11 @@ enum enum_transaction_type {
   transfer_out
 
   issue
-  adjustment
-  credit_note
+  adjustment_in
+  adjustment_out
+
+  credit_note_amount
+  credit_note_quantity
 
   close_period
   open_period
@@ -3163,12 +3166,12 @@ model tb_unit {
   tb_good_received_note_detail_item_received tb_good_received_note_detail_item[] @relation("tb_good_received_note_detail_item_received_unit_idTotb_unit")
   tb_good_received_note_detail_item_order    tb_good_received_note_detail_item[] @relation("tb_good_received_note_detail_item_order_unit_idTotb_unit")
   tb_unit_comment                            tb_unit_comment[]
+  tb_physical_count_detail                   tb_physical_count_detail[]
+  tb_recipe_ingredient_ingredient_unit       tb_recipe_ingredient[]              @relation("recipe_ingredient_unit")
+  tb_recipe_ingredient_inventory_unit        tb_recipe_ingredient[]              @relation("recipe_inventory_unit")
 
   @@unique([name, deleted_at], map: "unit_name_deletedat_u")
   @@index([name], map: "unit_name_idx")
-  tb_physical_count_detail                                                                      tb_physical_count_detail[]
-  tb_recipe_ingredient_ingredient_unit                                                           tb_recipe_ingredient[]    @relation("recipe_ingredient_unit")
-  tb_recipe_ingredient_inventory_unit                                                            tb_recipe_ingredient[]    @relation("recipe_inventory_unit")
 }
 
 model tb_unit_comment {
@@ -5450,7 +5453,7 @@ model tb_recipe_preparation_step {
 
   // Timing & Conditions
   duration         Int?
-  temperature      Decimal?              @db.Decimal(20, 5)
+  temperature      Decimal?               @db.Decimal(20, 5)
   temperature_unit enum_temperature_unit? @default(c)
 
   // Resources

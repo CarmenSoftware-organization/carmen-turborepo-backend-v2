@@ -107,21 +107,14 @@ export class InventoryTransactionService {
     return Result.ok(serializedInventoryTransactions);
   }
 
-  /**
-   * ⚠️ TEST ONLY — DELETE when GRN approve integration is verified.
-   *
-   * Standalone test wrapper that resolves tenant, opens a $transaction,
-   * and calls createFromGoodReceivedNote so you can test the FIFO logic
-   * via a direct HTTP request without going through the GRN approve flow.
-   */
   @TryCatch
-  async testCreateFromGrn(
+  async createFromGrn(
     data: ICreateFromGrnPayload,
     user_id: string,
     tenant_id: string,
   ): Promise<Result<unknown>> {
     this.logger.debug(
-      { function: 'testCreateFromGrn', grn_id: data.grn_id, user_id, tenant_id },
+      { function: 'createFromGrn', grn_id: data.grn_id, user_id, tenant_id },
       InventoryTransactionService.name,
     );
 
@@ -165,7 +158,7 @@ export class InventoryTransactionService {
       case 'fifo':
         return this.createFifoTransaction(tx, payload);
       case 'average':
-        throw new Error('Average calculation method is not yet supported');
+        return this.createAverageTransaction(tx, payload);
       default:
         throw new Error(`Unknown calculation method: ${method}`);
     }
@@ -267,6 +260,171 @@ export class InventoryTransactionService {
           inventory_transaction_id: inventoryTransaction.id,
           updated_by_id: payload.user_id,
           updated_at: now,
+        },
+      });
+    }
+
+    return inventoryTransaction.id;
+  }
+
+  /**
+   * Average: Create inventory transaction + details + cost layers from an approved GRN.
+   * Calculates weighted average cost per unit and updates all existing cost layers for the same product.
+   */
+  private async createAverageTransaction(
+    tx: any,
+    payload: ICreateFromGrnPayload,
+  ): Promise<string> {
+    const now = new Date();
+    const grnDate = payload.grn_date;
+    const year = grnDate.getFullYear().toString();
+    const month = (grnDate.getMonth() + 1).toString().padStart(2, '0');
+    const atPeriod = format(grnDate, 'yyMM');
+
+    // 1. Query existing inventory per product (on-hand qty + current average cost)
+    const uniqueProductIds = [...new Set(payload.detail_items.map(item => item.product_id))];
+
+    const stockGrouped = await tx.tb_inventory_transaction_detail.groupBy({
+      by: ['product_id'],
+      where: { product_id: { in: uniqueProductIds } },
+      _sum: { qty: true },
+    });
+
+    const onHandMap = new Map<string, number>();
+    for (const group of stockGrouped) {
+      const qty = Number(group._sum.qty || 0);
+      onHandMap.set(group.product_id, qty > 0 ? qty : 0);
+    }
+
+    const avgCostMap = new Map<string, number>();
+    for (const productId of uniqueProductIds) {
+      const latestLayer = await tx.tb_inventory_transaction_cost_layer.findFirst({
+        where: { product_id: productId, deleted_at: null },
+        select: { average_cost_per_unit: true },
+        orderBy: { created_at: 'desc' },
+      });
+      if (latestLayer) {
+        avgCostMap.set(productId, Number(latestLayer.average_cost_per_unit || 0));
+      }
+    }
+
+    // 2. Aggregate new receipts per product (handle multiple lines for same product in one GRN)
+    const newReceiptsPerProduct = new Map<string, { totalQty: number; totalCost: number }>();
+    for (const item of payload.detail_items) {
+      if (item.received_base_qty <= 0) continue;
+      const existing = newReceiptsPerProduct.get(item.product_id) || { totalQty: 0, totalCost: 0 };
+      existing.totalQty += item.received_base_qty;
+      existing.totalCost += item.base_net_amount;
+      newReceiptsPerProduct.set(item.product_id, existing);
+    }
+
+    // 3. Compute new weighted average cost per product
+    const newAvgCostMap = new Map<string, number>();
+    for (const [productId, newReceipt] of newReceiptsPerProduct) {
+      const existingQty = onHandMap.get(productId) || 0;
+      const existingAvgCost = avgCostMap.get(productId) || 0;
+
+      const existingTotalCost = existingQty * existingAvgCost;
+      const combinedQty = existingQty + newReceipt.totalQty;
+      const combinedCost = existingTotalCost + newReceipt.totalCost;
+
+      const newAvgCost = combinedQty > 0
+        ? Math.round((combinedCost / combinedQty) * 100) / 100
+        : 0;
+
+      newAvgCostMap.set(productId, newAvgCost);
+    }
+
+    // 4. Create the inventory transaction header
+    const inventoryTransaction = await tx.tb_inventory_transaction.create({
+      data: {
+        inventory_doc_type: enum_inventory_doc_type.good_received_note,
+        inventory_doc_no: payload.grn_id,
+        note: `GRN ${payload.grn_no || ''} approved`,
+        created_by_id: payload.user_id,
+        created_at: now,
+        updated_by_id: payload.user_id,
+        updated_at: now,
+      },
+    });
+
+    // 5. Process each detail item — create transaction detail + single cost layer
+    let lotSeqNo = 0;
+
+    for (const item of payload.detail_items) {
+      const qty = item.received_base_qty;
+      const totalCost = item.base_net_amount;
+
+      if (qty <= 0) continue;
+
+      lotSeqNo++;
+      const lotNo = `LOT-${year}-${month}-${lotSeqNo.toString().padStart(4, '0')}`;
+
+      const costPerUnit = Math.round((totalCost / qty) * 100) / 100;
+      const newAvgCost = newAvgCostMap.get(item.product_id) || costPerUnit;
+
+      // Create inventory transaction detail
+      const txnDetail = await tx.tb_inventory_transaction_detail.create({
+        data: {
+          inventory_transaction_id: inventoryTransaction.id,
+          product_id: item.product_id,
+          location_id: item.location_id,
+          location_code: item.location_code,
+          current_lot_no: lotNo,
+          qty: qty,
+          cost_per_unit: costPerUnit,
+          total_cost: totalCost,
+          created_by_id: payload.user_id,
+          created_at: now,
+          updated_by_id: payload.user_id,
+          updated_at: now,
+        },
+      });
+
+      // Create single cost layer (average doesn't split like FIFO)
+      await tx.tb_inventory_transaction_cost_layer.create({
+        data: {
+          inventory_transaction_detail_id: txnDetail.id,
+          lot_no: lotNo,
+          lot_index: 1,
+          location_id: item.location_id,
+          location_code: item.location_code,
+          lot_at_date: grnDate,
+          lot_seq_no: lotSeqNo,
+          product_id: item.product_id,
+          at_period: atPeriod,
+          transaction_type: enum_transaction_type.good_received_note,
+          in_qty: qty,
+          out_qty: 0,
+          cost_per_unit: costPerUnit,
+          total_cost: totalCost,
+          diff_amount: 0,
+          average_cost_per_unit: newAvgCost,
+          created_by_id: payload.user_id,
+          created_at: now,
+        },
+      });
+
+      // Link the inventory transaction back to the GRN detail item
+      await tx.tb_good_received_note_detail_item.update({
+        where: { id: item.detail_item_id },
+        data: {
+          inventory_transaction_id: inventoryTransaction.id,
+          updated_by_id: payload.user_id,
+          updated_at: now,
+        },
+      });
+    }
+
+    // 6. Update average_cost_per_unit on ALL existing cost layers for each affected product
+    for (const [productId, newAvgCost] of newAvgCostMap) {
+      await tx.tb_inventory_transaction_cost_layer.updateMany({
+        where: {
+          product_id: productId,
+          deleted_at: null,
+        },
+        data: {
+          average_cost_per_unit: newAvgCost,
         },
       });
     }

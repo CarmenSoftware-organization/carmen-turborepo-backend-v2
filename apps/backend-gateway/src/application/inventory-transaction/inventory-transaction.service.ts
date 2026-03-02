@@ -34,7 +34,7 @@ export class InventoryTransactionService {
     );
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
-      { cmd: 'inventory-transaction.test-create-from-grn', service: 'inventory-transaction' },
+      { cmd: 'inventory-transaction.create-from-grn', service: 'inventory-transaction' },
       { data, user_id, tenant_id },
     );
 
