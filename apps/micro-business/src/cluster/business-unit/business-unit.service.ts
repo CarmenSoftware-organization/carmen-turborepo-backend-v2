@@ -16,6 +16,7 @@ import QueryParams from 'src/libs/paginate.query';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { TenantService } from '@/tenant/tenant.service';
 import { IPaginate, Result, ErrorCode, TryCatch } from '@/common';
+import { BusinessUnitListItemResponseSchema } from './dto/business-unit.serializer';
 
 @Injectable()
 export class BusinessUnitService {
@@ -206,11 +207,24 @@ export class BusinessUnitService {
 
     const businessUnits = await this.prismaSystem.tb_business_unit.findMany({
       ...q.findMany(),
+      include: {
+        tb_cluster: { select: { name: true } },
+        tb_user_tb_business_unit_created_by_idTotb_user: {
+          select: { username: true, email: true },
+        },
+        tb_user_tb_business_unit_updated_by_idTotb_user: {
+          select: { username: true, email: true },
+        },
+      },
     });
 
     const total = await this.prismaSystem.tb_business_unit.count({
       where: q.where(),
     });
+
+    const serializedBusinessUnits = businessUnits.map((item) =>
+      BusinessUnitListItemResponseSchema.parse(item),
+    );
 
     return Result.ok({
       paginate: {
@@ -219,7 +233,7 @@ export class BusinessUnitService {
         perpage: paginate.perpage,
         pages: total == 0 ? 1 : Math.ceil(total / q.perpage),
       },
-      data: businessUnits,
+      data: serializedBusinessUnits,
     });
   }
 

@@ -20,8 +20,43 @@ export const BusinessUnitDetailResponseSchema = BusinessUnitResponseSchema;
 
 export type BusinessUnitDetailResponse = z.infer<typeof BusinessUnitDetailResponseSchema>;
 
+// Audit user schema (for created_by / updated_by)
+const AuditUserSchema = z.object({
+  username: z.string().nullable().optional(),
+  email: z.string().nullable().optional(),
+}).nullable().optional();
+
 // Business unit list item response schema
-export const BusinessUnitListItemResponseSchema = BusinessUnitResponseSchema;
+export const BusinessUnitListItemResponseSchema = z.object({
+  id: z.string(),
+  cluster_id: z.string().nullable().optional(),
+  code: z.string(),
+  name: z.string(),
+  description: z.string().nullable().optional(),
+  is_active: z.boolean().optional(),
+  info: z.any().nullable().optional(),
+  created_at: z.coerce.date().optional(),
+  created_by_id: z.string().nullable().optional(),
+  tb_user_tb_business_unit_created_by_idTotb_user: AuditUserSchema,
+  updated_at: z.coerce.date().optional(),
+  updated_by_id: z.string().nullable().optional(),
+  tb_user_tb_business_unit_updated_by_idTotb_user: AuditUserSchema,
+  tb_cluster: z.object({
+    name: z.string().nullable().optional(),
+  }).nullable().optional(),
+}).transform((item) => ({
+  ...item,
+  cluster_name: item.tb_cluster?.name ?? null,
+  created_by_name: item.tb_user_tb_business_unit_created_by_idTotb_user?.username
+    ?? item.tb_user_tb_business_unit_created_by_idTotb_user?.email
+    ?? null,
+  updated_by_name: item.tb_user_tb_business_unit_updated_by_idTotb_user?.username
+    ?? item.tb_user_tb_business_unit_updated_by_idTotb_user?.email
+    ?? null,
+  tb_cluster: undefined,
+  tb_user_tb_business_unit_created_by_idTotb_user: undefined,
+  tb_user_tb_business_unit_updated_by_idTotb_user: undefined,
+}));
 
 export type BusinessUnitListItemResponse = z.infer<typeof BusinessUnitListItemResponseSchema>;
 

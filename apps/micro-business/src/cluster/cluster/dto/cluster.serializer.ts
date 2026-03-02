@@ -35,6 +35,11 @@ export const ClusterDetailResponseSchema = z.object({
   tb_cluster_user: z.array(ClusterUserSchema).nullable().optional(),
 });
 
+const AuditUserSchema = z.object({
+  username: z.string().nullable().optional(),
+  email: z.string().nullable().optional(),
+}).nullable().optional();
+
 export const ClusterListItemResponseSchema = z.object({
   id: z.string(),
   name: z.string().nullable().optional(),
@@ -43,11 +48,27 @@ export const ClusterListItemResponseSchema = z.object({
   logo_url: z.string().nullable().optional(),
   is_active: z.boolean().nullable().optional(),
   info: z.any().nullable().optional(),
+  created_at: z.coerce.date().nullable().optional(),
+  created_by_id: z.string().nullable().optional(),
+  tb_user_tb_cluster_created_by_idTotb_user: AuditUserSchema,
+  updated_at: z.coerce.date().nullable().optional(),
+  updated_by_id: z.string().nullable().optional(),
+  tb_user_tb_cluster_updated_by_idTotb_user: AuditUserSchema,
   _count: z.object({
     tb_business_unit: z.number().nullable().optional(),
     tb_cluster_user: z.number().nullable().optional(),
   }).nullable().optional(),
-});
+}).transform((item) => ({
+  ...item,
+  created_by_name: item.tb_user_tb_cluster_created_by_idTotb_user?.username
+    ?? item.tb_user_tb_cluster_created_by_idTotb_user?.email
+    ?? null,
+  updated_by_name: item.tb_user_tb_cluster_updated_by_idTotb_user?.username
+    ?? item.tb_user_tb_cluster_updated_by_idTotb_user?.email
+    ?? null,
+  tb_user_tb_cluster_created_by_idTotb_user: undefined,
+  tb_user_tb_cluster_updated_by_idTotb_user: undefined,
+}));
 
 export const ClusterMutationResponseSchema = z.object({
   id: z.string(),

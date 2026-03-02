@@ -156,7 +156,10 @@ export class Platform_BusinessUnitService {
       );
     }
 
-    return Result.ok(response.data);
+    return Result.ok({
+      data: response.data,
+      paginate: response.paginate,
+    });
   }
 
   async getBusinessUnitById(

@@ -185,6 +185,16 @@ export class ClusterService {
         logo_url: true,
         is_active: true,
         info: true,
+        created_at: true,
+        created_by_id: true,
+        tb_user_tb_cluster_created_by_idTotb_user: {
+          select: { username: true, email: true },
+        },
+        updated_at: true,
+        updated_by_id: true,
+        tb_user_tb_cluster_updated_by_idTotb_user: {
+          select: { username: true, email: true },
+        },
         _count: {
           select: {
             tb_business_unit: {
