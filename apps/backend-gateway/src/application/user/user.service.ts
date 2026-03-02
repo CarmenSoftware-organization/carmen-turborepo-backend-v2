@@ -17,11 +17,23 @@ export class UserService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    try {
-      await this.authService.connect();
-      this.logger.log('AUTH_SERVICE TCP client connected (UserService)');
-    } catch (error) {
-      this.logger.error(`Failed to connect AUTH_SERVICE: ${error instanceof Error ? error.message : error}`);
+    const maxRetries = 5;
+    const delayMs = 3000;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        await this.authService.connect();
+        this.logger.log('AUTH_SERVICE TCP client connected (UserService)');
+        return;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : error;
+        if (attempt < maxRetries) {
+          this.logger.warn(`AUTH_SERVICE connection attempt ${attempt}/${maxRetries} failed: ${message}. Retrying in ${delayMs / 1000}s...`);
+          await new Promise((resolve) => setTimeout(resolve, delayMs));
+        } else {
+          this.logger.error(`AUTH_SERVICE connection failed after ${maxRetries} attempts: ${message}. Will reconnect on first request.`);
+        }
+      }
     }
   }
 
