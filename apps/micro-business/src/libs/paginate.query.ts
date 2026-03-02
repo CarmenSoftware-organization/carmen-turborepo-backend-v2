@@ -251,7 +251,9 @@ export default class QueryParams {
     // ✅ FIX: normalize search ให้เป็น string เสมอ (and exclude functions)
     this.search = typeof search === 'string' ? search : '';
 
-    this.searchFields = Array.isArray(searchFields) ? searchFields : [];
+    this.searchFields = Array.isArray(searchFields)
+      ? searchFields.flatMap((f) => f.split(',')).map((f) => f.trim()).filter(Boolean)
+      : [];
     this.defaultSearchFields = defaultSearchFields ?? [];
 
     if (this.searchFields.length === 0) {
