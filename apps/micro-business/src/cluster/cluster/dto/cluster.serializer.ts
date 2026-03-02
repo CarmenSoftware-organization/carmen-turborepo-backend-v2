@@ -78,6 +78,8 @@ const UserClusterSchema = z.object({
 export const UserClusterListResponseSchema = z.array(UserClusterSchema);
 
 export const UserClusterByClusterIdSchema = z.object({
+  id: z.string(),
+  user_id: z.string().nullable().optional(),
   email: z.string().nullable().optional(),
   role: z.string().nullable().optional(),
   userInfo: z.object({

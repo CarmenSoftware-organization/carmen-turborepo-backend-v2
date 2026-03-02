@@ -471,6 +471,7 @@ export class ClusterService {
           is_active: true,
         },
         select: {
+          id: true,
           user_id: true,
           role: true,
         },
@@ -494,6 +495,8 @@ export class ClusterService {
               },
             });
             return {
+              id: item.id,
+              user_id: item.user_id,
               email: user[0].email,
               role: item.role,
               userInfo:
