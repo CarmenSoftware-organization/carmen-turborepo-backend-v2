@@ -2,7 +2,7 @@ import { HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/c
 import { ClientProxy } from '@nestjs/microservices';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-http-bearer';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout, catchError, throwError } from 'rxjs';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { KeycloakUserInfo, ValidatedUser } from '../interfaces/auth.interface';
 import { MicroserviceResponse } from '@/common';
@@ -13,6 +13,7 @@ export class KeycloakStrategy extends PassportStrategy(Strategy, 'keycloak') {
 
   constructor(
     @Inject('KEYCLOAK_SERVICE') private readonly keycloakService: ClientProxy,
+    @Inject('AUTH_SERVICE') private readonly authService: ClientProxy,
   ) {
     super();
   }
@@ -25,6 +26,8 @@ export class KeycloakStrategy extends PassportStrategy(Strategy, 'keycloak') {
         this.logger.warn('User info is empty or missing sub field');
         throw new UnauthorizedException('Invalid user information');
       }
+
+      await this.ensureUserExists(userInfo);
 
       return {
         user_id: userInfo.sub,
@@ -41,6 +44,46 @@ export class KeycloakStrategy extends PassportStrategy(Strategy, 'keycloak') {
       }
 
       throw new UnauthorizedException('Invalid token');
+    }
+  }
+
+  private async ensureUserExists(userInfo: KeycloakUserInfo): Promise<void> {
+    try {
+      const response: MicroserviceResponse = await firstValueFrom(
+        this.authService.send(
+          { cmd: 'user.ensure-exists', service: 'user' },
+          {
+            data: {
+              id: userInfo.sub,
+              username: userInfo.preferred_username,
+              email: userInfo.email,
+              firstname: userInfo.given_name,
+              lastname: userInfo.family_name,
+            },
+          },
+        ).pipe(
+          timeout(5000),
+          catchError((err) => {
+            this.logger.warn(
+              `Auto-provisioning timeout/error for user ${userInfo.sub}: ${err.message}`,
+              KeycloakStrategy.name,
+            );
+            return throwError(() => err);
+          }),
+        ),
+      );
+
+      if ((response.data as Record<string, unknown>)?.created) {
+        this.logger.log(
+          `Auto-provisioned new user: ${userInfo.sub} (${userInfo.email})`,
+          KeycloakStrategy.name,
+        );
+      }
+    } catch (error) {
+      this.logger.warn(
+        `Failed to auto-provision user ${userInfo.sub}, proceeding with auth: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        KeycloakStrategy.name,
+      );
     }
   }
 

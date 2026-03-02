@@ -58,6 +58,17 @@ export class UserController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  @MessagePattern({ cmd: 'user.ensure-exists', service: 'user' })
+  async ensureUserExists(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'ensureUserExists', payload: payload },
+      UserController.name,
+    );
+    const { data } = payload;
+    const result = await this.userService.ensureUserExists(data);
+    return this.handleResult(result);
+  }
+
   @MessagePattern({ cmd: 'user.delete', service: 'user' })
   async deleteUser(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(

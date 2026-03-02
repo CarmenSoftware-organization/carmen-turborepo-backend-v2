@@ -339,6 +339,58 @@ export class UserService {
   }
 
   @TryCatch
+  async ensureUserExists(data: {
+    id: string;
+    username?: string;
+    email?: string;
+    firstname?: string;
+    lastname?: string;
+  }): Promise<Result<{ id: string; created: boolean }>> {
+    this.logger.debug(
+      { function: 'ensureUserExists', id: data.id },
+      UserService.name,
+    );
+
+    const existingUser = await this.prismaSystem.tb_user.findUnique({
+      where: { id: data.id },
+    });
+
+    if (existingUser) {
+      return Result.ok({ id: existingUser.id, created: false });
+    }
+
+    const newUser = await this.prismaSystem.$transaction(async (prisma) => {
+      const user = await prisma.tb_user.create({
+        data: {
+          id: data.id,
+          username: data.username || data.email || data.id,
+          email: data.email || null,
+          platform_role: 'user',
+          is_active: true,
+        },
+      });
+
+      await prisma.tb_user_profile.create({
+        data: {
+          user_id: user.id,
+          firstname: data.firstname || '',
+          lastname: data.lastname || '',
+          bio: {},
+        },
+      });
+
+      return user;
+    });
+
+    this.logger.log(
+      { function: 'ensureUserExists', message: `Auto-provisioned user ${newUser.id}` },
+      UserService.name,
+    );
+
+    return Result.ok({ id: newUser.id, created: true });
+  }
+
+  @TryCatch
   async deleteUser(id: string): Promise<Result<null>> {
     this.logger.debug({ function: 'deleteUser', id: id }, UserService.name);
     const user = await this.prismaSystem.tb_user.findUnique({

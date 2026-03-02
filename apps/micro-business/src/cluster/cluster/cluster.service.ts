@@ -54,6 +54,14 @@ export class ClusterService {
       return Result.error('Cluster already exists', ErrorCode.ALREADY_EXISTS);
     }
 
+    const findUser = await this.prismaSystem.tb_user.findFirst({
+      where: { id: user_id },
+    });
+
+    if (!findUser) {
+      return Result.error('User not found. Please ensure the user is registered in the system.', ErrorCode.NOT_FOUND);
+    }
+
     const createCluster = await this.prismaSystem.tb_cluster.create({
       data: {
         ...data,
@@ -94,6 +102,14 @@ export class ClusterService {
       return Result.error('Cluster already exists', ErrorCode.ALREADY_EXISTS);
     }
 
+    const findUser = await this.prismaSystem.tb_user.findFirst({
+      where: { id: user_id },
+    });
+
+    if (!findUser) {
+      return Result.error('User not found. Please ensure the user is registered in the system.', ErrorCode.NOT_FOUND);
+    }
+
     await this.prismaSystem.tb_cluster.update({
       where: { id: data.id },
       data: {
@@ -118,6 +134,14 @@ export class ClusterService {
 
     if (!cluster) {
       return Result.error('Cluster not found', ErrorCode.NOT_FOUND);
+    }
+
+    const findUser = await this.prismaSystem.tb_user.findFirst({
+      where: { id: user_id },
+    });
+
+    if (!findUser) {
+      return Result.error('User not found. Please ensure the user is registered in the system.', ErrorCode.NOT_FOUND);
     }
 
     await this.prismaSystem.tb_cluster.update({
