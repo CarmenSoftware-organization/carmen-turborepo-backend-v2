@@ -600,28 +600,17 @@ export class PriceListService {
       return Result.error('From date is greater than to date', ErrorCode.INVALID_ARGUMENT);
     }
 
-    // Get vendor and currency names for denormalization
-    const vendor = await this.prismaService.tb_vendor.findFirst({
-      where: { id: data.vendor_id },
-      select: { name: true },
-    });
-
-    const currency = await this.prismaService.tb_currency.findFirst({
-      where: { id: data.currency_id },
-      select: { code: true },
-    });
-
     const priceListNo = await this.generatePLNo(new Date().toISOString());
     const priceList = await this.prismaService.tb_pricelist.create({
       data: {
         pricelist_no: priceListNo,
         tb_vendor: { connect: { id: data.vendor_id } },
-        vendor_name: vendor.name,
+        vendor_name: data.vendor_name,
         name: data.name,
         description: data.description,
         status: data.status,
         tb_currency: { connect: { id: data.currency_id } },
-        currency_code: currency.code,
+        currency_code: data.currency_code,
         effective_from_date: data.effective_from_date,
         effective_to_date: data.effective_to_date,
         created_by_id: this.userId,
@@ -671,24 +660,6 @@ export class PriceListService {
 
     if (!currentPriceList) {
       return Result.error('Price list not found', ErrorCode.NOT_FOUND);
-    }
-
-    // Get vendor name for denormalization if vendor_id provided
-    if (data.vendor_id) {
-      const vendor = await this.prismaService.tb_vendor.findFirst({
-        where: { id: data.vendor_id },
-        select: { name: true },
-      });
-      data.vendor_name = vendor?.name;
-    }
-
-    // Get currency code for denormalization if currency_id provided
-    if (data.currency_id) {
-      const currency = await this.prismaService.tb_currency.findFirst({
-        where: { id: data.currency_id },
-        select: { code: true },
-      });
-      data.currency_code = currency?.code;
     }
 
     // Update the main price list record

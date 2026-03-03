@@ -1,5 +1,6 @@
 import { Controller, HttpStatus } from '@nestjs/common';
 import { PriceListService } from './price-list.service';
+import { PriceListLogic } from './price-list.logic';
 import { Payload } from '@nestjs/microservices';
 import { MessagePattern } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
@@ -11,7 +12,10 @@ export class PriceListController extends BaseMicroserviceController {
   private readonly logger: BackendLogger = new BackendLogger(
     PriceListController.name,
   );
-  constructor(private readonly priceListService: PriceListService) {
+  constructor(
+    private readonly priceListService: PriceListService,
+    private readonly priceListLogic: PriceListLogic,
+  ) {
     super();
   }
 
@@ -81,26 +85,24 @@ export class PriceListController extends BaseMicroserviceController {
   @MessagePattern({ cmd: 'price-list.create', service: 'price-list' })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, PriceListController.name);
-    this.priceListService.userId = payload.user_id;
-    this.priceListService.bu_code = payload.bu_code;
-    await this.priceListService.initializePrismaService(payload.bu_code, payload.user_id);
     const data = payload.data;
 
     const auditContext = this.createAuditContext(payload);
-    const result = await runWithAuditContext(auditContext, () => this.priceListService.create(data));
+    const result = await runWithAuditContext(auditContext, () =>
+      this.priceListLogic.create(data, payload.user_id, payload.bu_code),
+    );
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
   @MessagePattern({ cmd: 'price-list.update', service: 'price-list' })
   async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, PriceListController.name);
-    this.priceListService.userId = payload.user_id;
-    this.priceListService.bu_code = payload.bu_code;
-    await this.priceListService.initializePrismaService(payload.bu_code, payload.user_id);
     const data = payload.data;
 
     const auditContext = this.createAuditContext(payload);
-    const result = await runWithAuditContext(auditContext, () => this.priceListService.update(data));
+    const result = await runWithAuditContext(auditContext, () =>
+      this.priceListLogic.update(data, payload.user_id, payload.bu_code),
+    );
     return this.handleResult(result);
   }
 
@@ -168,4 +170,5 @@ export class PriceListController extends BaseMicroserviceController {
     const result = await runWithAuditContext(auditContext, () => this.priceListService.importCsv(csvContent));
     return this.handleResult(result, HttpStatus.CREATED);
   }
+
 }

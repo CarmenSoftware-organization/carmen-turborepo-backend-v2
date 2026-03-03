@@ -306,4 +306,5 @@ export class Config_PriceListService {
 
     return ResponseLib.success(response.data);
   }
+
 }

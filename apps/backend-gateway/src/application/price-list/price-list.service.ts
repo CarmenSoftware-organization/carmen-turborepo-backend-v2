@@ -225,4 +225,5 @@ export class PriceListService {
 
     return Result.ok(response.data);
   }
+
 }
