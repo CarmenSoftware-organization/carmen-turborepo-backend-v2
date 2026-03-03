@@ -8,7 +8,9 @@ export const PriceListSchema = z.object({
   name: z.string(),
   description: z.string().optional().nullable(),
   status: z.string().optional(),
+  vendor_name: z.string().optional().nullable(),
   currency_id: z.string().uuid().optional(),
+  currency_code: z.string().optional().nullable(),
   effective_from_date: z.coerce.date(),
   effective_to_date: z.coerce.date(),
   is_active: z.boolean().optional().default(true),
@@ -33,10 +35,22 @@ export const PriceListDetailSchema = z.object({
 export const PriceListDetailItemSchema = z.object({
   sequence_no: z.number().optional(),
   product_id: z.string().uuid(),
+  product_name: z.string().optional().nullable(),
   unit_id: z.string().uuid().optional(),
+  unit_name: z.string().optional().nullable(),
   tax_profile_id: z.string().uuid().optional(),
+  tax_profile_name: z.string().optional().nullable(),
   tax_rate: z.number().optional(),
   moq_qty: z.number().optional(),
+  price_without_tax: z.number().optional(),
+  tax_amt: z.number().optional(),
+  price: z.number().optional(),
+  lead_time_days: z.number().int().optional(),
+  is_active: z.boolean().optional(),
+  description: z.string().optional().nullable(),
+  note: z.string().optional().nullable(),
+  info: z.any().optional().nullable(),
+  dimension: z.any().optional().nullable(),
 })
 
 export const PriceListDetailActionSchema = z.object({

@@ -601,35 +601,79 @@ export class PriceListService {
     }
 
     const priceListNo = await this.generatePLNo(new Date().toISOString());
+
+    // Fetch denormalized names from DB
+    const vendor = await this.prismaService.tb_vendor.findFirst({
+      where: { id: data.vendor_id },
+      select: { name: true },
+    });
+
+    const currency = await this.prismaService.tb_currency.findFirst({
+      where: { id: data.currency_id },
+      select: { code: true },
+    });
+
+    // Fetch denormalized names for each detail item
+    const detailItems = await Promise.all(
+      (data.pricelist_detail?.add || []).map(async (item) => {
+        const product = await this.prismaService.tb_product.findFirst({
+          where: { id: item.product_id },
+          select: { name: true },
+        });
+
+        const unit = item.unit_id
+          ? await this.prismaService.tb_unit.findFirst({
+              where: { id: item.unit_id },
+              select: { name: true },
+            })
+          : null;
+
+        const taxProfile = item.tax_profile_id
+          ? await this.prismaService.tb_tax_profile.findFirst({
+              where: { id: item.tax_profile_id },
+              select: { name: true },
+            })
+          : null;
+
+        return {
+          sequence_no: item.sequence_no,
+          tb_unit: item.unit_id ? { connect: { id: item.unit_id } } : undefined,
+          unit_name: item.unit_name ?? unit?.name,
+          ...(item.tax_profile_id && { tb_tax_profile: { connect: { id: item.tax_profile_id } } }),
+          tax_profile_name: item.tax_profile_name ?? taxProfile?.name,
+          tax_rate: item.tax_rate,
+          moq_qty: item.moq_qty,
+          price_without_tax: item.price_without_tax,
+          tax_amt: item.tax_amt,
+          price: item.price,
+          lead_time_days: item.lead_time_days,
+          is_active: item.is_active,
+          tb_product: { connect: { id: item.product_id } },
+          product_name: item.product_name ?? product?.name,
+          note: item.note,
+          info: item.info,
+          dimension: item.dimension,
+          created_by_id: this.userId,
+        };
+      }),
+    );
+
     const priceList = await this.prismaService.tb_pricelist.create({
       data: {
         pricelist_no: priceListNo,
         tb_vendor: { connect: { id: data.vendor_id } },
-        vendor_name: data.vendor_name,
+        vendor_name: data.vendor_name ?? vendor?.name,
         name: data.name,
         description: data.description,
         status: data.status,
         tb_currency: { connect: { id: data.currency_id } },
-        currency_code: data.currency_code,
+        currency_code: data.currency_code ?? currency?.code,
         effective_from_date: data.effective_from_date,
         effective_to_date: data.effective_to_date,
         created_by_id: this.userId,
         note: data.note,
         tb_pricelist_detail: {
-          create: data.pricelist_detail.add.map((item) => ({
-            sequence_no: item.sequence_no,
-            tb_unit: { connect: { id: item.unit_id } },
-            unit_name: item.unit_name,
-            ...(item.tax_profile_id && { tb_tax_profile: { connect: { id: item.tax_profile_id } } }),
-            tax_profile_name: item.tax_profile_name,
-            tax_rate: item.tax_rate,
-            moq_qty: item.moq_qty,
-            price_without_tax: item.price_without_tax,
-            tax_amt: item.tax_amt,
-            price: item.price,
-            tb_product: { connect: { id: item.product_id } },
-            product_name: item.product_name
-          }))
+          create: detailItems,
         },
       },
     });
@@ -662,6 +706,21 @@ export class PriceListService {
       return Result.error('Price list not found', ErrorCode.NOT_FOUND);
     }
 
+    // Fetch denormalized names from DB for header
+    const vendor = data.vendor_id
+      ? await this.prismaService.tb_vendor.findFirst({
+          where: { id: data.vendor_id },
+          select: { name: true },
+        })
+      : null;
+
+    const currency = data.currency_id
+      ? await this.prismaService.tb_currency.findFirst({
+          where: { id: data.currency_id },
+          select: { code: true },
+        })
+      : null;
+
     // Update the main price list record
     const updatedPriceList = await this.prismaService.tb_pricelist.update({
       where: { id: priceListId },
@@ -671,9 +730,9 @@ export class PriceListService {
         note: data.note,
         status: data.status,
         vendor_id: data.vendor_id,
-        vendor_name: data.vendor_name,
+        vendor_name: data.vendor_name ?? vendor?.name,
         currency_id: data.currency_id,
-        currency_code: data.currency_code,
+        currency_code: data.currency_code ?? currency?.code,
         effective_from_date: data.effective_from_date,
         effective_to_date: data.effective_to_date,
         info: data.info,
@@ -681,21 +740,42 @@ export class PriceListService {
       },
     });
 
-    // Handle pricelist_detail add/remove/update
+    // Handle pricelist_detail add/delete/update
     if (data.pricelist_detail) {
       // Add new details
-      if ('add' in data.pricelist_detail) {
+      if (data.pricelist_detail.add && Array.isArray(data.pricelist_detail.add)) {
         for (const detail of data.pricelist_detail.add) {
+          const product = detail.product_id
+            ? await this.prismaService.tb_product.findFirst({
+                where: { id: detail.product_id },
+                select: { name: true },
+              })
+            : null;
+
+          const unit = detail.unit_id
+            ? await this.prismaService.tb_unit.findFirst({
+                where: { id: detail.unit_id },
+                select: { name: true },
+              })
+            : null;
+
+          const taxProfile = detail.tax_profile_id
+            ? await this.prismaService.tb_tax_profile.findFirst({
+                where: { id: detail.tax_profile_id },
+                select: { name: true },
+              })
+            : null;
+
           await this.prismaService.tb_pricelist_detail.create({
             data: {
               pricelist_id: updatedPriceList.id,
               product_id: detail.product_id,
-              product_name: detail.product_name,
+              product_name: detail.product_name ?? product?.name,
               sequence_no: detail.sequence_no,
               unit_id: detail.unit_id,
-              unit_name: detail.unit_name,
+              unit_name: detail.unit_name ?? unit?.name,
               tax_profile_id: detail.tax_profile_id,
-              tax_profile_name: detail.tax_profile_name,
+              tax_profile_name: detail.tax_profile_name ?? taxProfile?.name,
               tax_rate: detail.tax_rate,
               moq_qty: detail.moq_qty,
               price_without_tax: detail.price_without_tax,
@@ -712,9 +792,9 @@ export class PriceListService {
         }
       }
 
-      // Remove details
-      if ('remove' in data.pricelist_detail) {
-        for (const detailId of data.pricelist_detail.remove) {
+      // Delete details (DTO uses "delete" key)
+      if (data.pricelist_detail.delete && Array.isArray(data.pricelist_detail.delete)) {
+        for (const detailId of data.pricelist_detail.delete) {
           const id = typeof detailId === 'object' ? detailId.id : detailId;
           const detail = await this.prismaService.tb_pricelist_detail.findFirst({
             where: { id: id },
@@ -728,19 +808,41 @@ export class PriceListService {
       }
 
       // Update existing details
-      if ('update' in data.pricelist_detail) {
+      if (data.pricelist_detail.update && Array.isArray(data.pricelist_detail.update)) {
         for (const detail of data.pricelist_detail.update) {
           const detailId = typeof detail.id === 'object' ? detail.id.id : detail.id;
+
+          const product = detail.product_id
+            ? await this.prismaService.tb_product.findFirst({
+                where: { id: detail.product_id },
+                select: { name: true },
+              })
+            : null;
+
+          const unit = detail.unit_id
+            ? await this.prismaService.tb_unit.findFirst({
+                where: { id: detail.unit_id },
+                select: { name: true },
+              })
+            : null;
+
+          const taxProfile = detail.tax_profile_id
+            ? await this.prismaService.tb_tax_profile.findFirst({
+                where: { id: detail.tax_profile_id },
+                select: { name: true },
+              })
+            : null;
+
           await this.prismaService.tb_pricelist_detail.update({
             where: { id: detailId },
             data: {
               product_id: detail.product_id,
-              product_name: detail.product_name,
+              product_name: detail.product_name ?? product?.name,
               sequence_no: detail.sequence_no,
               unit_id: detail.unit_id,
-              unit_name: detail.unit_name,
+              unit_name: detail.unit_name ?? unit?.name,
               tax_profile_id: detail.tax_profile_id,
-              tax_profile_name: detail.tax_profile_name,
+              tax_profile_name: detail.tax_profile_name ?? taxProfile?.name,
               tax_rate: detail.tax_rate,
               moq_qty: detail.moq_qty,
               price_without_tax: detail.price_without_tax,

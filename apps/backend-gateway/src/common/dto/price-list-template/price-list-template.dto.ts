@@ -4,6 +4,18 @@ import { InfoSchema, EmbeddedProductSchema } from '../embedded.dto';
 
 export const PriceListTemplateStatusEnum = z.enum(['draft', 'active', 'inactive']);
 
+const ProductsModificationSchema = z.object({
+  add: z.array(z.object({
+    product_id: z.string().uuid(),
+    sequence_no: z.number().optional(),
+    moq: z.any().optional(),
+    info: z.any().optional(),
+    dimension: z.any().optional(),
+  })).optional().default([]),
+  remove: z.array(z.any()).optional().default([]),
+  update: z.array(z.any()).optional().default([]),
+}).optional();
+
 export const PriceListTemplateSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
@@ -23,6 +35,9 @@ export const PriceListTemplateSchema = z.object({
   send_reminders: z.boolean().optional().default(false),
   reminder_days: z.array(z.number()).optional().default([]), // array of days before deadline
   escalation_after_days: z.number().int().optional().nullable(), // number of days after which to escalate
+
+  // Products modification
+  products: ProductsModificationSchema,
 
   doc_version: z.number().optional().default(0),
 })

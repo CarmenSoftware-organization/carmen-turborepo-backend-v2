@@ -476,7 +476,7 @@ export class PriceListTemplateService {
       },
     });
 
-    if ('add' in data.products) {
+    if (data.products && 'add' in data.products && Array.isArray(data.products.add)) {
       for (const detail of data.products.add) {
         if (detail.product_id) {
           // Validate detail using factory function
@@ -512,10 +512,9 @@ export class PriceListTemplateService {
         })
       }
     }
-    if ('remove' in data.products) {
+    if (data.products && 'remove' in data.products && Array.isArray(data.products.remove)) {
       for (const detailId of data.products.remove) {
         const id = typeof detailId === 'object' ? detailId.id : detailId;
-        // console.log('delete detail id', id);
         const detail = await this.prismaService.tb_pricelist_template_detail.findFirst({
           where: { id: id },
         });
@@ -523,7 +522,7 @@ export class PriceListTemplateService {
       }
     }
 
-    if ('update' in data.products) {
+    if (data.products && 'update' in data.products && Array.isArray(data.products.update)) {
       for (const detail of data.products.update) {
         const detailId = typeof detail.id === 'object' ? detail.id.id : detail.id;
         await this.prismaService.tb_pricelist_template_detail.update({
