@@ -1,12 +1,5 @@
 import { z } from 'zod';
 
-// Embedded schemas
-const TaxProfileEmbeddedSchema = z.object({
-  id: z.string().nullable().optional(),
-  name: z.string().nullable().optional(),
-  rate: z.number().nullable().optional(),
-}).or(z.object({}));
-
 const PriceListDetailEmbeddedSchema = z.object({
   id: z.string(),
   sequence_no: z.number().nullable().optional(),
@@ -27,7 +20,6 @@ const PriceListDetailEmbeddedSchema = z.object({
   dimension: z.any().nullable().optional(),
   product_id: z.string().nullable().optional(),
   product_name: z.string().nullable().optional(),
-  tax_profile: TaxProfileEmbeddedSchema.optional(),
 });
 
 const VendorEmbeddedSchema = z.object({

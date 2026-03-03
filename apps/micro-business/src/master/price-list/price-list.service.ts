@@ -177,11 +177,6 @@ export class PriceListService {
             dimension: item.dimension,
             product_id: item.tb_product.id,
             product_name: item.tb_product.name,
-            tax_profile: {
-              id: item.tb_tax_profile?.id ?? item.tax_profile_id,
-              name: item.tb_tax_profile?.name ?? item.tax_profile_name,
-              rate: Number(item.tb_tax_profile?.tax_rate ?? item.tax_rate ?? 0),
-            },
           };
         });
         return {
@@ -346,11 +341,6 @@ export class PriceListService {
           dimension: row.dimension,
           product_id: row.tb_product.id,
           product_name: row.tb_product.name,
-          tax_profile: {
-            id: row.tb_tax_profile?.id ?? row.tax_profile_id,
-            name: row.tb_tax_profile?.name ?? row.tax_profile_name,
-            rate: Number(row.tb_tax_profile?.tax_rate ?? row.tax_rate ?? 0),
-          },
         };
       });
       return {
@@ -508,11 +498,6 @@ export class PriceListService {
             dimension: row.dimension,
             product_id: row.tb_product.id,
             product_name: row.tb_product.name,
-            tax_profile: {
-              id: row.tb_tax_profile?.id ?? row.tax_profile_id,
-              name: row.tb_tax_profile?.name ?? row.tax_profile_name,
-              rate: Number(row.tb_tax_profile?.tax_rate ?? row.tax_rate ?? 0),
-            },
           };
         }),
       }
