@@ -54,6 +54,8 @@ export class IssueService {
   private readonly logger: BackendLogger = new BackendLogger(IssueService.name);
 
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
+    this._bu_code = bu_code;
+    this._userId = userId;
     this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
   }
 
