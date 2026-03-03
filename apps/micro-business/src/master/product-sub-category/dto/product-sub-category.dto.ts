@@ -47,6 +47,7 @@ export const ProductSubCategoryUpdate = z.object({
   tax_profile_id: z.string().optional(),
   tax_profile_name: z.string().optional(),
   tax_profile_rate: z.number().optional(),
+  cascade_deviation: z.boolean().default(true).optional(),
 });
 
 export type IUpdateProductSubCategory = z.infer<typeof ProductSubCategoryUpdate> & { id: string };

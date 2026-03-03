@@ -270,17 +270,44 @@ export class ProductSubCategoryService {
       return Result.error('Product sub category already exists', ErrorCode.ALREADY_EXISTS);
     }
 
+    const { cascade_deviation, ...updateData } = data;
+
     const updateProductSubCategory =
       await this.prismaService.tb_product_sub_category.update({
         where: {
           id: data.id,
         },
         data: {
-          ...data,
+          ...updateData,
           updated_by_id: this.userId,
           updated_at: new Date().toISOString(),
         },
       });
+
+    // Cascade deviation limits to item groups and products
+    if (cascade_deviation && (data.price_deviation_limit !== undefined || data.qty_deviation_limit !== undefined)) {
+      const deviationData = {
+        ...(data.price_deviation_limit !== undefined && { price_deviation_limit: data.price_deviation_limit }),
+        ...(data.qty_deviation_limit !== undefined && { qty_deviation_limit: data.qty_deviation_limit }),
+        updated_by_id: this.userId,
+        updated_at: new Date().toISOString(),
+      };
+
+      // 1) Update all item groups under this sub-category
+      await this.prismaService.tb_product_item_group.updateMany({
+        where: { product_subcategory_id: data.id, deleted_at: null },
+        data: deviationData,
+      });
+
+      // 2) Update all products under those item groups
+      await this.prismaService.tb_product.updateMany({
+        where: {
+          tb_product_item_group: { product_subcategory_id: data.id, deleted_at: null },
+          deleted_at: null,
+        },
+        data: deviationData,
+      });
+    }
 
     return Result.ok({ id: updateProductSubCategory.id });
   }

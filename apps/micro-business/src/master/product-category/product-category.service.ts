@@ -247,16 +247,55 @@ export class ProductCategoryService {
       data.code = data.code.toUpperCase();
     }
 
+    const { cascade_deviation, ...updateData } = data;
+
     const updatedProductCategory = await this.prismaService.tb_product_category.update({
       where: {
         id: data.id,
       },
       data: {
-        ...data,
+        ...updateData,
         updated_by_id: this.userId,
         updated_at: new Date().toISOString(),
       },
     });
+
+    // Cascade deviation limits to sub-categories, item groups, and products
+    if (cascade_deviation && (data.price_deviation_limit !== undefined || data.qty_deviation_limit !== undefined)) {
+      const deviationData = {
+        ...(data.price_deviation_limit !== undefined && { price_deviation_limit: data.price_deviation_limit }),
+        ...(data.qty_deviation_limit !== undefined && { qty_deviation_limit: data.qty_deviation_limit }),
+        updated_by_id: this.userId,
+        updated_at: new Date().toISOString(),
+      };
+
+      // 1) Update all sub-categories under this category
+      await this.prismaService.tb_product_sub_category.updateMany({
+        where: { product_category_id: data.id, deleted_at: null },
+        data: deviationData,
+      });
+
+      // 2) Update all item groups under those sub-categories
+      await this.prismaService.tb_product_item_group.updateMany({
+        where: {
+          tb_product_sub_category: { product_category_id: data.id, deleted_at: null },
+          deleted_at: null,
+        },
+        data: deviationData,
+      });
+
+      // 3) Update all products under those item groups
+      await this.prismaService.tb_product.updateMany({
+        where: {
+          tb_product_item_group: {
+            tb_product_sub_category: { product_category_id: data.id, deleted_at: null },
+            deleted_at: null,
+          },
+          deleted_at: null,
+        },
+        data: deviationData,
+      });
+    }
 
     return Result.ok({ id: updatedProductCategory.id });
   }

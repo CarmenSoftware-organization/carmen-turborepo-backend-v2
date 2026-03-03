@@ -285,16 +285,34 @@ export class ProductItemGroupService {
       return Result.error('Product item group already exists', ErrorCode.ALREADY_EXISTS);
     }
 
+    const { cascade_deviation, ...updateData } = data;
+
     const updateProductItemGroup = await this.prismaService.tb_product_item_group.update({
       where: {
         id: data.id,
       },
       data: {
-        ...data,
+        ...updateData,
         updated_by_id: this.userId,
         updated_at: new Date().toISOString(),
       },
     });
+
+    // Cascade deviation limits to products
+    if (cascade_deviation && (data.price_deviation_limit !== undefined || data.qty_deviation_limit !== undefined)) {
+      const deviationData = {
+        ...(data.price_deviation_limit !== undefined && { price_deviation_limit: data.price_deviation_limit }),
+        ...(data.qty_deviation_limit !== undefined && { qty_deviation_limit: data.qty_deviation_limit }),
+        updated_by_id: this.userId,
+        updated_at: new Date().toISOString(),
+      };
+
+      // Update all products under this item group
+      await this.prismaService.tb_product.updateMany({
+        where: { product_item_group_id: data.id, deleted_at: null },
+        data: deviationData,
+      });
+    }
 
     return Result.ok({ id: updateProductItemGroup.id });
   }
