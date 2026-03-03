@@ -247,13 +247,67 @@ export class BusinessUnitService {
       where: {
         id,
       },
+      include: {
+        tb_cluster: { select: { name: true } },
+        tb_user_tb_business_unit: {
+          where: { is_active: true },
+          select: {
+            id: true,
+            user_id: true,
+            role: true,
+            is_default: true,
+            is_active: true,
+            tb_user_tb_user_tb_business_unit_user_idTotb_user: {
+              select: {
+                username: true,
+                email: true,
+                platform_role: true,
+                is_active: true,
+                tb_user_profile_tb_user_profile_user_idTotb_user: {
+                  select: {
+                    firstname: true,
+                    middlename: true,
+                    lastname: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!businessUnit) {
       return Result.error('Business unit not found', ErrorCode.NOT_FOUND);
     }
 
-    return Result.ok(businessUnit);
+    // Flatten user data for frontend consumption
+    const users = (businessUnit as any).tb_user_tb_business_unit?.map((item: any) => {
+      const user = item.tb_user_tb_user_tb_business_unit_user_idTotb_user;
+      const profile = user?.tb_user_profile_tb_user_profile_user_idTotb_user?.[0];
+      return {
+        id: item.id,
+        user_id: item.user_id,
+        role: item.role,
+        is_default: item.is_default,
+        is_active: item.is_active,
+        username: user?.username ?? null,
+        email: user?.email ?? null,
+        platform_role: user?.platform_role ?? null,
+        user_is_active: user?.is_active ?? null,
+        firstname: profile?.firstname ?? null,
+        middlename: profile?.middlename ?? null,
+        lastname: profile?.lastname ?? null,
+      };
+    }) ?? [];
+
+    const { tb_user_tb_business_unit, tb_cluster, ...rest } = businessUnit as any;
+
+    return Result.ok({
+      ...rest,
+      cluster_name: tb_cluster?.name ?? null,
+      users,
+    });
   }
 
   @TryCatch
