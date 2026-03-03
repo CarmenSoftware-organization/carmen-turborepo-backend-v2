@@ -1078,6 +1078,9 @@ enum enum_transaction_type {
   credit_note_amount
   credit_note_quantity
 
+  eop_in
+  eop_out
+
   close_period
   open_period
 }
