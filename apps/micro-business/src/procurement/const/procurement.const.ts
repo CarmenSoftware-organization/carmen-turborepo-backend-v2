@@ -31,4 +31,12 @@ export const RUNNING_CODE_PRESET = {
       format: '{A}{B}{C}',
     },
   },
+  PL: {
+    config: {
+      A: 'PL',
+      B: `date('yyyyMM')`,
+      C: `running(5, '0')`,
+      format: '{A}{B}{C}',
+    },
+  },
 };
