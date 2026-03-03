@@ -163,7 +163,7 @@ export class ProductsService {
           product_status_type: res.product_status_type,
           inventory_unit: {
             id: res.inventory_unit_id,
-            name: res.inventory_unit_name,
+            name: res.tb_unit?.name ?? res.inventory_unit_name,
           },
           is_sold_directly: res.is_sold_directly,
           is_used_in_recipe: res.is_used_in_recipe,
@@ -271,6 +271,7 @@ export class ProductsService {
       .findMany({
         ...q.findMany(),
         where: {
+          ...q.where(),
           tb_product_location: {
             some: {
               location_id: location_id,
@@ -290,7 +291,7 @@ export class ProductsService {
               code: product.code,
               inventory_unit: {
                 id: product.inventory_unit_id,
-                name: product.inventory_unit_name,
+                name: product.tb_unit?.name ?? product.inventory_unit_name,
               },
             };
           }),

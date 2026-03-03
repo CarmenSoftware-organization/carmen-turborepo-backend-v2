@@ -79,10 +79,12 @@ export class UnitConversionService {
     const units = await this.prismaService.tb_unit_conversion.findMany({
       include: {
         tb_product: {
-          where: {
-            id: productId,
-          }
-        }
+          include: {
+            tb_unit: true,
+          },
+        },
+        tb_unit_tb_unit_conversion_from_unit_idTotb_unit: true,
+        tb_unit_tb_unit_conversion_to_unit_idTotb_unit: true,
       },
       where: {
         product_id: productId,
@@ -95,16 +97,15 @@ export class UnitConversionService {
           where: {
             id: productId,
           },
-          select: {
-            inventory_unit_id: true,
-            inventory_unit_name: true,
-          }
+          include: {
+            tb_unit: true,
+          },
         })
 
         return [
           {
             id: product.inventory_unit_id,
-            name: product.inventory_unit_name,
+            name: product.tb_unit?.name ?? product.inventory_unit_name,
             conversion: 1
           }
         ]
@@ -113,14 +114,14 @@ export class UnitConversionService {
 
       newData.push({
         id: res[0].tb_product.inventory_unit_id,
-        name: res[0].tb_product.inventory_unit_name,
+        name: res[0].tb_product.tb_unit?.name ?? res[0].tb_product.inventory_unit_name,
         conversion: 1
       })
 
       res.forEach((item) => {
         newData.push({
           id: item.from_unit_id,
-          name: item.from_unit_name,
+          name: item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit?.name ?? item.from_unit_name,
           conversion: Number(item.to_unit_qty)
         });
       });
@@ -142,10 +143,12 @@ export class UnitConversionService {
     const units = await this.prismaService.tb_unit_conversion.findMany({
       include: {
         tb_product: {
-          where: {
-            id: productId,
-          }
-        }
+          include: {
+            tb_unit: true,
+          },
+        },
+        tb_unit_tb_unit_conversion_from_unit_idTotb_unit: true,
+        tb_unit_tb_unit_conversion_to_unit_idTotb_unit: true,
       },
       where: {
         product_id: productId,
@@ -158,16 +161,15 @@ export class UnitConversionService {
           where: {
             id: productId,
           },
-          select: {
-            inventory_unit_id: true,
-            inventory_unit_name: true,
-          }
+          include: {
+            tb_unit: true,
+          },
         })
 
         return [
           {
             id: product.inventory_unit_id,
-            name: product.inventory_unit_name,
+            name: product.tb_unit?.name ?? product.inventory_unit_name,
             conversion: 1
           }
         ]
@@ -176,14 +178,14 @@ export class UnitConversionService {
 
       newData.push({
         id: res[0].tb_product.inventory_unit_id,
-        name: res[0].tb_product.inventory_unit_name,
+        name: res[0].tb_product.tb_unit?.name ?? res[0].tb_product.inventory_unit_name,
         conversion: 1
       })
 
       res.forEach((item) => {
         newData.push({
           id: item.to_unit_id,
-          name: item.to_unit_name,
+          name: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit?.name ?? item.to_unit_name,
           conversion: Number(item.to_unit_qty)
         });
       });
@@ -191,7 +193,7 @@ export class UnitConversionService {
       return newData.sort((a, b) => a.name.localeCompare(b.name))
     })
 
-    const serializedUnits = units.map((item) => UnitConversionListResponseSchema.parse(item));
+    const serializedUnits = units.map((item) => UnitConversionItemResponseSchema.parse(item));
     return Result.ok(serializedUnits);
   }
 
@@ -205,10 +207,12 @@ export class UnitConversionService {
     const units = await this.prismaService.tb_unit_conversion.findMany({
       include: {
         tb_product: {
-          where: {
-            id: productId,
-          }
-        }
+          include: {
+            tb_unit: true,
+          },
+        },
+        tb_unit_tb_unit_conversion_from_unit_idTotb_unit: true,
+        tb_unit_tb_unit_conversion_to_unit_idTotb_unit: true,
       },
       where: {
         product_id: productId,
@@ -223,16 +227,15 @@ export class UnitConversionService {
           where: {
             id: productId,
           },
-          select: {
-            inventory_unit_id: true,
-            inventory_unit_name: true,
-          }
+          include: {
+            tb_unit: true,
+          },
         })
 
         return [
           {
             id: product?.inventory_unit_id,
-            name: product?.inventory_unit_name,
+            name: product?.tb_unit?.name ?? product?.inventory_unit_name,
             conversion: 1
           }
         ]
@@ -241,7 +244,7 @@ export class UnitConversionService {
 
       newData.push({
         id: res[0].tb_product.inventory_unit_id,
-        name: res[0].tb_product.inventory_unit_name,
+        name: res[0].tb_product.tb_unit?.name ?? res[0].tb_product.inventory_unit_name,
         conversion: 1
       })
 
@@ -249,13 +252,13 @@ export class UnitConversionService {
         if (item.unit_type === 'ingredient_unit') {
           newData.push({
             id: item.to_unit_id,
-            name: item.to_unit_name,
+            name: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit?.name ?? item.to_unit_name,
             conversion: 1 / Number(item.to_unit_qty)
           });
         } else if (item.unit_type === 'order_unit') {
           newData.push({
             id: item.to_unit_id,
-            name: item.to_unit_name,
+            name: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit?.name ?? item.to_unit_name,
             conversion: Number(item.from_unit_qty)
           });
         }
@@ -264,7 +267,7 @@ export class UnitConversionService {
       return newData.sort((a, b) => a.name.localeCompare(b.name))
     })
 
-    const serializedUnits = units.map((item) => UnitConversionListResponseSchema.parse(item));
+    const serializedUnits = units.map((item) => UnitConversionItemResponseSchema.parse(item));
     return Result.ok(serializedUnits);
   }
 }
