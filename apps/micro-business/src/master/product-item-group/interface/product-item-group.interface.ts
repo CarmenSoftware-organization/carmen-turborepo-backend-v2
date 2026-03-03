@@ -29,4 +29,5 @@ export interface IUpdateProductItemGroup {
   is_active?: boolean;
   product_subcategory_id?: string;
   info?: object;
+  cascade_deviation?: boolean;
 }

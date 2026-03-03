@@ -29,4 +29,5 @@ export interface IUpdateProductSubCategory {
   is_active?: boolean;
   product_category_id?: string;
   info?: object;
+  cascade_deviation?: boolean;
 }

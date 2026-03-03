@@ -27,4 +27,5 @@ export interface IUpdateProductCategory {
   tax_profile_name?: string;
   tax_rate?: number;
   info?: object;
+  cascade_deviation?: boolean;
 }
