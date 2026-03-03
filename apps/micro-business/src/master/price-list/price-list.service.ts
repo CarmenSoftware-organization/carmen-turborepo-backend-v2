@@ -118,20 +118,29 @@ export class PriceListService {
               sequence_no: true,
               unit_id: true,
               unit_name: true,
-
+              tb_unit: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
               tax_profile_id: true,
               tax_profile_name: true,
               tax_rate: true,
-
+              tb_tax_profile: {
+                select: {
+                  id: true,
+                  name: true,
+                  tax_rate: true,
+                },
+              },
               moq_qty: true,
-
               price_without_tax: true,
               tax_amt: true,
               price: true,
-
               lead_time_days: true,
-
               is_active: true,
+              description: true,
               note: true,
               info: true,
               dimension: true,
@@ -139,7 +148,6 @@ export class PriceListService {
                 select: {
                   id: true,
                   name: true,
-
                 },
               },
             },
@@ -148,35 +156,34 @@ export class PriceListService {
       })
       .then(async (res) => {
         if (!res) return null;
-        const pricelist_detail = await Promise.all(res.tb_pricelist_detail.map(async (item) => {
-          const tax_profile_result = await this.getTaxProfileList(item.tax_profile_id);
-          const tax_profile = tax_profile_result.isOk() ? tax_profile_result.value : null;
+        const pricelist_detail = res.tb_pricelist_detail.map((item) => {
           return {
             id: item.id,
             sequence_no: item.sequence_no,
             moq_qty: Number(item.moq_qty),
             unit_id: item.unit_id,
-            unit_name: item.unit_name,
-
+            unit_name: item.tb_unit?.name ?? item.unit_name,
             lead_time_days: Number(item.lead_time_days),
-
-            price_wirhout_tax: Number(item.price_without_tax),
+            price_without_tax: Number(item.price_without_tax),
             tax_amt: Number(item.tax_amt),
             price: Number(item.price),
-
             tax_profile_id: item.tax_profile_id,
+            tax_profile_name: item.tb_tax_profile?.name ?? item.tax_profile_name,
+            tax_rate: Number(item.tb_tax_profile?.tax_rate ?? item.tax_rate ?? 0),
             is_active: item.is_active,
+            description: item.description,
             note: item.note,
             info: item.info,
+            dimension: item.dimension,
             product_id: item.tb_product.id,
             product_name: item.tb_product.name,
             tax_profile: {
-              id: tax_profile?.id,
-              name: tax_profile?.name,
-              rate: Number(tax_profile?.rate || 0),
+              id: item.tb_tax_profile?.id ?? item.tax_profile_id,
+              name: item.tb_tax_profile?.name ?? item.tax_profile_name,
+              rate: Number(item.tb_tax_profile?.tax_rate ?? item.tax_rate ?? 0),
             },
           };
-        }));
+        });
         return {
           id: res.id,
           no: res.pricelist_no,
@@ -272,15 +279,29 @@ export class PriceListService {
           sequence_no: true,
           unit_id: true,
           unit_name: true,
+          tb_unit: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
           tax_profile_id: true,
           tax_profile_name: true,
           tax_rate: true,
+          tb_tax_profile: {
+            select: {
+              id: true,
+              name: true,
+              tax_rate: true,
+            },
+          },
           moq_qty: true,
           price_without_tax: true,
           tax_amt: true,
           price: true,
           lead_time_days: true,
           is_active: true,
+          description: true,
           note: true,
           info: true,
           dimension: true,
@@ -303,33 +324,35 @@ export class PriceListService {
 
     const total = await this.prismaService.tb_pricelist.count({ where: q.where() });
 
-    const priceList = await Promise.all(data.map(async (item) => {
-      const pricelist_detail = await Promise.all(item.tb_pricelist_detail.map(async (row) => {
-        const tax_profile_result = await this.getTaxProfileList(row.tax_profile_id);
-        const tax_profile = tax_profile_result.isOk() ? tax_profile_result.value : null;
+    const priceList = data.map((item) => {
+      const pricelist_detail = item.tb_pricelist_detail.map((row) => {
         return {
           id: row.id,
           sequence_no: row.sequence_no,
           moq_qty: Number(row.moq_qty),
           unit_id: row.unit_id,
-          unit_name: row.unit_name,
+          unit_name: row.tb_unit?.name ?? row.unit_name,
           lead_time_days: Number(row.lead_time_days),
-          price_wirhout_tax: Number(row.price_without_tax),
+          price_without_tax: Number(row.price_without_tax),
           tax_amt: Number(row.tax_amt),
           price: Number(row.price),
           tax_profile_id: row.tax_profile_id,
+          tax_profile_name: row.tb_tax_profile?.name ?? row.tax_profile_name,
+          tax_rate: Number(row.tb_tax_profile?.tax_rate ?? row.tax_rate ?? 0),
           is_active: row.is_active,
+          description: row.description,
           note: row.note,
           info: row.info,
+          dimension: row.dimension,
           product_id: row.tb_product.id,
           product_name: row.tb_product.name,
           tax_profile: {
-            id: tax_profile?.id,
-            name: tax_profile?.name,
-            rate: Number(tax_profile?.rate || 0),
+            id: row.tb_tax_profile?.id ?? row.tax_profile_id,
+            name: row.tb_tax_profile?.name ?? row.tax_profile_name,
+            rate: Number(row.tb_tax_profile?.tax_rate ?? row.tax_rate ?? 0),
           },
         };
-      }));
+      });
       return {
         id: item.id,
         no: item.pricelist_no,
@@ -342,7 +365,7 @@ export class PriceListService {
         note: item.note,
         pricelist_detail,
       };
-    }));
+    });
 
     // Serialize response data
     const serializedPriceList = priceList.map((item) => PriceListListItemResponseSchema.parse(item));
@@ -409,15 +432,29 @@ export class PriceListService {
           sequence_no: true,
           unit_id: true,
           unit_name: true,
+          tb_unit: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
           tax_profile_id: true,
           tax_profile_name: true,
           tax_rate: true,
+          tb_tax_profile: {
+            select: {
+              id: true,
+              name: true,
+              tax_rate: true,
+            },
+          },
           moq_qty: true,
           price_without_tax: true,
           tax_amt: true,
           price: true,
           lead_time_days: true,
           is_active: true,
+          description: true,
           note: true,
           info: true,
           dimension: true,
@@ -439,7 +476,7 @@ export class PriceListService {
     });
     const total = await this.prismaService.tb_pricelist.count({ where: q.where() });
 
-    const priceList = await Promise.all(data.map(async (item) => {
+    const priceList = data.map((item) => {
       return {
         id: item.id,
         no: item.pricelist_no,
@@ -450,34 +487,36 @@ export class PriceListService {
         currency: item.tb_currency,
         effectivePeriod: item.effective_from_date.toISOString() + ' - ' + item.effective_to_date.toISOString(),
         note: item.note,
-        pricelist_detail: await Promise.all(item.tb_pricelist_detail.map(async (row) => {
-          const tax_profile_result = await this.getTaxProfileList(row.tax_profile_id);
-          const tax_profile = tax_profile_result.isOk() ? tax_profile_result.value : null;
+        pricelist_detail: item.tb_pricelist_detail.map((row) => {
           return {
             id: row.id,
             sequence_no: row.sequence_no,
             moq_qty: Number(row.moq_qty),
             unit_id: row.unit_id,
-            unit_name: row.unit_name,
+            unit_name: row.tb_unit?.name ?? row.unit_name,
             lead_time_days: Number(row.lead_time_days),
-            price_wirhout_tax: Number(row.price_without_tax),
+            price_without_tax: Number(row.price_without_tax),
             tax_amt: Number(row.tax_amt),
             price: Number(row.price),
             tax_profile_id: row.tax_profile_id,
+            tax_profile_name: row.tb_tax_profile?.name ?? row.tax_profile_name,
+            tax_rate: Number(row.tb_tax_profile?.tax_rate ?? row.tax_rate ?? 0),
             is_active: row.is_active,
+            description: row.description,
             note: row.note,
             info: row.info,
+            dimension: row.dimension,
             product_id: row.tb_product.id,
             product_name: row.tb_product.name,
             tax_profile: {
-              id: tax_profile?.id,
-              name: tax_profile?.name,
-              rate: Number(tax_profile?.rate || 0),
+              id: row.tb_tax_profile?.id ?? row.tax_profile_id,
+              name: row.tb_tax_profile?.name ?? row.tax_profile_name,
+              rate: Number(row.tb_tax_profile?.tax_rate ?? row.tax_rate ?? 0),
             },
           };
-        })),
+        }),
       }
-    }));
+    });
 
     // Serialize response data
     const serializedPriceList = priceList.map((item) => PriceListListItemResponseSchema.parse(item));
