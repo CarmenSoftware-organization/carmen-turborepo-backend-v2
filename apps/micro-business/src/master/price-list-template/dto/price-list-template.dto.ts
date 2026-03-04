@@ -91,6 +91,7 @@ export class PriceListTemplateUpdateDto extends createZodDto(
 export const PriceListTemplateDetailCreate = PriceListTemplateDetailSchema.omit({
   id: true,
   doc_version: true,
+  pricelist_template_id: true,
 });
 
 export type IPriceListTemplateDetailCreate = z.infer<typeof PriceListTemplateDetailCreate>;
