@@ -2,13 +2,13 @@ name: Build and Deploy (UAT)
 
 on:
   push:
-    branches: [uat]
+    branches: [UAT]
   workflow_dispatch:
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/uat'
+    if: github.ref == 'refs/heads/UAT'
     environment: uat
 
     services:
@@ -146,9 +146,9 @@ jobs:
               ("if [ ! -d $PROJECT_DIR ]; then git clone https://" + $gh_token + "@github.com/" + $repo + ".git $PROJECT_DIR; fi"),
               "cd $PROJECT_DIR",
               ("git remote set-url origin https://" + $gh_token + "@github.com/" + $repo + ".git"),
-              "git fetch origin uat",
-              "git checkout uat",
-              "git reset --hard origin/uat",
+              "git fetch origin UAT",
+              "git checkout UAT",
+              "git reset --hard origin/UAT",
               "",
               "echo \"=== [3/7] Stop Containers ===\"",
               "docker-compose down --remove-orphans",
