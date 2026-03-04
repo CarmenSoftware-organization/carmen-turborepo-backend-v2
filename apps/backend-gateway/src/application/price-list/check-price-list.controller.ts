@@ -76,7 +76,7 @@ export class CheckPriceListController extends BaseHttpController {
     @Req() request: Request,
     @Res() res: Response,
   ): Promise<void> {
-    const decodedToken = (request as Record<string, unknown>).decodedToken;
+    const decodedToken = (request as any).decodedToken;
 
     this.logger.debug(
       {

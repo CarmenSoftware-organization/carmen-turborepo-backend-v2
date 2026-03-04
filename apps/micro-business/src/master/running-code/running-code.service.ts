@@ -15,7 +15,7 @@ import { isUUID } from 'class-validator';
 import { ERROR_MISSING_BU_CODE, ERROR_MISSING_TENANT_ID, ERROR_MISSING_USER_ID } from '@/common/constant';
 import order from '@/common/helpers/order_by';
 import getPaginationParams from '@/common/helpers/pagination.params';
-import { PrismaClient } from '@repo/prisma-shared-schema-tenant';
+import { PrismaClient, Prisma } from '@repo/prisma-shared-schema-tenant';
 
 @Injectable()
 export class RunningCodeService {
@@ -191,6 +191,7 @@ export class RunningCodeService {
     const createRunningCode = await this.prismaService.tb_config_running_code.create({
       data: {
         ...data,
+        config: data.config as Prisma.InputJsonValue,
         created_by_id: this.userId,
       },
     });
@@ -263,6 +264,7 @@ export class RunningCodeService {
       where: { id: data.id },
       data: {
         ...data,
+        config: data.config as Prisma.InputJsonValue,
         updated_by_id: this.userId,
       },
     });

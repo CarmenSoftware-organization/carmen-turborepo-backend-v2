@@ -1,9 +1,7 @@
 import { HttpStatus, Inject, Injectable, Logger, HttpException } from '@nestjs/common';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
-import { concat, firstValueFrom, Observable } from 'rxjs';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { PrismaClient_TENANT, PrismaClient } from '@repo/prisma-shared-schema-tenant';
-import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
 export class TenantService {
@@ -15,7 +13,6 @@ export class TenantService {
     private readonly prismaSystem: typeof PrismaClient_SYSTEM,
     @Inject('PRISMA_TENANT')
     private readonly prismaTenant: typeof PrismaClient_TENANT,
-    @Inject('CLUSTER_SERVICE') private readonly clusterService: ClientProxy,
   ) { }
 
   async getTenantInfo(userId: string): Promise<TenantConnection> {

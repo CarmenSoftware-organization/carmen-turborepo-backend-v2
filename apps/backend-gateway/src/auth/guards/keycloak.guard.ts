@@ -167,7 +167,7 @@ export class KeycloakGuard extends AuthGuard('keycloak') {
     return true;
   }
 
-  handleRequest(err: Error | null, user: ValidatedUser | null) {
+  handleRequest(err: any, user: any, _info?: any, _context?: any, _status?: any) {
     if (err || !user) {
       throw err || new UnauthorizedException('Authentication failed');
     }

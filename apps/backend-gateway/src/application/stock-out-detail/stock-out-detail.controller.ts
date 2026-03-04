@@ -136,7 +136,7 @@ export class StockOutDetailController extends BaseHttpController {
     this.logger.debug({ function: 'create', createDto, version }, StockOutDetailController.name);
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.stockOutDetailService.create(createDto, user_id, bu_code, version);
+    const result = await this.stockOutDetailService.create({ ...createDto }, user_id, bu_code, version);
     this.respond(res, result, HttpStatus.CREATED);
   }
 
@@ -170,7 +170,7 @@ export class StockOutDetailController extends BaseHttpController {
     this.logger.debug({ function: 'update', id, updateDto, version }, StockOutDetailController.name);
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.stockOutDetailService.update(id, updateDto, user_id, bu_code, version);
+    const result = await this.stockOutDetailService.update(id, { ...updateDto }, user_id, bu_code, version);
     this.respond(res, result);
   }
 

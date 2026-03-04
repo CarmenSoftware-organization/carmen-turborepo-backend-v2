@@ -1,8 +1,6 @@
 // Re-export DTOs from service folders
 
-// Cluster
-export * from '@/cluster/business-unit/dto/business-unit.serializer';
-export * from '@/cluster/cluster/dto/cluster.serializer';
+// Cluster — moved to micro-cluster service
 
 // Master
 export * from '@/master/credit_term/dto/credit-term.dto';

@@ -64,5 +64,7 @@ export const SavePurchaseRequestSchema = z.discriminatedUnion('stage_role', [
   })
 ])
 
+// @ts-expect-error discriminatedUnion not supported by createZodDto
 export class ApproveByStageRoleDto2 extends createZodDto(ApproveByStageRoleSchema2) { }
+// @ts-expect-error discriminatedUnion not supported by createZodDto
 export class SavePurchaseRequestDto extends createZodDto(SavePurchaseRequestSchema) { }

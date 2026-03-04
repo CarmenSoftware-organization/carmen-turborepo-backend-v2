@@ -56,8 +56,9 @@ export class StdResponse<T = unknown> {
     if (result.isOk()) {
       const value = result.value as unknown;
       // Check if this is a paginated result
-      if (value && typeof value === 'object' && 'paginate' in value && 'data' in value && Array.isArray(value.data)) {
-        return StdResponse.successPaginated(value.data, value.paginate) as unknown as StdResponse<T>;
+      if (value && typeof value === 'object' && 'paginate' in value && 'data' in value && Array.isArray((value as any).data)) {
+        const paginatedValue = value as { data: unknown[]; paginate: { total: number; page: number; perpage: number; pages: number } };
+        return StdResponse.successPaginated(paginatedValue.data, paginatedValue.paginate) as unknown as StdResponse<T>;
       }
       return StdResponse.success(result.value);
     }

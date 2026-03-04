@@ -15,12 +15,7 @@ import { PermissionModule } from './authen/permission/permission.module';
 import { ApplicationRolePermissionModule } from './authen/role_permission/role_permission.module';
 import { UserApplicationRoleModule } from './authen/user_application_role/user_application_role.module';
 
-// Cluster modules
-import { ClusterModule } from './cluster/cluster/cluster.module';
-import { BusinessUnitModule } from './cluster/business-unit/business-unit.module';
-import { CurrenciesModule as ClusterCurrenciesModule } from './cluster/currencies/currencies.module';
-import { NewsModule } from './cluster/news/news.module';
-import { UserModule } from './cluster/user/user.module';
+// Cluster modules — moved to micro-cluster service
 
 // Log modules
 import { ActivityLogModule } from './log/activity-log/activity-log.module';
@@ -112,12 +107,7 @@ import { CommonModule } from './common/common.module';
     ApplicationRolePermissionModule,
     UserApplicationRoleModule,
 
-    // Cluster modules (from micro-cluster)
-    ClusterModule,
-    BusinessUnitModule,
-    ClusterCurrenciesModule,
-    NewsModule,
-    UserModule,
+    // Cluster modules — moved to micro-cluster service
 
     // Log modules (from micro-log)
     ActivityLogModule,

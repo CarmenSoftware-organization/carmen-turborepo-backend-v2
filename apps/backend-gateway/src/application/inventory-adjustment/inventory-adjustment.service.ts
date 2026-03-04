@@ -59,11 +59,12 @@ export class InventoryAdjustmentService {
       const stockInResponse = await firstValueFrom(stockInRes);
 
       if (stockInResponse.response.status === HttpStatus.OK) {
-        const stockInItems = (stockInResponse.data || []).map((item: Record<string, unknown>) => ({
+        const stockInData = (stockInResponse.data || []) as Record<string, unknown>[];
+        const stockInItems = stockInData.map((item: Record<string, unknown>) => ({
           ...item,
           type: 'stock-in' as AdjustmentType,
           document_no: item.si_no || item.document_no,
-        }));
+        })) as InventoryAdjustmentItem[];
         results.push(...stockInItems);
         totalStockIn = stockInResponse.paginate?.total || stockInItems.length;
       }
@@ -79,11 +80,12 @@ export class InventoryAdjustmentService {
       const stockOutResponse = await firstValueFrom(stockOutRes);
 
       if (stockOutResponse.response.status === HttpStatus.OK) {
-        const stockOutItems = (stockOutResponse.data || []).map((item: Record<string, unknown>) => ({
+        const stockOutData = (stockOutResponse.data || []) as Record<string, unknown>[];
+        const stockOutItems = stockOutData.map((item: Record<string, unknown>) => ({
           ...item,
           type: 'stock-out' as AdjustmentType,
           document_no: item.so_no || item.document_no,
-        }));
+        })) as InventoryAdjustmentItem[];
         results.push(...stockOutItems);
         totalStockOut = stockOutResponse.paginate?.total || stockOutItems.length;
       }
@@ -101,7 +103,7 @@ export class InventoryAdjustmentService {
       paginate: {
         total: totalStockIn + totalStockOut,
         page: paginate.page,
-        perPage: paginate.perPage,
+        perpage: paginate.perpage,
         totalStockIn,
         totalStockOut,
       },
@@ -137,12 +139,13 @@ export class InventoryAdjustmentService {
       );
     }
 
+    const data = response.data as Record<string, unknown>;
     return Result.ok({
-      ...response.data,
+      ...data,
       type,
       document_no: type === 'stock-in'
-        ? response.data.si_no || response.data.document_no
-        : response.data.so_no || response.data.document_no,
+        ? data.si_no || data.document_no
+        : data.so_no || data.document_no,
     });
   }
 }

@@ -231,7 +231,7 @@ export class GoodReceivedNoteService {
     }
 
     // Convert the buffer data back to Buffer if it was serialized
-    const data = response.data;
+    const data = response.data as any;
     if (data && data.buffer && data.buffer.type === 'Buffer') {
       data.buffer = Buffer.from(data.buffer.data);
     }

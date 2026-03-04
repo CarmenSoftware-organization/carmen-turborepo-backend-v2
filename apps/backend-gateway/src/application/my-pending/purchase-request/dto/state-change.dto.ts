@@ -32,4 +32,5 @@ export const ApproveByStageRoleSchema2 = z.discriminatedUnion('stage_role', [
   })
 ]);
 
+// @ts-expect-error discriminatedUnion not supported by createZodDto
 export class ApproveByStageRoleDto2 extends createZodDto(ApproveByStageRoleSchema2) {}

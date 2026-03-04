@@ -114,7 +114,7 @@ export class StoreRequisitionController extends BaseHttpController {
       bu_code: string;
       role: string;
       permissions: Record<string, string[]>;
-    }[] = JSON.parse((req.headers as Record<string, string>)['x-bu-datas'] as string);
+    }[] = JSON.parse((req.headers as unknown as Record<string, string>)['x-bu-datas'] as string);
     const userData = userDatas.find((ud) => ud.bu_code === bu_code);
     const result = await this.storeRequisitionService.findOne(
       id,
@@ -185,7 +185,7 @@ export class StoreRequisitionController extends BaseHttpController {
       bu_code: string;
       role: string;
       permissions: Record<string, string[]>;
-    }[] = JSON.parse((req.headers as Record<string, string>)['x-bu-datas'] as string);
+    }[] = JSON.parse((req.headers as unknown as Record<string, string>)['x-bu-datas'] as string);
     const result = await this.storeRequisitionService.findAll(
       user_id,
       bu_code,
@@ -246,7 +246,7 @@ export class StoreRequisitionController extends BaseHttpController {
 
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.storeRequisitionService.create(
-      createDto,
+      { ...createDto },
       user_id,
       bu_code,
       version,
@@ -307,7 +307,7 @@ export class StoreRequisitionController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.storeRequisitionService.update(
       id,
-      updateDto,
+      { ...updateDto },
       user_id,
       bu_code,
       version,
@@ -344,7 +344,7 @@ export class StoreRequisitionController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.storeRequisitionService.submit(
       id,
-      payload,
+      { ...payload },
       user_id,
       bu_code,
       version,
@@ -381,7 +381,7 @@ export class StoreRequisitionController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.storeRequisitionService.approve(
       id,
-      payload,
+      { ...payload },
       user_id,
       bu_code,
       version,
@@ -419,7 +419,7 @@ export class StoreRequisitionController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.storeRequisitionService.reject(
       id,
-      payload,
+      { ...payload },
       user_id,
       bu_code,
       version,
@@ -456,7 +456,7 @@ export class StoreRequisitionController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.storeRequisitionService.review(
       id,
-      payload,
+      { ...payload },
       user_id,
       bu_code,
       version,

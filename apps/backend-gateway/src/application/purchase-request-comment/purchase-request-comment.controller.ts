@@ -173,7 +173,7 @@ export class PurchaseRequestCommentController {
     const { user_id } = ExtractRequestHeader(req);
 
     return this.purchaseRequestCommentService.create(
-      createDto,
+      { ...createDto },
       user_id,
       bu_code,
       version,
@@ -226,7 +226,7 @@ export class PurchaseRequestCommentController {
 
     return this.purchaseRequestCommentService.update(
       id,
-      updateDto,
+      { ...updateDto },
       user_id,
       bu_code,
       version,
@@ -326,7 +326,7 @@ export class PurchaseRequestCommentController {
 
     return this.purchaseRequestCommentService.addAttachment(
       id,
-      attachment,
+      { ...attachment },
       user_id,
       bu_code,
       version,

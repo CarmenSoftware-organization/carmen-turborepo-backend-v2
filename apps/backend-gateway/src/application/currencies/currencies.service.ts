@@ -47,9 +47,10 @@ export class CurrenciesService {
         httpStatusToErrorCode(response.response.status),
       );
     }
+    const responseData = response.data as { data: unknown[]; paginate: unknown };
     return Result.ok({
-      data: response.data.data,
-      paginate: response.data.paginate,
+      data: responseData.data,
+      paginate: responseData.paginate,
     });
   }
 
@@ -111,9 +112,10 @@ export class CurrenciesService {
         httpStatusToErrorCode(response.response.status),
       );
     }
+    const responseData = response.data as { data: unknown[]; paginate: unknown };
     return Result.ok({
-      data: response.data.data,
-      paginate: response.data.paginate,
+      data: responseData.data,
+      paginate: responseData.paginate,
     });
   }
 

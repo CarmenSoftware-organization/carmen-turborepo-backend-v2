@@ -41,13 +41,17 @@
     "dev:cronjob": {
       "cache": false
     },
+    "dev:cluster": {
+      "cache": false
+    },
     "dev:base": {
       "dependsOn": [
         "^db:generate",
         "^build:package",
         "dev:business",
         "dev:gateway",
-        "dev:keycloak-api"
+        "dev:keycloak-api",
+        "dev:cluster"
       ],
       "cache": false,
       "persistent": true

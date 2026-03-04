@@ -17,7 +17,7 @@ import {
 } from '@/common/constant';
 import order from '@/common/helpers/order_by';
 import getPaginationParams from '@/common/helpers/pagination.params';
-import { PrismaClient } from '@repo/prisma-shared-schema-tenant';
+import { PrismaClient, Prisma } from '@repo/prisma-shared-schema-tenant';
 import { TryCatch, Result, ErrorCode, VendorListItemResponseSchema, VendorDetailResponseSchema } from '@/common';
 
 @Injectable()
@@ -276,6 +276,8 @@ export class VendorsService {
       const createVendor = await prisma.tb_vendor.create({
         data: {
           ...vendorObject,
+          business_type: vendorObject.business_type as unknown as Prisma.InputJsonValue,
+          info: vendorObject.info as Prisma.InputJsonValue,
           created_by_id: this.userId,
         },
       });
@@ -450,6 +452,8 @@ export class VendorsService {
         },
         data: {
           ...vendorObject,
+          business_type: vendorObject.business_type as unknown as Prisma.InputJsonValue,
+          info: vendorObject.info as Prisma.InputJsonValue,
           updated_by_id: this.userId,
         },
       });

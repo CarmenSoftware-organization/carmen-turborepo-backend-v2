@@ -34,8 +34,6 @@ import {
   PaginateQuery,
 } from 'src/shared-dto/paginate.dto';
 import {
-  IGetAllResponse,
-  IPurchaseRequest,
   CreateStoreRequisitionDto,
   UpdateStoreRequisitionDto,
 } from '@/common';

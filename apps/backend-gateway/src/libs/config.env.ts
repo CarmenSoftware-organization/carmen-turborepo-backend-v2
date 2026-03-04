@@ -6,11 +6,12 @@ const DEFAULT_HOST = 'localhost';
 const DEFAULT_PORTS = {
   GATEWAY: 4000,
   GATEWAY_HTTPS: 4001,
-  // micro-business consolidated service (auth, cluster, license, log, inventory, master, procurement, recipe)
+  // micro-business consolidated service (auth, log, inventory, master, procurement, recipe)
   BUSINESS: 5020,
   AUTH: 5020,
-  CLUSTER: 5020,
-  LICENSE: 5020,
+  // micro-cluster service (separated from micro-business)
+  CLUSTER: 5014,
+  LICENSE: 5014,
   TENANT_INVENTORY: 5020,
   TENANT_PROCUREMENT: 5020,
   TENANT_RECIPE: 5020,
@@ -45,9 +46,9 @@ const envSchema = z.object({
   AUTH_SERVICE_PORT: z.coerce.number().optional(),
   AUTH_SERVICE_HTTP_PORT: z.coerce.number().optional(),
 
-  CLUSTER_SERVICE_HOST: z.string().optional(),
-  CLUSTER_SERVICE_PORT: z.coerce.number().optional(),
-  CLUSTER_SERVICE_HTTP_PORT: z.coerce.number().optional(),
+  CLUSTER_SERVICE_HOST: z.string().default(DEFAULT_HOST),
+  CLUSTER_SERVICE_PORT: z.coerce.number().default(DEFAULT_PORTS.CLUSTER),
+  CLUSTER_SERVICE_HTTP_PORT: z.coerce.number().default(6014),
 
   LICENSE_SERVICE_HOST: z.string().optional(),
   LICENSE_SERVICE_PORT: z.coerce.number().optional(),
@@ -132,19 +133,16 @@ export const envConfig = {
   AUTH_SERVICE_HTTP_PORT:
     env.AUTH_SERVICE_HTTP_PORT ?? env.BUSINESS_SERVICE_HTTP_PORT,
 
-  CLUSTER_SERVICE_HOST:
-    env.CLUSTER_SERVICE_HOST ?? env.BUSINESS_SERVICE_HOST,
-  CLUSTER_SERVICE_PORT:
-    env.CLUSTER_SERVICE_PORT ?? env.BUSINESS_SERVICE_PORT,
-  CLUSTER_SERVICE_HTTP_PORT:
-    env.CLUSTER_SERVICE_HTTP_PORT ?? env.BUSINESS_SERVICE_HTTP_PORT,
+  CLUSTER_SERVICE_HOST: env.CLUSTER_SERVICE_HOST,
+  CLUSTER_SERVICE_PORT: env.CLUSTER_SERVICE_PORT,
+  CLUSTER_SERVICE_HTTP_PORT: env.CLUSTER_SERVICE_HTTP_PORT,
 
   LICENSE_SERVICE_HOST:
-    env.LICENSE_SERVICE_HOST ?? env.BUSINESS_SERVICE_HOST,
+    env.LICENSE_SERVICE_HOST ?? env.CLUSTER_SERVICE_HOST,
   LICENSE_SERVICE_PORT:
-    env.LICENSE_SERVICE_PORT ?? env.BUSINESS_SERVICE_PORT,
+    env.LICENSE_SERVICE_PORT ?? env.CLUSTER_SERVICE_PORT,
   LICENSE_SERVICE_HTTP_PORT:
-    env.LICENSE_SERVICE_HTTP_PORT ?? env.BUSINESS_SERVICE_HTTP_PORT,
+    env.LICENSE_SERVICE_HTTP_PORT ?? env.CLUSTER_SERVICE_HTTP_PORT,
 
   REPORT_SERVICE_HOST: env.REPORT_SERVICE_HOST,
   REPORT_SERVICE_PORT: env.REPORT_SERVICE_PORT,

@@ -12,6 +12,7 @@ import {
   enum_last_action,
   enum_doc_status,
   enum_stage_role,
+  Prisma,
   PrismaClient,
   PrismaClient_TENANT,
 } from '@repo/prisma-shared-schema-tenant';
@@ -435,7 +436,7 @@ export class StoreRequisitionService {
         }));
 
         await prisma.tb_store_requisition_detail.createMany({
-          data: createStoreRequisitionObject,
+          data: createStoreRequisitionObject as any,
         });
       }
 
@@ -480,6 +481,8 @@ export class StoreRequisitionService {
           },
           data: {
             ...workflowHeader,
+            workflow_history: workflowHeader.workflow_history as unknown as Prisma.InputJsonValue,
+            user_action: workflowHeader.user_action as unknown as Prisma.InputJsonValue,
             doc_version: { increment: 1 },
             doc_status: enum_doc_status.in_progress,
             sr_no: newSrNo,
@@ -497,7 +500,7 @@ export class StoreRequisitionService {
       for (const detail of SRdetail) {
         const findDetails = payload.details.find((d) => d.id === detail.id);
         const stages_status = Array.isArray(detail.stages_status)
-          ? (detail.stages_status as StageStatus[])
+          ? (detail.stages_status as unknown as StageStatus[])
           : [];
         const history = (detail.history as unknown as unknown[]) || [];
         const latestStageStatus = stages_status[stages_status.length - 1];
@@ -543,8 +546,8 @@ export class StoreRequisitionService {
         await prismatx.tb_store_requisition_detail.update({
           where: { id: detail.id },
           data: {
-            stages_status: stages_status,
-            history: history,
+            stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             approved_qty: Number(detail.requested_qty),
             current_stage_status: '',
@@ -777,7 +780,7 @@ export class StoreRequisitionService {
         const findSRDoc = SRDetailDocs.find((d) => d.id === detail.id);
         const latestStageStatus =
           findSRDoc.stages_status[
-            (findSRDoc.stages_status as StageStatus[]).length - 1
+            (findSRDoc.stages_status as unknown as StageStatus[]).length - 1
           ];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const stages_status: any[] = findSRDoc?.stages_status as unknown as any[];
@@ -832,8 +835,8 @@ export class StoreRequisitionService {
           data: {
             ...updateDto,
             doc_version: { increment: 1 },
-            stages_status: stages_status,
-            history: history,
+            stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: '',
           },
@@ -899,7 +902,7 @@ export class StoreRequisitionService {
             id: detail.id,
           },
           data: {
-            stages_status: stages_status,
+            stages_status: stages_status as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: '',
           },
@@ -966,7 +969,7 @@ export class StoreRequisitionService {
             id: detail.id,
           },
           data: {
-            stages_status: stages_status,
+            stages_status: stages_status as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: findSR.stage_status,
           },

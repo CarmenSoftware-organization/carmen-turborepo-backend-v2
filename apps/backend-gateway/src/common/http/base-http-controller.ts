@@ -10,14 +10,14 @@ export abstract class BaseHttpController {
     customStatus?: HttpStatus,
   ) {
     // Check if result is a Result object (has isOk method)
-    if (result && typeof result.isOk === 'function') {
+    if (result && typeof result === 'object' && 'isOk' in result && typeof (result as any).isOk === 'function') {
       const typedResult = result as Result<unknown, unknown>;
       const stdResponse = StdResponse.fromResult<unknown, unknown>(typedResult);
       const status = typedResult.isOk() ? (customStatus ?? stdResponse.status) : stdResponse.status;
       response.status(status).send(stdResponse);
     } else {
       // Handle plain response objects (legacy ResponseLib format)
-      const status = customStatus ?? result?.status ?? HttpStatus.OK;
+      const status = customStatus ?? (result as any)?.status ?? HttpStatus.OK;
       response.status(status).send(result);
     }
   }

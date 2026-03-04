@@ -109,7 +109,7 @@ export class AuthController {
       AuthController.name,
     );
 
-    return this.authService.login(loginDto, version);
+    return this.authService.login({ ...loginDto }, version);
   }
 
   @Post('logout')
@@ -232,7 +232,7 @@ export class AuthController {
       AuthController.name,
     );
 
-    return this.authService.register(registerDto, version);
+    return this.authService.register({ ...registerDto }, version);
   }
 
   @Post('invite-user')
@@ -282,7 +282,7 @@ export class AuthController {
 
     const { user_id } = ExtractRequestHeader(req);
 
-    return this.authService.inviteUser(inviteUserDto, user_id, version);
+    return this.authService.inviteUser({ ...inviteUserDto }, user_id, version);
   }
 
   @Post('register-confirm')
@@ -325,7 +325,7 @@ export class AuthController {
       AuthController.name,
     );
 
-    return this.authService.registerConfirm(registerConfirmDto, version);
+    return this.authService.registerConfirm({ ...registerConfirmDto }, version);
   }
 
   // @Post('verify-token')
@@ -433,7 +433,7 @@ export class AuthController {
       AuthController.name,
     );
 
-    return this.authService.forgotPassword(forgotPasswordDto, version);
+    return this.authService.forgotPassword({ ...forgotPasswordDto }, version);
   }
 
   @Post('reset-password-with-token')
@@ -490,7 +490,7 @@ export class AuthController {
       AuthController.name,
     );
 
-    return this.authService.resetPasswordWithToken(resetPasswordWithTokenDto, version);
+    return this.authService.resetPasswordWithToken({ ...resetPasswordWithTokenDto }, version);
   }
 
   // @Get('mobile')
@@ -568,7 +568,7 @@ export class AuthController {
       AuthController.name,
     );
 
-    return this.authService.resetPassword(resetPasswordDto, version);
+    return this.authService.resetPassword({ ...resetPasswordDto }, version);
   }
 
   @Post('change-password')

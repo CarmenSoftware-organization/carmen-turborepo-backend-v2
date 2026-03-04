@@ -21,7 +21,7 @@ import {
 } from './dto/forgotpassword.dto';
 import { JwtService } from '@nestjs/jwt';
 import { BackendLogger } from '@/common/helpers/backend.logger';
-import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
+import { PrismaClient_TENANT, Prisma } from '@repo/prisma-shared-schema-tenant';
 import { TenantService } from '@/tenant/tenant.service';
 import { addHours } from 'date-fns';
 import { ChangePasswordDto } from './dto/changepassword';
@@ -105,7 +105,7 @@ export class AuthService {
           entity_id: userId,
           actor_id: userId,
           description: `User ${email} ${action === 'login' ? 'logged in' : 'logged out'}`,
-          meta_data: metadata || {},
+          meta_data: (metadata || {}) as Prisma.InputJsonValue,
           created_by_id: userId,
         },
       });
