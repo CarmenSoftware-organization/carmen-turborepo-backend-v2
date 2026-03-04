@@ -52,8 +52,16 @@ export const VendorCreate = z.object({
       }),
     )
     .optional(),
-  vendor_address: z.array(vendor_address).optional(),
-  vendor_contact: z.array(vendor_contact).optional(),
+  vendor_address: z
+    .object({
+      add: z.array(vendor_address).optional(),
+    })
+    .optional(),
+  vendor_contact: z
+    .object({
+      add: z.array(vendor_contact).optional(),
+    })
+    .optional(),
 });
 
 export type ICreateVendor = z.infer<typeof VendorCreate>;

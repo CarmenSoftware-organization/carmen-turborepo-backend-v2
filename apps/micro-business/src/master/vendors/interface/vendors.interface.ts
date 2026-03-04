@@ -42,8 +42,12 @@ export interface ICreateVendor {
   business_type?: IVendorBusinessType[];
   description?: string;
   info?: object;
-  vendor_address?: IVendorAddress[];
-  vendor_contact?: IVendorContact[];
+  vendor_address?: {
+    add?: IVendorAddress[];
+  };
+  vendor_contact?: {
+    add?: IVendorContact[];
+  };
 }
 
 export interface IUpdateVendor {

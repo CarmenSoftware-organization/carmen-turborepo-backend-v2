@@ -282,9 +282,9 @@ export class VendorsService {
         },
       });
 
-      if (data.vendor_address) {
+      if (data.vendor_address?.add?.length > 0) {
         const vendorAddressObj = await Promise.all(
-          data.vendor_address.map((address) => ({
+          data.vendor_address.add.map((address) => ({
             vendor_id: createVendor.id,
             is_active: true,
             created_by_id: this.userId,
@@ -297,9 +297,9 @@ export class VendorsService {
         });
       }
 
-      if (data.vendor_contact) {
+      if (data.vendor_contact?.add?.length > 0) {
         const vendorContactObj = await Promise.all(
-          data.vendor_contact.map((contact) => ({
+          data.vendor_contact.add.map((contact) => ({
             vendor_id: createVendor.id,
             is_active: true,
             created_by_id: this.userId,
