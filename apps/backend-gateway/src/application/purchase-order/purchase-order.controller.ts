@@ -230,7 +230,7 @@ export class PurchaseOrderController extends BaseHttpController {
 
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.purchaseOrderService.create(
-      createDto,
+      { ...createDto },
       user_id,
       bu_code,
       version,
@@ -291,7 +291,7 @@ export class PurchaseOrderController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.purchaseOrderService.update(
       id,
-      updateDto,
+      { ...updateDto },
       user_id,
       bu_code,
       version,
@@ -418,7 +418,7 @@ export class PurchaseOrderController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.purchaseOrderService.save(
       id,
-      data,
+      { ...data },
       user_id,
       bu_code,
       version,
@@ -492,7 +492,7 @@ export class PurchaseOrderController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.purchaseOrderService.approve(
       id,
-      data,
+      { ...data },
       user_id,
       bu_code,
       version,
@@ -566,7 +566,7 @@ export class PurchaseOrderController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.purchaseOrderService.reject(
       id,
-      data,
+      { ...data },
       user_id,
       bu_code,
       version,
@@ -640,7 +640,7 @@ export class PurchaseOrderController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.purchaseOrderService.review(
       id,
-      data,
+      { ...data },
       user_id,
       bu_code,
       version,

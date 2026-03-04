@@ -3,7 +3,7 @@ import { IPaginate } from '@/common/shared-interface/paginate.interface'
 import { TenantService } from "@/tenant/tenant.service";
 import { HttpStatus, HttpException, Injectable } from "@nestjs/common";
 import { isUUID } from 'class-validator';
-import { PrismaClient } from "@repo/prisma-shared-schema-tenant";
+import { PrismaClient, Prisma } from "@repo/prisma-shared-schema-tenant";
 import { BackendLogger } from "@/common/helpers/backend.logger";
 import getPaginationParams from '@/common/helpers/pagination.params';
 import {
@@ -172,7 +172,7 @@ export class IssueService {
         tags: data.tags,
         resolution: data.resolution,
         note: data.note,
-        info: data.info,
+        info: data.info as Prisma.InputJsonValue,
         created_by_id: this.userId,
         updated_by_id: this.userId,
       },
@@ -223,7 +223,7 @@ export class IssueService {
         tags: data.tags,
         resolution: data.resolution,
         note: data.note,
-        info: data.info,
+        info: data.info as Prisma.InputJsonValue,
         updated_at: new Date(),
         updated_by_id: this.userId,
       },

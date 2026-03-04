@@ -46,7 +46,7 @@ export class DocumentManagementService {
       },
     );
 
-    const response = await firstValueFrom(res);
+    const response = await firstValueFrom(res) as any;
 
     if (!response.success) {
       return Result.error(
@@ -77,7 +77,7 @@ export class DocumentManagementService {
       { fileToken, user_id, bu_code },
     );
 
-    const response = await firstValueFrom(res);
+    const response = await firstValueFrom(res) as any;
 
     if (!response.success) {
       return Result.error(response.response?.message ?? response.message, httpStatusToErrorCode(response.response?.status));
@@ -105,7 +105,7 @@ export class DocumentManagementService {
       { fileToken, user_id, bu_code },
     );
 
-    const response = await firstValueFrom(res);
+    const response = await firstValueFrom(res) as any;
 
     if (!response.success) {
       return Result.error(response.response?.message ?? response.message, httpStatusToErrorCode(response.response?.status));
@@ -133,7 +133,7 @@ export class DocumentManagementService {
       { fileToken, user_id, bu_code },
     );
 
-    const response = await firstValueFrom(res);
+    const response = await firstValueFrom(res) as any;
 
     if (!response.success) {
       return Result.error(response.response?.message ?? response.message, httpStatusToErrorCode(response.response?.status));
@@ -171,7 +171,7 @@ export class DocumentManagementService {
       },
     );
 
-    const response = await firstValueFrom(res);
+    const response = await firstValueFrom(res) as any;
 
     if (!response.success) {
       return Result.error(response.response?.message ?? response.message, httpStatusToErrorCode(response.response?.status));
@@ -206,7 +206,7 @@ export class DocumentManagementService {
       },
     );
 
-    const response = await firstValueFrom(res);
+    const response = await firstValueFrom(res) as any;
 
     if (!response.success) {
       return Result.error(response.response?.message ?? response.message, httpStatusToErrorCode(response.response?.status));

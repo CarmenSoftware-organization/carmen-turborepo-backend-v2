@@ -169,7 +169,7 @@ export class Config_CurrenciesController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const paginate = PaginateQuery(query) as unknown;
+    const paginate = PaginateQuery(query);
     const result = await this.currenciesService.findAll(
       user_id,
       bu_code,

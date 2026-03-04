@@ -86,7 +86,7 @@ export class MyPendingPurchaseRequestService {
 
     if (response.response.status !== HttpStatus.OK) {
       return Result.error(
-        response.message,
+        response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
     }

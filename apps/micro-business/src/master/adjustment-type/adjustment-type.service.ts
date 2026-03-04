@@ -7,7 +7,7 @@ import { BackendLogger } from '@/common/helpers/backend.logger';
 import { isUUID } from 'class-validator';
 import { ERROR_MISSING_BU_CODE, ERROR_MISSING_USER_ID } from '@/common/constant';
 import getPaginationParams from '@/common/helpers/pagination.params';
-import { PrismaClient } from '@repo/prisma-shared-schema-tenant';
+import { PrismaClient, Prisma } from '@repo/prisma-shared-schema-tenant';
 import { TryCatch, Result, ErrorCode } from '@/common';
 
 @Injectable()
@@ -156,6 +156,8 @@ export class AdjustmentTypeService {
     const createdAdjustmentType = await this.prismaService.tb_adjustment_type.create({
       data: {
         ...data,
+        info: data.info as Prisma.InputJsonValue,
+        dimension: data.dimension as unknown as Prisma.InputJsonValue,
         created_by_id: this.userId,
       },
     });
@@ -204,6 +206,8 @@ export class AdjustmentTypeService {
       },
       data: {
         ...data,
+        info: data.info as Prisma.InputJsonValue,
+        dimension: data.dimension as unknown as Prisma.InputJsonValue,
         updated_by_id: this.userId,
       },
     });

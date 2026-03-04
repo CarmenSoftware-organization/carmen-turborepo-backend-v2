@@ -14,6 +14,7 @@ import {
   enum_product_status_type,
   enum_purchase_request_doc_status,
   enum_stage_role,
+  Prisma,
   PrismaClient,
   PrismaClient_TENANT,
 } from '@repo/prisma-shared-schema-tenant';
@@ -806,7 +807,7 @@ export class PurchaseRequestService {
         }));
 
         await prisma.tb_purchase_request_detail.createMany({
-          data: createPurchaseRequestObject,
+          data: createPurchaseRequestObject as any,
         });
       }
 
@@ -850,6 +851,8 @@ export class PurchaseRequestService {
         },
         data: {
           ...workflowHeader,
+          workflow_history: workflowHeader.workflow_history as unknown as Prisma.InputJsonValue,
+          user_action: workflowHeader.user_action as unknown as Prisma.InputJsonValue,
           doc_version: { increment: 1 },
           pr_status: enum_purchase_request_doc_status.in_progress,
           pr_no: newPrNo,
@@ -867,7 +870,7 @@ export class PurchaseRequestService {
         const findDetails = payload.details.find((d) => d.id === detail.id);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const stages_status: any[] = Array.isArray(detail.stages_status)
-          ? (detail.stages_status as StageStatus[])
+          ? (detail.stages_status as unknown as StageStatus[])
           : [];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const history: any[] = (detail.history as any[]) || [];
@@ -917,8 +920,8 @@ export class PurchaseRequestService {
         await prismatx.tb_purchase_request_detail.update({
           where: { id: detail.id },
           data: {
-            stages_status: stages_status,
-            history: history,
+            stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             approved_qty: Number(detail.requested_qty),
             approved_unit_id: detail.requested_unit_id,
@@ -1139,9 +1142,9 @@ export class PurchaseRequestService {
           requestor_name: requestor.username,
           workflow_id: pr.workflow_id,
           workflow_name: pr.workflow_name,
-          info: pr.info,
+          info: pr.info as Prisma.InputJsonValue,
           description: pr.description,
-          dimension: pr.dimension,
+          dimension: pr.dimension as Prisma.InputJsonValue,
           pr_status: enum_purchase_request_doc_status.draft,
           created_by_id: user_id,
         };
@@ -1266,8 +1269,8 @@ export class PurchaseRequestService {
           workflow_current_stage: originalPr.workflow_current_stage,
           workflow_previous_stage: originalPr.workflow_previous_stage,
           workflow_next_stage: originalPr.workflow_next_stage,
-          workflow_history: originalPr.workflow_history as unknown as Record<string, unknown>,
-          user_action: originalPr.user_action as unknown as Record<string, unknown>,
+          workflow_history: originalPr.workflow_history as unknown as Prisma.InputJsonValue,
+          user_action: originalPr.user_action as unknown as Prisma.InputJsonValue,
           last_action: originalPr.last_action,
           last_action_at_date: originalPr.last_action_at_date,
           last_action_by_id: originalPr.last_action_by_id,
@@ -1277,8 +1280,8 @@ export class PurchaseRequestService {
           department_id: originalPr.department_id,
           department_name: originalPr.department_name,
           note: originalPr.note,
-          info: originalPr.info as unknown as Record<string, unknown>,
-          dimension: originalPr.dimension as unknown as Record<string, unknown>,
+          info: originalPr.info as unknown as Prisma.InputJsonValue,
+          dimension: originalPr.dimension as unknown as Prisma.InputJsonValue,
           created_by_id: user_id,
         },
       });
@@ -1417,7 +1420,7 @@ export class PurchaseRequestService {
         const findPRDoc = PRDetailDocs.find((d) => d.id === detail.id);
         const latestStageStatus =
           findPRDoc.stages_status[
-          (findPRDoc.stages_status as StageStatus[]).length - 1
+          (findPRDoc.stages_status as unknown as StageStatus[]).length - 1
           ];
         const stages_status: StageStatus[] = findPRDoc?.stages_status as unknown as StageStatus[];
         const history: Record<string, unknown>[] = (findPRDoc?.history as unknown as Record<string, unknown>[]) || [];
@@ -1470,8 +1473,8 @@ export class PurchaseRequestService {
           data: {
             ...updateDto,
             doc_version: { increment: 1 },
-            stages_status: stages_status,
-            history: history,
+            stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: '',
           },
@@ -1557,7 +1560,7 @@ export class PurchaseRequestService {
             id: detail.id,
           },
           data: {
-            stages_status: stagesStatus,
+            stages_status: stagesStatus as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: '',
           },
@@ -1571,6 +1574,8 @@ export class PurchaseRequestService {
         data: {
           updated_by_id: this.userId,
           ...workflow,
+          workflow_history: workflow.workflow_history as unknown as Prisma.InputJsonValue,
+          user_action: workflow.user_action as unknown as Prisma.InputJsonValue,
         },
       });
 
@@ -1632,7 +1637,7 @@ export class PurchaseRequestService {
             id: detail.id,
           },
           data: {
-            stages_status: stages_status,
+            stages_status: stages_status as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: '',
           },

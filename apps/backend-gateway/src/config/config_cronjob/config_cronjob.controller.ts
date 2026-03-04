@@ -47,7 +47,7 @@ export class ConfigCronjobController extends BaseHttpController {
   @ApiResponse({ status: 400, description: 'Invalid request data' })
   @ApiResponse({ status: 503, description: 'Failed to connect to cronjob service' })
   async create(@Body() body: CreateCronjobDto, @Res() res: Response): Promise<void> {
-    const result = await this.configCronjobService.create(body);
+    const result = await this.configCronjobService.create({ ...body });
     this.respond(res, result, HttpStatus.CREATED);
   }
 
@@ -61,7 +61,7 @@ export class ConfigCronjobController extends BaseHttpController {
   @ApiResponse({ status: 404, description: 'Cron job not found' })
   @ApiResponse({ status: 503, description: 'Failed to connect to cronjob service' })
   async update(@Param('id') id: string, @Body() body: UpdateCronjobDto, @Res() res: Response): Promise<void> {
-    const result = await this.configCronjobService.update(id, body);
+    const result = await this.configCronjobService.update(id, { ...body });
     this.respond(res, result);
   }
 

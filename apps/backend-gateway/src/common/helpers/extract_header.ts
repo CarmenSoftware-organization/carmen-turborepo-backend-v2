@@ -1,6 +1,6 @@
 import { BackendLogger } from './backend.logger';
 
-export function ExtractRequestHeader(req: Request): {
+export function ExtractRequestHeader(req: { user?: { user_id?: string } } & Record<string, any>): {
   tenant_id: string | null;
   user_id: string | null;
 } {

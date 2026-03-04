@@ -6,6 +6,7 @@ import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
 import {
   enum_purchase_order_doc_status,
   enum_purchase_request_doc_status,
+  Prisma,
   PrismaClient,
 } from '@repo/prisma-shared-schema-tenant';
 import { IPaginate } from '@/common/shared-interface/paginate.interface';
@@ -1060,7 +1061,7 @@ export class PurchaseOrderService {
           },
           data: {
             doc_version: { increment: 1 },
-            history: history,
+            history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
           },
         });
@@ -1142,7 +1143,7 @@ export class PurchaseOrderService {
           },
           data: {
             doc_version: { increment: 1 },
-            history: history,
+            history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
           },
         });
@@ -1224,7 +1225,7 @@ export class PurchaseOrderService {
           },
           data: {
             doc_version: { increment: 1 },
-            history: history,
+            history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
           },
         });

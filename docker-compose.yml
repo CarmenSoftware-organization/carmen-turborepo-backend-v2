@@ -90,6 +90,28 @@ services:
       retries: 3
       start_period: 40s
 
+  api-micro-cluster:
+    image: ${ECR_REGISTRY}/${IMAGE_PREFIX}-micro-cluster:${IMAGE_TAG:-latest}
+    container_name: carmen-api-micro-cluster
+    restart: unless-stopped
+    ports:
+      - "5014:5014"
+      - "6014:6014"
+    env_file:
+      - ./apps/micro-cluster/.env
+    environment:
+      - NODE_ENV=production
+    networks:
+      - carmen-network
+    depends_on:
+      - api-backend-gateway
+    healthcheck:
+      test: ["CMD", "bun", "-e", "fetch('http://localhost:6014/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
   api-micro-business:
     image: ${ECR_REGISTRY}/${IMAGE_PREFIX}-micro-business:${IMAGE_TAG:-latest}
     container_name: carmen-api-micro-business

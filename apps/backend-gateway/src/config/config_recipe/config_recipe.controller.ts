@@ -98,7 +98,7 @@ export class Config_RecipeController extends BaseHttpController {
       Config_RecipeController.name,
     );
     const { user_id } = ExtractRequestHeader(req);
-    const paginate = PaginateQuery(query) as unknown;
+    const paginate = PaginateQuery(query);
     const result = await this.recipeService.findAll(user_id, bu_code, paginate, version);
     this.respond(res, result);
   }

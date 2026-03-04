@@ -286,7 +286,7 @@ export class PriceListController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.priceListService.create(data, user_id, bu_code, version);
+    const result = await this.priceListService.create({ ...data }, user_id, bu_code, version);
     this.respond(res, result, HttpStatus.CREATED);
   }
 

@@ -160,7 +160,7 @@ export class PhysicalCountController extends BaseHttpController {
 
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.physicalCountService.create(
-      createDto,
+      { ...createDto },
       user_id,
       bu_code,
       version,
@@ -193,7 +193,7 @@ export class PhysicalCountController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.physicalCountService.update(
       id,
-      updateDto,
+      { ...updateDto },
       user_id,
       bu_code,
       version,

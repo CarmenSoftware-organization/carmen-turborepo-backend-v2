@@ -1,5 +1,3 @@
-import { IPaginate } from "src/shared-dto/paginate.dto";
-
 export class ResponseLib {
   static success(data: unknown) {
     return {
@@ -15,7 +13,7 @@ export class ResponseLib {
     };
   }
 
-  static successWithPaginate(data: unknown, paginate: IPaginate) {
+  static successWithPaginate(data: unknown, paginate: { total: number; page: number; perpage: number; pages: number }) {
     return {
       data: data,
       paginate: paginate,

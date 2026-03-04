@@ -1,6 +1,7 @@
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import {
   PrismaClient_TENANT,
+  Prisma,
   enum_period_status,
 } from '@repo/prisma-shared-schema-tenant';
 import { TenantService } from '@/tenant/tenant.service';
@@ -186,8 +187,8 @@ export class PeriodService {
         end_at: new Date(data.end_at),
         status: (data.status as enum_period_status) || enum_period_status.open,
         note: data.note,
-        info: data.info || {},
-        dimension: data.dimension || [],
+        info: (data.info || {}) as Prisma.InputJsonValue,
+        dimension: (data.dimension || []) as Prisma.InputJsonValue,
         created_by_id: user_id,
       },
     });

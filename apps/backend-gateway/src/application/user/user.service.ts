@@ -98,9 +98,10 @@ export class UserService implements OnModuleInit {
       );
     }
 
+    const responseData = response.data as { paginate: unknown; [key: string]: unknown };
     return Result.ok({
-      data: response.data,
-      paginate: response.data.paginate,
+      data: responseData,
+      paginate: responseData.paginate,
     });
   }
 

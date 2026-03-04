@@ -34,8 +34,6 @@ import {
 } from 'src/shared-dto/paginate.dto';
 import {
   CreatePurchaseRequestDto,
-  IGetAllResponse,
-  IPurchaseRequest,
   ReviewPurchaseRequestDto,
   UpdatePurchaseRequestDto,
 } from '@/common';
@@ -463,7 +461,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
 
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.myPendingPurchaseRequestService.create(
-      createDto,
+      { ...createDto },
       user_id,
       bu_code,
       version,
@@ -533,7 +531,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.myPendingPurchaseRequestService.approve(
       id,
-      payload,
+      { ...payload },
       user_id,
       bu_code,
       version,
@@ -603,7 +601,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.myPendingPurchaseRequestService.review(
       id,
-      payload,
+      { ...payload },
       user_id,
       bu_code,
       version,
@@ -663,7 +661,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.myPendingPurchaseRequestService.update(
       id,
-      updateDto,
+      { ...updateDto },
       user_id,
       bu_code,
       version,
