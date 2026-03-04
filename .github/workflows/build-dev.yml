@@ -1,0 +1,51 @@
+name: Build and Deploy (Dev)
+
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+jobs:
+  deploy-vm:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev'
+    environment: development
+
+    steps:
+      - name: Deploy to VM via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEV_SSH_HOST }}
+          username: ${{ secrets.DEV_SSH_USER }}
+          key: ${{ secrets.DEV_SSH_KEY }}
+          port: ${{ secrets.DEV_SSH_PORT }}
+          command_timeout: 30m
+          script: |
+            set -e
+            IMAGE_TAG=$(echo "${{ github.sha }}" | cut -c1-7)
+
+            echo "=== [1/5] Git Update ==="
+            PROJECT_DIR=$HOME/carmen-turborepo-backend-v2
+            if [ ! -d $PROJECT_DIR ]; then
+              git clone https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git $PROJECT_DIR
+            fi
+            cd $PROJECT_DIR
+            git remote set-url origin https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git
+            git fetch origin dev
+            git checkout dev
+            git reset --hard origin/dev
+
+            echo "=== [2/5] Stop Containers ==="
+            docker compose -f docker-compose.dev.yml down --remove-orphans || true
+
+            echo "=== [3/5] Build Images ==="
+            docker compose -f docker-compose.dev.yml build
+
+            echo "=== [4/5] Start Containers ==="
+            docker compose -f docker-compose.dev.yml up -d
+
+            echo "=== [5/5] Post-build Cleanup ==="
+            docker image prune -f 2>/dev/null || true
+
+            echo "=== Deployment Complete: $IMAGE_TAG ==="
+            docker compose -f docker-compose.dev.yml ps
