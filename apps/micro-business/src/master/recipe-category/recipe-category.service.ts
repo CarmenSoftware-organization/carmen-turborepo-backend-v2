@@ -7,7 +7,7 @@ import { BackendLogger } from '@/common/helpers/backend.logger';
 import { isUUID } from 'class-validator';
 import { ERROR_MISSING_BU_CODE, ERROR_MISSING_USER_ID } from '@/common/constant';
 import getPaginationParams from '@/common/helpers/pagination.params';
-import { PrismaClient, Prisma } from '@repo/prisma-shared-schema-tenant';
+import { PrismaClient } from '@repo/prisma-shared-schema-tenant';
 import { TryCatch, Result, ErrorCode } from '@/common';
 
 @Injectable()
@@ -202,10 +202,10 @@ export class RecipeCategoryService {
         is_active: data.is_active ?? true,
         parent_id: data.parent_id ?? null,
         level: level,
-        default_cost_settings: (data.default_cost_settings ?? {}) as Prisma.InputJsonValue,
-        default_margins: (data.default_margins ?? {}) as Prisma.InputJsonValue,
-        info: (data.info ?? {}) as Prisma.InputJsonValue,
-        dimension: (data.dimension ?? []) as Prisma.InputJsonValue,
+        default_cost_settings: data.default_cost_settings ?? {},
+        default_margins: data.default_margins ?? {},
+        info: data.info ?? {},
+        dimension: data.dimension ?? [],
         created_by_id: this.userId,
       },
     });

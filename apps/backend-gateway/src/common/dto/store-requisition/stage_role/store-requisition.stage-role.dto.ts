@@ -72,7 +72,6 @@ export type RejectStoreRequisition = z.infer<typeof RejectStoreRequisitionSchema
 // DTOs
 // ============================================================================
 
-// @ts-expect-error discriminatedUnion not supported by createZodDto
 export class ApproveStoreRequisitionByStageRoleDto extends createZodDto(ApproveStoreRequisitionByStageRoleSchema) {}
 export class SubmitStoreRequisitionDto extends createZodDto(SubmitStoreRequisitionSchema) {}
 export class ReviewStoreRequisitionDto extends createZodDto(ReviewStoreRequisitionSchema) {}
