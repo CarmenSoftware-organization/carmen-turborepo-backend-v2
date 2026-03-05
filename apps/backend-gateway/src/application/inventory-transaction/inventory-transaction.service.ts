@@ -15,7 +15,7 @@ export class InventoryTransactionService {
   constructor(
     @Inject('BUSINESS_SERVICE')
     private readonly inventoryService: ClientProxy,
-  ) {}
+  ) { }
 
   /**
    * Send GRN payload to microservice to create FIFO inventory transactions
