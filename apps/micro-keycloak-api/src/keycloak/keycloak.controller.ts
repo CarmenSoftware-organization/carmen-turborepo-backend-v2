@@ -414,11 +414,12 @@ export class KeycloakController extends BaseMicroserviceController {
   // ==================== Change Password ====================
 
   /**
-   * Change password using Keycloak Account API (user's own token)
+   * Change password: verify current password via login, then reset via Admin API
    * Payload:
    *   - accessToken: string (user's access token)
    *   - currentPassword: string
    *   - newPassword: string
+   *   - userId?: string (Keycloak user ID, falls back to token sub)
    *   - realm?: string
    */
   @MessagePattern({ cmd: 'keycloak.auth.changePassword', service: 'keycloak' })
@@ -428,10 +429,10 @@ export class KeycloakController extends BaseMicroserviceController {
       KeycloakController.name,
     );
     try {
-      const { accessToken, currentPassword, newPassword, realm } = payload;
+      const { accessToken, currentPassword, newPassword, userId, realm } = payload;
       const auditContext = this.createAuditContext(payload);
       const result = await runWithAuditContext(auditContext, () =>
-        this.keycloakService.changePassword(accessToken, currentPassword, newPassword, realm)
+        this.keycloakService.changePassword(accessToken, currentPassword, newPassword, userId, realm)
       );
       return this.handleResult(Result.ok(result));
     } catch (error: unknown) {
