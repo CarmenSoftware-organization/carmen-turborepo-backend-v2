@@ -160,6 +160,7 @@ export const PrismaClient_TENANT = async (tenantId: string, datasourceURL: strin
 		// Models that don't have deleted_at field
 		const modelsWithoutSoftDelete = new Set([
 			'tb_user_profile',
+			'tb_inventory_transaction_detail',
 		]);
 
 		const addSoftDeleteFilter = (model: string, args: any) => {
