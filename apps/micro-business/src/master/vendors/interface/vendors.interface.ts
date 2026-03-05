@@ -10,8 +10,9 @@ export interface IVendorAddress {
   address_type?: enum_vendor_address_type;
   address_line1?: string;
   address_line2?: string;
-  city?: string;
+  sub_district?: string;
   district?: string;
+  city?: string;
   province?: string;
   postal_code?: string;
   country?: string;
@@ -31,8 +32,9 @@ export interface IVendorAddressUpdate {
   address_type?: enum_vendor_address_type;
   address_line1?: string;
   address_line2?: string;
-  city?: string;
+  sub_district?: string;
   district?: string;
+  city?: string;
   province?: string;
   postal_code?: string;
   country?: string;
