@@ -12,7 +12,6 @@ import {
   KeycloakAdminConfig,
   KeycloakUserInfo,
   ResetPasswordPayload,
-  ChangePasswordAccountDto,
 } from './interface/keycloak.interface';
 
 /** Keycloak token introspection response */
@@ -1014,43 +1013,73 @@ export class KeycloakService {
     return userInfo;
   }
 
-  // ==================== Change Password (User Token - No Admin Required) ====================
+  // ==================== Change Password ====================
 
   /**
-   * Change password using Keycloak Account API.
-   * Uses the user's own access token - does NOT require admin token.
-   * Validates current password before allowing change.
+   * Change password by verifying current password via login,
+   * then using the fresh token to call Keycloak Account API.
+   *
+   * Strategy:
+   * 1. Get user email from accessToken
+   * 2. Login with email + currentPassword → verifies current password & gets fresh token
+   * 3. Use fresh token to call Account API to set new password
    */
   async changePassword(
     accessToken: string,
     currentPassword: string,
     newPassword: string,
+    userId?: string,
     realm?: string,
   ): Promise<{ success: boolean }> {
+    this.logger.log('Changing password: verifying current password');
+
+    // 1. Get user email from access token
+    const userInfo = await this.getUserInfo(accessToken, realm);
+    const email = userInfo.email || userInfo.preferred_username;
+
+    if (!email) {
+      throw new Error('Unable to determine user email from token');
+    }
+
+    // 2. Login with current password → verifies password & gets fresh token
+    let freshToken: string;
+    try {
+      const tokenResponse = await this.getUserToken(email, currentPassword, realm);
+      freshToken = tokenResponse.access_token;
+    } catch {
+      throw new Error('Current password is incorrect');
+    }
+
+    // 3. Change password via Keycloak Account API using fresh token
     const targetRealm = realm || this.config.realm;
     const url = `${this.config.baseUrl}/realms/${targetRealm}/account/credentials/password`;
-
-    this.logger.log('Changing password via Keycloak Account API');
-
-    const payload: ChangePasswordAccountDto = {
-      currentPassword,
-      newPassword,
-      confirmation: newPassword,
-    };
 
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
+        Accept: 'application/json',
+        Authorization: `Bearer ${freshToken}`,
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        currentPassword,
+        newPassword,
+        confirmation: newPassword,
+      }),
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      const errorMessage = (error as Record<string, string>).errorMessage || 'Failed to change password';
-      this.logger.error(`Change password failed: ${errorMessage}`);
+      const errorText = await response.text().catch(() => '');
+      let errorMessage = 'Failed to change password';
+      try {
+        const errorJson = JSON.parse(errorText);
+        errorMessage = errorJson.errorMessage || errorJson.error || errorMessage;
+      } catch {
+        if (errorText) {
+          errorMessage = errorText;
+        }
+      }
+      this.logger.error(`Change password failed (${response.status}): ${errorMessage}`);
       throw new Error(errorMessage);
     }
 
