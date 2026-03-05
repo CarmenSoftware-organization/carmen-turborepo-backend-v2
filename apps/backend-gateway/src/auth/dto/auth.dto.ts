@@ -100,3 +100,15 @@ export const ResetPasswordWithTokenSchema = z.object({
 
 export type IResetPasswordWithToken = z.infer<typeof ResetPasswordWithTokenSchema>;
 export class ResetPasswordWithTokenDto extends createZodDto(ResetPasswordWithTokenSchema) { }
+
+export const ChangePasswordSchema = z.object({
+  current_password: z
+    .string({ required_error: 'Current password field is required' })
+    .min(6, { message: 'Password must be at least 6 characters long' }),
+  new_password: z
+    .string({ required_error: 'New password field is required' })
+    .min(6, { message: 'Password must be at least 6 characters long' }),
+});
+
+export type IChangePassword = z.infer<typeof ChangePasswordSchema>;
+export class ChangePasswordDto extends createZodDto(ChangePasswordSchema) { }

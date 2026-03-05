@@ -411,6 +411,35 @@ export class KeycloakController extends BaseMicroserviceController {
     }
   }
 
+  // ==================== Change Password ====================
+
+  /**
+   * Change password using Keycloak Account API (user's own token)
+   * Payload:
+   *   - accessToken: string (user's access token)
+   *   - currentPassword: string
+   *   - newPassword: string
+   *   - realm?: string
+   */
+  @MessagePattern({ cmd: 'keycloak.auth.changePassword', service: 'keycloak' })
+  async handleChangePassword(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'handleChangePassword' },
+      KeycloakController.name,
+    );
+    try {
+      const { accessToken, currentPassword, newPassword, realm } = payload;
+      const auditContext = this.createAuditContext(payload);
+      const result = await runWithAuditContext(auditContext, () =>
+        this.keycloakService.changePassword(accessToken, currentPassword, newPassword, realm)
+      );
+      return this.handleResult(Result.ok(result));
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Failed to change password', ErrorCode.INVALID_ARGUMENT);
+      return this.handleResult(result);
+    }
+  }
+
   // ==================== Health Check ====================
 
   @MessagePattern({ cmd: 'keycloak.health', service: 'keycloak' })

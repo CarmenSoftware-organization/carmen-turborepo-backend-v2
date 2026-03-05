@@ -1265,35 +1265,31 @@ export class AuthService {
     );
 
     try {
-      // Reset user password via TCP service
-      const resetResponse = await firstValueFrom(
+      // Change password via Keycloak Account API (validates current password)
+      const changeResponse = await firstValueFrom(
         this.keycloakService.send(
-          { cmd: 'keycloak.users.resetPassword', service: 'keycloak' },
+          { cmd: 'keycloak.auth.changePassword', service: 'keycloak' },
           {
-            userId: changePasswordDto.user_id,
-            password: changePasswordDto.new_password,
-            temporary: false,
+            accessToken: changePasswordDto.accessToken,
+            currentPassword: changePasswordDto.current_password,
+            newPassword: changePasswordDto.new_password,
+            user_id: changePasswordDto.user_id,
           },
         ),
       );
 
       this.logger.log({
         file: AuthService.name,
-        function: this.resetPassword.name,
+        function: this.changePassword.name,
         version: version,
-        keycloakResponse: resetResponse.success,
+        keycloakResponse: changeResponse,
       });
 
-      if (!resetResponse.success) {
-        this.logger.error(resetResponse.error || 'Failed to reset password', {
-          file: AuthService.name,
-          function: this.resetPassword.name,
-          version: version,
-        });
+      if (changeResponse.response?.status !== HttpStatus.OK) {
         return {
           response: {
-            status: HttpStatus.BAD_REQUEST,
-            message: resetResponse.error || 'Failed to reset password',
+            status: changeResponse.response?.status || HttpStatus.BAD_REQUEST,
+            message: changeResponse.response?.message || 'Failed to change password',
           },
         };
       }
@@ -1301,14 +1297,14 @@ export class AuthService {
       return {
         response: {
           status: HttpStatus.OK,
-          message: 'Password reset successful',
+          message: 'Password changed successfully',
         },
       };
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred during password reset';
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during password change';
       this.logger.error(errorMessage, {
         file: AuthService.name,
-        function: this.resetPassword.name,
+        function: this.changePassword.name,
         version: version,
       });
       return {
