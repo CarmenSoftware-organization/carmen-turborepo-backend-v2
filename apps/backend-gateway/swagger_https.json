@@ -15010,10 +15010,13 @@
                 "address_line2": {
                   "type": "string"
                 },
-                "city": {
+                "sub_district": {
                   "type": "string"
                 },
                 "district": {
+                  "type": "string"
+                },
+                "city": {
                   "type": "string"
                 },
                 "province": {
@@ -15175,10 +15178,13 @@
                     "address_line2": {
                       "type": "string"
                     },
-                    "city": {
+                    "sub_district": {
                       "type": "string"
                     },
                     "district": {
+                      "type": "string"
+                    },
+                    "city": {
                       "type": "string"
                     },
                     "province": {
@@ -15215,10 +15221,13 @@
                     "address_line2": {
                       "type": "string"
                     },
-                    "city": {
+                    "sub_district": {
                       "type": "string"
                     },
                     "district": {
+                      "type": "string"
+                    },
+                    "city": {
                       "type": "string"
                     },
                     "province": {

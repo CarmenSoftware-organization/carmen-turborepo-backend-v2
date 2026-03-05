@@ -3335,14 +3335,17 @@ model tb_vendor_address {
   id           String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   vendor_id    String?                   @db.Uuid
   address_type enum_vendor_address_type?
-  address_line1 String? @db.VarChar
-  address_line2 String? @db.VarChar
-  city          String? @db.VarChar
-  district      String? @db.VarChar
-  province      String? @db.VarChar
-  postal_code   String? @db.VarChar
-  country       String? @db.VarChar
-  is_active     Boolean?                  @default(true)
+  // --- Address fields (ordered: street → sub_district → district → city → province → postal_code → country) ---
+  address_line1 String? @db.VarChar // บ้านเลขที่ / ถนน / ซอย
+  address_line2 String? @db.VarChar // ข้อมูลเพิ่มเติม เช่น อาคาร / ชั้น
+  sub_district  String? @db.VarChar // ตำบล / แขวง
+  district      String? @db.VarChar // อำเภอ / เขต
+  city          String? @db.VarChar // เมือง (สำหรับที่อยู่ต่างประเทศ)
+  province      String? @db.VarChar // จังหวัด / รัฐ
+  postal_code   String? @db.VarChar // รหัสไปรษณีย์
+  country       String? @db.VarChar // ประเทศ
+
+  is_active Boolean? @default(true)
 
   description String? @db.VarChar
   note        String? @db.VarChar
