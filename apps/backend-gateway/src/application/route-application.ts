@@ -42,6 +42,7 @@ import { InventoryAdjustmentModule } from './inventory-adjustment/inventory-adju
 import { InventoryTransactionModule } from './inventory-transaction/inventory-transaction.module'; // ⚠️ TEST ONLY — DELETE when GRN approve integration is verified
 import { PeriodModule } from './period/period.module';
 import { PhysicalCountPeriodModule } from './physical-count-period/physical-count-period.module';
+import { VendorProductModule } from './vendor-product/vendor-product.module';
 @Module({
   imports: [
     ApplicationRoleModule,
@@ -87,6 +88,7 @@ import { PhysicalCountPeriodModule } from './physical-count-period/physical-coun
     InventoryTransactionModule, // ⚠️ TEST ONLY — DELETE when GRN approve integration is verified
     PeriodModule,
     PhysicalCountPeriodModule,
+    VendorProductModule,
   ],
   controllers: [],
   providers: [],

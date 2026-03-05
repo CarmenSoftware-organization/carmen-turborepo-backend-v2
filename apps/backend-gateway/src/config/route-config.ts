@@ -19,7 +19,8 @@ import { Config_ExtraCostTypeModule } from './config_extra_cost_type/config_extr
 import { Config_TaxProfileModule } from './config_tax_profile/config_tax_profile.module';
 import { Config_PriceListModule } from './config_price-list/config_price-list.module';
 // import { Config_UserLocationModule } from './config_user-location/config_user-location.module';
-// import { Config_UnitCommentModule } from './config_unit_comment/config_unit_comment.module';
+import { Config_UnitCommentModule } from './config_unit_comment/config_unit_comment.module';
+import { Config_DepartmentUserModule } from './config_department-user/config_department-user.module';
 import { ConfigCronjobModule } from './config_cronjob/config_cronjob.module';
 import { ConfigApplicationRoleModule } from './config_application_role/config_application_role.module';
 import { ConfigPermissionModule } from './config_permission/config_permssion.module';
@@ -54,7 +55,8 @@ import { Config_RecipeEquipmentModule } from './config_recipe-equipment/config_r
     ConfigPermissionModule,
     ConfigUserApplicationRoleModule,
     // Config_UserLocationModule,
-    // Config_UnitCommentModule,
+    Config_UnitCommentModule,
+    Config_DepartmentUserModule,
     ConfigCronjobModule,
     Config_RecipeModule,
     Config_RecipeCategoryModule,

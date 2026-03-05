@@ -78,15 +78,16 @@ export class ApplicationRolePermissionService {
 
     const defaultSearchFields = ['name', 'description'];
 
+    const p = paginate || {};
     const q = new QueryParams(
-      paginate.page,
-      paginate.perpage,
-      paginate.search,
-      paginate.searchfields,
+      p.page ?? 1,
+      p.perpage ?? 100,
+      p.search ?? '',
+      p.searchfields ?? [],
       defaultSearchFields,
-      typeof paginate.filter === 'object' && !Array.isArray(paginate.filter) ? paginate.filter : {},
-      paginate.sort,
-      paginate.advance,
+      typeof p.filter === 'object' && !Array.isArray(p.filter) ? p.filter : {},
+      p.sort ?? [],
+      p.advance ?? null,
     );
     const pagination = getPaginationParams(q.page, q.perpage);
     const prismaParams = {

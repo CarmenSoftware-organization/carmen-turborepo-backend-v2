@@ -62,6 +62,7 @@ const app = new Elysia()
     fun_fact: 'Server นี้ใช้ Bun + Elysia เร็วมากกก! ⚡️'
   }))
   .get('/ping', () => 'pong')
+  .get('/health', () => 'OK')
   .use(routes)
   .listen(service_port)
 
