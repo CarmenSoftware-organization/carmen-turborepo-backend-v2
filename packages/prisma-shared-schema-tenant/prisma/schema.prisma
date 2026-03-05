@@ -3335,8 +3335,14 @@ model tb_vendor_address {
   id           String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   vendor_id    String?                   @db.Uuid
   address_type enum_vendor_address_type?
-  data         Json?                     @default("{}") @db.JsonB
-  is_active    Boolean?                  @default(true)
+  address_line1 String? @db.VarChar
+  address_line2 String? @db.VarChar
+  city          String? @db.VarChar
+  district      String? @db.VarChar
+  province      String? @db.VarChar
+  postal_code   String? @db.VarChar
+  country       String? @db.VarChar
+  is_active     Boolean?                  @default(true)
 
   description String? @db.VarChar
   note        String? @db.VarChar

@@ -92,7 +92,12 @@ export class CheckPriceListService {
           currency_code: true,
           validity_period: true,
           tb_pricelist_template_detail: {
-            where: {},
+            where: {
+              deleted_at: null,
+            },
+            orderBy: {
+              sequence_no: 'asc',
+            },
             select: {
               id: true,
               sequence_no: true,
@@ -120,7 +125,7 @@ export class CheckPriceListService {
 
       const pricelistDetails = await Promise.all(
         pricelistTemplate.tb_pricelist_template_detail.map(async (detail, index) => ({
-          sequence_no: detail.sequence_no ?? index + 1,
+          sequence_no: index + 1,
           product_id: detail.product_id,
           product_name: detail.product_name,
           unit_id: detail.inventory_unit_id,
@@ -142,8 +147,8 @@ export class CheckPriceListService {
           url_token: urlToken,
           currency_id: pricelistTemplate.currency_id,
           currency_code: pricelistTemplate.currency_code,
-          effective_from_date: pricing.tb_request_for_pricing.start_date,
-          effective_to_date: pricing.tb_request_for_pricing.end_date,
+          effective_from_date: pricing.tb_request_for_pricing?.start_date ?? effectiveFromDate,
+          effective_to_date: pricing.tb_request_for_pricing?.end_date ?? effectiveToDate,
           tb_pricelist_detail: {
             create: pricelistDetails,
           },

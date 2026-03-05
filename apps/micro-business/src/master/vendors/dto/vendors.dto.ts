@@ -20,7 +20,13 @@ const vendor_address = z.object({
   address_type: z
     .enum(Object.values(enum_vendor_address_type) as [string, ...string[]])
     .optional(),
-  data: z.object({}).passthrough().optional(),
+  address_line1: z.string().optional(),
+  address_line2: z.string().optional(),
+  city: z.string().optional(),
+  district: z.string().optional(),
+  province: z.string().optional(),
+  postal_code: z.string().optional(),
+  country: z.string().optional(),
 });
 
 const vendor_contact = z.object({
