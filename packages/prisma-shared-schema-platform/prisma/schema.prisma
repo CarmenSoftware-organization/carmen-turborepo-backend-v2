@@ -578,6 +578,29 @@ enum enum_user_business_unit_role {
   user
 }
 
+// ==================== Report ====================
+
+model tb_report_template {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String  @db.VarChar(255)
+  report_type String  @db.VarChar(100)
+  description String?
+  filters     Json?   @default("{}") @db.JsonB
+  options     Json?   @default("{}") @db.JsonB
+  is_default  Boolean @default(false)
+  is_active   Boolean @default(true)
+
+  // Audit Fields
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_by_id String?   @db.Uuid
+  deleted_at    DateTime? @db.Timestamptz(6)
+  deleted_by_id String?   @db.Uuid
+
+  @@index([report_type], map: "idx_report_template_type")
+}
+
 model tb_news {
   id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title    String  @db.VarChar
