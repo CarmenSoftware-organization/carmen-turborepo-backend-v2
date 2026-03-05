@@ -116,11 +116,10 @@ export class MyApproveService {
 
       return { pending: response.data?.pending || 0 };
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
       this.logger.error(
         {
           function: 'getSRCount',
-          error: message,
+          error: error.message,
         },
         MyApproveService.name,
       );
@@ -169,11 +168,10 @@ export class MyApproveService {
 
       return { pending: response.data?.pending || 0 };
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
       this.logger.error(
         {
           function: 'getPRCount',
-          error: message,
+          error: error.message,
         },
         MyApproveService.name,
       );
@@ -228,11 +226,10 @@ export class MyApproveService {
 
       return response.data || [];
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
       this.logger.error(
         {
           function: 'getSRList',
-          error: message,
+          error: error.message,
         },
         MyApproveService.name,
       );
@@ -287,11 +284,10 @@ export class MyApproveService {
 
       return response.data || [];
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
       this.logger.error(
         {
           function: 'getPRList',
-          error: message,
+          error: error.message,
         },
         MyApproveService.name,
       );
@@ -340,11 +336,10 @@ export class MyApproveService {
 
       return { pending: response.data?.pending || 0 };
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
       this.logger.error(
         {
           function: 'getPOCount',
-          error: message,
+          error: error.message,
         },
         MyApproveService.name,
       );
@@ -399,11 +394,10 @@ export class MyApproveService {
 
       return response.data || [];
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
       this.logger.error(
         {
           function: 'getPOList',
-          error: message,
+          error: error.message,
         },
         MyApproveService.name,
       );
