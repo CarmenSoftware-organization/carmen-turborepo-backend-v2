@@ -21,6 +21,7 @@ import {
   ResetPasswordDto,
   ForgotPasswordDto,
   ResetPasswordWithTokenDto,
+  ChangePasswordDto,
 } from './dto/auth.dto';
 import {
   ApiBearerAuth,
@@ -574,14 +575,15 @@ export class AuthController {
   @Post('change-password')
   @UseGuards(KeycloakGuard)
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
   @ApiVersionMinRequest()
   @ApiBody({
-    type: ResetPasswordDto,
+    type: ChangePasswordDto,
     description: 'Change Password',
     examples: {
       'Change Password': {
         value: {
-          email: 'user@example.com',
+          current_password: 'currentPassword123',
           new_password: 'newPassword123',
         },
       },
@@ -589,11 +591,15 @@ export class AuthController {
   })
   @ApiOperation({
     summary: 'Change Password',
-    description: 'Change user password',
+    description: 'Change user password (requires current password verification)',
     operationId: 'changePassword',
     tags: ['Authentication'],
     deprecated: false,
-    security: [{}],
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
     parameters: [
       {
         name: 'version',
@@ -606,28 +612,35 @@ export class AuthController {
         description: 'Password changed successfully',
       },
       400: {
-        description: 'Bad request',
+        description: 'Bad request or incorrect current password',
       },
-      404: {
-        description: 'User not found',
+      401: {
+        description: 'Unauthorized',
       },
     },
   })
   async changePassword(
-    @Body() changePasswordDto: Record<string, unknown>,
+    @Body() changePasswordDto: ChangePasswordDto,
     @Req() req: Request,
-    @Query('version') version: string,
+    @Query('version') version: string = 'latest',
   ) {
-    this.logger.log({
-      file: AuthController.name,
-      function: this.changePassword.name,
-      changePasswordDto: changePasswordDto,
-      version: version,
-    });
+    this.logger.debug(
+      {
+        function: 'changePassword',
+        version,
+      },
+      AuthController.name,
+    );
 
     const { user_id } = ExtractRequestHeader(req);
+    const authorization = (req.headers as Record<string, string>)['authorization'] || '';
+    const accessToken = authorization.replace('Bearer ', '');
 
-    const dto = { ...changePasswordDto, user_id: user_id }
+    const dto = {
+      ...changePasswordDto,
+      user_id,
+      accessToken,
+    };
 
     return this.authService.changePassword(dto, version);
   }

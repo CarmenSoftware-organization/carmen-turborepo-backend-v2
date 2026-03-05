@@ -12,6 +12,7 @@ import {
   KeycloakAdminConfig,
   KeycloakUserInfo,
   ResetPasswordPayload,
+  ChangePasswordAccountDto,
 } from './interface/keycloak.interface';
 
 /** Keycloak token introspection response */
@@ -1011,6 +1012,50 @@ export class KeycloakService {
     const userInfo: KeycloakUserInfo = await response.json();
     this.logger.debug(`User info fetched successfully for user: ${userInfo.sub}`);
     return userInfo;
+  }
+
+  // ==================== Change Password (User Token - No Admin Required) ====================
+
+  /**
+   * Change password using Keycloak Account API.
+   * Uses the user's own access token - does NOT require admin token.
+   * Validates current password before allowing change.
+   */
+  async changePassword(
+    accessToken: string,
+    currentPassword: string,
+    newPassword: string,
+    realm?: string,
+  ): Promise<{ success: boolean }> {
+    const targetRealm = realm || this.config.realm;
+    const url = `${this.config.baseUrl}/realms/${targetRealm}/account/credentials/password`;
+
+    this.logger.log('Changing password via Keycloak Account API');
+
+    const payload: ChangePasswordAccountDto = {
+      currentPassword,
+      newPassword,
+      confirmation: newPassword,
+    };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      const errorMessage = (error as Record<string, string>).errorMessage || 'Failed to change password';
+      this.logger.error(`Change password failed: ${errorMessage}`);
+      throw new Error(errorMessage);
+    }
+
+    this.logger.log('Password changed successfully');
+    return { success: true };
   }
 
   // ==================== Health Check (No Auth Required) ====================

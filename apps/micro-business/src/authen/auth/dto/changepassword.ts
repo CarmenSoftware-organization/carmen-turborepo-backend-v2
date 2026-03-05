@@ -1,7 +1,7 @@
 
-
 export class ChangePasswordDto {
   user_id: string;
-  old_password: string;
+  current_password: string;
   new_password: string;
+  accessToken: string;
 }

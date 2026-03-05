@@ -127,3 +127,9 @@ export interface ResetPasswordPayload {
   value: string;
   temporary: boolean;
 }
+
+export interface ChangePasswordAccountDto {
+  currentPassword: string;
+  newPassword: string;
+  confirmation: string;
+}

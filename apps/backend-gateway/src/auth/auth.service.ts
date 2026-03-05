@@ -7,7 +7,7 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { IInviteUser, ILogin, IRegisterConfirm, IResetPassword, IForgotPassword, IResetPasswordWithToken } from './dto/auth.dto';
+import { IInviteUser, ILogin, IRegisterConfirm, IResetPassword, IForgotPassword, IResetPasswordWithToken, IChangePassword } from './dto/auth.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ResponseLib } from 'src/libs/response.lib';
 import { sendToService } from 'src/common/helpers/microservice.helper';
@@ -259,11 +259,10 @@ export class AuthService implements OnModuleInit {
     return ResponseLib.success(response.data);
   }
 
-  async changePassword(changePasswordDto: Record<string, unknown>, version: string): Promise<unknown> {
+  async changePassword(changePasswordDto: IChangePassword & { user_id: string; accessToken: string }, version: string): Promise<unknown> {
     this.logger.debug(
       {
         function: 'changePassword',
-        changePasswordDto,
         version,
       },
       AuthService.name,
