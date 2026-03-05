@@ -30,13 +30,14 @@ mkdir -p "$PID_DIR" "$LOG_DIR"
 # ใช้ build+node เพื่อประหยัด RAM (ไม่ใช้ ts-node-dev/watch)
 SERVICE_GATEWAY="gateway|apps/backend-gateway|node dist/main"
 SERVICE_BUSINESS="business|apps/micro-business|node dist/main"
+SERVICE_CLUSTER="cluster|apps/micro-cluster|node dist/main"
 SERVICE_KEYCLOAK="keycloak|apps/micro-keycloak-api|node dist/main"
 SERVICE_FILE="file|apps/micro-file|node dist/main"
 SERVICE_NOTIFICATION="notification|apps/micro-notification|node dist/main"
 SERVICE_CRONJOB="cronjob|apps/micro-cronjob|bun dist/server.js"
 
-CORE_LIST="gateway business keycloak"
-ALL_LIST="gateway business keycloak file notification cronjob"
+CORE_LIST="gateway business cluster keycloak"
+ALL_LIST="gateway business cluster keycloak file notification cronjob"
 
 # ───────────────────────────────────────────────────────────
 # Helpers
@@ -46,6 +47,7 @@ get_service_def() {
     case "$1" in
         gateway)      echo "$SERVICE_GATEWAY" ;;
         business)     echo "$SERVICE_BUSINESS" ;;
+        cluster)      echo "$SERVICE_CLUSTER" ;;
         keycloak)     echo "$SERVICE_KEYCLOAK" ;;
         file)         echo "$SERVICE_FILE" ;;
         notification) echo "$SERVICE_NOTIFICATION" ;;
@@ -252,6 +254,7 @@ cmd_status() {
         case "$name" in
             gateway)      ports="4000, 4001" ;;
             business)     ports="5020, 6020" ;;
+            cluster)      ports="5014, 6014" ;;
             keycloak)     ports="5013, 6013" ;;
             file)         ports="5007, 6007" ;;
             notification) ports="5006, 6006" ;;
@@ -277,6 +280,7 @@ cmd_health() {
 
     check "Gateway (4000)"      "http://localhost:4000/health"
     check "Business (6020)"     "http://localhost:6020/health"
+    check "Cluster (6014)"      "http://localhost:6014/health"
     check "Keycloak API (6013)" "http://localhost:6013/health"
     check "File (6007)"         "http://localhost:6007/health"
     check "Notification (6006)" "http://localhost:6006/health"
@@ -306,9 +310,9 @@ cmd_help() {
     echo "  clean-logs                      ลบ log files"
     echo ""
     echo "Targets:"
-    echo "  core           gateway, business, keycloak (default)"
-    echo "  all            ทุก 6 services"
-    echo "  SERVICE name   gateway | business | keycloak | file | notification | cronjob"
+    echo "  core           gateway, business, cluster, keycloak (default)"
+    echo "  all            ทุก 7 services"
+    echo "  SERVICE name   gateway | business | cluster | keycloak | file | notification | cronjob"
     echo ""
     echo "ตัวอย่าง:"
     echo "  ./carmen.sh install             # ครั้งแรก"

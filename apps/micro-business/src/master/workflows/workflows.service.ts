@@ -168,13 +168,17 @@ export class WorkflowsService {
 
   @TryCatch
   async findByType(
-    type: enum_workflow_type,
+    type: string,
     user_id: string,
   ): Promise<Result<unknown>> {
+    // Normalize: append _workflow if not already present (e.g. "purchase_request" → "purchase_request_workflow")
+    const normalizedType = type.endsWith('_workflow') ? type : `${type}_workflow`;
+
     this.logger.debug(
       {
         function: 'findByType',
         type,
+        normalizedType,
         user_id,
       },
       WorkflowsService.name,
@@ -182,7 +186,7 @@ export class WorkflowsService {
 
     const results = await this.prismaService.tb_workflow.findMany({
       where: {
-        workflow_type: type,
+        workflow_type: normalizedType as enum_workflow_type,
         is_active: true,
       },
       select: {
