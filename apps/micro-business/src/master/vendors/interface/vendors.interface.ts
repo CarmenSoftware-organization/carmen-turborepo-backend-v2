@@ -8,7 +8,13 @@ export interface IVendorBusinessType {
 
 export interface IVendorAddress {
   address_type?: enum_vendor_address_type;
-  data?: object;
+  address_line1?: string;
+  address_line2?: string;
+  city?: string;
+  district?: string;
+  province?: string;
+  postal_code?: string;
+  country?: string;
 }
 
 export interface IVendorContact {
@@ -23,7 +29,13 @@ export interface IVendorContact {
 export interface IVendorAddressUpdate {
   vendor_address_id: string;
   address_type?: enum_vendor_address_type;
-  data?: object;
+  address_line1?: string;
+  address_line2?: string;
+  city?: string;
+  district?: string;
+  province?: string;
+  postal_code?: string;
+  country?: string;
 }
 
 export interface IVendorContactUpdate {

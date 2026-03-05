@@ -5,7 +5,13 @@ import { decimalField } from '@/common/validation/zod-helpers';
 const VendorAddressEmbeddedSchema = z.object({
   id: z.string(),
   address_type: z.string().nullable().optional(),
-  data: z.any().nullable().optional(),
+  address_line1: z.string().nullable().optional(),
+  address_line2: z.string().nullable().optional(),
+  city: z.string().nullable().optional(),
+  district: z.string().nullable().optional(),
+  province: z.string().nullable().optional(),
+  postal_code: z.string().nullable().optional(),
+  country: z.string().nullable().optional(),
   is_active: z.boolean().optional(),
 });
 

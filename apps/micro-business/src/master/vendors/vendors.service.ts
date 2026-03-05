@@ -101,7 +101,13 @@ export class VendorsService {
       select: {
         id: true,
         address_type: true,
-        data: true,
+        address_line1: true,
+        address_line2: true,
+        city: true,
+        district: true,
+        province: true,
+        postal_code: true,
+        country: true,
         is_active: true,
       },
     });
@@ -490,7 +496,13 @@ export class VendorsService {
                 vendor_id: vendorAddress.vendor_id,
                 address_type:
                   address.address_type ?? vendorAddress.address_type,
-                data: address.data ?? vendorAddress.data,
+                address_line1: address.address_line1 ?? vendorAddress.address_line1,
+                address_line2: address.address_line2 ?? vendorAddress.address_line2,
+                city: address.city ?? vendorAddress.city,
+                district: address.district ?? vendorAddress.district,
+                province: address.province ?? vendorAddress.province,
+                postal_code: address.postal_code ?? vendorAddress.postal_code,
+                country: address.country ?? vendorAddress.country,
                 updated_by_id: this.userId,
               };
 
