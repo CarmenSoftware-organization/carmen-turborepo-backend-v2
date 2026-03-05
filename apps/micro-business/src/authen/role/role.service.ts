@@ -50,15 +50,16 @@ export class ApplicationRoleService {
 
     const defaultSearchFields = ['name', 'description'];
 
+    const p = paginate || {};
     const q = new QueryParams(
-      paginate.page,
-      paginate.perpage,
-      paginate.search,
-      paginate.searchFields,
+      p.page ?? 1,
+      p.perpage ?? 100,
+      p.search ?? '',
+      p.searchFields ?? [],
       defaultSearchFields,
-      paginate.filter,
-      paginate.sort,
-      paginate.advance,
+      p.filter ?? {},
+      p.sort ?? [],
+      p.advance ?? null,
     );
 
     const roles = await this.prismaSystem.tb_application_role.findMany({

@@ -132,12 +132,13 @@ export class PurchaseRequestController extends BaseHttpController {
 
     const { user_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
+    const buDatasHeader = req.headers['x-bu-datas'] as string;
     const userData: {
       bu_id: string;
       bu_code: string;
       role: string;
       permissions: Record<string, string[]>;
-    } = JSON.parse(req.headers['x-bu-datas'] as string)
+    } = buDatasHeader ? JSON.parse(buDatasHeader) : {};
 
     if (paginate?.bu_code.length === 0) {
       throw new BadRequestException('bu_code is required');
@@ -269,12 +270,13 @@ export class PurchaseRequestController extends BaseHttpController {
       },
       PurchaseRequestController.name,
     );
+    const buDatasHeader = req.headers['x-bu-datas'] as string;
     const userDatas: {
       bu_id: string;
       bu_code: string;
       role: string;
       permissions: Record<string, string[]>;
-    }[] = JSON.parse(req.headers['x-bu-datas'] as string)
+    }[] = buDatasHeader ? JSON.parse(buDatasHeader) : [];
 
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.purchaseRequestService.findById(

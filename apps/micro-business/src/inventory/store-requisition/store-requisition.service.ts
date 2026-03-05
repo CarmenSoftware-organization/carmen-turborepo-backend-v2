@@ -1124,13 +1124,33 @@ export class StoreRequisitionService {
   @TryCatch
   async findAllMyPending(
     user_id: string,
-    bu_code: string,
+    bu_code: string | string[],
     paginate: IPaginate,
   ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAllMyPending', user_id, bu_code, paginate },
       StoreRequisitionService.name,
     );
+
+    // Resolve bu_codes: handle array or string input, fetch all user BUs if empty
+    let bu_codes: string[];
+    if (Array.isArray(bu_code)) {
+      bu_codes = bu_code.filter((c) => c);
+    } else if (bu_code) {
+      bu_codes = [bu_code];
+    } else {
+      bu_codes = [];
+    }
+
+    if (bu_codes.length === 0) {
+      const bus = await this.getBus(user_id, true, 'latest');
+      bu_codes = bus.data?.map((b) => b.tb_business_unit.code) ?? [];
+    }
+
+    if (bu_codes.length === 0) {
+      return Result.error('No business units found for user', ErrorCode.NOT_FOUND);
+    }
+
     const defaultSearchFields = ['sr_no', 'description'];
 
     const q = new QueryParams(
@@ -1146,35 +1166,90 @@ export class StoreRequisitionService {
       paginate.advance,
     );
 
-    const tenant = await this.tenantService.getdb_connection(user_id, bu_code);
+    const allResults = [];
+    let grandTotal = 0;
 
-    if (!tenant) {
-      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
-    }
+    for (const code of bu_codes) {
+      const tenant = await this.tenantService.getdb_connection(user_id, code);
 
-    const prisma = await this.prismaTenant(
-      tenant.tenant_id,
-      tenant.db_connection,
-    );
+      if (!tenant) {
+        continue;
+      }
 
-    const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
-      where: {
-        code: bu_code,
-      },
-    });
-
-    if (!bu_detail) {
-      return Result.error(
-        `Business unit ${bu_code} not found`,
-        ErrorCode.NOT_FOUND,
+      const prisma = await this.prismaTenant(
+        tenant.tenant_id,
+        tenant.db_connection,
       );
-    }
 
-    const standardQuery = q.findMany();
+      const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
+        where: {
+          code: code,
+        },
+      });
 
-    const storeRequisitions = await prisma.tb_store_requisition
-      .findMany({
-        ...standardQuery,
+      if (!bu_detail) {
+        continue;
+      }
+
+      const standardQuery = q.findMany();
+
+      const storeRequisitions = await prisma.tb_store_requisition
+        .findMany({
+          ...standardQuery,
+          where: {
+            ...standardQuery.where,
+            OR: [
+              {
+                user_action: {
+                  path: ['execute'],
+                  array_contains: user_id,
+                },
+              },
+              {
+                doc_status: enum_doc_status.draft,
+                requestor_id: user_id,
+              },
+            ],
+          },
+          include: {
+            tb_store_requisition_detail: true,
+          },
+        })
+        .then((res) => {
+          const mapSr = res.map((sr) => {
+            const store_requisition_detail = sr['tb_store_requisition_detail'];
+            delete sr['tb_store_requisition_detail'];
+
+            const returnSR = {
+              id: sr.id,
+              sr_no: sr.sr_no,
+              sr_date: sr.sr_date,
+              expected_date: sr.expected_date,
+              description: sr.description,
+              doc_status: sr.doc_status,
+              requestor_name: sr.requestor_name,
+              department_name: sr.department_name,
+              from_location_name: sr.from_location_name,
+              to_location_name: sr.to_location_name,
+              workflow_name: sr.workflow_name,
+              created_at: sr.created_at,
+              store_requisition_detail: store_requisition_detail.map((d) => ({
+                requested_qty: Number(d.requested_qty),
+                approved_qty: Number(d.approved_qty),
+              })),
+              workflow_current_stage: sr.workflow_current_stage,
+              workflow_next_stage: sr.workflow_next_stage,
+              workflow_previous_stage: sr.workflow_previous_stage,
+              last_action: sr.last_action,
+            };
+
+            return returnSR;
+          });
+
+          return mapSr;
+        });
+
+      const total = await prisma.tb_store_requisition.count({
         where: {
           ...standardQuery.where,
           OR: [
@@ -1190,76 +1265,30 @@ export class StoreRequisitionService {
             },
           ],
         },
-        include: {
-          tb_store_requisition_detail: true,
-        },
-      })
-      .then((res) => {
-        const mapSr = res.map((sr) => {
-          const store_requisition_detail = sr['tb_store_requisition_detail'];
-          delete sr['tb_store_requisition_detail'];
-
-          const returnSR = {
-            id: sr.id,
-            sr_no: sr.sr_no,
-            sr_date: sr.sr_date,
-            expected_date: sr.expected_date,
-            description: sr.description,
-            doc_status: sr.doc_status,
-            requestor_name: sr.requestor_name,
-            department_name: sr.department_name,
-            from_location_name: sr.from_location_name,
-            to_location_name: sr.to_location_name,
-            workflow_name: sr.workflow_name,
-            created_at: sr.created_at,
-            store_requisition_detail: store_requisition_detail.map((d) => ({
-              requested_qty: Number(d.requested_qty),
-              approved_qty: Number(d.approved_qty),
-            })),
-            workflow_current_stage: sr.workflow_current_stage,
-            workflow_next_stage: sr.workflow_next_stage,
-            workflow_previous_stage: sr.workflow_previous_stage,
-            last_action: sr.last_action,
-          };
-
-          return returnSR;
-        });
-
-        return mapSr;
       });
 
-    const total = await prisma.tb_store_requisition.count({
-      where: {
-        ...standardQuery.where,
-        OR: [
-          {
-            user_action: {
-              path: ['execute'],
-              array_contains: user_id,
-            },
-          },
-          {
-            doc_status: enum_doc_status.draft,
-            requestor_id: user_id,
-          },
-        ],
-      },
-    });
+      const serializedStoreRequisitions = storeRequisitions.map((item) =>
+        StoreRequisitionListItemResponseSchema.parse(item),
+      );
 
-    const serializedStoreRequisitions = storeRequisitions.map((item) =>
-      StoreRequisitionListItemResponseSchema.parse(item),
-    );
+      allResults.push({
+        bu_code: code,
+        bu_name: bu_detail.name,
+        data: serializedStoreRequisitions,
+        total: total,
+      });
+
+      grandTotal += total;
+    }
 
     return Result.ok({
-      bu_code: bu_code,
-      bu_name: bu_detail.name,
+      results: allResults,
       paginate: {
-        total: total,
+        total: grandTotal,
         page: Number(paginate.page),
         perpage: Number(paginate.perpage),
-        pages: total == 0 ? 1 : Math.ceil(total / Number(paginate.perpage)),
+        pages: grandTotal == 0 ? 1 : Math.ceil(grandTotal / Number(paginate.perpage)),
       },
-      data: serializedStoreRequisitions,
     });
   }
 

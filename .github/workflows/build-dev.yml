@@ -2,13 +2,13 @@ name: Build and Deploy (Dev)
 
 on:
   push:
-    branches: [dev]
+    branches: [DEV]
   workflow_dispatch:
 
 jobs:
   deploy-vm:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/dev'
+    if: github.ref == 'refs/heads/DEV'
     environment: development
 
     steps:
@@ -31,9 +31,9 @@ jobs:
             fi
             cd $PROJECT_DIR
             git remote set-url origin https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git
-            git fetch origin dev
-            git checkout dev
-            git reset --hard origin/dev
+            git fetch origin DEV
+            git checkout DEV
+            git reset --hard origin/DEV
 
             echo "=== [2/5] Stop Containers ==="
             docker compose -f docker-compose.dev.yml down --remove-orphans || true
