@@ -69,4 +69,245 @@ export class InventoryTransactionController extends BaseMicroserviceController {
     );
     return this.handleResult(result);
   }
+
+  @MessagePattern({
+    cmd: 'inventory-transaction.test-issue',
+    service: 'inventory-transaction',
+  })
+  async testIssue(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'testIssue', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const data = payload.data || {};
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.createIssueTransaction(
+        {
+          bu_code: tenant_id,
+          product_id: data.product_id,
+          location_id: data.location_id,
+          location_code: data.location_code || null,
+          qty: Number(data.qty),
+          user_id,
+        },
+        user_id,
+        tenant_id,
+      )
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'inventory-transaction.test-adjustment-out',
+    service: 'inventory-transaction',
+  })
+  async testAdjustmentOut(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'testAdjustmentOut', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const data = payload.data || {};
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.createAdjustmentOutTransaction(
+        {
+          bu_code: tenant_id,
+          product_id: data.product_id,
+          location_id: data.location_id,
+          location_code: data.location_code || null,
+          qty: Number(data.qty),
+          user_id,
+        },
+        user_id,
+        tenant_id,
+      )
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'inventory-transaction.test-adjustment-in',
+    service: 'inventory-transaction',
+  })
+  async testAdjustmentIn(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'testAdjustmentIn', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const data = payload.data || {};
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.createAdjustmentInTransaction(
+        {
+          bu_code: tenant_id,
+          product_id: data.product_id,
+          location_id: data.location_id,
+          location_code: data.location_code || null,
+          qty: Number(data.qty),
+          cost_per_unit: Number(data.cost_per_unit),
+          user_id,
+        },
+        user_id,
+        tenant_id,
+      )
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'inventory-transaction.test-transfer',
+    service: 'inventory-transaction',
+  })
+  async testTransfer(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'testTransfer', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const data = payload.data || {};
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.createTransferTransaction(
+        {
+          bu_code: tenant_id,
+          product_id: data.product_id,
+          from_location_id: data.from_location_id,
+          from_location_code: data.from_location_code || null,
+          to_location_id: data.to_location_id,
+          to_location_code: data.to_location_code || null,
+          qty: Number(data.qty),
+          user_id,
+        },
+        user_id,
+        tenant_id,
+      )
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'inventory-transaction.get-cost-layers',
+    service: 'inventory-transaction',
+  })
+  async getCostLayers(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'getCostLayers', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.getCostLayers(
+        {
+          bu_code: tenant_id,
+          product_id: payload.product_id,
+          location_id: payload.location_id,
+        },
+        user_id,
+        tenant_id,
+      )
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'inventory-transaction.get-stock-balance',
+    service: 'inventory-transaction',
+  })
+  async getStockBalance(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'getStockBalance', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.getStockBalance(
+        {
+          bu_code: tenant_id,
+          product_id: payload.product_id,
+        },
+        user_id,
+        tenant_id,
+      )
+    );
+    return this.handleResult(result);
+  }
+
+  // ⚠️ TEMPORARY — Remove when the frontend uses proper master-data endpoints.
+  @MessagePattern({
+    cmd: 'inventory-transaction.get-locations',
+    service: 'inventory-transaction',
+  })
+  async getLocations(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'getLocations', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.getLocations(user_id, tenant_id)
+    );
+    return this.handleResult(result);
+  }
+
+  // ⚠️ TEMPORARY — Remove when the frontend uses proper master-data endpoints.
+  @MessagePattern({
+    cmd: 'inventory-transaction.get-products',
+    service: 'inventory-transaction',
+  })
+  async getProducts(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'getProducts', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.getProducts(user_id, tenant_id)
+    );
+    return this.handleResult(result);
+  }
+
+  // ⚠️ TEMPORARY — Remove when the frontend uses proper master-data endpoints.
+  @MessagePattern({
+    cmd: 'inventory-transaction.get-products-by-location',
+    service: 'inventory-transaction',
+  })
+  async getProductsByLocation(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'getProductsByLocation', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.getProductsByLocation(
+        payload.location_id,
+        user_id,
+        tenant_id,
+      )
+    );
+    return this.handleResult(result);
+  }
+
+  // ⚠️ TEMPORARY — Remove when the frontend uses proper master-data endpoints.
+  @MessagePattern({
+    cmd: 'inventory-transaction.get-calculation-method',
+    service: 'inventory-transaction',
+  })
+  async getCalculationMethod(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'getCalculationMethod', payload }, InventoryTransactionController.name);
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const result = await this.inventoryTransactionService.getCalculationMethodResult(tenant_id);
+    return this.handleResult(result);
+  }
+
+  // ⚠️ TEST ONLY — DELETE
+  @MessagePattern({
+    cmd: 'inventory-transaction.clear-product-transactions',
+    service: 'inventory-transaction',
+  })
+  async clearProductTransactions(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'clearProductTransactions', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const data = payload.data || {};
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.clearProductTransactions(
+        { product_id: data.product_id },
+        user_id,
+        tenant_id,
+      )
+    );
+    return this.handleResult(result);
+  }
 }

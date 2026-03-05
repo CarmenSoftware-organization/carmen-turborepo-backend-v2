@@ -6,6 +6,19 @@ import { BackendLogger } from '@/common/helpers/backend.logger';
 import { format } from 'date-fns';
 import { splitFifoCost } from '@/common/helpers/fifo-cost-split.helper';
 import {
+  calculateAverageCost,
+  calculateNewAverageCost,
+  calculateBalance,
+  buildAvailableFifoLots,
+  consumeFifoLots,
+  calculateConsumptionTotalCost,
+  calculateConsumptionCostPerUnit,
+  sumReceivingTotals,
+  type IFifoLot,
+  type IConsumption,
+  type ILotGroup,
+} from '@/common/helpers/inventory-cost.formula';
+import {
   InventoryTransactionListItemResponseSchema,
   Result,
   ErrorCode,
@@ -39,6 +52,68 @@ export interface ICreateFromGrnPayload {
   grn_no: string | null;
   grn_date: Date;
   detail_items: ICreateFromGrnDetailItem[];
+  user_id: string;
+}
+
+export interface ITestIssuePayload {
+  bu_code: string;
+  product_id: string;
+  location_id: string;
+  location_code: string | null;
+  qty: number;
+  user_id: string;
+}
+
+export interface ITestTransferPayload {
+  bu_code: string;
+  product_id: string;
+  from_location_id: string;
+  from_location_code: string | null;
+  to_location_id: string;
+  to_location_code: string | null;
+  qty: number;
+  user_id: string;
+}
+
+export interface ITestAdjustmentInPayload {
+  bu_code: string;
+  product_id: string;
+  location_id: string;
+  location_code: string | null;
+  qty: number;
+  cost_per_unit: number;
+  user_id: string;
+}
+
+export interface ITestAdjustmentOutPayload {
+  bu_code: string;
+  product_id: string;
+  location_id: string;
+  location_code: string | null;
+  qty: number;
+  user_id: string;
+}
+
+export interface ICostLayerQuery {
+  bu_code: string;
+  product_id?: string;
+  location_id?: string;
+}
+
+export interface IStockBalanceQuery {
+  bu_code: string;
+  product_id?: string;
+}
+
+interface IConsumptionParams {
+  product_id: string;
+  location_id: string;
+  location_code: string | null;
+  qty: number;
+  transactionType: enum_transaction_type;
+  docType: enum_inventory_doc_type;
+  lotPrefix: string;
+  note: string;
   user_id: string;
 }
 
@@ -172,7 +247,9 @@ export class InventoryTransactionService {
     payload: ICreateFromGrnPayload,
   ): Promise<string> {
     const now = new Date();
+    const nowIso = now.toISOString();
     const grnDate = payload.grn_date;
+    const grnDateIso = grnDate.toISOString();
     const year = grnDate.getFullYear().toString();
     const month = (grnDate.getMonth() + 1).toString().padStart(2, '0');
     const atPeriod = format(grnDate, 'yyMM');
@@ -184,22 +261,20 @@ export class InventoryTransactionService {
         inventory_doc_no: payload.grn_id,
         note: `GRN ${payload.grn_no || ''} approved`,
         created_by_id: payload.user_id,
-        created_at: now,
+        created_at: nowIso,
         updated_by_id: payload.user_id,
-        updated_at: now,
+        updated_at: nowIso,
       },
     });
 
     // 2. Process each detail item — create transaction detail + FIFO cost layers
-    let lotSeqNo = 0;
-
     for (const item of payload.detail_items) {
       const qty = item.received_base_qty;
       const totalCost = item.base_net_amount;
 
       if (qty <= 0) continue;
 
-      lotSeqNo++;
+      const lotSeqNo = await this.getNextLotSeqNo(tx, atPeriod);
       const lotNo = `LOT-${year}-${month}-${lotSeqNo.toString().padStart(4, '0')}`;
 
       // Overall cost_per_unit for the transaction detail (rounded to 2 decimals)
@@ -217,9 +292,9 @@ export class InventoryTransactionService {
           cost_per_unit: costPerUnit,
           total_cost: totalCost,
           created_by_id: payload.user_id,
-          created_at: now,
+          created_at: nowIso,
           updated_by_id: payload.user_id,
-          updated_at: now,
+          updated_at: nowIso,
         },
       });
 
@@ -236,7 +311,7 @@ export class InventoryTransactionService {
             lot_index: i + 1,
             location_id: item.location_id,
             location_code: item.location_code,
-            lot_at_date: grnDate,
+            lot_at_date: grnDateIso,
             lot_seq_no: lotSeqNo,
             product_id: item.product_id,
             at_period: atPeriod,
@@ -248,20 +323,21 @@ export class InventoryTransactionService {
             diff_amount: 0,
             average_cost_per_unit: 0,
             created_by_id: payload.user_id,
-            created_at: now,
+            created_at: nowIso,
           },
         });
       }
 
+      // TODO: uncomment when GRN integration is wired
       // Link the inventory transaction back to the GRN detail item
-      await tx.tb_good_received_note_detail_item.update({
-        where: { id: item.detail_item_id },
-        data: {
-          inventory_transaction_id: inventoryTransaction.id,
-          updated_by_id: payload.user_id,
-          updated_at: now,
-        },
-      });
+      // await tx.tb_good_received_note_detail_item.update({
+      //   where: { id: item.detail_item_id },
+      //   data: {
+      //     inventory_transaction_id: inventoryTransaction.id,
+      //     updated_by_id: payload.user_id,
+      //     updated_at: nowIso,
+      //   },
+      // });
     }
 
     return inventoryTransaction.id;
@@ -276,36 +352,21 @@ export class InventoryTransactionService {
     payload: ICreateFromGrnPayload,
   ): Promise<string> {
     const now = new Date();
+    const nowIso = now.toISOString();
     const grnDate = payload.grn_date;
+    const grnDateIso = grnDate.toISOString();
     const year = grnDate.getFullYear().toString();
     const month = (grnDate.getMonth() + 1).toString().padStart(2, '0');
     const atPeriod = format(grnDate, 'yyMM');
 
-    // 1. Query existing inventory per product (on-hand qty + current average cost)
+    // 1. Query existing receiving cost layers per product and compute totals
+    // Formula: avg_cost = sum(in_qty * cost_per_unit) / sum(in_qty) for all receiving layers
     const uniqueProductIds = [...new Set(payload.detail_items.map(item => item.product_id))];
 
-    const stockGrouped = await tx.tb_inventory_transaction_detail.groupBy({
-      by: ['product_id'],
-      where: { product_id: { in: uniqueProductIds } },
-      _sum: { qty: true },
-    });
-
-    const onHandMap = new Map<string, number>();
-    for (const group of stockGrouped) {
-      const qty = Number(group._sum.qty || 0);
-      onHandMap.set(group.product_id, qty > 0 ? qty : 0);
-    }
-
-    const avgCostMap = new Map<string, number>();
+    const existingReceivingMap = new Map<string, { totalInQty: number; totalInCost: number }>();
     for (const productId of uniqueProductIds) {
-      const latestLayer = await tx.tb_inventory_transaction_cost_layer.findFirst({
-        where: { product_id: productId, deleted_at: null },
-        select: { average_cost_per_unit: true },
-        orderBy: { created_at: 'desc' },
-      });
-      if (latestLayer) {
-        avgCostMap.set(productId, Number(latestLayer.average_cost_per_unit || 0));
-      }
+      const layers = await this.getReceivingLayers(tx, productId);
+      existingReceivingMap.set(productId, sumReceivingTotals(layers));
     }
 
     // 2. Aggregate new receipts per product (handle multiple lines for same product in one GRN)
@@ -318,20 +379,15 @@ export class InventoryTransactionService {
       newReceiptsPerProduct.set(item.product_id, existing);
     }
 
-    // 3. Compute new weighted average cost per product
+    // 3. Compute new weighted average cost per product using formula:
+    // new_avg = (existing_total_cost + new_total_cost) / (existing_total_qty + new_qty)
     const newAvgCostMap = new Map<string, number>();
     for (const [productId, newReceipt] of newReceiptsPerProduct) {
-      const existingQty = onHandMap.get(productId) || 0;
-      const existingAvgCost = avgCostMap.get(productId) || 0;
-
-      const existingTotalCost = existingQty * existingAvgCost;
-      const combinedQty = existingQty + newReceipt.totalQty;
-      const combinedCost = existingTotalCost + newReceipt.totalCost;
-
-      const newAvgCost = combinedQty > 0
-        ? Math.round((combinedCost / combinedQty) * 100) / 100
-        : 0;
-
+      const existing = existingReceivingMap.get(productId) || { totalInQty: 0, totalInCost: 0 };
+      const newAvgCost = calculateNewAverageCost(
+        existing.totalInQty, existing.totalInCost,
+        newReceipt.totalQty, newReceipt.totalCost,
+      );
       newAvgCostMap.set(productId, newAvgCost);
     }
 
@@ -342,22 +398,20 @@ export class InventoryTransactionService {
         inventory_doc_no: payload.grn_id,
         note: `GRN ${payload.grn_no || ''} approved`,
         created_by_id: payload.user_id,
-        created_at: now,
+        created_at: nowIso,
         updated_by_id: payload.user_id,
-        updated_at: now,
+        updated_at: nowIso,
       },
     });
 
     // 5. Process each detail item — create transaction detail + single cost layer
-    let lotSeqNo = 0;
-
     for (const item of payload.detail_items) {
       const qty = item.received_base_qty;
       const totalCost = item.base_net_amount;
 
       if (qty <= 0) continue;
 
-      lotSeqNo++;
+      const lotSeqNo = await this.getNextLotSeqNo(tx, atPeriod);
       const lotNo = `LOT-${year}-${month}-${lotSeqNo.toString().padStart(4, '0')}`;
 
       const costPerUnit = Math.round((totalCost / qty) * 100) / 100;
@@ -375,45 +429,51 @@ export class InventoryTransactionService {
           cost_per_unit: costPerUnit,
           total_cost: totalCost,
           created_by_id: payload.user_id,
-          created_at: now,
+          created_at: nowIso,
           updated_by_id: payload.user_id,
-          updated_at: now,
+          updated_at: nowIso,
         },
       });
 
-      // Create single cost layer (average doesn't split like FIFO)
-      await tx.tb_inventory_transaction_cost_layer.create({
-        data: {
-          inventory_transaction_detail_id: txnDetail.id,
-          lot_no: lotNo,
-          lot_index: 1,
-          location_id: item.location_id,
-          location_code: item.location_code,
-          lot_at_date: grnDate,
-          lot_seq_no: lotSeqNo,
-          product_id: item.product_id,
-          at_period: atPeriod,
-          transaction_type: enum_transaction_type.good_received_note,
-          in_qty: qty,
-          out_qty: 0,
-          cost_per_unit: costPerUnit,
-          total_cost: totalCost,
-          diff_amount: 0,
-          average_cost_per_unit: newAvgCost,
-          created_by_id: payload.user_id,
-          created_at: now,
-        },
-      });
+      // Split cost into per-unit layers (same split logic as FIFO)
+      const costLayers = splitFifoCost(qty, totalCost, 2);
 
+      for (let i = 0; i < costLayers.length; i++) {
+        const layer = costLayers[i];
+        await tx.tb_inventory_transaction_cost_layer.create({
+          data: {
+            inventory_transaction_detail_id: txnDetail.id,
+            lot_no: lotNo,
+            lot_index: i + 1,
+            location_id: item.location_id,
+            location_code: item.location_code,
+            lot_at_date: grnDateIso,
+            lot_seq_no: lotSeqNo,
+            product_id: item.product_id,
+            at_period: atPeriod,
+            transaction_type: enum_transaction_type.good_received_note,
+            in_qty: layer.qty,
+            out_qty: 0,
+            cost_per_unit: layer.costPerUnit,
+            total_cost: layer.totalCost,
+            diff_amount: 0,
+            average_cost_per_unit: newAvgCost,
+            created_by_id: payload.user_id,
+            created_at: nowIso,
+          },
+        });
+      }
+
+      // TODO: uncomment when GRN integration is wired
       // Link the inventory transaction back to the GRN detail item
-      await tx.tb_good_received_note_detail_item.update({
-        where: { id: item.detail_item_id },
-        data: {
-          inventory_transaction_id: inventoryTransaction.id,
-          updated_by_id: payload.user_id,
-          updated_at: now,
-        },
-      });
+      // await tx.tb_good_received_note_detail_item.update({
+      //   where: { id: item.detail_item_id },
+      //   data: {
+      //     inventory_transaction_id: inventoryTransaction.id,
+      //     updated_by_id: payload.user_id,
+      //     updated_at: nowIso,
+      //   },
+      // });
     }
 
     // 6. Update average_cost_per_unit on ALL existing cost layers for each affected product
@@ -430,5 +490,976 @@ export class InventoryTransactionService {
     }
 
     return inventoryTransaction.id;
+  }
+
+  // ============================================================
+  // HELPERS
+  // ============================================================
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async getAvailableFifoLots(tx: any, productId: string, locationId: string): Promise<IFifoLot[]> {
+    // Get all receive layers (in_qty > 0)
+    const receiveLayers = await tx.tb_inventory_transaction_cost_layer.findMany({
+      where: {
+        product_id: productId,
+        location_id: locationId,
+        in_qty: { gt: 0 },
+        deleted_at: null,
+      },
+      orderBy: [
+        { lot_at_date: 'asc' },
+        { lot_seq_no: 'asc' },
+        { lot_index: 'asc' },
+      ],
+    });
+
+    // Group by lot_no → { totalIn, totalCost, lotAtDate, lotSeqNo }
+    const lotGroups = new Map<string, ILotGroup>();
+    for (const layer of receiveLayers) {
+      const lotNo = layer.lot_no!;
+      const existing = lotGroups.get(lotNo);
+      if (existing) {
+        existing.totalIn += Number(layer.in_qty);
+        existing.totalCost += Number(layer.total_cost);
+      } else {
+        lotGroups.set(lotNo, {
+          totalIn: Number(layer.in_qty),
+          totalCost: Number(layer.total_cost),
+          lotAtDate: layer.lot_at_date!,
+          lotSeqNo: layer.lot_seq_no!,
+        });
+      }
+    }
+
+    // Get consumed amounts per parent_lot_no
+    const lotNos = [...lotGroups.keys()];
+    const consumedLayers = lotNos.length > 0
+      ? await tx.tb_inventory_transaction_cost_layer.findMany({
+        where: {
+          parent_lot_no: { in: lotNos },
+          out_qty: { gt: 0 },
+          deleted_at: null,
+        },
+      })
+      : [];
+
+    const consumedPerLot = new Map<string, number>();
+    for (const layer of consumedLayers) {
+      const key = layer.parent_lot_no!;
+      consumedPerLot.set(key, (consumedPerLot.get(key) || 0) + Number(layer.out_qty));
+    }
+
+    // Build available lots sorted oldest-first using formula
+    return buildAvailableFifoLots(lotGroups, consumedPerLot);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async getNextLotSeqNo(tx: any, atPeriod: string): Promise<number> {
+    const maxLayer = await tx.tb_inventory_transaction_cost_layer.findFirst({
+      where: { at_period: atPeriod, deleted_at: null },
+      orderBy: { lot_seq_no: 'desc' },
+      select: { lot_seq_no: true },
+    });
+    return (maxLayer?.lot_seq_no || 0) + 1;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async getCurrentAverageCost(tx: any, productId: string): Promise<number> {
+    const layers = await this.getReceivingLayers(tx, productId);
+    return calculateAverageCost(layers);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async getReceivingLayers(tx: any, productId: string) {
+    const rawLayers = await tx.tb_inventory_transaction_cost_layer.findMany({
+      where: { product_id: productId, in_qty: { gt: 0 }, deleted_at: null },
+      select: { in_qty: true, cost_per_unit: true },
+    });
+    return rawLayers.map((l: any) => ({ in_qty: Number(l.in_qty), cost_per_unit: Number(l.cost_per_unit) }));
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async getLocationBalance(tx: any, productId: string, locationId: string): Promise<number> {
+    const result = await tx.tb_inventory_transaction_cost_layer.aggregate({
+      where: { product_id: productId, location_id: locationId, deleted_at: null },
+      _sum: { in_qty: true, out_qty: true },
+    });
+    // balance = sum(in_qty) - sum(out_qty)
+    return calculateBalance(Number(result._sum.in_qty || 0), Number(result._sum.out_qty || 0));
+  }
+
+  // ============================================================
+  // FIFO CONSUMPTION (issue, adjustment_out)
+  // ============================================================
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async createFifoConsumption(
+    tx: any,
+    params: IConsumptionParams,
+    existingTransactionId?: string,
+  ): Promise<{ transactionId: string; consumptions: IConsumption[] }> {
+    const now = new Date();
+    const nowIso = now.toISOString();
+    const atPeriod = format(now, 'yyMM');
+    const year = now.getFullYear().toString();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+
+    const availableLots = await this.getAvailableFifoLots(tx, params.product_id, params.location_id);
+    const consumptions = consumeFifoLots(availableLots, params.qty);
+
+    // Transaction header
+    const transactionId = existingTransactionId || (await tx.tb_inventory_transaction.create({
+      data: {
+        inventory_doc_type: params.docType,
+        inventory_doc_no: crypto.randomUUID(),
+        note: params.note,
+        created_by_id: params.user_id,
+        created_at: nowIso,
+        updated_by_id: params.user_id,
+        updated_at: nowIso,
+      },
+    })).id;
+
+    const lotSeqNo = await this.getNextLotSeqNo(tx, atPeriod);
+    const outLotNo = `${params.lotPrefix}-${year}-${month}-${lotSeqNo.toString().padStart(4, '0')}`;
+
+    // total_cost = sum(qty × costPerUnit) for each consumption
+    const totalCost = calculateConsumptionTotalCost(consumptions);
+    // cost_per_unit = total_cost / total_qty
+    const costPerUnit = calculateConsumptionCostPerUnit(consumptions, params.qty);
+
+    // Transaction detail (negative qty for outgoing)
+    const txnDetail = await tx.tb_inventory_transaction_detail.create({
+      data: {
+        inventory_transaction_id: transactionId,
+        product_id: params.product_id,
+        location_id: params.location_id,
+        location_code: params.location_code,
+        current_lot_no: outLotNo,
+        qty: -params.qty,
+        cost_per_unit: costPerUnit,
+        total_cost: totalCost,
+        created_by_id: params.user_id,
+        created_at: nowIso,
+        updated_by_id: params.user_id,
+        updated_at: nowIso,
+      },
+    });
+
+    // Cost layers — one per consumed lot
+    for (let i = 0; i < consumptions.length; i++) {
+      const c = consumptions[i];
+      await tx.tb_inventory_transaction_cost_layer.create({
+        data: {
+          inventory_transaction_detail_id: txnDetail.id,
+          lot_no: outLotNo,
+          lot_index: i + 1,
+          location_id: params.location_id,
+          location_code: params.location_code,
+          lot_at_date: nowIso,
+          lot_seq_no: lotSeqNo,
+          product_id: params.product_id,
+          parent_lot_no: c.lotNo,
+          at_period: atPeriod,
+          transaction_type: params.transactionType,
+          in_qty: 0,
+          out_qty: c.qty,
+          cost_per_unit: c.costPerUnit,
+          total_cost: Math.round(c.qty * c.costPerUnit * 100) / 100,
+          diff_amount: 0,
+          average_cost_per_unit: 0,
+          created_by_id: params.user_id,
+          created_at: nowIso,
+        },
+      });
+    }
+
+    return { transactionId, consumptions };
+  }
+
+  // ============================================================
+  // AVERAGE CONSUMPTION (issue, adjustment_out)
+  // ============================================================
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async createAverageConsumption(
+    tx: any,
+    params: IConsumptionParams,
+    existingTransactionId?: string,
+  ): Promise<{ transactionId: string }> {
+    const now = new Date();
+    const nowIso = now.toISOString();
+    const atPeriod = format(now, 'yyMM');
+    const year = now.getFullYear().toString();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+
+    const avgCost = await this.getCurrentAverageCost(tx, params.product_id);
+    const balance = await this.getLocationBalance(tx, params.product_id, params.location_id);
+
+    if (balance < params.qty) {
+      throw new Error(`Insufficient stock. Requested: ${params.qty}, Available: ${balance}`);
+    }
+
+    // Transaction header
+    const transactionId = existingTransactionId || (await tx.tb_inventory_transaction.create({
+      data: {
+        inventory_doc_type: params.docType,
+        inventory_doc_no: crypto.randomUUID(),
+        note: params.note,
+        created_by_id: params.user_id,
+        created_at: nowIso,
+        updated_by_id: params.user_id,
+        updated_at: nowIso,
+      },
+    })).id;
+
+    const lotSeqNo = await this.getNextLotSeqNo(tx, atPeriod);
+    const outLotNo = `${params.lotPrefix}-${year}-${month}-${lotSeqNo.toString().padStart(4, '0')}`;
+    const totalCost = Math.round(params.qty * avgCost * 100) / 100;
+
+    // Transaction detail (negative qty)
+    const txnDetail = await tx.tb_inventory_transaction_detail.create({
+      data: {
+        inventory_transaction_id: transactionId,
+        product_id: params.product_id,
+        location_id: params.location_id,
+        location_code: params.location_code,
+        current_lot_no: outLotNo,
+        qty: -params.qty,
+        cost_per_unit: avgCost,
+        total_cost: totalCost,
+        created_by_id: params.user_id,
+        created_at: nowIso,
+        updated_by_id: params.user_id,
+        updated_at: nowIso,
+      },
+    });
+
+    // Single cost layer
+    await tx.tb_inventory_transaction_cost_layer.create({
+      data: {
+        inventory_transaction_detail_id: txnDetail.id,
+        lot_no: outLotNo,
+        lot_index: 1,
+        location_id: params.location_id,
+        location_code: params.location_code,
+        lot_at_date: nowIso,
+        lot_seq_no: lotSeqNo,
+        product_id: params.product_id,
+        at_period: atPeriod,
+        transaction_type: params.transactionType,
+        in_qty: 0,
+        out_qty: params.qty,
+        cost_per_unit: avgCost,
+        total_cost: totalCost,
+        diff_amount: 0,
+        average_cost_per_unit: avgCost,
+        created_by_id: params.user_id,
+        created_at: nowIso,
+      },
+    });
+
+    return { transactionId };
+  }
+
+  // ============================================================
+  // PUBLIC TEST METHODS
+  // ============================================================
+
+  @TryCatch
+  async createIssueTransaction(
+    data: ITestIssuePayload,
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'createIssueTransaction', data }, InventoryTransactionService.name);
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+    const method = await this.getCalculationMethod(data.bu_code);
+
+    let transactionId = '';
+
+    await prisma.$transaction(async (tx: unknown) => {
+      const params: IConsumptionParams = {
+        product_id: data.product_id,
+        location_id: data.location_id,
+        location_code: data.location_code,
+        qty: data.qty,
+        transactionType: enum_transaction_type.issue,
+        docType: enum_inventory_doc_type.store_requisition,
+        lotPrefix: 'ISS',
+        note: 'Test issue transaction',
+        user_id: data.user_id,
+      };
+
+      if (method === 'fifo') {
+        const result = await this.createFifoConsumption(tx, params);
+        transactionId = result.transactionId;
+      } else {
+        const result = await this.createAverageConsumption(tx, params);
+        transactionId = result.transactionId;
+      }
+    });
+
+    return Result.ok({ id: transactionId });
+  }
+
+  @TryCatch
+  async createAdjustmentOutTransaction(
+    data: ITestAdjustmentOutPayload,
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'createAdjustmentOutTransaction', data }, InventoryTransactionService.name);
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+    const method = await this.getCalculationMethod(data.bu_code);
+
+    let transactionId = '';
+
+    await prisma.$transaction(async (tx: unknown) => {
+      const params: IConsumptionParams = {
+        product_id: data.product_id,
+        location_id: data.location_id,
+        location_code: data.location_code,
+        qty: data.qty,
+        transactionType: enum_transaction_type.adjustment_out,
+        docType: enum_inventory_doc_type.stock_out,
+        lotPrefix: 'ADO',
+        note: 'Test adjustment out transaction',
+        user_id: data.user_id,
+      };
+
+      if (method === 'fifo') {
+        const result = await this.createFifoConsumption(tx, params);
+        transactionId = result.transactionId;
+      } else {
+        const result = await this.createAverageConsumption(tx, params);
+        transactionId = result.transactionId;
+      }
+    });
+
+    return Result.ok({ id: transactionId });
+  }
+
+  @TryCatch
+  async createAdjustmentInTransaction(
+    data: ITestAdjustmentInPayload,
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'createAdjustmentInTransaction', data }, InventoryTransactionService.name);
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+    const method = await this.getCalculationMethod(data.bu_code);
+
+    let transactionId = '';
+
+    await prisma.$transaction(async (tx: unknown) => {
+      const now = new Date();
+      const nowIso = now.toISOString();
+      const atPeriod = format(now, 'yyMM');
+      const year = now.getFullYear().toString();
+      const month = (now.getMonth() + 1).toString().padStart(2, '0');
+
+      // Create transaction header
+      const inventoryTransaction = await (tx as any).tb_inventory_transaction.create({
+        data: {
+          inventory_doc_type: enum_inventory_doc_type.stock_in,
+          inventory_doc_no: crypto.randomUUID(),
+          note: 'Test adjustment in transaction',
+          created_by_id: data.user_id,
+          created_at: nowIso,
+          updated_by_id: data.user_id,
+          updated_at: nowIso,
+        },
+      });
+      transactionId = inventoryTransaction.id;
+
+      const lotSeqNo = await this.getNextLotSeqNo(tx, atPeriod);
+      const lotNo = `ADI-${year}-${month}-${lotSeqNo.toString().padStart(4, '0')}`;
+      const totalCost = Math.round(data.qty * data.cost_per_unit * 100) / 100;
+
+      // Transaction detail (positive qty for incoming)
+      const txnDetail = await (tx as any).tb_inventory_transaction_detail.create({
+        data: {
+          inventory_transaction_id: inventoryTransaction.id,
+          product_id: data.product_id,
+          location_id: data.location_id,
+          location_code: data.location_code,
+          current_lot_no: lotNo,
+          qty: data.qty,
+          cost_per_unit: data.cost_per_unit,
+          total_cost: totalCost,
+          created_by_id: data.user_id,
+          created_at: nowIso,
+          updated_by_id: data.user_id,
+          updated_at: nowIso,
+        },
+      });
+
+      if (method === 'fifo') {
+        // FIFO: split cost into layers
+        const costLayers = splitFifoCost(data.qty, totalCost, 2);
+        for (let i = 0; i < costLayers.length; i++) {
+          const layer = costLayers[i];
+          await (tx as any).tb_inventory_transaction_cost_layer.create({
+            data: {
+              inventory_transaction_detail_id: txnDetail.id,
+              lot_no: lotNo,
+              lot_index: i + 1,
+              location_id: data.location_id,
+              location_code: data.location_code,
+              lot_at_date: nowIso,
+              lot_seq_no: lotSeqNo,
+              product_id: data.product_id,
+              at_period: atPeriod,
+              transaction_type: enum_transaction_type.adjustment_in,
+              in_qty: layer.qty,
+              out_qty: 0,
+              cost_per_unit: layer.costPerUnit,
+              total_cost: layer.totalCost,
+              diff_amount: 0,
+              average_cost_per_unit: 0,
+              created_by_id: data.user_id,
+              created_at: nowIso,
+            },
+          });
+        }
+      } else {
+        // Average: recalculate from all receiving layers using formula:
+        // new_avg = (existing_total_cost + new_total_cost) / (existing_total_qty + new_qty)
+        const layers = await this.getReceivingLayers(tx, data.product_id);
+        const { totalInQty, totalInCost } = sumReceivingTotals(layers);
+        const newAvgCost = calculateNewAverageCost(totalInQty, totalInCost, data.qty, totalCost);
+
+        // Create cost layers (split per unit like FIFO)
+        const costLayers = splitFifoCost(data.qty, totalCost, 2);
+        for (let i = 0; i < costLayers.length; i++) {
+          const layer = costLayers[i];
+          await (tx as any).tb_inventory_transaction_cost_layer.create({
+            data: {
+              inventory_transaction_detail_id: txnDetail.id,
+              lot_no: lotNo,
+              lot_index: i + 1,
+              location_id: data.location_id,
+              location_code: data.location_code,
+              lot_at_date: nowIso,
+              lot_seq_no: lotSeqNo,
+              product_id: data.product_id,
+              at_period: atPeriod,
+              transaction_type: enum_transaction_type.adjustment_in,
+              in_qty: layer.qty,
+              out_qty: 0,
+              cost_per_unit: layer.costPerUnit,
+              total_cost: layer.totalCost,
+              diff_amount: 0,
+              average_cost_per_unit: newAvgCost,
+              created_by_id: data.user_id,
+              created_at: nowIso,
+            },
+          });
+        }
+
+        // Update average_cost_per_unit on ALL existing layers for this product
+        await (tx as any).tb_inventory_transaction_cost_layer.updateMany({
+          where: { product_id: data.product_id, deleted_at: null },
+          data: { average_cost_per_unit: newAvgCost },
+        });
+      }
+    });
+
+    return Result.ok({ id: transactionId });
+  }
+
+  @TryCatch
+  async createTransferTransaction(
+    data: ITestTransferPayload,
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'createTransferTransaction', data }, InventoryTransactionService.name);
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+    const method = await this.getCalculationMethod(data.bu_code);
+
+    let transactionId = '';
+
+    await prisma.$transaction(async (tx: unknown) => {
+      const now = new Date();
+      const nowIso = now.toISOString();
+      const atPeriod = format(now, 'yyMM');
+      const year = now.getFullYear().toString();
+      const month = (now.getMonth() + 1).toString().padStart(2, '0');
+
+      // Create shared transaction header
+      const inventoryTransaction = await (tx as any).tb_inventory_transaction.create({
+        data: {
+          inventory_doc_type: enum_inventory_doc_type.store_requisition,
+          inventory_doc_no: crypto.randomUUID(),
+          note: 'Test transfer transaction',
+          created_by_id: data.user_id,
+          created_at: nowIso,
+          updated_by_id: data.user_id,
+          updated_at: nowIso,
+        },
+      });
+      transactionId = inventoryTransaction.id;
+
+      if (method === 'fifo') {
+        // --- FIFO Transfer ---
+        // 1. Consume from source (transfer_out)
+        const outResult = await this.createFifoConsumption(tx, {
+          product_id: data.product_id,
+          location_id: data.from_location_id,
+          location_code: data.from_location_code,
+          qty: data.qty,
+          transactionType: enum_transaction_type.transfer_out,
+          docType: enum_inventory_doc_type.store_requisition,
+          lotPrefix: 'TRO',
+          note: 'Test transfer out',
+          user_id: data.user_id,
+        }, transactionId);
+
+        // 2. Receive at target (transfer_in) with same costs
+        const lotSeqNo = await this.getNextLotSeqNo(tx, atPeriod);
+        const inLotNo = `TRI-${year}-${month}-${lotSeqNo.toString().padStart(4, '0')}`;
+
+        // total_cost = sum(qty × costPerUnit) for each FIFO consumption
+        const totalCost = calculateConsumptionTotalCost(outResult.consumptions);
+        // cost_per_unit = total_cost / total_qty
+        const costPerUnit = calculateConsumptionCostPerUnit(outResult.consumptions, data.qty);
+
+        const inDetail = await (tx as any).tb_inventory_transaction_detail.create({
+          data: {
+            inventory_transaction_id: transactionId,
+            product_id: data.product_id,
+            location_id: data.to_location_id,
+            location_code: data.to_location_code,
+            current_lot_no: inLotNo,
+            qty: data.qty,
+            cost_per_unit: costPerUnit,
+            total_cost: totalCost,
+            created_by_id: data.user_id,
+            created_at: nowIso,
+            updated_by_id: data.user_id,
+            updated_at: nowIso,
+          },
+        });
+
+        // Create transfer_in cost layers preserving FIFO costs
+        for (let i = 0; i < outResult.consumptions.length; i++) {
+          const c = outResult.consumptions[i];
+          await (tx as any).tb_inventory_transaction_cost_layer.create({
+            data: {
+              inventory_transaction_detail_id: inDetail.id,
+              lot_no: inLotNo,
+              lot_index: i + 1,
+              location_id: data.to_location_id,
+              location_code: data.to_location_code,
+              lot_at_date: nowIso,
+              lot_seq_no: lotSeqNo,
+              product_id: data.product_id,
+              parent_lot_no: c.lotNo,
+              at_period: atPeriod,
+              transaction_type: enum_transaction_type.transfer_in,
+              in_qty: c.qty,
+              out_qty: 0,
+              cost_per_unit: c.costPerUnit,
+              total_cost: Math.round(c.qty * c.costPerUnit * 100) / 100,
+              diff_amount: 0,
+              average_cost_per_unit: 0,
+              created_by_id: data.user_id,
+              created_at: nowIso,
+            },
+          });
+        }
+      } else {
+        // --- Average Transfer ---
+        // 1. Consume from source
+        await this.createAverageConsumption(tx, {
+          product_id: data.product_id,
+          location_id: data.from_location_id,
+          location_code: data.from_location_code,
+          qty: data.qty,
+          transactionType: enum_transaction_type.transfer_out,
+          docType: enum_inventory_doc_type.store_requisition,
+          lotPrefix: 'TRO',
+          note: 'Test transfer out',
+          user_id: data.user_id,
+        }, transactionId);
+
+        // 2. Receive at target with same average cost
+        const avgCost = await this.getCurrentAverageCost(tx, data.product_id);
+        const lotSeqNo = await this.getNextLotSeqNo(tx, atPeriod);
+        const inLotNo = `TRI-${year}-${month}-${lotSeqNo.toString().padStart(4, '0')}`;
+        const totalCost = Math.round(data.qty * avgCost * 100) / 100;
+
+        const inDetail = await (tx as any).tb_inventory_transaction_detail.create({
+          data: {
+            inventory_transaction_id: transactionId,
+            product_id: data.product_id,
+            location_id: data.to_location_id,
+            location_code: data.to_location_code,
+            current_lot_no: inLotNo,
+            qty: data.qty,
+            cost_per_unit: avgCost,
+            total_cost: totalCost,
+            created_by_id: data.user_id,
+            created_at: nowIso,
+            updated_by_id: data.user_id,
+            updated_at: nowIso,
+          },
+        });
+
+        await (tx as any).tb_inventory_transaction_cost_layer.create({
+          data: {
+            inventory_transaction_detail_id: inDetail.id,
+            lot_no: inLotNo,
+            lot_index: 1,
+            location_id: data.to_location_id,
+            location_code: data.to_location_code,
+            lot_at_date: nowIso,
+            lot_seq_no: lotSeqNo,
+            product_id: data.product_id,
+            at_period: atPeriod,
+            transaction_type: enum_transaction_type.transfer_in,
+            in_qty: data.qty,
+            out_qty: 0,
+            cost_per_unit: avgCost,
+            total_cost: totalCost,
+            diff_amount: 0,
+            average_cost_per_unit: avgCost,
+            created_by_id: data.user_id,
+            created_at: nowIso,
+          },
+        });
+      }
+    });
+
+    return Result.ok({ id: transactionId });
+  }
+
+  // ============================================================
+  // QUERY METHODS
+  // ============================================================
+
+  @TryCatch
+  async getCostLayers(
+    query: ICostLayerQuery,
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'getCostLayers', query }, InventoryTransactionService.name);
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const where: any = { deleted_at: null };
+    if (query.product_id) where.product_id = query.product_id;
+    if (query.location_id) where.location_id = query.location_id;
+
+    const layers = await prisma.tb_inventory_transaction_cost_layer.findMany({
+      where,
+      orderBy: [
+        { product_id: 'asc' },
+        { lot_at_date: 'asc' },
+        { lot_seq_no: 'asc' },
+        { lot_index: 'asc' },
+        { created_at: 'asc' },
+      ],
+    });
+
+    const result = layers.map((layer) => ({
+      id: layer.id,
+      lot_no: layer.lot_no,
+      lot_index: layer.lot_index,
+      parent_lot_no: layer.parent_lot_no,
+      transaction_type: layer.transaction_type,
+      product_id: layer.product_id,
+      location_id: layer.location_id,
+      location_code: layer.location_code,
+      in_qty: Number(layer.in_qty),
+      out_qty: Number(layer.out_qty),
+      balance: Number(layer.in_qty) - Number(layer.out_qty),
+      cost_per_unit: Number(layer.cost_per_unit),
+      average_cost_per_unit: Number(layer.average_cost_per_unit),
+      total_cost: Number(layer.total_cost),
+      lot_at_date: layer.lot_at_date,
+      lot_seq_no: layer.lot_seq_no,
+      at_period: layer.at_period,
+      created_at: layer.created_at,
+    }));
+
+    return Result.ok(result);
+  }
+
+  @TryCatch
+  async getStockBalance(
+    query: IStockBalanceQuery,
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'getStockBalance', query }, InventoryTransactionService.name);
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const where: any = { deleted_at: null };
+    if (query.product_id) where.product_id = query.product_id;
+
+    const layers = await prisma.tb_inventory_transaction_cost_layer.findMany({
+      where,
+      select: {
+        product_id: true,
+        location_id: true,
+        location_code: true,
+        in_qty: true,
+        out_qty: true,
+        cost_per_unit: true,
+        average_cost_per_unit: true,
+      },
+    });
+
+    // Aggregate per product + location
+    const balanceMap = new Map<string, {
+      product_id: string;
+      location_id: string | null;
+      location_code: string | null;
+      total_in: number;
+      total_out: number;
+      latest_avg_cost: number;
+    }>();
+
+    for (const layer of layers) {
+      const key = `${layer.product_id}|${layer.location_id}`;
+      const existing = balanceMap.get(key);
+      if (existing) {
+        existing.total_in += Number(layer.in_qty);
+        existing.total_out += Number(layer.out_qty);
+        existing.latest_avg_cost = Number(layer.average_cost_per_unit) || existing.latest_avg_cost;
+      } else {
+        balanceMap.set(key, {
+          product_id: layer.product_id!,
+          location_id: layer.location_id,
+          location_code: layer.location_code,
+          total_in: Number(layer.in_qty),
+          total_out: Number(layer.out_qty),
+          latest_avg_cost: Number(layer.average_cost_per_unit),
+        });
+      }
+    }
+
+    const result = [...balanceMap.values()].map((item) => ({
+      product_id: item.product_id,
+      location_id: item.location_id,
+      location_code: item.location_code,
+      total_in_qty: item.total_in,
+      total_out_qty: item.total_out,
+      balance: item.total_in - item.total_out,
+      latest_avg_cost: item.latest_avg_cost,
+      total_value: Math.round((item.total_in - item.total_out) * item.latest_avg_cost * 100) / 100,
+    }));
+
+    return Result.ok(result);
+  }
+
+  // ──────────────────────────────────────────────────────────────────────
+  // ⚠️ TEMPORARY — helper queries for the test frontend.
+  // Remove these when proper master-data lookup is wired through the UI.
+  // ──────────────────────────────────────────────────────────────────────
+
+  /**
+   * ⚠️ TEMPORARY — Returns active locations.
+   * Remove when the frontend uses the proper master-data endpoints.
+   */
+  async getLocations(
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    const locations = await prisma.tb_location.findMany({
+      where: { is_active: true, deleted_at: null },
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        _count: { select: { tb_product_location: { where: { deleted_at: null } } } },
+      },
+      orderBy: { code: 'asc' },
+    });
+
+    const result = locations
+      .map((l) => ({
+        id: l.id,
+        code: l.code,
+        name: l.name,
+        product_count: l._count.tb_product_location,
+      }))
+      .sort((a, b) => b.product_count - a.product_count);
+
+    return Result.ok(result);
+  }
+
+  /**
+   * ⚠️ TEMPORARY — Returns all unique products that have at least one location assignment.
+   * Remove when the frontend uses the proper master-data endpoints.
+   */
+  async getProducts(
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    const productLocations = await prisma.tb_product_location.findMany({
+      where: { deleted_at: null },
+      select: {
+        product_id: true,
+        product_name: true,
+        tb_product: {
+          select: { id: true, code: true, name: true },
+        },
+      },
+      orderBy: { product_name: 'asc' },
+    });
+
+    // Deduplicate by product_id
+    const seen = new Set<string>();
+    const result: { product_id: string; product_code: string | null; product_name: string | null }[] = [];
+    for (const pl of productLocations) {
+      if (seen.has(pl.product_id)) continue;
+      seen.add(pl.product_id);
+      result.push({
+        product_id: pl.product_id,
+        product_code: pl.tb_product?.code ?? null,
+        product_name: pl.product_name ?? pl.tb_product?.name ?? null,
+      });
+    }
+
+    return Result.ok(result);
+  }
+
+  /**
+   * ⚠️ TEMPORARY — Returns products assigned to a given location.
+   * Remove when the frontend uses the proper master-data endpoints.
+   */
+  async getProductsByLocation(
+    location_id: string,
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    const productLocations = await prisma.tb_product_location.findMany({
+      where: { location_id, deleted_at: null },
+      select: {
+        product_id: true,
+        product_name: true,
+        location_id: true,
+        location_code: true,
+        location_name: true,
+        tb_product: {
+          select: { id: true, code: true, name: true },
+        },
+      },
+      orderBy: { product_name: 'asc' },
+    });
+
+    const result = productLocations.map((pl) => ({
+      product_id: pl.product_id,
+      product_code: pl.tb_product?.code ?? null,
+      product_name: pl.product_name ?? pl.tb_product?.name ?? null,
+      location_id: pl.location_id,
+      location_code: pl.location_code,
+      location_name: pl.location_name,
+    }));
+
+    return Result.ok(result);
+  }
+
+  // ⚠️ TEMPORARY — Remove when the frontend uses proper master-data endpoints.
+  async getCalculationMethodResult(bu_code: string): Promise<Result<unknown>> {
+    const method = await this.getCalculationMethod(bu_code);
+    return Result.ok({ calculation_method: method });
+  }
+
+  /**
+   * ⚠️ TEST ONLY — DELETE. Clears all inventory transactions for a product.
+   */
+  @TryCatch
+  async clearProductTransactions(
+    data: { product_id: string },
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    // 1. Delete cost layers for this product
+    const deletedLayers = await prisma.tb_inventory_transaction_cost_layer.deleteMany({
+      where: { product_id: data.product_id },
+    });
+
+    // 2. Find transaction details for this product
+    const details = await prisma.tb_inventory_transaction_detail.findMany({
+      where: { product_id: data.product_id },
+      select: { id: true, inventory_transaction_id: true },
+    });
+
+    const detailIds = details.map((d) => d.id);
+    const transactionIds = [...new Set(details.map((d) => d.inventory_transaction_id))];
+
+    // 3. Delete transaction details
+    const deletedDetails = await prisma.tb_inventory_transaction_detail.deleteMany({
+      where: { id: { in: detailIds } },
+    });
+
+    // 4. Delete transaction headers that have no remaining details
+    let deletedHeaders = 0;
+    for (const txnId of transactionIds) {
+      const remaining = await prisma.tb_inventory_transaction_detail.count({
+        where: { inventory_transaction_id: txnId },
+      });
+      if (remaining === 0) {
+        await prisma.tb_inventory_transaction.delete({ where: { id: txnId } });
+        deletedHeaders++;
+      }
+    }
+
+    return Result.ok({
+      deleted_cost_layers: deletedLayers.count,
+      deleted_details: deletedDetails.count,
+      deleted_headers: deletedHeaders,
+    });
   }
 }
