@@ -5583,3 +5583,87 @@ model tb_recipe_yield_variant {
   tb_recipe_pricing_history tb_recipe_pricing_history[]
   tb_recipe_default_variant tb_recipe[]                 @relation("DefaultVariant")
 }
+
+// ==================== Report ====================
+
+enum enum_report_format {
+  pdf
+  excel
+  csv
+  json
+}
+
+enum enum_report_category {
+  inventory
+  procurement
+  recipe
+  vendor
+  financial
+  operational
+}
+
+enum enum_report_job_status {
+  queued
+  processing
+  completed
+  failed
+  cancelled
+}
+
+model tb_report_job {
+  id              String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  report_type     String                 @db.VarChar(100)
+  report_category enum_report_category
+  format          enum_report_format
+  status          enum_report_job_status @default(queued)
+  filters         Json?                  @default("{}") @db.JsonB
+  options         Json?                  @default("{}") @db.JsonB
+  file_url        String?
+  file_name       String?                @db.VarChar(255)
+  file_size       BigInt?
+  row_count       Int?
+  error_message   String?
+  started_at      DateTime?              @db.Timestamptz(6)
+  completed_at    DateTime?              @db.Timestamptz(6)
+  expires_at      DateTime?              @db.Timestamptz(6)
+  duration_ms     Int?
+
+  // Audit Fields
+  requested_by_id String    @db.Uuid
+  created_at      DateTime? @default(now()) @db.Timestamptz(6)
+  created_by_id   String?   @db.Uuid
+  updated_at      DateTime? @default(now()) @db.Timestamptz(6)
+  updated_by_id   String?   @db.Uuid
+  deleted_at      DateTime? @db.Timestamptz(6)
+  deleted_by_id   String?   @db.Uuid
+
+  @@index([status], map: "idx_report_job_status")
+  @@index([report_type], map: "idx_report_job_type")
+  @@index([requested_by_id], map: "idx_report_job_requested")
+  @@index([created_at(sort: Desc)], map: "idx_report_job_created")
+}
+
+model tb_report_schedule {
+  id              String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String             @db.VarChar(255)
+  report_type     String             @db.VarChar(100)
+  format          enum_report_format
+  cron_expression String             @db.VarChar(100)
+  filters         Json?              @default("{}") @db.JsonB
+  options         Json?              @default("{}") @db.JsonB
+  recipients      Json?              @default("[]") @db.JsonB
+  is_active       Boolean            @default(true)
+  last_run_at     DateTime?          @db.Timestamptz(6)
+  next_run_at     DateTime?          @db.Timestamptz(6)
+
+  // Audit Fields
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_by_id String?   @db.Uuid
+  deleted_at    DateTime? @db.Timestamptz(6)
+  deleted_by_id String?   @db.Uuid
+
+  @@index([is_active], map: "idx_report_schedule_active")
+}
+
