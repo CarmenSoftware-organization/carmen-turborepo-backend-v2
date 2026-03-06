@@ -12,7 +12,7 @@
 #
 # ตัวอย่าง:
 #   ./carmen.sh install                     ติดตั้ง dependencies ครั้งแรก
-#   ./carmen.sh start core                  Start 3 services หลัก
+#   ./carmen.sh start core                  Start 4 core services
 #   ./carmen.sh stop core                   Stop ทั้งหมด
 #   ./carmen.sh restart gateway             Restart เฉพาะ gateway
 #   ./carmen.sh logs business               ดู logs business
@@ -20,7 +20,7 @@
 set -e
 
 # Project root
-ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 PID_DIR="$ROOT_DIR/.carmen/pids"
 LOG_DIR="$ROOT_DIR/.carmen/logs"
 
@@ -245,6 +245,7 @@ cmd_status() {
     for name in $ALL_LIST; do
         pid="-"
         status="STOPPED"
+        ports="-"
 
         if is_running "$name"; then
             pid=$(cat "$PID_DIR/$name.pid")
@@ -271,8 +272,8 @@ cmd_health() {
 
     check() {
         printf "  %-20s " "$1:"
-        if wget -qO- --timeout=3 "$2" 2>/dev/null; then
-            echo ""
+        if wget -qO/dev/null --timeout=3 "$2" 2>/dev/null; then
+            echo "OK"
         else
             echo "UNREACHABLE"
         fi
@@ -310,14 +311,14 @@ cmd_help() {
     echo "  clean-logs                      ลบ log files"
     echo ""
     echo "Targets:"
-    echo "  core           gateway, business, cluster, keycloak (default)"
+    echo "  core           gateway, business, cluster, keycloak (default, 4 services)"
     echo "  all            ทุก 7 services"
     echo "  SERVICE name   gateway | business | cluster | keycloak | file | notification | cronjob"
     echo ""
     echo "ตัวอย่าง:"
     echo "  ./carmen.sh install             # ครั้งแรก"
-    echo "  ./carmen.sh build core          # Build 3 core services"
-    echo "  ./carmen.sh start core          # Start 3 core services"
+    echo "  ./carmen.sh build core          # Build 4 core services"
+    echo "  ./carmen.sh start core          # Start 4 core services"
     echo "  ./carmen.sh stop all            # Stop ทั้งหมด"
     echo "  ./carmen.sh restart business    # Restart เฉพาะ business"
     echo "  ./carmen.sh logs gateway        # ดู logs gateway"

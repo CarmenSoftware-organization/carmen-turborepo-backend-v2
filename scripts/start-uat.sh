@@ -24,8 +24,9 @@
 #   SERVICE name   gateway | business | cluster | keycloak | file | notification | cronjob
 #
 # Options:
-#   --remote       รันคำสั่งบน remote server (EC2) ผ่าน SSH
-#   --dev          ใช้ docker-compose.dev.yml (default: docker-compose.yml)
+#   --remote             รันคำสั่งบน remote server (EC2) ผ่าน SSH
+#   --dev                ใช้ docker-compose.dev.yml (default: docker-compose.yml)
+#   --ssh-key <path>     ระบุ path ของ SSH key
 #
 # ตัวอย่าง:
 #   ./docker-service.sh status                    สถานะ local
@@ -73,19 +74,30 @@ ALL_LIST="gateway business cluster keycloak file notification cronjob"
 REMOTE=false
 DEV=false
 ACTION="${1:-status}"
-TARGET="${2:-}"
+TARGET=""
+SSH_KEY_ARG=""
 
-# Parse flags from all arguments
+# Parse positional and flag arguments
+shift_count=0
 for arg in "$@"; do
     case "$arg" in
-        --remote) REMOTE=true ;;
-        --dev)    DEV=true ;;
+        --remote)        REMOTE=true ;;
+        --dev)           DEV=true ;;
+        --ssh-key)       SSH_KEY_ARG="__next__" ;;
+        --ssh-key=*)     SSH_KEY_ARG="${arg#--ssh-key=}" ;;
+        *)
+            if [[ "$SSH_KEY_ARG" == "__next__" ]]; then
+                SSH_KEY_ARG="$arg"
+            elif [[ -z "$TARGET" && "$arg" != "$ACTION" ]]; then
+                TARGET="$arg"
+            fi
+            ;;
     esac
 done
 
-# Remove flags from TARGET if accidentally captured
-if [[ "${TARGET}" == "--remote" || "${TARGET}" == "--dev" ]]; then
-    TARGET=""
+# Override SSH_KEY if provided via flag
+if [[ -n "$SSH_KEY_ARG" && "$SSH_KEY_ARG" != "__next__" ]]; then
+    SSH_KEY="$SSH_KEY_ARG"
 fi
 
 if $DEV; then
@@ -161,8 +173,9 @@ show_usage() {
     echo "  SERVICE name   gateway | business | cluster | keycloak | file | notification | cronjob"
     echo ""
     echo "Options:"
-    echo "  --remote       รันบน remote server ผ่าน SSH"
-    echo "  --dev          ใช้ docker-compose.dev.yml"
+    echo "  --remote             รันบน remote server ผ่าน SSH"
+    echo "  --dev                ใช้ docker-compose.dev.yml"
+    echo "  --ssh-key <path>     ระบุ path ของ SSH key"
     echo ""
     echo "Environment variables:"
     echo "  SSH_HOST       IP/hostname ของ remote server (required for --remote)"
