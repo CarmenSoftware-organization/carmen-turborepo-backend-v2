@@ -1041,17 +1041,35 @@ export class KeycloakService {
       throw new Error('Unable to determine user email from token');
     }
 
-    // 2. Login with current password → verifies password & gets fresh token
+    // 2. Login with current password (without scope restriction) → verifies password & gets fresh token with all default scopes
+    const targetRealm = realm || this.config.realm;
+    const tokenUrl = `${this.config.baseUrl}/realms/${targetRealm}/protocol/openid-connect/token`;
+
+    const loginParams = new URLSearchParams();
+    loginParams.append('grant_type', 'password');
+    loginParams.append('client_id', this.config.clientId);
+    loginParams.append('username', email);
+    loginParams.append('password', currentPassword);
+
     let freshToken: string;
     try {
-      const tokenResponse = await this.getUserToken(email, currentPassword, realm);
-      freshToken = tokenResponse.access_token;
+      const tokenRes = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: loginParams.toString(),
+      });
+
+      if (!tokenRes.ok) {
+        throw new Error('Login failed');
+      }
+
+      const tokenData: KeycloakTokenResponse = await tokenRes.json();
+      freshToken = tokenData.access_token;
     } catch {
       throw new Error('Current password is incorrect');
     }
 
     // 3. Change password via Keycloak Account API using fresh token
-    const targetRealm = realm || this.config.realm;
     const url = `${this.config.baseUrl}/realms/${targetRealm}/account/credentials/password`;
 
     const response = await fetch(url, {
