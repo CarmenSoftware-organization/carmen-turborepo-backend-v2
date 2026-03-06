@@ -48,7 +48,7 @@ import {
 } from '@/common';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
-import { ApproveByStageRoleDto2, SavePurchaseRequestDto } from './dto/state-change.dto';
+import { ApproveByStageRoleDto2 } from './dto/state-change.dto';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { Permission } from 'src/auth/decorators/permission.decorator';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
@@ -659,7 +659,7 @@ export class PurchaseRequestController extends BaseHttpController {
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() updateDto: SavePurchaseRequestDto,
+    @Body() updateDto: Record<string, unknown>,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',

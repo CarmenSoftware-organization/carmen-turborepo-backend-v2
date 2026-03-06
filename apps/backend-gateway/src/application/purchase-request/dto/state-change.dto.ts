@@ -41,6 +41,7 @@ export const SavePurchaseRequestSchema = z.discriminatedUnion('stage_role', [
   z.object({
     stage_role: z.literal(enum_stage_role.create),
     details: z.object({
+      pr_date: z.string().datetime().pipe(z.coerce.date()).optional(),
       description: z.string().optional().nullable(),
       requestor_id: z.string().uuid().optional(),
     })
@@ -49,7 +50,9 @@ export const SavePurchaseRequestSchema = z.discriminatedUnion('stage_role', [
       .extend({
         purchase_request_detail: z.object({
           add: z.array(CreatePurchaseRequestDetailSchema).optional(),
-          update: z.array(CreatePurchaseRequestDetailSchema).optional(),
+          update: z.array(CreatePurchaseRequestDetailSchema.extend({
+            id: z.string().uuid(),
+          })).optional(),
           remove: z.array(z.object({ id: z.string() })).optional()
         })
       })
