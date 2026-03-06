@@ -53,6 +53,16 @@ REMOTE_PROJECT_DIR="${REMOTE_PROJECT_DIR:-/home/ec2-user/carmen-turborepo-backen
 # Docker compose file
 COMPOSE_FILE="docker-compose.yml"
 
+# Detect docker compose command (v2 plugin vs v1 standalone)
+if docker compose version &>/dev/null; then
+    DOCKER_COMPOSE="docker compose"
+elif docker-compose version &>/dev/null; then
+    DOCKER_COMPOSE="docker-compose"
+else
+    echo "ERROR: docker compose not found"
+    exit 1
+fi
+
 # Service name mapping: short name -> docker compose service name
 declare -A SERVICE_MAP=(
     [gateway]="api-backend-gateway"
@@ -150,7 +160,7 @@ compose_cmd() {
     if $REMOTE; then
         project_dir="$REMOTE_PROJECT_DIR"
     fi
-    echo "cd $project_dir && docker compose -f $COMPOSE_FILE"
+    echo "cd $project_dir && $DOCKER_COMPOSE -f $COMPOSE_FILE"
 }
 
 show_usage() {
@@ -182,7 +192,6 @@ show_usage() {
     echo "  SSH_USER       SSH username (default: ubuntu)"
     echo "  SSH_KEY        Path ไปยัง SSH key (default: ~/workspace/ssh/aws/script/ec2-webservice-bkk.pem)"
     echo "  REMOTE_PROJECT_DIR  Path โปรเจกต์บน server (default: /home/ubuntu/carmen-turborepo-backend-v2)"
-    exit 1
 }
 
 # ───────────────────────────────────────────────────────────
@@ -350,5 +359,6 @@ case "${ACTION}" in
     ps)         cmd_ps ;;
     health)     cmd_health ;;
     clean)      cmd_clean ;;
-    help|*)     show_usage ;;
+    help)       show_usage ;;
+    *)          echo "Unknown command: ${ACTION}"; echo ""; show_usage; exit 1 ;;
 esac
