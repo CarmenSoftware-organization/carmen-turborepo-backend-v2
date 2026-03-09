@@ -7,6 +7,7 @@ import {
   Query,
   Req,
   Res,
+  Body,
   UseGuards,
   Param,
   UseInterceptors,
@@ -16,7 +17,12 @@ import { CreditNoteReasonService } from './credit-note-reason.service';
 import {
   BaseHttpController,
   ZodSerializerInterceptor,
+  Serialize,
 } from '@/common';
+import {
+  CreditNoteReasonCreateDto,
+  CreditNoteReasonMutationResponseSchema,
+} from 'src/common/dto/credit-note-reason';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -24,18 +30,16 @@ import {
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
-import { ApiTags } from '@nestjs/swagger';
 
 @Controller('api/:bu_code/credit-note-reason')
 @ApiTags('Application - Credit Note Reason')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
-@Controller('api/:bu_code/credit-note-reason')
 export class CreditNoteReasonController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(
     CreditNoteReasonController.name,
@@ -49,6 +53,7 @@ export class CreditNoteReasonController extends BaseHttpController {
 
   @Get()
   @UseGuards(new AppIdGuard('creditNoteReason.findAll'))
+  @ApiOperation({ summary: 'Get all credit note reasons' })
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @HttpCode(HttpStatus.OK)
@@ -77,5 +82,37 @@ export class CreditNoteReasonController extends BaseHttpController {
       version,
     );
     this.respond(res, result);
+  }
+
+  @Post()
+  @UseGuards(new AppIdGuard('creditNoteReason.create'))
+  @ApiOperation({ summary: 'Create a credit note reason' })
+  @Serialize(CreditNoteReasonMutationResponseSchema)
+  @HttpCode(HttpStatus.CREATED)
+  @ApiVersionMinRequest()
+  async create(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('bu_code') bu_code: string,
+    @Body() createDto: CreditNoteReasonCreateDto,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      {
+        function: 'create',
+        createDto,
+        version,
+      },
+      CreditNoteReasonController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.creditNoteReasonService.create(
+      createDto,
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result, HttpStatus.CREATED);
   }
 }

@@ -67,6 +67,15 @@ async function bootstrap() {
       scheme: 'bearer',
       in: 'header',
     })
+    .addApiKey(
+      {
+        type: 'apiKey',
+        name: 'x-app-id',
+        in: 'header',
+        description: 'Application ID',
+      },
+      'x-app-id',
+    )
     .build();
 
   const document_http = SwaggerModule.createDocument(

@@ -1,4 +1,4 @@
-import { Body, Controller } from "@nestjs/common";
+import { Body, Controller, HttpStatus } from "@nestjs/common";
 import { CreditNoteReasonService } from "./credit-note-reason.service";
 import { MessagePattern } from "@nestjs/microservices";
 import { BackendLogger } from "@/common/helpers/backend.logger";
@@ -34,5 +34,20 @@ export class CreditNoteReasonController extends BaseMicroserviceController {
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () => this.creditNoteReasonService.findAll(payload.paginate));
     return this.handlePaginatedResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'credit-note-reason.create',
+    service: 'credit-note-reason',
+  })
+  async create(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'create', payload }, CreditNoteReasonController.name);
+    const data = payload.data;
+    await this.creditNoteReasonService.initializePrismaService(payload.tenant_id || payload.bu_code, payload.user_id);
+    this.creditNoteReasonService.bu_code = payload.tenant_id || payload.bu_code;
+    this.creditNoteReasonService.userId = payload.user_id;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () => this.creditNoteReasonService.create(data));
+    return this.handleResult(result, HttpStatus.CREATED);
   }
 }
