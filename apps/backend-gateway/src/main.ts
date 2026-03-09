@@ -102,6 +102,15 @@ async function bootstrap() {
     .addTag('Procurement', 'Purchase requests, purchase orders, good received notes, credit notes, request for pricing, and store requisitions')
     .addTag('User & Access', 'User profiles, business unit assignments, location assignments, and role management')
     .addTag('Workflow & Approval', 'Approval workflows, pending approvals, and document state transitions')
+    .addApiKey(
+      {
+        type: 'apiKey',
+        name: 'x-app-id',
+        in: 'header',
+        description: 'Application ID',
+      },
+      'x-app-id',
+    )
     .build();
 
   const document_http = SwaggerModule.createDocument(
