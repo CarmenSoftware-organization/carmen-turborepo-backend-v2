@@ -24,14 +24,13 @@ import {
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
-import { ApiTags } from '@nestjs/swagger';
 
 @Controller('api/:bu_code/credit-note-reason')
-@ApiTags('Application - Credit Note Reason')
+@ApiTags('Procurement')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -47,10 +46,20 @@ export class CreditNoteReasonController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Lists all configurable reasons for issuing vendor credit notes (e.g., damaged
+   * goods, short delivery, quality issues) to populate reason dropdowns.
+   */
   @Get()
   @UseGuards(new AppIdGuard('creditNoteReason.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'Get all credit note reasons',
+    description: 'Lists all configurable reasons for issuing vendor credit notes (e.g., damaged goods, short delivery, quality issues), used to populate reason dropdowns when creating credit notes.',
+    operationId: 'findAllCreditNoteReasons',
+    tags: ['Procurement', 'Credit Note Reason'],
+  })
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Req() req: Request,

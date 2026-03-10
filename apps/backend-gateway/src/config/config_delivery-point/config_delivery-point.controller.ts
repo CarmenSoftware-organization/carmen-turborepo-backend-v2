@@ -43,7 +43,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/config/:bu_code/delivery-point')
-@ApiTags('Config - Delivery Point')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -58,6 +58,10 @@ export class Config_DeliveryPointController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves a specific delivery point where vendors deliver goods to the property,
+   * used in purchase orders to specify the receiving location.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('delivery-point.findOne'))
   @Serialize(DeliveryPointResponseSchema)
@@ -65,9 +69,9 @@ export class Config_DeliveryPointController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get a delivery point by ID',
-    description: 'Retrieve a delivery point by its unique identifier',
+    description: 'Retrieves a specific delivery point where vendors deliver goods to the property. Delivery points are used in purchase orders to specify the exact receiving location for vendor shipments.',
     operationId: 'findOneDeliveryPoint',
-    tags: ['config-delivery-point', '[Method] Get - Config'],
+    tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [
       {
@@ -121,6 +125,10 @@ export class Config_DeliveryPointController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all delivery points at the property (e.g., loading dock, back entrance, kitchen door)
+   * where vendors can deliver goods.
+   */
   @Get()
   @UseGuards(new AppIdGuard('delivery-point.findAll'))
   @Serialize(DeliveryPointResponseSchema)
@@ -128,9 +136,9 @@ export class Config_DeliveryPointController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all delivery points',
-    description: 'Retrieve all delivery points',
+    description: 'Returns all delivery points configured for the property. These represent physical locations (e.g., loading dock, back entrance, kitchen door) where vendors can deliver goods.',
     operationId: 'findAllDeliveryPoints',
-    tags: ['config-delivery-point', '[Method] Get - Config'],
+    tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [
       {
@@ -181,6 +189,10 @@ export class Config_DeliveryPointController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Defines a new delivery location at the property for vendor shipments.
+   * Once created, it can be specified in purchase orders.
+   */
   @Post()
   @UseGuards(new AppIdGuard('delivery-point.create'))
   @Serialize(DeliveryPointResponseSchema)
@@ -188,9 +200,9 @@ export class Config_DeliveryPointController extends BaseHttpController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Create a new delivery point',
-    description: 'Create a new delivery point',
+    description: 'Defines a new delivery location at the property where vendors can deliver goods. Once created, it can be specified in purchase orders to direct vendor shipments.',
     operationId: 'createDeliveryPoint',
-    tags: ['config-delivery-point', '[Method] Post - Config'],
+    tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [
       {
@@ -236,6 +248,9 @@ export class Config_DeliveryPointController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Fully updates an existing delivery point configuration such as name, address, or operating hours.
+   */
   @Put(':id')
   @UseGuards(new AppIdGuard('delivery-point.update'))
   @Serialize(DeliveryPointResponseSchema)
@@ -243,9 +258,9 @@ export class Config_DeliveryPointController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Update a delivery point',
-    description: 'Update a delivery point',
+    description: 'Modifies an existing delivery point configuration, such as updating its name, address, or operating hours. Changes affect how future purchase orders reference this delivery location.',
     operationId: 'updateDeliveryPoint',
-    tags: ['config-delivery-point', '[Method] Put - Config'],
+    tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [
       {
@@ -305,6 +320,9 @@ export class Config_DeliveryPointController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Partially updates specific fields of a delivery point such as toggling active status.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('delivery-point.patch'))
   @Serialize(DeliveryPointResponseSchema)
@@ -312,9 +330,9 @@ export class Config_DeliveryPointController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Update a delivery point',
-    description: 'Update a delivery point',
+    description: 'Partially updates specific fields of a delivery point without replacing the entire record. Useful for toggling active status or making minor adjustments.',
     operationId: 'patchDeliveryPoint',
-    tags: ['config-delivery-point', '[Method] Patch - Config'],
+    tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [
       {
@@ -374,6 +392,9 @@ export class Config_DeliveryPointController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a delivery point from active use. Historical procurement records are preserved.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('delivery-point.delete'))
   @Serialize(DeliveryPointResponseSchema)
@@ -381,9 +402,9 @@ export class Config_DeliveryPointController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Delete a delivery point',
-    description: 'Delete a delivery point',
+    description: 'Removes a delivery point from active use. It will no longer be selectable in new purchase orders, but historical procurement records referencing this delivery point are preserved.',
     operationId: 'deleteDeliveryPoint',
-    tags: ['config-delivery-point', '[Method] Delete - Config'],
+    tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [
       {

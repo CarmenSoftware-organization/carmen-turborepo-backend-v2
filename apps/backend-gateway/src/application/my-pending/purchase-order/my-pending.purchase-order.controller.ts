@@ -22,7 +22,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/my-pending/purchase-order')
-@ApiTags('Application - My Pending')
+@ApiTags('Workflow & Approval')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -37,14 +37,18 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Returns the count of purchase orders awaiting the current user's action
+   * in the approval pipeline, used for dashboard badge notifications.
+   */
   @Get('pending')
   @UseGuards(new AppIdGuard('my-pending.purchaseOrder.findAllPending.count'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get count of all pending purchase orders',
-    description: 'Retrieves count of all pending purchase orders',
+    description: 'Returns the count of purchase orders currently awaiting the user\'s action in the approval pipeline, used for dashboard badge notifications and workload indicators.',
     operationId: 'findAllPendingPurchaseOrdersCount',
-    tags: ['Application - My Pending Purchase Order', '[Method] Get'],
+    tags: ['Workflow & Approval', 'My Pending - Purchase Order'],
     deprecated: false,
     parameters: [
       {
@@ -113,15 +117,19 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves the full details of a specific purchase order pending approval,
+   * including vendor info, ordered items, pricing, and current workflow stage.
+   */
   @Get(':bu_code/:id')
   @UseGuards(new AppIdGuard('my-pending.purchaseOrder.findOne'))
   @ApiVersionMinRequest()
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get a purchase order by ID',
-    description: 'Retrieves a purchase order by its ID',
+    description: 'Retrieves the full details of a specific purchase order pending approval, including vendor information, ordered items, quantities, pricing, and current approval workflow stage.',
     operationId: 'findPurchaseOrderById',
-    tags: ['Application - My Pending Purchase Order', '[Method] Get'],
+    tags: ['Workflow & Approval', 'My Pending - Purchase Order'],
     deprecated: false,
     parameters: [
       {
@@ -172,15 +180,19 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all purchase orders in the user's pending approval queue,
+   * allowing approvers to review vendor orders awaiting authorization.
+   */
   @Get()
   @UseGuards(new AppIdGuard('my-pending.purchaseOrder.findAll'))
   @ApiVersionMinRequest()
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all purchase orders',
-    description: 'Retrieves all purchase orders',
+    description: 'Lists all purchase orders in the user\'s pending approval queue with pagination, allowing approvers to review and process vendor orders awaiting authorization before goods are procured.',
     operationId: 'findAllPurchaseOrders',
-    tags: ['Application - My Pending Purchase Order', '[Method] Get'],
+    tags: ['Workflow & Approval', 'My Pending - Purchase Order'],
     deprecated: false,
     parameters: [
       {

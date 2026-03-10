@@ -17,7 +17,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_ProductsService } from './config_products.service';
-import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   IUpdateProduct,
@@ -43,7 +43,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/config/:bu_code/products')
-@ApiTags('Config - Products')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -58,11 +58,22 @@ export class Config_ProductsController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves the full details of a product (SKU/ingredient) from the master catalog,
+   * including category, unit of measure, and item group configurations.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('product.findOne'))
   @Serialize(ProductDetailResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get a product by ID',
+    description: 'Retrieves the complete details of a product from the master catalog, including SKU, description, category, and unit of measure configurations used across procurement and inventory.',
+    operationId: 'findOneProduct',
+    tags: ['Configuration', 'Products'],
+    responses: { 200: { description: 'Product retrieved successfully' } },
+  })
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -84,12 +95,23 @@ export class Config_ProductsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all products (SKUs, ingredients, supplies) in the master catalog
+   * with pagination, search, and filtering support.
+   */
   @Get()
   @UseGuards(new AppIdGuard('product.findAll'))
   @Serialize(ProductListItemResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'Get all products',
+    description: 'Returns a paginated list of all products in the master catalog. Used by administrators to browse and manage SKUs, ingredients, and supplies available for procurement and inventory operations.',
+    operationId: 'findAllProducts',
+    tags: ['Configuration', 'Products'],
+    responses: { 200: { description: 'Products retrieved successfully' } },
+  })
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -118,11 +140,22 @@ export class Config_ProductsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves the item group classification for a product, used for
+   * procurement reporting and inventory categorization.
+   */
   @Get('item-group/:id')
   @UseGuards(new AppIdGuard('product.findItemGroup'))
   @Serialize(ProductItemGroupResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get product item group by ID',
+    description: 'Retrieves the item group classification for a specific product, which determines how the product is grouped for reporting, procurement analysis, and inventory categorization.',
+    operationId: 'findProductItemGroup',
+    tags: ['Configuration', 'Products'],
+    responses: { 200: { description: 'Product item group retrieved successfully' } },
+  })
   async findItemGroup(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -176,11 +209,22 @@ export class Config_ProductsController extends BaseHttpController {
   //   // return this.productsService.getIngredientUnitByProductId(id);
   // }
 
+  /**
+   * Adds a new product to the master catalog with its SKU, category, and unit definitions.
+   * The product becomes available for purchase requests, purchase orders, and inventory.
+   */
   @Post()
   @UseGuards(new AppIdGuard('product.create'))
   @Serialize(ProductMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Create a new product',
+    description: 'Adds a new product to the master catalog with its SKU, description, category, and unit definitions. The product becomes available for use in purchase requests, purchase orders, and inventory transactions.',
+    operationId: 'createProduct',
+    tags: ['Configuration', 'Products'],
+    responses: { 201: { description: 'Product created successfully' } },
+  })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -207,11 +251,22 @@ export class Config_ProductsController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Updates an existing product's details such as description, category, or unit configurations.
+   * Changes affect future procurement and inventory transactions referencing this product.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('product.update'))
   @Serialize(ProductMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Update a product',
+    description: 'Modifies an existing product in the master catalog, such as updating its description, category assignment, or unit configurations. Changes affect all future procurement and inventory transactions referencing this product.',
+    operationId: 'updateProduct',
+    tags: ['Configuration', 'Products'],
+    responses: { 200: { description: 'Product updated successfully' } },
+  })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -244,11 +299,22 @@ export class Config_ProductsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Soft-deletes a product from the master catalog, removing it from future
+   * procurement and inventory use while preserving historical records.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('product.delete'))
   @Serialize(ProductMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Delete a product',
+    description: 'Soft-deletes a product from the master catalog. The product will no longer be available for new procurement or inventory transactions, but historical records referencing it are preserved.',
+    operationId: 'deleteProduct',
+    tags: ['Configuration', 'Products'],
+    responses: { 200: { description: 'Product deleted successfully' } },
+  })
   async delete(
     @Req() req: Request,
     @Res() res: Response,

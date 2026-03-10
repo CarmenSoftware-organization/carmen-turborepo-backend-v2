@@ -42,7 +42,7 @@ import {
 } from '@/common';
 
 @Controller('api/:bu_code/price-list')
-@ApiTags('Application - Price List')
+@ApiTags('Procurement')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -56,6 +56,10 @@ export class PriceListController extends BaseHttpController {
     this.logger.debug('PriceListController initialized');
   }
 
+  /**
+   * Compares vendor prices for a specific product across all active price lists,
+   * helping procurement staff identify the best-value supplier for purchase orders.
+   */
   @Get('price-compare')
   @UseGuards(new AppIdGuard('priceList.priceCompare'))
   @Serialize(PriceListListItemResponseSchema)
@@ -64,9 +68,9 @@ export class PriceListController extends BaseHttpController {
   @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Compare price list',
-    description: 'Compares price list based on given criteria',
+    description: 'Compares vendor prices for a specific product across all active price lists, enabling procurement staff to identify the best-value supplier for purchase orders.',
     operationId: 'priceCompare',
-    tags: ['Application - Price List', '[Method] Get'],
+    tags: ['Procurement', 'Price List'],
     deprecated: false,
     security: [
       {
@@ -117,6 +121,10 @@ export class PriceListController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves the full details of a vendor price list including all product prices,
+   * validity dates, and terms for reviewing or editing procurement pricing.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('priceList.findOne'))
   @Serialize(PriceListDetailResponseSchema)
@@ -124,9 +132,9 @@ export class PriceListController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get price list by ID',
-    description: 'Retrieves price list by ID',
+    description: 'Retrieves the full details of a vendor price list including all product prices, validity dates, and terms, used when reviewing or editing procurement pricing agreements.',
     operationId: 'findOnePriceList',
-    tags: ['Application - Price List', '[Method] Get'],
+    tags: ['Procurement', 'Price List'],
     deprecated: false,
     security: [
       {
@@ -170,6 +178,10 @@ export class PriceListController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all active vendor price lists for the business unit, allowing
+   * procurement staff to browse current pricing agreements and compare vendors.
+   */
   @Get()
   @UseGuards(new AppIdGuard('priceList.findAll'))
   @Serialize(PriceListListItemResponseSchema)
@@ -179,9 +191,9 @@ export class PriceListController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get price list by user ID',
     description:
-      'Retrieves price list using user ID that acquired from JWT token and price list must be active',
+      'Lists all active vendor price lists for the business unit, allowing procurement staff to browse current pricing agreements and compare vendor offerings.',
     operationId: 'findAllByUserId',
-    tags: ['Application - Price List'],
+    tags: ['Procurement', 'Price List'],
     deprecated: false,
     parameters: [
       {
@@ -244,6 +256,10 @@ export class PriceListController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Records a new vendor price list with product prices and validity dates,
+   * establishing the pricing basis for procurement purchase orders.
+   */
   @Post()
   @UseGuards(new AppIdGuard('priceList.create'))
   @Serialize(PriceListMutationResponseSchema)
@@ -251,9 +267,9 @@ export class PriceListController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a new price list',
-    description: 'Creates a new price list',
+    description: 'Records a new vendor price list with product prices and validity dates, establishing the pricing basis for procurement purchase orders and cost comparison.',
     operationId: 'createPriceList',
-    tags: ['Application - Price List', '[Method] Post'],
+    tags: ['Procurement', 'Price List'],
     deprecated: false,
     security: [
       {
@@ -290,6 +306,10 @@ export class PriceListController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies an existing vendor price list, such as adjusting product prices,
+   * extending validity dates, or correcting pricing errors.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('priceList.update'))
   @Serialize(PriceListMutationResponseSchema)
@@ -297,9 +317,9 @@ export class PriceListController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a price list',
-    description: 'Updates an existing price list',
+    description: 'Modifies an existing vendor price list, such as adjusting product prices, extending validity dates, or correcting pricing errors in procurement agreements.',
     operationId: 'updatePriceList',
-    tags: ['Application - Price List', '[Method] Patch'],
+    tags: ['Procurement', 'Price List'],
     deprecated: false,
     security: [
       {
@@ -345,6 +365,10 @@ export class PriceListController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes an outdated or incorrect vendor price list from active use.
+   * Historical pricing data is retained for audit purposes.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('priceList.delete'))
   @Serialize(PriceListMutationResponseSchema)
@@ -352,9 +376,9 @@ export class PriceListController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a price list',
-    description: 'Deletes an existing price list (soft delete)',
+    description: 'Removes an outdated or incorrect vendor price list from active use. Historical pricing data is retained for audit purposes.',
     operationId: 'deletePriceList',
-    tags: ['Application - Price List', '[Method] Delete'],
+    tags: ['Procurement', 'Price List'],
     deprecated: false,
     security: [
       {

@@ -17,7 +17,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_UnitsService } from './config_units.service';
-import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   BaseHttpController,
@@ -42,7 +42,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/config/:bu_code/units')
-@ApiTags('Config - Units')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -55,11 +55,22 @@ export class Config_UnitsController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves a specific unit of measurement definition (e.g., kg, litre, piece, case)
+   * used for product ordering, inventory counting, and recipe quantities.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('unit.findOne'))
   @Serialize(UnitDetailResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get a unit by ID',
+    description: 'Retrieves a specific unit of measurement definition (e.g., kg, litre, piece, case) used for product ordering, inventory counting, and recipe ingredient quantities.',
+    operationId: 'findOneUnit',
+    tags: ['Configuration', 'Units'],
+    responses: { 200: { description: 'Unit retrieved successfully' } },
+  })
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -80,12 +91,23 @@ export class Config_UnitsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all configured units of measurement (kg, litre, piece, dozen, etc.)
+   * referenced by products, recipes, and procurement documents.
+   */
   @Get()
   @UseGuards(new AppIdGuard('unit.findAll'))
   @Serialize(UnitListItemResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'Get all units',
+    description: 'Returns all configured units of measurement available in the system. These units are referenced by products, recipes, and procurement documents to ensure consistent quantity tracking.',
+    operationId: 'findAllUnits',
+    tags: ['Configuration', 'Units'],
+    responses: { 200: { description: 'Units retrieved successfully' } },
+  })
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -112,11 +134,22 @@ export class Config_UnitsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Defines a new unit of measurement for use in product definitions,
+   * recipe ingredients, and procurement documents.
+   */
   @Post()
   @UseGuards(new AppIdGuard('unit.create'))
   @Serialize(UnitMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Create a new unit',
+    description: 'Defines a new unit of measurement (e.g., kg, litre, dozen, case) in the system. The unit becomes available for assignment to products, recipe ingredients, and procurement documents.',
+    operationId: 'createUnit',
+    tags: ['Configuration', 'Units'],
+    responses: { 201: { description: 'Unit created successfully' } },
+  })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -142,11 +175,21 @@ export class Config_UnitsController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies an existing unit of measurement definition such as name or conversion factors.
+   */
   @Put(':id')
   @UseGuards(new AppIdGuard('unit.update'))
   @Serialize(UnitMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Update a unit',
+    description: 'Modifies an existing unit of measurement definition, such as updating its name or conversion factors. Changes affect how quantities are displayed across procurement and inventory modules.',
+    operationId: 'updateUnit',
+    tags: ['Configuration', 'Units'],
+    responses: { 200: { description: 'Unit updated successfully' } },
+  })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -173,11 +216,22 @@ export class Config_UnitsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a unit of measurement from the system.
+   * Existing references in historical data are preserved.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('unit.delete'))
   @Serialize(UnitMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Delete a unit',
+    description: 'Removes a unit of measurement from the system. The unit will no longer be available for new product or procurement configurations, but existing references in historical data are preserved.',
+    operationId: 'deleteUnit',
+    tags: ['Configuration', 'Units'],
+    responses: { 200: { description: 'Unit deleted successfully' } },
+  })
   async delete(
     @Req() req: Request,
     @Res() res: Response,

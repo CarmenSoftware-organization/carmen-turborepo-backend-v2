@@ -36,7 +36,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api')
-@ApiTags('Application - Spot Check')
+@ApiTags('Inventory')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -51,10 +51,23 @@ export class SpotCheckController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Returns the count of random inventory spot checks awaiting the current user,
+   * used for dashboard alerts on quality-control verification tasks.
+   */
   @Get('spot-check/pending')
   @UseGuards(new AppIdGuard('spotCheck.findAllPending.count'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get pending spot check count',
+    description: 'Returns the count of random inventory spot checks awaiting the current user, used to drive dashboard alerts for quality-control verification tasks.',
+    operationId: 'findAllPendingSpotCheckCount',
+    tags: ['Inventory', 'Spot Check'],
+    responses: {
+      200: { description: 'Pending spot check count retrieved successfully' },
+    },
+  })
   async findAllPendingSpotCheckCount(
     @Req() req: Request,
     @Res() res: Response,
@@ -76,10 +89,28 @@ export class SpotCheckController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves the full details of a random inventory spot check, including
+   * target location, selected products, and recorded quantities.
+   */
   @Get(':bu_code/spot-check/:id')
   @UseGuards(new AppIdGuard('spotCheck.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get a spot check by ID',
+    description: 'Retrieves the full details of a random inventory spot check, including the target location, selected products, and recorded quantities for quality-control review.',
+    operationId: 'findOneSpotCheck',
+    tags: ['Inventory', 'Spot Check'],
+    parameters: [
+      { name: 'id', in: 'path', required: true, description: 'Spot Check ID' },
+      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+    ],
+    responses: {
+      200: { description: 'Spot check retrieved successfully' },
+      404: { description: 'Spot check not found' },
+    },
+  })
   async findOne(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -106,11 +137,27 @@ export class SpotCheckController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all inventory spot checks for a business unit with pagination,
+   * enabling managers to track random stock verification activities.
+   */
   @Get(':bu_code/spot-check/')
   @UseGuards(new AppIdGuard('spotCheck.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get all spot checks',
+    description: 'Lists all inventory spot checks for a business unit with pagination, enabling managers to track the frequency and results of random stock verification activities.',
+    operationId: 'findAllSpotChecks',
+    tags: ['Inventory', 'Spot Check'],
+    parameters: [
+      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+    ],
+    responses: {
+      200: { description: 'Spot checks retrieved successfully' },
+    },
+  })
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -138,10 +185,27 @@ export class SpotCheckController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Initiates a random inventory spot check at a specific storage location,
+   * selecting products to verify actual stock against system records.
+   */
   @Post(':bu_code/spot-check')
   @UseGuards(new AppIdGuard('spotCheck.create'))
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Create a new spot check',
+    description: 'Initiates a random inventory spot check at a specific storage location, selecting products either randomly or manually to verify actual stock against system records for quality control.',
+    operationId: 'createSpotCheck',
+    tags: ['Inventory', 'Spot Check'],
+    parameters: [
+      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+    ],
+    responses: {
+      201: { description: 'Spot check created successfully' },
+      400: { description: 'Invalid request body' },
+    },
+  })
   async create(
     @Body() createDto: SpotCheckCreateDto,
     @Param('bu_code') bu_code: string,
@@ -168,10 +232,28 @@ export class SpotCheckController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies a spot check record before submission, such as updating the
+   * location or adjusting which products are included in the verification.
+   */
   @Patch(':bu_code/spot-check/:id')
   @UseGuards(new AppIdGuard('spotCheck.update'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Update a spot check',
+    description: 'Modifies a spot check record before submission, such as updating the location or adjusting which products are included in the verification.',
+    operationId: 'updateSpotCheck',
+    tags: ['Inventory', 'Spot Check'],
+    parameters: [
+      { name: 'id', in: 'path', required: true, description: 'Spot Check ID' },
+      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+    ],
+    responses: {
+      200: { description: 'Spot check updated successfully' },
+      404: { description: 'Spot check not found' },
+    },
+  })
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -201,10 +283,28 @@ export class SpotCheckController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a spot check that was created in error or is no longer
+   * required for inventory quality control.
+   */
   @Delete(':bu_code/spot-check/:id')
   @UseGuards(new AppIdGuard('spotCheck.delete'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Delete a spot check',
+    description: 'Removes a spot check that was created in error or is no longer required for inventory quality control.',
+    operationId: 'deleteSpotCheck',
+    tags: ['Inventory', 'Spot Check'],
+    parameters: [
+      { name: 'id', in: 'path', required: true, description: 'Spot Check ID' },
+      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+    ],
+    responses: {
+      200: { description: 'Spot check deleted successfully' },
+      404: { description: 'Spot check not found' },
+    },
+  })
   async delete(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -228,14 +328,18 @@ export class SpotCheckController extends BaseHttpController {
 
   // ==================== Spot Check Detail CRUD ====================
 
+  /**
+   * Returns all product line items selected for a spot check, showing system
+   * quantities and recorded actual quantities for variance analysis.
+   */
   @Get(':bu_code/spot-check/:id/details')
   @UseGuards(new AppIdGuard('spotCheck.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get all details for a Spot Check',
-    description: 'Retrieves all line items/details for a specific Spot Check',
+    description: 'Returns all product line items selected for a spot check, showing system quantities and any recorded actual quantities for variance analysis.',
     operationId: 'findAllSpotCheckDetails',
-    tags: ['[Method] Get', 'Spot Check Detail'],
+    tags: ['Inventory', 'Spot Check'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -264,14 +368,18 @@ export class SpotCheckController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves a specific product line item from a spot check, including its
+   * system quantity, actual counted quantity, and variance.
+   */
   @Get(':bu_code/spot-check/:id/details/:detail_id')
   @UseGuards(new AppIdGuard('spotCheck.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a specific Spot Check detail by ID',
-    description: 'Retrieves a single Spot Check detail/line item by its ID',
+    description: 'Retrieves a specific product line item from a spot check, including its system quantity, actual counted quantity, and variance for detailed investigation.',
     operationId: 'findSpotCheckDetailById',
-    tags: ['[Method] Get', 'Spot Check Detail'],
+    tags: ['Inventory', 'Spot Check'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -302,14 +410,18 @@ export class SpotCheckController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a product from a draft spot check when it was incorrectly
+   * selected for the random verification.
+   */
   @Delete(':bu_code/spot-check/:id/details/:detail_id')
   @UseGuards(new AppIdGuard('spotCheck.update'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a Spot Check detail',
-    description: 'Deletes an existing Spot Check detail/line item. Only works for Spot Checks in draft status.',
+    description: 'Removes a product from a draft spot check, used when a product was incorrectly selected for the random verification.',
     operationId: 'deleteSpotCheckDetail',
-    tags: ['[Method] Delete', 'Spot Check Detail'],
+    tags: ['Inventory', 'Spot Check'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -343,14 +455,18 @@ export class SpotCheckController extends BaseHttpController {
 
   // ==================== Mobile-specific endpoints ====================
 
+  /**
+   * Persists actual counted quantities from a mobile device as a draft,
+   * allowing staff to pause and resume the spot check without finalizing.
+   */
   @Patch(':bu_code/spot-check/:id/save')
   @UseGuards(new AppIdGuard('spotCheck.save'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Save Spot Check items',
-    description: 'Saves actual quantities for Spot Check items without submitting',
+    description: 'Persists the actual counted quantities entered by staff on a mobile device as a draft, allowing them to pause and resume the spot check without finalizing results.',
     operationId: 'saveSpotCheckItems',
-    tags: ['[Method] Patch', 'Spot Check Mobile'],
+    tags: ['Inventory', 'Spot Check'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -382,14 +498,18 @@ export class SpotCheckController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Compares actual counted quantities against system stock levels and calculates
+   * variances for each spot-checked item before submission.
+   */
   @Patch(':bu_code/spot-check/:id/review')
   @UseGuards(new AppIdGuard('spotCheck.review'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Review Spot Check items',
-    description: 'Reviews actual quantities for Spot Check items and returns difference list',
+    description: 'Compares the actual counted quantities against system stock levels and calculates variances for each spot-checked item, enabling staff to review discrepancies before submission.',
     operationId: 'reviewSpotCheckItems',
-    tags: ['[Method] Patch', 'Spot Check Mobile'],
+    tags: ['Inventory', 'Spot Check'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -421,14 +541,18 @@ export class SpotCheckController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves the previously calculated variance report for a spot check,
+   * showing differences between system and actual quantities for management review.
+   */
   @Get(':bu_code/spot-check/:id/review')
   @UseGuards(new AppIdGuard('spotCheck.getReview'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get Spot Check review result',
-    description: 'Gets the review result with difference calculations for a Spot Check',
+    description: 'Retrieves the previously calculated variance report for a spot check, showing differences between system and actual quantities for management review.',
     operationId: 'getSpotCheckReview',
-    tags: ['[Method] Get', 'Spot Check Mobile'],
+    tags: ['Inventory', 'Spot Check'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -458,14 +582,18 @@ export class SpotCheckController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Finalizes a spot check by recording verified quantities as the official result.
+   * Discrepancies may trigger further investigation or inventory adjustments.
+   */
   @Patch(':bu_code/spot-check/:id/submit')
   @UseGuards(new AppIdGuard('spotCheck.submit'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Submit Spot Check',
-    description: 'Submits a Spot Check for completion',
+    description: 'Finalizes a spot check by recording the verified quantities as the official result. Discrepancies found may trigger further investigation or inventory adjustments.',
     operationId: 'submitSpotCheck',
-    tags: ['[Method] Patch', 'Spot Check Mobile'],
+    tags: ['Inventory', 'Spot Check'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -496,14 +624,18 @@ export class SpotCheckController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Clears all recorded actual quantities and resets the spot check to draft state,
+   * allowing staff to restart the verification process from scratch.
+   */
   @Post(':bu_code/spot-check/:id/reset')
   @UseGuards(new AppIdGuard('spotCheck.reset'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Reset Spot Check',
-    description: 'Resets a Spot Check to its initial state',
+    description: 'Clears all recorded actual quantities and resets the spot check to draft state, allowing staff to restart the verification process from scratch if counts were inaccurate.',
     operationId: 'resetSpotCheck',
-    tags: ['[Method] Post', 'Spot Check Mobile'],
+    tags: ['Inventory', 'Spot Check'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -534,14 +666,18 @@ export class SpotCheckController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves products stocked at a specific storage location, enabling staff
+   * to select items for a new spot check or verify location inventory assignments.
+   */
   @Get(':bu_code/locations/:location_id/products')
   @UseGuards(new AppIdGuard('spotCheck.getProductsByLocation'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get products by location',
-    description: 'Gets all products available at a specific location for spot checking',
+    description: 'Retrieves the list of products stocked at a specific storage location, enabling staff to select items for a new spot check or verify location inventory assignments.',
     operationId: 'getProductsByLocationId',
-    tags: ['[Method] Get', 'Spot Check Mobile'],
+    tags: ['Inventory', 'Spot Check'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [

@@ -47,7 +47,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/config/:bu_code/exchange-rate')
-@ApiTags('Config - Exchange Rate')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -62,6 +62,10 @@ export class Config_ExchangeRateController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves a specific currency exchange rate used for converting foreign currency
+   * amounts in multi-currency procurement transactions.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('exchangeRate.findOne'))
   @Serialize(ExchangeRateDetailResponseSchema)
@@ -69,9 +73,9 @@ export class Config_ExchangeRateController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a exchange rate by ID',
-    description: 'Get a exchange rate by ID',
+    description: 'Retrieves a specific currency exchange rate record with its effective date and conversion factor. Exchange rates are used to convert foreign currency amounts in procurement documents to the base currency.',
     operationId: 'findOneExchangeRate',
-    tags: ['config-exchange-rate', '[Method] Get - Config'],
+    tags: ['Configuration', 'Exchange Rate'],
     deprecated: false,
     security: [
       {
@@ -117,6 +121,10 @@ export class Config_ExchangeRateController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all currency exchange rates configured for the business unit,
+   * used to convert foreign currency purchase orders to the base currency.
+   */
   @Get()
   @UseGuards(new AppIdGuard('exchangeRate.findAll'))
   @Serialize(ExchangeRateListItemResponseSchema)
@@ -125,9 +133,9 @@ export class Config_ExchangeRateController extends BaseHttpController {
   @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all exchange rates',
-    description: 'Get all exchange rates',
+    description: 'Returns all configured currency exchange rates with their effective dates. Used by the procurement system to convert multi-currency purchase orders and invoices to the base currency.',
     operationId: 'findAllExchangeRates',
-    tags: ['config-exchange-rate', '[Method] Get - Config'],
+    tags: ['Configuration', 'Exchange Rate'],
     deprecated: false,
     security: [
       {
@@ -174,6 +182,9 @@ export class Config_ExchangeRateController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Creates a new exchange rate between currencies for use in multi-currency procurement calculations.
+   */
   @Post()
   @UseGuards(new AppIdGuard('exchangeRate.create'))
   @Serialize(ExchangeRateMutationResponseSchema)
@@ -181,9 +192,9 @@ export class Config_ExchangeRateController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a new exchange rate',
-    description: 'Create a new exchange rate',
+    description: 'Records a new currency exchange rate with its effective date. Supports single or bulk creation for maintaining up-to-date conversion rates used in multi-currency procurement.',
     operationId: 'createExchangeRate',
-    tags: ['config-exchange-rate', '[Method] Post - Config'],
+    tags: ['Configuration', 'Exchange Rate'],
     deprecated: false,
     security: [
       {
@@ -229,6 +240,10 @@ export class Config_ExchangeRateController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies an existing exchange rate record, such as correcting the conversion factor
+   * or adjusting the effective date for multi-currency procurement calculations.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('exchangeRate.update'))
   @Serialize(ExchangeRateMutationResponseSchema)
@@ -236,9 +251,9 @@ export class Config_ExchangeRateController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a exchange rate',
-    description: 'Update a exchange rate',
+    description: 'Modifies an existing exchange rate record, such as correcting the conversion factor or adjusting the effective date. Changes affect future currency conversions in procurement documents.',
     operationId: 'updateExchangeRate',
-    tags: ['config-exchange-rate', '[Method] Patch - Config'],
+    tags: ['Configuration', 'Exchange Rate'],
     deprecated: false,
     security: [
       {
@@ -290,6 +305,10 @@ export class Config_ExchangeRateController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes an exchange rate record from the system. Historical procurement documents
+   * that used this rate are unaffected, but it will no longer be available for future conversions.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('exchangeRate.delete'))
   @Serialize(ExchangeRateMutationResponseSchema)
@@ -297,9 +316,9 @@ export class Config_ExchangeRateController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a exchange rate',
-    description: 'Delete a exchange rate',
+    description: 'Removes an exchange rate record from the system. Historical procurement documents that used this rate are unaffected, but it will no longer be available for future currency conversions.',
     operationId: 'deleteExchangeRate',
-    tags: ['config-exchange-rate', '[Method] Delete - Config'],
+    tags: ['Configuration', 'Exchange Rate'],
     deprecated: false,
     security: [
       {

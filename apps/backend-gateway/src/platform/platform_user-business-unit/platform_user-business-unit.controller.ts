@@ -17,7 +17,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Platform_UserBusinessUnitService } from './platform_user-business-unit.service';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam, ApiBody } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   IUserBusinessUnitUpdate,
@@ -35,7 +35,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { BaseHttpController } from '@/common';
 
 @Controller('api-system/user/business-unit')
-@ApiTags('Platform - User Business Unit')
+@ApiTags('Platform Admin')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -50,10 +50,28 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves the details of a specific user-to-property access assignment.
+   * Shows which user has access to which hotel property and with what role.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('userBusinessUnit.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiParam({ name: 'id', description: 'User-Business Unit mapping ID', type: 'string' })
+  @ApiOperation({
+    summary: 'Get user-business unit mapping by ID',
+    description: 'Retrieves the details of a specific user-to-property access assignment, showing which user has access to which hotel property and with what role.',
+    operationId: 'getUserBusinessUnitById',
+    tags: ['Platform Admin', 'User Business Unit'],
+    deprecated: false,
+    security: [{ bearerAuth: [] }],
+    responses: {
+      200: { description: 'User-business unit mapping retrieved successfully' },
+      401: { description: 'Unauthorized' },
+      404: { description: 'Mapping not found' },
+    },
+  })
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -73,10 +91,26 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all user-to-property access assignments across the platform.
+   * Used for multi-tenant access management and auditing of hotel property access.
+   */
   @Get()
   @UseGuards(new AppIdGuard('userBusinessUnit.findAll'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get all user-business unit mappings',
+    description: 'Lists all user-to-property access assignments across the platform, showing which users have been granted access to which hotel properties. Used for multi-tenant access management and auditing.',
+    operationId: 'getAllUserBusinessUnits',
+    tags: ['Platform Admin', 'User Business Unit'],
+    deprecated: false,
+    security: [{ bearerAuth: [] }],
+    responses: {
+      200: { description: 'User-business unit mappings retrieved successfully' },
+      401: { description: 'Unauthorized' },
+    },
+  })
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -101,10 +135,28 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Grants a user access to a specific hotel property or operational unit.
+   * Enables them to perform procurement and inventory operations within that property's tenant.
+   */
   @Post()
   @UseGuards(new AppIdGuard('userBusinessUnit.create'))
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
+  @ApiBody({ type: UserBusinessUnitDto, description: 'Create user-business unit mapping data' })
+  @ApiOperation({
+    summary: 'Create a user-business unit mapping',
+    description: 'Grants a user access to a specific hotel property or operational unit, enabling them to perform procurement, inventory, and other ERP operations within that business unit\'s tenant context.',
+    operationId: 'createUserBusinessUnit',
+    tags: ['Platform Admin', 'User Business Unit'],
+    deprecated: false,
+    security: [{ bearerAuth: [] }],
+    responses: {
+      201: { description: 'User-business unit mapping created successfully' },
+      400: { description: 'Bad request' },
+      401: { description: 'Unauthorized' },
+    },
+  })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -124,10 +176,30 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies an existing user-to-property access assignment.
+   * Can update the user's role or permissions within a specific hotel property.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('userBusinessUnit.update'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiParam({ name: 'id', description: 'User-Business Unit mapping ID', type: 'string' })
+  @ApiBody({ type: UserBusinessUnitUpdateDto, description: 'Update user-business unit mapping data' })
+  @ApiOperation({
+    summary: 'Update a user-business unit mapping',
+    description: 'Modifies an existing user-to-property access assignment, such as changing the user\'s role or permissions within a specific hotel property.',
+    operationId: 'updateUserBusinessUnit',
+    tags: ['Platform Admin', 'User Business Unit'],
+    deprecated: false,
+    security: [{ bearerAuth: [] }],
+    responses: {
+      200: { description: 'User-business unit mapping updated successfully' },
+      400: { description: 'Bad request' },
+      401: { description: 'Unauthorized' },
+      404: { description: 'Mapping not found' },
+    },
+  })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -153,10 +225,28 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Revokes a user's access to a specific hotel property or operational unit.
+   * The user will no longer be able to perform ERP operations within that property.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('userBusinessUnit.delete'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiParam({ name: 'id', description: 'User-Business Unit mapping ID', type: 'string' })
+  @ApiOperation({
+    summary: 'Delete a user-business unit mapping',
+    description: 'Revokes a user\'s access to a specific hotel property or operational unit. The user will no longer be able to perform any ERP operations within that business unit\'s tenant context.',
+    operationId: 'deleteUserBusinessUnit',
+    tags: ['Platform Admin', 'User Business Unit'],
+    deprecated: false,
+    security: [{ bearerAuth: [] }],
+    responses: {
+      200: { description: 'User-business unit mapping deleted successfully' },
+      401: { description: 'Unauthorized' },
+      404: { description: 'Mapping not found' },
+    },
+  })
   async delete(
     @Req() req: Request,
     @Res() res: Response,

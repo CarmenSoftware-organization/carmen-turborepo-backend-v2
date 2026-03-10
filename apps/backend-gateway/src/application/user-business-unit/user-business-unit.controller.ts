@@ -35,7 +35,7 @@ import {
 } from '@/common';
 
 @Controller('api/business-unit')
-@ApiTags('Application - User Business Unit')
+@ApiTags('User & Access')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -50,15 +50,19 @@ export class UserBusinessUnitController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Sets the user's default business unit (tenant), determining which
+   * hotel property's data and procurement operations are loaded upon login.
+   */
   @Post('default')
   @UseGuards(new AppIdGuard('userBusinessUnit.setDefaultTenant'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Set default tenant',
-    description: 'Set default tenant',
+    description: 'Sets the user\'s default business unit (tenant), determining which hotel property\'s data and procurement operations are loaded upon login.',
     operationId: 'setDefaultTenant',
-    tags: ['[Method] Post'],
+    tags: ['User & Access', 'User Business Unit'],
     deprecated: false,
     security: [
       {

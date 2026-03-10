@@ -39,7 +39,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { StockInDetailCreateDto, StockInDetailUpdateDto } from 'src/common/dto/stock-in/stock-in.dto';
 
 @Controller('api/:bu_code/stock-in-detail')
-@ApiTags('Application - Stock In Detail')
+@ApiTags('Inventory')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -50,6 +50,10 @@ export class StockInDetailController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Lists all line items across stock-in transactions, showing products
+   * and quantities received into inventory from vendors or transfers.
+   */
   @Get()
   @UseGuards(new AppIdGuard('stockInDetail.findAll'))
   @ApiVersionMinRequest()
@@ -57,9 +61,9 @@ export class StockInDetailController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all Stock In Details with pagination',
-    description: 'Retrieves all stock in detail records with pagination and filtering',
+    description: 'Lists all line items across stock-in transactions, showing individual products and quantities received into inventory from vendors or inter-location transfers.',
     operationId: 'findAllStockInDetails',
-    tags: ['[Method] Get'],
+    tags: ['Inventory', 'Stock In Detail'],
     responses: {
       200: { description: 'Stock In Details retrieved successfully' },
     },
@@ -79,15 +83,19 @@ export class StockInDetailController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves a specific stock-in line item including the product,
+   * received quantity, unit of measure, and cost details for inventory valuation.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('stockInDetail.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a Stock In Detail by ID',
-    description: 'Retrieves a single stock in detail record by its ID',
+    description: 'Retrieves a specific line item from a stock-in transaction, including the product, received quantity, unit of measure, and cost details for inventory valuation.',
     operationId: 'findOneStockInDetail',
-    tags: ['[Method] Get'],
+    tags: ['Inventory', 'Stock In Detail'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock In Detail ID' },
     ],
@@ -110,6 +118,10 @@ export class StockInDetailController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Adds a new product line item to a draft stock-in transaction,
+   * specifying the product, quantity received, and unit of measure.
+   */
   @Post()
   @UseGuards(new AppIdGuard('stockInDetail.create'))
   @Serialize(StockInMutationResponseSchema)
@@ -117,9 +129,9 @@ export class StockInDetailController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a new Stock In Detail',
-    description: 'Creates a new stock in detail record. Requires stock_in_id in the body. Only works for Stock In in draft status.',
+    description: 'Adds a new product line item to a draft stock-in transaction, specifying the product, quantity received, and unit of measure for goods being received into a storage location.',
     operationId: 'createStockInDetail',
-    tags: ['[Method] Post'],
+    tags: ['Inventory', 'Stock In Detail'],
     responses: {
       201: { description: 'Stock In Detail created successfully' },
       400: { description: 'Cannot add detail to non-draft Stock In' },
@@ -140,6 +152,10 @@ export class StockInDetailController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies a stock-in line item in a draft transaction, allowing corrections
+   * to received quantities, units, or cost before inventory balances are updated.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('stockInDetail.update'))
   @Serialize(StockInMutationResponseSchema)
@@ -147,9 +163,9 @@ export class StockInDetailController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a Stock In Detail',
-    description: 'Updates an existing stock in detail record. Only works for Stock In in draft status.',
+    description: 'Modifies a product line item in a draft stock-in transaction, allowing corrections to received quantities, units, or cost before the stock-in is finalized and inventory balances are updated.',
     operationId: 'updateStockInDetail',
-    tags: ['[Method] Patch'],
+    tags: ['Inventory', 'Stock In Detail'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock In Detail ID' },
     ],
@@ -174,6 +190,10 @@ export class StockInDetailController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a product line item from a draft stock-in transaction,
+   * used when an item was added in error or is no longer being received.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('stockInDetail.delete'))
   @Serialize(StockInMutationResponseSchema)
@@ -181,9 +201,9 @@ export class StockInDetailController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a Stock In Detail',
-    description: 'Soft deletes an existing stock in detail record. Only works for Stock In in draft status.',
+    description: 'Removes a product line item from a draft stock-in transaction, used when an item was added in error or is no longer part of the goods being received.',
     operationId: 'deleteStockInDetail',
-    tags: ['[Method] Delete'],
+    tags: ['Inventory', 'Stock In Detail'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock In Detail ID' },
     ],

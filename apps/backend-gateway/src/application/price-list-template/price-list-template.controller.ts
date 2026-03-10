@@ -40,7 +40,7 @@ import {
 } from '@/common';
 
 @Controller('api/:bu_code/price-list-template')
-@ApiTags('Application - Price List Template')
+@ApiTags('Procurement')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -56,6 +56,10 @@ export class PriceListTemplateController extends BaseHttpController {
     this.logger.debug('PriceListTemplateController initialized');
   }
 
+  /**
+   * Retrieves a reusable price list template with its product lineup and configuration,
+   * used when generating new vendor price lists from a standard template.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('priceListTemplate.findOne'))
   @Serialize(PriceListTemplateDetailResponseSchema)
@@ -63,9 +67,9 @@ export class PriceListTemplateController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get price list template by ID',
-    description: 'Retrieves price list template by ID',
+    description: 'Retrieves the full details of a reusable price list template, including its product lineup and configuration, used when generating new vendor price lists from a standard template.',
     operationId: 'findOnePriceListTemplate',
-    tags: ['Application - Price List Template', '[Method] Get'],
+    tags: ['Procurement', 'Price List Template'],
     deprecated: false,
     security: [
       {
@@ -109,6 +113,10 @@ export class PriceListTemplateController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all available price list templates for the business unit, enabling
+   * procurement staff to select a standard template for vendor pricing requests.
+   */
   @Get()
   @UseGuards(new AppIdGuard('priceListTemplate.findAll'))
   @Serialize(PriceListTemplateListItemResponseSchema)
@@ -117,9 +125,9 @@ export class PriceListTemplateController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get all price list templates',
-    description: 'Retrieves all price list templates with pagination',
+    description: 'Lists all available price list templates for the business unit, enabling procurement staff to select a standard template when requesting pricing from vendors.',
     operationId: 'findAllPriceListTemplates',
-    tags: ['Application - Price List Template', '[Method] Get'],
+    tags: ['Procurement', 'Price List Template'],
     deprecated: false,
     parameters: [
       {
@@ -163,6 +171,10 @@ export class PriceListTemplateController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Creates a reusable price list template with a predefined set of products,
+   * streamlining standardized pricing requests to multiple vendors.
+   */
   @Post()
   @UseGuards(new AppIdGuard('priceListTemplate.create'))
   @Serialize(PriceListTemplateMutationResponseSchema)
@@ -170,9 +182,9 @@ export class PriceListTemplateController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a new price list template',
-    description: 'Creates a new price list template',
+    description: 'Creates a reusable price list template with a predefined set of products, streamlining the process of requesting standardized pricing from multiple vendors.',
     operationId: 'createPriceListTemplate',
-    tags: ['Application - Price List Template', '[Method] Post'],
+    tags: ['Procurement', 'Price List Template'],
     deprecated: false,
     security: [
       {
@@ -209,6 +221,10 @@ export class PriceListTemplateController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies a price list template to add or remove products, or update
+   * its configuration for changing procurement requirements.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('priceListTemplate.update'))
   @Serialize(PriceListTemplateMutationResponseSchema)
@@ -216,9 +232,9 @@ export class PriceListTemplateController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a price list template',
-    description: 'Updates an existing price list template',
+    description: 'Modifies a price list template to add or remove products, or update its configuration to reflect changing procurement requirements.',
     operationId: 'updatePriceListTemplate',
-    tags: ['Application - Price List Template', '[Method] Patch'],
+    tags: ['Procurement', 'Price List Template'],
     deprecated: false,
     security: [
       {
@@ -269,6 +285,10 @@ export class PriceListTemplateController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a price list template that is no longer needed.
+   * Existing price lists generated from this template are not affected.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('priceListTemplate.delete'))
   @Serialize(PriceListTemplateMutationResponseSchema)
@@ -276,9 +296,9 @@ export class PriceListTemplateController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a price list template',
-    description: 'Deletes an existing price list template',
+    description: 'Removes a price list template that is no longer needed for vendor pricing requests. Existing price lists generated from this template are not affected.',
     operationId: 'deletePriceListTemplate',
-    tags: ['Application - Price List Template', '[Method] Delete'],
+    tags: ['Procurement', 'Price List Template'],
     deprecated: false,
     security: [
       {
@@ -322,6 +342,10 @@ export class PriceListTemplateController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Changes the lifecycle status of a price list template (draft, active, inactive),
+   * controlling whether it is available for generating new vendor price requests.
+   */
   @Patch(':id/status')
   @UseGuards(new AppIdGuard('priceListTemplate.updateStatus'))
   @Serialize(PriceListTemplateMutationResponseSchema)
@@ -329,9 +353,9 @@ export class PriceListTemplateController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update price list template status',
-    description: 'Updates the status of a price list template (draft/active/inactive)',
+    description: 'Changes the lifecycle status of a price list template (draft, active, or inactive), controlling whether it is available for generating new vendor price requests.',
     operationId: 'updatePriceListTemplateStatus',
-    tags: ['Application - Price List Template', '[Method] Patch'],
+    tags: ['Procurement', 'Price List Template'],
     deprecated: false,
     security: [
       {

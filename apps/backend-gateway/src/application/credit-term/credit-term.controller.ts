@@ -34,7 +34,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/:bu_code/credit-term')
-@ApiTags('Application - Credit Term')
+@ApiTags('Master Data')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -46,13 +46,17 @@ export class CreditTermController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Lists all vendor payment terms (e.g., Net 30, Net 60, COD), used when
+   * setting up vendor agreements and calculating payment due dates.
+   */
   @Get()
   @UseGuards(new AppIdGuard('creditTerm.findAll'))
   @Serialize(CreditTermListItemResponseSchema)
   @ApiOperation({
     summary: 'Get all credit terms',
-    description: 'Get all credit terms',
-    tags: ['[Method] Get'],
+    description: 'Lists all available vendor payment terms (e.g., Net 30, Net 60, COD), used when setting up vendor agreements and calculating payment due dates on purchase orders.',
+    tags: ['Master Data', 'Credit Term'],
   })
   @ApiUserFilterQueries()
   @ApiVersionMinRequest()
@@ -78,13 +82,17 @@ export class CreditTermController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves details of a specific payment term including its code, name,
+   * and number of days for reviewing vendor payment conditions.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('creditTerm.findOne'))
   @Serialize(CreditTermDetailResponseSchema)
   @ApiOperation({
     summary: 'Get a credit term by id',
-    description: 'Get a credit term by id',
-    tags: ['[Method] Get'],
+    description: 'Retrieves the details of a specific payment term including its code, name, and number of days, used when reviewing or assigning vendor payment conditions.',
+    tags: ['Master Data', 'Credit Term'],
   })
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)

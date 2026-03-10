@@ -7,11 +7,11 @@ import { CreateConfigApplicationRoleDto, UpdateConfigApplicationRoleDto } from '
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto'
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header'
 import { BackendLogger } from 'src/common/helpers/backend.logger'
-import { ApiTags } from '@nestjs/swagger'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator'
 
 @Controller('api/config/:bu_code/application-roles')
-@ApiTags('Config - Application Roles')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 export class ConfigApplicationRoleController extends BaseHttpController {
@@ -24,8 +24,13 @@ export class ConfigApplicationRoleController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Lists all defined application roles (e.g., Admin, Manager, Purchaser, Requestor)
+   * that determine system feature access for each user.
+   */
   @Get()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all application roles', description: 'Returns all defined application roles (e.g., Admin, Manager, Purchaser, Requestor) used for access control. Roles determine which system features and data each user can access.', operationId: 'findAllApplicationRoles', tags: ['Configuration', 'Application Role'] })
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -50,8 +55,13 @@ export class ConfigApplicationRoleController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves a specific application role with its associated permissions
+   * to review what system capabilities are granted.
+   */
   @Get(':id')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get an application role by ID', description: 'Retrieves a specific application role definition with its associated permissions. Used to review what system capabilities are granted to users assigned this role.', operationId: 'findOneApplicationRole', tags: ['Configuration', 'Application Role'] })
   async findOne(
     @Param('id') id: string,
     @Req() req: Request,
@@ -65,8 +75,13 @@ export class ConfigApplicationRoleController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Defines a new application role (e.g., Department Head, Finance Controller)
+   * that can be assigned permissions and then granted to users.
+   */
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new application role', description: 'Defines a new application role for access control (e.g., Department Head, Finance Controller). Once created, the role can be assigned permissions and then assigned to users.', operationId: 'createApplicationRole', tags: ['Configuration', 'Application Role'] })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -80,8 +95,13 @@ export class ConfigApplicationRoleController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies an existing application role's name or permission set.
+   * Changes immediately affect all users assigned this role.
+   */
   @Put(':id')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Update an application role', description: 'Modifies an existing application role definition, such as updating its name or permission set. Changes immediately affect all users currently assigned this role.', operationId: 'updateApplicationRole', tags: ['Configuration', 'Application Role'] })
   async update(
     @Param('id') id: string,
     @Req() req: Request,
@@ -96,8 +116,12 @@ export class ConfigApplicationRoleController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes an application role from the system. Users with this role lose its permissions.
+   */
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete an application role', description: 'Removes an application role from the system. Users previously assigned this role will lose its associated permissions. Ensure users are reassigned to appropriate roles before deletion.', operationId: 'deleteApplicationRole', tags: ['Configuration', 'Application Role'] })
   async remove(
     @Param('id') id: string,
     @Req() req: Request,

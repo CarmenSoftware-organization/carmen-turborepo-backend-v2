@@ -33,7 +33,7 @@ import {
 } from '@/common';
 
 @Controller('api')
-@ApiTags('Application - Products')
+@ApiTags('Master Data')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -46,6 +46,10 @@ export class ProductsController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves all products assigned to a specific storage location or warehouse,
+   * used for inventory operations such as stock-in, physical counts, and requisitions.
+   */
   @Get(':bu_code/products/locations/:id')
   @UseGuards(new AppIdGuard('products.getByLocation'))
   @Serialize(ProductLocationListItemResponseSchema)
@@ -53,9 +57,9 @@ export class ProductsController extends BaseHttpController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all products by location id',
-    description: 'Retrieves all products by location id',
+    description: 'Retrieves all products assigned to a specific storage location or warehouse, used for inventory operations such as stock-in, physical counts, and requisition fulfillment.',
     operationId: 'findAllProductsByLocationId',
-    tags: ['[Method] Get'],
+    tags: ['Master Data', 'Products'],
     deprecated: false,
     security: [
       {

@@ -39,7 +39,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { StockOutDetailCreateDto, StockOutDetailUpdateDto } from 'src/common/dto/stock-out/stock-out.dto';
 
 @Controller('api/:bu_code/stock-out-detail')
-@ApiTags('Application - Stock Out Detail')
+@ApiTags('Inventory')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -50,6 +50,10 @@ export class StockOutDetailController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Lists all line items across stock-out transactions, showing products
+   * and quantities issued from inventory to hotel departments.
+   */
   @Get()
   @UseGuards(new AppIdGuard('stockOutDetail.findAll'))
   @ApiVersionMinRequest()
@@ -57,9 +61,9 @@ export class StockOutDetailController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all Stock Out Details with pagination',
-    description: 'Retrieves all stock out detail records with pagination and filtering',
+    description: 'Lists all line items across stock-out transactions, showing individual products and quantities issued from inventory to hotel departments or operational areas.',
     operationId: 'findAllStockOutDetails',
-    tags: ['[Method] Get'],
+    tags: ['Inventory', 'Stock Out Detail'],
     responses: {
       200: { description: 'Stock Out Details retrieved successfully' },
     },
@@ -79,15 +83,19 @@ export class StockOutDetailController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves a specific stock-out line item including the product,
+   * issued quantity, and the department or cost center consuming the inventory.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('stockOutDetail.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a Stock Out Detail by ID',
-    description: 'Retrieves a single stock out detail record by its ID',
+    description: 'Retrieves a specific line item from a stock-out transaction, including the product, issued quantity, unit of measure, and the department or cost center consuming the inventory.',
     operationId: 'findOneStockOutDetail',
-    tags: ['[Method] Get'],
+    tags: ['Inventory', 'Stock Out Detail'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock Out Detail ID' },
     ],
@@ -110,6 +118,10 @@ export class StockOutDetailController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Adds a new product line item to a draft stock-out transaction, specifying
+   * the product and quantity being issued to a department such as kitchen or housekeeping.
+   */
   @Post()
   @UseGuards(new AppIdGuard('stockOutDetail.create'))
   @Serialize(StockOutMutationResponseSchema)
@@ -117,9 +129,9 @@ export class StockOutDetailController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a new Stock Out Detail',
-    description: 'Creates a new stock out detail record. Requires stock_out_id in the body. Only works for Stock Out in draft status.',
+    description: 'Adds a new product line item to a draft stock-out transaction, specifying the product and quantity being issued from a storage location to a requesting department such as kitchen or housekeeping.',
     operationId: 'createStockOutDetail',
-    tags: ['[Method] Post'],
+    tags: ['Inventory', 'Stock Out Detail'],
     responses: {
       201: { description: 'Stock Out Detail created successfully' },
       400: { description: 'Cannot add detail to non-draft Stock Out' },
@@ -140,6 +152,10 @@ export class StockOutDetailController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies a stock-out line item in a draft transaction, allowing corrections
+   * to issued quantities or units before inventory balances are deducted.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('stockOutDetail.update'))
   @Serialize(StockOutMutationResponseSchema)
@@ -147,9 +163,9 @@ export class StockOutDetailController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a Stock Out Detail',
-    description: 'Updates an existing stock out detail record. Only works for Stock Out in draft status.',
+    description: 'Modifies a product line item in a draft stock-out transaction, allowing corrections to issued quantities or units before the stock-out is finalized and inventory balances are deducted.',
     operationId: 'updateStockOutDetail',
-    tags: ['[Method] Patch'],
+    tags: ['Inventory', 'Stock Out Detail'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock Out Detail ID' },
     ],
@@ -174,6 +190,10 @@ export class StockOutDetailController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a product line item from a draft stock-out transaction,
+   * used when an item was added in error or is no longer needed for issuance.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('stockOutDetail.delete'))
   @Serialize(StockOutMutationResponseSchema)
@@ -181,9 +201,9 @@ export class StockOutDetailController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a Stock Out Detail',
-    description: 'Soft deletes an existing stock out detail record. Only works for Stock Out in draft status.',
+    description: 'Removes a product line item from a draft stock-out transaction, used when an item was added in error or is no longer needed for the issuance.',
     operationId: 'deleteStockOutDetail',
-    tags: ['[Method] Delete'],
+    tags: ['Inventory', 'Stock Out Detail'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock Out Detail ID' },
     ],

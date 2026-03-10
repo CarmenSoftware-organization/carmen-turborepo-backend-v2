@@ -36,7 +36,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/:bu_code/department')
-@ApiTags('Application - Department')
+@ApiTags('Master Data')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -49,13 +49,18 @@ export class DepartmentController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Lists all hotel departments (e.g., F&B, Housekeeping, Engineering),
+   * used for cost allocation and procurement requisition routing.
+   */
   @Get()
   @UseGuards(new AppIdGuard('department.findAll'))
   @Serialize(DepartmentListItemResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get all departments',
-    description: 'Get all departments',
+    description: 'Lists all hotel departments (e.g., Kitchen, F&B, Housekeeping) within the business unit, used to assign requisitions, track departmental consumption, and allocate procurement costs.',
+    tags: ['Master Data', 'Department'],
   })
   @HttpCode(HttpStatus.OK)
   async getDepartments(
@@ -86,13 +91,18 @@ export class DepartmentController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves the details of a specific hotel department, including its code,
+   * name, and active status for procurement and inventory workflows.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('department.findOne'))
   @Serialize(DepartmentDetailResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a department by id',
-    description: 'Get a department by id',
+    description: 'Retrieves the details of a specific hotel department, including its code, name, and active status, for use in procurement and inventory assignment workflows.',
+    tags: ['Master Data', 'Department'],
   })
   @HttpCode(HttpStatus.OK)
   async getDepartment(

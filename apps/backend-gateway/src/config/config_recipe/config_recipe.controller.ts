@@ -36,7 +36,7 @@ import {
 } from './dto/recipe.dto';
 
 @Controller('api/config/:bu_code/recipe')
-@ApiTags('Config - Recipe')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -49,6 +49,10 @@ export class Config_RecipeController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves a specific recipe with its full ingredient list, quantities,
+   * preparation steps, and yield information for kitchen cost control.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('recipe.findOne'))
   @Serialize(RecipeResponseSchema)
@@ -56,8 +60,9 @@ export class Config_RecipeController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get a recipe by ID',
+    description: 'Retrieves a specific recipe with its full ingredient list, quantities, preparation steps, and yield information. Used by kitchen and F&B teams to manage standardized recipes for cost control.',
     operationId: 'findOneRecipe',
-    tags: ['config-recipe', '[Method] Get - Config'],
+    tags: ['Configuration', 'Recipe'],
   })
   async findOne(
     @Req() req: Request,
@@ -75,6 +80,10 @@ export class Config_RecipeController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all configured recipes with ingredient compositions for menu costing
+   * and ingredient demand forecasting.
+   */
   @Get()
   @UseGuards(new AppIdGuard('recipe.findAll'))
   @Serialize(RecipeResponseSchema)
@@ -82,8 +91,9 @@ export class Config_RecipeController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all recipes',
+    description: 'Returns all configured recipes with their ingredient compositions. Used by administrators and chefs to manage the recipe catalog for menu costing and ingredient demand forecasting.',
     operationId: 'findAllRecipes',
-    tags: ['config-recipe', '[Method] Get - Config'],
+    tags: ['Configuration', 'Recipe'],
   })
   @ApiUserFilterQueries()
   async findAll(
@@ -103,6 +113,10 @@ export class Config_RecipeController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Creates a new recipe linking products as ingredients with quantities and preparation steps
+   * for menu costing, food cost analysis, and inventory consumption tracking.
+   */
   @Post()
   @UseGuards(new AppIdGuard('recipe.create'))
   @Serialize(RecipeResponseSchema)
@@ -110,8 +124,9 @@ export class Config_RecipeController extends BaseHttpController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Create a new recipe',
+    description: 'Creates a new recipe linking products as ingredients with specified quantities and preparation steps. The recipe can then be used for menu costing, food cost analysis, and inventory consumption tracking.',
     operationId: 'createRecipe',
-    tags: ['config-recipe', '[Method] Post - Config'],
+    tags: ['Configuration', 'Recipe'],
   })
   async create(
     @Req() req: Request,
@@ -129,6 +144,9 @@ export class Config_RecipeController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Fully updates a recipe including its ingredient list, quantities, and preparation instructions.
+   */
   @Put(':id')
   @UseGuards(new AppIdGuard('recipe.update'))
   @Serialize(RecipeResponseSchema)
@@ -136,8 +154,9 @@ export class Config_RecipeController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Update a recipe',
+    description: 'Fully updates a recipe including its ingredient list, quantities, and preparation instructions. Changes are reflected in menu cost calculations and ingredient demand projections.',
     operationId: 'updateRecipe',
-    tags: ['config-recipe', '[Method] Put - Config'],
+    tags: ['Configuration', 'Recipe'],
   })
   async update(
     @Req() req: Request,
@@ -157,6 +176,10 @@ export class Config_RecipeController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Partially updates specific fields of a recipe such as individual ingredient quantities
+   * or active status without replacing the entire record.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('recipe.patch'))
   @Serialize(RecipeResponseSchema)
@@ -164,8 +187,9 @@ export class Config_RecipeController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Patch a recipe',
+    description: 'Partially updates specific fields of a recipe without replacing the entire record. Useful for adjusting individual ingredient quantities or toggling active status.',
     operationId: 'patchRecipe',
-    tags: ['config-recipe', '[Method] Patch - Config'],
+    tags: ['Configuration', 'Recipe'],
   })
   async patch(
     @Req() req: Request,
@@ -185,6 +209,9 @@ export class Config_RecipeController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a recipe from the active catalog. Historical cost data is preserved.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('recipe.delete'))
   @Serialize(RecipeResponseSchema)
@@ -192,8 +219,9 @@ export class Config_RecipeController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Delete a recipe',
+    description: 'Removes a recipe from the active catalog. The recipe will no longer be used for menu costing or ingredient consumption calculations, but historical cost data is preserved.',
     operationId: 'deleteRecipe',
-    tags: ['config-recipe', '[Method] Delete - Config'],
+    tags: ['Configuration', 'Recipe'],
   })
   async delete(
     @Req() req: Request,

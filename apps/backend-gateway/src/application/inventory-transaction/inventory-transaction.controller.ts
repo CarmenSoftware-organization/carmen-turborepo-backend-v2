@@ -30,7 +30,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
  * ⚠️ TEST ONLY — DELETE this entire controller when GRN approve integration is verified.
  */
 @Controller('api/:bu_code/inventory-transaction')
-@ApiTags('Application - Inventory Transaction (TEST)')
+@ApiTags('Inventory')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -74,9 +74,9 @@ export class InventoryTransactionController extends BaseHttpController {
   @ApiOperation({
     summary: '⚠️ TEST ONLY — Create inventory transaction from GRN payload',
     description:
-      'Direct test endpoint for FIFO cost-layer logic. DELETE when GRN approve integration is verified.',
+      'Test endpoint that simulates creating FIFO cost-layer inventory transactions from a Goods Received Note payload. Used only for verifying inventory valuation logic before full GRN approval integration is complete.',
     operationId: 'testCreateInventoryTransactionFromGrn',
-    tags: ['[Method] Post'],
+    tags: ['Inventory', 'Inventory Transaction'],
     deprecated: true,
   })
   @HttpCode(HttpStatus.OK)

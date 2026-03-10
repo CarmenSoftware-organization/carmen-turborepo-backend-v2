@@ -52,6 +52,10 @@ export class AuthController {
 
   constructor(private readonly authService: AuthService) {}
 
+  /**
+   * Authenticates a user against Keycloak using email and password credentials.
+   * Returns JWT access and refresh tokens for subsequent API requests across all ERP modules.
+   */
   @Post('login')
   @UseGuards(new AppIdGuard('auth.login'))
   @HttpCode(HttpStatus.OK)
@@ -76,9 +80,9 @@ export class AuthController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Login',
-    description: 'Login to the application',
+    description: 'Authenticates a user against Keycloak using email and password credentials, returning JWT access and refresh tokens for subsequent API requests across all ERP modules.',
     operationId: 'login',
-    tags: ['Authentication'],
+    tags: ['Authentication', 'Auth'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -113,6 +117,10 @@ export class AuthController {
     return this.authService.login({ ...loginDto }, version);
   }
 
+  /**
+   * Terminates the user's authenticated session by invalidating their Keycloak tokens.
+   * The user must log in again to access ERP resources.
+   */
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
@@ -120,9 +128,9 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Logout',
-    description: 'Logout from the application',
+    description: 'Terminates the user\'s authenticated session by invalidating their Keycloak tokens, ensuring they can no longer access ERP resources until they log in again.',
     operationId: 'logout',
-    tags: ['Authentication'],
+    tags: ['Authentication', 'Auth'],
     deprecated: false,
     security: [
       {
@@ -166,6 +174,10 @@ export class AuthController {
     return this.authService.logout(logoutDto, version);
   }
 
+  /**
+   * Creates a new user account in both Keycloak and the Carmen platform.
+   * Used to onboard new hotel staff such as purchasers, department heads, or property managers.
+   */
   @Post('register')
   // @UseGuards(KeycloakGuard)
   @HttpCode(HttpStatus.CREATED)
@@ -192,9 +204,9 @@ export class AuthController {
   })
   @ApiOperation({
     summary: 'Register',
-    description: 'Register a new user (requires authentication)',
+    description: 'Creates a new user account in both Keycloak and the Carmen platform. Used to onboard new hotel staff such as purchasers, department heads, or property managers into the ERP system.',
     operationId: 'register',
-    tags: ['Register'],
+    tags: ['Authentication', 'Auth'],
     deprecated: false,
     security: [
       {
@@ -236,15 +248,19 @@ export class AuthController {
     return this.authService.register({ ...registerDto }, version);
   }
 
+  /**
+   * Sends an invitation to a new user to join the Carmen ERP platform.
+   * The invited user receives a registration link to complete their account setup.
+   */
   @Post('invite-user')
   @UseGuards(KeycloakGuard)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Invite User',
-    description: 'Invite a new user',
+    description: 'Sends an invitation to a new user to join the Carmen ERP platform. The invited user receives a registration link to complete their account setup and gain access to assigned hotel properties.',
     operationId: 'inviteUser',
-    tags: ['Register'],
+    tags: ['Authentication', 'Auth'],
     deprecated: false,
     security: [
       {
@@ -286,15 +302,19 @@ export class AuthController {
     return this.authService.inviteUser({ ...inviteUserDto }, user_id, version);
   }
 
+  /**
+   * Completes the registration process for an invited user.
+   * Verifies the invitation token and activates the user's account in the platform.
+   */
   @Post('register-confirm')
   @IgnoreGuards(KeycloakGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Register Confirm',
-    description: 'Confirm a new user',
+    description: 'Completes the registration process for an invited user by verifying their invitation token and activating their account in the Carmen ERP platform.',
     operationId: 'registerConfirm',
-    tags: ['Register'],
+    tags: ['Authentication', 'Auth'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -343,13 +363,17 @@ export class AuthController {
   //   return this.authService.verifyToken(verifyTokenDto, version);
   // }
 
+  /**
+   * Exchanges an expired or expiring access token for a new one using the refresh token.
+   * Maintains the user's authenticated session without requiring re-login.
+   */
   @Post('refresh-token')
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Refresh Token',
-    description: 'Refresh a token',
+    description: 'Exchanges an expired or expiring access token for a new one using the refresh token, maintaining the user\'s authenticated session without requiring them to log in again.',
     operationId: 'refreshToken',
-    tags: ['Authentication'],
+    tags: ['Authentication', 'Auth'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -384,6 +408,10 @@ export class AuthController {
     return this.authService.refreshToken(refreshTokenDto, version);
   }
 
+  /**
+   * Initiates the password recovery flow for a user who has forgotten their credentials.
+   * Sends a password reset email with a secure token link to the registered address.
+   */
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
@@ -401,9 +429,9 @@ export class AuthController {
   @ApiOperation({
     summary: 'Forgot Password',
     description:
-      'Request password reset. Sends an email with reset link to the user.',
+      'Initiates the password recovery flow for a user who has forgotten their credentials. Sends a password reset email with a secure token link to the registered email address.',
     operationId: 'forgotPassword',
-    tags: ['Authentication'],
+    tags: ['Authentication', 'Auth'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -438,6 +466,10 @@ export class AuthController {
     return this.authService.forgotPassword({ ...forgotPasswordDto }, version);
   }
 
+  /**
+   * Completes the password recovery process by setting a new password using the emailed token.
+   * The token is single-use and time-limited for security.
+   */
   @Post('reset-password-with-token')
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
@@ -455,9 +487,9 @@ export class AuthController {
   })
   @ApiOperation({
     summary: 'Reset Password with Token',
-    description: 'Reset password using the token received via email',
+    description: 'Completes the password recovery process by setting a new password using the secure token received via the forgot-password email. The token is single-use and time-limited for security.',
     operationId: 'resetPasswordWithToken',
-    tags: ['Authentication'],
+    tags: ['Authentication', 'Auth'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -517,6 +549,10 @@ export class AuthController {
   //   return this.authService.permission_web(accessToken, version);
   // }
 
+  /**
+   * Allows a platform administrator to forcibly reset another user's password.
+   * Used for support scenarios when hotel staff are locked out of their accounts.
+   */
   @Post('reset-password')
   @UseGuards(KeycloakGuard)
   @HttpCode(HttpStatus.OK)
@@ -536,9 +572,9 @@ export class AuthController {
   })
   @ApiOperation({
     summary: 'Reset Password',
-    description: 'Reset user password using admin privileges',
+    description: 'Allows a platform administrator to forcibly reset another user\'s password without requiring the user\'s current password. Used for support scenarios when hotel staff are locked out of their accounts.',
     operationId: 'resetPassword',
-    tags: ['Authentication'],
+    tags: ['Authentication', 'Auth'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -576,6 +612,10 @@ export class AuthController {
     return this.authService.resetPassword({ ...resetPasswordDto }, version);
   }
 
+  /**
+   * Allows an authenticated user to change their own password.
+   * Requires the current password for verification before setting the new one.
+   */
   @Post('change-password')
   @UseGuards(KeycloakGuard)
   @HttpCode(HttpStatus.OK)
@@ -596,9 +636,9 @@ export class AuthController {
   @ApiOperation({
     summary: 'Change Password',
     description:
-      'Change user password (requires current password verification)',
+      'Allows an authenticated user to change their own password by providing their current password for verification. This is the standard self-service password update flow for ERP users.',
     operationId: 'changePassword',
-    tags: ['Authentication'],
+    tags: ['Authentication', 'Auth'],
     deprecated: false,
     security: [
       {
@@ -662,6 +702,9 @@ export class AuthController {
   //   return this.authService.changeEmail(changeEmailDto, version);
   // }
 
+  /**
+   * Retrieves all platform users for notification testing purposes.
+   */
   @Get('test-notification')
   @ApiVersionMinRequest()
   async getAllUsers(@Query('version') version: string = 'latest') {

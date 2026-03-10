@@ -30,7 +30,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/:bu_code/inventory-adjustment')
-@ApiTags('Application - Inventory Adjustment')
+@ApiTags('Inventory')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -41,6 +41,10 @@ export class InventoryAdjustmentController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Lists all manual inventory corrections (stock-in and stock-out) for the
+   * business unit, with optional filtering by adjustment type.
+   */
   @Get()
   @UseGuards(new AppIdGuard('inventoryAdjustment.findAll'))
   @ApiVersionMinRequest()
@@ -53,9 +57,9 @@ export class InventoryAdjustmentController extends BaseHttpController {
   })
   @ApiOperation({
     summary: 'Get all inventory adjustments',
-    description: 'Retrieves a combined list of stock-in and stock-out records (inventory adjustments). Can be filtered by type.',
+    description: 'Lists all manual inventory corrections (stock-in additions and stock-out deductions) for the business unit, enabling managers to review adjustments made to resolve discrepancies from physical counts, spoilage, or other non-standard inventory movements.',
     operationId: 'findAllInventoryAdjustments',
-    tags: ['[Method] Get', 'Inventory Adjustment'],
+    tags: ['Inventory', 'Inventory Adjustment'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {
@@ -79,6 +83,10 @@ export class InventoryAdjustmentController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves a single inventory adjustment record (stock-in or stock-out) by ID,
+   * including the adjusted items, quantities, and reason for the correction.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('inventoryAdjustment.findOne'))
   @HttpCode(HttpStatus.OK)
@@ -91,9 +99,9 @@ export class InventoryAdjustmentController extends BaseHttpController {
   })
   @ApiOperation({
     summary: 'Get a specific inventory adjustment',
-    description: 'Retrieves a single stock-in or stock-out record by ID. The type query parameter is required to specify which type of record to fetch.',
+    description: 'Retrieves the full details of a specific inventory adjustment (stock-in or stock-out), including affected products, quantities, and the reason for the correction, for audit review and verification.',
     operationId: 'findOneInventoryAdjustment',
-    tags: ['[Method] Get', 'Inventory Adjustment'],
+    tags: ['Inventory', 'Inventory Adjustment'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [

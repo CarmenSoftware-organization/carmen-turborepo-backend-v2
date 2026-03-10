@@ -29,7 +29,7 @@ import {
 } from './dto/purchase-request-comment.dto';
 
 @Controller('api')
-@ApiTags('Application - Purchase Request Comment')
+@ApiTags('Procurement')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()
@@ -42,15 +42,19 @@ export class PurchaseRequestCommentController {
     private readonly purchaseRequestCommentService: PurchaseRequestCommentService,
   ) {}
 
+  /**
+   * Retrieves the full discussion thread on a purchase request,
+   * enabling requestors and approvers to review collaboration notes and feedback.
+   */
   @Get(':bu_code/purchase-request/:purchase_request_id/comment')
   @UseGuards(new AppIdGuard('purchaseRequestComment.findAll'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get all comments for a purchase request',
     description:
-      'Retrieves all comments associated with a specific purchase request',
+      'Retrieves the full discussion thread on a purchase request, enabling requestors and approvers to review collaboration notes, clarification requests, and approval-related feedback.',
     operationId: 'findAllPurchaseRequestComments',
-    tags: ['Application - Purchase Request Comment', '[Method] Get'],
+    tags: ['Procurement', 'Purchase Request Comment'],
     responses: {
       200: {
         description: 'Comments retrieved successfully',
@@ -90,14 +94,18 @@ export class PurchaseRequestCommentController {
     );
   }
 
+  /**
+   * Retrieves a specific comment from a purchase request discussion thread,
+   * including its content, author, timestamp, and any attachments.
+   */
   @Get(':bu_code/purchase-request-comment/:id')
   @UseGuards(new AppIdGuard('purchaseRequestComment.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a comment by ID',
-    description: 'Retrieves a specific comment by its ID',
+    description: 'Retrieves a specific comment from a purchase request discussion thread, including its content, author, timestamp, and any attached supporting documents.',
     operationId: 'findOnePurchaseRequestComment',
-    tags: ['Application - Purchase Request Comment', '[Method] Get'],
+    tags: ['Procurement', 'Purchase Request Comment'],
     responses: {
       200: {
         description: 'Comment retrieved successfully',
@@ -133,14 +141,18 @@ export class PurchaseRequestCommentController {
     );
   }
 
+  /**
+   * Posts a new comment on a purchase request discussion thread, allowing
+   * requestors and approvers to collaborate during the procurement review process.
+   */
   @Post(':bu_code/purchase-request-comment')
   @UseGuards(new AppIdGuard('purchaseRequestComment.create'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a new comment',
-    description: 'Creates a new comment for a purchase request',
+    description: 'Posts a new comment on a purchase request discussion thread, allowing requestors and approvers to collaborate by asking questions, providing justifications, or requesting changes before approval.',
     operationId: 'createPurchaseRequestComment',
-    tags: ['Application - Purchase Request Comment', '[Method] Post'],
+    tags: ['Procurement', 'Purchase Request Comment'],
     responses: {
       201: {
         description: 'Comment created successfully',
@@ -180,14 +192,18 @@ export class PurchaseRequestCommentController {
     );
   }
 
+  /**
+   * Edits an existing comment in a purchase request discussion thread.
+   * Only the comment author can modify their own remarks.
+   */
   @Patch(':bu_code/purchase-request-comment/:id')
   @UseGuards(new AppIdGuard('purchaseRequestComment.update'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a comment',
-    description: 'Updates an existing comment',
+    description: 'Edits an existing comment in a purchase request discussion thread. Only the comment author can modify their own remarks, preserving accountability in the procurement collaboration process.',
     operationId: 'updatePurchaseRequestComment',
-    tags: ['Application - Purchase Request Comment', '[Method] Patch'],
+    tags: ['Procurement', 'Purchase Request Comment'],
     responses: {
       200: {
         description: 'Comment updated successfully',
@@ -233,14 +249,18 @@ export class PurchaseRequestCommentController {
     );
   }
 
+  /**
+   * Removes a comment from a purchase request discussion thread.
+   * Only the comment author can delete their own remarks.
+   */
   @Delete(':bu_code/purchase-request-comment/:id')
   @UseGuards(new AppIdGuard('purchaseRequestComment.delete'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a comment',
-    description: 'Soft deletes an existing comment',
+    description: 'Removes a comment from a purchase request discussion thread. Only the comment author can delete their own remarks, maintaining an auditable collaboration history.',
     operationId: 'deletePurchaseRequestComment',
-    tags: ['Application - Purchase Request Comment', '[Method] Delete'],
+    tags: ['Procurement', 'Purchase Request Comment'],
     responses: {
       200: {
         description: 'Comment deleted successfully',
@@ -279,15 +299,19 @@ export class PurchaseRequestCommentController {
     );
   }
 
+  /**
+   * Attaches a supporting document (e.g., quotation or specification sheet)
+   * to a purchase request comment for evidence sharing during procurement review.
+   */
   @Post(':bu_code/purchase-request-comment/:id/attachment')
   @UseGuards(new AppIdGuard('purchaseRequestComment.addAttachment'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Add an attachment to a comment',
     description:
-      'Adds a file attachment to an existing comment. File should be uploaded via files.service first.',
+      'Attaches a supporting document (e.g., quotation, specification sheet, or photo) to a purchase request comment, enabling stakeholders to share evidence and documentation during the procurement review process.',
     operationId: 'addAttachmentToPurchaseRequestComment',
-    tags: ['Application - Purchase Request Comment', '[Method] Post'],
+    tags: ['Procurement', 'Purchase Request Comment'],
     responses: {
       200: {
         description: 'Attachment added successfully',
@@ -333,15 +357,19 @@ export class PurchaseRequestCommentController {
     );
   }
 
+  /**
+   * Removes a previously attached document from a purchase request comment,
+   * allowing the author to clean up outdated or incorrect attachments.
+   */
   @Delete(':bu_code/purchase-request-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('purchaseRequestComment.removeAttachment'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Remove an attachment from a comment',
     description:
-      'Removes a file attachment from an existing comment by its file token',
+      'Removes a previously attached supporting document from a purchase request comment, allowing the comment author to clean up outdated or incorrect attachments from the discussion thread.',
     operationId: 'removeAttachmentFromPurchaseRequestComment',
-    tags: ['Application - Purchase Request Comment', '[Method] Delete'],
+    tags: ['Procurement', 'Purchase Request Comment'],
     responses: {
       200: {
         description: 'Attachment removed successfully',

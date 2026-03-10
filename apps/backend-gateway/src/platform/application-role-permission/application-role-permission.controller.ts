@@ -31,7 +31,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api-system/role-permission')
-@ApiTags('Application - Role Permission')
+@ApiTags('Platform Admin')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -44,6 +44,10 @@ export class ApplicationRolePermissionController {
     private readonly applicationRolePermissionService: ApplicationRolePermissionService,
   ) {}
 
+  /**
+   * Lists all feature permissions currently assigned to a specific role.
+   * Shows exactly what actions users with this role are authorized to perform.
+   */
   @Get('role/:roleId/permissions')
   @UseGuards(new AppIdGuard('application-role-permission.getPermissionsByRole'))
   @HttpCode(HttpStatus.OK)
@@ -55,9 +59,9 @@ export class ApplicationRolePermissionController {
   })
   @ApiOperation({
     summary: 'Get all permissions for a role',
-    description: 'Retrieve all permissions assigned to a specific role from micro_auth',
+    description: 'Lists all feature permissions currently assigned to a specific role, showing exactly what actions (e.g., create PO, approve PR) users with this role are authorized to perform in the ERP system.',
     operationId: 'getPermissionsByRole',
-    tags: ['[Method] Get'],
+    tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [
       {
@@ -109,6 +113,10 @@ export class ApplicationRolePermissionController {
     );
   }
 
+  /**
+   * Finds all application roles that include a specific permission.
+   * Enables administrators to audit which roles grant a particular capability.
+   */
   @Get('permission/:permissionId/roles')
   @UseGuards(new AppIdGuard('application-role-permission.getRolesByPermission'))
   @HttpCode(HttpStatus.OK)
@@ -120,9 +128,9 @@ export class ApplicationRolePermissionController {
   })
   @ApiOperation({
     summary: 'Get all roles that have a permission',
-    description: 'Retrieve all roles that have a specific permission from micro_auth',
+    description: 'Finds all application roles that include a specific permission, enabling administrators to audit which roles grant a particular capability such as inventory adjustments or purchase approvals.',
     operationId: 'getRolesByPermission',
-    tags: ['[Method] Get'],
+    tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [
       {
@@ -174,6 +182,10 @@ export class ApplicationRolePermissionController {
     );
   }
 
+  /**
+   * Grants multiple feature permissions to an application role in a single operation.
+   * Enables bulk configuration of role capabilities across procurement and inventory modules.
+   */
   @Post('assign-permissions')
   @UseGuards(new AppIdGuard('application-role-permission.assignPermissionsToRole'))
   @HttpCode(HttpStatus.OK)
@@ -184,9 +196,9 @@ export class ApplicationRolePermissionController {
   })
   @ApiOperation({
     summary: 'Assign multiple permissions to a role',
-    description: 'Assign multiple permissions to a role in micro_auth',
+    description: 'Grants multiple feature permissions to an application role in a single operation, enabling bulk configuration of role capabilities such as giving a Purchaser role access to create POs, view vendors, and manage stock-in records.',
     operationId: 'assignPermissionsToRole',
-    tags: ['[Method] Post'],
+    tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [
       {
@@ -232,6 +244,10 @@ export class ApplicationRolePermissionController {
     );
   }
 
+  /**
+   * Grants a single feature permission to an application role.
+   * Allows fine-grained incremental updates to role capabilities.
+   */
   @Post('assign-permission')
   @UseGuards(new AppIdGuard('application-role-permission.assignPermissionToRole'))
   @HttpCode(HttpStatus.OK)
@@ -242,9 +258,9 @@ export class ApplicationRolePermissionController {
   })
   @ApiOperation({
     summary: 'Assign a single permission to a role',
-    description: 'Assign a single permission to a role in micro_auth',
+    description: 'Grants a single feature permission to an application role, allowing fine-grained incremental updates to role capabilities without replacing the entire permission set.',
     operationId: 'assignPermissionToRole',
-    tags: ['[Method] Post'],
+    tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [
       {
@@ -290,6 +306,10 @@ export class ApplicationRolePermissionController {
     );
   }
 
+  /**
+   * Revokes multiple feature permissions from an application role in a single operation.
+   * Useful when restructuring role access or restricting capabilities.
+   */
   @Delete('remove-permissions')
   @UseGuards(new AppIdGuard('application-role-permission.removePermissionsFromRole'))
   @HttpCode(HttpStatus.OK)
@@ -300,9 +320,9 @@ export class ApplicationRolePermissionController {
   })
   @ApiOperation({
     summary: 'Remove multiple permissions from a role',
-    description: 'Remove multiple permissions from a role in micro_auth',
+    description: 'Revokes multiple feature permissions from an application role in a single operation, useful when restructuring role access or restricting capabilities across procurement and inventory modules.',
     operationId: 'removePermissionsFromRole',
-    tags: ['[Method] Delete'],
+    tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [
       {
@@ -348,6 +368,10 @@ export class ApplicationRolePermissionController {
     );
   }
 
+  /**
+   * Revokes a single feature permission from an application role.
+   * Allows precise removal of a specific capability without affecting other permissions.
+   */
   @Delete('remove-permission')
   @UseGuards(new AppIdGuard('application-role-permission.removePermissionFromRole'))
   @HttpCode(HttpStatus.OK)
@@ -358,9 +382,9 @@ export class ApplicationRolePermissionController {
   })
   @ApiOperation({
     summary: 'Remove a single permission from a role',
-    description: 'Remove a single permission from a role in micro_auth',
+    description: 'Revokes a single feature permission from an application role, allowing precise removal of a specific capability without affecting other permissions assigned to the role.',
     operationId: 'removePermissionFromRole',
-    tags: ['[Method] Delete'],
+    tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [
       {

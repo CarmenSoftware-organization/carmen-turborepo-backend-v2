@@ -17,7 +17,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_ProductSubCategoryService } from './config_product-sub-category.service';
-import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   BaseHttpController,
@@ -42,7 +42,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/config/:bu_code/products/sub-category')
-@ApiTags('Config - Product Sub Category')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -57,11 +57,16 @@ export class Config_ProductSubCategoryController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves a specific product sub-category that provides a second level of classification
+   * under a parent category (e.g., Dairy under Fresh Produce, Spirits under Beverages).
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('productSubCategory.findOne'))
   @Serialize(ProductSubCategoryDetailResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({ summary: 'Get a product sub-category by ID', description: 'Retrieves a specific product sub-category that provides a second level of classification under a parent category (e.g., Dairy under Fresh Produce, Spirits under Beverages).', operationId: 'findOneProductSubCategory', tags: ['Configuration', 'Product Sub Category'] })
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -88,12 +93,17 @@ export class Config_ProductSubCategoryController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all product sub-categories configured for the business unit, providing granular
+   * classification within parent categories for detailed product organization and reporting.
+   */
   @Get()
   @UseGuards(new AppIdGuard('productSubCategory.findAll'))
   @Serialize(ProductSubCategoryListItemResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
+  @ApiOperation({ summary: 'Get all product sub-categories', description: 'Returns all product sub-categories configured for the business unit. Sub-categories provide granular classification within parent categories for detailed product organization and reporting.', operationId: 'findAllProductSubCategories', tags: ['Configuration', 'Product Sub Category'] })
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -121,11 +131,16 @@ export class Config_ProductSubCategoryController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Defines a new product sub-category under an existing parent category. Products can
+   * then be assigned to this sub-category for more detailed classification and reporting.
+   */
   @Post()
   @UseGuards(new AppIdGuard('productSubCategory.create'))
   @Serialize(ProductSubCategoryMutationResponseSchema)
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
+  @ApiOperation({ summary: 'Create a new product sub-category', description: 'Defines a new product sub-category under an existing parent category. Products can then be assigned to this sub-category for more detailed classification and reporting.', operationId: 'createProductSubCategory', tags: ['Configuration', 'Product Sub Category'] })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -152,11 +167,16 @@ export class Config_ProductSubCategoryController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies an existing product sub-category, such as renaming it or reassigning it
+   * to a different parent category. Changes affect product classification and reporting.
+   */
   @Put(':id')
   @UseGuards(new AppIdGuard('productSubCategory.update'))
   @Serialize(ProductSubCategoryMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({ summary: 'Update a product sub-category', description: 'Modifies an existing product sub-category, such as renaming it or reassigning it to a different parent category. Changes affect product classification and reporting.', operationId: 'updateProductSubCategory', tags: ['Configuration', 'Product Sub Category'] })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -189,11 +209,16 @@ export class Config_ProductSubCategoryController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a product sub-category from the classification hierarchy. Products assigned
+   * to this sub-category should be reassigned before deletion.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('productSubCategory.delete'))
   @Serialize(ProductSubCategoryMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({ summary: 'Delete a product sub-category', description: 'Removes a product sub-category from the classification hierarchy. Products assigned to this sub-category should be reassigned before deletion.', operationId: 'deleteProductSubCategory', tags: ['Configuration', 'Product Sub Category'] })
   async remove(
     @Req() req: Request,
     @Res() res: Response,

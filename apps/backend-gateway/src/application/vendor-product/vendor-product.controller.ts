@@ -36,7 +36,7 @@ import {
 } from '@/common';
 
 @Controller('api/:bu_code/vendor-product')
-@ApiTags('Application - Vendor Product')
+@ApiTags('Procurement')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -49,14 +49,18 @@ export class VendorProductController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves a specific vendor-product mapping including pricing, lead time,
+   * and supply terms for procurement decision-making and PO generation.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('vendorProduct.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get vendor product by ID',
-    description: 'Get vendor product by ID',
+    description: 'Retrieves a specific vendor-product mapping including the vendor\'s pricing, lead time, and supply terms for a particular product, used for procurement decision-making and purchase order generation.',
     operationId: 'getVendorProductById',
-    tags: ['[Method] Get'],
+    tags: ['Procurement', 'Vendor Product'],
     deprecated: false,
     security: [
       {
@@ -101,14 +105,18 @@ export class VendorProductController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all vendor-product mappings in the business unit, showing which
+   * products each vendor supplies along with pricing for comparison.
+   */
   @Get()
   @UseGuards(new AppIdGuard('vendorProduct.findAll'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get all vendor products',
-    description: 'Get all vendor products',
+    description: 'Lists all vendor-product mappings within the business unit, showing which products each vendor supplies along with pricing information, enabling procurement staff to compare vendor offerings.',
     operationId: 'getAllVendorProducts',
-    tags: ['[Method] Get'],
+    tags: ['Procurement', 'Vendor Product'],
     deprecated: false,
     security: [
       {
@@ -151,14 +159,18 @@ export class VendorProductController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Registers a new vendor-product mapping, recording that a vendor supplies
+   * a particular product with its pricing and supply terms.
+   */
   @Post()
   @UseGuards(new AppIdGuard('vendorProduct.create'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a vendor product',
-    description: 'Create a vendor product',
+    description: 'Creates a new vendor-product mapping, registering that a specific vendor supplies a particular product with its pricing and supply terms for use in procurement operations.',
     operationId: 'createVendorProduct',
-    tags: ['[Method] Post'],
+    tags: ['Procurement', 'Vendor Product'],
     deprecated: false,
     security: [
       {
@@ -201,14 +213,18 @@ export class VendorProductController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Updates a vendor-product mapping to reflect changes in pricing,
+   * supply terms, or availability for accurate procurement.
+   */
   @Put(':id')
   @UseGuards(new AppIdGuard('vendorProduct.update'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a vendor product',
-    description: 'Update a vendor product',
+    description: 'Updates a vendor-product mapping to reflect changes in pricing, supply terms, or availability, keeping vendor catalog information current for accurate procurement.',
     operationId: 'updateVendorProduct',
-    tags: ['[Method] Put'],
+    tags: ['Procurement', 'Vendor Product'],
     deprecated: false,
     security: [
       {
@@ -253,14 +269,18 @@ export class VendorProductController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a vendor-product mapping when a vendor no longer supplies
+   * a product, preventing it from appearing in procurement workflows.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('vendorProduct.delete'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a vendor product',
-    description: 'Delete a vendor product',
+    description: 'Removes a vendor-product mapping when a vendor no longer supplies a particular product, preventing it from appearing in procurement workflows and purchase order creation.',
     operationId: 'deleteVendorProduct',
-    tags: ['[Method] Delete'],
+    tags: ['Procurement', 'Vendor Product'],
     deprecated: false,
     security: [
       {

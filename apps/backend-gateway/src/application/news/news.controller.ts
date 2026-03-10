@@ -29,7 +29,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { BaseHttpController } from '@/common';
 
 @Controller('/api/news')
-@ApiTags('Application - News')
+@ApiTags('Document & Log')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -42,6 +42,10 @@ export class NewsController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves all internal announcements published within the business unit,
+   * used to communicate operational updates and policy changes to hotel staff.
+   */
   @Get()
   @UseGuards(new AppIdGuard('news.findAll'))
   @ApiVersionMinRequest()
@@ -49,8 +53,8 @@ export class NewsController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all news',
-    description: 'Get all news',
-    tags: ['[Method] Get'],
+    description: 'Retrieves all internal announcements and news articles published within the business unit, used to communicate operational updates, policy changes, and important notices to hotel staff.',
+    tags: ['Document & Log', 'News'],
   })
   async findAll(
     @Req() req: Request,
@@ -74,14 +78,18 @@ export class NewsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves a specific internal announcement by ID,
+   * including its full content and publication details.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('news.findOne'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get a news by ID',
-    description: 'Retrieve a news by its unique identifier',
-    tags: ['[Method] Get'],
+    description: 'Retrieves a specific internal announcement or news article by its ID, including its full content, publication date, and target audience within the business unit.',
+    tags: ['Document & Log', 'News'],
   })
   async findOne(
     @Req() req: Request,
@@ -103,14 +111,18 @@ export class NewsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Publishes a new internal announcement to inform business unit staff
+   * about operational updates, procurement policy changes, or hotel-wide notices.
+   */
   @Post()
   @UseGuards(new AppIdGuard('news.create'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Create a news',
-    description: 'Create a new news item',
-    tags: ['[Method] Post'],
+    description: 'Publishes a new internal announcement or news article to inform business unit users about operational updates, procurement policy changes, or other important hotel-wide notices.',
+    tags: ['Document & Log', 'News'],
   })
   async create(
     @Req() req: Request,
@@ -136,14 +148,18 @@ export class NewsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Modifies an existing internal announcement, allowing administrators
+   * to correct content or update publication scope within the business unit.
+   */
   @Put(':id')
   @UseGuards(new AppIdGuard('news.update'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Update a news by ID',
-    description: 'Update an existing news item by its unique identifier',
-    tags: ['[Method] Put'],
+    description: 'Modifies an existing internal announcement or news article, allowing administrators to correct content, update details, or change the publication scope within the business unit.',
+    tags: ['Document & Log', 'News'],
   })
   async update(
     @Req() req: Request,
@@ -172,14 +188,18 @@ export class NewsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes an internal announcement from the business unit,
+   * archiving it so it is no longer visible to staff.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('news.delete'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Delete a news by ID',
-    description: 'Delete a news item by its unique identifier',
-    tags: ['[Method] Delete'],
+    description: 'Removes an internal announcement or news article from the business unit, archiving it so it is no longer visible to staff.',
+    tags: ['Document & Log', 'News'],
   })
   async delete(
     @Req() req: Request,

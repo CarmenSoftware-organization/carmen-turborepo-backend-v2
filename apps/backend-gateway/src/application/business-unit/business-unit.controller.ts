@@ -6,7 +6,7 @@ import { BaseHttpController } from '@/common';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('/api/:bu_code/business-unit')
-@ApiTags('Application - business unit')
+@ApiTags('Master Data')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

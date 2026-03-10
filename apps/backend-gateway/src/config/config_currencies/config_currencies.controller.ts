@@ -43,7 +43,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/config/:bu_code/currencies')
-@ApiTags('Config - Currencies')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -56,6 +56,10 @@ export class Config_CurrenciesController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves a specific currency configuration including code, symbol, and base currency status
+   * for multi-currency procurement and vendor price lists.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('currencies.findOne'))
   @Serialize(CurrencyResponseSchema)
@@ -63,9 +67,9 @@ export class Config_CurrenciesController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get a currency by ID',
-    description: 'Retrieve a currency by its unique identifier',
+    description: 'Retrieves a specific currency configuration including its code, symbol, and base currency status. Currencies are used in multi-currency procurement for purchase orders and vendor price lists.',
     operationId: 'findOneCurrency',
-    tags: ['config-currencies', '[Method] Get - Config'],
+    tags: ['Configuration', 'Currencies'],
     deprecated: false,
     security: [
       {
@@ -119,6 +123,10 @@ export class Config_CurrenciesController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all supported currencies for the business unit, including the base currency,
+   * for international procurement and vendor payments.
+   */
   @Get()
   @UseGuards(new AppIdGuard('currencies.findAll'))
   @Serialize(CurrencyResponseSchema)
@@ -126,9 +134,9 @@ export class Config_CurrenciesController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all currencies',
-    description: 'Retrieve all currencies',
+    description: 'Returns all supported currencies configured for the business unit, including the base currency. Used to manage multi-currency support for international procurement and vendor payments.',
     operationId: 'findAllCurrencies',
-    tags: ['config-currencies', '[Method] Get - Config'],
+    tags: ['Configuration', 'Currencies'],
     deprecated: false,
     security: [
       {
@@ -179,6 +187,10 @@ export class Config_CurrenciesController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Adds a new currency for multi-currency procurement. The currency can then be
+   * assigned exchange rates and used in purchase orders and vendor price lists.
+   */
   @Post()
   @UseGuards(new AppIdGuard('currencies.create'))
   @Serialize(CurrencyResponseSchema)
@@ -186,9 +198,9 @@ export class Config_CurrenciesController extends BaseHttpController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Create a new currency',
-    description: 'Create a new currency',
+    description: 'Adds a new currency to the system for use in multi-currency procurement. Once created, the currency can be assigned exchange rates and used in purchase orders and vendor price lists.',
     operationId: 'createCurrency',
-    tags: ['config-currencies', '[Method] Post - Config'],
+    tags: ['Configuration', 'Currencies'],
     deprecated: false,
     security: [
       {
@@ -234,6 +246,10 @@ export class Config_CurrenciesController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Fully updates a currency configuration such as symbol, decimal precision,
+   * or base currency designation for procurement documents.
+   */
   @Put(':id')
   @UseGuards(new AppIdGuard('currencies.update'))
   @Serialize(CurrencyResponseSchema)
@@ -241,9 +257,9 @@ export class Config_CurrenciesController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Update a currency',
-    description: 'Update a currency',
+    description: 'Modifies a currency configuration, such as updating its symbol, decimal precision, or base currency designation. Changes affect how amounts are displayed and calculated in procurement documents.',
     operationId: 'updateCurrency',
-    tags: ['config-currencies', '[Method] Put - Config'],
+    tags: ['Configuration', 'Currencies'],
     deprecated: false,
     security: [
       {
@@ -303,6 +319,10 @@ export class Config_CurrenciesController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Partially updates specific fields of a currency configuration,
+   * such as toggling active status or adjusting display settings.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('currencies.patch'))
   @Serialize(CurrencyResponseSchema)
@@ -310,9 +330,9 @@ export class Config_CurrenciesController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Update a currency',
-    description: 'Update a currency',
+    description: 'Partially updates specific fields of a currency configuration without replacing the entire record. Useful for toggling active status or adjusting display settings.',
     operationId: 'updateCurrency',
-    tags: ['config-currencies', '[Method] Patch - Config'],
+    tags: ['Configuration', 'Currencies'],
     deprecated: false,
     security: [
       {
@@ -372,6 +392,9 @@ export class Config_CurrenciesController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a currency from active use. Historical procurement records using it are preserved.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('currencies.delete'))
   @Serialize(CurrencyResponseSchema)
@@ -379,9 +402,9 @@ export class Config_CurrenciesController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Delete a currency',
-    description: 'Delete a currency',
+    description: 'Removes a currency from active use. The currency will no longer be available for new procurement transactions, but historical records using this currency are preserved.',
     operationId: 'deleteCurrency',
-    tags: ['config-currencies', '[Method] Delete - Config'],
+    tags: ['Configuration', 'Currencies'],
     deprecated: false,
     security: [
       {

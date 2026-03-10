@@ -17,7 +17,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_WorkflowsService } from './config_workflows.service';
-import { ApiTags, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiBody, ApiHeader, ApiOperation } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   BaseHttpController,
@@ -42,7 +42,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/config/:bu_code/workflows')
-@ApiTags('Config - Workflows')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -56,11 +56,22 @@ export class Config_WorkflowsController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves a specific approval workflow template including its stages,
+   * approver roles, and routing rules for procurement document approvals.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('workflow.findOne'))
   @Serialize(WorkflowDetailResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get a workflow by ID',
+    description: 'Retrieves a specific approval workflow template including its stages, approver roles, and routing rules. Workflows define the approval chain for procurement documents like purchase requests and purchase orders.',
+    operationId: 'findOneWorkflow',
+    tags: ['Configuration', 'Workflows'],
+    responses: { 200: { description: 'Workflow retrieved successfully' } },
+  })
   async findOne(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -86,12 +97,23 @@ export class Config_WorkflowsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all configured approval workflow templates for managing document
+   * approval chains (purchase requests, purchase orders, etc.).
+   */
   @Get()
   @UseGuards(new AppIdGuard('workflow.findAll'))
   @Serialize(WorkflowListItemResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'Get all workflows',
+    description: 'Returns all configured approval workflow templates for the business unit. Administrators use these to manage document approval chains for purchase requests, purchase orders, and other procurement documents.',
+    operationId: 'findAllWorkflows',
+    tags: ['Configuration', 'Workflows'],
+    responses: { 200: { description: 'Workflows retrieved successfully' } },
+  })
   async findAll(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -118,11 +140,22 @@ export class Config_WorkflowsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Creates a new approval workflow template defining stages and approver roles
+   * (e.g., HOD, Purchaser, FC, GM) for procurement document routing.
+   */
   @Post()
   @UseGuards(new AppIdGuard('workflow.create'))
   @Serialize(WorkflowMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Create a new workflow',
+    description: 'Creates a new approval workflow template defining the stages, approver roles (e.g., HOD, Purchaser, FC, GM), and routing rules for document approvals in the procurement process.',
+    operationId: 'createWorkflow',
+    tags: ['Configuration', 'Workflows'],
+    responses: { 201: { description: 'Workflow created successfully' } },
+  })
   async create(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -148,11 +181,22 @@ export class Config_WorkflowsController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies an existing approval workflow template such as adding/removing stages
+   * or changing approver role assignments.
+   */
   @Put(':id')
   @UseGuards(new AppIdGuard('workflow.update'))
   @Serialize(WorkflowMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Update a workflow',
+    description: 'Modifies an existing approval workflow template, such as adding/removing approval stages or changing approver role assignments. Changes affect all future documents using this workflow.',
+    operationId: 'updateWorkflow',
+    tags: ['Configuration', 'Workflows'],
+    responses: { 200: { description: 'Workflow updated successfully' } },
+  })
   async update(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -184,11 +228,22 @@ export class Config_WorkflowsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes an approval workflow template from active use.
+   * In-progress documents are not affected; only new documents cannot use this workflow.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('workflow.delete'))
   @Serialize(WorkflowMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Delete a workflow',
+    description: 'Removes an approval workflow template from active use. Documents currently in progress using this workflow are not affected, but no new documents will use this workflow.',
+    operationId: 'deleteWorkflow',
+    tags: ['Configuration', 'Workflows'],
+    responses: { 200: { description: 'Workflow deleted successfully' } },
+  })
   async delete(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,

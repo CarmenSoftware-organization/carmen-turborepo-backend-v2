@@ -28,7 +28,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/config/:bu_code/location-product')
-@ApiTags('Config - Location Product')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -41,15 +41,19 @@ export class Config_LocationProductController {
     private readonly config_locationProductService: Config_LocationProductService,
   ) {}
 
+  /**
+   * Retrieves all products assigned to a specific storage location, showing which items
+   * are stocked at each warehouse or store for inventory tracking and replenishment.
+   */
   @Get(':locationId')
   @UseGuards(new AppIdGuard('locationProduct.getProductByLocationId'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a product by location ID',
-    description: 'Get a product by location ID',
+    description: 'Retrieves all products assigned to a specific storage location. This mapping determines which products are stocked at each warehouse or store for inventory tracking and replenishment.',
     operationId: 'getProductByLocationId',
-    tags: ['config-location-product', '[Method] Get - Config'],
+    tags: ['Configuration', 'Location Product'],
     deprecated: false,
     security: [
       {

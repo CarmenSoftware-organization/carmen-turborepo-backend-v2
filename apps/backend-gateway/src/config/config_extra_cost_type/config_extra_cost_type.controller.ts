@@ -47,7 +47,7 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
-@ApiTags('Config - Extra Cost Type')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @Controller('api/config/:bu_code/extra-cost-type')
 @UseGuards(KeycloakGuard)
@@ -63,11 +63,16 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves a specific extra cost type definition (e.g., shipping, insurance, customs duty)
+   * used to categorize additional charges on procurement documents beyond product prices.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('extraCostType.findOne'))
   @Serialize(ExtraCostTypeDetailResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get an extra cost type by ID', description: 'Retrieves a specific extra cost type definition (e.g., shipping, insurance, customs duty) used to categorize additional charges on procurement documents beyond product prices.', operationId: 'findOneExtraCostType', tags: ['Configuration', 'Extra Cost Type'] })
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -94,12 +99,17 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all configured extra cost categories for procurement, such as freight,
+   * handling, and insurance charges added to purchase orders and goods received notes.
+   */
   @Get()
   @UseGuards(new AppIdGuard('extraCostType.findAll'))
   @Serialize(ExtraCostTypeListItemResponseSchema)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all extra cost types', description: 'Returns all configured extra cost categories for procurement. These types are used when adding supplementary charges (e.g., freight, handling, insurance) to purchase orders and goods received notes.', operationId: 'findAllExtraCostTypes', tags: ['Configuration', 'Extra Cost Type'] })
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -127,11 +137,16 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Defines a new category for additional procurement costs (e.g., shipping, customs, handling fees)
+   * that can be applied to purchase orders beyond the product line items.
+   */
   @Post()
   @UseGuards(new AppIdGuard('extraCostType.create'))
   @Serialize(ExtraCostTypeMutationResponseSchema)
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
+  @ApiOperation({ summary: 'Create a new extra cost type', description: 'Defines a new category for additional procurement costs (e.g., shipping, customs, handling fees). Once created, it can be used to add supplementary charges to purchase orders.', operationId: 'createExtraCostType', tags: ['Configuration', 'Extra Cost Type'] })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -158,11 +173,16 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies an existing extra cost type definition, such as renaming or reclassifying
+   * the cost category. Changes apply to future procurement documents.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('extraCostType.update'))
   @Serialize(ExtraCostTypeMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({ summary: 'Update an extra cost type', description: 'Modifies an existing extra cost type definition, such as renaming or reclassifying the cost category. Changes apply to future procurement documents.', operationId: 'updateExtraCostType', tags: ['Configuration', 'Extra Cost Type'] })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -195,11 +215,16 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes an extra cost type from active use. Historical procurement records are preserved,
+   * but it will no longer appear as an option for adding charges to new documents.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('extraCostType.delete'))
   @Serialize(ExtraCostTypeMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({ summary: 'Delete an extra cost type', description: 'Removes an extra cost type from active use. It will no longer appear as an option for adding charges to procurement documents, but historical records are preserved.', operationId: 'deleteExtraCostType', tags: ['Configuration', 'Extra Cost Type'] })
   async delete(
     @Req() req: Request,
     @Res() res: Response,

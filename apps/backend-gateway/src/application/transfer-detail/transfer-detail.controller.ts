@@ -39,7 +39,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/:bu_code/transfer-detail')
-@ApiTags('Application - Transfer Detail')
+@ApiTags('Inventory')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -50,6 +50,10 @@ export class TransferDetailController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Lists all line items across inter-location transfer transactions,
+   * showing products and quantities being moved between storage locations.
+   */
   @Get()
   @UseGuards(new AppIdGuard('transferDetail.findAll'))
   @ApiVersionMinRequest()
@@ -57,9 +61,9 @@ export class TransferDetailController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all Transfer Details with pagination',
-    description: 'Retrieves all transfer detail records with pagination and filtering',
+    description: 'Lists all line items across inter-location transfer transactions, showing individual products and quantities being moved between storage locations within the hotel property.',
     operationId: 'findAllTransferDetails',
-    tags: ['[Method] Get'],
+    tags: ['Inventory', 'Transfer Detail'],
     responses: {
       200: { description: 'Transfer Details retrieved successfully' },
     },
@@ -79,15 +83,19 @@ export class TransferDetailController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves a specific transfer line item including the product,
+   * transfer quantity, and unit of measure for inter-location movement.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('transferDetail.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a Transfer Detail by ID',
-    description: 'Retrieves a single transfer detail record by its ID',
+    description: 'Retrieves a specific line item from an inventory transfer transaction, including the product, transfer quantity, and unit of measure for goods being moved between storage locations.',
     operationId: 'findOneTransferDetail',
-    tags: ['[Method] Get'],
+    tags: ['Inventory', 'Transfer Detail'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Transfer Detail ID' },
     ],
@@ -110,6 +118,10 @@ export class TransferDetailController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Adds a new product line item to a draft inventory transfer, specifying
+   * the product and quantity being moved between storage locations.
+   */
   @Post()
   @UseGuards(new AppIdGuard('transferDetail.create'))
   @Serialize(TransferMutationResponseSchema)
@@ -117,9 +129,9 @@ export class TransferDetailController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a new Transfer Detail',
-    description: 'Creates a new transfer detail record. Requires transfer_id in the body. Only works for Transfer in draft status.',
+    description: 'Adds a new product line item to a draft inventory transfer, specifying the product and quantity being moved from one storage location to another (e.g., main warehouse to kitchen storeroom).',
     operationId: 'createTransferDetail',
-    tags: ['[Method] Post'],
+    tags: ['Inventory', 'Transfer Detail'],
     responses: {
       201: { description: 'Transfer Detail created successfully' },
       400: { description: 'Cannot add detail to non-draft Transfer' },
@@ -140,6 +152,10 @@ export class TransferDetailController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies a transfer line item in a draft transaction, allowing corrections
+   * to quantities or units before inventory balances are adjusted across locations.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('transferDetail.update'))
   @Serialize(TransferMutationResponseSchema)
@@ -147,9 +163,9 @@ export class TransferDetailController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a Transfer Detail',
-    description: 'Updates an existing transfer detail record. Only works for Transfer in draft status.',
+    description: 'Modifies a product line item in a draft inventory transfer, allowing corrections to transfer quantities or units before the transfer is finalized and inventory balances are adjusted across locations.',
     operationId: 'updateTransferDetail',
-    tags: ['[Method] Patch'],
+    tags: ['Inventory', 'Transfer Detail'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Transfer Detail ID' },
     ],
@@ -174,6 +190,10 @@ export class TransferDetailController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a product line item from a draft inventory transfer,
+   * used when an item was added in error or is no longer needed.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('transferDetail.delete'))
   @Serialize(TransferMutationResponseSchema)
@@ -181,9 +201,9 @@ export class TransferDetailController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a Transfer Detail',
-    description: 'Soft deletes an existing transfer detail record. Only works for Transfer in draft status.',
+    description: 'Removes a product line item from a draft inventory transfer, used when an item was added in error or is no longer needed for the inter-location movement.',
     operationId: 'deleteTransferDetail',
-    tags: ['[Method] Delete'],
+    tags: ['Inventory', 'Transfer Detail'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Transfer Detail ID' },
     ],

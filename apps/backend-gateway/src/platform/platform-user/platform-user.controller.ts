@@ -17,7 +17,9 @@ import { Response } from 'express';
 import { PlatformUserService } from './platform-user.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
+  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
@@ -33,7 +35,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { BaseHttpController } from '@/common';
 
 @Controller('api-system')
-@ApiTags('Platform - User')
+@ApiTags('Platform Admin')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -48,15 +50,19 @@ export class PlatformUserController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Synchronizes user accounts from the Keycloak identity provider into the Carmen platform.
+   * Ensures all hotel staff provisioned in Keycloak are available for role and property assignment.
+   */
   @Post('fetch-user')
   @UseGuards(new AppIdGuard('platform-user.fetch'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Fetch users from Keycloak realm',
-    description: 'Fetches all users from Keycloak realm and syncs them to tb_user and tb_user_profile tables. Creates new records if not exists, updates existing records.',
+    description: 'Synchronizes user accounts from the Keycloak identity provider into the Carmen platform database. This ensures that all hotel staff and administrators provisioned in Keycloak are available for assignment to clusters, business units, and roles within the ERP system.',
     operationId: 'fetchUsers',
-    tags: ['[Method] Post'],
+    tags: ['Platform Admin', 'Platform User'],
     deprecated: false,
     security: [
       {
@@ -102,11 +108,27 @@ export class PlatformUserController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all system-wide user accounts across all tenants with pagination.
+   * Used by platform administrators to manage hotel staff and ERP users across the organization.
+   */
   @Get('user')
   @UseGuards(new AppIdGuard('platform-user.list'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'Get list of platform users',
+    description: 'Lists all system-wide user accounts across all tenants with pagination support. Used by platform administrators to manage hotel staff, procurement officers, and other ERP users across the entire organization.',
+    operationId: 'getUserList',
+    tags: ['Platform Admin', 'Platform User'],
+    deprecated: false,
+    security: [{ bearerAuth: [] }],
+    responses: {
+      200: { description: 'Users retrieved successfully' },
+      401: { description: 'Unauthorized' },
+    },
+  })
   async getUserList(
     @Req() req: Request,
     @Res() res: Response,
@@ -132,10 +154,28 @@ export class PlatformUserController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves detailed information about a specific platform user.
+   * Includes their profile, role assignments, and associated business units.
+   */
   @Get('user/:id')
   @UseGuards(new AppIdGuard('platform-user.get'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiParam({ name: 'id', description: 'User ID', type: 'string' })
+  @ApiOperation({
+    summary: 'Get platform user by ID',
+    description: 'Retrieves detailed information about a specific platform user, including their profile, role assignments, and associated business units. Used to review or audit individual user access across the ERP system.',
+    operationId: 'getUser',
+    tags: ['Platform Admin', 'Platform User'],
+    deprecated: false,
+    security: [{ bearerAuth: [] }],
+    responses: {
+      200: { description: 'User retrieved successfully' },
+      401: { description: 'Unauthorized' },
+      404: { description: 'User not found' },
+    },
+  })
   async getUser(
     @Req() req: Request,
     @Res() res: Response,
@@ -160,10 +200,27 @@ export class PlatformUserController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Provisions a new system-wide user account in the Carmen ERP platform.
+   * The user can then be assigned to clusters and business units for property access.
+   */
   @Post('user')
   @UseGuards(new AppIdGuard('platform-user.create'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Create a new platform user',
+    description: 'Provisions a new system-wide user account in the Carmen ERP platform. The user can subsequently be assigned to clusters and business units to grant them access to specific hotel properties and procurement workflows.',
+    operationId: 'createUser',
+    tags: ['Platform Admin', 'Platform User'],
+    deprecated: false,
+    security: [{ bearerAuth: [] }],
+    responses: {
+      200: { description: 'User created successfully' },
+      400: { description: 'Bad request' },
+      401: { description: 'Unauthorized' },
+    },
+  })
   async createUser(
     @Req() req: Request,
     @Res() res: Response,
@@ -188,10 +245,29 @@ export class PlatformUserController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Updates the profile or account details of an existing platform user.
+   * Used by administrators to maintain accurate user records across the hotel management system.
+   */
   @Put('user/:id')
   @UseGuards(new AppIdGuard('platform-user.update'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiParam({ name: 'id', description: 'User ID', type: 'string' })
+  @ApiOperation({
+    summary: 'Update a platform user',
+    description: 'Updates the profile or account details of an existing platform user, such as name, contact information, or status. Used by administrators to maintain accurate user records across the hotel management system.',
+    operationId: 'updateUser',
+    tags: ['Platform Admin', 'Platform User'],
+    deprecated: false,
+    security: [{ bearerAuth: [] }],
+    responses: {
+      200: { description: 'User updated successfully' },
+      400: { description: 'Bad request' },
+      401: { description: 'Unauthorized' },
+      404: { description: 'User not found' },
+    },
+  })
   async updateUser(
     @Req() req: Request,
     @Res() res: Response,
@@ -219,10 +295,28 @@ export class PlatformUserController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Deactivates or removes a user account from the Carmen platform.
+   * Revokes the user's access to all business units, clusters, and procurement workflows.
+   */
   @Delete('user/:id')
   @UseGuards(new AppIdGuard('platform-user.delete'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiParam({ name: 'id', description: 'User ID', type: 'string' })
+  @ApiOperation({
+    summary: 'Delete a platform user',
+    description: 'Deactivates or removes a user account from the Carmen platform. This revokes the user\'s access to all business units and clusters, effectively removing them from all hotel properties and procurement workflows.',
+    operationId: 'deleteUser',
+    tags: ['Platform Admin', 'Platform User'],
+    deprecated: false,
+    security: [{ bearerAuth: [] }],
+    responses: {
+      200: { description: 'User deleted successfully' },
+      401: { description: 'Unauthorized' },
+      404: { description: 'User not found' },
+    },
+  })
   async deleteUser(
     @Req() req: Request,
     @Res() res: Response,
