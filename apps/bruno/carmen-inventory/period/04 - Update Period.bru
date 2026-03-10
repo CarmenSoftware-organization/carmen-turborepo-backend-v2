@@ -11,7 +11,7 @@ patch {
 }
 
 params:path {
-  id: {{period_id}}
+  id: 6f871e7c-c138-40da-8baf-c8b0437ca651
 }
 
 headers {
@@ -24,8 +24,15 @@ auth:bearer {
 
 body:json {
   {
-    "name": "",
-    "start_date": "",
-    "end_date": ""
+    "period": "2604",
+    "fiscal_year": 2026,
+    "fiscal_month": 4,
+    "start_at": "2026-04-01T00:00:00.000Z",
+    "end_at": "2026-04-30T23:59:59.000Z",
+    "status": "open"
   }
+}
+
+vars:pre-request {
+  period_id: 19e7cc87-64b2-4002-9574-a8e2bfaa4950
 }
