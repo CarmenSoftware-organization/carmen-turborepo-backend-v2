@@ -140,7 +140,7 @@ export class AuthService {
       const response = await firstValueFrom(
         this.keycloakService.send(
           { cmd: 'keycloak.auth.login', service: 'keycloak' },
-          { email: loginDto.email, password: loginDto.password },
+          { email: loginDto.email.toLowerCase(), password: loginDto.password },
         ),
       );
 
@@ -171,7 +171,7 @@ export class AuthService {
       }
 
       const user = await this.prismaSystem.tb_user.findFirst({
-        where: { email: loginDto.email },
+        where: { email: loginDto.email.toLowerCase() },
         select: { id: true, email: true, platform_role: true },
       });
 
