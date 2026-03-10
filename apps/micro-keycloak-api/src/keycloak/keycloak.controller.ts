@@ -436,7 +436,13 @@ export class KeycloakController extends BaseMicroserviceController {
       );
       return this.handleResult(Result.ok(result));
     } catch (error: unknown) {
-      const result = Result.error(error instanceof Error ? error.message : 'Failed to change password', ErrorCode.INVALID_ARGUMENT);
+      const message = error instanceof Error ? error.message : 'Failed to change password';
+      const isAuthError = message.includes('expired') || message.includes('invalid') || message.includes('401');
+      const isInvalidPassword = message.includes('password is incorrect');
+      const errorCode = isAuthError ? ErrorCode.UNAUTHENTICATED
+        : isInvalidPassword ? ErrorCode.INVALID_ARGUMENT
+        : ErrorCode.INTERNAL;
+      const result = Result.error(message, errorCode);
       return this.handleResult(result);
     }
   }
