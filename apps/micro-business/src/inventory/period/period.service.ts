@@ -66,12 +66,31 @@ export class PeriodService {
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
+    const findManyArgs = q.findMany();
+    const hasCustomSort = Array.isArray(findManyArgs.orderBy)
+      ? findManyArgs.orderBy.length > 0
+      : Object.keys(findManyArgs.orderBy).length > 0;
+
     const data = await prisma.tb_period.findMany({
-      ...q.findMany(),
+      ...findManyArgs,
+      select: {
+        id: true,
+        period: true,
+        fiscal_year: true,
+        fiscal_month: true,
+        start_at: true,
+        end_at: true,
+        status: true,
+        created_at: true,
+        updated_at: true,
+      },
       where: {
         ...q.where(),
         deleted_at: null,
       },
+      ...(hasCustomSort
+        ? {}
+        : { orderBy: [{ status: "asc" }, { fiscal_year: "asc" }, { fiscal_month: "asc" }] }),
     });
 
     const total = await prisma.tb_period.count({
@@ -241,7 +260,31 @@ export class PeriodService {
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
-    // Find the last period (by fiscal_year desc, fiscal_month desc)
+    // Find the oldest open period
+    const oldestOpenPeriod = await prisma.tb_period.findFirst({
+      where: { status: enum_period_status.open, deleted_at: null },
+      orderBy: [{ fiscal_year: "asc" }, { fiscal_month: "asc" }],
+    });
+
+    // Count existing open periods from the oldest open period onward
+    const existingOpenCount = await prisma.tb_period.count({
+      where: { status: enum_period_status.open, deleted_at: null },
+    });
+
+    // If already have enough open periods, nothing to do
+    if (existingOpenCount >= count) {
+      return Result.ok({
+        created: [],
+        skipped: [],
+        total_created: 0,
+        total_skipped: 0,
+        message: `Already have ${existingOpenCount} open periods (requested ${count})`,
+      });
+    }
+
+    const periodsToCreate = count - existingOpenCount;
+
+    // Find the last period overall to know where to start creating
     const lastPeriod = await prisma.tb_period.findFirst({
       where: { deleted_at: null },
       orderBy: [{ fiscal_year: "desc" }, { fiscal_month: "desc" }],
@@ -251,7 +294,6 @@ export class PeriodService {
     let startMonth: number;
 
     if (lastPeriod) {
-      // Start from the month after the last period
       startYear = lastPeriod.fiscal_year;
       startMonth = lastPeriod.fiscal_month + 1;
       if (startMonth > 12) {
@@ -259,7 +301,6 @@ export class PeriodService {
         startYear += 1;
       }
     } else {
-      // No periods exist, start from current month
       const now = new Date();
       startYear = now.getFullYear();
       startMonth = now.getMonth() + 1;
@@ -271,7 +312,7 @@ export class PeriodService {
     let year = startYear;
     let month = startMonth;
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < periodsToCreate; i++) {
       const periodCode = year.toString().slice(-2) + month.toString().padStart(2, "0");
 
       // Check if period already exists
@@ -334,6 +375,10 @@ export class PeriodService {
     }
 
     return Result.ok({
+      oldest_open_period: oldestOpenPeriod
+        ? { period: oldestOpenPeriod.period, fiscal_year: oldestOpenPeriod.fiscal_year, fiscal_month: oldestOpenPeriod.fiscal_month }
+        : null,
+      existing_open_count: existingOpenCount,
       created: createdPeriods,
       skipped: skippedPeriods,
       total_created: createdPeriods.length,
