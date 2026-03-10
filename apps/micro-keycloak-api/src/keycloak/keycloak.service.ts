@@ -85,10 +85,15 @@ export class KeycloakService {
 
     const params = new URLSearchParams();
     params.append('grant_type', 'password');
-    params.append('client_id', this.config.adminClientId);
+    params.append('client_id', this.config.adminClientId || 'admin-cli');
     params.append('username', this.config.adminUsername || '');
     params.append('password', this.config.adminPassword || '');
-    params.append('client_secret', this.config.adminClientSecret);
+    if (this.config.adminClientSecret) {
+      params.append('client_secret', this.config.adminClientSecret);
+    }
+
+    this.logger.debug(`Fetching new admin token from Keycloak: ${tokenUrl}`);
+    this.logger.debug(`Params: ${params.toString()}`);
 
     const response = await fetch(tokenUrl, {
       method: 'POST',
@@ -198,11 +203,18 @@ export class KeycloakService {
 
     if (!response.ok) {
       const error = await response.text();
-      this.logger.error(`Keycloak Admin API error: ${response.status} - ${error}`);
-      throw new Error(`Keycloak Admin API error: ${response.status} - ${error}`);
+      this.logger.error(
+        `Keycloak Admin API error: ${response.status} - ${error}`,
+      );
+      throw new Error(
+        `Keycloak Admin API error: ${response.status} - ${error}`,
+      );
     }
 
-    if (response.status === 204 || response.headers.get('content-length') === '0') {
+    if (
+      response.status === 204 ||
+      response.headers.get('content-length') === '0'
+    ) {
       return {} as T;
     }
 
@@ -218,7 +230,12 @@ export class KeycloakService {
 
   async getUserById(userId: string, realm?: string): Promise<KeycloakUser> {
     this.logger.log(`Fetching user by ID: ${userId}`);
-    return this.request<KeycloakUser>('GET', `/users/${userId}`, undefined, realm);
+    return this.request<KeycloakUser>(
+      'GET',
+      `/users/${userId}`,
+      undefined,
+      realm,
+    );
   }
 
   async getUserByUsername(
@@ -312,7 +329,10 @@ export class KeycloakService {
     };
 
     // 3. Remove read-only fields before PUT
-    const { id, createdTimestamp, ...updatePayload } = mergedUser as Record<string, unknown>;
+    const { id, createdTimestamp, ...updatePayload } = mergedUser as Record<
+      string,
+      unknown
+    >;
 
     // 4. PUT the full user object back
     await this.request<void>('PUT', `/users/${userId}`, updatePayload, realm);
@@ -375,7 +395,9 @@ export class KeycloakService {
 
     if (attributes['BusinessUnit'] && attributes['BusinessUnit'].length > 0) {
       try {
-        buList = attributes['BusinessUnit'].map((item: string) => JSON.parse(item));
+        buList = attributes['BusinessUnit'].map((item: string) =>
+          JSON.parse(item),
+        );
       } catch {
         this.logger.warn('Failed to parse existing BU attribute, resetting');
         buList = [];
@@ -386,7 +408,9 @@ export class KeycloakService {
     const existingIndex = buList.findIndex((b) => b.bu_id === bu.bu_id);
     if (existingIndex >= 0) {
       buList[existingIndex] = bu;
-      this.logger.log(`Updated existing BU '${bu.bu_code}' for user: ${userId}`);
+      this.logger.log(
+        `Updated existing BU '${bu.bu_code}' for user: ${userId}`,
+      );
     } else {
       buList.push(bu);
       this.logger.log(`Added new BU '${bu.bu_code}' to user: ${userId}`);
@@ -397,7 +421,8 @@ export class KeycloakService {
     user.attributes['BusinessUnit'] = buList.map((b) => JSON.stringify(b));
 
     // 3. PUT the full user object back (remove read-only fields)
-    const { id, createdTimestamp, ...updatePayload } = user as unknown as Record<string, unknown>;
+    const { id, createdTimestamp, ...updatePayload } =
+      user as unknown as Record<string, unknown>;
     await this.request<void>('PUT', `/users/${userId}`, updatePayload, realm);
   }
 
@@ -417,7 +442,11 @@ export class KeycloakService {
     const user = await this.getUserById(userId, realm);
 
     // Check if BU attribute exists
-    if (!user.attributes || !user.attributes['BusinessUnit'] || user.attributes['BusinessUnit'].length === 0) {
+    if (
+      !user.attributes ||
+      !user.attributes['BusinessUnit'] ||
+      user.attributes['BusinessUnit'].length === 0
+    ) {
       this.logger.log(`No BU attribute found on user: ${userId}`);
       return;
     }
@@ -425,7 +454,9 @@ export class KeycloakService {
     // 2. MODIFY the BU attribute locally
     let buList: { bu_id: string; bu_code: string; role: string }[] = [];
     try {
-      buList = user.attributes['BusinessUnit'].map((item: string) => JSON.parse(item));
+      buList = user.attributes['BusinessUnit'].map((item: string) =>
+        JSON.parse(item),
+      );
     } catch {
       this.logger.warn('Failed to parse BU attribute');
       return;
@@ -442,11 +473,14 @@ export class KeycloakService {
     if (filteredList.length === 0) {
       delete user.attributes['BusinessUnit'];
     } else {
-      user.attributes['BusinessUnit'] = filteredList.map((b) => JSON.stringify(b));
+      user.attributes['BusinessUnit'] = filteredList.map((b) =>
+        JSON.stringify(b),
+      );
     }
 
     // 3. PUT the full user object back (remove read-only fields)
-    const { id, createdTimestamp, ...updatePayload } = user as unknown as Record<string, unknown>;
+    const { id, createdTimestamp, ...updatePayload } =
+      user as unknown as Record<string, unknown>;
     await this.request<void>('PUT', `/users/${userId}`, updatePayload, realm);
     this.logger.log(`BU '${buId}' removed from user: ${userId}`);
   }
@@ -460,12 +494,18 @@ export class KeycloakService {
   ): Promise<{ bu_id: string; bu_code: string; role: string }[]> {
     const user = await this.getUserById(userId, realm);
 
-    if (!user.attributes || !user.attributes['BusinessUnit'] || user.attributes['BusinessUnit'].length === 0) {
+    if (
+      !user.attributes ||
+      !user.attributes['BusinessUnit'] ||
+      user.attributes['BusinessUnit'].length === 0
+    ) {
       return [];
     }
 
     try {
-      return user.attributes['BusinessUnit'].map((item: string) => JSON.parse(item));
+      return user.attributes['BusinessUnit'].map((item: string) =>
+        JSON.parse(item),
+      );
     } catch {
       this.logger.warn('Failed to parse BU attribute');
       return [];
@@ -520,35 +560,52 @@ export class KeycloakService {
     cluster: { cluster_id: string; cluster_code: string; role: string },
     realm?: string,
   ): Promise<void> {
-    this.logger.log(`Adding Cluster '${cluster.cluster_code}' to user: ${userId}`);
+    this.logger.log(
+      `Adding Cluster '${cluster.cluster_code}' to user: ${userId}`,
+    );
 
     const user = await this.getUserById(userId, realm);
 
     const attributes = user.attributes || {};
-    let clusterList: { cluster_id: string; cluster_code: string; role: string }[] = [];
+    let clusterList: {
+      cluster_id: string;
+      cluster_code: string;
+      role: string;
+    }[] = [];
 
     if (attributes['Cluster'] && attributes['Cluster'].length > 0) {
       try {
-        clusterList = attributes['Cluster'].map((item: string) => JSON.parse(item));
+        clusterList = attributes['Cluster'].map((item: string) =>
+          JSON.parse(item),
+        );
       } catch {
-        this.logger.warn('Failed to parse existing Cluster attribute, resetting');
+        this.logger.warn(
+          'Failed to parse existing Cluster attribute, resetting',
+        );
         clusterList = [];
       }
     }
 
-    const existingIndex = clusterList.findIndex((c) => c.cluster_id === cluster.cluster_id);
+    const existingIndex = clusterList.findIndex(
+      (c) => c.cluster_id === cluster.cluster_id,
+    );
     if (existingIndex >= 0) {
       clusterList[existingIndex] = cluster;
-      this.logger.log(`Updated existing Cluster '${cluster.cluster_code}' for user: ${userId}`);
+      this.logger.log(
+        `Updated existing Cluster '${cluster.cluster_code}' for user: ${userId}`,
+      );
     } else {
       clusterList.push(cluster);
-      this.logger.log(`Added new Cluster '${cluster.cluster_code}' to user: ${userId}`);
+      this.logger.log(
+        `Added new Cluster '${cluster.cluster_code}' to user: ${userId}`,
+      );
     }
 
     user.attributes = user.attributes || {};
     user.attributes['Cluster'] = clusterList.map((c) => JSON.stringify(c));
 
-    const { id, createdTimestamp, ...updatePayload } = user as unknown as Record<string, unknown>;
+    const { id, createdTimestamp, ...updatePayload } =
+      user as unknown as Record<string, unknown>;
     await this.request<void>('PUT', `/users/${userId}`, updatePayload, realm);
   }
 
@@ -566,14 +623,24 @@ export class KeycloakService {
 
     const user = await this.getUserById(userId, realm);
 
-    if (!user.attributes || !user.attributes['Cluster'] || user.attributes['Cluster'].length === 0) {
+    if (
+      !user.attributes ||
+      !user.attributes['Cluster'] ||
+      user.attributes['Cluster'].length === 0
+    ) {
       this.logger.log(`No Cluster attribute found on user: ${userId}`);
       return;
     }
 
-    let clusterList: { cluster_id: string; cluster_code: string; role: string }[] = [];
+    let clusterList: {
+      cluster_id: string;
+      cluster_code: string;
+      role: string;
+    }[] = [];
     try {
-      clusterList = user.attributes['Cluster'].map((item: string) => JSON.parse(item));
+      clusterList = user.attributes['Cluster'].map((item: string) =>
+        JSON.parse(item),
+      );
     } catch {
       this.logger.warn('Failed to parse Cluster attribute');
       return;
@@ -592,7 +659,8 @@ export class KeycloakService {
       user.attributes['Cluster'] = filteredList.map((c) => JSON.stringify(c));
     }
 
-    const { id, createdTimestamp, ...updatePayload } = user as unknown as Record<string, unknown>;
+    const { id, createdTimestamp, ...updatePayload } =
+      user as unknown as Record<string, unknown>;
     await this.request<void>('PUT', `/users/${userId}`, updatePayload, realm);
     this.logger.log(`Cluster '${clusterId}' removed from user: ${userId}`);
   }
@@ -606,7 +674,11 @@ export class KeycloakService {
   ): Promise<{ cluster_id: string; cluster_code: string; role: string }[]> {
     const user = await this.getUserById(userId, realm);
 
-    if (!user.attributes || !user.attributes['Cluster'] || user.attributes['Cluster'].length === 0) {
+    if (
+      !user.attributes ||
+      !user.attributes['Cluster'] ||
+      user.attributes['Cluster'].length === 0
+    ) {
       return [];
     }
 
@@ -635,7 +707,11 @@ export class KeycloakService {
       }
       await this.addUserCluster(
         userId,
-        { cluster_id: cluster.cluster_id, cluster_code: cluster.cluster_code, role: cluster.role },
+        {
+          cluster_id: cluster.cluster_id,
+          cluster_code: cluster.cluster_code,
+          role: cluster.role,
+        },
         realm,
       );
     } else if (action === 'remove') {
@@ -707,7 +783,10 @@ export class KeycloakService {
     );
   }
 
-  async getUserGroups(userId: string, realm?: string): Promise<KeycloakGroup[]> {
+  async getUserGroups(
+    userId: string,
+    realm?: string,
+  ): Promise<KeycloakGroup[]> {
     this.logger.log(`Fetching groups for user: ${userId}`);
     return this.request<KeycloakGroup[]>(
       'GET',
@@ -801,7 +880,6 @@ export class KeycloakService {
     this.logger.log('Logout successful');
   }
 
-
   // async changeUserPassword(
   //   userId: string,
   //   newPassword: string,
@@ -852,15 +930,12 @@ export class KeycloakService {
     const targetRealm = realm || this.config.realm;
     const logoutUrl = `${this.config.baseUrl}/admin/realms/${targetRealm}/users/${userId}/logout`;
 
-    const response = await fetch(
-      logoutUrl,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${adminToken}`,
-        },
-      }
-    );
+    const response = await fetch(logoutUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+      },
+    });
 
     if (!response.ok) {
       const error = await response.text();
@@ -918,7 +993,10 @@ export class KeycloakService {
    * Verify/introspect a token.
    * Uses client credentials to introspect - does NOT require admin token.
    */
-  async verifyToken(token: string, realm?: string): Promise<KeycloakTokenIntrospection> {
+  async verifyToken(
+    token: string,
+    realm?: string,
+  ): Promise<KeycloakTokenIntrospection> {
     const targetRealm = realm || this.config.realm;
     const introspectUrl = `${this.config.baseUrl}/realms/${targetRealm}/protocol/openid-connect/token/introspect`;
 
@@ -959,7 +1037,10 @@ export class KeycloakService {
 
   // ==================== Session Management (Admin Token Required) ====================
 
-  async getUserSessions(userId: string, realm?: string): Promise<KeycloakUserSession[]> {
+  async getUserSessions(
+    userId: string,
+    realm?: string,
+  ): Promise<KeycloakUserSession[]> {
     this.logger.log(`Fetching sessions for user: ${userId}`);
     return this.request<KeycloakUserSession[]>(
       'GET',
@@ -1013,7 +1094,9 @@ export class KeycloakService {
     }
 
     const userInfo: KeycloakUserInfo = await response.json();
-    this.logger.debug(`User info fetched successfully for user: ${userInfo.sub}`);
+    this.logger.debug(
+      `User info fetched successfully for user: ${userInfo.sub}`,
+    );
     return userInfo;
   }
 
@@ -1104,13 +1187,16 @@ export class KeycloakService {
         };
       }
 
-      this.logger.warn(`Keycloak health check returned status: ${response.status}`);
+      this.logger.warn(
+        `Keycloak health check returned status: ${response.status}`,
+      );
       return {
         status: 'unhealthy',
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       this.logger.error(`Keycloak health check failed: ${errorMessage}`);
       return {
         status: 'unhealthy',

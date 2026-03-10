@@ -50,7 +50,7 @@ export class AuthController {
     AuthController.name,
   );
 
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('login')
   @UseGuards(new AppIdGuard('auth.login'))
@@ -400,7 +400,8 @@ export class AuthController {
   })
   @ApiOperation({
     summary: 'Forgot Password',
-    description: 'Request password reset. Sends an email with reset link to the user.',
+    description:
+      'Request password reset. Sends an email with reset link to the user.',
     operationId: 'forgotPassword',
     tags: ['Authentication'],
     deprecated: false,
@@ -491,7 +492,10 @@ export class AuthController {
       AuthController.name,
     );
 
-    return this.authService.resetPasswordWithToken({ ...resetPasswordWithTokenDto }, version);
+    return this.authService.resetPasswordWithToken(
+      { ...resetPasswordWithTokenDto },
+      version,
+    );
   }
 
   // @Get('mobile')
@@ -591,7 +595,8 @@ export class AuthController {
   })
   @ApiOperation({
     summary: 'Change Password',
-    description: 'Change user password (requires current password verification)',
+    description:
+      'Change user password (requires current password verification)',
     operationId: 'changePassword',
     tags: ['Authentication'],
     deprecated: false,
@@ -632,9 +637,7 @@ export class AuthController {
       AuthController.name,
     );
 
-    const { user_id } = ExtractRequestHeader(req);
-    const authorization = (req.headers as Record<string, string>)['authorization'] || '';
-    const accessToken = authorization.replace('Bearer ', '');
+    const { user_id, accessToken } = ExtractRequestHeader(req);
 
     const dto = {
       ...changePasswordDto,
