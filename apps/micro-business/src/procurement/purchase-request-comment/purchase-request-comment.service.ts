@@ -1,28 +1,20 @@
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
-import { isUUID } from 'class-validator';
-import { TenantService } from '@/tenant/tenant.service';
-import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
-import {
-  PrismaClient,
-  PrismaClient_TENANT,
-} from '@repo/prisma-shared-schema-tenant';
-import { IPaginate } from '@/common/shared-interface/paginate.interface';
-import QueryParams from '@/libs/paginate.query';
-import { BackendLogger } from '@/common/helpers/backend.logger';
+import { HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
+import { isUUID } from "class-validator";
+import { TenantService } from "@/tenant/tenant.service";
+import { PrismaClient_SYSTEM } from "@repo/prisma-shared-schema-platform";
+import { PrismaClient, PrismaClient_TENANT } from "@repo/prisma-shared-schema-tenant";
+import { IPaginate } from "@/common/shared-interface/paginate.interface";
+import QueryParams from "@/libs/paginate.query";
+import { BackendLogger } from "@/common/helpers/backend.logger";
 import {
   CreatePurchaseRequestComment,
   UpdatePurchaseRequestComment,
   Attachment,
-} from './dto/purchase-request-comment.dto';
-import getPaginationParams from '@/common/helpers/pagination.params';
+} from "./dto/purchase-request-comment.dto";
+import getPaginationParams from "@/common/helpers/pagination.params";
 
-const ERROR_MISSING_BU_CODE = 'Missing bu_code';
-const ERROR_MISSING_USER_ID = 'Missing user_id';
+const ERROR_MISSING_BU_CODE = "Missing bu_code";
+const ERROR_MISSING_USER_ID = "Missing user_id";
 
 @Injectable()
 export class PurchaseRequestCommentService {
@@ -30,20 +22,14 @@ export class PurchaseRequestCommentService {
     if (this._bu_code) {
       return String(this._bu_code);
     }
-    throw new HttpException(
-      ERROR_MISSING_BU_CODE,
-      HttpStatus.UNPROCESSABLE_ENTITY,
-    );
+    throw new HttpException(ERROR_MISSING_BU_CODE, HttpStatus.UNPROCESSABLE_ENTITY);
   }
 
   get userId(): string {
     if (isUUID(this._userId, 4)) {
       return String(this._userId);
     }
-    throw new HttpException(
-      ERROR_MISSING_USER_ID,
-      HttpStatus.UNPROCESSABLE_ENTITY,
-    );
+    throw new HttpException(ERROR_MISSING_USER_ID, HttpStatus.UNPROCESSABLE_ENTITY);
   }
 
   set bu_code(value: string) {
@@ -57,38 +43,27 @@ export class PurchaseRequestCommentService {
   private _bu_code?: string;
   private _userId?: string;
 
-  private readonly logger: BackendLogger = new BackendLogger(
-    PurchaseRequestCommentService.name,
-  );
+  private readonly logger: BackendLogger = new BackendLogger(PurchaseRequestCommentService.name);
 
-  async initializePrismaService(
-    bu_code: string,
-    userId: string,
-  ): Promise<void> {
+  async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._bu_code = bu_code;
     this._userId = userId;
-    this._prismaService = await this.tenantService.prismaTenantInstance(
-      bu_code,
-      userId,
-    );
+    this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
   }
 
   private _prismaService: PrismaClient | undefined;
 
   get prismaService(): PrismaClient {
     if (!this._prismaService) {
-      throw new HttpException(
-        'Prisma service is not initialized',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new HttpException("Prisma service is not initialized", HttpStatus.INTERNAL_SERVER_ERROR);
     }
     return this._prismaService;
   }
 
   constructor(
-    @Inject('PRISMA_SYSTEM')
+    @Inject("PRISMA_SYSTEM")
     private readonly prismaSystem: typeof PrismaClient_SYSTEM,
-    @Inject('PRISMA_TENANT')
+    @Inject("PRISMA_TENANT")
     private readonly prismaTenant: typeof PrismaClient_TENANT,
     private readonly tenantService: TenantService,
   ) {}
@@ -96,7 +71,7 @@ export class PurchaseRequestCommentService {
   async findById(id: string): Promise<any> {
     this.logger.debug(
       {
-        function: 'findById',
+        function: "findById",
         id,
         user_id: this.userId,
         tenant_id: this.bu_code,
@@ -104,42 +79,55 @@ export class PurchaseRequestCommentService {
       PurchaseRequestCommentService.name,
     );
 
-    const comment =
-      await this.prismaService.tb_purchase_request_comment.findFirst({
-        where: {
-          id: id,
-          deleted_at: null,
-        },
-      });
+    const comment = await this.prismaService.tb_purchase_request_comment.findFirst({
+      where: {
+        id: id,
+        deleted_at: null,
+      },
+    });
 
     if (!comment) {
       return {
         response: {
           status: HttpStatus.NOT_FOUND,
-          message: 'Comment not found',
+          message: "Comment not found",
         },
       };
     }
 
+    const [userProfile, user] = comment.user_id
+      ? await Promise.all([
+          this.prismaSystem.tb_user_profile.findFirst({
+            where: { user_id: comment.user_id },
+            select: { firstname: true, middlename: true, lastname: true },
+          }),
+          this.prismaSystem.tb_user.findFirst({
+            where: { id: comment.user_id },
+            select: { username: true },
+          }),
+        ])
+      : [null, null];
+
     return {
       data: {
         ...comment,
+        username: user?.username ?? null,
+        firstname: userProfile?.firstname ?? null,
+        middlename: userProfile?.middlename ?? null,
+        lastname: userProfile?.lastname ?? null,
         attachments: comment.attachments || [],
       },
       response: {
         status: HttpStatus.OK,
-        message: 'Comment retrieved successfully',
+        message: "Comment retrieved successfully",
       },
     };
   }
 
-  async findAllByPurchaseRequestId(
-    purchaseRequestId: string,
-    paginate: IPaginate,
-  ): Promise<any> {
+  async findAllByPurchaseRequestId(purchaseRequestId: string, paginate: IPaginate): Promise<any> {
     this.logger.debug(
       {
-        function: 'findAllByPurchaseRequestId',
+        function: "findAllByPurchaseRequestId",
         purchaseRequestId,
         user_id: this.userId,
         tenant_id: this.bu_code,
@@ -148,7 +136,7 @@ export class PurchaseRequestCommentService {
       PurchaseRequestCommentService.name,
     );
 
-    const defaultSearchFields = ['message'];
+    const defaultSearchFields = ["message"];
 
     const q = new QueryParams(
       paginate.page,
@@ -156,9 +144,7 @@ export class PurchaseRequestCommentService {
       paginate.search,
       paginate.searchfields,
       defaultSearchFields,
-      typeof paginate.filter === 'object' && !Array.isArray(paginate.filter)
-        ? paginate.filter
-        : {},
+      typeof paginate.filter === "object" && !Array.isArray(paginate.filter) ? paginate.filter : {},
       paginate.sort,
       paginate.advance,
     );
@@ -171,21 +157,46 @@ export class PurchaseRequestCommentService {
       deleted_at: null,
     };
 
-    const comments =
-      await this.prismaService.tb_purchase_request_comment.findMany({
-        where: whereQry,
-        orderBy: q.orderBy().length > 0 ? q.orderBy() : { created_at: 'desc' },
-        ...pagination,
-      });
+    const comments = await this.prismaService.tb_purchase_request_comment.findMany({
+      where: whereQry,
+      orderBy: q.orderBy().length > 0 ? q.orderBy() : { created_at: "desc" },
+      ...pagination,
+    });
 
     const total = await this.prismaService.tb_purchase_request_comment.count({
       where: whereQry,
     });
 
-    const mappedComments = comments.map((comment) => ({
-      ...comment,
-      attachments: comment.attachments || [],
-    }));
+    // Collect unique user_ids and batch-fetch profiles + usernames
+    const userIds = [...new Set(comments.map((c) => c.user_id).filter(Boolean))] as string[];
+    const [userProfiles, users] =
+      userIds.length > 0
+        ? await Promise.all([
+            this.prismaSystem.tb_user_profile.findMany({
+              where: { user_id: { in: userIds } },
+              select: { user_id: true, firstname: true, middlename: true, lastname: true },
+            }),
+            this.prismaSystem.tb_user.findMany({
+              where: { id: { in: userIds } },
+              select: { id: true, username: true },
+            }),
+          ])
+        : [[], []];
+    const profileMap = new Map(userProfiles.map((p) => [p.user_id, p]));
+    const userMap = new Map(users.map((u) => [u.id, u]));
+
+    const mappedComments = comments.map((comment) => {
+      const profile = comment.user_id ? profileMap.get(comment.user_id) : null;
+      const user = comment.user_id ? userMap.get(comment.user_id) : null;
+      return {
+        ...comment,
+        username: user?.username ?? null,
+        firstname: profile?.firstname ?? null,
+        middlename: profile?.middlename ?? null,
+        lastname: profile?.lastname ?? null,
+        attachments: comment.attachments || [],
+      };
+    });
 
     return {
       data: mappedComments,
@@ -197,7 +208,7 @@ export class PurchaseRequestCommentService {
       },
       response: {
         status: HttpStatus.OK,
-        message: 'Comments retrieved successfully',
+        message: "Comments retrieved successfully",
       },
     };
   }
@@ -205,7 +216,7 @@ export class PurchaseRequestCommentService {
   async create(createDto: CreatePurchaseRequestComment): Promise<any> {
     this.logger.debug(
       {
-        function: 'create',
+        function: "create",
         createDto,
         user_id: this.userId,
         tenant_id: this.bu_code,
@@ -214,33 +225,31 @@ export class PurchaseRequestCommentService {
     );
 
     // Verify purchase request exists
-    const purchaseRequest =
-      await this.prismaService.tb_purchase_request.findFirst({
-        where: {
-          id: createDto.purchase_request_id,
-        },
-      });
+    const purchaseRequest = await this.prismaService.tb_purchase_request.findFirst({
+      where: {
+        id: createDto.purchase_request_id,
+      },
+    });
 
     if (!purchaseRequest) {
       return {
         response: {
           status: HttpStatus.NOT_FOUND,
-          message: 'Purchase request not found',
+          message: "Purchase request not found",
         },
       };
     }
 
-    const comment =
-      await this.prismaService.tb_purchase_request_comment.create({
-        data: {
-          purchase_request_id: createDto.purchase_request_id,
-          message: createDto.message,
-          type: createDto.type,
-          user_id: this.userId,
-          attachments: createDto.attachments || [],
-          created_by_id: this.userId,
-        },
-      });
+    const comment = await this.prismaService.tb_purchase_request_comment.create({
+      data: {
+        purchase_request_id: createDto.purchase_request_id,
+        message: createDto.message,
+        type: createDto.type,
+        user_id: this.userId,
+        attachments: createDto.attachments || [],
+        created_by_id: this.userId,
+      },
+    });
 
     return {
       data: {
@@ -250,7 +259,7 @@ export class PurchaseRequestCommentService {
       },
       response: {
         status: HttpStatus.CREATED,
-        message: 'Comment created successfully',
+        message: "Comment created successfully",
       },
     };
   }
@@ -258,7 +267,7 @@ export class PurchaseRequestCommentService {
   async update(id: string, updateDto: UpdatePurchaseRequestComment): Promise<any> {
     this.logger.debug(
       {
-        function: 'update',
+        function: "update",
         id,
         updateDto,
         user_id: this.userId,
@@ -267,19 +276,18 @@ export class PurchaseRequestCommentService {
       PurchaseRequestCommentService.name,
     );
 
-    const existingComment =
-      await this.prismaService.tb_purchase_request_comment.findFirst({
-        where: {
-          id: id,
-          deleted_at: null,
-        },
-      });
+    const existingComment = await this.prismaService.tb_purchase_request_comment.findFirst({
+      where: {
+        id: id,
+        deleted_at: null,
+      },
+    });
 
     if (!existingComment) {
       return {
         response: {
           status: HttpStatus.NOT_FOUND,
-          message: 'Comment not found',
+          message: "Comment not found",
         },
       };
     }
@@ -289,7 +297,7 @@ export class PurchaseRequestCommentService {
       return {
         response: {
           status: HttpStatus.FORBIDDEN,
-          message: 'You can only update your own comments',
+          message: "You can only update your own comments",
         },
       };
     }
@@ -306,11 +314,10 @@ export class PurchaseRequestCommentService {
       updateData.attachments = updateDto.attachments;
     }
 
-    const comment =
-      await this.prismaService.tb_purchase_request_comment.update({
-        where: { id: id },
-        data: updateData,
-      });
+    const comment = await this.prismaService.tb_purchase_request_comment.update({
+      where: { id: id },
+      data: updateData,
+    });
 
     return {
       data: {
@@ -319,7 +326,7 @@ export class PurchaseRequestCommentService {
       },
       response: {
         status: HttpStatus.OK,
-        message: 'Comment updated successfully',
+        message: "Comment updated successfully",
       },
     };
   }
@@ -327,7 +334,7 @@ export class PurchaseRequestCommentService {
   async delete(id: string): Promise<any> {
     this.logger.debug(
       {
-        function: 'delete',
+        function: "delete",
         id,
         user_id: this.userId,
         tenant_id: this.bu_code,
@@ -335,19 +342,18 @@ export class PurchaseRequestCommentService {
       PurchaseRequestCommentService.name,
     );
 
-    const existingComment =
-      await this.prismaService.tb_purchase_request_comment.findFirst({
-        where: {
-          id: id,
-          deleted_at: null,
-        },
-      });
+    const existingComment = await this.prismaService.tb_purchase_request_comment.findFirst({
+      where: {
+        id: id,
+        deleted_at: null,
+      },
+    });
 
     if (!existingComment) {
       return {
         response: {
           status: HttpStatus.NOT_FOUND,
-          message: 'Comment not found',
+          message: "Comment not found",
         },
       };
     }
@@ -357,7 +363,7 @@ export class PurchaseRequestCommentService {
       return {
         response: {
           status: HttpStatus.FORBIDDEN,
-          message: 'You can only delete your own comments',
+          message: "You can only delete your own comments",
         },
       };
     }
@@ -375,7 +381,7 @@ export class PurchaseRequestCommentService {
       data: { id },
       response: {
         status: HttpStatus.OK,
-        message: 'Comment deleted successfully',
+        message: "Comment deleted successfully",
       },
     };
   }
@@ -383,7 +389,7 @@ export class PurchaseRequestCommentService {
   async addAttachment(id: string, attachment: Attachment): Promise<any> {
     this.logger.debug(
       {
-        function: 'addAttachment',
+        function: "addAttachment",
         id,
         attachment,
         user_id: this.userId,
@@ -392,19 +398,18 @@ export class PurchaseRequestCommentService {
       PurchaseRequestCommentService.name,
     );
 
-    const existingComment =
-      await this.prismaService.tb_purchase_request_comment.findFirst({
-        where: {
-          id: id,
-          deleted_at: null,
-        },
-      });
+    const existingComment = await this.prismaService.tb_purchase_request_comment.findFirst({
+      where: {
+        id: id,
+        deleted_at: null,
+      },
+    });
 
     if (!existingComment) {
       return {
         response: {
           status: HttpStatus.NOT_FOUND,
-          message: 'Comment not found',
+          message: "Comment not found",
         },
       };
     }
@@ -413,7 +418,7 @@ export class PurchaseRequestCommentService {
       return {
         response: {
           status: HttpStatus.FORBIDDEN,
-          message: 'You can only modify your own comments',
+          message: "You can only modify your own comments",
         },
       };
     }
@@ -421,14 +426,13 @@ export class PurchaseRequestCommentService {
     const currentAttachments = (existingComment.attachments as Attachment[]) || [];
     const updatedAttachments = [...currentAttachments, attachment];
 
-    const comment =
-      await this.prismaService.tb_purchase_request_comment.update({
-        where: { id: id },
-        data: {
-          attachments: updatedAttachments,
-          updated_by_id: this.userId,
-        },
-      });
+    const comment = await this.prismaService.tb_purchase_request_comment.update({
+      where: { id: id },
+      data: {
+        attachments: updatedAttachments,
+        updated_by_id: this.userId,
+      },
+    });
 
     return {
       data: {
@@ -437,7 +441,7 @@ export class PurchaseRequestCommentService {
       },
       response: {
         status: HttpStatus.OK,
-        message: 'Attachment added successfully',
+        message: "Attachment added successfully",
       },
     };
   }
@@ -445,7 +449,7 @@ export class PurchaseRequestCommentService {
   async removeAttachment(id: string, fileToken: string): Promise<any> {
     this.logger.debug(
       {
-        function: 'removeAttachment',
+        function: "removeAttachment",
         id,
         fileToken,
         user_id: this.userId,
@@ -454,19 +458,18 @@ export class PurchaseRequestCommentService {
       PurchaseRequestCommentService.name,
     );
 
-    const existingComment =
-      await this.prismaService.tb_purchase_request_comment.findFirst({
-        where: {
-          id: id,
-          deleted_at: null,
-        },
-      });
+    const existingComment = await this.prismaService.tb_purchase_request_comment.findFirst({
+      where: {
+        id: id,
+        deleted_at: null,
+      },
+    });
 
     if (!existingComment) {
       return {
         response: {
           status: HttpStatus.NOT_FOUND,
-          message: 'Comment not found',
+          message: "Comment not found",
         },
       };
     }
@@ -475,24 +478,21 @@ export class PurchaseRequestCommentService {
       return {
         response: {
           status: HttpStatus.FORBIDDEN,
-          message: 'You can only modify your own comments',
+          message: "You can only modify your own comments",
         },
       };
     }
 
     const currentAttachments = (existingComment.attachments as Attachment[]) || [];
-    const updatedAttachments = currentAttachments.filter(
-      (att) => att.fileToken !== fileToken,
-    );
+    const updatedAttachments = currentAttachments.filter((att) => att.fileToken !== fileToken);
 
-    const comment =
-      await this.prismaService.tb_purchase_request_comment.update({
-        where: { id: id },
-        data: {
-          attachments: updatedAttachments,
-          updated_by_id: this.userId,
-        },
-      });
+    const comment = await this.prismaService.tb_purchase_request_comment.update({
+      where: { id: id },
+      data: {
+        attachments: updatedAttachments,
+        updated_by_id: this.userId,
+      },
+    });
 
     return {
       data: {
@@ -501,7 +501,7 @@ export class PurchaseRequestCommentService {
       },
       response: {
         status: HttpStatus.OK,
-        message: 'Attachment removed successfully',
+        message: "Attachment removed successfully",
       },
     };
   }
