@@ -133,8 +133,10 @@ export class KeycloakController extends BaseMicroserviceController {
       const result = Result.ok(userInfo);
       return this.handleResult(result);
     } catch (error: unknown) {
-      const result = Result.error(error instanceof Error ? error.message : 'Failed to get user info', ErrorCode.INTERNAL);
-      return this.handleResult(result);
+      const message = error instanceof Error ? error.message : 'Failed to get user info';
+      const isAuthError = message.includes('expired') || message.includes('invalid') || message.includes('unauthorized');
+      const result = Result.error(message, isAuthError ? ErrorCode.UNAUTHENTICATED : ErrorCode.INTERNAL);
+      return this.handleResult(result, isAuthError ? HttpStatus.UNAUTHORIZED : undefined);
     }
   }
 
