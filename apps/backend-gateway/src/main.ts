@@ -81,7 +81,7 @@ async function bootstrap() {
   // SwaggerModule.setup('swagger', app_http as unknown as Parameters<typeof SwaggerModule.createDocument>[0], document_http);
   // SwaggerModule.setup('swagger', app_https as unknown as Parameters<typeof SwaggerModule.createDocument>[0], document_https);
 
-  // fs.writeFileSync('./swagger.json', JSON.stringify(document_http));
+  // fs.writeFileSync('./swagger.json', JSON.stringify(document_http, null, 2));
   // fs.writeFileSync('./swagger_https.json', JSON.stringify(document_https));
 
   // // Serve static files from the "public" folder

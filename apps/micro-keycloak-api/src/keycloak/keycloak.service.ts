@@ -1000,11 +1000,15 @@ export class KeycloakService {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!response.ok) {
       const error = await response.text();
       this.logger.error(`Failed to get user info: ${error}`);
+      if (response.status === 401) {
+        throw new Error('Access token is expired or invalid');
+      }
       throw new Error(`Failed to get user info: ${response.status}`);
     }
 
@@ -1057,6 +1061,7 @@ export class KeycloakService {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: loginParams.toString(),
+        signal: AbortSignal.timeout(10000),
       });
 
       if (!tokenRes.ok) {
@@ -1084,6 +1089,7 @@ export class KeycloakService {
         newPassword,
         confirmation: newPassword,
       }),
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!response.ok) {
