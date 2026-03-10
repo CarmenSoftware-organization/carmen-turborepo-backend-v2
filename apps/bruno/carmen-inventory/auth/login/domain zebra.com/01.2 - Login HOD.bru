@@ -1,0 +1,32 @@
+meta {
+  name: 01.2 - Login HOD
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host}}/api/auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+body:json {
+  {
+    "email": "hod@zebra.com",
+    "password": "12345678"
+  }
+}
+
+script:post-response {
+  if (res.body.data) {
+    bru.setEnvVar('access_token', res.body.data.access_token);
+    bru.setEnvVar('refresh_token', res.body.data.refresh_token);
+  } else {
+    bru.setEnvVar('access_token', '');
+    bru.setEnvVar('refresh_token', '');
+  }
+}
