@@ -132,6 +132,35 @@ export class PeriodService {
     return Result.ok(response.data);
   }
 
+  async generateNext(
+    count: number,
+    start_day: number,
+    user_id: string,
+    tenant_id: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'generateNext', count, start_day, user_id, tenant_id, version },
+      PeriodService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      { cmd: 'inventory-period.generateNext', service: 'inventory-period' },
+      { count, start_day, user_id, tenant_id, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.CREATED) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
   async delete(
     id: string,
     user_id: string,

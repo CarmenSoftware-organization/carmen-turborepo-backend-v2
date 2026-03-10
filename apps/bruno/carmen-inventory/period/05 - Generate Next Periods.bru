@@ -1,0 +1,26 @@
+meta {
+  name: 05 - Generate Next Periods
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/period/next
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "count": 12,
+    "start_day": 1
+  }
+}

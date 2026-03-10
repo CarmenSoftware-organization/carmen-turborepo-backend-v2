@@ -103,9 +103,11 @@ export class PeriodService {
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
+    const period_code = data.fiscal_year.toString().slice(-2) + data.fiscal_month.toString().padStart(2, "0");
+
     const foundPeriod = await prisma.tb_period.findFirst({
       where: {
-        period: data.period,
+        period: period_code,
         deleted_at: null,
       },
     });
@@ -127,7 +129,8 @@ export class PeriodService {
     }
 
     const rawStart = data.start_at;
-    const startAtStr = typeof rawStart === "string" ? rawStart : rawStart instanceof Date ? rawStart.toISOString() : null;
+    const startAtStr =
+      typeof rawStart === "string" ? rawStart : rawStart instanceof Date ? rawStart.toISOString() : null;
     const rawEnd = data.end_at;
     const endAtStr = typeof rawEnd === "string" ? rawEnd : rawEnd instanceof Date ? rawEnd.toISOString() : null;
 
@@ -140,7 +143,7 @@ export class PeriodService {
 
     const period = await prisma.tb_period.create({
       data: {
-        period: data.period,
+        period: period_code,
         fiscal_year: data.fiscal_year,
         fiscal_month: data.fiscal_month,
         start_at: startAtStr,
@@ -177,22 +180,25 @@ export class PeriodService {
 
     const { id, ...fields } = data;
 
-    this.logger.debug({
-      function: "update-debug",
-      start_at_type: typeof fields.start_at,
-      start_at_value: JSON.stringify(fields.start_at),
-      start_at_isDate: fields.start_at instanceof Date,
-      end_at_type: typeof fields.end_at,
-      end_at_value: JSON.stringify(fields.end_at),
-      new_date_test: JSON.stringify(new Date()),
-    }, PeriodService.name);
+    this.logger.debug(
+      {
+        function: "update-debug",
+        start_at_type: typeof fields.start_at,
+        start_at_value: JSON.stringify(fields.start_at),
+        start_at_isDate: fields.start_at instanceof Date,
+        end_at_type: typeof fields.end_at,
+        end_at_value: JSON.stringify(fields.end_at),
+        new_date_test: JSON.stringify(new Date()),
+      },
+      PeriodService.name,
+    );
 
     const updatePayload: Record<string, unknown> = {
       updated_by_id: user_id,
       updated_at: new Date().toISOString(),
     };
 
-    if (fields.period !== undefined) updatePayload.period = fields.period;
+    // if (fields.period !== undefined) updatePayload.period = fields.period;
     if (fields.fiscal_year !== undefined) updatePayload.fiscal_year = fields.fiscal_year;
     if (fields.fiscal_month !== undefined) updatePayload.fiscal_month = fields.fiscal_month;
     if (fields.start_at !== undefined) {
@@ -222,6 +228,117 @@ export class PeriodService {
     });
 
     return Result.ok({ id: data.id });
+  }
+
+  @TryCatch
+  async generateNextPeriods(count: number, start_day: number, user_id: string, tenant_id: string): Promise<Result<unknown>> {
+    this.logger.debug({ function: "generateNextPeriods", count, start_day, user_id, tenant_id }, PeriodService.name);
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) {
+      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
+    }
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    // Find the last period (by fiscal_year desc, fiscal_month desc)
+    const lastPeriod = await prisma.tb_period.findFirst({
+      where: { deleted_at: null },
+      orderBy: [{ fiscal_year: "desc" }, { fiscal_month: "desc" }],
+    });
+
+    let startYear: number;
+    let startMonth: number;
+
+    if (lastPeriod) {
+      // Start from the month after the last period
+      startYear = lastPeriod.fiscal_year;
+      startMonth = lastPeriod.fiscal_month + 1;
+      if (startMonth > 12) {
+        startMonth = 1;
+        startYear += 1;
+      }
+    } else {
+      // No periods exist, start from current month
+      const now = new Date();
+      startYear = now.getFullYear();
+      startMonth = now.getMonth() + 1;
+    }
+
+    const createdPeriods: { id: string; period: string; fiscal_year: number; fiscal_month: number }[] = [];
+    const skippedPeriods: { period: string; reason: string }[] = [];
+
+    let year = startYear;
+    let month = startMonth;
+
+    for (let i = 0; i < count; i++) {
+      const periodCode = year.toString().slice(-2) + month.toString().padStart(2, "0");
+
+      // Check if period already exists
+      const existing = await prisma.tb_period.findFirst({
+        where: {
+          OR: [
+            { period: periodCode, deleted_at: null },
+            { fiscal_year: year, fiscal_month: month, deleted_at: null },
+          ],
+        },
+      });
+
+      if (existing) {
+        skippedPeriods.push({ period: periodCode, reason: "Already exists" });
+      } else {
+        // Calculate start_at and end_at based on start_day
+        const startAt = new Date(Date.UTC(year, month - 1, start_day)).toISOString();
+        let endAt: string;
+        if (start_day === 1) {
+          const lastDay = new Date(Date.UTC(year, month, 0)).getDate();
+          endAt = new Date(Date.UTC(year, month - 1, lastDay, 23, 59, 59, 999)).toISOString();
+        } else {
+          let endMonth = month + 1;
+          let endYear = year;
+          if (endMonth > 12) {
+            endMonth = 1;
+            endYear += 1;
+          }
+          endAt = new Date(Date.UTC(endYear, endMonth - 1, start_day - 1, 23, 59, 59, 999)).toISOString();
+        }
+
+        const period = await prisma.tb_period.create({
+          data: {
+            period: periodCode,
+            fiscal_year: year,
+            fiscal_month: month,
+            start_at: startAt,
+            end_at: endAt,
+            status: enum_period_status.open,
+            info: {} as Prisma.InputJsonValue,
+            dimension: [] as Prisma.InputJsonValue,
+            created_by_id: user_id,
+          },
+        });
+
+        createdPeriods.push({
+          id: period.id,
+          period: periodCode,
+          fiscal_year: year,
+          fiscal_month: month,
+        });
+      }
+
+      // Move to next month
+      month += 1;
+      if (month > 12) {
+        month = 1;
+        year += 1;
+      }
+    }
+
+    return Result.ok({
+      created: createdPeriods,
+      skipped: skippedPeriods,
+      total_created: createdPeriods.length,
+      total_skipped: skippedPeriods.length,
+    });
   }
 
   @TryCatch

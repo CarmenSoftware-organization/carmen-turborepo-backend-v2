@@ -1,5 +1,5 @@
 export interface ICreatePeriod {
-  period: string; // YYMM format
+  // period: string; // YYMM format
   fiscal_year: number; // YYYY
   fiscal_month: number; // 1-12
   start_at: Date;
@@ -12,7 +12,7 @@ export interface ICreatePeriod {
 
 export interface IUpdatePeriod {
   id: string;
-  period?: string;
+  // period?: string;
   fiscal_year?: number;
   fiscal_month?: number;
   start_at?: Date;

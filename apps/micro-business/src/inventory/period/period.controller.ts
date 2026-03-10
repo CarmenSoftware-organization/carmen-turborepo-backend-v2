@@ -76,6 +76,20 @@ export class PeriodController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  @MessagePattern({ cmd: 'inventory-period.generateNext', service: 'inventory-period' })
+  async generateNext(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'generateNext', payload }, PeriodController.name);
+    const count = payload.count;
+    const start_day = payload.start_day ?? 1;
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.periodService.generateNextPeriods(count, start_day, user_id, tenant_id),
+    );
+    return this.handleResult(result, HttpStatus.CREATED);
+  }
+
   @MessagePattern({ cmd: 'inventory-period.delete', service: 'inventory-period' })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, PeriodController.name);
