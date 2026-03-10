@@ -17,9 +17,15 @@ import { Response } from 'express';
 import { SpotCheckService } from './spot-check.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import {
+  SpotCheckCreateRequestDto,
+  SpotCheckUpdateRequestDto,
+  SpotCheckSaveItemsRequestDto,
+} from './swagger/request';
 import {
   BaseHttpController,
 } from '@/common';
@@ -206,6 +212,7 @@ export class SpotCheckController extends BaseHttpController {
       400: { description: 'Invalid request body' },
     },
   })
+  @ApiBody({ type: SpotCheckCreateRequestDto })
   async create(
     @Body() createDto: SpotCheckCreateDto,
     @Param('bu_code') bu_code: string,
@@ -254,6 +261,7 @@ export class SpotCheckController extends BaseHttpController {
       404: { description: 'Spot check not found' },
     },
   })
+  @ApiBody({ type: SpotCheckUpdateRequestDto })
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -479,6 +487,7 @@ export class SpotCheckController extends BaseHttpController {
       404: { description: 'Spot Check not found' },
     },
   })
+  @ApiBody({ type: SpotCheckSaveItemsRequestDto })
   @HttpCode(HttpStatus.OK)
   async saveItems(
     @Param('id') id: string,
@@ -522,6 +531,7 @@ export class SpotCheckController extends BaseHttpController {
       404: { description: 'Spot Check not found' },
     },
   })
+  @ApiBody({ type: SpotCheckSaveItemsRequestDto })
   @HttpCode(HttpStatus.OK)
   async reviewItems(
     @Param('id') id: string,

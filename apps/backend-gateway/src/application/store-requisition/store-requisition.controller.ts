@@ -19,8 +19,17 @@ import { StoreRequisitionService } from './store-requisition.service';
 import {
   ApiTags,
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
 } from '@nestjs/swagger';
+import {
+  CreateStoreRequisitionSwaggerDto,
+  UpdateStoreRequisitionSwaggerDto,
+  SubmitStoreRequisitionSwaggerDto,
+  ApproveStoreRequisitionSwaggerDto,
+  RejectStoreRequisitionSwaggerDto,
+  ReviewStoreRequisitionSwaggerDto,
+} from './swagger/request';
 import {
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
@@ -237,11 +246,12 @@ export class StoreRequisitionController extends BaseHttpController {
       201: {
         description: 'The store requisition was successfully created',
       },
-      404: {
-        description: 'The store requisition was not found',
+      400: {
+        description: 'Invalid request body',
       },
     },
   })
+  @ApiBody({ type: CreateStoreRequisitionSwaggerDto })
   @HttpCode(HttpStatus.CREATED)
   async create(
     @Body() createDto: CreateStoreRequisitionDto,
@@ -304,6 +314,7 @@ export class StoreRequisitionController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: UpdateStoreRequisitionSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id') id: string,
@@ -345,8 +356,10 @@ export class StoreRequisitionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Submit a store requisition',
     description: 'Submits a draft store requisition into the approval workflow, making it visible to approvers. Once submitted, the SR moves from draft to pending status and enters the configured approval chain.',
+    operationId: 'submitStoreRequisition',
     tags: ['Procurement', 'Store Requisition'],
   })
+  @ApiBody({ type: SubmitStoreRequisitionSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async submit(
     @Param('id') id: string,
@@ -387,8 +400,10 @@ export class StoreRequisitionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Approve a store requisition',
     description: 'Advances a store requisition through its approval workflow at the current stage. Once fully approved, items can be issued from the store to the requesting department, triggering inventory deductions.',
+    operationId: 'approveStoreRequisition',
     tags: ['Procurement', 'Store Requisition'],
   })
+  @ApiBody({ type: ApproveStoreRequisitionSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async approve(
     @Param('id') id: string,
@@ -429,8 +444,10 @@ export class StoreRequisitionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Reject a store requisition',
     description: 'Rejects a store requisition at the current approval stage, preventing items from being issued. Used when the request exceeds budget, items are unavailable, or the request is not justified.',
+    operationId: 'rejectStoreRequisition',
     tags: ['Procurement', 'Store Requisition'],
   })
+  @ApiBody({ type: RejectStoreRequisitionSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async reject(
     @Param('id') id: string,
@@ -472,8 +489,10 @@ export class StoreRequisitionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Review a store requisition',
     description: 'Returns a store requisition to a previous workflow stage for corrections, such as adjusting quantities or replacing unavailable items. Allows approvers to request changes before granting final authorization.',
+    operationId: 'reviewStoreRequisition',
     tags: ['Procurement', 'Store Requisition'],
   })
+  @ApiBody({ type: ReviewStoreRequisitionSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async review(
     @Param('id') id: string,

@@ -18,9 +18,14 @@ import { Response } from 'express';
 import { StockOutDetailService } from './stock-out-detail.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import {
+  StockOutDetailCreateRequestDto,
+  StockOutDetailUpdateRequestDto,
+} from './swagger/request';
 import {
   BaseHttpController,
   Serialize,
@@ -138,6 +143,7 @@ export class StockOutDetailController extends BaseHttpController {
       404: { description: 'Stock Out not found' },
     },
   })
+  @ApiBody({ type: StockOutDetailCreateRequestDto })
   async create(
     @Body() createDto: StockOutDetailCreateDto,
     @Param('bu_code') bu_code: string,
@@ -175,6 +181,7 @@ export class StockOutDetailController extends BaseHttpController {
       404: { description: 'Stock Out Detail not found' },
     },
   })
+  @ApiBody({ type: StockOutDetailUpdateRequestDto })
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,

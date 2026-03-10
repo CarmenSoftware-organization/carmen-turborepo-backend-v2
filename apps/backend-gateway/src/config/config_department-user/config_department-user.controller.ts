@@ -19,6 +19,7 @@ import { Config_DepartmentUserService } from './config_department-user.service';
 import { ZodSerializerInterceptor, BaseHttpController } from '@/common';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiHeader,
   ApiHideProperty,
   ApiOperation,
@@ -35,6 +36,7 @@ import { PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
+import { DepartmentUserCreateRequest, DepartmentUserUpdateRequest } from './swagger/request';
 
 
 @Controller('api/config/:bu_code/department-user')
@@ -62,9 +64,9 @@ export class Config_DepartmentUserController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Get a department by ID',
+    summary: 'Get a department-user assignment by ID',
     description: 'Retrieves a specific department-user assignment record, showing which users are assigned to a particular hotel department for requisition and approval permissions.',
-    operationId: 'findOneDepartment',
+    operationId: 'configDepartmentUser_findOne',
     tags: ['Configuration', 'Department User'],
     deprecated: false,
     security: [
@@ -81,7 +83,7 @@ export class Config_DepartmentUserController extends BaseHttpController {
     ],
     responses: {
       200: {
-        description: 'Department retrieved successfully',
+        description: 'Department-user assignment retrieved successfully',
       },
     },
   })
@@ -121,9 +123,9 @@ export class Config_DepartmentUserController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @ApiOperation({
-    summary: 'Get all departments',
+    summary: 'Get all department-user assignments',
     description: 'Returns all department-user assignments for the business unit. Used by administrators to manage which staff members belong to each hotel department for requisition routing.',
-    operationId: 'findAllDepartments',
+    operationId: 'configDepartmentUser_findAll',
     tags: ['Configuration', 'Department User'],
     deprecated: false,
     security: [
@@ -140,7 +142,7 @@ export class Config_DepartmentUserController extends BaseHttpController {
     ],
     responses: {
       200: {
-        description: 'Departments retrieved successfully',
+        description: 'Department-user assignments retrieved successfully',
       },
     },
   })
@@ -180,9 +182,9 @@ export class Config_DepartmentUserController extends BaseHttpController {
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Create a new department',
+    summary: 'Create a new department-user assignment',
     description: 'Creates a new department-user assignment, linking a user to a hotel department. This determines which department the user can create requisitions for and participate in approval workflows.',
-    operationId: 'createDepartment',
+    operationId: 'configDepartmentUser_create',
     tags: ['Configuration', 'Department User'],
     deprecated: false,
     security: [
@@ -199,10 +201,11 @@ export class Config_DepartmentUserController extends BaseHttpController {
     ],
     responses: {
       201: {
-        description: 'Department created successfully',
+        description: 'Department-user assignment created successfully',
       },
     },
   })
+  @ApiBody({ type: DepartmentUserCreateRequest })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -237,9 +240,9 @@ export class Config_DepartmentUserController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Update a department',
+    summary: 'Update a department-user assignment',
     description: 'Modifies an existing department-user assignment, such as changing the user role within the department or updating assignment details.',
-    operationId: 'updateDepartment',
+    operationId: 'configDepartmentUser_update',
     tags: ['Configuration', 'Department User'],
     deprecated: false,
     security: [
@@ -256,10 +259,11 @@ export class Config_DepartmentUserController extends BaseHttpController {
     ],
     responses: {
       200: {
-        description: 'Department updated successfully',
+        description: 'Department-user assignment updated successfully',
       },
     },
   })
+  @ApiBody({ type: DepartmentUserUpdateRequest })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -297,9 +301,9 @@ export class Config_DepartmentUserController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Delete a department',
+    summary: 'Delete a department-user assignment',
     description: 'Removes a department-user assignment, unlinking a user from a hotel department. The user will no longer be able to create requisitions for or approve documents in that department.',
-    operationId: 'deleteDepartment',
+    operationId: 'configDepartmentUser_delete',
     tags: ['Configuration', 'Department User'],
     deprecated: false,
     security: [
@@ -316,7 +320,7 @@ export class Config_DepartmentUserController extends BaseHttpController {
     ],
     responses: {
       200: {
-        description: 'Department deleted successfully',
+        description: 'Department-user assignment deleted successfully',
       },
     },
   })

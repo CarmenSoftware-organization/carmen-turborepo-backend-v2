@@ -18,9 +18,16 @@ import { Response } from 'express';
 import { TransferService } from './transfer.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import {
+  CreateTransferSwaggerDto,
+  UpdateTransferSwaggerDto,
+  CreateTransferDetailSwaggerDto,
+  UpdateTransferDetailSwaggerDto,
+} from './swagger/request';
 import {
   BaseHttpController,
   Serialize,
@@ -146,6 +153,7 @@ export class TransferController extends BaseHttpController {
       400: { description: 'Invalid request body' },
     },
   })
+  @ApiBody({ type: CreateTransferSwaggerDto })
   async create(
     @Body() createDto: TransferCreateDto,
     @Param('bu_code') bu_code: string,
@@ -182,6 +190,7 @@ export class TransferController extends BaseHttpController {
       404: { description: 'The Transfer was not found' },
     },
   })
+  @ApiBody({ type: UpdateTransferSwaggerDto })
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -334,6 +343,7 @@ export class TransferController extends BaseHttpController {
       404: { description: 'Transfer not found' },
     },
   })
+  @ApiBody({ type: CreateTransferDetailSwaggerDto })
   @HttpCode(HttpStatus.CREATED)
   async createDetail(
     @Param('id') id: string,
@@ -375,6 +385,7 @@ export class TransferController extends BaseHttpController {
       404: { description: 'Transfer detail not found' },
     },
   })
+  @ApiBody({ type: UpdateTransferDetailSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async updateDetail(
     @Param('id') id: string,

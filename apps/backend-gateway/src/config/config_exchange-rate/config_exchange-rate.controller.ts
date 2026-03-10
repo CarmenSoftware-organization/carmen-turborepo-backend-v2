@@ -19,6 +19,7 @@ import { Response } from 'express';
 import { Config_ExchangeRateService } from './config_exchange-rate.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiHeader,
   ApiOperation,
   ApiTags,
@@ -45,6 +46,7 @@ import { PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
+import { ExchangeRateCreateRequest, ExchangeRateUpdateRequest } from './swagger/request';
 
 @Controller('api/config/:bu_code/exchange-rate')
 @ApiTags('Configuration')
@@ -72,9 +74,9 @@ export class Config_ExchangeRateController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Get a exchange rate by ID',
+    summary: 'Get an exchange rate by ID',
     description: 'Retrieves a specific currency exchange rate record with its effective date and conversion factor. Exchange rates are used to convert foreign currency amounts in procurement documents to the base currency.',
-    operationId: 'findOneExchangeRate',
+    operationId: 'configExchangeRate_findOne',
     tags: ['Configuration', 'Exchange Rate'],
     deprecated: false,
     security: [
@@ -134,7 +136,7 @@ export class Config_ExchangeRateController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all exchange rates',
     description: 'Returns all configured currency exchange rates with their effective dates. Used by the procurement system to convert multi-currency purchase orders and invoices to the base currency.',
-    operationId: 'findAllExchangeRates',
+    operationId: 'configExchangeRate_findAll',
     tags: ['Configuration', 'Exchange Rate'],
     deprecated: false,
     security: [
@@ -193,7 +195,7 @@ export class Config_ExchangeRateController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a new exchange rate',
     description: 'Records a new currency exchange rate with its effective date. Supports single or bulk creation for maintaining up-to-date conversion rates used in multi-currency procurement.',
-    operationId: 'createExchangeRate',
+    operationId: 'configExchangeRate_create',
     tags: ['Configuration', 'Exchange Rate'],
     deprecated: false,
     security: [
@@ -214,6 +216,7 @@ export class Config_ExchangeRateController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: ExchangeRateCreateRequest })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -250,9 +253,9 @@ export class Config_ExchangeRateController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Update a exchange rate',
+    summary: 'Update an exchange rate',
     description: 'Modifies an existing exchange rate record, such as correcting the conversion factor or adjusting the effective date. Changes affect future currency conversions in procurement documents.',
-    operationId: 'updateExchangeRate',
+    operationId: 'configExchangeRate_update',
     tags: ['Configuration', 'Exchange Rate'],
     deprecated: false,
     security: [
@@ -273,6 +276,7 @@ export class Config_ExchangeRateController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: ExchangeRateUpdateRequest })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -315,9 +319,9 @@ export class Config_ExchangeRateController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Delete a exchange rate',
+    summary: 'Delete an exchange rate',
     description: 'Removes an exchange rate record from the system. Historical procurement documents that used this rate are unaffected, but it will no longer be available for future currency conversions.',
-    operationId: 'deleteExchangeRate',
+    operationId: 'configExchangeRate_delete',
     tags: ['Configuration', 'Exchange Rate'],
     deprecated: false,
     security: [

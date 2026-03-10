@@ -18,9 +18,16 @@ import { Response } from 'express';
 import { StockOutService } from './stock-out.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import {
+  CreateStockOutSwaggerDto,
+  UpdateStockOutSwaggerDto,
+  CreateStockOutDetailSwaggerDto,
+  UpdateStockOutDetailSwaggerDto,
+} from './swagger/request';
 import {
   BaseHttpController,
   Serialize,
@@ -147,6 +154,7 @@ export class StockOutController extends BaseHttpController {
       400: { description: 'Invalid request body' },
     },
   })
+  @ApiBody({ type: CreateStockOutSwaggerDto })
   async create(
     @Body() createDto: StockOutCreateDto,
     @Param('bu_code') bu_code: string,
@@ -183,6 +191,7 @@ export class StockOutController extends BaseHttpController {
       404: { description: 'The Stock Out was not found' },
     },
   })
+  @ApiBody({ type: UpdateStockOutSwaggerDto })
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -335,6 +344,7 @@ export class StockOutController extends BaseHttpController {
       404: { description: 'Stock Out not found' },
     },
   })
+  @ApiBody({ type: CreateStockOutDetailSwaggerDto })
   @HttpCode(HttpStatus.CREATED)
   async createDetail(
     @Param('id') id: string,
@@ -376,6 +386,7 @@ export class StockOutController extends BaseHttpController {
       404: { description: 'Stock Out detail not found' },
     },
   })
+  @ApiBody({ type: UpdateStockOutDetailSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async updateDetail(
     @Param('id') id: string,

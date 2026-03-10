@@ -17,9 +17,14 @@ import { Response } from 'express';
 import { PhysicalCountPeriodService } from './physical-count-period.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import {
+  PhysicalCountPeriodCreateRequestDto,
+  PhysicalCountPeriodUpdateRequestDto,
+} from './swagger/request';
 import { BaseHttpController } from '@/common';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
@@ -186,6 +191,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
       409: { description: 'Physical count period with same dates already exists' },
     },
   })
+  @ApiBody({ type: PhysicalCountPeriodCreateRequestDto })
   async create(
     @Body() createDto: PhysicalCountPeriodCreateDto,
     @Param('bu_code') bu_code: string,
@@ -225,6 +231,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
       404: { description: 'Physical count period not found' },
     },
   })
+  @ApiBody({ type: PhysicalCountPeriodUpdateRequestDto })
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,

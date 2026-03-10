@@ -30,6 +30,7 @@ import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
+import { UpdatePurchaseOrderSwaggerDto } from './swagger/request';
 import {
   ApprovePurchaseOrderDto,
   SavePurchaseOrderDto,
@@ -286,6 +287,7 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: UpdatePurchaseOrderSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id') id: string,

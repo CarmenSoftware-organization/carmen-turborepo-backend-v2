@@ -34,7 +34,6 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
-@Controller('api/:bu_code/credit-note-reason')
 export class CreditNoteReasonController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(
     CreditNoteReasonController.name,

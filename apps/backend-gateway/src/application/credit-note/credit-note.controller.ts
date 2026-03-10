@@ -22,11 +22,16 @@ import { CreditNoteService } from './credit-note.service';
 import {
   ApiHeader,
   ApiBearerAuth,
+  ApiBody,
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiResponseProperty,
 } from '@nestjs/swagger';
+import {
+  CreateCreditNoteRequestDto,
+  UpdateCreditNoteRequestDto,
+} from './swagger/request';
 import {
   BaseHttpController,
   Serialize,
@@ -155,6 +160,7 @@ export class CreditNoteController extends BaseHttpController {
     operationId: 'createCreditNote',
     tags: ['Procurement', 'Credit Note'],
   })
+  @ApiBody({ type: CreateCreditNoteRequestDto })
   @HttpCode(HttpStatus.CREATED)
   async create(
     @Body() createDto: CreateCreditNoteDto,
@@ -196,6 +202,7 @@ export class CreditNoteController extends BaseHttpController {
     operationId: 'updateCreditNote',
     tags: ['Procurement', 'Credit Note'],
   })
+  @ApiBody({ type: UpdateCreditNoteRequestDto })
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id') id: string,

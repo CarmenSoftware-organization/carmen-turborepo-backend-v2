@@ -42,6 +42,7 @@ import {
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
+import { PriceListCreateRequestDto, PriceListUpdateRequestDto } from './swagger/request';
 
 @Controller('api/config/:bu_code/price-list')
 @ApiTags('Configuration')
@@ -69,10 +70,11 @@ export class Config_PriceListController extends BaseHttpController {
   @ApiOperation({
     summary: 'Upload price list from Excel',
     description: 'Bulk imports vendor price lists from an Excel file, enabling administrators to efficiently update product pricing from multiple suppliers for procurement cost control.',
-    operationId: 'uploadPriceListExcel',
+    operationId: 'configPriceList_uploadExcel',
     tags: ['Configuration', 'Price List'],
     responses: { 201: { description: 'Price list uploaded successfully' } },
   })
+  @ApiBody({ type: PriceListCreateRequestDto })
   async uploadExcel(
     @Body() createConfigPriceListDto: PriceListCreateDto,
     @Param('bu_code') bu_code: string,
@@ -112,7 +114,7 @@ export class Config_PriceListController extends BaseHttpController {
   @ApiOperation({
     summary: 'Download price list as Excel',
     description: 'Exports a vendor price list to Excel format for offline review, comparison, or sharing with stakeholders for procurement cost analysis and budget planning.',
-    operationId: 'downloadPriceListExcel',
+    operationId: 'configPriceList_downloadExcel',
     tags: ['Configuration', 'Price List'],
     responses: { 200: { description: 'Price list Excel downloaded successfully' } },
   })
@@ -155,10 +157,11 @@ export class Config_PriceListController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a new price list',
     description: 'Creates a new vendor price list with product-level pricing details. Price lists are used during purchase order creation to automatically populate agreed vendor prices for cost control.',
-    operationId: 'createPriceList',
+    operationId: 'configPriceList_create',
     tags: ['Configuration', 'Price List'],
     responses: { 201: { description: 'Price list created successfully' } },
   })
+  @ApiBody({ type: PriceListCreateRequestDto })
   async create(
     @Body() createConfigPriceListDto: PriceListCreateDto,
     @Param('bu_code') bu_code: string,
@@ -195,7 +198,7 @@ export class Config_PriceListController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all price lists',
     description: 'Returns all vendor price lists configured for the business unit. Used by procurement staff to compare supplier pricing and manage cost agreements across vendors.',
-    operationId: 'findAllPriceLists',
+    operationId: 'configPriceList_findAll',
     tags: ['Configuration', 'Price List'],
     responses: { 200: { description: 'Price lists retrieved successfully' } },
   })
@@ -239,7 +242,7 @@ export class Config_PriceListController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get a price list by ID',
     description: 'Retrieves a specific vendor price list with all its line-item pricing details. Used to review agreed product prices from a particular vendor for procurement decisions.',
-    operationId: 'findOnePriceList',
+    operationId: 'configPriceList_findOne',
     tags: ['Configuration', 'Price List'],
     responses: { 200: { description: 'Price list retrieved successfully' } },
   })
@@ -277,10 +280,11 @@ export class Config_PriceListController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a price list',
     description: 'Modifies an existing vendor price list, such as updating product prices, validity dates, or adding new product lines. Updated prices are used in subsequent purchase order creation.',
-    operationId: 'updatePriceList',
+    operationId: 'configPriceList_update',
     tags: ['Configuration', 'Price List'],
     responses: { 200: { description: 'Price list updated successfully' } },
   })
+  @ApiBody({ type: PriceListUpdateRequestDto })
   async update(
     @Param('id') id: string,
     @Body() updateConfigPriceListDto: PriceListUpdateDto,
@@ -322,7 +326,7 @@ export class Config_PriceListController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a price list',
     description: 'Removes a vendor price list from the system. The price list will no longer be used for automated pricing in purchase orders, but historical procurement records are unaffected.',
-    operationId: 'deletePriceList',
+    operationId: 'configPriceList_delete',
     tags: ['Configuration', 'Price List'],
     responses: { 200: { description: 'Price list deleted successfully' } },
   })
@@ -361,8 +365,9 @@ export class Config_PriceListController extends BaseHttpController {
   @ApiOperation({
     summary: 'Import price lists from CSV',
     description: 'Bulk imports vendor price list data from a CSV file, creating or updating price lists and their line items. Invalid rows are skipped and reported, enabling efficient mass updates of procurement pricing.',
-    operationId: 'importPriceListCsv',
+    operationId: 'configPriceList_importCsv',
     tags: ['Configuration', 'Price List'],
+    responses: { 201: { description: 'Price list CSV imported successfully' } },
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({

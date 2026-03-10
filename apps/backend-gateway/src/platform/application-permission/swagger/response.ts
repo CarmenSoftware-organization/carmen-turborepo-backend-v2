@@ -4,6 +4,12 @@ export class ApplicationPermissionResponseDto {
   @ApiProperty({ description: 'Permission ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   id: string;
 
+  @ApiProperty({ description: 'Permission name', example: 'create_user' })
+  name: string;
+
+  @ApiPropertyOptional({ description: 'Permission code', example: 'user.create' })
+  code?: string;
+
   @ApiProperty({ description: 'Permission resource', example: 'user' })
   resource: string;
 
@@ -12,6 +18,9 @@ export class ApplicationPermissionResponseDto {
 
   @ApiPropertyOptional({ description: 'Permission description', example: 'Permission to create new users' })
   description?: string;
+
+  @ApiPropertyOptional({ description: 'Is permission active', example: true })
+  is_active?: boolean;
 
   @ApiPropertyOptional({ description: 'Created timestamp', example: '2026-03-10T00:00:00.000Z' })
   created_at?: Date;

@@ -32,7 +32,25 @@ export class PhysicalCountSaveItemsRequestDto {
   items: PhysicalCountSaveItemDto[];
 }
 
+export class PhysicalCountDetailCommentAttachmentDto {
+  @ApiProperty({ description: 'Original file name', example: 'photo_001.jpg' })
+  originalName: string;
+
+  @ApiProperty({ description: 'File token for uploaded file', example: 'token-abc-123' })
+  fileToken: string;
+
+  @ApiProperty({ description: 'MIME content type', example: 'image/jpeg' })
+  contentType: string;
+}
+
 export class PhysicalCountDetailCommentRequestDto {
-  @ApiProperty({ description: 'Comment text', example: 'Found discrepancy in this item count' })
-  comment: string;
+  @ApiPropertyOptional({ description: 'Comment message text', example: 'Found discrepancy in this item count' })
+  message?: string | null;
+
+  @ApiPropertyOptional({
+    description: 'Attached files for evidence',
+    type: [PhysicalCountDetailCommentAttachmentDto],
+    default: [],
+  })
+  attachments?: PhysicalCountDetailCommentAttachmentDto[];
 }

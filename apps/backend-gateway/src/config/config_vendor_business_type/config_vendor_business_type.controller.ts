@@ -21,10 +21,12 @@ import { Config_VendorBusinessTypeService } from './config_vendor_business_type.
 import { ZodSerializerInterceptor, BaseHttpController } from '@/common';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiHeader,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { VendorBusinessTypeCreateRequest, VendorBusinessTypeUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   VendorBusinessTypeCreateDto,
@@ -65,7 +67,7 @@ export class Config_VendorBusinessTypeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('vendorBusinessType.findOne'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get a vendor business type by ID', description: 'Retrieves a specific vendor business type classification (e.g., food supplier, cleaning supplies, equipment maintenance). Used to categorize vendors by their service or product specialty.', operationId: 'findOneVendorBusinessType', tags: ['Configuration', 'Vendor Business Type'] })
+  @ApiOperation({ summary: 'Get a vendor business type by ID', description: 'Retrieves a specific vendor business type classification (e.g., food supplier, cleaning supplies, equipment maintenance). Used to categorize vendors by their service or product specialty.', operationId: 'configVendorBusinessType_findOne', tags: ['Configuration', 'Vendor Business Type'] })
   async findOne(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -100,7 +102,7 @@ export class Config_VendorBusinessTypeController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all vendor business types', description: 'Returns all vendor business type classifications configured for the business unit. These types help categorize the vendor directory by industry or service specialty for procurement sourcing.', operationId: 'findAllVendorBusinessTypes', tags: ['Configuration', 'Vendor Business Type'] })
+  @ApiOperation({ summary: 'Get all vendor business types', description: 'Returns all vendor business type classifications configured for the business unit. These types help categorize the vendor directory by industry or service specialty for procurement sourcing.', operationId: 'configVendorBusinessType_findAll', tags: ['Configuration', 'Vendor Business Type'] })
   async findAll(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -135,7 +137,8 @@ export class Config_VendorBusinessTypeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('vendorBusinessType.create'))
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new vendor business type', description: 'Defines a new vendor classification category (e.g., fresh food supplier, beverage distributor, laundry service). Vendors can then be tagged with this type for organized sourcing and reporting.', operationId: 'createVendorBusinessType', tags: ['Configuration', 'Vendor Business Type'] })
+  @ApiOperation({ summary: 'Create a new vendor business type', description: 'Defines a new vendor classification category (e.g., fresh food supplier, beverage distributor, laundry service). Vendors can then be tagged with this type for organized sourcing and reporting.', operationId: 'configVendorBusinessType_create', tags: ['Configuration', 'Vendor Business Type'] })
+  @ApiBody({ type: VendorBusinessTypeCreateRequest })
   async create(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -169,7 +172,8 @@ export class Config_VendorBusinessTypeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('vendorBusinessType.update'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a vendor business type', description: 'Modifies an existing vendor business type classification, such as renaming or reclassifying it. Changes affect how vendors tagged with this type are categorized.', operationId: 'updateVendorBusinessType', tags: ['Configuration', 'Vendor Business Type'] })
+  @ApiOperation({ summary: 'Patch a vendor business type', description: 'Partially updates an existing vendor business type classification, such as renaming or reclassifying it. Changes affect how vendors tagged with this type are categorized.', operationId: 'configVendorBusinessType_patch', tags: ['Configuration', 'Vendor Business Type'] })
+  @ApiBody({ type: VendorBusinessTypeUpdateRequest })
   async update(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -209,7 +213,7 @@ export class Config_VendorBusinessTypeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('vendorBusinessType.delete'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a vendor business type', description: 'Removes a vendor business type classification from the system. Vendors currently tagged with this type should be reclassified before deletion.', operationId: 'deleteVendorBusinessType', tags: ['Configuration', 'Vendor Business Type'] })
+  @ApiOperation({ summary: 'Delete a vendor business type', description: 'Removes a vendor business type classification from the system. Vendors currently tagged with this type should be reclassified before deletion.', operationId: 'configVendorBusinessType_delete', tags: ['Configuration', 'Vendor Business Type'] })
   async delete(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,

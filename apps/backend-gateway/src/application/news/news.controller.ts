@@ -15,7 +15,8 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { NewsService } from './news.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CreateNewsRequestDto, UpdateNewsRequestDto } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -54,7 +55,11 @@ export class NewsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all news',
     description: 'Retrieves all internal announcements and news articles published within the business unit, used to communicate operational updates, policy changes, and important notices to hotel staff.',
+    operationId: 'findAllNews',
     tags: ['Document & Log', 'News'],
+    responses: {
+      200: { description: 'News list retrieved successfully' },
+    },
   })
   async findAll(
     @Req() req: Request,
@@ -89,7 +94,12 @@ export class NewsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get a news by ID',
     description: 'Retrieves a specific internal announcement or news article by its ID, including its full content, publication date, and target audience within the business unit.',
+    operationId: 'findOneNews',
     tags: ['Document & Log', 'News'],
+    responses: {
+      200: { description: 'News article retrieved successfully' },
+      404: { description: 'News article not found' },
+    },
   })
   async findOne(
     @Req() req: Request,
@@ -122,8 +132,14 @@ export class NewsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a news',
     description: 'Publishes a new internal announcement or news article to inform business unit users about operational updates, procurement policy changes, or other important hotel-wide notices.',
+    operationId: 'createNews',
     tags: ['Document & Log', 'News'],
+    responses: {
+      201: { description: 'News article created successfully' },
+      400: { description: 'Bad request' },
+    },
   })
+  @ApiBody({ type: CreateNewsRequestDto })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -159,8 +175,14 @@ export class NewsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a news by ID',
     description: 'Modifies an existing internal announcement or news article, allowing administrators to correct content, update details, or change the publication scope within the business unit.',
+    operationId: 'updateNews',
     tags: ['Document & Log', 'News'],
+    responses: {
+      200: { description: 'News article updated successfully' },
+      404: { description: 'News article not found' },
+    },
   })
+  @ApiBody({ type: UpdateNewsRequestDto })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -199,7 +221,12 @@ export class NewsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a news by ID',
     description: 'Removes an internal announcement or news article from the business unit, archiving it so it is no longer visible to staff.',
+    operationId: 'deleteNews',
     tags: ['Document & Log', 'News'],
+    responses: {
+      200: { description: 'News article deleted successfully' },
+      404: { description: 'News article not found' },
+    },
   })
   async delete(
     @Req() req: Request,

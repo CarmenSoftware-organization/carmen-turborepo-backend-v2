@@ -4,8 +4,11 @@ export class UserProfileResponseDto {
   @ApiProperty({ description: 'User ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   id: string;
 
-  @ApiPropertyOptional({ description: 'Username / email', example: 'john.doe@example.com' })
+  @ApiPropertyOptional({ description: 'Username', example: 'john.doe' })
   username?: string;
+
+  @ApiProperty({ description: 'Email address', example: 'john.doe@example.com' })
+  email: string;
 
   @ApiPropertyOptional({ description: 'First name', example: 'John' })
   firstname?: string;
@@ -38,11 +41,17 @@ export class UserListItemResponseDto {
   @ApiProperty({ description: 'User ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   id: string;
 
-  @ApiPropertyOptional({ description: 'Username / email', example: 'john.doe@example.com' })
+  @ApiPropertyOptional({ description: 'Username', example: 'john.doe' })
   username?: string;
+
+  @ApiProperty({ description: 'Email address', example: 'john.doe@example.com' })
+  email: string;
 
   @ApiPropertyOptional({ description: 'First name', example: 'John' })
   firstname?: string;
+
+  @ApiPropertyOptional({ description: 'Middle name', example: 'William' })
+  middlename?: string;
 
   @ApiPropertyOptional({ description: 'Last name', example: 'Doe' })
   lastname?: string;

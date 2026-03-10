@@ -18,6 +18,7 @@ import {
 import { Response } from 'express';
 import { Config_ProductsService } from './config_products.service';
 import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ProductCreateRequestDto, ProductUpdateRequestDto } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   IUpdateProduct,
@@ -70,7 +71,7 @@ export class Config_ProductsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get a product by ID',
     description: 'Retrieves the complete details of a product from the master catalog, including SKU, description, category, and unit of measure configurations used across procurement and inventory.',
-    operationId: 'findOneProduct',
+    operationId: 'configProducts_findOne',
     tags: ['Configuration', 'Products'],
     responses: { 200: { description: 'Product retrieved successfully' } },
   })
@@ -108,7 +109,7 @@ export class Config_ProductsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all products',
     description: 'Returns a paginated list of all products in the master catalog. Used by administrators to browse and manage SKUs, ingredients, and supplies available for procurement and inventory operations.',
-    operationId: 'findAllProducts',
+    operationId: 'configProducts_findAll',
     tags: ['Configuration', 'Products'],
     responses: { 200: { description: 'Products retrieved successfully' } },
   })
@@ -152,7 +153,7 @@ export class Config_ProductsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get product item group by ID',
     description: 'Retrieves the item group classification for a specific product, which determines how the product is grouped for reporting, procurement analysis, and inventory categorization.',
-    operationId: 'findProductItemGroup',
+    operationId: 'configProducts_findItemGroup',
     tags: ['Configuration', 'Products'],
     responses: { 200: { description: 'Product item group retrieved successfully' } },
   })
@@ -221,10 +222,11 @@ export class Config_ProductsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a new product',
     description: 'Adds a new product to the master catalog with its SKU, description, category, and unit definitions. The product becomes available for use in purchase requests, purchase orders, and inventory transactions.',
-    operationId: 'createProduct',
+    operationId: 'configProducts_create',
     tags: ['Configuration', 'Products'],
     responses: { 201: { description: 'Product created successfully' } },
   })
+  @ApiBody({ type: ProductCreateRequestDto })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -263,10 +265,11 @@ export class Config_ProductsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a product',
     description: 'Modifies an existing product in the master catalog, such as updating its description, category assignment, or unit configurations. Changes affect all future procurement and inventory transactions referencing this product.',
-    operationId: 'updateProduct',
+    operationId: 'configProducts_update',
     tags: ['Configuration', 'Products'],
     responses: { 200: { description: 'Product updated successfully' } },
   })
+  @ApiBody({ type: ProductUpdateRequestDto })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -311,7 +314,7 @@ export class Config_ProductsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a product',
     description: 'Soft-deletes a product from the master catalog. The product will no longer be available for new procurement or inventory transactions, but historical records referencing it are preserved.',
-    operationId: 'deleteProduct',
+    operationId: 'configProducts_delete',
     tags: ['Configuration', 'Products'],
     responses: { 200: { description: 'Product deleted successfully' } },
   })

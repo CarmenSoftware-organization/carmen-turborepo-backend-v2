@@ -62,7 +62,7 @@ export class LocationsController extends BaseHttpController {
     summary: 'Get locations by user ID',
     description:
       'Lists all active storage locations and warehouses accessible to the current user, used to select destinations for stock-in, stock-out, transfers, and physical count operations.',
-    operationId: 'findAllByUserId',
+    operationId: 'findAllLocationsByUserId',
     tags: ['Master Data', 'Location'],
     deprecated: false,
     parameters: [
@@ -76,7 +76,7 @@ export class LocationsController extends BaseHttpController {
     ],
     responses: {
       200: {
-        description: 'locations was successfully retrieved',
+        description: 'Locations were successfully retrieved',
         content: {
           'application/json': {
             schema: {
@@ -87,10 +87,10 @@ export class LocationsController extends BaseHttpController {
                   id: { type: 'string' },
                   code: { type: 'string' },
                   name: { type: 'string' },
-                  address: { type: 'string' },
+                  location_type: { type: 'string' },
+                  physical_count_type: { type: 'string' },
+                  description: { type: 'string' },
                   is_active: { type: 'boolean' },
-                  created_at: { type: 'string', format: 'date-time' },
-                  updated_at: { type: 'string', format: 'date-time' },
                 },
               },
             },
@@ -135,6 +135,7 @@ export class LocationsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get location by ID',
     description: 'Retrieves the full details of a storage location including its assigned users and stocked products, used for managing warehouse configuration and inventory assignments.',
+    operationId: 'findOneLocation',
     tags: ['Master Data', 'Location'],
   })
   async findOne(
@@ -175,7 +176,7 @@ export class LocationsController extends BaseHttpController {
    */
   @Get(':bu_code/locations/:location_id/product/:product_id/inventory')
   @UseGuards(new AppIdGuard('locations.getProductInventory'))
-  @Serialize(LocationDetailResponseSchema)
+  @Serialize(ProductInventoryInfoDtoSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({

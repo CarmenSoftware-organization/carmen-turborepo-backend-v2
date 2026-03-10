@@ -13,9 +13,11 @@ import { Response } from 'express';
 import { InventoryTransactionService } from './inventory-transaction.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { TestCreateFromGrnRequestDto } from './swagger/request';
 import {
   BaseHttpController,
   Serialize,
@@ -79,6 +81,7 @@ export class InventoryTransactionController extends BaseHttpController {
     tags: ['Inventory', 'Inventory Transaction'],
     deprecated: true,
   })
+  @ApiBody({ type: TestCreateFromGrnRequestDto })
   @HttpCode(HttpStatus.OK)
   async testCreateFromGrn(
     @Param('bu_code') bu_code: string,

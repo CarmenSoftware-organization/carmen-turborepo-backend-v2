@@ -20,6 +20,7 @@ import { Config_LocationsService } from './config_locations.service';
 import {
   ApiTags,
   ApiBearerAuth,
+  ApiBody,
   ApiHeader,
   ApiOperation,
 } from '@nestjs/swagger';
@@ -45,6 +46,7 @@ import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
+import { LocationCreateRequestDto, LocationUpdateRequestDto } from './swagger/request';
 
 @Controller('api/config/:bu_code/locations')
 @ApiTags('Configuration')
@@ -74,7 +76,7 @@ export class Config_LocationsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get a location by ID',
     description: 'Retrieves details of a specific storage location, warehouse, or store within the property, including assigned users and stocked products. Locations are the physical points where inventory is tracked.',
-    operationId: 'findOneLocation',
+    operationId: 'configLocations_findOne',
     tags: ['Configuration', 'Locations'],
     deprecated: false,
     // security: [
@@ -140,7 +142,7 @@ export class Config_LocationsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all locations',
     description: 'Returns all storage locations, warehouses, and stores configured for the business unit. These locations are used for inventory tracking, stock transfers, and goods receiving.',
-    operationId: 'findAllLocations',
+    operationId: 'configLocations_findAll',
     tags: ['Configuration', 'Locations'],
     deprecated: false,
     // security: [
@@ -215,7 +217,7 @@ export class Config_LocationsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a new location',
     description: 'Defines a new storage location, warehouse, or store within the property. Once created, products can be assigned to it and inventory movements (stock-in, stock-out, transfers) can be recorded.',
-    operationId: 'createLocation',
+    operationId: 'configLocations_create',
     tags: ['Configuration', 'Locations'],
     deprecated: false,
     // security: [
@@ -236,6 +238,7 @@ export class Config_LocationsController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: LocationCreateRequestDto })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -273,7 +276,7 @@ export class Config_LocationsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a location',
     description: 'Modifies an existing storage location configuration, such as its name, type, or capacity settings. Changes affect how inventory is organized and tracked at this location.',
-    operationId: 'updateLocation',
+    operationId: 'configLocations_update',
     tags: ['Configuration', 'Locations'],
     deprecated: false,
     // security: [
@@ -294,6 +297,7 @@ export class Config_LocationsController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: LocationUpdateRequestDto })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -337,7 +341,7 @@ export class Config_LocationsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a location',
     description: 'Removes a storage location from active use. The location will no longer accept new inventory transactions, but historical stock movement records at this location are preserved.',
-    operationId: 'deleteLocation',
+    operationId: 'configLocations_delete',
     tags: ['Configuration', 'Locations'],
     deprecated: false,
     // security: [

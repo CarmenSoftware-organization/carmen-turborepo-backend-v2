@@ -13,7 +13,7 @@ export class PeriodCreateRequestDto {
   @ApiProperty({ description: 'Period end date (ISO 8601)', example: '2026-03-31T23:59:59.000Z' })
   end_at: Date;
 
-  @ApiPropertyOptional({ description: 'Period status', example: 'open', enum: ['open', 'closed'] })
+  @ApiPropertyOptional({ description: 'Period status', example: 'open', default: 'open' })
   status?: string;
 
   @ApiPropertyOptional({ description: 'Note', example: 'March 2026 period' })

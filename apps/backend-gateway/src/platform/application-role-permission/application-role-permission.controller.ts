@@ -60,7 +60,7 @@ export class ApplicationRolePermissionController {
   @ApiOperation({
     summary: 'Get all permissions for a role',
     description: 'Lists all feature permissions currently assigned to a specific role, showing exactly what actions (e.g., create PO, approve PR) users with this role are authorized to perform in the ERP system.',
-    operationId: 'getPermissionsByRole',
+    operationId: 'platformRolePermission_getPermissionsByRole',
     tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [
@@ -129,7 +129,7 @@ export class ApplicationRolePermissionController {
   @ApiOperation({
     summary: 'Get all roles that have a permission',
     description: 'Finds all application roles that include a specific permission, enabling administrators to audit which roles grant a particular capability such as inventory adjustments or purchase approvals.',
-    operationId: 'getRolesByPermission',
+    operationId: 'platformRolePermission_getRolesByPermission',
     tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [
@@ -197,7 +197,7 @@ export class ApplicationRolePermissionController {
   @ApiOperation({
     summary: 'Assign multiple permissions to a role',
     description: 'Grants multiple feature permissions to an application role in a single operation, enabling bulk configuration of role capabilities such as giving a Purchaser role access to create POs, view vendors, and manage stock-in records.',
-    operationId: 'assignPermissionsToRole',
+    operationId: 'platformRolePermission_assignPermissions',
     tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [
@@ -259,7 +259,7 @@ export class ApplicationRolePermissionController {
   @ApiOperation({
     summary: 'Assign a single permission to a role',
     description: 'Grants a single feature permission to an application role, allowing fine-grained incremental updates to role capabilities without replacing the entire permission set.',
-    operationId: 'assignPermissionToRole',
+    operationId: 'platformRolePermission_assignPermission',
     tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [
@@ -321,7 +321,7 @@ export class ApplicationRolePermissionController {
   @ApiOperation({
     summary: 'Remove multiple permissions from a role',
     description: 'Revokes multiple feature permissions from an application role in a single operation, useful when restructuring role access or restricting capabilities across procurement and inventory modules.',
-    operationId: 'removePermissionsFromRole',
+    operationId: 'platformRolePermission_removePermissions',
     tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [
@@ -383,7 +383,7 @@ export class ApplicationRolePermissionController {
   @ApiOperation({
     summary: 'Remove a single permission from a role',
     description: 'Revokes a single feature permission from an application role, allowing precise removal of a specific capability without affecting other permissions assigned to the role.',
-    operationId: 'removePermissionFromRole',
+    operationId: 'platformRolePermission_removePermission',
     tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [

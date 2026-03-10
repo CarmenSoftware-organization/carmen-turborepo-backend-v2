@@ -109,9 +109,9 @@ export class UserController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Get User Profile',
+    summary: 'Get user permissions',
     description: 'Retrieves the authenticated user\'s permission set, defining which procurement modules, inventory operations, and approval actions the user is authorized to perform within the ERP system.',
-    operationId: 'getUserProfile',
+    operationId: 'getUserPermission',
     tags: ['User & Access', 'User'],
     deprecated: false,
     security: [{}],
@@ -124,7 +124,7 @@ export class UserController extends BaseHttpController {
     ],
     responses: {
       200: {
-        description: 'User profile retrieved successfully',
+        description: 'User permissions retrieved successfully',
       },
       401: {
         description: 'Unauthorized',
@@ -165,7 +165,7 @@ export class UserController extends BaseHttpController {
   @Serialize(UserListItemResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Get all user in tenant',
+    summary: 'Get all users in tenant',
     description: 'Lists all users assigned to the current business unit (tenant), used for administrative purposes such as managing staff access, assigning roles, and configuring approval workflows.',
     operationId: 'getAllUserInTenant',
     tags: ['User & Access', 'User'],
@@ -177,7 +177,7 @@ export class UserController extends BaseHttpController {
     ],
     responses: {
       200: {
-        description: 'User profile retrieved successfully',
+        description: 'Users list retrieved successfully',
       },
     },
   })

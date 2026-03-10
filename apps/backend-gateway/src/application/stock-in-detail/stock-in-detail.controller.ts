@@ -18,9 +18,14 @@ import { Response } from 'express';
 import { StockInDetailService } from './stock-in-detail.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import {
+  StockInDetailCreateRequestDto,
+  StockInDetailUpdateRequestDto,
+} from './swagger/request';
 import {
   BaseHttpController,
   Serialize,
@@ -138,6 +143,7 @@ export class StockInDetailController extends BaseHttpController {
       404: { description: 'Stock In not found' },
     },
   })
+  @ApiBody({ type: StockInDetailCreateRequestDto })
   async create(
     @Body() createDto: StockInDetailCreateDto,
     @Param('bu_code') bu_code: string,
@@ -175,6 +181,7 @@ export class StockInDetailController extends BaseHttpController {
       404: { description: 'Stock In Detail not found' },
     },
   })
+  @ApiBody({ type: StockInDetailUpdateRequestDto })
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,

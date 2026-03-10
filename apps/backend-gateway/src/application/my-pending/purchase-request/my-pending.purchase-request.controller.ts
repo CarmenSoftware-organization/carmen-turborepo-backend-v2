@@ -44,6 +44,10 @@ import {
   MOCK_PURCHASE_REQUEST_LIST,
 } from './example/my-pending.purchase-request.example';
 import { ApproveByStageRoleDto2 } from './dto/state-change.dto';
+import {
+  ApproveByStageRoleRequestDto,
+  ReviewPurchaseRequestRequestDto,
+} from './swagger/request';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/my-pending/purchase-request')
@@ -85,7 +89,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     ],
     responses: {
       200: {
-        description: 'The purchase requests were successfully retrieved',
+        description: 'Pending purchase request count retrieved successfully',
         content: {
           'application/json': {
             examples: {
@@ -103,7 +107,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
         },
       },
       404: {
-        description: 'The purchase requests were not found',
+        description: 'No pending purchase requests found',
         content: {
           'application/json': {
             examples: {
@@ -155,7 +159,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get workflow stages of a purchase request',
     description: 'Retrieves the approval workflow stages configured for purchase requests in the business unit, showing the sequence of approval steps (e.g., HOD, Finance Controller, GM) that a purchase request must pass through.',
-    operationId: 'findAllWorkflowStagesByPr',
+    operationId: 'findPendingPurchaseRequestWorkflowStages',
     tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
     deprecated: false,
     parameters: [
@@ -167,7 +171,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     ],
     responses: {
       200: {
-        description: 'The purchase requests were successfully retrieved',
+        description: 'Purchase request workflow stages retrieved successfully',
         content: {
           'application/json': {
             examples: {
@@ -185,7 +189,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
         },
       },
       404: {
-        description: 'The purchase requests were not found',
+        description: 'Workflow stages not found',
         content: {
           'application/json': {
             examples: {
@@ -237,7 +241,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get a purchase request by ID',
     description: 'Retrieves the full details of a specific purchase request pending in the approval pipeline, including requested items, quantities, estimated costs, and current approval status.',
-    operationId: 'findOnePurchaseRequest',
+    operationId: 'findOnePendingPurchaseRequest',
     tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
     deprecated: false,
     security: [
@@ -304,7 +308,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all purchase requests',
     description: 'Lists all purchase requests in the user\'s pending queue with pagination, enabling requestors and approvers to track and manage procurement requests through the approval workflow.',
-    operationId: 'findAllPurchaseRequests',
+    operationId: 'findAllPendingPurchaseRequests',
     tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
     deprecated: false,
     parameters: [
@@ -330,8 +334,8 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
       },
       {
         name: 'bu_code',
-        in: 'path',
-        required: true,
+        in: 'query',
+        required: false,
       },
     ],
     responses: {
@@ -388,9 +392,13 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   @UseGuards(new AppIdGuard('my-pending.purchaseRequest.findAllByStatus'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Get approval status of a purchase request',
+    summary: 'Get purchase requests by status',
     description: 'Filters purchase requests by their current approval status (e.g., draft, pending, approved, rejected), allowing users to view requests at a specific stage in the procurement workflow.',
+    operationId: 'findPurchaseRequestsByStatus',
     tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
+    responses: {
+      200: { description: 'Purchase requests retrieved successfully' },
+    },
   })
   @HttpCode(HttpStatus.OK)
   async findAllByStatus(
@@ -430,7 +438,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a purchase request',
     description: 'Creates a new purchase request for items needed by a hotel department, initiating the procurement approval workflow where the request will be routed to designated approvers (HOD, FC, GM).',
-    operationId: 'createPurchaseRequest',
+    operationId: 'createPendingPurchaseRequest',
     tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
     deprecated: false,
     parameters: [
@@ -504,7 +512,12 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   @ApiOperation({
     summary: 'Submit a purchase request',
     description: 'Submits a draft purchase request into the approval workflow, moving it from draft status to the first approval stage where designated approvers will review the procurement request.',
+    operationId: 'submitPendingPurchaseRequest',
     tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
+    responses: {
+      200: { description: 'Purchase request submitted successfully' },
+      404: { description: 'Purchase request not found' },
+    },
   })
   @HttpCode(HttpStatus.OK)
   async submit(
@@ -541,10 +554,16 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   @UseGuards(new AppIdGuard('my-pending.purchaseRequest.approve'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Submit a purchase request',
+    summary: 'Approve a purchase request',
     description: 'Approves a purchase request at the current user\'s workflow stage, advancing it to the next approval level or marking it as fully approved for purchase order generation.',
+    operationId: 'approvePendingPurchaseRequest',
     tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
+    responses: {
+      200: { description: 'Purchase request approved successfully' },
+      404: { description: 'Purchase request not found' },
+    },
   })
+  @ApiBody({ type: ApproveByStageRoleRequestDto })
   @HttpCode(HttpStatus.OK)
   async approve(
     @Param('id') id: string,
@@ -582,9 +601,14 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   @UseGuards(new AppIdGuard('my-pending.purchaseRequest.reject'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Submit a purchase request',
+    summary: 'Reject a purchase request',
     description: 'Rejects a purchase request at the current approval stage, sending it back to the requestor for revision or cancellation with the reason for rejection.',
+    operationId: 'rejectPendingPurchaseRequest',
     tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
+    responses: {
+      200: { description: 'Purchase request rejected successfully' },
+      404: { description: 'Purchase request not found' },
+    },
   })
   @HttpCode(HttpStatus.OK)
   async reject(
@@ -623,8 +647,14 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   @ApiOperation({
     summary: 'Review a purchase request',
     description: 'Allows an approver to review a purchase request and provide feedback or modifications before making a final approve/reject decision, supporting collaborative procurement review.',
+    operationId: 'reviewPendingPurchaseRequest',
     tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
+    responses: {
+      200: { description: 'Purchase request reviewed successfully' },
+      404: { description: 'Purchase request not found' },
+    },
   })
+  @ApiBody({ type: ReviewPurchaseRequestRequestDto })
   @HttpCode(HttpStatus.OK)
   async review(
     @Param('id') id: string,
@@ -664,7 +694,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a purchase request',
     description: 'Saves changes to a draft purchase request, allowing the requestor to modify items, quantities, or justification before submitting it for approval.',
-    operationId: 'updatePurchaseRequest',
+    operationId: 'updatePendingPurchaseRequest',
     tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
     deprecated: false,
     security: [
@@ -688,6 +718,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: UpdatePurchaseRequestDto })
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id') id: string,
@@ -728,7 +759,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a purchase request',
     description: 'Removes a purchase request that is no longer needed, typically a draft or rejected request that the requestor has decided to discard rather than resubmit.',
-    operationId: 'deletePurchaseRequest',
+    operationId: 'deletePendingPurchaseRequest',
     tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
     deprecated: false,
     parameters: [

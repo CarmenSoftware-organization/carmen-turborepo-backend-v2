@@ -19,6 +19,7 @@ import { Response } from 'express';
 import { Config_DeliveryPointService } from './config_delivery-point.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -41,6 +42,7 @@ import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
+import { DeliveryPointCreateRequest, DeliveryPointUpdateRequest } from './swagger/request';
 
 @Controller('api/config/:bu_code/delivery-point')
 @ApiTags('Configuration')
@@ -70,7 +72,7 @@ export class Config_DeliveryPointController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get a delivery point by ID',
     description: 'Retrieves a specific delivery point where vendors deliver goods to the property. Delivery points are used in purchase orders to specify the exact receiving location for vendor shipments.',
-    operationId: 'findOneDeliveryPoint',
+    operationId: 'configDeliveryPoint_findOne',
     tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [
@@ -137,7 +139,7 @@ export class Config_DeliveryPointController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all delivery points',
     description: 'Returns all delivery points configured for the property. These represent physical locations (e.g., loading dock, back entrance, kitchen door) where vendors can deliver goods.',
-    operationId: 'findAllDeliveryPoints',
+    operationId: 'configDeliveryPoint_findAll',
     tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [
@@ -201,7 +203,7 @@ export class Config_DeliveryPointController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a new delivery point',
     description: 'Defines a new delivery location at the property where vendors can deliver goods. Once created, it can be specified in purchase orders to direct vendor shipments.',
-    operationId: 'createDeliveryPoint',
+    operationId: 'configDeliveryPoint_create',
     tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [
@@ -222,6 +224,7 @@ export class Config_DeliveryPointController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: DeliveryPointCreateRequest })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -259,7 +262,7 @@ export class Config_DeliveryPointController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a delivery point',
     description: 'Modifies an existing delivery point configuration, such as updating its name, address, or operating hours. Changes affect how future purchase orders reference this delivery location.',
-    operationId: 'updateDeliveryPoint',
+    operationId: 'configDeliveryPoint_update',
     tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [
@@ -288,6 +291,7 @@ export class Config_DeliveryPointController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: DeliveryPointUpdateRequest })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -329,9 +333,9 @@ export class Config_DeliveryPointController extends BaseHttpController {
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Update a delivery point',
+    summary: 'Partially update a delivery point',
     description: 'Partially updates specific fields of a delivery point without replacing the entire record. Useful for toggling active status or making minor adjustments.',
-    operationId: 'patchDeliveryPoint',
+    operationId: 'configDeliveryPoint_patch',
     tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [
@@ -360,6 +364,7 @@ export class Config_DeliveryPointController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: DeliveryPointUpdateRequest })
   async patch(
     @Req() req: Request,
     @Res() res: Response,
@@ -403,7 +408,7 @@ export class Config_DeliveryPointController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a delivery point',
     description: 'Removes a delivery point from active use. It will no longer be selectable in new purchase orders, but historical procurement records referencing this delivery point are preserved.',
-    operationId: 'deleteDeliveryPoint',
+    operationId: 'configDeliveryPoint_delete',
     tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [

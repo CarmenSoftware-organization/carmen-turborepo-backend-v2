@@ -56,7 +56,7 @@ export class Platform_ClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get list of clusters',
     description: 'Lists all top-level organizations (hotel chains or companies) registered in the platform with pagination. Each cluster groups multiple business units (hotel properties) under a single corporate entity.',
-    operationId: 'getListCluster',
+    operationId: 'platformCluster_findAll',
     tags: ['Platform Admin', 'Cluster'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -102,7 +102,7 @@ export class Platform_ClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get cluster by ID',
     description: 'Retrieves the details of a specific hotel chain or company, including its name, configuration, and the business units (properties) it contains.',
-    operationId: 'getClusterById',
+    operationId: 'platformCluster_findOne',
     tags: ['Platform Admin', 'Cluster'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -143,7 +143,7 @@ export class Platform_ClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a new cluster',
     description: 'Onboards a new hotel chain or company into the Carmen ERP platform. The cluster serves as the top-level organizational grouping under which individual hotel properties (business units) will be created.',
-    operationId: 'createCluster',
+    operationId: 'platformCluster_create',
     tags: ['Platform Admin', 'Cluster'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -190,7 +190,7 @@ export class Platform_ClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a cluster',
     description: 'Modifies the details of an existing hotel chain or company, such as its name, contact information, or subscription settings.',
-    operationId: 'updateCluster',
+    operationId: 'platformCluster_update',
     tags: ['Platform Admin', 'Cluster'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -240,7 +240,7 @@ export class Platform_ClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a cluster',
     description: 'Removes a hotel chain or company from the platform. This is a significant operation as it affects all business units and user assignments under this cluster.',
-    operationId: 'deleteCluster',
+    operationId: 'platformCluster_delete',
     tags: ['Platform Admin', 'Cluster'],
     deprecated: false,
     security: [{ bearerAuth: [] }],

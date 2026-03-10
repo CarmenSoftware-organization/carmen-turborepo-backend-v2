@@ -21,10 +21,18 @@ import { Response } from 'express';
 import { GoodReceivedNoteService } from './good-received-note.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiHeader,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import {
+  CreateGoodReceivedNoteSwaggerDto,
+  UpdateGoodReceivedNoteSwaggerDto,
+  RejectGoodReceivedNoteSwaggerDto,
+  ConfirmGoodReceivedNoteSwaggerDto,
+  CreateGrnCommentSwaggerDto,
+} from './swagger/request';
 import {
   BaseHttpController,
   Serialize,
@@ -283,6 +291,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
       400: { description: 'Invalid request body' },
     },
   })
+  @ApiBody({ type: CreateGoodReceivedNoteSwaggerDto })
   async create(
     @Body() createDto: GoodReceivedNoteCreateDto,
     @Param('bu_code') bu_code: string,
@@ -331,6 +340,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
       404: { description: 'The Good Received Note was not found' },
     },
   })
+  @ApiBody({ type: UpdateGoodReceivedNoteSwaggerDto })
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -521,6 +531,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: RejectGoodReceivedNoteSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async reject(
     @Param('id') id: string,
@@ -814,6 +825,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
       404: { description: 'GRN not found' },
     },
   })
+  @ApiBody({ type: ConfirmGoodReceivedNoteSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async confirm(
     @Param('id') id: string,
@@ -898,6 +910,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
       404: { description: 'GRN not found' },
     },
   })
+  @ApiBody({ type: CreateGrnCommentSwaggerDto })
   @HttpCode(HttpStatus.CREATED)
   async createComment(
     @Param('id') id: string,

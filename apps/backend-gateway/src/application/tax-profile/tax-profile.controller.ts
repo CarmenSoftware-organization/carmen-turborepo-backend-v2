@@ -110,9 +110,13 @@ export class TaxProfileController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiBearerAuth()
   @ApiOperation({
-    summary: 'Get all tax type inventories',
+    summary: 'Get all tax profiles',
     description: 'Lists all tax configuration profiles available in the business unit, including VAT rates and withholding tax settings used for calculating taxes on purchase orders and vendor payments.',
+    operationId: 'findAllTaxProfiles',
     tags: ['Master Data', 'Tax Profile'],
+    responses: {
+      200: { description: 'Tax profiles retrieved successfully' },
+    },
   })
   async findAll(
     @Req() req: Request,

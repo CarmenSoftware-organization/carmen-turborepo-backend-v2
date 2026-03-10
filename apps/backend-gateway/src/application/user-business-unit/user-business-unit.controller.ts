@@ -16,10 +16,12 @@ import { Response } from 'express';
 import { UserBusinessUnitService } from './user-business-unit.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiHeader,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { SetDefaultTenantRequestDto } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -85,6 +87,7 @@ export class UserBusinessUnitController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: SetDefaultTenantRequestDto })
   async setDefaultTenant(
     @Req() req: Request,
     @Res() res: Response,

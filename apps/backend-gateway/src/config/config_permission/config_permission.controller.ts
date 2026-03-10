@@ -15,7 +15,6 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @ApiHeaderRequiredXAppId()
 @ApiBearerAuth()
 @UseGuards(KeycloakGuard)
-@Controller('api/config/:bu_code/permissions')
 export class ConfigPermissionController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(
     ConfigPermissionService.name,
@@ -32,7 +31,7 @@ export class ConfigPermissionController extends BaseHttpController {
    */
   @Get()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all permissions', description: 'Returns all granular permission definitions available in the system. Permissions control access to specific features and actions, and are assigned to application roles for role-based access control.', operationId: 'findAllPermissions', tags: ['Configuration', 'Permission'] })
+  @ApiOperation({ summary: 'Get all permissions', description: 'Returns all granular permission definitions available in the system. Permissions control access to specific features and actions, and are assigned to application roles for role-based access control.', operationId: 'configPermission_findAll', tags: ['Configuration', 'Permission'] })
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
