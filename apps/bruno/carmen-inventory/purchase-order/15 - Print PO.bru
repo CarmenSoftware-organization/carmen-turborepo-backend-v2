@@ -1,0 +1,19 @@
+meta {
+  name: 15 - Print PO
+  type: http
+  seq: 15
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:id/print
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{po_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

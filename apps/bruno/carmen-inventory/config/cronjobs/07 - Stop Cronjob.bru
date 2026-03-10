@@ -1,0 +1,19 @@
+meta {
+  name: 07 - Stop Cronjob
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{host}}/api/config/cronjobs/:id/stop
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: 
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

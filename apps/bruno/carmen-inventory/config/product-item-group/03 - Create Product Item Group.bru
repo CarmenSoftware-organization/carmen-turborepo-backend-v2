@@ -1,0 +1,23 @@
+meta {
+  name: 03 - Create Product Item Group
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/config/{{bu_code}}/products/item-group
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "",
+    "code": "",
+    "is_active": true
+  }
+}

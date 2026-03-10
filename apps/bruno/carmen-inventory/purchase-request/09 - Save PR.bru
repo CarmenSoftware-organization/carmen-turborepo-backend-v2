@@ -1,0 +1,23 @@
+meta {
+  name: 09 - Save PR
+  type: http
+  seq: 9
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/purchase-request/:id/save
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{pr_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}

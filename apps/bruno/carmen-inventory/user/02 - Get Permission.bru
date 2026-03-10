@@ -1,0 +1,15 @@
+meta {
+  name: 02 - Get Permission
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/user/permission
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

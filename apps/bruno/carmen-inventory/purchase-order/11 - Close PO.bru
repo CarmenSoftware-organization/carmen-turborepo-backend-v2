@@ -1,0 +1,23 @@
+meta {
+  name: 11 - Close PO
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:id/close
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{po_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}

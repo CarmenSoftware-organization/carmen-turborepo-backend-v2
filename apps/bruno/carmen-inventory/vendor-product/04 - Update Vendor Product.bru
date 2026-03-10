@@ -1,0 +1,26 @@
+meta {
+  name: 04 - Update Vendor Product
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{host}}/api/{{bu_code}}/vendor-product/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{vendor_product_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "vendor_id": "",
+    "product_id": ""
+  }
+}

@@ -1,0 +1,19 @@
+meta {
+  name: 05 - Delete Request For Pricing
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/request-for-pricing/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{rfp_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

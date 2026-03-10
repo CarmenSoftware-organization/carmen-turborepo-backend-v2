@@ -1,0 +1,20 @@
+meta {
+  name: 15 - Get PR Status
+  type: http
+  seq: 15
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request/:id/status/:status
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{pr_id}}
+  status: draft
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

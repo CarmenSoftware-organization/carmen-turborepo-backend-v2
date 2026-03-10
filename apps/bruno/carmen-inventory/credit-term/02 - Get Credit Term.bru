@@ -1,0 +1,19 @@
+meta {
+  name: 02 - Get Credit Term
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/credit-term/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{credit_term_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

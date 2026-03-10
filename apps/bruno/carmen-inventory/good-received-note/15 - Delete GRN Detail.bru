@@ -1,0 +1,20 @@
+meta {
+  name: 15 - Delete GRN Detail
+  type: http
+  seq: 15
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/good-received-note/:id/details/:detail_id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{grn_id}}
+  detail_id: {{grn_detail_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

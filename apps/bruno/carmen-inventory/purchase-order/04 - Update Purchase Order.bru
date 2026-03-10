@@ -1,0 +1,26 @@
+meta {
+  name: 04 - Update Purchase Order
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{po_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "description": "",
+    "note": ""
+  }
+}

@@ -1,0 +1,19 @@
+meta {
+  name: 05 - Delete Store Requisition
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/store-requisition/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{sr_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

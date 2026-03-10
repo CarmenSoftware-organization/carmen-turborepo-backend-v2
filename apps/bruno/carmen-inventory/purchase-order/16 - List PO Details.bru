@@ -1,0 +1,19 @@
+meta {
+  name: 16 - List PO Details
+  type: http
+  seq: 16
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:id/details
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{po_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

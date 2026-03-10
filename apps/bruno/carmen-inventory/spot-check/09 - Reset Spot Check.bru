@@ -1,0 +1,23 @@
+meta {
+  name: 09 - Reset Spot Check
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/spot-check/:id/reset
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{spot_check_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}

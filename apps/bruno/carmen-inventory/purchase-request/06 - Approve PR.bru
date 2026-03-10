@@ -1,0 +1,23 @@
+meta {
+  name: 06 - Approve PR
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/purchase-request/:id/approve
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{pr_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}

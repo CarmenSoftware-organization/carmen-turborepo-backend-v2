@@ -1,0 +1,19 @@
+meta {
+  name: 01 - Get Location Product
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/location-product/:locationId
+  body: none
+  auth: bearer
+}
+
+params:path {
+  locationId: 
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

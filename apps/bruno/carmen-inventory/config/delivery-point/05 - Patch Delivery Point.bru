@@ -1,0 +1,26 @@
+meta {
+  name: 05 - Patch Delivery Point
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{host}}/api/config/{{bu_code}}/delivery-point/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: 
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "",
+    "is_active": true
+  }
+}

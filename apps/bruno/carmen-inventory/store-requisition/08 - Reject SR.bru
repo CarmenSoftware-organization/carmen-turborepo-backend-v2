@@ -1,0 +1,23 @@
+meta {
+  name: 08 - Reject SR
+  type: http
+  seq: 8
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/store-requisition/:id/reject
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{sr_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}

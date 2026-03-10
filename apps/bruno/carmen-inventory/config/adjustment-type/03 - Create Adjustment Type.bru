@@ -1,0 +1,26 @@
+meta {
+  name: 03 - Create Adjustment Type
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/config/{{bu_code}}/adjustment-type
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "code": "ADJ-001",
+    "name": "Adjustment Type Test",
+    "type": "STOCK_IN",
+    "description": "Test adjustment type",
+    "is_active": true,
+    "note": ""
+  }
+}

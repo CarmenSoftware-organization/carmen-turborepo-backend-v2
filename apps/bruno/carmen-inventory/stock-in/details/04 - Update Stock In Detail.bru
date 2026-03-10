@@ -1,0 +1,36 @@
+meta {
+  name: 04 - Update Stock In Detail
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{host}}/api/{{bu_code}}/stock-in/:id/details/:detail_id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{stock_in_id}}
+  detail_id: {{stock_in_detail_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "id": "{{stock_in_detail_id}}",
+    "product_id": "",
+    "product_name": "",
+    "location_id": "",
+    "location_code": "",
+    "location_name": "",
+    "qty": 10,
+    "cost_per_unit": 50,
+    "total_cost": 500,
+    "description": "updated",
+    "note": ""
+  }
+}

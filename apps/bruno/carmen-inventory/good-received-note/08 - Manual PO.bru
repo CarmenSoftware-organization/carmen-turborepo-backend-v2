@@ -1,0 +1,19 @@
+meta {
+  name: 08 - Manual PO
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/good-received-note/manual-po/:po_no
+  body: none
+  auth: bearer
+}
+
+params:path {
+  po_no: {{po_no}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

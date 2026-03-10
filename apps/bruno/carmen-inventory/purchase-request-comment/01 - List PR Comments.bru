@@ -1,0 +1,19 @@
+meta {
+  name: 01 - List PR Comments
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request/:purchase_request_id/comment
+  body: none
+  auth: bearer
+}
+
+params:path {
+  purchase_request_id: {{pr_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

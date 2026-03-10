@@ -1,0 +1,19 @@
+meta {
+  name: 02 - Get Vendor Product
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/vendor-product/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{vendor_product_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

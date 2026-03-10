@@ -1,0 +1,19 @@
+meta {
+  name: 03 - Get Activity Log
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/activity-log/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{activity_log_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

@@ -1,0 +1,19 @@
+meta {
+  name: 04 - Get Presigned URL
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/documents/:filetoken/presigned-url
+  body: none
+  auth: bearer
+}
+
+params:path {
+  filetoken: {{filetoken}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

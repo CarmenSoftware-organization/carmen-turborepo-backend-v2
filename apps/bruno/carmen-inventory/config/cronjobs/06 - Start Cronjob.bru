@@ -1,0 +1,19 @@
+meta {
+  name: 06 - Start Cronjob
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{host}}/api/config/cronjobs/:id/start
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: 
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

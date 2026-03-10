@@ -1,0 +1,19 @@
+meta {
+  name: 05 - Delete PR Template
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/purchase-request-template/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{pr_template_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

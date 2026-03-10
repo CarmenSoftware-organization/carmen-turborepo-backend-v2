@@ -1,0 +1,23 @@
+meta {
+  name: 07 - Approve PO
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:id/approve
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{po_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}

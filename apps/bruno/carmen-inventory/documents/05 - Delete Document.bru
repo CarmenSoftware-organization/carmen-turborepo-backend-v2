@@ -1,0 +1,19 @@
+meta {
+  name: 05 - Delete Document
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/documents/:filetoken
+  body: none
+  auth: bearer
+}
+
+params:path {
+  filetoken: {{filetoken}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

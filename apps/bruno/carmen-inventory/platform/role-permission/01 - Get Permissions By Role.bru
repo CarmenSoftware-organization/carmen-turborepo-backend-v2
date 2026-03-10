@@ -1,0 +1,19 @@
+meta {
+  name: 01 - Get Permissions By Role
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api-system/role-permission/role/:roleId/permissions
+  body: none
+  auth: bearer
+}
+
+params:path {
+  roleId:
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

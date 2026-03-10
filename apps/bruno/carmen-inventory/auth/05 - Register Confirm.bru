@@ -1,0 +1,17 @@
+meta {
+  name: 05 - Register Confirm
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{host}}/api/auth/register-confirm
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "token": ""
+  }
+}

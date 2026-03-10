@@ -1,0 +1,23 @@
+meta {
+  name: 08 - Submit Spot Check
+  type: http
+  seq: 8
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/spot-check/:id/submit
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{spot_check_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}

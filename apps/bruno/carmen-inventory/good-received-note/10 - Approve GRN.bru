@@ -1,0 +1,23 @@
+meta {
+  name: 10 - Approve GRN
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/good-received-note/:id/approve
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{grn_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}

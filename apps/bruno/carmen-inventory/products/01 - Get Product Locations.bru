@@ -1,0 +1,19 @@
+meta {
+  name: 01 - Get Product Locations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/products/locations/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{product_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

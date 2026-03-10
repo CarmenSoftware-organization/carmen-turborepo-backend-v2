@@ -1,0 +1,38 @@
+meta {
+  name: 03 - Create Stock Out
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/stock-out
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "description": "Stock Out Test",
+    "adjustment_type_id": "",
+    "doc_status": "draft",
+    "note": "",
+    "stock_out_detail": {
+      "add": [
+        {
+          "product_id": "",
+          "product_name": "",
+          "location_id": "",
+          "location_code": "",
+          "location_name": "",
+          "qty": 5,
+          "description": "",
+          "note": ""
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,19 @@
+meta {
+  name: 01 - Get Order Units
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/unit/order/product/:productId
+  body: none
+  auth: bearer
+}
+
+params:path {
+  productId: {{product_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

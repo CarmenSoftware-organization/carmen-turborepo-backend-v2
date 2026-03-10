@@ -1,0 +1,19 @@
+meta {
+  name: 02 - Get Purchase Request
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{pr_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

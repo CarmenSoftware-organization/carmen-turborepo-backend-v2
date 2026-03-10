@@ -1,0 +1,21 @@
+meta {
+  name: 03 - Create Spot Check
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/spot-check
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "description": ""
+  }
+}

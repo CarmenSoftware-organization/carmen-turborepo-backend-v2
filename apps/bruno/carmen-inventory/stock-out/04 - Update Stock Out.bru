@@ -1,0 +1,32 @@
+meta {
+  name: 04 - Update Stock Out
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/stock-out/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{stock_out_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "description": "Stock Out Updated",
+    "doc_status": "draft",
+    "note": "updated note",
+    "stock_out_detail": {
+      "add": [],
+      "update": [],
+      "remove": []
+    }
+  }
+}

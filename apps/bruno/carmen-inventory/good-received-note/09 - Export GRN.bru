@@ -1,0 +1,19 @@
+meta {
+  name: 09 - Export GRN
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/good-received-note/:id/export
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{grn_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

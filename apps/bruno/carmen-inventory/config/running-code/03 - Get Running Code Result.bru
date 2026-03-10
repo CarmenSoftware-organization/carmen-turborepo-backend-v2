@@ -1,0 +1,19 @@
+meta {
+  name: 03 - Get Running Code Result
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/running-code/result/:type
+  body: none
+  auth: bearer
+}
+
+params:path {
+  type: 
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

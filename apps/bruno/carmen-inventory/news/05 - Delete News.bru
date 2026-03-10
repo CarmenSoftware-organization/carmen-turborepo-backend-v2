@@ -1,0 +1,19 @@
+meta {
+  name: 05 - Delete News
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{host}}/api/news/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{news_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

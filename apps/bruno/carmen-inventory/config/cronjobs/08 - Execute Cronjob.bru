@@ -1,0 +1,19 @@
+meta {
+  name: 08 - Execute Cronjob
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{host}}/api/config/cronjobs/:id/execute
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: 
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

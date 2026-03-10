@@ -1,0 +1,25 @@
+meta {
+  name: 03 - Create User Business Unit
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api-system/user/business-unit
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "user_id": "",
+    "business_unit_id": "",
+    "role": "member",
+    "is_default": false,
+    "is_active": true
+  }
+}

@@ -1,0 +1,19 @@
+meta {
+  name: 13 - Print PR
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request/:id/print
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{pr_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

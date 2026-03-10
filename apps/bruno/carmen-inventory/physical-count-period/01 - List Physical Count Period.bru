@@ -1,0 +1,15 @@
+meta {
+  name: 01 - List Physical Count Period
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/physical-count-period
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

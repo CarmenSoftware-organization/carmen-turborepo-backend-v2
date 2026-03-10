@@ -1,0 +1,15 @@
+meta {
+  name: 02 - List Inventory Adjustment Stock In
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/inventory-adjustment?type=stock-in
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

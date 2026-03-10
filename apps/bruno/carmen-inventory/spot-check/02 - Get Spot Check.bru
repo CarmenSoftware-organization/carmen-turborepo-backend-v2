@@ -1,0 +1,19 @@
+meta {
+  name: 02 - Get Spot Check
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/spot-check/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{spot_check_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

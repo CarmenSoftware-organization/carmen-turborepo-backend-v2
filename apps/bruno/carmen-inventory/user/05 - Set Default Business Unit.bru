@@ -1,0 +1,21 @@
+meta {
+  name: 05 - Set Default Business Unit
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{host}}/api/business-unit/default
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "business_unit_id": ""
+  }
+}

@@ -1,0 +1,30 @@
+meta {
+  name: 07 - Save Physical Count
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/physical-count/:id/save
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{physical_count_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "items": [
+      {
+        "id": "",
+        "actual_qty": 10
+      }
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+meta {
+  name: 01 - Get Workflow By Type
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/workflow/type/:type
+  body: none
+  auth: bearer
+}
+
+params:path {
+  type: purchase_request
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
