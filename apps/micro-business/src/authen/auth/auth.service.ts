@@ -425,8 +425,11 @@ export class AuthService {
       AuthService.name,
     );
 
+    const normalizedUsername = registerDto.username.toLowerCase();
+    const normalizedEmail = registerDto.email.toLowerCase();
+
     const findUsername = await this.prismaSystem.tb_user.findFirst({
-      where: { username: registerDto.username },
+      where: { username: normalizedUsername },
     });
 
     if (findUsername) {
@@ -439,7 +442,7 @@ export class AuthService {
     }
 
     const findEmail = await this.prismaSystem.tb_user.findFirst({
-      where: { email: registerDto.email },
+      where: { email: normalizedEmail },
     });
 
     if (findEmail) {
@@ -454,8 +457,8 @@ export class AuthService {
     try {
       // Create user in Keycloak via TCP service
       const keycloakUserPayload = {
-        username: registerDto.username,
-        email: registerDto.email,
+        username: normalizedUsername,
+        email: normalizedEmail,
         firstName: registerDto.user_info.first_name,
         lastName: registerDto.user_info.last_name,
         enabled: true,
@@ -517,7 +520,7 @@ export class AuthService {
       const getUserResponse = await firstValueFrom(
         this.keycloakService.send(
           { cmd: 'keycloak.users.getByEmail', service: 'keycloak' },
-          { email: registerDto.email },
+          { email: normalizedEmail },
         ),
       );
 
@@ -528,7 +531,7 @@ export class AuthService {
         this.logger.error('Failed to find newly created user in Keycloak', {
           file: AuthService.name,
           function: 'register',
-          email: registerDto.email,
+          email: normalizedEmail,
         });
         return {
           response: {
@@ -544,8 +547,8 @@ export class AuthService {
         const createUser = await prisma.tb_user.create({
           data: {
             id: keycloakUserId,
-            username: registerDto.username,
-            email: registerDto.email,
+            username: normalizedUsername,
+            email: normalizedEmail,
             platform_role: 'user',
             is_active: true,
           },
@@ -639,8 +642,11 @@ export class AuthService {
       };
     }
 
+    const normalizedUsername = registerConfirmDto.username.toLowerCase();
+    const normalizedEmail = registerConfirmDto.email.toLowerCase();
+
     const findUsername = await this.prismaSystem.tb_user.findFirst({
-      where: { username: registerConfirmDto.username },
+      where: { username: normalizedUsername },
     });
 
     if (findUsername) {
@@ -653,7 +659,7 @@ export class AuthService {
     }
 
     const findEmail = await this.prismaSystem.tb_user.findFirst({
-      where: { email: registerConfirmDto.email },
+      where: { email: normalizedEmail },
     });
 
     if (findEmail) {
@@ -668,8 +674,8 @@ export class AuthService {
     try {
       // Create user in Keycloak via TCP service
       const keycloakUserPayload = {
-        username: registerConfirmDto.username,
-        email: registerConfirmDto.email,
+        username: normalizedUsername,
+        email: normalizedEmail,
         firstName: registerConfirmDto.user_info.first_name,
         lastName: registerConfirmDto.user_info.last_name,
         enabled: true,
@@ -724,7 +730,7 @@ export class AuthService {
       const getUserResponse = await firstValueFrom(
         this.keycloakService.send(
           { cmd: 'keycloak.users.getByEmail', service: 'keycloak' },
-          { email: registerConfirmDto.email },
+          { email: normalizedEmail },
         ),
       );
 
@@ -735,7 +741,7 @@ export class AuthService {
         this.logger.error('Failed to find newly created user in Keycloak', {
           file: AuthService.name,
           function: 'registerConfirm',
-          email: registerConfirmDto.email,
+          email: normalizedEmail,
         });
         return {
           response: {
@@ -751,8 +757,8 @@ export class AuthService {
         const createUser = await prisma.tb_user.create({
           data: {
             id: keycloakUserId,
-            username: registerConfirmDto.username,
-            email: registerConfirmDto.email,
+            username: normalizedUsername,
+            email: normalizedEmail,
             platform_role: 'user',
             is_active: true,
           },
