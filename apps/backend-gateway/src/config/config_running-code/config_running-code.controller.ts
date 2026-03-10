@@ -18,7 +18,8 @@ import {
 import { Response } from 'express';
 import { Config_RunningCodeService } from './config_running-code.service';
 import { ZodSerializerInterceptor, BaseHttpController } from '@/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { RunningCodeCreateRequest, RunningCodeUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { PaginateQuery } from 'src/shared-dto/paginate.dto';
@@ -60,7 +61,7 @@ export class Config_RunningCodeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('runningCode.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a running code by ID', description: 'Retrieves a specific auto-numbering rule configuration used to generate sequential document codes (e.g., PR-001, PO-001, GRN-001) for procurement and inventory documents.', operationId: 'findOneRunningCode', tags: ['Configuration', 'Running Code'] })
+  @ApiOperation({ summary: 'Get a running code by ID', description: 'Retrieves a specific auto-numbering rule configuration used to generate sequential document codes (e.g., PR-001, PO-001, GRN-001) for procurement and inventory documents.', operationId: 'configRunningCode_findOne', tags: ['Configuration', 'Running Code'] })
   async findOne(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -86,7 +87,7 @@ export class Config_RunningCodeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('runningCode.findByType'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a running code result by type', description: 'Retrieves the running code configuration for a specific document type (e.g., purchase request, purchase order). Returns the current counter and format pattern for generating the next document number.', operationId: 'findRunningCodeByType', tags: ['Configuration', 'Running Code'] })
+  @ApiOperation({ summary: 'Get a running code result by type', description: 'Retrieves the running code configuration for a specific document type (e.g., purchase request, purchase order). Returns the current counter and format pattern for generating the next document number.', operationId: 'configRunningCode_findByType', tags: ['Configuration', 'Running Code'] })
   async findByType(
     @Param('type') type: string,
     @Param('bu_code') bu_code: string,
@@ -121,7 +122,7 @@ export class Config_RunningCodeController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all running codes', description: 'Returns all auto-numbering rule configurations for the business unit. Each rule defines the format pattern, prefix, and counter for a specific document type.', operationId: 'findAllRunningCodes', tags: ['Configuration', 'Running Code'] })
+  @ApiOperation({ summary: 'Get all running codes', description: 'Returns all auto-numbering rule configurations for the business unit. Each rule defines the format pattern, prefix, and counter for a specific document type.', operationId: 'configRunningCode_findAll', tags: ['Configuration', 'Running Code'] })
   async findAll(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -156,7 +157,8 @@ export class Config_RunningCodeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('runningCode.create'))
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new running code', description: 'Defines a new auto-numbering rule for a document type, specifying the prefix, format pattern, starting number, and reset frequency. Controls how document codes are automatically generated.', operationId: 'createRunningCode', tags: ['Configuration', 'Running Code'] })
+  @ApiOperation({ summary: 'Create a new running code', description: 'Defines a new auto-numbering rule for a document type, specifying the prefix, format pattern, starting number, and reset frequency. Controls how document codes are automatically generated.', operationId: 'configRunningCode_create', tags: ['Configuration', 'Running Code'] })
+  @ApiBody({ type: RunningCodeCreateRequest })
   async create(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -190,7 +192,8 @@ export class Config_RunningCodeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('runningCode.update'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a running code', description: 'Modifies an existing auto-numbering rule, such as changing the format pattern, prefix, or resetting the counter. Changes affect how future document numbers are generated.', operationId: 'updateRunningCode', tags: ['Configuration', 'Running Code'] })
+  @ApiOperation({ summary: 'Update a running code', description: 'Modifies an existing auto-numbering rule, such as changing the format pattern, prefix, or resetting the counter. Changes affect how future document numbers are generated.', operationId: 'configRunningCode_update', tags: ['Configuration', 'Running Code'] })
+  @ApiBody({ type: RunningCodeUpdateRequest })
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -230,7 +233,7 @@ export class Config_RunningCodeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('runningCode.delete'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a running code', description: 'Removes an auto-numbering rule from the system. The associated document type will no longer have automatic code generation until a new rule is configured.', operationId: 'deleteRunningCode', tags: ['Configuration', 'Running Code'] })
+  @ApiOperation({ summary: 'Delete a running code', description: 'Removes an auto-numbering rule from the system. The associated document type will no longer have automatic code generation until a new rule is configured.', operationId: 'configRunningCode_delete', tags: ['Configuration', 'Running Code'] })
   async remove(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,

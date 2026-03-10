@@ -80,7 +80,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     ],
     responses: {
       200: {
-        description: 'The store requisitions were successfully retrieved',
+        description: 'Pending store requisition count retrieved successfully',
         content: {
           'application/json': {
             examples: {
@@ -98,7 +98,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
         },
       },
       404: {
-        description: 'The store requisitions were not found',
+        description: 'No pending store requisitions found',
         content: {
           'application/json': {
             examples: {
@@ -162,7 +162,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     ],
     responses: {
       200: {
-        description: 'The store requisitions were successfully retrieved',
+        description: 'Store requisition workflow stages retrieved successfully',
         content: {
           'application/json': {
             examples: {
@@ -180,7 +180,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
         },
       },
       404: {
-        description: 'The store requisitions were not found',
+        description: 'Workflow stages not found',
         content: {
           'application/json': {
             examples: {
@@ -233,7 +233,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get a store requisition by ID',
     description: 'Retrieves the full details of a specific store requisition pending in the approval pipeline, including requested items, quantities, requesting department, and current approval status.',
-    operationId: 'findStoreRequisitionById',
+    operationId: 'findPendingStoreRequisitionById',
     tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
@@ -296,7 +296,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all store requisitions',
     description: 'Lists all store requisitions in the user\'s pending queue with pagination, enabling department staff and approvers to track internal stock requests through the approval and fulfillment process.',
-    operationId: 'findAllStoreRequisitions',
+    operationId: 'findAllPendingStoreRequisitions',
     tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
@@ -373,7 +373,11 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all store requisitions by status',
     description: 'Filters store requisitions by their current status (e.g., draft, pending, approved, rejected), allowing users to view internal stock requests at a specific stage in the approval workflow.',
+    operationId: 'findStoreRequisitionsByStatus',
     tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
+    responses: {
+      200: { description: 'Store requisitions retrieved successfully' },
+    },
   })
   @HttpCode(HttpStatus.OK)
   async findAllByStatus(
@@ -413,7 +417,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a store requisition',
     description: 'Creates a new store requisition for a hotel department to request items from internal storage, initiating the approval workflow before the storeroom fulfills the request.',
-    operationId: 'createStoreRequisition',
+    operationId: 'createPendingStoreRequisition',
     tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
@@ -429,6 +433,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
       },
     ],
   })
+  @ApiBody({ type: CreateStoreRequisitionDto })
   @HttpCode(HttpStatus.CREATED)
   async create(
     @Req() req: Request,
@@ -467,7 +472,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a store requisition',
     description: 'Saves changes to a draft store requisition, allowing the requestor to modify requested items, quantities, or delivery details before submitting for approval.',
-    operationId: 'updateStoreRequisition',
+    operationId: 'updatePendingStoreRequisition',
     tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
@@ -483,6 +488,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
       },
     ],
   })
+  @ApiBody({ type: UpdateStoreRequisitionDto })
   @HttpCode(HttpStatus.OK)
   async update(
     @Req() req: Request,
@@ -523,7 +529,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Submit a store requisition',
     description: 'Submits a draft store requisition into the approval workflow, moving it from draft status to the first approval stage for designated approvers to review.',
-    operationId: 'submitStoreRequisition',
+    operationId: 'submitPendingStoreRequisition',
     tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
@@ -577,7 +583,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Approve a store requisition',
     description: 'Approves a store requisition at the current user\'s workflow stage, advancing it to the next approval level or marking it as fully approved for storeroom fulfillment.',
-    operationId: 'approveStoreRequisition',
+    operationId: 'approvePendingStoreRequisition',
     tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
@@ -631,7 +637,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Reject a store requisition',
     description: 'Rejects a store requisition at the current approval stage, sending it back to the requesting department for revision or cancellation.',
-    operationId: 'rejectStoreRequisition',
+    operationId: 'rejectPendingStoreRequisition',
     tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
@@ -685,7 +691,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Review a store requisition',
     description: 'Allows an approver to review a store requisition and provide feedback or modifications before making a final approve/reject decision on the internal stock request.',
-    operationId: 'reviewStoreRequisition',
+    operationId: 'reviewPendingStoreRequisition',
     tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
@@ -739,7 +745,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a store requisition',
     description: 'Removes a store requisition that is no longer needed, typically a draft or rejected request that the department has decided to discard rather than resubmit.',
-    operationId: 'deleteStoreRequisition',
+    operationId: 'deletePendingStoreRequisition',
     tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [

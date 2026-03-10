@@ -4,7 +4,8 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_RecipeCategoryService } from './config_recipe-category.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { RecipeCategoryCreateRequest, RecipeCategoryUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { BaseHttpController, Serialize } from '@/common';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
@@ -39,7 +40,7 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   @Serialize(RecipeCategoryResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get a recipe category by ID', description: 'Retrieves a specific recipe category used to classify recipes (e.g., Appetizers, Main Course, Desserts, Beverages). Categories help organize the recipe catalog for menu planning and cost analysis.', operationId: 'findOneRecipeCategory', tags: ['Configuration', 'Recipe Category'] })
+  @ApiOperation({ summary: 'Get a recipe category by ID', description: 'Retrieves a specific recipe category used to classify recipes (e.g., Appetizers, Main Course, Desserts, Beverages). Categories help organize the recipe catalog for menu planning and cost analysis.', operationId: 'configRecipeCategory_findOne', tags: ['Configuration', 'Recipe Category'] })
   async findOne(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'findOne', id, version }, Config_RecipeCategoryController.name);
     const { user_id } = ExtractRequestHeader(req);
@@ -56,7 +57,7 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   @Serialize(RecipeCategoryResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all recipe categories', description: 'Returns all recipe categories configured for the business unit. Used to organize recipes by meal type or course for structured menu management and kitchen operations.', operationId: 'findAllRecipeCategories', tags: ['Configuration', 'Recipe Category'] })
+  @ApiOperation({ summary: 'Get all recipe categories', description: 'Returns all recipe categories configured for the business unit. Used to organize recipes by meal type or course for structured menu management and kitchen operations.', operationId: 'configRecipeCategory_findAll', tags: ['Configuration', 'Recipe Category'] })
   @ApiUserFilterQueries()
   async findAll(@Req() req: Request, @Res() res: Response, @Param('bu_code') bu_code: string, @Query() query?: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'findAll', query, version }, Config_RecipeCategoryController.name);
@@ -75,7 +76,8 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   @Serialize(RecipeCategoryResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new recipe category', description: 'Defines a new recipe classification category for organizing the recipe catalog. Recipes can then be assigned to this category for structured menu planning.', operationId: 'createRecipeCategory', tags: ['Configuration', 'Recipe Category'] })
+  @ApiOperation({ summary: 'Create a new recipe category', description: 'Defines a new recipe classification category for organizing the recipe catalog. Recipes can then be assigned to this category for structured menu planning.', operationId: 'configRecipeCategory_create', tags: ['Configuration', 'Recipe Category'] })
+  @ApiBody({ type: RecipeCategoryCreateRequest })
   async create(@Req() req: Request, @Res() res: Response, @Param('bu_code') bu_code: string, @Body() createDto: RecipeCategoryCreateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'create', createDto, version }, Config_RecipeCategoryController.name);
     const { user_id } = ExtractRequestHeader(req);
@@ -92,7 +94,8 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   @Serialize(RecipeCategoryResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update a recipe category', description: 'Fully updates an existing recipe category, such as renaming it. Changes affect how recipes are organized and filtered in the catalog.', operationId: 'updateRecipeCategory', tags: ['Configuration', 'Recipe Category'] })
+  @ApiOperation({ summary: 'Update a recipe category', description: 'Fully updates an existing recipe category, such as renaming it. Changes affect how recipes are organized and filtered in the catalog.', operationId: 'configRecipeCategory_update', tags: ['Configuration', 'Recipe Category'] })
+  @ApiBody({ type: RecipeCategoryUpdateRequest })
   async update(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeCategoryUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'update', id, updateDto, version }, Config_RecipeCategoryController.name);
     const { user_id } = ExtractRequestHeader(req);
@@ -110,7 +113,8 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   @Serialize(RecipeCategoryResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Patch a recipe category', description: 'Partially updates specific fields of a recipe category without replacing the entire record. Useful for toggling active status or making minor adjustments.', operationId: 'patchRecipeCategory', tags: ['Configuration', 'Recipe Category'] })
+  @ApiOperation({ summary: 'Patch a recipe category', description: 'Partially updates specific fields of a recipe category without replacing the entire record. Useful for toggling active status or making minor adjustments.', operationId: 'configRecipeCategory_patch', tags: ['Configuration', 'Recipe Category'] })
+  @ApiBody({ type: RecipeCategoryUpdateRequest })
   async patch(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeCategoryUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'patch', id, updateDto, version }, Config_RecipeCategoryController.name);
     const { user_id } = ExtractRequestHeader(req);
@@ -128,7 +132,7 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   @Serialize(RecipeCategoryResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete a recipe category', description: 'Removes a recipe category from the system. Recipes currently assigned to this category should be reassigned before deletion.', operationId: 'deleteRecipeCategory', tags: ['Configuration', 'Recipe Category'] })
+  @ApiOperation({ summary: 'Delete a recipe category', description: 'Removes a recipe category from the system. Recipes currently assigned to this category should be reassigned before deletion.', operationId: 'configRecipeCategory_delete', tags: ['Configuration', 'Recipe Category'] })
   async delete(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'delete', id, version }, Config_RecipeCategoryController.name);
     const { user_id } = ExtractRequestHeader(req);

@@ -56,6 +56,7 @@ export class CreditTermController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all credit terms',
     description: 'Lists all available vendor payment terms (e.g., Net 30, Net 60, COD), used when setting up vendor agreements and calculating payment due dates on purchase orders.',
+    operationId: 'findAllCreditTerms',
     tags: ['Master Data', 'Credit Term'],
   })
   @ApiUserFilterQueries()
@@ -92,6 +93,7 @@ export class CreditTermController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get a credit term by id',
     description: 'Retrieves the details of a specific payment term including its code, name, and number of days, used when reviewing or assigning vendor payment conditions.',
+    operationId: 'findOneCreditTerm',
     tags: ['Master Data', 'Credit Term'],
   })
   @ApiVersionMinRequest()

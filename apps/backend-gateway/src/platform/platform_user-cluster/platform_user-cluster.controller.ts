@@ -59,7 +59,7 @@ export class Platform_UserClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get user-cluster mapping by ID',
     description: 'Retrieves the details of a specific user-to-organization membership, showing which user belongs to which hotel chain or company and their role within it.',
-    operationId: 'getUserClusterById',
+    operationId: 'platformUserCluster_findOne',
     tags: ['Platform Admin', 'User Cluster'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -104,7 +104,7 @@ export class Platform_UserClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all user-cluster mappings',
     description: 'Lists all user-to-organization memberships across the platform, showing which users belong to which hotel chains or companies. Used to manage and audit organizational-level access control.',
-    operationId: 'getAllUserClusters',
+    operationId: 'platformUserCluster_findAll',
     tags: ['Platform Admin', 'User Cluster'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -150,7 +150,7 @@ export class Platform_UserClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a user-cluster mapping',
     description: 'Adds a user to a hotel chain or company organization, granting them membership at the cluster level. This is typically the first step before assigning the user to individual business units (properties) within that cluster.',
-    operationId: 'createUserCluster',
+    operationId: 'platformUserCluster_create',
     tags: ['Platform Admin', 'User Cluster'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -197,7 +197,7 @@ export class Platform_UserClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a user-cluster mapping',
     description: 'Modifies an existing user-to-organization membership, such as changing the user\'s role or access level within a hotel chain or company.',
-    operationId: 'updateUserCluster',
+    operationId: 'platformUserCluster_update',
     tags: ['Platform Admin', 'User Cluster'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -250,7 +250,7 @@ export class Platform_UserClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a user-cluster mapping',
     description: 'Removes a user\'s membership from a hotel chain or company organization. This revokes their organizational-level access and may cascade to remove their business unit assignments within that cluster.',
-    operationId: 'deleteUserCluster',
+    operationId: 'platformUserCluster_delete',
     tags: ['Platform Admin', 'User Cluster'],
     deprecated: false,
     security: [{ bearerAuth: [] }],

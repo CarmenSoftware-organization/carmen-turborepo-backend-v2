@@ -27,7 +27,6 @@ import {
 import {
   ApiBearerAuth,
   ApiOperation,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
@@ -60,6 +59,7 @@ export class DepartmentController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all departments',
     description: 'Lists all hotel departments (e.g., Kitchen, F&B, Housekeeping) within the business unit, used to assign requisitions, track departmental consumption, and allocate procurement costs.',
+    operationId: 'findAllDepartments',
     tags: ['Master Data', 'Department'],
   })
   @HttpCode(HttpStatus.OK)
@@ -102,6 +102,7 @@ export class DepartmentController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get a department by id',
     description: 'Retrieves the details of a specific hotel department, including its code, name, and active status, for use in procurement and inventory assignment workflows.',
+    operationId: 'findOneDepartment',
     tags: ['Master Data', 'Department'],
   })
   @HttpCode(HttpStatus.OK)

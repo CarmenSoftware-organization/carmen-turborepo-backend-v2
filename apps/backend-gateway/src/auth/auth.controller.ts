@@ -36,7 +36,6 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { KeycloakGuard } from './guards/keycloak.guard';
-import { Glob } from 'bun';
 import { ExceptionFilter } from 'src/exception/exception.fillter';
 import { IgnoreGuards } from './decorators/ignore-guard.decorator';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
@@ -82,7 +81,7 @@ export class AuthController {
     summary: 'Login',
     description: 'Authenticates a user against Keycloak using email and password credentials, returning JWT access and refresh tokens for subsequent API requests across all ERP modules.',
     operationId: 'login',
-    tags: ['Authentication', 'Auth'],
+    tags: ['Authentication'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -126,11 +125,21 @@ export class AuthController {
   @ApiVersionMinRequest()
   @UseGuards(KeycloakGuard)
   @ApiBearerAuth()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        refresh_token: { type: 'string', description: 'Refresh token to invalidate', example: 'eyJhbGciOi...' },
+      },
+    },
+    description: 'Logout request body',
+    required: false,
+  })
   @ApiOperation({
     summary: 'Logout',
     description: 'Terminates the user\'s authenticated session by invalidating their Keycloak tokens, ensuring they can no longer access ERP resources until they log in again.',
     operationId: 'logout',
-    tags: ['Authentication', 'Auth'],
+    tags: ['Authentication'],
     deprecated: false,
     security: [
       {
@@ -206,7 +215,7 @@ export class AuthController {
     summary: 'Register',
     description: 'Creates a new user account in both Keycloak and the Carmen platform. Used to onboard new hotel staff such as purchasers, department heads, or property managers into the ERP system.',
     operationId: 'register',
-    tags: ['Authentication', 'Auth'],
+    tags: ['Authentication'],
     deprecated: false,
     security: [
       {
@@ -255,12 +264,14 @@ export class AuthController {
   @Post('invite-user')
   @UseGuards(KeycloakGuard)
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
   @ApiVersionMinRequest()
+  @ApiBody({ type: InviteUserDto, description: 'Email of the user to invite' })
   @ApiOperation({
     summary: 'Invite User',
     description: 'Sends an invitation to a new user to join the Carmen ERP platform. The invited user receives a registration link to complete their account setup and gain access to assigned hotel properties.',
     operationId: 'inviteUser',
-    tags: ['Authentication', 'Auth'],
+    tags: ['Authentication'],
     deprecated: false,
     security: [
       {
@@ -310,11 +321,12 @@ export class AuthController {
   @IgnoreGuards(KeycloakGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
+  @ApiBody({ type: RegisterConfirmDto, description: 'Registration confirmation with token and user info' })
   @ApiOperation({
     summary: 'Register Confirm',
     description: 'Completes the registration process for an invited user by verifying their invitation token and activating their account in the Carmen ERP platform.',
     operationId: 'registerConfirm',
-    tags: ['Authentication', 'Auth'],
+    tags: ['Authentication'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -369,11 +381,21 @@ export class AuthController {
    */
   @Post('refresh-token')
   @ApiVersionMinRequest()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['refresh_token'],
+      properties: {
+        refresh_token: { type: 'string', description: 'Refresh token from login response', example: 'eyJhbGciOi...' },
+      },
+    },
+    description: 'Refresh token request body',
+  })
   @ApiOperation({
     summary: 'Refresh Token',
     description: 'Exchanges an expired or expiring access token for a new one using the refresh token, maintaining the user\'s authenticated session without requiring them to log in again.',
     operationId: 'refreshToken',
-    tags: ['Authentication', 'Auth'],
+    tags: ['Authentication'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -431,7 +453,7 @@ export class AuthController {
     description:
       'Initiates the password recovery flow for a user who has forgotten their credentials. Sends a password reset email with a secure token link to the registered email address.',
     operationId: 'forgotPassword',
-    tags: ['Authentication', 'Auth'],
+    tags: ['Authentication'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -489,7 +511,7 @@ export class AuthController {
     summary: 'Reset Password with Token',
     description: 'Completes the password recovery process by setting a new password using the secure token received via the forgot-password email. The token is single-use and time-limited for security.',
     operationId: 'resetPasswordWithToken',
-    tags: ['Authentication', 'Auth'],
+    tags: ['Authentication'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -574,7 +596,7 @@ export class AuthController {
     summary: 'Reset Password',
     description: 'Allows a platform administrator to forcibly reset another user\'s password without requiring the user\'s current password. Used for support scenarios when hotel staff are locked out of their accounts.',
     operationId: 'resetPassword',
-    tags: ['Authentication', 'Auth'],
+    tags: ['Authentication'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -638,7 +660,7 @@ export class AuthController {
     description:
       'Allows an authenticated user to change their own password by providing their current password for verification. This is the standard self-service password update flow for ERP users.',
     operationId: 'changePassword',
-    tags: ['Authentication', 'Auth'],
+    tags: ['Authentication'],
     deprecated: false,
     security: [
       {
@@ -707,6 +729,18 @@ export class AuthController {
    */
   @Get('test-notification')
   @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get all users (test)',
+    description: 'Retrieves all platform users for notification testing purposes. This is a development/test endpoint.',
+    operationId: 'getAllUsersTest',
+    tags: ['Authentication'],
+    deprecated: true,
+    responses: {
+      200: {
+        description: 'Users retrieved successfully',
+      },
+    },
+  })
   async getAllUsers(@Query('version') version: string = 'latest') {
     // get all user in tb_user
     return this.authService.getAllUsers(version);

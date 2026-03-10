@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { PriceListService } from './price-list.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -40,6 +40,11 @@ import {
   isValidDate,
   toISOStringOrThrow,
 } from '@/common';
+import {
+  PriceListCreateRequestDto,
+  PriceListUpdateRequestDto,
+  PriceCompareQueryDto,
+} from './swagger/request';
 
 @Controller('api/:bu_code/price-list')
 @ApiTags('Procurement')
@@ -133,7 +138,7 @@ export class PriceListController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get price list by ID',
     description: 'Retrieves the full details of a vendor price list including all product prices, validity dates, and terms, used when reviewing or editing procurement pricing agreements.',
-    operationId: 'findOnePriceList',
+    operationId: 'findOnePriceListByBusinessUnit',
     tags: ['Procurement', 'Price List'],
     deprecated: false,
     security: [
@@ -189,10 +194,10 @@ export class PriceListController extends BaseHttpController {
   @ApiBearerAuth()
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Get price list by user ID',
+    summary: 'Get all price lists',
     description:
       'Lists all active vendor price lists for the business unit, allowing procurement staff to browse current pricing agreements and compare vendor offerings.',
-    operationId: 'findAllByUserId',
+    operationId: 'findAllPriceListsByBusinessUnit',
     tags: ['Procurement', 'Price List'],
     deprecated: false,
     parameters: [
@@ -206,31 +211,7 @@ export class PriceListController extends BaseHttpController {
     ],
     responses: {
       200: {
-        description: 'Price list was successfully retrieved',
-        content: {
-          'application/json': {
-            schema: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  id: { type: 'string' },
-                  vendor_id: { type: 'string' },
-                  vendor_name: { type: 'string' },
-                  product_id: { type: 'string' },
-                  product_name: { type: 'string' },
-                  price: { type: 'number' },
-                  price_with_vat: { type: 'number' },
-                  price_without_vat: { type: 'number' },
-                  from_date: { type: 'string', format: 'date-time' },
-                  to_date: { type: 'string', format: 'date-time' },
-                  created_at: { type: 'string', format: 'date-time' },
-                  updated_at: { type: 'string', format: 'date-time' },
-                },
-              },
-            },
-          },
-        },
+        description: 'Price lists were successfully retrieved',
       },
     },
   })
@@ -268,7 +249,7 @@ export class PriceListController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a new price list',
     description: 'Records a new vendor price list with product prices and validity dates, establishing the pricing basis for procurement purchase orders and cost comparison.',
-    operationId: 'createPriceList',
+    operationId: 'createPriceListByBusinessUnit',
     tags: ['Procurement', 'Price List'],
     deprecated: false,
     security: [
@@ -285,6 +266,7 @@ export class PriceListController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: PriceListCreateRequestDto })
   async create(
     @Body() data: PriceListCreateDto,
     @Param('bu_code') bu_code: string,
@@ -318,7 +300,7 @@ export class PriceListController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a price list',
     description: 'Modifies an existing vendor price list, such as adjusting product prices, extending validity dates, or correcting pricing errors in procurement agreements.',
-    operationId: 'updatePriceList',
+    operationId: 'updatePriceListByBusinessUnit',
     tags: ['Procurement', 'Price List'],
     deprecated: false,
     security: [
@@ -342,6 +324,7 @@ export class PriceListController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: PriceListUpdateRequestDto })
   async update(
     @Param('id') id: string,
     @Body() data: PriceListUpdateDto,
@@ -377,7 +360,7 @@ export class PriceListController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a price list',
     description: 'Removes an outdated or incorrect vendor price list from active use. Historical pricing data is retained for audit purposes.',
-    operationId: 'deletePriceList',
+    operationId: 'deletePriceListByBusinessUnit',
     tags: ['Procurement', 'Price List'],
     deprecated: false,
     security: [

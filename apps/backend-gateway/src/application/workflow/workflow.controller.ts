@@ -44,7 +44,16 @@ export class WorkflowController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get all workflow types', tags: ['Workflow & Approval', 'Workflow'] })
+  @ApiOperation({
+    summary: 'Get workflow by type',
+    description: 'Retrieves the configurable approval workflow for a given document type (e.g., purchase request, store requisition), including approval stages and assigned roles.',
+    operationId: 'findWorkflowByType',
+    tags: ['Workflow & Approval', 'Workflow'],
+    responses: {
+      200: { description: 'Workflow retrieved successfully' },
+      404: { description: 'Workflow not found for the specified type' },
+    },
+  })
   async findByType(
     @Req() req: Request,
     @Res() res: Response,
@@ -81,7 +90,16 @@ export class WorkflowController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get previous stages of a workflow', tags: ['Workflow & Approval', 'Workflow'] })
+  @ApiOperation({
+    summary: 'Get previous stages of a workflow',
+    description: 'Retrieves the previous approval stages of a workflow relative to the current stage, used to determine revert/return-to options in the approval chain.',
+    operationId: 'getWorkflowPreviousStages',
+    tags: ['Workflow & Approval', 'Workflow'],
+    responses: {
+      200: { description: 'Previous workflow stages retrieved successfully' },
+      404: { description: 'Workflow not found' },
+    },
+  })
   async getPreviousStages(
     @Req() req: Request,
     @Res() res: Response,

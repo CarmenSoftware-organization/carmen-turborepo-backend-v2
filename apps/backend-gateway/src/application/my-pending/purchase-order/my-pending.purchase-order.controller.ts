@@ -59,7 +59,7 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
     ],
     responses: {
       200: {
-        description: 'The purchase orders were successfully retrieved',
+        description: 'Pending purchase order count retrieved successfully',
         content: {
           'application/json': {
             examples: {
@@ -77,7 +77,7 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
         },
       },
       404: {
-        description: 'The purchase orders were not found',
+        description: 'No pending purchase orders found',
         content: {
           'application/json': {
             examples: {
@@ -128,7 +128,7 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get a purchase order by ID',
     description: 'Retrieves the full details of a specific purchase order pending approval, including vendor information, ordered items, quantities, pricing, and current approval workflow stage.',
-    operationId: 'findPurchaseOrderById',
+    operationId: 'findPendingPurchaseOrderById',
     tags: ['Workflow & Approval', 'My Pending - Purchase Order'],
     deprecated: false,
     parameters: [
@@ -191,7 +191,7 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all purchase orders',
     description: 'Lists all purchase orders in the user\'s pending approval queue with pagination, allowing approvers to review and process vendor orders awaiting authorization before goods are procured.',
-    operationId: 'findAllPurchaseOrders',
+    operationId: 'findAllPendingPurchaseOrders',
     tags: ['Workflow & Approval', 'My Pending - Purchase Order'],
     deprecated: false,
     parameters: [

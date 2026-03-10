@@ -16,8 +16,8 @@ export class CurrencyListItemResponseDto {
   @ApiPropertyOptional({ description: 'Currency description', example: 'United States Dollar' })
   description?: string;
 
-  @ApiPropertyOptional({ description: 'Number of decimal places', example: 2 })
-  decimal_places?: number;
+  @ApiPropertyOptional({ description: 'Whether this is the default currency', example: false })
+  is_default?: boolean;
 
   @ApiPropertyOptional({ description: 'Whether the currency is active', example: true })
   is_active?: boolean;
@@ -25,8 +25,11 @@ export class CurrencyListItemResponseDto {
   @ApiPropertyOptional({ description: 'Exchange rate relative to base currency', example: 1.0 })
   exchange_rate?: number;
 
-  @ApiPropertyOptional({ description: 'Exchange rate timestamp', example: '2026-03-10T00:00:00.000Z' })
-  exchange_rate_at?: Date;
+  @ApiPropertyOptional({ description: 'Additional info (JSON)', example: {} })
+  info?: unknown;
+
+  @ApiPropertyOptional({ description: 'Dimension data (JSON)', example: [] })
+  dimension?: unknown;
 
   @ApiPropertyOptional({ description: 'Created timestamp', example: '2026-03-10T00:00:00.000Z' })
   created_at?: Date;
@@ -35,19 +38,7 @@ export class CurrencyListItemResponseDto {
   updated_at?: Date;
 }
 
-export class CurrencyDetailResponseDto extends CurrencyListItemResponseDto {
-  @ApiPropertyOptional({ description: 'Additional notes', example: 'Default currency for US operations' })
-  note?: string;
-
-  @ApiPropertyOptional({ description: 'Additional info (JSON)', example: {} })
-  info?: unknown;
-
-  @ApiPropertyOptional({ description: 'Dimension data (JSON)', example: [] })
-  dimension?: unknown;
-
-  @ApiPropertyOptional({ description: 'Created by user ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  created_by_id?: string;
-
-  @ApiPropertyOptional({ description: 'Updated by user ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  updated_by_id?: string;
-}
+/**
+ * Detail and list schemas are identical for currencies (both use CurrencyResponseSchema).
+ */
+export class CurrencyDetailResponseDto extends CurrencyListItemResponseDto {}

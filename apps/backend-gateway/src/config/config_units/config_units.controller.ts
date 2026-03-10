@@ -18,6 +18,7 @@ import {
 import { Response } from 'express';
 import { Config_UnitsService } from './config_units.service';
 import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UnitCreateRequestDto, UnitUpdateRequestDto } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   BaseHttpController,
@@ -67,7 +68,7 @@ export class Config_UnitsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get a unit by ID',
     description: 'Retrieves a specific unit of measurement definition (e.g., kg, litre, piece, case) used for product ordering, inventory counting, and recipe ingredient quantities.',
-    operationId: 'findOneUnit',
+    operationId: 'configUnits_findOne',
     tags: ['Configuration', 'Units'],
     responses: { 200: { description: 'Unit retrieved successfully' } },
   })
@@ -104,7 +105,7 @@ export class Config_UnitsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all units',
     description: 'Returns all configured units of measurement available in the system. These units are referenced by products, recipes, and procurement documents to ensure consistent quantity tracking.',
-    operationId: 'findAllUnits',
+    operationId: 'configUnits_findAll',
     tags: ['Configuration', 'Units'],
     responses: { 200: { description: 'Units retrieved successfully' } },
   })
@@ -146,10 +147,11 @@ export class Config_UnitsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a new unit',
     description: 'Defines a new unit of measurement (e.g., kg, litre, dozen, case) in the system. The unit becomes available for assignment to products, recipe ingredients, and procurement documents.',
-    operationId: 'createUnit',
+    operationId: 'configUnits_create',
     tags: ['Configuration', 'Units'],
     responses: { 201: { description: 'Unit created successfully' } },
   })
+  @ApiBody({ type: UnitCreateRequestDto })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -186,10 +188,11 @@ export class Config_UnitsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a unit',
     description: 'Modifies an existing unit of measurement definition, such as updating its name or conversion factors. Changes affect how quantities are displayed across procurement and inventory modules.',
-    operationId: 'updateUnit',
+    operationId: 'configUnits_update',
     tags: ['Configuration', 'Units'],
     responses: { 200: { description: 'Unit updated successfully' } },
   })
+  @ApiBody({ type: UnitUpdateRequestDto })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -228,7 +231,7 @@ export class Config_UnitsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a unit',
     description: 'Removes a unit of measurement from the system. The unit will no longer be available for new product or procurement configurations, but existing references in historical data are preserved.',
-    operationId: 'deleteUnit',
+    operationId: 'configUnits_delete',
     tags: ['Configuration', 'Units'],
     responses: { 200: { description: 'Unit deleted successfully' } },
   })

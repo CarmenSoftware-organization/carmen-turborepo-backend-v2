@@ -18,9 +18,16 @@ import { Response } from 'express';
 import { StockInService } from './stock-in.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import {
+  CreateStockInSwaggerDto,
+  UpdateStockInSwaggerDto,
+  CreateStockInDetailSwaggerDto,
+  UpdateStockInDetailSwaggerDto,
+} from './swagger/request';
 import {
   BaseHttpController,
   Serialize,
@@ -147,6 +154,7 @@ export class StockInController extends BaseHttpController {
       400: { description: 'Invalid request body' },
     },
   })
+  @ApiBody({ type: CreateStockInSwaggerDto })
   async create(
     @Body() createDto: StockInCreateDto,
     @Param('bu_code') bu_code: string,
@@ -183,6 +191,7 @@ export class StockInController extends BaseHttpController {
       404: { description: 'The Stock In was not found' },
     },
   })
+  @ApiBody({ type: UpdateStockInSwaggerDto })
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -335,6 +344,7 @@ export class StockInController extends BaseHttpController {
       404: { description: 'Stock In not found' },
     },
   })
+  @ApiBody({ type: CreateStockInDetailSwaggerDto })
   @HttpCode(HttpStatus.CREATED)
   async createDetail(
     @Param('id') id: string,
@@ -376,6 +386,7 @@ export class StockInController extends BaseHttpController {
       404: { description: 'Stock In detail not found' },
     },
   })
+  @ApiBody({ type: UpdateStockInDetailSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async updateDetail(
     @Param('id') id: string,

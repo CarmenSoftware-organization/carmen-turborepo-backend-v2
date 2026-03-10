@@ -17,9 +17,16 @@ import { Response } from 'express';
 import { PhysicalCountService } from './physical-count.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import {
+  PhysicalCountCreateRequestDto,
+  PhysicalCountUpdateRequestDto,
+  PhysicalCountSaveItemsRequestDto,
+  PhysicalCountDetailCommentRequestDto,
+} from './swagger/request';
 import {
   BaseHttpController,
 } from '@/common';
@@ -206,6 +213,7 @@ export class PhysicalCountController extends BaseHttpController {
       400: { description: 'Invalid request body' },
     },
   })
+  @ApiBody({ type: PhysicalCountCreateRequestDto })
   async create(
     @Body() createDto: PhysicalCountCreateDto,
     @Param('bu_code') bu_code: string,
@@ -254,6 +262,7 @@ export class PhysicalCountController extends BaseHttpController {
       404: { description: 'Physical count not found' },
     },
   })
+  @ApiBody({ type: PhysicalCountUpdateRequestDto })
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -479,6 +488,7 @@ export class PhysicalCountController extends BaseHttpController {
       404: { description: 'Physical Count not found' },
     },
   })
+  @ApiBody({ type: PhysicalCountSaveItemsRequestDto })
   @HttpCode(HttpStatus.OK)
   async saveItems(
     @Param('id') id: string,
@@ -522,6 +532,7 @@ export class PhysicalCountController extends BaseHttpController {
       404: { description: 'Physical Count not found' },
     },
   })
+  @ApiBody({ type: PhysicalCountSaveItemsRequestDto })
   @HttpCode(HttpStatus.OK)
   async reviewItems(
     @Param('id') id: string,
@@ -649,6 +660,7 @@ export class PhysicalCountController extends BaseHttpController {
       404: { description: 'Physical Count detail not found' },
     },
   })
+  @ApiBody({ type: PhysicalCountDetailCommentRequestDto })
   @HttpCode(HttpStatus.CREATED)
   async createComment(
     @Param('id') id: string,

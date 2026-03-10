@@ -18,6 +18,7 @@ import {
 import { Response } from 'express';
 import { Config_VendorsService } from './config_vendors.service';
 import { ApiTags, ApiBearerAuth, ApiBody, ApiHeader, ApiOperation } from '@nestjs/swagger';
+import { VendorCreateRequestDto, VendorUpdateRequestDto } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   IUpdateVendor,
@@ -67,7 +68,7 @@ export class Config_VendorsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get a vendor by ID',
     description: 'Retrieves complete vendor/supplier master data including company details, contact information, and payment terms. Used to view a specific supplier profile for procurement operations.',
-    operationId: 'findOneVendor',
+    operationId: 'configVendors_findOne',
     tags: ['Configuration', 'Vendors'],
     responses: { 200: { description: 'Vendor retrieved successfully' } },
   })
@@ -104,7 +105,7 @@ export class Config_VendorsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all vendors',
     description: 'Returns a paginated list of all registered vendors/suppliers. Used by procurement staff and administrators to browse the approved vendor directory for sourcing and purchase order creation.',
-    operationId: 'findAllVendors',
+    operationId: 'configVendors_findAll',
     tags: ['Configuration', 'Vendors'],
     responses: { 200: { description: 'Vendors retrieved successfully' } },
   })
@@ -146,10 +147,11 @@ export class Config_VendorsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a new vendor',
     description: 'Registers a new vendor/supplier in the system with their company details, contact information, and payment terms. Once created, the vendor becomes available for selection in purchase orders and price lists.',
-    operationId: 'createVendor',
+    operationId: 'configVendors_create',
     tags: ['Configuration', 'Vendors'],
     responses: { 201: { description: 'Vendor created successfully' } },
   })
+  @ApiBody({ type: VendorCreateRequestDto })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -187,10 +189,11 @@ export class Config_VendorsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a vendor',
     description: 'Updates an existing vendor/supplier record, such as modifying contact details, payment terms, or business classification. Changes apply to all future procurement transactions with this vendor.',
-    operationId: 'updateVendor',
+    operationId: 'configVendors_update',
     tags: ['Configuration', 'Vendors'],
     responses: { 200: { description: 'Vendor updated successfully' } },
   })
+  @ApiBody({ type: VendorUpdateRequestDto })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -229,7 +232,7 @@ export class Config_VendorsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a vendor',
     description: 'Removes a vendor/supplier from the active directory. The vendor will no longer be available for new purchase orders, but historical procurement records are preserved.',
-    operationId: 'deleteVendor',
+    operationId: 'configVendors_delete',
     tags: ['Configuration', 'Vendors'],
     responses: { 200: { description: 'Vendor deleted successfully' } },
   })

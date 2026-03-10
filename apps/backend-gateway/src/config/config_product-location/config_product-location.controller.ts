@@ -44,7 +44,7 @@ export class Config_ProductLocationController {
   @UseGuards(new AppIdGuard('productLocation.getLocationsByProductId'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get locations by product ID', description: 'Retrieves all storage locations where a specific product is stocked or available. This product-to-location mapping is essential for inventory tracking, replenishment, and stock transfer planning.', operationId: 'getLocationsByProductId', tags: ['Configuration', 'Product Location'] })
+  @ApiOperation({ summary: 'Get locations by product ID', description: 'Retrieves all storage locations where a specific product is stocked or available. This product-to-location mapping is essential for inventory tracking, replenishment, and stock transfer planning.', operationId: 'configProductLocation_findByProductId', tags: ['Configuration', 'Product Location'] })
   async getLocationsByProductId(
     @Param('productId') productId: string,
     @Param('bu_code') bu_code: string,

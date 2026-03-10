@@ -22,7 +22,7 @@ export class ConfigCronjobController extends BaseHttpController {
    */
   @Get()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all cron jobs', description: 'Returns all scheduled tasks configured in the system, such as automated report generation, inventory recalculations, and periodic data synchronization jobs.', tags: ['Configuration', 'Cronjob'] })
+  @ApiOperation({ summary: 'Get all cron jobs', description: 'Returns all scheduled tasks configured in the system, such as automated report generation, inventory recalculations, and periodic data synchronization jobs.', operationId: 'configCronjob_findAll', tags: ['Configuration', 'Cronjob'] })
   @ApiResponse({ status: 200, description: 'Successfully retrieved all cron jobs' })
   @ApiResponse({ status: 503, description: 'Failed to connect to cronjob service' })
   async getAll(@Res() res: Response): Promise<void> {
@@ -37,7 +37,7 @@ export class ConfigCronjobController extends BaseHttpController {
    */
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get cron job by ID', description: 'Retrieves the configuration details of a specific scheduled task, including its cron schedule expression, execution status, and last run information.', tags: ['Configuration', 'Cronjob'] })
+  @ApiOperation({ summary: 'Get cron job by ID', description: 'Retrieves the configuration details of a specific scheduled task, including its cron schedule expression, execution status, and last run information.', operationId: 'configCronjob_findOne', tags: ['Configuration', 'Cronjob'] })
   @ApiParam({ name: 'id', description: 'Cron job ID', example: 'cron_123' })
   @ApiResponse({ status: 200, description: 'Successfully retrieved cron job' })
   @ApiResponse({ status: 404, description: 'Cron job not found' })
@@ -53,7 +53,7 @@ export class ConfigCronjobController extends BaseHttpController {
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create new cron job', description: 'Creates a new scheduled task with a cron schedule expression and task configuration. Used to automate recurring operations like report generation, data cleanup, or inventory snapshots.', tags: ['Configuration', 'Cronjob'] })
+  @ApiOperation({ summary: 'Create new cron job', description: 'Creates a new scheduled task with a cron schedule expression and task configuration. Used to automate recurring operations like report generation, data cleanup, or inventory snapshots.', operationId: 'configCronjob_create', tags: ['Configuration', 'Cronjob'] })
   @ApiBody({ type: CreateCronjobDto })
   @ApiResponse({ status: 201, description: 'Cron job created successfully' })
   @ApiResponse({ status: 400, description: 'Invalid request data' })
@@ -69,7 +69,7 @@ export class ConfigCronjobController extends BaseHttpController {
    */
   @Put(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update cron job', description: 'Modifies an existing scheduled task configuration, such as changing its cron schedule, task parameters, or enabling/disabling the job.', tags: ['Configuration', 'Cronjob'] })
+  @ApiOperation({ summary: 'Update cron job', description: 'Modifies an existing scheduled task configuration, such as changing its cron schedule, task parameters, or enabling/disabling the job.', operationId: 'configCronjob_update', tags: ['Configuration', 'Cronjob'] })
   @ApiParam({ name: 'id', description: 'Cron job ID', example: 'cron_123' })
   @ApiBody({ type: UpdateCronjobDto })
   @ApiResponse({ status: 200, description: 'Cron job updated successfully' })
@@ -86,7 +86,7 @@ export class ConfigCronjobController extends BaseHttpController {
    */
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete cron job', description: 'Permanently removes a scheduled task from the system and stops it from executing. Use this to clean up tasks that are no longer needed.', tags: ['Configuration', 'Cronjob'] })
+  @ApiOperation({ summary: 'Delete cron job', description: 'Permanently removes a scheduled task from the system and stops it from executing. Use this to clean up tasks that are no longer needed.', operationId: 'configCronjob_delete', tags: ['Configuration', 'Cronjob'] })
   @ApiParam({ name: 'id', description: 'Cron job ID', example: 'cron_123' })
   @ApiResponse({ status: 200, description: 'Cron job deleted successfully' })
   @ApiResponse({ status: 404, description: 'Cron job not found' })
@@ -101,7 +101,7 @@ export class ConfigCronjobController extends BaseHttpController {
    */
   @Post(':id/start')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Start cron job', description: 'Activates a scheduled task so it begins executing according to its cron schedule. The task will run automatically at the configured intervals until stopped.', tags: ['Configuration', 'Cronjob'] })
+  @ApiOperation({ summary: 'Start cron job', description: 'Activates a scheduled task so it begins executing according to its cron schedule. The task will run automatically at the configured intervals until stopped.', operationId: 'configCronjob_start', tags: ['Configuration', 'Cronjob'] })
   @ApiParam({ name: 'id', description: 'Cron job ID', example: 'cron_123' })
   @ApiResponse({ status: 200, description: 'Cron job started successfully' })
   @ApiResponse({ status: 404, description: 'Cron job not found' })
@@ -116,7 +116,7 @@ export class ConfigCronjobController extends BaseHttpController {
    */
   @Post(':id/stop')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Stop cron job', description: 'Pauses a running scheduled task without deleting it. The task remains configured and can be restarted later without losing its settings.', tags: ['Configuration', 'Cronjob'] })
+  @ApiOperation({ summary: 'Stop cron job', description: 'Pauses a running scheduled task without deleting it. The task remains configured and can be restarted later without losing its settings.', operationId: 'configCronjob_stop', tags: ['Configuration', 'Cronjob'] })
   @ApiParam({ name: 'id', description: 'Cron job ID', example: 'cron_123' })
   @ApiResponse({ status: 200, description: 'Cron job stopped successfully' })
   @ApiResponse({ status: 404, description: 'Cron job not found' })
@@ -132,7 +132,7 @@ export class ConfigCronjobController extends BaseHttpController {
    */
   @Post(':id/execute')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Execute cron job immediately', description: 'Manually triggers a scheduled task to run immediately, bypassing the cron schedule. Useful for testing task configurations or running on-demand operations like urgent report generation.', tags: ['Configuration', 'Cronjob'] })
+  @ApiOperation({ summary: 'Execute cron job immediately', description: 'Manually triggers a scheduled task to run immediately, bypassing the cron schedule. Useful for testing task configurations or running on-demand operations like urgent report generation.', operationId: 'configCronjob_execute', tags: ['Configuration', 'Cronjob'] })
   @ApiParam({ name: 'id', description: 'Cron job ID', example: 'cron_123' })
   @ApiResponse({ status: 200, description: 'Cron job executed successfully' })
   @ApiResponse({ status: 404, description: 'Cron job not found' })
@@ -148,7 +148,7 @@ export class ConfigCronjobController extends BaseHttpController {
    */
   @Get('debug/memory')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get active jobs in memory', description: 'Returns diagnostic information about all scheduled tasks currently loaded and active in the application memory. Used for system monitoring and troubleshooting job execution issues.', tags: ['Configuration', 'Cronjob'] })
+  @ApiOperation({ summary: 'Get active jobs in memory', description: 'Returns diagnostic information about all scheduled tasks currently loaded and active in the application memory. Used for system monitoring and troubleshooting job execution issues.', operationId: 'configCronjob_getActiveInMemory', tags: ['Configuration', 'Cronjob'] })
   @ApiResponse({ status: 200, description: 'Successfully retrieved active jobs in memory' })
   @ApiResponse({ status: 503, description: 'Failed to connect to cronjob service' })
   async getActiveInMemory(@Res() res: Response): Promise<void> {

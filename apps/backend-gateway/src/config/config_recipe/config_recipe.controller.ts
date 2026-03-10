@@ -16,7 +16,8 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_RecipeService } from './config_recipe.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { RecipeCreateRequestDto, RecipeUpdateRequestDto } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { BaseHttpController, Serialize } from '@/common';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
@@ -61,8 +62,9 @@ export class Config_RecipeController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get a recipe by ID',
     description: 'Retrieves a specific recipe with its full ingredient list, quantities, preparation steps, and yield information. Used by kitchen and F&B teams to manage standardized recipes for cost control.',
-    operationId: 'findOneRecipe',
+    operationId: 'configRecipe_findOne',
     tags: ['Configuration', 'Recipe'],
+    responses: { 200: { description: 'Recipe retrieved successfully' } },
   })
   async findOne(
     @Req() req: Request,
@@ -92,8 +94,9 @@ export class Config_RecipeController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all recipes',
     description: 'Returns all configured recipes with their ingredient compositions. Used by administrators and chefs to manage the recipe catalog for menu costing and ingredient demand forecasting.',
-    operationId: 'findAllRecipes',
+    operationId: 'configRecipe_findAll',
     tags: ['Configuration', 'Recipe'],
+    responses: { 200: { description: 'Recipes retrieved successfully' } },
   })
   @ApiUserFilterQueries()
   async findAll(
@@ -125,9 +128,11 @@ export class Config_RecipeController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a new recipe',
     description: 'Creates a new recipe linking products as ingredients with specified quantities and preparation steps. The recipe can then be used for menu costing, food cost analysis, and inventory consumption tracking.',
-    operationId: 'createRecipe',
+    operationId: 'configRecipe_create',
     tags: ['Configuration', 'Recipe'],
+    responses: { 201: { description: 'Recipe created successfully' } },
   })
+  @ApiBody({ type: RecipeCreateRequestDto })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -155,9 +160,11 @@ export class Config_RecipeController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a recipe',
     description: 'Fully updates a recipe including its ingredient list, quantities, and preparation instructions. Changes are reflected in menu cost calculations and ingredient demand projections.',
-    operationId: 'updateRecipe',
+    operationId: 'configRecipe_update',
     tags: ['Configuration', 'Recipe'],
+    responses: { 200: { description: 'Recipe updated successfully' } },
   })
+  @ApiBody({ type: RecipeUpdateRequestDto })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -188,9 +195,11 @@ export class Config_RecipeController extends BaseHttpController {
   @ApiOperation({
     summary: 'Patch a recipe',
     description: 'Partially updates specific fields of a recipe without replacing the entire record. Useful for adjusting individual ingredient quantities or toggling active status.',
-    operationId: 'patchRecipe',
+    operationId: 'configRecipe_patch',
     tags: ['Configuration', 'Recipe'],
+    responses: { 200: { description: 'Recipe patched successfully' } },
   })
+  @ApiBody({ type: RecipeUpdateRequestDto })
   async patch(
     @Req() req: Request,
     @Res() res: Response,
@@ -220,8 +229,9 @@ export class Config_RecipeController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a recipe',
     description: 'Removes a recipe from the active catalog. The recipe will no longer be used for menu costing or ingredient consumption calculations, but historical cost data is preserved.',
-    operationId: 'deleteRecipe',
+    operationId: 'configRecipe_delete',
     tags: ['Configuration', 'Recipe'],
+    responses: { 200: { description: 'Recipe deleted successfully' } },
   })
   async delete(
     @Req() req: Request,

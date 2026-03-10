@@ -6,13 +6,16 @@ import { ZodSerializerInterceptor, BaseHttpController } from '@/common';
 import { AssignUserApplicationRoleDto, RemoveUserApplicationRoleDto, UpdateUserApplicationRoleDto } from './dto/user_application_role.dto';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AssignUserApplicationRoleRequest, UpdateUserApplicationRoleRequest, RemoveUserApplicationRoleRequest } from './swagger/request';
+import { ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/config/:bu_code/user-application-roles')
 @ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
+@ApiBearerAuth()
 export class ConfigUserApplicationRoleController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(
     ConfigUserApplicationRoleController.name,
@@ -30,7 +33,8 @@ export class ConfigUserApplicationRoleController extends BaseHttpController {
    */
   @Get(':user_id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get application roles by user ID', description: 'Retrieves all application roles assigned to a specific user, determining their system access permissions (e.g., Admin, Manager, Purchaser, Requestor).', operationId: 'findUserApplicationRolesByUser', tags: ['Configuration', 'User Application Role'] })
+  @ApiVersionMinRequest()
+  @ApiOperation({ summary: 'Get application roles by user ID', description: 'Retrieves all application roles assigned to a specific user, determining their system access permissions (e.g., Admin, Manager, Purchaser, Requestor).', operationId: 'configUserApplicationRole_findByUser', tags: ['Configuration', 'User Application Role'] })
   async findByUser(
     @Req() req: Request,
     @Res() res: Response,
@@ -60,7 +64,9 @@ export class ConfigUserApplicationRoleController extends BaseHttpController {
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Assign application roles to a user', description: 'Assigns one or more application roles to a user, granting them the associated permissions and access rights within the procurement and inventory system.', operationId: 'assignUserApplicationRole', tags: ['Configuration', 'User Application Role'] })
+  @ApiVersionMinRequest()
+  @ApiOperation({ summary: 'Assign application roles to a user', description: 'Assigns one or more application roles to a user, granting them the associated permissions and access rights within the procurement and inventory system.', operationId: 'configUserApplicationRole_assign', tags: ['Configuration', 'User Application Role'] })
+  @ApiBody({ type: AssignUserApplicationRoleRequest })
   async assign(
     @Req() req: Request,
     @Res() res: Response,
@@ -90,7 +96,9 @@ export class ConfigUserApplicationRoleController extends BaseHttpController {
    */
   @Patch()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update user application role assignments', description: 'Modifies the application role assignments for a user, such as changing their role level or adjusting permissions within the system.', operationId: 'updateUserApplicationRole', tags: ['Configuration', 'User Application Role'] })
+  @ApiVersionMinRequest()
+  @ApiOperation({ summary: 'Update user application role assignments', description: 'Modifies the application role assignments for a user, such as changing their role level or adjusting permissions within the system.', operationId: 'configUserApplicationRole_update', tags: ['Configuration', 'User Application Role'] })
+  @ApiBody({ type: UpdateUserApplicationRoleRequest })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -120,7 +128,9 @@ export class ConfigUserApplicationRoleController extends BaseHttpController {
    */
   @Delete()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Remove application roles from a user', description: 'Revokes one or more application roles from a user, removing the associated permissions and system access rights. The user loses access to features granted by those roles.', operationId: 'removeUserApplicationRole', tags: ['Configuration', 'User Application Role'] })
+  @ApiVersionMinRequest()
+  @ApiOperation({ summary: 'Remove application roles from a user', description: 'Revokes one or more application roles from a user, removing the associated permissions and system access rights. The user loses access to features granted by those roles.', operationId: 'configUserApplicationRole_remove', tags: ['Configuration', 'User Application Role'] })
+  @ApiBody({ type: RemoveUserApplicationRoleRequest })
   async remove(
     @Req() req: Request,
     @Res() res: Response,

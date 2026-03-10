@@ -56,12 +56,17 @@ export class PriceListDetailItemRequestDto {
   dimension?: unknown;
 }
 
+export class PriceListDetailItemUpdateRequestDto extends PriceListDetailItemRequestDto {
+  @ApiProperty({ description: 'Price list detail ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+}
+
 export class PriceListDetailActionRequestDto {
   @ApiPropertyOptional({ description: 'Items to add', type: [PriceListDetailItemRequestDto] })
   add?: PriceListDetailItemRequestDto[];
 
-  @ApiPropertyOptional({ description: 'Items to update (must include id)', type: [PriceListDetailItemRequestDto] })
-  update?: PriceListDetailItemRequestDto[];
+  @ApiPropertyOptional({ description: 'Items to update (must include id)', type: [PriceListDetailItemUpdateRequestDto] })
+  update?: PriceListDetailItemUpdateRequestDto[];
 
   @ApiPropertyOptional({ description: 'Item IDs to delete', type: [String], example: ['uuid-1', 'uuid-2'] })
   delete?: string[];

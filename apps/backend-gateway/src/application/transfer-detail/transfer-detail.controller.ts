@@ -17,9 +17,14 @@ import { Response } from 'express';
 import { TransferDetailService } from './transfer-detail.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import {
+  TransferDetailCreateRequestDto,
+  TransferDetailUpdateRequestDto,
+} from './swagger/request';
 import {
   BaseHttpController,
   Serialize,
@@ -138,6 +143,7 @@ export class TransferDetailController extends BaseHttpController {
       404: { description: 'Transfer not found' },
     },
   })
+  @ApiBody({ type: TransferDetailCreateRequestDto })
   async create(
     @Body() createDto: TransferDetailCreateDto,
     @Param('bu_code') bu_code: string,
@@ -175,6 +181,7 @@ export class TransferDetailController extends BaseHttpController {
       404: { description: 'Transfer Detail not found' },
     },
   })
+  @ApiBody({ type: TransferDetailUpdateRequestDto })
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,

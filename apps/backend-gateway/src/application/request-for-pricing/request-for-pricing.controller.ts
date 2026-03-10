@@ -16,7 +16,11 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { RequestForPricingService } from './request-for-pricing.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  CreateRequestForPricingRequestDto,
+  UpdateRequestForPricingRequestDto,
+} from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiVersionMinRequest,
@@ -190,6 +194,7 @@ export class RequestForPricingController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: CreateRequestForPricingRequestDto })
   async create(
     @Body() data: Record<string, unknown>,
     @Param('bu_code') bu_code: string,
@@ -246,6 +251,7 @@ export class RequestForPricingController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: UpdateRequestForPricingRequestDto })
   async update(
     @Param('id') id: string,
     @Body() data: Record<string, unknown>,

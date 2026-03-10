@@ -1,6 +1,8 @@
 import {
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Put,
   Body,
@@ -11,7 +13,8 @@ import {
 } from '@nestjs/common';
 import { Config_UserLocationService } from './config_user-location.service';
 import { ZodSerializerInterceptor } from '@/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UserLocationUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -41,8 +44,9 @@ export class Config_UserLocationController {
    */
   @Get(':locationId')
   @UseGuards(new AppIdGuard('userLocation.getUsersByLocationId'))
+  @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get users by location ID', description: 'Retrieves all users who have access to a specific storage location. This determines which staff members can perform inventory operations (stock-in, stock-out, transfers) at this location.', operationId: 'getUsersByLocationId', tags: ['Configuration', 'User Location'] })
+  @ApiOperation({ summary: 'Get users by location ID', description: 'Retrieves all users who have access to a specific storage location. This determines which staff members can perform inventory operations (stock-in, stock-out, transfers) at this location.', operationId: 'configUserLocation_findByLocationId', tags: ['Configuration', 'User Location'] })
   async getUsersByLocationId(
     @Param('bu_code') bu_code: string,
     @Param('locationId') locationId: string,
@@ -72,8 +76,10 @@ export class Config_UserLocationController {
    */
   @Put(':locationId')
   @UseGuards(new AppIdGuard('userLocation.managerUserLocation'))
+  @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Manage user-location assignments', description: 'Updates the set of users assigned to a specific storage location. Controls which staff members can perform inventory operations at this warehouse or store.', operationId: 'managerUserLocation', tags: ['Configuration', 'User Location'] })
+  @ApiOperation({ summary: 'Manage user-location assignments', description: 'Updates the set of users assigned to a specific storage location. Controls which staff members can perform inventory operations at this warehouse or store.', operationId: 'configUserLocation_manageAssignments', tags: ['Configuration', 'User Location'] })
+  @ApiBody({ type: UserLocationUpdateRequest })
   async managerUserLocation(
     @Param('bu_code') bu_code: string,
     @Param('locationId') locationId: string,

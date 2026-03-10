@@ -16,7 +16,12 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { PriceListTemplateService } from './price-list-template.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  PriceListTemplateCreateRequestDto,
+  PriceListTemplateUpdateRequestDto,
+  PriceListTemplateUpdateStatusRequestDto,
+} from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -200,6 +205,7 @@ export class PriceListTemplateController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: PriceListTemplateCreateRequestDto })
   async create(
     @Body() data: PriceListTemplateCreateDto,
     @Param('bu_code') bu_code: string,
@@ -257,6 +263,7 @@ export class PriceListTemplateController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: PriceListTemplateUpdateRequestDto })
   async update(
     @Param('id') id: string,
     @Body() data: PriceListTemplateUpdateDto,
@@ -378,6 +385,7 @@ export class PriceListTemplateController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: PriceListTemplateUpdateStatusRequestDto })
   async updateStatus(
     @Param('id') id: string,
     @Body('status') status: string,

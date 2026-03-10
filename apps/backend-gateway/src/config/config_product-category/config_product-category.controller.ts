@@ -17,7 +17,8 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_ProductCategoryService } from './config_product-category.service';
-import { ApiBearerAuth, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ProductCategoryCreateRequest, ProductCategoryUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   BaseHttpController,
@@ -69,7 +70,7 @@ export class Config_ProductCategoryController extends BaseHttpController {
   @Serialize(ProductCategoryDetailResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get a product category by ID', description: 'Retrieves a specific product category used to classify products in the master catalog (e.g., Fresh Produce, Dry Goods, Beverages, Cleaning Supplies). Categories form the top level of the product classification hierarchy.', operationId: 'findOneProductCategory', tags: ['Configuration', 'Product Category'] })
+  @ApiOperation({ summary: 'Get a product category by ID', description: 'Retrieves a specific product category used to classify products in the master catalog (e.g., Fresh Produce, Dry Goods, Beverages, Cleaning Supplies). Categories form the top level of the product classification hierarchy.', operationId: 'configProductCategory_findOne', tags: ['Configuration', 'Product Category'] })
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -106,7 +107,7 @@ export class Config_ProductCategoryController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all product categories', description: 'Returns all product categories configured for the business unit. Categories provide the primary classification for organizing the product catalog and generating procurement reports by product type.', operationId: 'findAllProductCategories', tags: ['Configuration', 'Product Category'] })
+  @ApiOperation({ summary: 'Get all product categories', description: 'Returns all product categories configured for the business unit. Categories provide the primary classification for organizing the product catalog and generating procurement reports by product type.', operationId: 'configProductCategory_findAll', tags: ['Configuration', 'Product Category'] })
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -143,7 +144,8 @@ export class Config_ProductCategoryController extends BaseHttpController {
   @Serialize(ProductCategoryMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new product category', description: 'Defines a new top-level product category for classifying items in the master catalog. Sub-categories can then be created under this category for more granular classification.', operationId: 'createProductCategory', tags: ['Configuration', 'Product Category'] })
+  @ApiOperation({ summary: 'Create a new product category', description: 'Defines a new top-level product category for classifying items in the master catalog. Sub-categories can then be created under this category for more granular classification.', operationId: 'configProductCategory_create', tags: ['Configuration', 'Product Category'] })
+  @ApiBody({ type: ProductCategoryCreateRequest })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -179,7 +181,8 @@ export class Config_ProductCategoryController extends BaseHttpController {
   @Serialize(ProductCategoryMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update a product category', description: 'Modifies an existing product category, such as renaming it or adjusting its display order. Changes affect how products are organized in the catalog and categorized in procurement reports.', operationId: 'updateProductCategory', tags: ['Configuration', 'Product Category'] })
+  @ApiOperation({ summary: 'Update a product category', description: 'Modifies an existing product category, such as renaming it or adjusting its display order. Changes affect how products are organized in the catalog and categorized in procurement reports.', operationId: 'configProductCategory_update', tags: ['Configuration', 'Product Category'] })
+  @ApiBody({ type: ProductCategoryUpdateRequest })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -221,7 +224,7 @@ export class Config_ProductCategoryController extends BaseHttpController {
   @Serialize(ProductCategoryMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete a product category', description: 'Removes a product category from the classification hierarchy. Products currently assigned to this category should be reassigned before deletion.', operationId: 'deleteProductCategory', tags: ['Configuration', 'Product Category'] })
+  @ApiOperation({ summary: 'Delete a product category', description: 'Removes a product category from the classification hierarchy. Products currently assigned to this category should be reassigned before deletion.', operationId: 'configProductCategory_delete', tags: ['Configuration', 'Product Category'] })
   async delete(
     @Req() req: Request,
     @Res() res: Response,

@@ -18,6 +18,7 @@ import { Response } from 'express';
 import { Config_DepartmentsService } from './config_departments.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -43,6 +44,7 @@ import { PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
+import { DepartmentCreateRequestDto, DepartmentUpdateRequestDto } from './swagger/request';
 
 @Controller('api/config/:bu_code/departments')
 @ApiTags('Configuration')
@@ -72,7 +74,7 @@ export class Config_DepartmentsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get a department by ID',
     description: 'Retrieves a specific hotel department record (e.g., Kitchen, F&B, Housekeeping, Engineering). Department details include cost center information used for budget allocation and purchase request routing.',
-    operationId: 'findOneDepartment',
+    operationId: 'configDepartments_findOne',
     tags: ['Configuration', 'Departments'],
     deprecated: false,
     security: [
@@ -132,7 +134,7 @@ export class Config_DepartmentsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all departments',
     description: 'Returns all hotel departments configured in the business unit. Departments are used to organize purchase requests, assign users, and track costs by operational area.',
-    operationId: 'findAllDepartments',
+    operationId: 'configDepartments_findAll',
     tags: ['Configuration', 'Departments'],
     deprecated: false,
     security: [
@@ -192,7 +194,7 @@ export class Config_DepartmentsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a new department',
     description: 'Creates a new hotel department (e.g., Kitchen, Housekeeping, Spa). The department can then be assigned users and used as a cost center for procurement and inventory requisitions.',
-    operationId: 'createDepartment',
+    operationId: 'configDepartments_create',
     tags: ['Configuration', 'Departments'],
     deprecated: false,
     security: [
@@ -213,6 +215,7 @@ export class Config_DepartmentsController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: DepartmentCreateRequestDto })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -250,7 +253,7 @@ export class Config_DepartmentsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a department',
     description: 'Modifies an existing department configuration, such as its name or cost center settings. Changes affect how future purchase requests and inventory transactions are categorized.',
-    operationId: 'updateDepartment',
+    operationId: 'configDepartments_update',
     tags: ['Configuration', 'Departments'],
     deprecated: false,
     security: [
@@ -271,6 +274,7 @@ export class Config_DepartmentsController extends BaseHttpController {
       },
     },
   })
+  @ApiBody({ type: DepartmentUpdateRequestDto })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -314,7 +318,7 @@ export class Config_DepartmentsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a department',
     description: 'Removes a department from the active configuration. The department will no longer be available for new requisitions or user assignments, but historical records are retained.',
-    operationId: 'deleteDepartment',
+    operationId: 'configDepartments_delete',
     tags: ['Configuration', 'Departments'],
     deprecated: false,
     security: [

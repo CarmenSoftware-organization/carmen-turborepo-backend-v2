@@ -50,9 +50,9 @@ export class Config_LocationProductController {
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Get a product by location ID',
+    summary: 'Get products by location ID',
     description: 'Retrieves all products assigned to a specific storage location. This mapping determines which products are stocked at each warehouse or store for inventory tracking and replenishment.',
-    operationId: 'getProductByLocationId',
+    operationId: 'configLocationProduct_findByLocationId',
     tags: ['Configuration', 'Location Product'],
     deprecated: false,
     security: [
@@ -69,7 +69,7 @@ export class Config_LocationProductController {
     ],
     responses: {
       200: {
-        description: 'Product retrieved successfully',
+        description: 'Products for location retrieved successfully',
       },
     },
   })

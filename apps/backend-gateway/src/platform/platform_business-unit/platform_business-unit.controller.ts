@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Platform_BusinessUnitService as Platform_BusinessUnitService } from './platform_business-unit.service';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import {
   BusinessUnitCreateDto,
   BusinessUnitUpdateDto,
@@ -61,10 +61,11 @@ export class Platform_BusinessUnitController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all business units',
     description: 'Lists all hotel properties and operational units within the organization, with filtering and pagination. Each business unit represents a distinct tenant (e.g., a hotel, resort, or property) that operates its own inventory and procurement workflows.',
-    operationId: 'getBusinessUnitList',
+    operationId: 'platformBusinessUnit_findAll',
     tags: ['Platform Admin', 'Business Unit'],
     responses: {
       200: { description: 'Business units retrieved successfully' },
+      401: { description: 'Unauthorized' },
     },
   })
   @ApiVersionMinRequest()
@@ -101,13 +102,15 @@ export class Platform_BusinessUnitController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('businessUnit.findOne'))
   @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'id', description: 'Business unit ID', type: 'string' })
   @ApiOperation({
     summary: 'Get a business unit by ID',
     description: 'Retrieves the full details of a specific hotel property or operational unit, including its configuration, cluster membership, and tenant settings.',
-    operationId: 'getBusinessUnitById',
+    operationId: 'platformBusinessUnit_findOne',
     tags: ['Platform Admin', 'Business Unit'],
     responses: {
       200: { description: 'Business unit retrieved successfully' },
+      401: { description: 'Unauthorized' },
       404: { description: 'Business unit not found' },
     },
   })
@@ -147,11 +150,12 @@ export class Platform_BusinessUnitController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a business unit',
     description: 'Registers a new hotel property or operational unit in the platform. This creates a new tenant context with its own isolated inventory, procurement, and recipe data, and associates it with a cluster (hotel chain or company).',
-    operationId: 'createBusinessUnit',
+    operationId: 'platformBusinessUnit_create',
     tags: ['Platform Admin', 'Business Unit'],
     responses: {
       201: { description: 'Business unit created successfully' },
       400: { description: 'Bad request' },
+      401: { description: 'Unauthorized' },
     },
   })
   @ApiBody({ type: BusinessUnitCreateDto, description: 'Business unit data' })
@@ -187,13 +191,16 @@ export class Platform_BusinessUnitController extends BaseHttpController {
   @Put(':id')
   @UseGuards(new AppIdGuard('businessUnit.update'))
   @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'id', description: 'Business unit ID', type: 'string' })
   @ApiOperation({
     summary: 'Update a business unit',
     description: 'Modifies the configuration or details of an existing hotel property or operational unit, such as its name, address, or cluster association.',
-    operationId: 'updateBusinessUnit',
+    operationId: 'platformBusinessUnit_update',
     tags: ['Platform Admin', 'Business Unit'],
     responses: {
       200: { description: 'Business unit updated successfully' },
+      400: { description: 'Bad request' },
+      401: { description: 'Unauthorized' },
       404: { description: 'Business unit not found' },
     },
   })
@@ -234,13 +241,15 @@ export class Platform_BusinessUnitController extends BaseHttpController {
   @Delete(':id')
   @UseGuards(new AppIdGuard('businessUnit.delete'))
   @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'id', description: 'Business unit ID', type: 'string' })
   @ApiOperation({
     summary: 'Delete a business unit',
     description: 'Soft-deletes a hotel property or operational unit from the platform. The business unit and its associated tenant data are retained for audit purposes but become inactive, preventing further operations.',
-    operationId: 'deleteBusinessUnit',
+    operationId: 'platformBusinessUnit_delete',
     tags: ['Platform Admin', 'Business Unit'],
     responses: {
       200: { description: 'Business unit deleted successfully' },
+      401: { description: 'Unauthorized' },
       404: { description: 'Business unit not found' },
     },
   })

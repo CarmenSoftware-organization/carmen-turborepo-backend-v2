@@ -20,10 +20,12 @@ import { Response } from 'express';
 import { Config_TaxProfileService } from './config_tax_profile.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiHeader,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { TaxProfileCreateRequest, TaxProfileUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   BaseHttpController,
@@ -71,7 +73,7 @@ export class Config_TaxProfileController extends BaseHttpController {
   @Serialize(TaxProfileDetailResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get a tax profile by ID', description: 'Retrieves a specific tax rate configuration (e.g., VAT 7%, withholding tax 3%) used to calculate taxes on procurement documents and vendor invoices.', operationId: 'findOneTaxProfile', tags: ['Configuration', 'Tax Profile'] })
+  @ApiOperation({ summary: 'Get a tax profile by ID', description: 'Retrieves a specific tax rate configuration (e.g., VAT 7%, withholding tax 3%) used to calculate taxes on procurement documents and vendor invoices.', operationId: 'configTaxProfile_findOne', tags: ['Configuration', 'Tax Profile'] })
   async findOne(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -107,7 +109,7 @@ export class Config_TaxProfileController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all tax profiles', description: 'Returns all tax rate configurations for the business unit. Tax profiles are applied to procurement documents to automatically calculate VAT, withholding tax, and other applicable taxes.', operationId: 'findAllTaxProfiles', tags: ['Configuration', 'Tax Profile'] })
+  @ApiOperation({ summary: 'Get all tax profiles', description: 'Returns all tax rate configurations for the business unit. Tax profiles are applied to procurement documents to automatically calculate VAT, withholding tax, and other applicable taxes.', operationId: 'configTaxProfile_findAll', tags: ['Configuration', 'Tax Profile'] })
   async findAll(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -143,7 +145,8 @@ export class Config_TaxProfileController extends BaseHttpController {
   @Serialize(TaxProfileMutationResponseSchema)
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new tax profile', description: 'Defines a new tax rate configuration with its percentage and calculation rules. Once created, the tax profile can be applied to purchase orders and vendor invoices for automated tax computation.', operationId: 'createTaxProfile', tags: ['Configuration', 'Tax Profile'] })
+  @ApiOperation({ summary: 'Create a new tax profile', description: 'Defines a new tax rate configuration with its percentage and calculation rules. Once created, the tax profile can be applied to purchase orders and vendor invoices for automated tax computation.', operationId: 'configTaxProfile_create', tags: ['Configuration', 'Tax Profile'] })
+  @ApiBody({ type: TaxProfileCreateRequest })
   async create(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -179,7 +182,8 @@ export class Config_TaxProfileController extends BaseHttpController {
   @Serialize(TaxProfileMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a tax profile', description: 'Modifies an existing tax rate configuration, such as adjusting the percentage or calculation method. Changes affect tax calculations on future procurement documents.', operationId: 'updateTaxProfile', tags: ['Configuration', 'Tax Profile'] })
+  @ApiOperation({ summary: 'Patch a tax profile', description: 'Partially updates an existing tax rate configuration, such as adjusting the percentage or calculation method. Changes affect tax calculations on future procurement documents.', operationId: 'configTaxProfile_patch', tags: ['Configuration', 'Tax Profile'] })
+  @ApiBody({ type: TaxProfileUpdateRequest })
   async update(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -221,7 +225,7 @@ export class Config_TaxProfileController extends BaseHttpController {
   @Serialize(TaxProfileMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a tax profile', description: 'Removes a tax rate configuration from active use. It will no longer be selectable for new procurement documents, but historical tax calculations are preserved.', operationId: 'deleteTaxProfile', tags: ['Configuration', 'Tax Profile'] })
+  @ApiOperation({ summary: 'Delete a tax profile', description: 'Removes a tax rate configuration from active use. It will no longer be selectable for new procurement documents, but historical tax calculations are preserved.', operationId: 'configTaxProfile_delete', tags: ['Configuration', 'Tax Profile'] })
   async delete(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,

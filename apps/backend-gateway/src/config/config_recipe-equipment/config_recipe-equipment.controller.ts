@@ -4,7 +4,8 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_RecipeEquipmentService } from './config_recipe-equipment.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { RecipeEquipmentCreateRequest, RecipeEquipmentUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { BaseHttpController, Serialize } from '@/common';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
@@ -39,7 +40,7 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   @Serialize(RecipeEquipmentResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get a recipe equipment by ID', description: 'Retrieves a specific kitchen equipment definition (e.g., oven, mixer, blender, sous vide) that can be associated with recipes to track required equipment for preparation.', operationId: 'findOneRecipeEquipment', tags: ['Configuration', 'Recipe Equipment'] })
+  @ApiOperation({ summary: 'Get a recipe equipment by ID', description: 'Retrieves a specific kitchen equipment definition (e.g., oven, mixer, blender, sous vide) that can be associated with recipes to track required equipment for preparation.', operationId: 'configRecipeEquipment_findOne', tags: ['Configuration', 'Recipe Equipment'] })
   async findOne(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'findOne', id, version }, Config_RecipeEquipmentController.name);
     const { user_id } = ExtractRequestHeader(req);
@@ -56,7 +57,7 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   @Serialize(RecipeEquipmentResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all recipe equipment', description: 'Returns all kitchen equipment types configured for the business unit. Used to tag recipes with required equipment for kitchen capacity planning and recipe feasibility assessment.', operationId: 'findAllRecipeEquipment', tags: ['Configuration', 'Recipe Equipment'] })
+  @ApiOperation({ summary: 'Get all recipe equipment', description: 'Returns all kitchen equipment types configured for the business unit. Used to tag recipes with required equipment for kitchen capacity planning and recipe feasibility assessment.', operationId: 'configRecipeEquipment_findAll', tags: ['Configuration', 'Recipe Equipment'] })
   @ApiUserFilterQueries()
   async findAll(@Req() req: Request, @Res() res: Response, @Param('bu_code') bu_code: string, @Query() query?: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'findAll', query, version }, Config_RecipeEquipmentController.name);
@@ -75,7 +76,8 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   @Serialize(RecipeEquipmentResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new recipe equipment', description: 'Defines a new kitchen equipment type that can be associated with recipes. Helps track which tools and appliances are needed for recipe preparation.', operationId: 'createRecipeEquipment', tags: ['Configuration', 'Recipe Equipment'] })
+  @ApiOperation({ summary: 'Create a new recipe equipment', description: 'Defines a new kitchen equipment type that can be associated with recipes. Helps track which tools and appliances are needed for recipe preparation.', operationId: 'configRecipeEquipment_create', tags: ['Configuration', 'Recipe Equipment'] })
+  @ApiBody({ type: RecipeEquipmentCreateRequest })
   async create(@Req() req: Request, @Res() res: Response, @Param('bu_code') bu_code: string, @Body() createDto: RecipeEquipmentCreateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'create', createDto, version }, Config_RecipeEquipmentController.name);
     const { user_id } = ExtractRequestHeader(req);
@@ -92,7 +94,8 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   @Serialize(RecipeEquipmentResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update a recipe equipment', description: 'Fully updates an existing kitchen equipment type definition. Changes affect how recipes reference this equipment.', operationId: 'updateRecipeEquipment', tags: ['Configuration', 'Recipe Equipment'] })
+  @ApiOperation({ summary: 'Update a recipe equipment', description: 'Fully updates an existing kitchen equipment type definition. Changes affect how recipes reference this equipment.', operationId: 'configRecipeEquipment_update', tags: ['Configuration', 'Recipe Equipment'] })
+  @ApiBody({ type: RecipeEquipmentUpdateRequest })
   async update(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeEquipmentUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'update', id, updateDto, version }, Config_RecipeEquipmentController.name);
     const { user_id } = ExtractRequestHeader(req);
@@ -110,7 +113,8 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   @Serialize(RecipeEquipmentResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Patch a recipe equipment', description: 'Partially updates specific fields of a kitchen equipment definition without replacing the entire record.', operationId: 'patchRecipeEquipment', tags: ['Configuration', 'Recipe Equipment'] })
+  @ApiOperation({ summary: 'Patch a recipe equipment', description: 'Partially updates specific fields of a kitchen equipment definition without replacing the entire record.', operationId: 'configRecipeEquipment_patch', tags: ['Configuration', 'Recipe Equipment'] })
+  @ApiBody({ type: RecipeEquipmentUpdateRequest })
   async patch(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeEquipmentUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'patch', id, updateDto, version }, Config_RecipeEquipmentController.name);
     const { user_id } = ExtractRequestHeader(req);
@@ -128,7 +132,7 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   @Serialize(RecipeEquipmentResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete a recipe equipment', description: 'Removes a kitchen equipment type from the system. Recipes referencing this equipment should be updated before deletion.', operationId: 'deleteRecipeEquipment', tags: ['Configuration', 'Recipe Equipment'] })
+  @ApiOperation({ summary: 'Delete a recipe equipment', description: 'Removes a kitchen equipment type from the system. Recipes referencing this equipment should be updated before deletion.', operationId: 'configRecipeEquipment_delete', tags: ['Configuration', 'Recipe Equipment'] })
   async delete(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'delete', id, version }, Config_RecipeEquipmentController.name);
     const { user_id } = ExtractRequestHeader(req);

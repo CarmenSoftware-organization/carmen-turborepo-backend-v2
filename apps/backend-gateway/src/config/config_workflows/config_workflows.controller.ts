@@ -18,6 +18,7 @@ import {
 import { Response } from 'express';
 import { Config_WorkflowsService } from './config_workflows.service';
 import { ApiTags, ApiBearerAuth, ApiBody, ApiHeader, ApiOperation } from '@nestjs/swagger';
+import { WorkflowCreateRequestDto, WorkflowUpdateRequestDto } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   BaseHttpController,
@@ -68,7 +69,7 @@ export class Config_WorkflowsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get a workflow by ID',
     description: 'Retrieves a specific approval workflow template including its stages, approver roles, and routing rules. Workflows define the approval chain for procurement documents like purchase requests and purchase orders.',
-    operationId: 'findOneWorkflow',
+    operationId: 'configWorkflows_findOne',
     tags: ['Configuration', 'Workflows'],
     responses: { 200: { description: 'Workflow retrieved successfully' } },
   })
@@ -110,7 +111,7 @@ export class Config_WorkflowsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all workflows',
     description: 'Returns all configured approval workflow templates for the business unit. Administrators use these to manage document approval chains for purchase requests, purchase orders, and other procurement documents.',
-    operationId: 'findAllWorkflows',
+    operationId: 'configWorkflows_findAll',
     tags: ['Configuration', 'Workflows'],
     responses: { 200: { description: 'Workflows retrieved successfully' } },
   })
@@ -152,10 +153,11 @@ export class Config_WorkflowsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a new workflow',
     description: 'Creates a new approval workflow template defining the stages, approver roles (e.g., HOD, Purchaser, FC, GM), and routing rules for document approvals in the procurement process.',
-    operationId: 'createWorkflow',
+    operationId: 'configWorkflows_create',
     tags: ['Configuration', 'Workflows'],
     responses: { 201: { description: 'Workflow created successfully' } },
   })
+  @ApiBody({ type: WorkflowCreateRequestDto })
   async create(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -193,10 +195,11 @@ export class Config_WorkflowsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a workflow',
     description: 'Modifies an existing approval workflow template, such as adding/removing approval stages or changing approver role assignments. Changes affect all future documents using this workflow.',
-    operationId: 'updateWorkflow',
+    operationId: 'configWorkflows_update',
     tags: ['Configuration', 'Workflows'],
     responses: { 200: { description: 'Workflow updated successfully' } },
   })
+  @ApiBody({ type: WorkflowUpdateRequestDto })
   async update(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -240,7 +243,7 @@ export class Config_WorkflowsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a workflow',
     description: 'Removes an approval workflow template from active use. Documents currently in progress using this workflow are not affected, but no new documents will use this workflow.',
-    operationId: 'deleteWorkflow',
+    operationId: 'configWorkflows_delete',
     tags: ['Configuration', 'Workflows'],
     responses: { 200: { description: 'Workflow deleted successfully' } },
   })

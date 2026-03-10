@@ -7,13 +7,15 @@ import { CreateConfigApplicationRoleDto, UpdateConfigApplicationRoleDto } from '
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto'
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header'
 import { BackendLogger } from 'src/common/helpers/backend.logger'
-import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator'
+import { CreateApplicationRoleRequest, UpdateApplicationRoleRequest } from './swagger/request'
 
 @Controller('api/config/:bu_code/application-roles')
 @ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
+@ApiBearerAuth()
 export class ConfigApplicationRoleController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(
     ConfigApplicationRoleController.name,
@@ -30,7 +32,7 @@ export class ConfigApplicationRoleController extends BaseHttpController {
    */
   @Get()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all application roles', description: 'Returns all defined application roles (e.g., Admin, Manager, Purchaser, Requestor) used for access control. Roles determine which system features and data each user can access.', operationId: 'findAllApplicationRoles', tags: ['Configuration', 'Application Role'] })
+  @ApiOperation({ summary: 'Get all application roles', description: 'Returns all defined application roles (e.g., Admin, Manager, Purchaser, Requestor) used for access control. Roles determine which system features and data each user can access.', operationId: 'configApplicationRole_findAll', tags: ['Configuration', 'Application Role'] })
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -61,7 +63,7 @@ export class ConfigApplicationRoleController extends BaseHttpController {
    */
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get an application role by ID', description: 'Retrieves a specific application role definition with its associated permissions. Used to review what system capabilities are granted to users assigned this role.', operationId: 'findOneApplicationRole', tags: ['Configuration', 'Application Role'] })
+  @ApiOperation({ summary: 'Get an application role by ID', description: 'Retrieves a specific application role definition with its associated permissions. Used to review what system capabilities are granted to users assigned this role.', operationId: 'configApplicationRole_findOne', tags: ['Configuration', 'Application Role'] })
   async findOne(
     @Param('id') id: string,
     @Req() req: Request,
@@ -81,7 +83,8 @@ export class ConfigApplicationRoleController extends BaseHttpController {
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new application role', description: 'Defines a new application role for access control (e.g., Department Head, Finance Controller). Once created, the role can be assigned permissions and then assigned to users.', operationId: 'createApplicationRole', tags: ['Configuration', 'Application Role'] })
+  @ApiOperation({ summary: 'Create a new application role', description: 'Defines a new application role for access control (e.g., Department Head, Finance Controller). Once created, the role can be assigned permissions and then assigned to users.', operationId: 'configApplicationRole_create', tags: ['Configuration', 'Application Role'] })
+  @ApiBody({ type: CreateApplicationRoleRequest })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -101,7 +104,8 @@ export class ConfigApplicationRoleController extends BaseHttpController {
    */
   @Put(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update an application role', description: 'Modifies an existing application role definition, such as updating its name or permission set. Changes immediately affect all users currently assigned this role.', operationId: 'updateApplicationRole', tags: ['Configuration', 'Application Role'] })
+  @ApiOperation({ summary: 'Update an application role', description: 'Modifies an existing application role definition, such as updating its name or permission set. Changes immediately affect all users currently assigned this role.', operationId: 'configApplicationRole_update', tags: ['Configuration', 'Application Role'] })
+  @ApiBody({ type: UpdateApplicationRoleRequest })
   async update(
     @Param('id') id: string,
     @Req() req: Request,
@@ -121,7 +125,7 @@ export class ConfigApplicationRoleController extends BaseHttpController {
    */
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete an application role', description: 'Removes an application role from the system. Users previously assigned this role will lose its associated permissions. Ensure users are reassigned to appropriate roles before deletion.', operationId: 'deleteApplicationRole', tags: ['Configuration', 'Application Role'] })
+  @ApiOperation({ summary: 'Delete an application role', description: 'Removes an application role from the system. Users previously assigned this role will lose its associated permissions. Ensure users are reassigned to appropriate roles before deletion.', operationId: 'configApplicationRole_delete', tags: ['Configuration', 'Application Role'] })
   async remove(
     @Param('id') id: string,
     @Req() req: Request,

@@ -1,5 +1,56 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
+class DeliveryPointEmbeddedDto {
+  @ApiPropertyOptional({ description: 'Delivery point ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id?: string;
+
+  @ApiPropertyOptional({ description: 'Delivery point name', example: 'Loading Dock A' })
+  name?: string;
+
+  @ApiPropertyOptional({ description: 'Whether the delivery point is active', example: true })
+  is_active?: boolean;
+}
+
+class UserLocationEmbeddedDto {
+  @ApiProperty({ description: 'User ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+
+  @ApiPropertyOptional({ description: 'First name', example: 'John' })
+  firstname?: string;
+
+  @ApiPropertyOptional({ description: 'Last name', example: 'Doe' })
+  lastname?: string;
+
+  @ApiPropertyOptional({ description: 'Middle name', example: 'M.' })
+  middlename?: string;
+
+  @ApiPropertyOptional({ description: 'Telephone number', example: '+66-2-123-4567' })
+  telephone?: string;
+}
+
+class ProductLocationEmbeddedDto {
+  @ApiProperty({ description: 'Product ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+
+  @ApiPropertyOptional({ description: 'Product name', example: 'Rice 5kg' })
+  name?: string;
+
+  @ApiPropertyOptional({ description: 'Product code', example: 'PRD-001' })
+  code?: string;
+
+  @ApiPropertyOptional({ description: 'Minimum quantity', example: 10 })
+  min_qty?: number;
+
+  @ApiPropertyOptional({ description: 'Maximum quantity', example: 500 })
+  max_qty?: number;
+
+  @ApiPropertyOptional({ description: 'Reorder quantity', example: 50 })
+  re_order_qty?: number;
+
+  @ApiPropertyOptional({ description: 'Par quantity', example: 100 })
+  par_qty?: number;
+}
+
 export class LocationListItemResponseDto {
   @ApiProperty({ description: 'Location ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   id: string;
@@ -10,8 +61,11 @@ export class LocationListItemResponseDto {
   @ApiProperty({ description: 'Location name', example: 'Main Warehouse' })
   name: string;
 
-  @ApiPropertyOptional({ description: 'Location type', enum: ['inventory', 'direct', 'consignment'], example: 'inventory' })
-  location_type?: string;
+  @ApiProperty({ description: 'Location type', enum: ['inventory', 'direct', 'consignment'], example: 'inventory' })
+  location_type: string;
+
+  @ApiPropertyOptional({ description: 'Physical count type', enum: ['no', 'daily', 'weekly', 'monthly'], example: 'no' })
+  physical_count_type?: string;
 
   @ApiPropertyOptional({ description: 'Location description', example: 'Primary storage warehouse' })
   description?: string;
@@ -19,37 +73,19 @@ export class LocationListItemResponseDto {
   @ApiPropertyOptional({ description: 'Whether the location is active', example: true })
   is_active?: boolean;
 
-  @ApiPropertyOptional({ description: 'Created timestamp', example: '2026-03-10T00:00:00.000Z' })
-  created_at?: Date;
-
-  @ApiPropertyOptional({ description: 'Updated timestamp', example: '2026-03-10T00:00:00.000Z' })
-  updated_at?: Date;
-}
-
-export class LocationDetailResponseDto extends LocationListItemResponseDto {
-  @ApiPropertyOptional({ description: 'Delivery point ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  delivery_point_id?: string;
-
-  @ApiPropertyOptional({ description: 'Delivery point name', example: 'Loading Dock A' })
-  delivery_point_name?: string;
-
-  @ApiPropertyOptional({ description: 'Physical count type', enum: ['no', 'daily', 'weekly', 'monthly'], example: 'no' })
-  physical_count_type?: string;
-
-  @ApiPropertyOptional({ description: 'Additional notes', example: 'Temperature-controlled area' })
-  note?: string;
-
   @ApiPropertyOptional({ description: 'Additional info (JSON)', example: {} })
   info?: unknown;
 
-  @ApiPropertyOptional({ description: 'Dimension data (JSON)', example: [] })
-  dimension?: unknown;
+  @ApiPropertyOptional({ description: 'Delivery point', type: DeliveryPointEmbeddedDto })
+  delivery_point?: DeliveryPointEmbeddedDto;
+}
 
-  @ApiPropertyOptional({ description: 'Created by user ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  created_by_id?: string;
+export class LocationDetailResponseDto extends LocationListItemResponseDto {
+  @ApiPropertyOptional({ description: 'Users assigned to this location', type: [UserLocationEmbeddedDto] })
+  user_location?: UserLocationEmbeddedDto[];
 
-  @ApiPropertyOptional({ description: 'Updated by user ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  updated_by_id?: string;
+  @ApiPropertyOptional({ description: 'Products assigned to this location', type: [ProductLocationEmbeddedDto] })
+  product_location?: ProductLocationEmbeddedDto[];
 }
 
 export class ProductInventoryInfoResponseDto {

@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_AdjustmentTypeService } from './config_adjustment-type.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { BaseHttpController } from '@/common';
 import {
@@ -33,6 +33,10 @@ import {
   AdjustmentTypeUpdateDto,
   IUpdateAdjustmentType,
 } from './dto/adjustment-type.dto';
+import {
+  AdjustmentTypeCreateRequest,
+  AdjustmentTypeUpdateRequest,
+} from './swagger/request';
 
 @Controller('api/config/:bu_code/adjustment-type')
 @ApiTags('Configuration')
@@ -58,7 +62,7 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('adjustment-type.findOne'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get an adjustment type by ID', description: 'Retrieves a specific inventory adjustment type definition (e.g., spoilage, breakage, theft, expiration). Adjustment types categorize the reason for inventory quantity changes outside normal operations.', operationId: 'findOneAdjustmentType', tags: ['Configuration', 'Adjustment Type'] })
+  @ApiOperation({ summary: 'Get an adjustment type by ID', description: 'Retrieves a specific inventory adjustment type definition (e.g., spoilage, breakage, theft, expiration). Adjustment types categorize the reason for inventory quantity changes outside normal operations.', operationId: 'configAdjustmentType_findOne', tags: ['Configuration', 'Adjustment Type'] })
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -92,7 +96,7 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('adjustment-type.findAll'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all adjustment types', description: 'Returns all configured inventory adjustment type categories. These types are used when recording inventory adjustments to classify the reason for stock discrepancies.', operationId: 'findAllAdjustmentTypes', tags: ['Configuration', 'Adjustment Type'] })
+  @ApiOperation({ summary: 'Get all adjustment types', description: 'Returns all configured inventory adjustment type categories. These types are used when recording inventory adjustments to classify the reason for stock discrepancies.', operationId: 'configAdjustmentType_findAll', tags: ['Configuration', 'Adjustment Type'] })
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
@@ -128,7 +132,8 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('adjustment-type.create'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new adjustment type', description: 'Defines a new inventory adjustment category (e.g., spoilage, breakage, theft). Once created, warehouse staff can select this type when recording inventory discrepancies.', operationId: 'createAdjustmentType', tags: ['Configuration', 'Adjustment Type'] })
+  @ApiOperation({ summary: 'Create a new adjustment type', description: 'Defines a new inventory adjustment category (e.g., spoilage, breakage, theft). Once created, warehouse staff can select this type when recording inventory discrepancies.', operationId: 'configAdjustmentType_create', tags: ['Configuration', 'Adjustment Type'] })
+  @ApiBody({ type: AdjustmentTypeCreateRequest })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -161,7 +166,8 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('adjustment-type.update'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update an adjustment type', description: 'Modifies an existing inventory adjustment type definition, such as renaming or updating its classification. Changes apply to all future inventory adjustment records.', operationId: 'updateAdjustmentType', tags: ['Configuration', 'Adjustment Type'] })
+  @ApiOperation({ summary: 'Update an adjustment type', description: 'Modifies an existing inventory adjustment type definition, such as renaming or updating its classification. Changes apply to all future inventory adjustment records.', operationId: 'configAdjustmentType_update', tags: ['Configuration', 'Adjustment Type'] })
+  @ApiBody({ type: AdjustmentTypeUpdateRequest })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -200,7 +206,7 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('adjustment-type.delete'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete an adjustment type', description: 'Removes an inventory adjustment type from active use. Historical adjustment records using this type are preserved, but it will no longer appear as an option for new adjustments.', operationId: 'deleteAdjustmentType', tags: ['Configuration', 'Adjustment Type'] })
+  @ApiOperation({ summary: 'Delete an adjustment type', description: 'Removes an inventory adjustment type from active use. Historical adjustment records using this type are preserved, but it will no longer appear as an option for new adjustments.', operationId: 'configAdjustmentType_delete', tags: ['Configuration', 'Adjustment Type'] })
   async delete(
     @Req() req: Request,
     @Res() res: Response,

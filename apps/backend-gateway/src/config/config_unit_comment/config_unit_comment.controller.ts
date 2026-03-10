@@ -18,7 +18,8 @@ import {
 import { Response } from 'express';
 import { Config_UnitCommentService as Config_UnitCommentService } from './config_unit_comment.service';
 import { ZodSerializerInterceptor, BaseHttpController } from '@/common';
-import { ApiBearerAuth, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UnitCommentCreateRequest, UnitCommentUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -54,7 +55,7 @@ export class Config_UnitCommentController extends BaseHttpController {
   @UseGuards(new AppIdGuard('unitComment.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a unit comment by ID', description: 'Retrieves a specific predefined comment/note template associated with unit operations. These standardized comments streamline data entry for inventory and procurement transactions.', operationId: 'findOneUnitComment', tags: ['Configuration', 'Unit Comment'] })
+  @ApiOperation({ summary: 'Get a unit comment by ID', description: 'Retrieves a specific predefined comment/note template associated with unit operations. These standardized comments streamline data entry for inventory and procurement transactions.', operationId: 'configUnitComment_findOne', tags: ['Configuration', 'Unit Comment'] })
   async findOne(
     @Param('bu_code') bu_code: string,
     @Param('id') id: string,
@@ -88,7 +89,8 @@ export class Config_UnitCommentController extends BaseHttpController {
   @UseGuards(new AppIdGuard('unitComment.findAll'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get all unit comments', description: 'Returns all predefined comment templates for unit-related operations. These reusable notes help standardize remarks on procurement and inventory documents.', operationId: 'findAllUnitComments', tags: ['Configuration', 'Unit Comment'] })
+  @ApiUserFilterQueries()
+  @ApiOperation({ summary: 'Get all unit comments', description: 'Returns all predefined comment templates for unit-related operations. These reusable notes help standardize remarks on procurement and inventory documents.', operationId: 'configUnitComment_findAll', tags: ['Configuration', 'Unit Comment'] })
   async findAll(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -123,7 +125,8 @@ export class Config_UnitCommentController extends BaseHttpController {
   @UseGuards(new AppIdGuard('unitComment.create'))
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new unit comment', description: 'Defines a new predefined comment template for unit-related operations. Users can quickly select these standardized notes when processing inventory or procurement transactions.', operationId: 'createUnitComment', tags: ['Configuration', 'Unit Comment'] })
+  @ApiOperation({ summary: 'Create a new unit comment', description: 'Defines a new predefined comment template for unit-related operations. Users can quickly select these standardized notes when processing inventory or procurement transactions.', operationId: 'configUnitComment_create', tags: ['Configuration', 'Unit Comment'] })
+  @ApiBody({ type: UnitCommentCreateRequest })
   async create(
     @Param('bu_code') bu_code: string,
     @Body() createDto: UnitCommentCreateDto,
@@ -157,7 +160,8 @@ export class Config_UnitCommentController extends BaseHttpController {
   @UseGuards(new AppIdGuard('unitComment.update'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a unit comment', description: 'Modifies an existing predefined comment template. Changes are reflected in the comment options available for future transactions.', operationId: 'updateUnitComment', tags: ['Configuration', 'Unit Comment'] })
+  @ApiOperation({ summary: 'Update a unit comment', description: 'Modifies an existing predefined comment template. Changes are reflected in the comment options available for future transactions.', operationId: 'configUnitComment_update', tags: ['Configuration', 'Unit Comment'] })
+  @ApiBody({ type: UnitCommentUpdateRequest })
   async update(
     @Param('bu_code') bu_code: string,
     @Param('id') id: string,
@@ -194,7 +198,7 @@ export class Config_UnitCommentController extends BaseHttpController {
   @UseGuards(new AppIdGuard('unitComment.delete'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a unit comment', description: 'Removes a predefined comment template from the available options. Historical transactions that used this comment are not affected.', operationId: 'deleteUnitComment', tags: ['Configuration', 'Unit Comment'] })
+  @ApiOperation({ summary: 'Delete a unit comment', description: 'Removes a predefined comment template from the available options. Historical transactions that used this comment are not affected.', operationId: 'configUnitComment_delete', tags: ['Configuration', 'Unit Comment'] })
   async remove(
     @Param('bu_code') bu_code: string,
     @Param('id') id: string,
