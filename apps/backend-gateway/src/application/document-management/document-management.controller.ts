@@ -38,7 +38,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/:bu_code/documents')
-@ApiTags('Application - Document Management')
+@ApiTags('Document & Log')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -53,14 +53,19 @@ export class DocumentManagementController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Uploads a procurement document (e.g., invoice, contract, delivery receipt)
+   * to file storage for attachment to purchase orders or goods received notes.
+   */
   @Post('upload')
   @UseGuards(new AppIdGuard('documents.upload'))
   @UseInterceptors(FileInterceptor('file'))
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Upload a document',
-    description: 'Uploads a document file to storage',
+    description: 'Uploads a procurement-related document (e.g., vendor invoices, contracts, delivery receipts) to secure storage for attachment to purchase orders, GRNs, or other transaction records.',
     operationId: 'uploadDocument',
+    tags: ['Document & Log', 'Document Management'],
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -106,13 +111,18 @@ export class DocumentManagementController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Lists all uploaded procurement documents for the business unit with pagination,
+   * enabling staff to search and browse stored files.
+   */
   @Get()
   @UseGuards(new AppIdGuard('documents.list'))
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'List documents',
-    description: 'Retrieves a paginated list of documents',
+    description: 'Lists all uploaded procurement documents for the business unit with pagination, enabling staff to search and browse stored invoices, contracts, and delivery receipts.',
     operationId: 'listDocuments',
+    tags: ['Document & Log', 'Document Management'],
   })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'perpage', required: false, type: Number })
@@ -144,13 +154,18 @@ export class DocumentManagementController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Downloads a specific procurement document by its unique file token,
+   * used to view attachments linked to transaction records.
+   */
   @Get(':filetoken')
   @UseGuards(new AppIdGuard('documents.get'))
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get document by token',
-    description: 'Retrieves a document by its file token',
+    description: 'Downloads a specific procurement document by its unique file token, used to view attached invoices, contracts, or delivery receipts linked to transaction records.',
     operationId: 'getDocument',
+    tags: ['Document & Log', 'Document Management'],
   })
   async getDocument(
     @Param('filetoken') fileToken: string,
@@ -172,13 +187,18 @@ export class DocumentManagementController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves metadata (file name, type, size, upload date) for a document
+   * without downloading the file content, useful for document listing views.
+   */
   @Get(':filetoken/info')
   @UseGuards(new AppIdGuard('documents.info'))
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get document info',
-    description: 'Retrieves metadata for a document by its file token',
+    description: 'Retrieves metadata (file name, type, size, upload date) for a procurement document without downloading the file content, useful for display in document listing views.',
     operationId: 'getDocumentInfo',
+    tags: ['Document & Log', 'Document Management'],
   })
   async getDocumentInfo(
     @Param('filetoken') fileToken: string,
@@ -204,13 +224,18 @@ export class DocumentManagementController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Generates a time-limited presigned URL for secure, direct access to a
+   * document, enabling browser-based viewing without exposing storage credentials.
+   */
   @Get(':filetoken/presigned-url')
   @UseGuards(new AppIdGuard('documents.presignedUrl'))
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get presigned URL',
-    description: 'Generates a presigned URL for document access',
+    description: 'Generates a time-limited presigned URL for secure, direct access to a procurement document, enabling browser-based viewing or sharing without exposing permanent storage credentials.',
     operationId: 'getPresignedUrl',
+    tags: ['Document & Log', 'Document Management'],
   })
   @ApiQuery({ name: 'expirySeconds', required: false, type: Number })
   async getPresignedUrl(
@@ -241,13 +266,18 @@ export class DocumentManagementController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Permanently removes a procurement document from storage when it was
+   * uploaded in error or is no longer relevant to the transaction.
+   */
   @Delete(':filetoken')
   @UseGuards(new AppIdGuard('documents.delete'))
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Delete document',
-    description: 'Deletes a document by its file token',
+    description: 'Permanently removes a procurement document from storage, used when files were uploaded in error or are no longer relevant to the associated transaction.',
     operationId: 'deleteDocument',
+    tags: ['Document & Log', 'Document Management'],
   })
   async deleteDocument(
     @Param('filetoken') fileToken: string,

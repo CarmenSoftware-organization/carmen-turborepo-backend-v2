@@ -33,7 +33,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { BaseHttpController } from '@/common';
 
 @Controller('api-system/permission')
-@ApiTags('Application - Permission')
+@ApiTags('Platform Admin')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -48,15 +48,19 @@ export class ApplicationPermissionController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves the full catalog of granular feature permissions available in the ERP system.
+   * Used by platform administrators to review what access controls can be assigned to roles.
+   */
   @Get()
   @UseGuards(new AppIdGuard('application-permission.findAll'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get all application permissions',
-    description: 'Retrieve all application permissions from micro_auth',
+    description: 'Lists all granular feature permissions available in the ERP system, such as "can create purchase request" or "can approve purchase order". Used by platform administrators to review and manage the full permission catalog.',
     operationId: 'getAllApplicationPermissions',
-    tags: ['[Method] Get'],
+    tags: ['Platform Admin', 'Application Permission'],
     deprecated: false,
     security: [
       {
@@ -96,6 +100,10 @@ export class ApplicationPermissionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves the details of a specific feature permission by its ID.
+   * Useful for inspecting individual permission definitions before assigning them to roles.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('application-permission.findOne'))
   @HttpCode(HttpStatus.OK)
@@ -107,9 +115,9 @@ export class ApplicationPermissionController extends BaseHttpController {
   })
   @ApiOperation({
     summary: 'Get application permission by ID',
-    description: 'Retrieve a specific application permission by ID from micro_auth',
+    description: 'Retrieves the details of a specific feature permission by its ID, including its name, code, and scope. Useful for inspecting individual permission definitions before assigning them to roles.',
     operationId: 'getApplicationPermissionById',
-    tags: ['[Method] Get'],
+    tags: ['Platform Admin', 'Application Permission'],
     deprecated: false,
     security: [
       {
@@ -160,6 +168,10 @@ export class ApplicationPermissionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Defines a new granular feature permission in the ERP platform.
+   * Once created, this permission can be assigned to application roles to control user access.
+   */
   @Post()
   @UseGuards(new AppIdGuard('application-permission.create'))
   @HttpCode(HttpStatus.CREATED)
@@ -170,9 +182,9 @@ export class ApplicationPermissionController extends BaseHttpController {
   })
   @ApiOperation({
     summary: 'Create new application permission',
-    description: 'Create a new application permission in micro_auth',
+    description: 'Defines a new granular feature permission in the ERP platform, such as access to create, approve, or view specific procurement or inventory operations. Once created, this permission can be assigned to application roles.',
     operationId: 'createApplicationPermission',
-    tags: ['[Method] Post'],
+    tags: ['Platform Admin', 'Application Permission'],
     deprecated: false,
     security: [
       {
@@ -220,6 +232,10 @@ export class ApplicationPermissionController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies an existing feature permission definition.
+   * Changes propagate to all roles that reference this permission across tenants.
+   */
   @Put(':id')
   @UseGuards(new AppIdGuard('application-permission.update'))
   @HttpCode(HttpStatus.OK)
@@ -235,9 +251,9 @@ export class ApplicationPermissionController extends BaseHttpController {
   })
   @ApiOperation({
     summary: 'Update application permission',
-    description: 'Update an existing application permission in micro_auth',
+    description: 'Modifies an existing feature permission definition, such as renaming it or changing its scope. Changes propagate to all roles that reference this permission across tenants.',
     operationId: 'updateApplicationPermission',
-    tags: ['[Method] Put'],
+    tags: ['Platform Admin', 'Application Permission'],
     deprecated: false,
     security: [
       {
@@ -297,6 +313,10 @@ export class ApplicationPermissionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a feature permission from the ERP platform.
+   * Affects all roles that include this permission, potentially revoking user access.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('application-permission.delete'))
   @HttpCode(HttpStatus.OK)
@@ -308,9 +328,9 @@ export class ApplicationPermissionController extends BaseHttpController {
   })
   @ApiOperation({
     summary: 'Delete application permission',
-    description: 'Delete an application permission from micro_auth',
+    description: 'Removes a feature permission from the ERP platform. This should be done with caution as it will affect all roles that currently include this permission, potentially revoking user access to the associated feature.',
     operationId: 'deleteApplicationPermission',
-    tags: ['[Method] Delete'],
+    tags: ['Platform Admin', 'Application Permission'],
     deprecated: false,
     security: [
       {

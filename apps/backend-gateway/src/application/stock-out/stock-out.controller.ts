@@ -45,7 +45,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/:bu_code/stock-out')
-@ApiTags('Application - Stock Out')
+@ApiTags('Inventory')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -56,11 +56,28 @@ export class StockOutController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves full details of a stock-out record including all line items and
+   * quantities removed from inventory. Used to review manual stock deductions.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('stockOut.findOne'))
   @Serialize(StockOutDetailResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get a Stock Out by ID',
+    description: 'Retrieves the full details of a stock-out transaction including all items removed from inventory, their quantities, and the reason for removal (e.g., kitchen consumption, department usage, waste, or spoilage).',
+    operationId: 'findOneStockOut',
+    tags: ['Inventory', 'Stock Out'],
+    parameters: [
+      { name: 'id', in: 'path', required: true, description: 'Stock Out ID' },
+    ],
+    responses: {
+      200: { description: 'The Stock Out was successfully retrieved' },
+      404: { description: 'The Stock Out was not found' },
+    },
+  })
   async findOne(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -75,11 +92,25 @@ export class StockOutController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all stock-out records for the business unit with pagination.
+   * Used by inventory managers to track manual deductions from stock levels.
+   */
   @Get()
   @UseGuards(new AppIdGuard('stockOut.findAll'))
   @Serialize(StockOutListItemResponseSchema)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'Get all Stock Out records',
+    description: 'Lists all inventory removal records for the business unit with pagination and filtering. Used by inventory managers to track consumption by kitchens and departments, monitor waste levels, and analyze usage patterns.',
+    operationId: 'findAllStockOut',
+    tags: ['Inventory', 'Stock Out'],
+    responses: {
+      200: { description: 'Stock Out records retrieved successfully' },
+      404: { description: 'No Stock Out records found' },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Req() req: Request,
@@ -96,11 +127,26 @@ export class StockOutController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Creates a new stock-out record to manually remove items from inventory.
+   * Used for inventory adjustments such as spoilage, breakage, write-offs,
+   * or corrections outside the normal store requisition process.
+   */
   @Post()
   @UseGuards(new AppIdGuard('stockOut.create'))
   @Serialize(StockOutMutationResponseSchema)
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Create a Stock Out',
+    description: 'Records an inventory removal to decrease stock levels. Used for issuing items to kitchens or departments, recording waste and spoilage, or correcting inventory discrepancies found during physical counts.',
+    operationId: 'createStockOut',
+    tags: ['Inventory', 'Stock Out'],
+    responses: {
+      201: { description: 'The Stock Out was successfully created' },
+      400: { description: 'Invalid request body' },
+    },
+  })
   async create(
     @Body() createDto: StockOutCreateDto,
     @Param('bu_code') bu_code: string,
@@ -115,11 +161,28 @@ export class StockOutController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Updates an existing stock-out record's header or line item details
+   * while it is still in draft status.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('stockOut.update'))
   @Serialize(StockOutMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Update a Stock Out',
+    description: 'Modifies an existing stock-out record to correct quantities, items, or removal reasons before the transaction is finalized. Used when staff need to amend an inventory deduction.',
+    operationId: 'updateStockOut',
+    tags: ['Inventory', 'Stock Out'],
+    parameters: [
+      { name: 'id', in: 'path', required: true, description: 'Stock Out ID' },
+    ],
+    responses: {
+      200: { description: 'The Stock Out was successfully updated' },
+      404: { description: 'The Stock Out was not found' },
+    },
+  })
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -136,11 +199,27 @@ export class StockOutController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a draft stock-out record that was created in error or is no longer needed.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('stockOut.delete'))
   @Serialize(StockOutMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Delete a Stock Out',
+    description: 'Removes a stock-out record that was created in error. Only applicable to draft transactions that have not yet been committed to inventory.',
+    operationId: 'deleteStockOut',
+    tags: ['Inventory', 'Stock Out'],
+    parameters: [
+      { name: 'id', in: 'path', required: true, description: 'Stock Out ID' },
+    ],
+    responses: {
+      200: { description: 'The Stock Out was successfully deleted' },
+      404: { description: 'The Stock Out was not found' },
+    },
+  })
   async delete(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -157,14 +236,18 @@ export class StockOutController extends BaseHttpController {
 
   // ==================== Stock Out Detail CRUD ====================
 
+  /**
+   * Lists all line items for a specific stock-out record, showing which products
+   * and quantities are being removed from inventory.
+   */
   @Get(':id/details')
   @UseGuards(new AppIdGuard('stockOut.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get all details for a Stock Out',
-    description: 'Retrieves all line items/details for a specific Stock Out',
+    description: 'Lists all individual items being removed from inventory in this stock-out transaction, including product details, quantities, and the department or purpose receiving the items.',
     operationId: 'findAllStockOutDetails',
-    tags: ['[Method] Get', 'Stock Out Detail'],
+    tags: ['Inventory', 'Stock Out'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -190,14 +273,17 @@ export class StockOutController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves a single stock-out line item with full product and quantity details.
+   */
   @Get(':id/details/:detail_id')
   @UseGuards(new AppIdGuard('stockOut.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a specific Stock Out detail by ID',
-    description: 'Retrieves a single Stock Out detail/line item by its ID',
+    description: 'Retrieves a specific item line from a stock-out transaction with full product, quantity, and cost details. Used to inspect or verify a particular inventory removal.',
     operationId: 'findStockOutDetailById',
-    tags: ['[Method] Get', 'Stock Out Detail'],
+    tags: ['Inventory', 'Stock Out'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -225,15 +311,19 @@ export class StockOutController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Adds a new line item to a draft stock-out record, specifying a product
+   * and quantity to be removed from inventory.
+   */
   @Post(':id/details')
   @UseGuards(new AppIdGuard('stockOut.update'))
   @Serialize(StockOutMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a new Stock Out detail',
-    description: 'Creates a new line item/detail for a Stock Out. Only works for Stock Out in draft status.',
+    description: 'Adds a new item line to a draft stock-out transaction, specifying the product and quantity to be removed from inventory for department use, kitchen consumption, or waste recording.',
     operationId: 'createStockOutDetail',
-    tags: ['[Method] Post', 'Stock Out Detail'],
+    tags: ['Inventory', 'Stock Out'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -261,15 +351,19 @@ export class StockOutController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Updates an existing stock-out line item's product or quantity.
+   * Only applicable while the stock-out record is in draft status.
+   */
   @Put(':id/details/:detail_id')
   @UseGuards(new AppIdGuard('stockOut.update'))
   @Serialize(StockOutMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a Stock Out detail',
-    description: 'Updates an existing Stock Out detail/line item. Only works for Stock Out in draft status.',
+    description: 'Modifies an item line on a draft stock-out transaction to correct the product, quantity, or other details before the inventory deduction is committed.',
     operationId: 'updateStockOutDetail',
-    tags: ['[Method] Put', 'Stock Out Detail'],
+    tags: ['Inventory', 'Stock Out'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -299,15 +393,18 @@ export class StockOutController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a line item from a draft stock-out record.
+   */
   @Delete(':id/details/:detail_id')
   @UseGuards(new AppIdGuard('stockOut.update'))
   @Serialize(StockOutMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a Stock Out detail',
-    description: 'Deletes an existing Stock Out detail/line item. Only works for Stock Out in draft status.',
+    description: 'Removes an item line from a draft stock-out transaction when the item was added in error or is no longer needed in this inventory removal.',
     operationId: 'deleteStockOutDetail',
-    tags: ['[Method] Delete', 'Stock Out Detail'],
+    tags: ['Inventory', 'Stock Out'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [

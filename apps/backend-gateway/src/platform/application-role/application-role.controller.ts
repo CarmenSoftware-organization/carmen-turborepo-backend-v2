@@ -33,7 +33,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { BaseHttpController } from '@/common';
 
 @Controller('api-system/role')
-@ApiTags('Application - Role')
+@ApiTags('Platform Admin')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -48,15 +48,19 @@ export class ApplicationRoleController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Lists all named role bundles (e.g., Admin, Purchaser, HOD, GM) defined in the platform.
+   * These roles group permissions to simplify user access management across hotel properties.
+   */
   @Get()
   @UseGuards(new AppIdGuard('application-role.findAll'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get all application roles',
-    description: 'Retrieve all application roles from micro_auth',
+    description: 'Lists all named role bundles defined in the ERP platform, such as Admin, Purchaser, HOD, or General Manager. These roles group permissions together to simplify user access management across hotel properties.',
     operationId: 'getAllApplicationRoles',
-    tags: ['[Method] Get'],
+    tags: ['Platform Admin', 'Application Role'],
     deprecated: false,
     security: [
       {
@@ -96,6 +100,10 @@ export class ApplicationRoleController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves the details of a specific application role, including its name and metadata.
+   * Used to inspect role configuration before assigning it to users or modifying its permissions.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('application-role.findOne'))
   @HttpCode(HttpStatus.OK)
@@ -107,9 +115,9 @@ export class ApplicationRoleController extends BaseHttpController {
   })
   @ApiOperation({
     summary: 'Get application role by ID',
-    description: 'Retrieve a specific application role by ID from micro_auth',
+    description: 'Retrieves the details of a specific application role, including its name and associated metadata. Used to inspect role configuration before assigning it to users or modifying its permissions.',
     operationId: 'getApplicationRoleById',
-    tags: ['[Method] Get'],
+    tags: ['Platform Admin', 'Application Role'],
     deprecated: false,
     security: [
       {
@@ -160,6 +168,10 @@ export class ApplicationRoleController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Creates a new named role bundle in the ERP platform.
+   * After creation, permissions can be assigned to define what actions users with this role can perform.
+   */
   @Post()
   @UseGuards(new AppIdGuard('application-role.create'))
   @HttpCode(HttpStatus.CREATED)
@@ -170,9 +182,9 @@ export class ApplicationRoleController extends BaseHttpController {
   })
   @ApiOperation({
     summary: 'Create new application role',
-    description: 'Create a new application role in micro_auth',
+    description: 'Creates a new named role bundle in the ERP platform, such as a custom department head or property-specific role. After creation, permissions can be assigned to this role to define what actions users with this role can perform.',
     operationId: 'createApplicationRole',
-    tags: ['[Method] Post'],
+    tags: ['Platform Admin', 'Application Role'],
     deprecated: false,
     security: [
       {
@@ -220,6 +232,10 @@ export class ApplicationRoleController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies an existing application role definition, such as renaming it or updating metadata.
+   * This affects all users assigned to this role across the platform.
+   */
   @Put(':id')
   @UseGuards(new AppIdGuard('application-role.update'))
   @HttpCode(HttpStatus.OK)
@@ -235,9 +251,9 @@ export class ApplicationRoleController extends BaseHttpController {
   })
   @ApiOperation({
     summary: 'Update application role',
-    description: 'Update an existing application role in micro_auth',
+    description: 'Modifies an existing application role definition, such as renaming it or updating its metadata. This affects all users assigned to this role across the platform.',
     operationId: 'updateApplicationRole',
-    tags: ['[Method] Put'],
+    tags: ['Platform Admin', 'Application Role'],
     deprecated: false,
     security: [
       {
@@ -297,6 +313,10 @@ export class ApplicationRoleController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes an application role from the platform.
+   * Users previously assigned this role will lose the associated permissions.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('application-role.delete'))
   @HttpCode(HttpStatus.OK)
@@ -308,9 +328,9 @@ export class ApplicationRoleController extends BaseHttpController {
   })
   @ApiOperation({
     summary: 'Delete application role',
-    description: 'Delete an application role from micro_auth',
+    description: 'Removes an application role from the platform. Users previously assigned this role will lose the associated permissions, so ensure affected users are reassigned to appropriate roles beforehand.',
     operationId: 'deleteApplicationRole',
-    tags: ['[Method] Delete'],
+    tags: ['Platform Admin', 'Application Role'],
     deprecated: false,
     security: [
       {

@@ -36,7 +36,7 @@ import {
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api')
-@ApiTags('Application - Location')
+@ApiTags('Master Data')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -49,6 +49,10 @@ export class LocationsController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Lists all active storage locations (warehouses, storerooms) assigned to the
+   * current user within the business unit for inventory operations.
+   */
   @Get(':bu_code/locations')
   @UseGuards(new AppIdGuard('locations.findAll'))
   @Serialize(LocationListItemResponseSchema)
@@ -57,9 +61,9 @@ export class LocationsController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get locations by user ID',
     description:
-      'Retrieves locations using user ID that acquired from JWT token and location must be active',
+      'Lists all active storage locations and warehouses accessible to the current user, used to select destinations for stock-in, stock-out, transfers, and physical count operations.',
     operationId: 'findAllByUserId',
-    tags: ['Application - Location'],
+    tags: ['Master Data', 'Location'],
     deprecated: false,
     parameters: [
       {
@@ -119,6 +123,10 @@ export class LocationsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves full details of a storage location including assigned users and
+   * stocked products, used for warehouse configuration and inventory management.
+   */
   @Get(':bu_code/locations/:id')
   @UseGuards(new AppIdGuard('locations.findOne'))
   @Serialize(LocationDetailResponseSchema)
@@ -126,7 +134,8 @@ export class LocationsController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get location by ID',
-    description: 'Retrieves a location by ID',
+    description: 'Retrieves the full details of a storage location including its assigned users and stocked products, used for managing warehouse configuration and inventory assignments.',
+    tags: ['Master Data', 'Location'],
   })
   async findOne(
     @Req() req: Request,
@@ -160,6 +169,10 @@ export class LocationsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves real-time inventory levels for a specific product at a given location,
+   * including on-hand, on-order, reorder, and restock quantities.
+   */
   @Get(':bu_code/locations/:location_id/product/:product_id/inventory')
   @UseGuards(new AppIdGuard('locations.getProductInventory'))
   @Serialize(LocationDetailResponseSchema)
@@ -167,9 +180,9 @@ export class LocationsController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get product inventory by location ID and product ID',
-    description: 'Retrieves a product inventory by location ID and product ID',
+    description: 'Retrieves real-time inventory levels for a specific product at a given storage location, including on-hand, on-order, reorder, and restock quantities for procurement and replenishment decisions.',
     operationId: 'getProductInventory',
-    tags: ['Application - Location'],
+    tags: ['Master Data', 'Location'],
     deprecated: false,
     parameters: [
       {

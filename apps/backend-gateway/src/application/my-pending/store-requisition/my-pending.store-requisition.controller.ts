@@ -43,7 +43,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { IgnoreGuards } from 'src/auth/decorators/ignore-guard.decorator';
 
 @Controller('api/my-pending/store-requisition')
-@ApiTags('Application - My Pending')
+@ApiTags('Workflow & Approval')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -58,14 +58,18 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Returns the count of store requisitions awaiting the current user's action,
+   * used for dashboard badge notifications and workload tracking.
+   */
   @Get('pending')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.findAllPending.count'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get count of all pending store requisitions',
-    description: 'Retrieves count of all pending store requisitions',
+    description: 'Returns the count of store requisitions currently awaiting the user\'s action in the approval pipeline, used for dashboard badge notifications and workload tracking.',
     operationId: 'findAllPendingStoreRequisitionsCount',
-    tags: ['Application - My Pending Store Requisition', '[Method] Get'],
+    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -134,6 +138,10 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves the approval workflow stages configured for store requisitions,
+   * showing the sequence of approval steps internal stock requests must pass through.
+   */
   @Get(':bu_code/workflow-stages')
   @UseGuards(
     new AppIdGuard('my-pending.storeRequisition.findAllWorkflowStagesBySr'),
@@ -141,9 +149,9 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get workflow stages of a store requisition',
-    description: 'Retrieves workflow stages of a store requisition',
+    description: 'Retrieves the approval workflow stages configured for store requisitions in the business unit, showing the sequence of approval steps that internal stock requests must pass through before fulfillment.',
     operationId: 'findAllWorkflowStagesBySr',
-    tags: ['Application - My Pending Store Requisition', '[Method] Get'],
+    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -214,15 +222,19 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves the full details of a specific store requisition pending approval,
+   * including requested items, quantities, requesting department, and approval status.
+   */
   @Get(':bu_code/:id')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.findOne'))
   @ApiVersionMinRequest()
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get a store requisition by ID',
-    description: 'Retrieves a store requisition by its ID',
+    description: 'Retrieves the full details of a specific store requisition pending in the approval pipeline, including requested items, quantities, requesting department, and current approval status.',
     operationId: 'findStoreRequisitionById',
-    tags: ['Application - My Pending Store Requisition', '[Method] Get'],
+    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -273,15 +285,19 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all store requisitions in the user's pending queue with pagination,
+   * enabling department staff and approvers to track internal stock requests.
+   */
   @Get()
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.findAll'))
   @ApiVersionMinRequest()
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all store requisitions',
-    description: 'Retrieves all store requisitions',
+    description: 'Lists all store requisitions in the user\'s pending queue with pagination, enabling department staff and approvers to track internal stock requests through the approval and fulfillment process.',
     operationId: 'findAllStoreRequisitions',
-    tags: ['Application - My Pending Store Requisition', '[Method] Get'],
+    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -346,13 +362,18 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Filters store requisitions by their current status (e.g., draft, pending,
+   * approved, rejected) to view requests at a specific workflow stage.
+   */
   @Get(':bu_code/status/:status')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.findAllByStatus'))
   @ApiVersionMinRequest()
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all store requisitions by status',
-    description: 'Retrieves all store requisitions by status',
+    description: 'Filters store requisitions by their current status (e.g., draft, pending, approved, rejected), allowing users to view internal stock requests at a specific stage in the approval workflow.',
+    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
   })
   @HttpCode(HttpStatus.OK)
   async findAllByStatus(
@@ -381,15 +402,19 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Creates a new store requisition for a hotel department to request items
+   * from internal storage, initiating the approval workflow before fulfillment.
+   */
   @Post(':bu_code')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.create'))
   @ApiVersionMinRequest()
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Create a store requisition',
-    description: 'Creates a new store requisition',
+    description: 'Creates a new store requisition for a hotel department to request items from internal storage, initiating the approval workflow before the storeroom fulfills the request.',
     operationId: 'createStoreRequisition',
-    tags: ['Application - My Pending Store Requisition', '[Method] Post'],
+    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -431,15 +456,19 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Saves changes to a draft store requisition, allowing the requestor to
+   * modify requested items, quantities, or delivery details before submitting.
+   */
   @Patch(':bu_code/:id/save')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.update'))
   @ApiVersionMinRequest()
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Update a store requisition',
-    description: 'Updates an existing store requisition',
+    description: 'Saves changes to a draft store requisition, allowing the requestor to modify requested items, quantities, or delivery details before submitting for approval.',
     operationId: 'updateStoreRequisition',
-    tags: ['Application - My Pending Store Requisition', '[Method] Patch'],
+    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -483,15 +512,19 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Submits a draft store requisition into the approval workflow,
+   * moving it from draft status to the first approval stage for review.
+   */
   @Patch(':bu_code/:id/submit')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.submit'))
   @ApiVersionMinRequest()
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Submit a store requisition',
-    description: 'Submits an existing store requisition',
+    description: 'Submits a draft store requisition into the approval workflow, moving it from draft status to the first approval stage for designated approvers to review.',
     operationId: 'submitStoreRequisition',
-    tags: ['Application - My Pending Store Requisition', '[Method] Patch'],
+    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -533,15 +566,19 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Approves a store requisition at the current user's workflow stage,
+   * advancing it to the next level or marking it as approved for fulfillment.
+   */
   @Patch(':bu_code/:id/approve')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.approve'))
   @ApiVersionMinRequest()
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Approve a store requisition',
-    description: 'Approves an existing store requisition',
+    description: 'Approves a store requisition at the current user\'s workflow stage, advancing it to the next approval level or marking it as fully approved for storeroom fulfillment.',
     operationId: 'approveStoreRequisition',
-    tags: ['Application - My Pending Store Requisition', '[Method] Patch'],
+    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -583,15 +620,19 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Rejects a store requisition at the current approval stage,
+   * sending it back to the requesting department for revision or cancellation.
+   */
   @Patch(':bu_code/:id/reject')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.reject'))
   @ApiVersionMinRequest()
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Reject a store requisition',
-    description: 'Rejects an existing store requisition',
+    description: 'Rejects a store requisition at the current approval stage, sending it back to the requesting department for revision or cancellation.',
     operationId: 'rejectStoreRequisition',
-    tags: ['Application - My Pending Store Requisition', '[Method] Patch'],
+    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -633,15 +674,19 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Allows an approver to review a store requisition and provide feedback
+   * or modifications before making a final approve/reject decision.
+   */
   @Patch(':bu_code/:id/review')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.review'))
   @ApiVersionMinRequest()
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Review a store requisition',
-    description: 'Reviews an existing store requisition',
+    description: 'Allows an approver to review a store requisition and provide feedback or modifications before making a final approve/reject decision on the internal stock request.',
     operationId: 'reviewStoreRequisition',
-    tags: ['Application - My Pending Store Requisition', '[Method] Patch'],
+    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -683,15 +728,19 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a store requisition that is no longer needed, typically a draft
+   * or rejected request that the department has decided to discard.
+   */
   @Delete(':bu_code/:id')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.delete'))
   @ApiVersionMinRequest()
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Delete a store requisition',
-    description: 'Deletes an existing store requisition',
+    description: 'Removes a store requisition that is no longer needed, typically a draft or rejected request that the department has decided to discard rather than resubmit.',
     operationId: 'deleteStoreRequisition',
-    tags: ['Application - My Pending Store Requisition', '[Method] Delete'],
+    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {

@@ -34,7 +34,7 @@ import {
 } from '@/common';
 
 @Controller()
-@ApiTags('Application - User')
+@ApiTags('User & Access')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -47,6 +47,10 @@ export class UserController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves the authenticated user's profile including name, contact details,
+   * assigned business units, and role within the hotel ERP system.
+   */
   @Get('/api/user/profile')
   @UseGuards(new AppIdGuard('user.getProfile'))
   @ApiBearerAuth()
@@ -56,9 +60,9 @@ export class UserController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get user profile',
-    description: 'Get user profile',
+    description: 'Retrieves the authenticated user\'s profile information including name, contact details, assigned business units, and role within the hotel ERP system.',
     operationId: 'getUserProfile',
-    tags: ['[Method] Get'],
+    tags: ['User & Access', 'User'],
     deprecated: false,
     security: [
       {
@@ -96,15 +100,19 @@ export class UserController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves the authenticated user's permission set, defining which
+   * procurement modules, inventory operations, and approval actions are authorized.
+   */
   @Get('/api/user/permission')
   @UseGuards(KeycloakGuard)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get User Profile',
-    description: 'Get user profile',
+    description: 'Retrieves the authenticated user\'s permission set, defining which procurement modules, inventory operations, and approval actions the user is authorized to perform within the ERP system.',
     operationId: 'getUserProfile',
-    tags: ['Authentication'],
+    tags: ['User & Access', 'User'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -144,6 +152,10 @@ export class UserController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all users assigned to the current business unit (tenant),
+   * used for managing staff access, roles, and approval workflow assignments.
+   */
   // get all user in tenant
   @Get('api/:bu_code/users')
   @UseGuards(new AppIdGuard('user.getAllUserInTenant'))
@@ -154,9 +166,9 @@ export class UserController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get all user in tenant',
-    description: 'Get all user in tenant',
+    description: 'Lists all users assigned to the current business unit (tenant), used for administrative purposes such as managing staff access, assigning roles, and configuring approval workflows.',
     operationId: 'getAllUserInTenant',
-    tags: ['[Method] Get'],
+    tags: ['User & Access', 'User'],
     deprecated: false,
     security: [
       {
@@ -192,6 +204,10 @@ export class UserController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Updates a user's profile information (name, contact details) in both the
+   * identity provider and the ERP database for consistent data across the system.
+   */
   @Put('/api/user/:user_id')
   @UseGuards(new AppIdGuard('user.updateUserById'))
   @ApiBearerAuth()
@@ -201,9 +217,9 @@ export class UserController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update user profile by ID',
     description:
-      'Update user profile information (firstname, middlename, lastname, telephone). Updates both Keycloak and database.',
+      'Updates a user\'s profile information (name, contact details) in both the identity provider and the ERP database, ensuring consistent user data across the hotel procurement system.',
     operationId: 'updateUserById',
-    tags: ['[Method] Put'],
+    tags: ['User & Access', 'User'],
     deprecated: false,
     security: [
       {

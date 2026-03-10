@@ -56,7 +56,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { CalculatePurchaseRequestDetail } from './dto/CalculatePurchaseRequestDetail.dto';
 
 @Controller('api')
-@ApiTags('Application - Purchase Request')
+@ApiTags('Procurement')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()
@@ -71,6 +71,11 @@ export class PurchaseRequestController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Lists all purchase requests across business units for the current user.
+   * Supports filtering by status, search term, and pagination for tracking
+   * PR documents through the procurement approval workflow.
+   */
   @Get('purchase-request')
   @Permission({ 'procurement.purchase_request': ['view'] })
   @UseGuards(new AppIdGuard('purchaseRequest.findAll'))
@@ -79,9 +84,9 @@ export class PurchaseRequestController extends BaseHttpController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all purchase requests',
-    description: 'Retrieves all purchase requests',
+    description: 'Lists all purchase requests for the current user across business units, filtered by status, search term, and pagination. Used by department staff and approvers to view and track PR documents in the procurement workflow.',
     operationId: 'findAllPurchaseRequests',
-    tags: ['Application - Purchase Request', '[Method] Get'],
+    tags: ['Procurement', 'Purchase Request'],
     deprecated: false,
     parameters: [
       {
@@ -155,6 +160,11 @@ export class PurchaseRequestController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves the configured approval workflow stages (e.g., HOD, Purchaser, FC, GM)
+   * for purchase requests in a business unit. Used to display workflow progress
+   * and determine which approval steps a PR must pass through.
+   */
   @Get(':bu_code/purchase-request/workflow-stages')
   @Permission({ 'procurement.purchase_request': ['view'] })
   @UseGuards(new AppIdGuard('purchaseRequest.findAll'))
@@ -162,9 +172,9 @@ export class PurchaseRequestController extends BaseHttpController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all workflow stages by purchase request',
-    description: 'Retrieves all workflow stages for purchase requests',
+    description: 'Returns the configured approval workflow stages (e.g., HOD, Purchaser, FC, GM) for purchase requests in this business unit. Used to display workflow progress and determine which approval steps a PR must pass through.',
     operationId: 'findAllWorkflowStagesByPr',
-    tags: ['Application - Purchase Request', '[Method] Get'],
+    tags: ['Procurement', 'Purchase Request'],
     deprecated: false,
     parameters: [
       {
@@ -223,15 +233,20 @@ export class PurchaseRequestController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves full details of a specific purchase request including line items,
+   * quantities, pricing, and current approval status. Used to review PR contents
+   * before approving, rejecting, or converting to a purchase order.
+   */
   @Get(':bu_code/purchase-request/:id')
   @UseGuards(new AppIdGuard('purchaseRequest.findOne'))
   @Serialize(PurchaseRequestDetailResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a purchase request by ID',
-    description: 'Retrieves a purchase request by its unique identifier',
+    description: 'Retrieves the full details of a specific purchase request including all line items, quantities, pricing, and current approval status. Used to review PR contents before approving, rejecting, or converting to a purchase order.',
     operationId: 'findOnePurchaseRequest',
-    tags: ['[Method] Get'],
+    tags: ['Procurement', 'Purchase Request'],
     deprecated: false,
     security: [
       {
@@ -290,13 +305,19 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
 
+  /**
+   * Filters purchase requests by a specific workflow status (e.g., draft, pending,
+   * approved, rejected). Used by approvers and managers to view PRs at a particular
+   * stage of the approval workflow.
+   */
   @Get(':bu_code/purchase-request/:id/status/:status')
   @UseGuards(new AppIdGuard('purchaseRequest.approval'))
   @Serialize(PurchaseRequestListItemResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get approval status of a purchase request',
-    description: 'Retrieves the approval status of a purchase request',
+    description: 'Filters purchase requests by a specific workflow status (e.g., draft, pending, approved, rejected). Used by approvers and managers to view PRs at a particular stage of the approval workflow.',
+    tags: ['Procurement', 'Purchase Request'],
   })
   @HttpCode(HttpStatus.OK)
   async findAllByStatus(
@@ -325,6 +346,11 @@ export class PurchaseRequestController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Creates a new purchase request for a department to request items or services.
+   * The PR starts in draft status with line items, quantities, and estimated costs,
+   * and can then be submitted for approval through the configured workflow.
+   */
   @Post(':bu_code/purchase-request')
   @UseGuards(new AppIdGuard('purchaseRequest.create'))
   @Serialize(PurchaseRequestMutationResponseSchema)
@@ -332,9 +358,9 @@ export class PurchaseRequestController extends BaseHttpController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Create a purchase request',
-    description: 'Creates a new purchase request',
+    description: 'Creates a new purchase request for a department to request items or services they need. The PR starts in draft status and includes line items with product details, quantities, and estimated costs. Once created, it can be submitted for approval through the configured workflow.',
     operationId: 'createPurchaseRequest',
-    tags: ['Application - Purchase Request', '[Method] Post'],
+    tags: ['Procurement', 'Purchase Request'],
     deprecated: false,
     parameters: [
       {
@@ -393,13 +419,19 @@ export class PurchaseRequestController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Duplicates one or more existing purchase requests, preserving their line items
+   * and details. Useful for recurring procurement needs where departments regularly
+   * order the same items.
+   */
   @Post(':bu_code/purchase-request/duplicate-pr')
   @UseGuards(new AppIdGuard('purchaseRequest.duplicatePr'))
   @Serialize(PurchaseRequestMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Duplicate purchase requests',
-    description: 'Duplicates existing purchase requests',
+    description: 'Creates copies of one or more existing purchase requests, preserving their line items and details. Useful for recurring procurement needs where departments regularly order the same items.',
+    tags: ['Procurement', 'Purchase Request'],
   })
   @HttpCode(HttpStatus.CREATED)
   async duplicatePr(
@@ -423,15 +455,19 @@ export class PurchaseRequestController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Splits selected line items from an existing purchase request into a new separate PR.
+   * Used when a purchaser needs to separate items for different vendors or delivery timelines.
+   */
   @Post(':bu_code/purchase-request/:id/split')
   @UseGuards(new AppIdGuard('purchaseRequest.split'))
   @Serialize(PurchaseRequestMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Split purchase request',
-    description: 'Splits specified detail items from a purchase request into a new purchase request with the same status',
+    description: 'Moves selected line items from an existing purchase request into a new separate PR, preserving the original workflow status. Used when a purchaser needs to separate items for different vendors or delivery timelines.',
     operationId: 'splitPurchaseRequest',
-    tags: ['Application - Purchase Request', '[Method] Post'],
+    tags: ['Procurement', 'Purchase Request'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Original purchase request ID' },
       { name: 'bu_code', in: 'path', required: true, description: 'Business unit code' },
@@ -486,13 +522,19 @@ export class PurchaseRequestController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Submits a draft purchase request into the approval workflow.
+   * The PR moves from draft to pending status and becomes available for
+   * review by the next approver (e.g., HOD).
+   */
   @Patch(':bu_code/purchase-request/:id/submit')
   @UseGuards(new AppIdGuard('purchaseRequest.submit'))
   @Serialize(PurchaseRequestMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Submit a purchase request',
-    description: 'Submits an existing purchase request',
+    description: 'Submits a draft purchase request into the approval workflow, making it available for review by the next approver (e.g., HOD). Once submitted, the PR moves from draft to pending status and can no longer be freely edited.',
+    tags: ['Procurement', 'Purchase Request'],
   })
   @HttpCode(HttpStatus.OK)
   async submit(
@@ -517,13 +559,19 @@ export class PurchaseRequestController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Advances a purchase request through the approval workflow at the current stage.
+   * Approval roles (HOD, FC, GM) confirm the request; the purchase role adds vendor
+   * selection, pricing, tax, and discount details to prepare for PO conversion.
+   */
   @Patch(':bu_code/purchase-request/:id/approve')
   @UseGuards(new AppIdGuard('purchaseRequest.approve'))
   @Serialize(PurchaseRequestMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Approve a purchase request',
-    description: 'Approves an existing purchase request. Use stage_role "approve" for approval role, or "purchase" for purchase role (includes pricelist, vendor, tax, discount fields).',
+    description: 'Advances a purchase request through the approval workflow at the current stage. Approval roles (HOD, FC, GM) confirm the request, while the purchase role adds vendor selection, price list, tax, and discount details to prepare the PR for conversion into a purchase order.',
+    tags: ['Procurement', 'Purchase Request'],
   })
   @ApiBody({
     description: 'Approve purchase request payload. Use stage_role to determine which role is approving.',
@@ -561,13 +609,19 @@ export class PurchaseRequestController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Rejects a purchase request at the current approval stage, returning it to the
+   * requester with a reason. Used by approvers (HOD, Purchaser, FC, GM) when the
+   * request does not meet requirements or budget constraints.
+   */
   @Patch(':bu_code/purchase-request/:id/reject')
   @UseGuards(new AppIdGuard('purchaseRequest.reject'))
   @Serialize(PurchaseRequestMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Submit a purchase request',
-    description: 'Submits an existing purchase request',
+    description: 'Rejects a purchase request at the current approval stage, returning it to the requester with a reason. Used by approvers (HOD, Purchaser, FC, GM) when the request does not meet requirements or budget constraints.',
+    tags: ['Procurement', 'Purchase Request'],
   })
   @HttpCode(HttpStatus.OK)
   async reject(
@@ -593,13 +647,18 @@ export class PurchaseRequestController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Sends a purchase request back to a previous workflow stage for corrections
+   * or additional information before it can proceed through approval.
+   */
   @Patch(':bu_code/purchase-request/:id/review')
   @UseGuards(new AppIdGuard('purchaseRequest.review'))
   @Serialize(PurchaseRequestMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Review a purchase request',
-    description: 'Review an existing purchase request',
+    description: 'Sends a purchase request back to a previous workflow stage for corrections or additional information. Used by approvers who need the requester or a prior approver to revise the PR before it can proceed.',
+    tags: ['Procurement', 'Purchase Request'],
   })
   @HttpCode(HttpStatus.OK)
   async review(
@@ -624,15 +683,19 @@ export class PurchaseRequestController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Saves changes to a purchase request including header information and line item
+   * modifications (quantities, items, details) before submitting for approval.
+   */
   @Patch(':bu_code/purchase-request/:id/save')
   @UseGuards(new AppIdGuard('purchaseRequest.update'))
   @Serialize(PurchaseRequestMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a purchase request',
-    description: 'Updates an existing purchase request',
+    description: 'Saves changes to a purchase request including header information and line item modifications. Used to update quantities, add or remove items, or adjust details before submitting the PR for approval.',
     operationId: 'updatePurchaseRequest',
-    tags: ['[Method] Update'],
+    tags: ['Procurement', 'Purchase Request'],
     deprecated: false,
     security: [
       {
@@ -686,14 +749,18 @@ export class PurchaseRequestController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Generates an Excel spreadsheet of the purchase request with all line items,
+   * pricing, and approval details for offline review or archival.
+   */
   @Get(':bu_code/purchase-request/:id/export')
   @UseGuards(new AppIdGuard('purchaseRequest.export'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Export a purchase request to Excel',
-    description: 'Exports a purchase request to Excel format (.xlsx) for download',
+    description: 'Generates an Excel spreadsheet of the purchase request with all line items, pricing, and approval details. Used for offline review, sharing with stakeholders, or archival purposes.',
     operationId: 'exportPurchaseRequest',
-    tags: ['[Method] Get'],
+    tags: ['Procurement', 'Purchase Request'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -740,14 +807,18 @@ export class PurchaseRequestController extends BaseHttpController {
     res.send(buffer);
   }
 
+  /**
+   * Generates a printable PDF of the purchase request for physical signatures,
+   * filing, or sending to vendors. Includes line items, totals, and approval history.
+   */
   @Get(':bu_code/purchase-request/:id/print')
   @UseGuards(new AppIdGuard('purchaseRequest.print'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Print a purchase request to PDF',
-    description: 'Generates a PDF document of the purchase request for printing',
+    description: 'Generates a printable PDF document of the purchase request for physical signatures, filing, or sending to vendors. Includes all line items, totals, and approval history.',
     operationId: 'printPurchaseRequest',
-    tags: ['[Method] Get'],
+    tags: ['Procurement', 'Purchase Request'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -794,15 +865,19 @@ export class PurchaseRequestController extends BaseHttpController {
     res.send(buffer);
   }
 
+  /**
+   * Removes a purchase request that is no longer needed, typically a draft PR
+   * created in error or no longer required by the department.
+   */
   @Delete(':bu_code/purchase-request/:id')
   @UseGuards(new AppIdGuard('purchaseRequest.delete'))
   @Serialize(PurchaseRequestMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a purchase request',
-    description: 'Deletes an existing purchase request',
+    description: 'Removes a purchase request that is no longer needed. Typically used for draft PRs that were created in error or are no longer required by the department.',
     operationId: 'deletePurchaseRequest',
-    tags: ['[Method] Delete'],
+    tags: ['Procurement', 'Purchase Request'],
     deprecated: false,
     parameters: [
       {
@@ -842,12 +917,17 @@ export class PurchaseRequestController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves cost allocation dimensions (e.g., department, cost center, project)
+   * for a specific PR line item. Used for financial reporting and budget tracking.
+   */
   @Get(':bu_code/purchase-request/detail/:detail_id/dimension')
   @UseGuards(new AppIdGuard('purchaseRequest.detail.findDimensions'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get dimensions of a purchase request detail',
-    description: 'Retrieves dimensions associated with a purchase request detail',
+    description: 'Retrieves cost allocation dimensions (e.g., department, cost center, project) associated with a specific PR line item. Used for financial reporting and budget tracking across organizational units.',
+    tags: ['Procurement', 'Purchase Request'],
   })
   @HttpCode(HttpStatus.OK)
   async findDimensionsByDetailId(
@@ -875,12 +955,17 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
 
+  /**
+   * Retrieves the change history and audit trail for a specific PR line item,
+   * including price changes, quantity adjustments, and approval actions at each stage.
+   */
   @Get(':bu_code/purchase-request/detail/:detail_id/history')
   @UseGuards(new AppIdGuard('purchaseRequest.detail.findhistory'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get history of a purchase request detail',
-    description: 'Retrieves history associated with a purchase request detail',
+    description: 'Retrieves the change history and audit trail for a specific PR line item, including price changes, quantity adjustments, and approval actions taken at each workflow stage.',
+    tags: ['Procurement', 'Purchase Request'],
   })
   @HttpCode(HttpStatus.OK)
   async findHistoryByDetailId(
@@ -908,12 +993,18 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
 
+  /**
+   * Calculates the total cost breakdown for a PR line item including unit price,
+   * tax, discount, and net amount. Used by purchasers to evaluate pricing from
+   * different vendors and price lists before finalizing the request.
+   */
   @Get(':bu_code/purchase-request/detail/:detail_id/calculate')
   @UseGuards(new AppIdGuard('purchaseRequest.detail.findhistory'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get history of a purchase request detail',
-    description: 'Retrieves history associated with a purchase request detail',
+    description: 'Calculates the total cost breakdown for a PR line item including unit price, tax, discount, and net amount. Used by purchasers to evaluate pricing from different vendors and price lists before finalizing the request.',
+    tags: ['Procurement', 'Purchase Request'],
   })
   @HttpCode(HttpStatus.OK)
   async getCalculatePriceInfoByDetailId(

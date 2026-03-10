@@ -22,7 +22,7 @@ import {
 
 @Controller('api/:bu_code/workflow')
 @UseGuards(KeycloakGuard)
-@ApiTags('Application - Workflow')
+@ApiTags('Workflow & Approval')
 @ApiHeaderRequiredXAppId()
 @ApiBearerAuth()
 export class WorkflowController extends BaseHttpController {
@@ -34,13 +34,17 @@ export class WorkflowController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves the configurable approval workflow for a given document type
+   * (e.g., purchase request, store requisition), including approval stages and assigned roles.
+   */
   @Get('/type/:type')
   @UseGuards(new AppIdGuard('workflow.findByType'))
   @Serialize(WorkflowDetailResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get all workflow types' })
+  @ApiOperation({ summary: 'Get all workflow types', tags: ['Workflow & Approval', 'Workflow'] })
   async findByType(
     @Req() req: Request,
     @Res() res: Response,
@@ -67,13 +71,17 @@ export class WorkflowController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves the previous approval stages of a workflow relative to the current stage,
+   * used to determine revert/return-to options in the approval chain.
+   */
   @Get(':workflow_id/previous_stages')
   @UseGuards(KeycloakGuard)
   @Serialize(WorkflowListItemResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get previous stages of a workflow' })
+  @ApiOperation({ summary: 'Get previous stages of a workflow', tags: ['Workflow & Approval', 'Workflow'] })
   async getPreviousStages(
     @Req() req: Request,
     @Res() res: Response,

@@ -21,7 +21,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/my-approve')
-@ApiTags('Application - My Approve')
+@ApiTags('Workflow & Approval')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -34,15 +34,19 @@ export class MyApproveController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Provides a dashboard summary count of all documents awaiting the current user's
+   * approval across store requisitions, purchase requests, and purchase orders.
+   */
   @Get('pending')
   @UseGuards(new AppIdGuard('my-approve.findAllPending.count'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get combined count of all pending approvals (SR + PR + PO)',
     description:
-      'Retrieves the total count of pending store requisitions, purchase requests, and purchase orders',
+      'Provides a dashboard summary count of all documents awaiting the current user\'s approval across store requisitions, purchase requests, and purchase orders, helping approvers prioritize their workload.',
     operationId: 'findAllPendingApprovalsCount',
-    tags: ['Application - My Approve', '[Method] Get'],
+    tags: ['Workflow & Approval', 'My Approve'],
     deprecated: false,
     parameters: [
       {
@@ -97,6 +101,10 @@ export class MyApproveController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves all procurement documents pending the current user's approval,
+   * grouped by type (SR, PR, PO), serving as the approver's central task queue.
+   */
   @Get()
   @UseGuards(new AppIdGuard('my-approve.findAll'))
   @ApiVersionMinRequest()
@@ -104,9 +112,9 @@ export class MyApproveController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all pending approvals (SR + PR + PO) grouped by type',
     description:
-      'Retrieves all pending store requisitions, purchase requests, and purchase orders, grouped by document type',
+      'Retrieves the full list of procurement documents pending the current user\'s approval, grouped by document type (store requisitions, purchase requests, purchase orders), serving as the approver\'s central task queue.',
     operationId: 'findAllPendingApprovals',
-    tags: ['Application - My Approve', '[Method] Get'],
+    tags: ['Workflow & Approval', 'My Approve'],
     deprecated: false,
     parameters: [
       {

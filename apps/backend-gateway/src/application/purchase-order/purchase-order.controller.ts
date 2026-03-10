@@ -53,7 +53,7 @@ import {
 } from '@/common';
 
 @Controller('api/:bu_code/purchase-order')
-@ApiTags('Application - Purchase Order')
+@ApiTags('Procurement')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()
@@ -66,15 +66,19 @@ export class PurchaseOrderController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves full details of a specific purchase order including vendor information,
+   * line items, pricing, delivery dates, and current workflow status.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('purchaseOrder.findOne'))
   @Serialize(PurchaseOrderDetailResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a purchase order by ID',
-    description: 'Retrieves a purchase order by its unique identifier',
+    description: 'Retrieves the full details of a specific purchase order including vendor information, line items, pricing, delivery dates, and current workflow status. Used to review PO contents before sending to a vendor or during goods receiving.',
     operationId: 'findOnePurchaseOrder',
-    tags: ['[Method] Get'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -119,15 +123,19 @@ export class PurchaseOrderController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all purchase orders for the business unit with pagination and search.
+   * Used by purchasers and managers to track outstanding orders and vendor commitments.
+   */
   @Get()
   @UseGuards(new AppIdGuard('purchaseOrder.findAll'))
   @Serialize(PurchaseOrderListItemResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get all purchase orders',
-    description: 'Retrieves all purchase orders',
+    description: 'Lists all purchase orders for the business unit with pagination and search. Used by purchasers and managers to track outstanding orders, monitor delivery status, and manage vendor commitments.',
     operationId: 'findAllPurchaseOrders',
-    tags: ['[Method] Get'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -178,6 +186,11 @@ export class PurchaseOrderController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Creates a new purchase order to formalize procurement from a vendor.
+   * Groups approved PR line items by vendor, delivery date, and currency,
+   * establishing a binding order commitment.
+   */
   @Post()
   @UseGuards(new AppIdGuard('purchaseOrder.create'))
   @Serialize(PurchaseOrderMutationResponseSchema)
@@ -185,9 +198,9 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a purchase order',
     description:
-      'Creates a new purchase order. PO groups items from PR by vendor_id -> delivery_date -> currency_id',
+      'Creates a new purchase order to formalize procurement from a vendor. The PO groups approved PR line items by vendor, delivery date, and currency, establishing a binding order commitment that can be sent to the vendor.',
     operationId: 'createPurchaseOrder',
-    tags: ['[Method] Post'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -238,15 +251,19 @@ export class PurchaseOrderController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Updates purchase order header and line item details such as quantities, pricing,
+   * delivery dates, or vendor terms. Only for POs not yet fully received or closed.
+   */
   @Put(':id')
   @UseGuards(new AppIdGuard('purchaseOrder.update'))
   @Serialize(PurchaseOrderMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a purchase order',
-    description: 'Updates an existing purchase order',
+    description: 'Updates purchase order header and line item details such as quantities, pricing, delivery dates, or vendor terms. Only applicable to POs that have not yet been fully received or closed.',
     operationId: 'updatePurchaseOrder',
-    tags: ['[Method] Update'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -299,15 +316,19 @@ export class PurchaseOrderController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a purchase order that is no longer needed, typically a draft PO
+   * created in error before being sent to a vendor.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('purchaseOrder.delete'))
   @Serialize(PurchaseOrderMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a purchase order',
-    description: 'Deletes an existing purchase order',
+    description: 'Removes a purchase order that is no longer needed. Typically used for draft POs that were created in error before being sent to a vendor.',
     operationId: 'deletePurchaseOrder',
-    tags: ['[Method] Delete'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -352,6 +373,11 @@ export class PurchaseOrderController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Saves incremental changes to a purchase order still being prepared, including
+   * adding, modifying, or removing line items. Used by purchasers to finalize
+   * PO details before submitting for approval.
+   */
   @Patch(':id/save')
   @UseGuards(new AppIdGuard('purchaseOrder.save'))
   @Serialize(PurchaseOrderMutationResponseSchema)
@@ -359,9 +385,9 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiOperation({
     summary: 'Save purchase order changes (add/update/remove details)',
     description:
-      'Saves changes to a purchase order while it is in progress. Supports updating header fields and adding, updating, or removing detail line items.',
+      'Saves incremental changes to a purchase order that is still being prepared, including adding new items, modifying quantities or pricing, and removing line items. Used by purchasers to finalize PO details before submitting for approval.',
     operationId: 'savePurchaseOrder',
-    tags: ['[Method] Patch'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -426,6 +452,11 @@ export class PurchaseOrderController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Advances a purchase order through its approval workflow at the current stage.
+   * Each authorized approver (e.g., FC, GM) signs off to authorize the vendor
+   * commitment and expenditure.
+   */
   @Patch(':id/approve')
   @UseGuards(new AppIdGuard('purchaseOrder.approve'))
   @Serialize(PurchaseOrderMutationResponseSchema)
@@ -433,9 +464,9 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiOperation({
     summary: 'Approve a purchase order',
     description:
-      'Approves a purchase order at the current workflow stage. Validates user role and advances the workflow.',
+      'Advances a purchase order through its approval workflow at the current stage. Each authorized approver (e.g., FC, GM) signs off to authorize the vendor commitment and expenditure.',
     operationId: 'approvePurchaseOrder',
-    tags: ['[Method] Patch'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -500,6 +531,11 @@ export class PurchaseOrderController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Rejects a purchase order at the current approval stage, preventing it from
+   * being sent to the vendor. Used when budget, pricing, or business reasons
+   * require the order to be stopped.
+   */
   @Patch(':id/reject')
   @UseGuards(new AppIdGuard('purchaseOrder.reject'))
   @Serialize(PurchaseOrderMutationResponseSchema)
@@ -507,9 +543,9 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiOperation({
     summary: 'Reject a purchase order',
     description:
-      'Rejects a purchase order at the current workflow stage. Sets status to closed.',
+      'Rejects a purchase order at the current approval stage, closing it and preventing it from being sent to the vendor. Used when an approver determines the order should not proceed due to budget, pricing, or business reasons.',
     operationId: 'rejectPurchaseOrder',
-    tags: ['[Method] Patch'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -574,6 +610,10 @@ export class PurchaseOrderController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Returns a purchase order to a previous workflow stage for corrections,
+   * such as adjusting vendor terms, quantities, or pricing before final authorization.
+   */
   @Patch(':id/review')
   @UseGuards(new AppIdGuard('purchaseOrder.review'))
   @Serialize(PurchaseOrderMutationResponseSchema)
@@ -581,9 +621,9 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiOperation({
     summary: 'Review a purchase order',
     description:
-      'Sends a purchase order back to a previous workflow stage for review.',
+      'Returns a purchase order to a previous workflow stage for corrections, such as adjusting vendor terms, quantities, or pricing. Allows approvers to request changes before giving final authorization.',
     operationId: 'reviewPurchaseOrder',
-    tags: ['[Method] Patch'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -648,6 +688,10 @@ export class PurchaseOrderController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Cancels a purchase order that has not been fully received, withdrawing the
+   * commitment to the vendor. Cancelled quantities are tracked for reporting.
+   */
   @Post(':id/cancel')
   @UseGuards(new AppIdGuard('purchaseOrder.cancel'))
   @Serialize(PurchaseOrderMutationResponseSchema)
@@ -655,9 +699,9 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiOperation({
     summary: 'Cancel a purchase order',
     description:
-      'Cancels an existing purchase order. Only orders with status draft, in_progress, or sent can be cancelled. Sets status to closed and updates cancelled_qty on line items.',
+      'Cancels a purchase order that has not been fully received, withdrawing the commitment to the vendor. Only draft, in-progress, or sent POs can be cancelled. Cancelled quantities are tracked on line items for reporting.',
     operationId: 'cancelPurchaseOrder',
-    tags: ['[Method] Post'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -705,6 +749,11 @@ export class PurchaseOrderController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Finalizes a purchase order after all expected goods have been received or when
+   * no further deliveries are expected. Unreceived quantities are recorded as cancelled
+   * for inventory and financial reconciliation.
+   */
   @Post(':id/close')
   @UseGuards(new AppIdGuard('purchaseOrder.close'))
   @Serialize(PurchaseOrderMutationResponseSchema)
@@ -712,9 +761,9 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiOperation({
     summary: 'Close a purchase order',
     description:
-      'Closes an existing purchase order and sends notification to buyer and email to vendor. Only orders with status sent, partial, or in_progress can be closed. Sets status to closed and updates cancelled_qty for unreceived items.',
+      'Finalizes a purchase order after all expected goods have been received or when no further deliveries are expected. Notifies the buyer and sends an email to the vendor. Unreceived quantities are recorded as cancelled for inventory and financial reconciliation.',
     operationId: 'closePurchaseOrder',
-    tags: ['[Method] Post'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -762,6 +811,11 @@ export class PurchaseOrderController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Previews how approved purchase request line items will be grouped into purchase
+   * orders by vendor, delivery date, and currency. Used by purchasers to review
+   * the PO structure before confirming PR-to-PO conversion.
+   */
   @Post('group-pr')
   @UseGuards(new AppIdGuard('purchaseOrder.groupPr'))
   @Serialize(PurchaseOrderListItemResponseSchema)
@@ -769,9 +823,9 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiOperation({
     summary: 'Group PR details for PO creation',
     description:
-      'Groups PR details by vendor_id -> delivery_date -> currency_id for creating POs from PRs',
+      'Previews how approved purchase request line items will be grouped into purchase orders by vendor, delivery date, and currency. Used by purchasers to review the PO structure before confirming the conversion from PRs to POs.',
     operationId: 'groupPrForPo',
-    tags: ['[Method] Post'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -834,6 +888,11 @@ export class PurchaseOrderController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Converts approved purchase requests into purchase orders by grouping PR line items
+   * by vendor, delivery date, and currency. This is the primary action that transitions
+   * procurement from the request phase to the ordering phase.
+   */
   @Post('confirm-pr')
   @UseGuards(new AppIdGuard('purchaseOrder.confirmPr'))
   @Serialize(PurchaseOrderMutationResponseSchema)
@@ -841,9 +900,9 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiOperation({
     summary: 'Confirm PR and create PO(s)',
     description:
-      'Finds PRs by ID, groups PR details by vendor_id -> delivery_date -> currency_id, and creates Purchase Orders',
+      'Converts approved purchase requests into purchase orders by grouping PR line items by vendor, delivery date, and currency. This is the primary action that transitions procurement from the request phase to the ordering phase.',
     operationId: 'confirmPrToPo',
-    tags: ['[Method] Post'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -906,14 +965,18 @@ export class PurchaseOrderController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Generates an Excel spreadsheet of the purchase order with vendor details,
+   * line items, pricing, and delivery information for record-keeping or sharing.
+   */
   @Get(':id/export')
   @UseGuards(new AppIdGuard('purchaseOrder.export'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Export a purchase order to Excel',
-    description: 'Exports a purchase order to Excel format (.xlsx) for download',
+    description: 'Generates an Excel spreadsheet of the purchase order with vendor details, all line items, pricing, and delivery information. Used for record-keeping, sharing with finance, or sending to vendors who require spreadsheet formats.',
     operationId: 'exportPurchaseOrder',
-    tags: ['[Method] Get'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -978,14 +1041,18 @@ export class PurchaseOrderController extends BaseHttpController {
     res.send(buffer);
   }
 
+  /**
+   * Generates a printable PDF of the purchase order for sending to the vendor,
+   * obtaining physical signatures, or filing. Includes terms and approval signatures.
+   */
   @Get(':id/print')
   @UseGuards(new AppIdGuard('purchaseOrder.print'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Print a purchase order to PDF',
-    description: 'Generates a PDF document of the purchase order for printing',
+    description: 'Generates a printable PDF of the purchase order for sending to the vendor, obtaining physical signatures, or filing. Includes vendor details, line items, totals, terms, and approval signatures.',
     operationId: 'printPurchaseOrder',
-    tags: ['[Method] Get'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -1052,14 +1119,18 @@ export class PurchaseOrderController extends BaseHttpController {
 
   // ==================== Purchase Order Detail CRUD ====================
 
+  /**
+   * Lists all line items on a purchase order including product details, ordered
+   * quantities, unit prices, and received quantities for tracking partial deliveries.
+   */
   @Get(':id/details')
   @UseGuards(new AppIdGuard('purchaseOrder.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get all details for a purchase order',
-    description: 'Retrieves all line items/details for a specific purchase order',
+    description: 'Lists all line items on a purchase order including product details, ordered quantities, unit prices, and received quantities. Used to review what has been ordered and track partial deliveries.',
     operationId: 'findAllPurchaseOrderDetails',
-    tags: ['[Method] Get', 'Purchase Order Detail'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -1088,14 +1159,18 @@ export class PurchaseOrderController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves a single line item from a purchase order with full product, pricing,
+   * and delivery details. Used when creating a Good Received Note or resolving discrepancies.
+   */
   @Get(':id/details/:detail_id')
   @UseGuards(new AppIdGuard('purchaseOrder.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a single purchase order detail by ID',
-    description: 'Retrieves a specific line item/detail from a purchase order',
+    description: 'Retrieves a single line item from a purchase order with full product, pricing, and delivery details. Used to inspect a specific item when creating a Good Received Note or resolving discrepancies.',
     operationId: 'findOnePurchaseOrderDetail',
-    tags: ['[Method] Get', 'Purchase Order Detail'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -1126,15 +1201,18 @@ export class PurchaseOrderController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a line item from a draft purchase order before it is sent to the vendor.
+   */
   @Delete(':id/details/:detail_id')
   @UseGuards(new AppIdGuard('purchaseOrder.update'))
   @Serialize(PurchaseOrderMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a purchase order detail',
-    description: 'Removes a line item/detail from a purchase order (draft status only)',
+    description: 'Removes a line item from a draft purchase order before it is sent to the vendor. Used when an item is no longer needed or was added in error.',
     operationId: 'deletePurchaseOrderDetail',
-    tags: ['[Method] Delete', 'Purchase Order Detail'],
+    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [

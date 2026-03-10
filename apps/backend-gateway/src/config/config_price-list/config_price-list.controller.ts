@@ -44,7 +44,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/config/:bu_code/price-list')
-@ApiTags('Config - Price List')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -59,9 +59,20 @@ export class Config_PriceListController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Bulk imports vendor price lists from an Excel file for efficient
+   * multi-supplier pricing updates in procurement cost control.
+   */
   @Post('upload-excel')
   @UseGuards(new AppIdGuard('priceList.uploadExcel'))
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Upload price list from Excel',
+    description: 'Bulk imports vendor price lists from an Excel file, enabling administrators to efficiently update product pricing from multiple suppliers for procurement cost control.',
+    operationId: 'uploadPriceListExcel',
+    tags: ['Configuration', 'Price List'],
+    responses: { 201: { description: 'Price list uploaded successfully' } },
+  })
   async uploadExcel(
     @Body() createConfigPriceListDto: PriceListCreateDto,
     @Param('bu_code') bu_code: string,
@@ -91,9 +102,20 @@ export class Config_PriceListController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Exports a vendor price list to Excel format for offline review,
+   * comparison, or sharing for procurement cost analysis.
+   */
   @Get(':id/download-excel')
   @UseGuards(new AppIdGuard('priceList.downloadExcel'))
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Download price list as Excel',
+    description: 'Exports a vendor price list to Excel format for offline review, comparison, or sharing with stakeholders for procurement cost analysis and budget planning.',
+    operationId: 'downloadPriceListExcel',
+    tags: ['Configuration', 'Price List'],
+    responses: { 200: { description: 'Price list Excel downloaded successfully' } },
+  })
   async downloadExcel(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -123,9 +145,20 @@ export class Config_PriceListController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Creates a new vendor price list with product-level pricing details
+   * used during purchase order creation for automatic price population.
+   */
   @Post()
   @UseGuards(new AppIdGuard('priceList.create'))
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Create a new price list',
+    description: 'Creates a new vendor price list with product-level pricing details. Price lists are used during purchase order creation to automatically populate agreed vendor prices for cost control.',
+    operationId: 'createPriceList',
+    tags: ['Configuration', 'Price List'],
+    responses: { 201: { description: 'Price list created successfully' } },
+  })
   async create(
     @Body() createConfigPriceListDto: PriceListCreateDto,
     @Param('bu_code') bu_code: string,
@@ -152,9 +185,20 @@ export class Config_PriceListController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Lists all vendor price lists for comparing supplier pricing
+   * and managing cost agreements across vendors.
+   */
   @Get()
   @UseGuards(new AppIdGuard('priceList.findAll'))
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get all price lists',
+    description: 'Returns all vendor price lists configured for the business unit. Used by procurement staff to compare supplier pricing and manage cost agreements across vendors.',
+    operationId: 'findAllPriceLists',
+    tags: ['Configuration', 'Price List'],
+    responses: { 200: { description: 'Price lists retrieved successfully' } },
+  })
   async findAll(
     @Query() query: IPaginateQuery,
     @Param('bu_code') bu_code: string,
@@ -185,9 +229,20 @@ export class Config_PriceListController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves a specific vendor price list with all line-item pricing details
+   * for reviewing agreed product prices from a particular vendor.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('priceList.findOne'))
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get a price list by ID',
+    description: 'Retrieves a specific vendor price list with all its line-item pricing details. Used to review agreed product prices from a particular vendor for procurement decisions.',
+    operationId: 'findOnePriceList',
+    tags: ['Configuration', 'Price List'],
+    responses: { 200: { description: 'Price list retrieved successfully' } },
+  })
   async findOne(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -212,9 +267,20 @@ export class Config_PriceListController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Modifies an existing vendor price list such as updating product prices,
+   * validity dates, or adding new product lines.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('priceList.update'))
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Update a price list',
+    description: 'Modifies an existing vendor price list, such as updating product prices, validity dates, or adding new product lines. Updated prices are used in subsequent purchase order creation.',
+    operationId: 'updatePriceList',
+    tags: ['Configuration', 'Price List'],
+    responses: { 200: { description: 'Price list updated successfully' } },
+  })
   async update(
     @Param('id') id: string,
     @Body() updateConfigPriceListDto: PriceListUpdateDto,
@@ -247,9 +313,19 @@ export class Config_PriceListController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a vendor price list from the system. Historical procurement records are unaffected.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('priceList.remove'))
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Delete a price list',
+    description: 'Removes a vendor price list from the system. The price list will no longer be used for automated pricing in purchase orders, but historical procurement records are unaffected.',
+    operationId: 'deletePriceList',
+    tags: ['Configuration', 'Price List'],
+    responses: { 200: { description: 'Price list deleted successfully' } },
+  })
   async remove(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -274,14 +350,19 @@ export class Config_PriceListController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Bulk imports vendor price list data from a CSV file, creating or updating
+   * price lists with line items. Invalid rows are skipped and reported.
+   */
   @Post('import-csv')
   @UseGuards(new AppIdGuard('priceList.importCsv'))
   @UseInterceptors(FileInterceptor('file'))
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Import price lists from CSV',
-    description: 'Uploads a CSV file to import/upsert price lists with their details. Invalid rows are skipped and reported in the response.',
+    description: 'Bulk imports vendor price list data from a CSV file, creating or updating price lists and their line items. Invalid rows are skipped and reported, enabling efficient mass updates of procurement pricing.',
     operationId: 'importPriceListCsv',
+    tags: ['Configuration', 'Price List'],
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({

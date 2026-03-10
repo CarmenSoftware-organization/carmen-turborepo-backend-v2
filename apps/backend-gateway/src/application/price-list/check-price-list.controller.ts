@@ -26,7 +26,7 @@ import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { UrlTokenGuard } from 'src/auth/guards/url-token.guard';
 
 @Controller('api/check-price-list')
-@ApiTags('Public - Check Price List')
+@ApiTags('Procurement')
 @ApiHeaderRequiredXAppId()
 @IgnoreGuards(KeycloakGuard)
 @UseGuards(UrlTokenGuard)
@@ -40,15 +40,19 @@ export class CheckPriceListController extends BaseHttpController {
     this.logger.debug('CheckPriceListController initialized');
   }
 
+  /**
+   * Validates a secure URL token sent to vendors for price list confirmation,
+   * allowing external vendors to review and verify pricing without system login.
+   */
   @Post(':url_token')
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Check price list by URL token',
     description:
-      'Validates the URL token from tb_shot_url table and returns decoded token data',
+      'Validates a secure URL token sent to vendors for price list confirmation, allowing external vendors to review and verify their submitted pricing without requiring system login.',
     operationId: 'checkPriceListByUrlToken',
-    tags: ['Public - Check Price List', '[Method] Get'],
+    tags: ['Procurement', 'Price List'],
     deprecated: false,
     parameters: [
       {

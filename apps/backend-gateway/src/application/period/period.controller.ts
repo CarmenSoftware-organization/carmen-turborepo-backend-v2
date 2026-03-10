@@ -33,7 +33,7 @@ import {
 } from 'src/common/dto/period/period.dto';
 
 @Controller('api')
-@ApiTags('Application - Period')
+@ApiTags('Inventory')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -46,15 +46,19 @@ export class PeriodController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves a fiscal/accounting period by ID, including its open/closed status
+   * and date range, to verify whether inventory transactions can be posted.
+   */
   @Get(':bu_code/period/:id')
   @UseGuards(new AppIdGuard('period.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a period by ID',
-    description: 'Retrieves a specific period by its ID',
+    description: 'Retrieves the details of a fiscal/accounting period, including its open/closed status and date range, used to verify whether inventory transactions and valuations can be posted.',
     operationId: 'findOnePeriod',
-    tags: ['Application - Period', '[Method] Get'],
+    tags: ['Inventory', 'Period'],
     responses: {
       200: { description: 'Period retrieved successfully' },
       404: { description: 'Period not found' },
@@ -82,6 +86,10 @@ export class PeriodController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all fiscal/accounting periods for the business unit, enabling finance
+   * staff to manage month-end closing cycles and inventory transaction windows.
+   */
   @Get(':bu_code/period')
   @UseGuards(new AppIdGuard('period.findAll'))
   @ApiVersionMinRequest()
@@ -89,9 +97,9 @@ export class PeriodController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all periods',
-    description: 'Retrieves all periods with pagination support',
+    description: 'Lists all fiscal/accounting periods for the business unit, enabling finance staff to manage month-end closing cycles and control when inventory transactions can be recorded.',
     operationId: 'findAllPeriods',
-    tags: ['Application - Period', '[Method] Get'],
+    tags: ['Inventory', 'Period'],
     responses: {
       200: { description: 'Periods retrieved successfully' },
     },
@@ -119,15 +127,19 @@ export class PeriodController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Creates a new fiscal/accounting period that controls when inventory transactions
+   * and valuations can be posted, typically aligned with hotel monthly closing.
+   */
   @Post(':bu_code/period')
   @UseGuards(new AppIdGuard('period.create'))
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a new period',
-    description: 'Creates a new fiscal period',
+    description: 'Creates a new fiscal/accounting period that controls when inventory transactions and valuations can be posted, typically aligned with the hotel monthly closing schedule.',
     operationId: 'createPeriod',
-    tags: ['Application - Period', '[Method] Post'],
+    tags: ['Inventory', 'Period'],
     responses: {
       201: { description: 'Period created successfully' },
       409: { description: 'Period or fiscal year/month already exists' },
@@ -159,15 +171,19 @@ export class PeriodController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies a fiscal period, such as opening or closing it for inventory
+   * transactions, essential for month-end closing and valuation control.
+   */
   @Patch(':bu_code/period/:id')
   @UseGuards(new AppIdGuard('period.update'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a period',
-    description: 'Updates an existing period',
+    description: 'Modifies an existing fiscal period, such as opening or closing it for inventory transactions, which is essential for month-end closing and inventory valuation control.',
     operationId: 'updatePeriod',
-    tags: ['Application - Period', '[Method] Patch'],
+    tags: ['Inventory', 'Period'],
     responses: {
       200: { description: 'Period updated successfully' },
       404: { description: 'Period not found' },
@@ -201,6 +217,10 @@ export class PeriodController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Bulk-generates upcoming fiscal periods for forward planning, automatically
+   * creating the next N monthly periods for inventory and procurement scheduling.
+   */
   @Post(':bu_code/period/next')
   @UseGuards(new AppIdGuard('period.create'))
   @HttpCode(HttpStatus.CREATED)
@@ -208,9 +228,9 @@ export class PeriodController extends BaseHttpController {
   @ApiOperation({
     summary: 'Generate next N open periods',
     description:
-      'Generates the next N open periods after the last existing period. Skips periods that already exist.',
+      'Bulk-generates upcoming fiscal periods for forward planning, automatically creating the next N monthly periods so inventory and procurement operations can be scheduled in advance.',
     operationId: 'generateNextPeriods',
-    tags: ['Application - Period', '[Method] Post'],
+    tags: ['Inventory', 'Period'],
     responses: {
       201: { description: 'Periods generated successfully' },
     },
@@ -250,15 +270,19 @@ export class PeriodController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Removes a fiscal period created in error. Periods with existing inventory
+   * transactions cannot be deleted to preserve financial integrity.
+   */
   @Delete(':bu_code/period/:id')
   @UseGuards(new AppIdGuard('period.delete'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a period',
-    description: 'Soft deletes an existing period',
+    description: 'Removes a fiscal period that was created in error. Periods with existing inventory transactions cannot be deleted to preserve financial integrity.',
     operationId: 'deletePeriod',
-    tags: ['Application - Period', '[Method] Delete'],
+    tags: ['Inventory', 'Period'],
     responses: {
       200: { description: 'Period deleted successfully' },
       404: { description: 'Period not found' },

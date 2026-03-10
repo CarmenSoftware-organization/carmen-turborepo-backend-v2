@@ -19,7 +19,7 @@ import { PurchaseRequestTemplateService } from './purchase-request-template.serv
 import { CreatePurchaseRequestTemplateDto } from './dto/purchase-requesr-template.dto';
 import { UpdatePurchaseRequestTemplateDto } from './dto/update-purchase-request-template.dto';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
@@ -37,7 +37,7 @@ import {
 } from '@/common';
 
 @Controller('api/:bu_code/purchase-request-template')
-@ApiTags('Application - Purchase Request Template')
+@ApiTags('Procurement')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -52,9 +52,22 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Lists all reusable purchase request templates in the business unit,
+   * such as recurring kitchen supply orders or standard stock replenishments.
+   */
   @Get()
   @UseGuards(new AppIdGuard('purchaseRequestTemplate.findAll'))
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get all purchase request templates',
+    description: 'Lists all reusable purchase request templates available in the business unit, such as recurring weekly kitchen supply orders or standard housekeeping stock replenishments, enabling quick creation of routine procurement requests.',
+    operationId: 'findAllPurchaseRequestTemplates',
+    tags: ['Procurement', 'Purchase Request Template'],
+    responses: {
+      200: { description: 'Templates retrieved successfully' },
+    },
+  })
   async getPurchaseRequestTemplate(
     @Req() req: Request,
     @Res() res: Response,
@@ -83,9 +96,23 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves a specific purchase request template with its predefined
+   * item list and quantities for review or use in a new procurement request.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('purchaseRequestTemplate.findOne'))
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get a purchase request template by ID',
+    description: 'Retrieves a specific purchase request template with its predefined item list and quantities, allowing users to review or use the template for creating a new procurement request.',
+    operationId: 'findOnePurchaseRequestTemplate',
+    tags: ['Procurement', 'Purchase Request Template'],
+    responses: {
+      200: { description: 'Template retrieved successfully' },
+      404: { description: 'Template not found' },
+    },
+  })
   async getPurchaseRequestTemplateById(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -113,9 +140,24 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Creates a new reusable template with predefined items and quantities,
+   * streamlining repetitive procurement tasks like weekly kitchen supply orders.
+   */
   @Post()
   @UseGuards(new AppIdGuard('purchaseRequestTemplate.create'))
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Create a new purchase request template',
+    description: 'Creates a new reusable purchase request template with a predefined set of items and quantities, streamlining repetitive procurement tasks such as weekly kitchen supply orders or periodic maintenance material requests.',
+    operationId: 'createPurchaseRequestTemplate',
+    tags: ['Procurement', 'Purchase Request Template'],
+    responses: {
+      201: { description: 'Template created successfully' },
+      400: { description: 'Bad request' },
+    },
+  })
+  @ApiBody({ type: CreatePurchaseRequestTemplateDto })
   async createPurchaseRequestTemplate(
     @Body() createPurchaseRequestTemplateDto: CreatePurchaseRequestTemplateDto,
     @Param('bu_code') bu_code: string,
@@ -142,9 +184,24 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies an existing purchase request template to adjust the predefined
+   * item list, quantities, or name to match current ordering needs.
+   */
   @Put(':id')
   @UseGuards(new AppIdGuard('purchaseRequestTemplate.update'))
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Update a purchase request template',
+    description: 'Modifies an existing purchase request template to adjust the predefined item list, quantities, or template name, keeping reusable procurement templates aligned with current ordering needs.',
+    operationId: 'updatePurchaseRequestTemplate',
+    tags: ['Procurement', 'Purchase Request Template'],
+    responses: {
+      200: { description: 'Template updated successfully' },
+      404: { description: 'Template not found' },
+    },
+  })
+  @ApiBody({ type: UpdatePurchaseRequestTemplateDto })
   async updatePurchaseRequestTemplate(
     @Param('bu_code') bu_code: string,
     @Body() updatePurchaseRequestTemplateDto: UpdatePurchaseRequestTemplateDto,
@@ -173,9 +230,23 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a reusable purchase request template that is no longer needed,
+   * preventing staff from using outdated item sets for new requests.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('purchaseRequestTemplate.delete'))
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Delete a purchase request template',
+    description: 'Removes a reusable purchase request template that is no longer needed, preventing staff from using outdated or discontinued item sets for new procurement requests.',
+    operationId: 'deletePurchaseRequestTemplate',
+    tags: ['Procurement', 'Purchase Request Template'],
+    responses: {
+      200: { description: 'Template deleted successfully' },
+      404: { description: 'Template not found' },
+    },
+  })
   async deletePurchaseRequestTemplate(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,

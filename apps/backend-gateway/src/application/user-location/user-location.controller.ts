@@ -6,7 +6,7 @@ import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -18,7 +18,7 @@ import {
 } from '@/common';
 
 @Controller('api/:bu_code/user-location')
-@ApiTags('Config - Tax Type Inventory')
+@ApiTags('User & Access')
 @ApiHeaderRequiredXAppId()
 @ApiBearerAuth()
 @UseGuards(KeycloakGuard)
@@ -31,11 +31,24 @@ export class UserLocationController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves all storage locations the current user has access to
+   * (e.g., main warehouse, kitchen storeroom), controlling where inventory operations can be performed.
+   */
   @Get()
   @UseGuards(new AppIdGuard('userLocation.findAll'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get all user locations',
+    description: 'Retrieves all storage locations (e.g., main warehouse, kitchen storeroom, bar stock) that the current user has access permissions for, controlling which inventory locations the user can perform stock-in, stock-out, and transfer operations on.',
+    operationId: 'findAllUserLocations',
+    tags: ['User & Access', 'User Location'],
+    responses: {
+      200: { description: 'User locations retrieved successfully' },
+    },
+  })
   async findAll(
     @Req() req: Request,
     @Res() res: Response,

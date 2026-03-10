@@ -45,7 +45,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/config/:bu_code/departments')
-@ApiTags('Config - Departments')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -60,6 +60,10 @@ export class Config_DepartmentsController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves a specific hotel department (e.g., Kitchen, F&B, Housekeeping)
+   * including cost center information for budget allocation and requisition routing.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('department.findOne'))
   @Serialize(DepartmentDetailResponseSchema)
@@ -67,9 +71,9 @@ export class Config_DepartmentsController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a department by ID',
-    description: 'Get a department by ID',
+    description: 'Retrieves a specific hotel department record (e.g., Kitchen, F&B, Housekeeping, Engineering). Department details include cost center information used for budget allocation and purchase request routing.',
     operationId: 'findOneDepartment',
-    tags: ['config-departments', '[Method] Get - Config'],
+    tags: ['Configuration', 'Departments'],
     deprecated: false,
     security: [
       {
@@ -115,6 +119,10 @@ export class Config_DepartmentsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all hotel departments configured in the business unit, used to organize
+   * purchase requests, assign users, and track costs by operational area.
+   */
   @Get()
   @UseGuards(new AppIdGuard('department.findAll'))
   @Serialize(DepartmentListItemResponseSchema)
@@ -123,9 +131,9 @@ export class Config_DepartmentsController extends BaseHttpController {
   @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all departments',
-    description: 'Get all departments',
+    description: 'Returns all hotel departments configured in the business unit. Departments are used to organize purchase requests, assign users, and track costs by operational area.',
     operationId: 'findAllDepartments',
-    tags: ['config-departments', '[Method] Get - Config'],
+    tags: ['Configuration', 'Departments'],
     deprecated: false,
     security: [
       {
@@ -172,6 +180,10 @@ export class Config_DepartmentsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Creates a new hotel department (e.g., Kitchen, Housekeeping, Spa) that can be
+   * assigned users and used as a cost center for procurement requisitions.
+   */
   @Post()
   @UseGuards(new AppIdGuard('department.create'))
   @Serialize(DepartmentMutationResponseSchema)
@@ -179,9 +191,9 @@ export class Config_DepartmentsController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a new department',
-    description: 'Create a new department',
+    description: 'Creates a new hotel department (e.g., Kitchen, Housekeeping, Spa). The department can then be assigned users and used as a cost center for procurement and inventory requisitions.',
     operationId: 'createDepartment',
-    tags: ['config-departments', '[Method] Post - Config'],
+    tags: ['Configuration', 'Departments'],
     deprecated: false,
     security: [
       {
@@ -227,6 +239,9 @@ export class Config_DepartmentsController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies an existing department's configuration such as name or cost center settings.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('department.update'))
   @Serialize(DepartmentMutationResponseSchema)
@@ -234,9 +249,9 @@ export class Config_DepartmentsController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a department',
-    description: 'Update a department',
+    description: 'Modifies an existing department configuration, such as its name or cost center settings. Changes affect how future purchase requests and inventory transactions are categorized.',
     operationId: 'updateDepartment',
-    tags: ['config-departments', '[Method] Patch - Config'],
+    tags: ['Configuration', 'Departments'],
     deprecated: false,
     security: [
       {
@@ -288,6 +303,9 @@ export class Config_DepartmentsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a department from active configuration. Historical records are retained.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('department.delete'))
   @Serialize(DepartmentMutationResponseSchema)
@@ -295,9 +313,9 @@ export class Config_DepartmentsController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a department',
-    description: 'Delete a department',
+    description: 'Removes a department from the active configuration. The department will no longer be available for new requisitions or user assignments, but historical records are retained.',
     operationId: 'deleteDepartment',
-    tags: ['config-departments', '[Method] Delete - Config'],
+    tags: ['Configuration', 'Departments'],
     deprecated: false,
     security: [
       {

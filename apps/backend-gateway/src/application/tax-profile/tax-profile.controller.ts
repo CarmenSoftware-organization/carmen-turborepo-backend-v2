@@ -40,7 +40,7 @@ import {
 } from '@/common';
 
 @Controller('api/:bu_code/tax-profile')
-@ApiTags('Config - Tax Profile')
+@ApiTags('Master Data')
 @ApiHeaderRequiredXAppId()
 @ApiBearerAuth()
 @UseGuards(KeycloakGuard)
@@ -55,10 +55,24 @@ export class TaxProfileController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves a specific tax configuration profile including VAT rates,
+   * withholding tax rules, and calculation parameters for procurement transactions.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('taxProfile.findOne'))
   @Serialize(TaxProfileDetailResponseSchema)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get a tax profile by ID',
+    description: 'Retrieves a specific tax configuration profile including VAT rates, withholding tax rules, and tax calculation parameters applied to procurement transactions and vendor invoices.',
+    operationId: 'findOneTaxProfile',
+    tags: ['Master Data', 'Tax Profile'],
+    responses: {
+      200: { description: 'Tax profile retrieved successfully' },
+      404: { description: 'Tax profile not found' },
+    },
+  })
   async findOne(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -85,6 +99,10 @@ export class TaxProfileController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all tax configuration profiles in the business unit, including
+   * VAT rates and withholding tax settings for purchase orders and vendor payments.
+   */
   @Get()
   @UseGuards(new AppIdGuard('taxProfile.findAll'))
   @Serialize(TaxProfileListItemResponseSchema)
@@ -93,7 +111,8 @@ export class TaxProfileController extends BaseHttpController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all tax type inventories',
-    description: 'Get all tax type inventories',
+    description: 'Lists all tax configuration profiles available in the business unit, including VAT rates and withholding tax settings used for calculating taxes on purchase orders and vendor payments.',
+    tags: ['Master Data', 'Tax Profile'],
   })
   async findAll(
     @Req() req: Request,

@@ -38,7 +38,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 
 
 @Controller('api/config/:bu_code/department-user')
-@ApiTags('Application - User Department')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -53,15 +53,19 @@ export class Config_DepartmentUserController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves a specific department-user assignment showing which users
+   * belong to a hotel department for requisition and approval permissions.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('departmentUser.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a department by ID',
-    description: 'Get a department by ID',
+    description: 'Retrieves a specific department-user assignment record, showing which users are assigned to a particular hotel department for requisition and approval permissions.',
     operationId: 'findOneDepartment',
-    tags: ['config-department-user', '[Method] Get - Config'],
+    tags: ['Configuration', 'Department User'],
     deprecated: false,
     security: [
       {
@@ -107,6 +111,10 @@ export class Config_DepartmentUserController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all department-user assignments for managing which staff members
+   * belong to each hotel department for requisition routing.
+   */
   @Get()
   @UseGuards(new AppIdGuard('departmentUser.findAll'))
   @HttpCode(HttpStatus.OK)
@@ -114,9 +122,9 @@ export class Config_DepartmentUserController extends BaseHttpController {
   @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all departments',
-    description: 'Get all departments',
+    description: 'Returns all department-user assignments for the business unit. Used by administrators to manage which staff members belong to each hotel department for requisition routing.',
     operationId: 'findAllDepartments',
-    tags: ['config-department-user', '[Method] Get - Config'],
+    tags: ['Configuration', 'Department User'],
     deprecated: false,
     security: [
       {
@@ -163,15 +171,19 @@ export class Config_DepartmentUserController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Creates a new department-user assignment, linking a user to a hotel department
+   * for requisition creation and approval workflow participation.
+   */
   @Post()
   @UseGuards(new AppIdGuard('departmentUser.create'))
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a new department',
-    description: 'Create a new department',
+    description: 'Creates a new department-user assignment, linking a user to a hotel department. This determines which department the user can create requisitions for and participate in approval workflows.',
     operationId: 'createDepartment',
-    tags: ['config-department-user', '[Method] Post - Config'],
+    tags: ['Configuration', 'Department User'],
     deprecated: false,
     security: [
       {
@@ -217,15 +229,18 @@ export class Config_DepartmentUserController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies an existing department-user assignment such as changing the user's role within the department.
+   */
   @Put(':id')
   @UseGuards(new AppIdGuard('departmentUser.update'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a department',
-    description: 'Update a department',
+    description: 'Modifies an existing department-user assignment, such as changing the user role within the department or updating assignment details.',
     operationId: 'updateDepartment',
-    tags: ['config-department-user', '[Method] Put - Config'],
+    tags: ['Configuration', 'Department User'],
     deprecated: false,
     security: [
       {
@@ -274,15 +289,18 @@ export class Config_DepartmentUserController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a department-user assignment, unlinking a user from a hotel department.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('departmentUser.delete'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a department',
-    description: 'Delete a department',
+    description: 'Removes a department-user assignment, unlinking a user from a hotel department. The user will no longer be able to create requisitions for or approve documents in that department.',
     operationId: 'deleteDepartment',
-    tags: ['config-department-user', '[Method] Delete - Config'],
+    tags: ['Configuration', 'Department User'],
     deprecated: false,
     security: [
       {

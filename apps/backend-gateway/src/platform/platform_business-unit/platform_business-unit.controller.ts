@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Platform_BusinessUnitService as Platform_BusinessUnitService } from './platform_business-unit.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   BusinessUnitCreateDto,
   BusinessUnitUpdateDto,
@@ -35,7 +35,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { BaseHttpController } from '@/common';
 
 @Controller('api-system/business-unit')
-@ApiTags('Platform - Business Unit')
+@ApiTags('Platform Admin')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -49,9 +49,24 @@ export class Platform_BusinessUnitController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Lists all hotel properties and operational units within the organization.
+   * Each business unit represents a distinct tenant (e.g., hotel, resort, property)
+   * with its own inventory, procurement, and recipe workflows.
+   * Supports pagination, search, and version filtering.
+   */
   @Get()
   @UseGuards(new AppIdGuard('businessUnit.findAll'))
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get all business units',
+    description: 'Lists all hotel properties and operational units within the organization, with filtering and pagination. Each business unit represents a distinct tenant (e.g., a hotel, resort, or property) that operates its own inventory and procurement workflows.',
+    operationId: 'getBusinessUnitList',
+    tags: ['Platform Admin', 'Business Unit'],
+    responses: {
+      200: { description: 'Business units retrieved successfully' },
+    },
+  })
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   async getBusinessUnitList(
@@ -79,9 +94,23 @@ export class Platform_BusinessUnitController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves the full details of a specific hotel property or operational unit,
+   * including its configuration, cluster membership, currency, and tenant settings.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('businessUnit.findOne'))
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get a business unit by ID',
+    description: 'Retrieves the full details of a specific hotel property or operational unit, including its configuration, cluster membership, and tenant settings.',
+    operationId: 'getBusinessUnitById',
+    tags: ['Platform Admin', 'Business Unit'],
+    responses: {
+      200: { description: 'Business unit retrieved successfully' },
+      404: { description: 'Business unit not found' },
+    },
+  })
   @ApiVersionMinRequest()
   async getBusinessUnitById(
     @Param('id') id: string,
@@ -107,9 +136,25 @@ export class Platform_BusinessUnitController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Registers a new hotel property or operational unit in the platform.
+   * Creates a new tenant context with its own isolated inventory, procurement,
+   * and recipe data, and associates it with a cluster (hotel chain or company).
+   */
   @Post()
   @UseGuards(new AppIdGuard('businessUnit.create'))
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Create a business unit',
+    description: 'Registers a new hotel property or operational unit in the platform. This creates a new tenant context with its own isolated inventory, procurement, and recipe data, and associates it with a cluster (hotel chain or company).',
+    operationId: 'createBusinessUnit',
+    tags: ['Platform Admin', 'Business Unit'],
+    responses: {
+      201: { description: 'Business unit created successfully' },
+      400: { description: 'Bad request' },
+    },
+  })
+  @ApiBody({ type: BusinessUnitCreateDto, description: 'Business unit data' })
   @ApiVersionMinRequest()
   async createBusinessUnit(
     @Req() req: Request,
@@ -135,9 +180,24 @@ export class Platform_BusinessUnitController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies the configuration or details of an existing hotel property,
+   * such as its name, address, currency, format settings, or cluster association.
+   */
   @Put(':id')
   @UseGuards(new AppIdGuard('businessUnit.update'))
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Update a business unit',
+    description: 'Modifies the configuration or details of an existing hotel property or operational unit, such as its name, address, or cluster association.',
+    operationId: 'updateBusinessUnit',
+    tags: ['Platform Admin', 'Business Unit'],
+    responses: {
+      200: { description: 'Business unit updated successfully' },
+      404: { description: 'Business unit not found' },
+    },
+  })
+  @ApiBody({ type: BusinessUnitUpdateDto, description: 'Business unit update data' })
   @ApiVersionMinRequest()
   async updateBusinessUnit(
     @Req() req: Request,
@@ -166,9 +226,24 @@ export class Platform_BusinessUnitController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Soft-deletes a hotel property or operational unit from the platform.
+   * The business unit data is retained for audit purposes but becomes inactive,
+   * preventing further inventory and procurement operations.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('businessUnit.delete'))
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Delete a business unit',
+    description: 'Soft-deletes a hotel property or operational unit from the platform. The business unit and its associated tenant data are retained for audit purposes but become inactive, preventing further operations.',
+    operationId: 'deleteBusinessUnit',
+    tags: ['Platform Admin', 'Business Unit'],
+    responses: {
+      200: { description: 'Business unit deleted successfully' },
+      404: { description: 'Business unit not found' },
+    },
+  })
   @ApiVersionMinRequest()
   async deleteBusinessUnit(
     @Req() req: Request,

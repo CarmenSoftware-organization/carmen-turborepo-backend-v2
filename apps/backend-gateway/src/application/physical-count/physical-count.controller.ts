@@ -36,7 +36,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { PhysicalCountCreateDto, PhysicalCountUpdateDto } from 'src/common/dto/physical-count/physical-count.dto';
 
 @Controller('api')
-@ApiTags('Application - Physical Count')
+@ApiTags('Inventory')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -51,10 +51,23 @@ export class PhysicalCountController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Returns the count of physical inventory counts pending the current user's action.
+   * Used for dashboard notifications and task prioritization.
+   */
   @Get('physical-count/pending')
   @UseGuards(new AppIdGuard('physicalCount.findAllPending.count'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get pending physical count count',
+    description: 'Returns the count of physical inventory counts awaiting the current user to record actual stock quantities, used to drive dashboard notifications and task prioritization.',
+    operationId: 'findAllPendingPhysicalCountCount',
+    tags: ['Inventory', 'Physical Count'],
+    responses: {
+      200: { description: 'Pending physical count count retrieved successfully' },
+    },
+  })
   async findAllPendingPhysicalCountCount(
     @Req() req: Request,
     @Res() res: Response,
@@ -76,10 +89,28 @@ export class PhysicalCountController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves a physical inventory count session by ID, including location,
+   * period, status, and counted items for review or continuation.
+   */
   @Get(':bu_code/physical-count/:id')
   @UseGuards(new AppIdGuard('physicalCount.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get a physical count by ID',
+    description: 'Retrieves the full details of a physical inventory count session, including the location, period, status, and counted items, for review or continuation of the stock verification process.',
+    operationId: 'findOnePhysicalCount',
+    tags: ['Inventory', 'Physical Count'],
+    parameters: [
+      { name: 'id', in: 'path', required: true, description: 'Physical Count ID' },
+      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+    ],
+    responses: {
+      200: { description: 'Physical count retrieved successfully' },
+      404: { description: 'Physical count not found' },
+    },
+  })
   async findOne(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -106,11 +137,27 @@ export class PhysicalCountController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all physical inventory count sessions for a business unit with pagination.
+   * Allows inventory managers to monitor ongoing and completed stock verifications.
+   */
   @Get(':bu_code/physical-count/')
   @UseGuards(new AppIdGuard('physicalCount.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get all physical counts',
+    description: 'Lists all physical inventory count sessions for a business unit with pagination, allowing inventory managers to monitor ongoing and completed stock verification activities.',
+    operationId: 'findAllPhysicalCounts',
+    tags: ['Inventory', 'Physical Count'],
+    parameters: [
+      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+    ],
+    responses: {
+      200: { description: 'Physical counts retrieved successfully' },
+    },
+  })
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -138,10 +185,27 @@ export class PhysicalCountController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Initiates a new periodic physical inventory count for a storage location,
+   * generating the list of products to be verified against system stock levels.
+   */
   @Post(':bu_code/physical-count')
   @UseGuards(new AppIdGuard('physicalCount.create'))
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Create a new physical count',
+    description: 'Initiates a new periodic physical inventory count for a specific storage location and count period, generating the list of products to be verified against system stock levels.',
+    operationId: 'createPhysicalCount',
+    tags: ['Inventory', 'Physical Count'],
+    parameters: [
+      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+    ],
+    responses: {
+      201: { description: 'Physical count created successfully' },
+      400: { description: 'Invalid request body' },
+    },
+  })
   async create(
     @Body() createDto: PhysicalCountCreateDto,
     @Param('bu_code') bu_code: string,
@@ -168,10 +232,28 @@ export class PhysicalCountController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies a physical count record (e.g., assigned location or metadata)
+   * before the count is finalized and submitted.
+   */
   @Patch(':bu_code/physical-count/:id')
   @UseGuards(new AppIdGuard('physicalCount.update'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Update a physical count',
+    description: 'Modifies a physical count record, such as changing the assigned location or adjusting metadata, before the count is finalized and submitted.',
+    operationId: 'updatePhysicalCount',
+    tags: ['Inventory', 'Physical Count'],
+    parameters: [
+      { name: 'id', in: 'path', required: true, description: 'Physical Count ID' },
+      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+    ],
+    responses: {
+      200: { description: 'Physical count updated successfully' },
+      404: { description: 'Physical count not found' },
+    },
+  })
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -201,10 +283,28 @@ export class PhysicalCountController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a physical count created in error. Only draft counts that
+   * have not been submitted can be deleted.
+   */
   @Delete(':bu_code/physical-count/:id')
   @UseGuards(new AppIdGuard('physicalCount.delete'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Delete a physical count',
+    description: 'Removes a physical count that was created in error or is no longer needed. Only draft counts that have not been submitted can be deleted.',
+    operationId: 'deletePhysicalCount',
+    tags: ['Inventory', 'Physical Count'],
+    parameters: [
+      { name: 'id', in: 'path', required: true, description: 'Physical Count ID' },
+      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+    ],
+    responses: {
+      200: { description: 'Physical count deleted successfully' },
+      404: { description: 'Physical count not found' },
+    },
+  })
   async delete(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -228,14 +328,18 @@ export class PhysicalCountController extends BaseHttpController {
 
   // ==================== Physical Count Detail CRUD ====================
 
+  /**
+   * Returns all product line items in a physical count, showing system quantities
+   * alongside recorded actual quantities for inventory reconciliation.
+   */
   @Get(':bu_code/physical-count/:id/details')
   @UseGuards(new AppIdGuard('physicalCount.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get all details for a Physical Count',
-    description: 'Retrieves all line items/details for a specific Physical Count',
+    description: 'Returns all product line items included in a physical count, showing system quantities alongside any recorded actual quantities for inventory reconciliation.',
     operationId: 'findAllPhysicalCountDetails',
-    tags: ['[Method] Get', 'Physical Count Detail'],
+    tags: ['Inventory', 'Physical Count'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -264,14 +368,18 @@ export class PhysicalCountController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves a single product line item from a physical count, including its
+   * system quantity, actual counted quantity, and variance for investigation.
+   */
   @Get(':bu_code/physical-count/:id/details/:detail_id')
   @UseGuards(new AppIdGuard('physicalCount.findOne'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a specific Physical Count detail by ID',
-    description: 'Retrieves a single Physical Count detail/line item by its ID',
+    description: 'Retrieves a specific product line item from a physical count, including its system quantity, actual counted quantity, and any variance for detailed investigation.',
     operationId: 'findPhysicalCountDetailById',
-    tags: ['[Method] Get', 'Physical Count Detail'],
+    tags: ['Inventory', 'Physical Count'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -302,14 +410,18 @@ export class PhysicalCountController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a product line item from a draft physical count when it was
+   * added in error or is no longer relevant to the current count session.
+   */
   @Delete(':bu_code/physical-count/:id/details/:detail_id')
   @UseGuards(new AppIdGuard('physicalCount.update'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a Physical Count detail',
-    description: 'Deletes an existing Physical Count detail/line item. Only works for Physical Counts in draft status.',
+    description: 'Removes a product line item from a draft physical count, used when items were added in error or are no longer relevant to the current count session.',
     operationId: 'deletePhysicalCountDetail',
-    tags: ['[Method] Delete', 'Physical Count Detail'],
+    tags: ['Inventory', 'Physical Count'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -343,14 +455,18 @@ export class PhysicalCountController extends BaseHttpController {
 
   // ==================== Mobile-specific endpoints ====================
 
+  /**
+   * Persists actual counted quantities entered on a mobile device as a draft,
+   * allowing warehouse staff to pause and resume counting without finalizing.
+   */
   @Patch(':bu_code/physical-count/:id/save')
   @UseGuards(new AppIdGuard('physicalCount.save'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Save Physical Count items',
-    description: 'Saves actual quantities for Physical Count items without submitting',
+    description: 'Persists the actual counted quantities entered by warehouse staff on a mobile device as a draft, allowing them to pause and resume the physical count without finalizing it.',
     operationId: 'savePhysicalCountItems',
-    tags: ['[Method] Patch', 'Physical Count Mobile'],
+    tags: ['Inventory', 'Physical Count'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -382,14 +498,18 @@ export class PhysicalCountController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Compares actual counted quantities against system stock levels and calculates
+   * variances, enabling staff to review discrepancies before final submission.
+   */
   @Patch(':bu_code/physical-count/:id/review')
   @UseGuards(new AppIdGuard('physicalCount.review'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Review Physical Count items',
-    description: 'Reviews actual quantities for Physical Count items and calculates differences',
+    description: 'Compares the actual counted quantities against system stock levels and calculates variances for each item, enabling warehouse staff to review discrepancies before final submission.',
     operationId: 'reviewPhysicalCountItems',
-    tags: ['[Method] Patch', 'Physical Count Mobile'],
+    tags: ['Inventory', 'Physical Count'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -421,14 +541,18 @@ export class PhysicalCountController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves the previously calculated variance report for a physical count,
+   * showing differences between system and actual quantities for manager approval.
+   */
   @Get(':bu_code/physical-count/:id/review')
   @UseGuards(new AppIdGuard('physicalCount.getReview'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get Physical Count review result',
-    description: 'Gets the review result with difference calculations for a Physical Count',
+    description: 'Retrieves the previously calculated variance report for a physical count, showing the differences between system and actual quantities so managers can approve or investigate discrepancies.',
     operationId: 'getPhysicalCountReview',
-    tags: ['[Method] Get', 'Physical Count Mobile'],
+    tags: ['Inventory', 'Physical Count'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -458,14 +582,18 @@ export class PhysicalCountController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Finalizes a physical count and automatically generates inventory adjustment
+   * records to reconcile system stock levels with actual counted quantities.
+   */
   @Patch(':bu_code/physical-count/:id/submit')
   @UseGuards(new AppIdGuard('physicalCount.submit'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Submit Physical Count',
-    description: 'Submits a Physical Count and creates inventory adjustment',
+    description: 'Finalizes a physical count and automatically generates inventory adjustment records to reconcile system stock levels with the actual counted quantities.',
     operationId: 'submitPhysicalCount',
-    tags: ['[Method] Patch', 'Physical Count Mobile'],
+    tags: ['Inventory', 'Physical Count'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -496,14 +624,18 @@ export class PhysicalCountController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Records an explanatory note on a counted item, such as reasons for variances
+   * (e.g., spoilage, breakage) to support audit trails.
+   */
   @Post(':bu_code/physical-count/:id/details/:detail_id/comment')
   @UseGuards(new AppIdGuard('physicalCount.createComment'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Add comment to Physical Count detail',
-    description: 'Adds a comment to a specific Physical Count detail item',
+    description: 'Records an explanatory note on a specific counted item, such as reasons for variances (e.g., spoilage, breakage, or misplacement) to support audit trails.',
     operationId: 'createPhysicalCountDetailComment',
-    tags: ['[Method] Post', 'Physical Count Mobile'],
+    tags: ['Inventory', 'Physical Count'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [

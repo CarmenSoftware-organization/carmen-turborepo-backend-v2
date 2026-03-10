@@ -33,7 +33,7 @@ import {
 } from '@/common';
 
 @Controller('api/:bu_code/request-for-pricing')
-@ApiTags('Application - Request For Pricing')
+@ApiTags('Procurement')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -49,15 +49,19 @@ export class RequestForPricingController extends BaseHttpController {
     this.logger.debug('RequestForPricingController initialized');
   }
 
+  /**
+   * Retrieves a specific Request for Pricing (RFP) document,
+   * including requested items, vendor responses, and quoted prices for comparison.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('requestForPricing.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get request for pricing by ID',
-    description: 'Retrieves request for pricing by ID',
+    description: 'Retrieves a specific Request for Pricing (RFP) document sent to vendors, including the requested items, vendor responses, and quoted prices used for competitive procurement comparison.',
     operationId: 'findOneRequestForPricing',
-    tags: ['Application - Request For Pricing', '[Method] Get'],
+    tags: ['Procurement', 'Request For Pricing'],
     deprecated: false,
     security: [
       {
@@ -101,6 +105,10 @@ export class RequestForPricingController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all RFP documents within the business unit, allowing procurement
+   * staff to track and compare competitive pricing submissions from vendors.
+   */
   @Get()
   @UseGuards(new AppIdGuard('requestForPricing.findAll'))
   @HttpCode(HttpStatus.OK)
@@ -108,9 +116,9 @@ export class RequestForPricingController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get all request for pricing',
-    description: 'Retrieves all request for pricing with pagination',
+    description: 'Lists all Request for Pricing (RFP) documents within the business unit, allowing procurement staff to track and compare competitive pricing submissions from multiple vendors.',
     operationId: 'findAllRequestForPricing',
-    tags: ['Application - Request For Pricing', '[Method] Get'],
+    tags: ['Procurement', 'Request For Pricing'],
     deprecated: false,
     parameters: [
       {
@@ -154,15 +162,19 @@ export class RequestForPricingController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Creates a new RFP to solicit competitive quotes from vendors for specified items,
+   * initiating the price comparison process before purchase order generation.
+   */
   @Post()
   @UseGuards(new AppIdGuard('requestForPricing.create'))
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a new request for pricing',
-    description: 'Creates a new request for pricing',
+    description: 'Creates a new Request for Pricing (RFP) to solicit competitive quotes from vendors for specified items, initiating the price comparison process before purchase order generation.',
     operationId: 'createRequestForPricing',
-    tags: ['Application - Request For Pricing', '[Method] Post'],
+    tags: ['Procurement', 'Request For Pricing'],
     deprecated: false,
     security: [
       {
@@ -199,15 +211,19 @@ export class RequestForPricingController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Updates an existing RFP to modify requested items, adjust quantities,
+   * or record vendor pricing responses during the competitive bidding process.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('requestForPricing.update'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a request for pricing',
-    description: 'Updates an existing request for pricing',
+    description: 'Updates an existing Request for Pricing (RFP) to modify requested items, adjust quantities, or record vendor pricing responses during the competitive bidding process.',
     operationId: 'updateRequestForPricing',
-    tags: ['Application - Request For Pricing', '[Method] Patch'],
+    tags: ['Procurement', 'Request For Pricing'],
     deprecated: false,
     security: [
       {
@@ -258,15 +274,19 @@ export class RequestForPricingController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes an RFP document that is no longer needed, such as cancelled
+   * procurement inquiries or duplicate vendor pricing requests.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('requestForPricing.delete'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a request for pricing',
-    description: 'Deletes an existing request for pricing',
+    description: 'Removes a Request for Pricing (RFP) document that is no longer needed, such as cancelled procurement inquiries or duplicate vendor pricing requests.',
     operationId: 'deleteRequestForPricing',
-    tags: ['Application - Request For Pricing', '[Method] Delete'],
+    tags: ['Procurement', 'Request For Pricing'],
     deprecated: false,
     security: [
       {

@@ -17,7 +17,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_ProductItemGroupService } from './config_product-item-group.service';
-import { ApiTags, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiHeader, ApiOperation } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   BaseHttpController,
@@ -42,7 +42,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/config/:bu_code/products/item-group')
-@ApiTags('Config - Product Item Group')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -57,11 +57,16 @@ export class Config_ProductItemGroupController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves a specific product item group definition used to group products for
+   * procurement reporting and analysis (e.g., Food Items, Beverage Items, Operating Supplies).
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('productItemGroup.findOne'))
   @Serialize(ProductItemGroupDetailResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get a product item group by ID', description: 'Retrieves a specific product item group definition used to group products for procurement reporting and analysis (e.g., Food Items, Beverage Items, Operating Supplies).', operationId: 'findOneProductItemGroup', tags: ['Configuration', 'Product Item Group'] })
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -88,12 +93,17 @@ export class Config_ProductItemGroupController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all product item groups configured for the business unit, used to classify
+   * products for aggregated procurement reporting, spend analysis, and inventory valuation.
+   */
   @Get()
   @UseGuards(new AppIdGuard('productItemGroup.findAll'))
   @Serialize(ProductItemGroupListItemResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiUserFilterQueries()
+  @ApiOperation({ summary: 'Get all product item groups', description: 'Returns all product item groups configured for the business unit. Item groups are used to classify products for aggregated procurement reporting, spend analysis, and inventory valuation.', operationId: 'findAllProductItemGroups', tags: ['Configuration', 'Product Item Group'] })
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -121,11 +131,16 @@ export class Config_ProductItemGroupController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Defines a new product grouping for reporting and procurement analysis. Products
+   * assigned to this group will be aggregated together in spend reports and inventory summaries.
+   */
   @Post()
   @UseGuards(new AppIdGuard('productItemGroup.create'))
   @Serialize(ProductItemGroupMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new product item group', description: 'Defines a new product grouping for reporting and procurement analysis. Products assigned to this group will be aggregated together in spend reports and inventory summaries.', operationId: 'createProductItemGroup', tags: ['Configuration', 'Product Item Group'] })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -152,11 +167,16 @@ export class Config_ProductItemGroupController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies an existing product item group, such as renaming it or adjusting its classification.
+   * Changes affect how products are grouped in procurement and inventory reports.
+   */
   @Put(':id')
   @UseGuards(new AppIdGuard('productItemGroup.update'))
   @Serialize(ProductItemGroupMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Update a product item group', description: 'Modifies an existing product item group, such as renaming it or adjusting its classification. Changes affect how products are grouped in procurement and inventory reports.', operationId: 'updateProductItemGroup', tags: ['Configuration', 'Product Item Group'] })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -189,11 +209,16 @@ export class Config_ProductItemGroupController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a product item group from the system. Products currently assigned to this
+   * group should be reassigned before deletion to maintain reporting accuracy.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('productItemGroup.delete'))
   @Serialize(ProductItemGroupMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete a product item group', description: 'Removes a product item group from the system. Products currently assigned to this group should be reassigned before deletion to maintain reporting accuracy.', operationId: 'deleteProductItemGroup', tags: ['Configuration', 'Product Item Group'] })
   async delete(
     @Req() req: Request,
     @Res() res: Response,

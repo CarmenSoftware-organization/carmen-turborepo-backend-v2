@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { Config_ProductLocationService } from './config_product-location.service';
 import { ZodSerializerInterceptor } from '@/common';
-import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -23,7 +23,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/config/:bu_code/product/location')
-@ApiTags('Config - Product Location')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -36,10 +36,15 @@ export class Config_ProductLocationController {
     private readonly config_productLocationService: Config_ProductLocationService,
   ) {}
 
+  /**
+   * Retrieves all storage locations where a specific product is stocked or available,
+   * essential for inventory tracking, replenishment, and stock transfer planning.
+   */
   @Get(':productId')
   @UseGuards(new AppIdGuard('productLocation.getLocationsByProductId'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get locations by product ID', description: 'Retrieves all storage locations where a specific product is stocked or available. This product-to-location mapping is essential for inventory tracking, replenishment, and stock transfer planning.', operationId: 'getLocationsByProductId', tags: ['Configuration', 'Product Location'] })
   async getLocationsByProductId(
     @Param('productId') productId: string,
     @Param('bu_code') bu_code: string,

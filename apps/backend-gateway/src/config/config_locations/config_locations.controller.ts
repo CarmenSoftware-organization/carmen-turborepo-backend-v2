@@ -47,7 +47,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/config/:bu_code/locations')
-@ApiTags('Config - Locations')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -62,6 +62,10 @@ export class Config_LocationsController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves details of a specific storage location, warehouse, or store,
+   * including assigned users and stocked products for inventory tracking.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('location.findOne'))
   @Serialize(LocationDetailResponseSchema)
@@ -69,9 +73,9 @@ export class Config_LocationsController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a location by ID',
-    description: 'Get a location by ID',
+    description: 'Retrieves details of a specific storage location, warehouse, or store within the property, including assigned users and stocked products. Locations are the physical points where inventory is tracked.',
     operationId: 'findOneLocation',
-    tags: ['config-locations', '[Method] Get - Config'],
+    tags: ['Configuration', 'Locations'],
     deprecated: false,
     // security: [
     //   {
@@ -123,6 +127,10 @@ export class Config_LocationsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all storage locations, warehouses, and stores configured for the business unit,
+   * used for inventory tracking, stock transfers, and goods receiving.
+   */
   @Get()
   @UseGuards(new AppIdGuard('location.findAll'))
   @Serialize(LocationListItemResponseSchema)
@@ -131,9 +139,9 @@ export class Config_LocationsController extends BaseHttpController {
   @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all locations',
-    description: 'Get all locations',
+    description: 'Returns all storage locations, warehouses, and stores configured for the business unit. These locations are used for inventory tracking, stock transfers, and goods receiving.',
     operationId: 'findAllLocations',
-    tags: ['config-locations', '[Method] Get - Config'],
+    tags: ['Configuration', 'Locations'],
     deprecated: false,
     // security: [
     //   {
@@ -195,6 +203,10 @@ export class Config_LocationsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Defines a new storage location, warehouse, or store within the property
+   * for inventory movements (stock-in, stock-out, transfers).
+   */
   @Post()
   @UseGuards(new AppIdGuard('location.create'))
   @Serialize(LocationMutationResponseSchema)
@@ -202,9 +214,9 @@ export class Config_LocationsController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a new location',
-    description: 'Create a new location',
+    description: 'Defines a new storage location, warehouse, or store within the property. Once created, products can be assigned to it and inventory movements (stock-in, stock-out, transfers) can be recorded.',
     operationId: 'createLocation',
-    tags: ['config-locations', '[Method] Post - Config'],
+    tags: ['Configuration', 'Locations'],
     deprecated: false,
     // security: [
     //   {
@@ -250,6 +262,9 @@ export class Config_LocationsController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies an existing storage location's configuration such as name, type, or capacity.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('location.update'))
   @Serialize(LocationMutationResponseSchema)
@@ -257,9 +272,9 @@ export class Config_LocationsController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a location',
-    description: 'Update a location',
+    description: 'Modifies an existing storage location configuration, such as its name, type, or capacity settings. Changes affect how inventory is organized and tracked at this location.',
     operationId: 'updateLocation',
-    tags: ['config-locations', '[Method] Patch - Config'],
+    tags: ['Configuration', 'Locations'],
     deprecated: false,
     // security: [
     //   {
@@ -311,6 +326,9 @@ export class Config_LocationsController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a storage location from active use. Historical stock movement records are preserved.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('location.delete'))
   @Serialize(LocationMutationResponseSchema)
@@ -318,9 +336,9 @@ export class Config_LocationsController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a location',
-    description: 'Delete a location',
+    description: 'Removes a storage location from active use. The location will no longer accept new inventory transactions, but historical stock movement records at this location are preserved.',
     operationId: 'deleteLocation',
-    tags: ['config-locations', '[Method] Delete - Config'],
+    tags: ['Configuration', 'Locations'],
     deprecated: false,
     // security: [
     //   {

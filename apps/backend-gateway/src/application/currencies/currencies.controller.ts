@@ -33,7 +33,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api')
-@ApiTags('Application - Currencies')
+@ApiTags('Master Data')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -46,6 +46,10 @@ export class CurrenciesController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Lists all active currencies configured for the business unit,
+   * used in procurement pricing, purchase orders, and invoice processing.
+   */
   @Get(':bu_code/currencies')
   @UseGuards(new AppIdGuard('currencies.findAllActive'))
   @Serialize(CurrencyListItemResponseSchema)
@@ -54,8 +58,8 @@ export class CurrenciesController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all active currencies',
-    description: 'Get all active currencies',
-    tags: ['[Method] Get'],
+    description: 'Lists all currencies enabled for the business unit, used to populate currency selectors in purchase orders, price lists, and other multi-currency procurement documents.',
+    tags: ['Master Data', 'Currencies'],
   })
   async findAllActive(
     @Req() req: Request,
@@ -84,6 +88,10 @@ export class CurrenciesController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all ISO 4217 standard currencies available in the system,
+   * used when configuring which currencies a business unit should support.
+   */
   @Get('iso')
   @UseGuards(new AppIdGuard('currencies.findAllISO'))
   @Serialize(CurrencyListItemResponseSchema)
@@ -92,8 +100,8 @@ export class CurrenciesController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all ISO currencies',
-    description: 'Get all ISO currencies',
-    tags: ['[Method] Get'],
+    description: 'Lists all ISO 4217 standard currencies available in the system, used when configuring which currencies a business unit should support for international procurement.',
+    tags: ['Master Data', 'Currencies'],
   })
   async findAllISO(
     @Req() req: Request,
@@ -116,6 +124,10 @@ export class CurrenciesController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves the default base currency for the business unit, used as
+   * the primary currency for inventory valuation and cost calculations.
+   */
   @Get(':bu_code/currencies/default')
   @UseGuards(new AppIdGuard('currencies.default'))
   @Serialize(CurrencyDetailResponseSchema)
@@ -123,8 +135,8 @@ export class CurrenciesController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get default currency',
-    description: 'Retrieve default currency',
-    tags: ['[Method] Get'],
+    description: 'Retrieves the default base currency for the business unit, which is used as the primary currency for inventory valuation and procurement cost calculations.',
+    tags: ['Master Data', 'Currencies'],
   })
   async currency_default(
     @Req() req: Request,
@@ -145,6 +157,10 @@ export class CurrenciesController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves a specific currency including its code, symbol, and exchange
+   * rate configuration for reviewing currency settings.
+   */
   @Get(':bu_code/currencies/:id')
   @UseGuards(new AppIdGuard('currencies.findOne'))
   @Serialize(CurrencyDetailResponseSchema)
@@ -152,8 +168,8 @@ export class CurrenciesController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get a currency by ID',
-    description: 'Retrieve a currency by its unique identifier',
-    tags: ['[Method] Get'],
+    description: 'Retrieves the details of a specific currency including its code, symbol, and exchange rate configuration, used when reviewing currency settings for procurement documents.',
+    tags: ['Master Data', 'Currencies'],
   })
   async findOne(
     @Req() req: Request,

@@ -1,0 +1,44 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { enum_activity_action } from '@repo/prisma-shared-schema-tenant';
+
+export class ActivityLogResponseDto {
+  @ApiProperty({ description: 'Activity log ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+
+  @ApiPropertyOptional({
+    description: 'Action performed',
+    enum: Object.values(enum_activity_action),
+    example: 'create',
+  })
+  action?: string;
+
+  @ApiPropertyOptional({ description: 'Entity type', example: 'purchase_request' })
+  entity_type?: string;
+
+  @ApiPropertyOptional({ description: 'Entity ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  entity_id?: string;
+
+  @ApiPropertyOptional({ description: 'Actor (user) ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  actor_id?: string;
+
+  @ApiPropertyOptional({ description: 'Metadata (JSON)', example: {} })
+  meta_data?: unknown;
+
+  @ApiPropertyOptional({ description: 'Previous data before change (JSON)', example: {} })
+  old_data?: unknown;
+
+  @ApiPropertyOptional({ description: 'New data after change (JSON)' })
+  new_data?: unknown;
+
+  @ApiPropertyOptional({ description: 'IP address of the actor', example: '192.168.1.1' })
+  ip_address?: string;
+
+  @ApiPropertyOptional({ description: 'User agent string', example: 'Mozilla/5.0' })
+  user_agent?: string;
+
+  @ApiPropertyOptional({ description: 'Description of the activity', example: 'Created purchase request PR-001' })
+  description?: string;
+
+  @ApiPropertyOptional({ description: 'Created timestamp', example: '2026-03-10T00:00:00.000Z' })
+  created_at?: Date;
+}

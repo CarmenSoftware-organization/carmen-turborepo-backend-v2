@@ -7,11 +7,11 @@ import { ZodSerializerInterceptor, BaseHttpController } from '@/common'
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto'
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header'
 import { BackendLogger } from 'src/common/helpers/backend.logger'
-import { ApiTags } from '@nestjs/swagger'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator'
 
 @Controller('api/config/:bu_code/permissions')
-@ApiTags('Config - Permissions')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @ApiBearerAuth()
 @UseGuards(KeycloakGuard)
@@ -26,8 +26,13 @@ export class ConfigPermissionController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Lists all granular permission definitions available in the system, used for
+   * role-based access control to specific features and actions.
+   */
   @Get()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all permissions', description: 'Returns all granular permission definitions available in the system. Permissions control access to specific features and actions, and are assigned to application roles for role-based access control.', operationId: 'findAllPermissions', tags: ['Configuration', 'Permission'] })
   async findAll(
     @Req() req: Request,
     @Res() res: Response,

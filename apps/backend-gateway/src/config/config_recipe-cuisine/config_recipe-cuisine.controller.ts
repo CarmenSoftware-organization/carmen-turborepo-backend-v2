@@ -19,7 +19,7 @@ import {
 } from './dto/recipe-cuisine.dto';
 
 @Controller('api/config/:bu_code/recipe-cuisine')
-@ApiTags('Config - Recipe Cuisine')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -30,12 +30,16 @@ export class Config_RecipeCuisineController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves a specific cuisine type definition (e.g., Thai, Italian, Japanese, Continental)
+   * used to classify recipes by culinary origin for menu diversity management.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('recipe-cuisine.findOne'))
   @Serialize(RecipeCuisineResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get a recipe cuisine by ID', operationId: 'findOneRecipeCuisine', tags: ['config-recipe-cuisine', '[Method] Get - Config'] })
+  @ApiOperation({ summary: 'Get a recipe cuisine by ID', description: 'Retrieves a specific cuisine type definition (e.g., Thai, Italian, Japanese, Continental) used to classify recipes by culinary origin for menu diversity management.', operationId: 'findOneRecipeCuisine', tags: ['Configuration', 'Recipe Cuisine'] })
   async findOne(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'findOne', id, version }, Config_RecipeCuisineController.name);
     const { user_id } = ExtractRequestHeader(req);
@@ -43,12 +47,16 @@ export class Config_RecipeCuisineController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all cuisine types configured for recipe classification, used to tag recipes
+   * by culinary tradition for menu planning and kitchen specialization management.
+   */
   @Get()
   @UseGuards(new AppIdGuard('recipe-cuisine.findAll'))
   @Serialize(RecipeCuisineResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all recipe cuisines', operationId: 'findAllRecipeCuisines', tags: ['config-recipe-cuisine', '[Method] Get - Config'] })
+  @ApiOperation({ summary: 'Get all recipe cuisines', description: 'Returns all cuisine types configured for recipe classification. Used to tag recipes by culinary tradition for menu planning and kitchen specialization management.', operationId: 'findAllRecipeCuisines', tags: ['Configuration', 'Recipe Cuisine'] })
   @ApiUserFilterQueries()
   async findAll(@Req() req: Request, @Res() res: Response, @Param('bu_code') bu_code: string, @Query() query?: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'findAll', query, version }, Config_RecipeCuisineController.name);
@@ -58,12 +66,16 @@ export class Config_RecipeCuisineController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Defines a new cuisine type for recipe classification (e.g., Mediterranean, Mexican).
+   * Recipes can then be tagged with this cuisine for organized menu planning.
+   */
   @Post()
   @UseGuards(new AppIdGuard('recipe-cuisine.create'))
   @Serialize(RecipeCuisineResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new recipe cuisine', operationId: 'createRecipeCuisine', tags: ['config-recipe-cuisine', '[Method] Post - Config'] })
+  @ApiOperation({ summary: 'Create a new recipe cuisine', description: 'Defines a new cuisine type for recipe classification (e.g., Mediterranean, Mexican). Recipes can then be tagged with this cuisine for organized menu planning.', operationId: 'createRecipeCuisine', tags: ['Configuration', 'Recipe Cuisine'] })
   async create(@Req() req: Request, @Res() res: Response, @Param('bu_code') bu_code: string, @Body() createDto: RecipeCuisineCreateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'create', createDto, version }, Config_RecipeCuisineController.name);
     const { user_id } = ExtractRequestHeader(req);
@@ -71,12 +83,16 @@ export class Config_RecipeCuisineController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Fully updates an existing cuisine type definition. Changes affect how recipes
+   * tagged with this cuisine are categorized in the menu catalog.
+   */
   @Put(':id')
   @UseGuards(new AppIdGuard('recipe-cuisine.update'))
   @Serialize(RecipeCuisineResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update a recipe cuisine', operationId: 'updateRecipeCuisine', tags: ['config-recipe-cuisine', '[Method] Put - Config'] })
+  @ApiOperation({ summary: 'Update a recipe cuisine', description: 'Fully updates an existing cuisine type definition. Changes affect how recipes tagged with this cuisine are categorized.', operationId: 'updateRecipeCuisine', tags: ['Configuration', 'Recipe Cuisine'] })
   async update(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeCuisineUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'update', id, updateDto, version }, Config_RecipeCuisineController.name);
     const { user_id } = ExtractRequestHeader(req);
@@ -85,12 +101,16 @@ export class Config_RecipeCuisineController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Partially updates specific fields of a cuisine type definition without replacing
+   * the entire record.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('recipe-cuisine.patch'))
   @Serialize(RecipeCuisineResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Patch a recipe cuisine', operationId: 'patchRecipeCuisine', tags: ['config-recipe-cuisine', '[Method] Patch - Config'] })
+  @ApiOperation({ summary: 'Patch a recipe cuisine', description: 'Partially updates specific fields of a cuisine type definition without replacing the entire record.', operationId: 'patchRecipeCuisine', tags: ['Configuration', 'Recipe Cuisine'] })
   async patch(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeCuisineUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'patch', id, updateDto, version }, Config_RecipeCuisineController.name);
     const { user_id } = ExtractRequestHeader(req);
@@ -99,12 +119,16 @@ export class Config_RecipeCuisineController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a cuisine type from the system. Recipes currently tagged with this cuisine
+   * should be reassigned before deletion.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('recipe-cuisine.delete'))
   @Serialize(RecipeCuisineResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete a recipe cuisine', operationId: 'deleteRecipeCuisine', tags: ['config-recipe-cuisine', '[Method] Delete - Config'] })
+  @ApiOperation({ summary: 'Delete a recipe cuisine', description: 'Removes a cuisine type from the system. Recipes currently tagged with this cuisine should be reassigned before deletion.', operationId: 'deleteRecipeCuisine', tags: ['Configuration', 'Recipe Cuisine'] })
   async delete(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'delete', id, version }, Config_RecipeCuisineController.name);
     const { user_id } = ExtractRequestHeader(req);

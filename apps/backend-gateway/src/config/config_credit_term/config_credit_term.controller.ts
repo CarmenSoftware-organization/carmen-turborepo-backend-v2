@@ -18,6 +18,8 @@ import { Response } from 'express';
 import { Config_CreditTermService } from './config_credit_term.service';
 import {
   ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
@@ -43,7 +45,7 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
-@ApiTags('Config - Credit Term')
+@ApiTags('Configuration')
 @ApiHeaderRequiredXAppId()
 @Controller('api/config/:bu_code/credit-term')
 @UseGuards(KeycloakGuard)
@@ -59,38 +61,25 @@ export class Config_CreditTermController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves a specific payment term definition (e.g., Net 30, Net 60, COD)
+   * including due day calculation rules for vendor invoice payment deadlines.
+   */
   @Get(':id')
   @UseGuards(new AppIdGuard('creditTerm.findOne'))
   @Serialize(CreditTermDetailResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  // @ApiOperation({
-  //   summary: 'Get a credit term by ID',
-  //   description: 'Retrieve a credit term by its unique identifier',
-  //   operationId: 'findOneCreditTerm',
-  //   tags: ['config-credit-term', '[Method] Get - Config'],
-  //   deprecated: false,
-  //   security: [
-  //     {
-  //       bearerAuth: [],
-  //     },
-  //   ],
-  //   parameters: [
-  //     {
-  //       name: 'id',
-  //       in: 'path',
-  //       required: true,
-  //     },
-  //   ],
-  //   responses: {
-  //     200: {
-  //       description: 'Credit term retrieved successfully',
-  //     },
-  //     404: {
-  //       description: 'Credit term not found',
-  //     },
-  //   },
-  // })
+  @ApiOperation({
+    summary: 'Get a credit term by ID',
+    description: 'Retrieves a specific payment term definition (e.g., Net 30, Net 60, COD) including its due day calculation rules. Credit terms are assigned to vendors to determine invoice payment deadlines.',
+    operationId: 'findOneCreditTerm',
+    tags: ['Configuration', 'Credit Term'],
+    responses: {
+      200: { description: 'Credit term retrieved successfully' },
+      404: { description: 'Credit term not found' },
+    },
+  })
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -117,36 +106,23 @@ export class Config_CreditTermController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all payment term definitions (Net 30, Net 60, COD, etc.) used for
+   * vendor agreements and invoice due date calculations.
+   */
   @Get()
   @UseGuards(new AppIdGuard('creditTerm.findAll'))
   @Serialize(CreditTermListItemResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  // @ApiOperation({
-  //   summary: 'Get all credit terms',
-  //   description: 'Retrieve all credit terms',
-  //   operationId: 'findAllCreditTerms',
-  //   tags: ['config-credit-term', '[Method] Get - Config'],
-  //   deprecated: false,
-  //   security: [
-  //     {
-  //       bearerAuth: [],
-  //     },
-  //   ],
-  //   parameters: [
-  //     {
-  //       name: 'version',
-  //       in: 'query',
-  //       required: false,
-  //     },
-  //   ],
-  //   responses: {
-  //     200: {
-  //       description: 'Credit terms retrieved successfully',
-  //     },
-  //   },
-  // })
+  @ApiOperation({
+    summary: 'Get all credit terms',
+    description: 'Returns all payment term definitions configured for the business unit. These terms are used when setting up vendor agreements and calculating invoice due dates for accounts payable.',
+    operationId: 'findAllCreditTerms',
+    tags: ['Configuration', 'Credit Term'],
+    responses: { 200: { description: 'Credit terms retrieved successfully' } },
+  })
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -174,35 +150,22 @@ export class Config_CreditTermController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Defines a new payment term (e.g., Net 30, Net 60, COD) with due date calculation rules.
+   * Once created, it can be assigned to vendors for invoice payment scheduling.
+   */
   @Post()
   @UseGuards(new AppIdGuard('creditTerm.create'))
   @Serialize(CreditTermMutationResponseSchema)
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
-  // @ApiOperation({
-  //   summary: 'Create a new credit term',
-  //   description: 'Create a new credit term',
-  //   operationId: 'createCreditTerm',
-  //   tags: ['config-credit-term', '[Method] Post - Config'],
-  //   deprecated: false,
-  //   security: [
-  //     {
-  //       bearerAuth: [],
-  //     },
-  //   ],
-  //   parameters: [
-  //     {
-  //       name: 'version',
-  //       in: 'query',
-  //       required: false,
-  //     },
-  //   ],
-  //   responses: {
-  //     201: {
-  //       description: 'Credit term created successfully',
-  //     },
-  //   },
-  // })
+  @ApiOperation({
+    summary: 'Create a new credit term',
+    description: 'Defines a new payment term (e.g., Net 30, Net 60, COD) with its due date calculation rules. Once created, the credit term can be assigned to vendors for invoice payment scheduling.',
+    operationId: 'createCreditTerm',
+    tags: ['Configuration', 'Credit Term'],
+    responses: { 201: { description: 'Credit term created successfully' } },
+  })
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -229,38 +192,24 @@ export class Config_CreditTermController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Modifies an existing payment term such as adjusting credit days or payment conditions.
+   */
   @Patch(':id')
   @UseGuards(new AppIdGuard('creditTerm.update'))
   @Serialize(CreditTermMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  // @ApiOperation({
-  //   summary: 'Update a credit term',
-  //   description: 'Update a credit term',
-  //   operationId: 'updateCreditTerm',
-  //   tags: ['config-credit-term', '[Method] Patch - Config'],
-  //   deprecated: false,
-  //   security: [
-  //     {
-  //       bearerAuth: [],
-  //     },
-  //   ],
-  //   parameters: [
-  //     {
-  //       name: 'id',
-  //       in: 'path',
-  //       required: true,
-  //     },
-  //   ],
-  //   responses: {
-  //     200: {
-  //       description: 'Credit term updated successfully',
-  //     },
-  //     404: {
-  //       description: 'Credit term not found',
-  //     },
-  //   },
-  // })
+  @ApiOperation({
+    summary: 'Update a credit term',
+    description: 'Modifies an existing payment term definition, such as adjusting the number of credit days or payment conditions. Changes affect future invoice due date calculations for vendors using this term.',
+    operationId: 'updateCreditTerm',
+    tags: ['Configuration', 'Credit Term'],
+    responses: {
+      200: { description: 'Credit term updated successfully' },
+      404: { description: 'Credit term not found' },
+    },
+  })
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -293,38 +242,24 @@ export class Config_CreditTermController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a payment term from active use. Existing vendor agreements using it are preserved.
+   */
   @Delete(':id')
   @UseGuards(new AppIdGuard('creditTerm.delete'))
   @Serialize(CreditTermMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  // @ApiOperation({
-  //   summary: 'Delete a credit term',
-  //   description: 'Delete a credit term',
-  //   operationId: 'deleteCreditTerm',
-  //   tags: ['config-credit-term', '[Method] Delete - Config'],
-  //   deprecated: false,
-  //   security: [
-  //     {
-  //       bearerAuth: [],
-  //     },
-  //   ],
-  //   parameters: [
-  //     {
-  //       name: 'id',
-  //       in: 'path',
-  //       required: true,
-  //     },
-  //   ],
-  //   responses: {
-  //     200: {
-  //       description: 'Credit term deleted successfully',
-  //     },
-  //     404: {
-  //       description: 'Credit term not found',
-  //     },
-  //   },
-  // })
+  @ApiOperation({
+    summary: 'Delete a credit term',
+    description: 'Removes a payment term from active use. The term will no longer be assignable to vendors, but existing vendor agreements and historical invoices using this term are preserved.',
+    operationId: 'deleteCreditTerm',
+    tags: ['Configuration', 'Credit Term'],
+    responses: {
+      200: { description: 'Credit term deleted successfully' },
+      404: { description: 'Credit term not found' },
+    },
+  })
   async delete(
     @Req() req: Request,
     @Res() res: Response,

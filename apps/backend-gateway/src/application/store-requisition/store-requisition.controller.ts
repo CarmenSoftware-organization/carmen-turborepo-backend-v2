@@ -45,7 +45,7 @@ import {
 } from '@/common';
 
 @Controller('api')
-@ApiTags('Config - Store Requisition')
+@ApiTags('Procurement')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -60,15 +60,20 @@ export class StoreRequisitionController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Retrieves full details of a store requisition including requested items,
+   * quantities, and current approval status. Store requisitions represent
+   * internal requests from departments to draw items from the central store.
+   */
   @Get('/:bu_code/store-requisition/:id')
   @UseGuards(new AppIdGuard('storeRequisition.findOne'))
   @Serialize(StoreRequisitionDetailResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a store requisition by ID',
-    description: 'Retrieves a store requisition by its unique identifier',
+    description: 'Retrieves the full details of a store requisition including requested items, quantities, requesting department, and current approval status. Used to review an internal stock request before approving or issuing items from the store.',
     operationId: 'findOneStoreRequisition',
-    tags: ['[Method] Get'],
+    tags: ['Procurement', 'Store Requisition'],
     deprecated: false,
     security: [
       {
@@ -127,15 +132,19 @@ export class StoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Lists all store requisitions with pagination and filtering. Used by store
+   * managers and department staff to track internal stock requests and their status.
+   */
   @Get('store-requisition')
   @UseGuards(new AppIdGuard('storeRequisition.findAll'))
   @Serialize(StoreRequisitionListItemResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get all store requisitions',
-    description: 'Retrieves all store requisitions',
+    description: 'Lists all store requisitions across business units with pagination and filtering. Used by department staff to track their internal stock requests and by store managers to view pending issuance requests.',
     operationId: 'findAllStoreRequisitions',
-    tags: ['[Method] Get'],
+    tags: ['Procurement', 'Store Requisition'],
     deprecated: false,
     security: [
       {
@@ -198,15 +207,19 @@ export class StoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Creates a new store requisition for a department to request items from the
+   * central store. Starts in draft status and can be submitted for approval.
+   */
   @Post(':bu_code/store-requisition')
   @UseGuards(new AppIdGuard('storeRequisition.create'))
   @Serialize(StoreRequisitionMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a store requisition',
-    description: 'Creates a new store requisition',
+    description: 'Creates a new internal store requisition for a department to request items from inventory (e.g., kitchen supplies, cleaning materials, office supplies). The SR starts in draft status and must be submitted for approval before items can be issued.',
     operationId: 'createStoreRequisition',
-    tags: ['[Method] Post'],
+    tags: ['Procurement', 'Store Requisition'],
     deprecated: false,
     security: [
       {
@@ -256,15 +269,19 @@ export class StoreRequisitionController extends BaseHttpController {
     this.respond(res, result, HttpStatus.CREATED);
   }
 
+  /**
+   * Updates an existing store requisition's header and line items before
+   * it is submitted for approval.
+   */
   @Put(':bu_code/store-requisition/:id')
   @UseGuards(new AppIdGuard('storeRequisition.update'))
   @Serialize(StoreRequisitionMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a store requisition',
-    description: 'Updates an existing store requisition',
+    description: 'Modifies a store requisition to adjust requested items, quantities, or other details. Used by department staff to refine their internal stock request before submitting for approval.',
     operationId: 'updateStoreRequisition',
-    tags: ['[Method] Update'],
+    tags: ['Procurement', 'Store Requisition'],
     deprecated: false,
     security: [
       {
@@ -317,13 +334,18 @@ export class StoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Submits a draft store requisition into the approval workflow, making it
+   * available for review by the store manager or designated approver.
+   */
   @Patch(':bu_code/store-requisition/:id/submit')
   @UseGuards(new AppIdGuard('storeRequisition.submit'))
   @Serialize(StoreRequisitionMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Submit a store requisition',
-    description: 'Submits an existing store requisition for approval',
+    description: 'Submits a draft store requisition into the approval workflow, making it visible to approvers. Once submitted, the SR moves from draft to pending status and enters the configured approval chain.',
+    tags: ['Procurement', 'Store Requisition'],
   })
   @HttpCode(HttpStatus.OK)
   async submit(
@@ -354,13 +376,18 @@ export class StoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Approves a store requisition at the current workflow stage, authorizing
+   * the issuance of requested items from the central store to the department.
+   */
   @Patch(':bu_code/store-requisition/:id/approve')
   @UseGuards(new AppIdGuard('storeRequisition.approve'))
   @Serialize(StoreRequisitionMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Approve a store requisition',
-    description: 'Approves an existing store requisition',
+    description: 'Advances a store requisition through its approval workflow at the current stage. Once fully approved, items can be issued from the store to the requesting department, triggering inventory deductions.',
+    tags: ['Procurement', 'Store Requisition'],
   })
   @HttpCode(HttpStatus.OK)
   async approve(
@@ -391,13 +418,18 @@ export class StoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Rejects a store requisition, returning it to the requester with a reason.
+   * Used when the requested items are not available or the request is not justified.
+   */
   @Patch(':bu_code/store-requisition/:id/reject')
   @UseGuards(new AppIdGuard('storeRequisition.reject'))
   @Serialize(StoreRequisitionMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Reject a store requisition',
-    description: 'Rejects an existing store requisition',
+    description: 'Rejects a store requisition at the current approval stage, preventing items from being issued. Used when the request exceeds budget, items are unavailable, or the request is not justified.',
+    tags: ['Procurement', 'Store Requisition'],
   })
   @HttpCode(HttpStatus.OK)
   async reject(
@@ -429,13 +461,18 @@ export class StoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Sends a store requisition back to a previous workflow stage for corrections
+   * or additional information before it can proceed through approval.
+   */
   @Patch(':bu_code/store-requisition/:id/review')
   @UseGuards(new AppIdGuard('storeRequisition.review'))
   @Serialize(StoreRequisitionMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Review a store requisition',
-    description: 'Sends a store requisition back to a previous stage for review',
+    description: 'Returns a store requisition to a previous workflow stage for corrections, such as adjusting quantities or replacing unavailable items. Allows approvers to request changes before granting final authorization.',
+    tags: ['Procurement', 'Store Requisition'],
   })
   @HttpCode(HttpStatus.OK)
   async review(
@@ -466,15 +503,19 @@ export class StoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Removes a store requisition that is no longer needed, typically a draft
+   * created in error or no longer required by the department.
+   */
   @Delete(':bu_code/store-requisition/:id')
   @UseGuards(new AppIdGuard('storeRequisition.delete'))
   @Serialize(StoreRequisitionMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a store requisition',
-    description: 'Deletes an existing store requisition',
+    description: 'Removes a store requisition that is no longer needed. Typically used for draft SRs that were created in error or when the department no longer requires the requested items.',
     operationId: 'deleteStoreRequisition',
-    tags: ['[Method] Delete'],
+    tags: ['Procurement', 'Store Requisition'],
     deprecated: false,
     security: [
       {
@@ -521,14 +562,18 @@ export class StoreRequisitionController extends BaseHttpController {
 
   // ==================== Mobile-specific endpoints ====================
 
+  /**
+   * Retrieves the workflow permissions for the current user on a store requisition,
+   * determining which actions (approve, reject, review) are available.
+   */
   @Get(':bu_code/store-requisition/:id/workflow-permission')
   @UseGuards(new AppIdGuard('storeRequisition.getWorkflowPermission'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get workflow permission for a store requisition',
-    description: 'Retrieves the workflow permission for the current user on a store requisition',
+    description: 'Checks what workflow actions (approve, reject, review) the current user is authorized to perform on a specific store requisition based on their role and the SR current stage.',
     operationId: 'getStoreRequisitionWorkflowPermission',
-    tags: ['[Method] Get', 'Store Requisition Mobile'],
+    tags: ['Procurement', 'Store Requisition'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -567,14 +612,18 @@ export class StoreRequisitionController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Retrieves the list of previous workflow steps for a store requisition,
+   * used to determine which stage to send the document back to during review.
+   */
   @Get(':bu_code/store-requisition/:id/workflow-previous-step-list')
   @UseGuards(new AppIdGuard('storeRequisition.getWorkflowPreviousStepList'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get workflow previous step list for a store requisition',
-    description: 'Retrieves the list of previous workflow steps for a store requisition',
+    description: 'Returns the list of earlier workflow stages that a store requisition can be sent back to for review. Used to populate the review target selection when an approver needs to return the SR for corrections.',
     operationId: 'getStoreRequisitionWorkflowPreviousStepList',
-    tags: ['[Method] Get', 'Store Requisition Mobile'],
+    tags: ['Procurement', 'Store Requisition'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
