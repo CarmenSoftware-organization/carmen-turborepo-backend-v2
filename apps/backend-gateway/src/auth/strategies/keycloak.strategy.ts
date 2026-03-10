@@ -97,13 +97,17 @@ export class KeycloakStrategy extends PassportStrategy(Strategy, 'keycloak') {
       );
 
       if (response.response.status !== HttpStatus.OK) {
-        this.logger.error(`Failed to fetch user info: ${response.response.message}`);
-        throw new UnauthorizedException('Failed to fetch user info');
+        const message = response.response.message || 'Failed to fetch user info';
+        this.logger.error(`Failed to fetch user info: ${message}`);
+        throw new UnauthorizedException(message);
       }
 
       this.logger.debug({ userInfo: response.data }, 'Fetched user info from Keycloak via TCP');
       return response.data;
     } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
       this.logger.error('Failed to fetch user info from Keycloak', error);
       throw new UnauthorizedException('Failed to fetch user info');
     }
