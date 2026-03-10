@@ -14,6 +14,10 @@ params:path {
   entity_type: purchase_request
 }
 
+headers {
+  x-app-id: {{x_app_id}}
+}
+
 auth:bearer {
   token: {{access_token}}
 }
