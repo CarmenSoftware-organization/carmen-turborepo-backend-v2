@@ -81,9 +81,9 @@ The gateway organizes routes into domain modules under `src/config/`, `src/appli
 
 ### Authentication
 
-Dual strategy via Passport.js:
-- **JWT**: Bearer token validated with `SUPABASE_JWT_SECRET`
+Keycloak-based authentication via Passport.js:
 - **Keycloak**: Bearer token forwarded to micro-keycloak-api via TCP for validation
+- `SUPABASE_JWT_SECRET` env var is a legacy name — it holds the JWT signing secret (not related to Supabase)
 
 Guards are applied at the route level: `KeycloakGuard` → `PermissionGuard` (order matters — PermissionGuard depends on user context set by KeycloakGuard).
 
@@ -116,11 +116,42 @@ TypeScript path alias `@repo/*` maps to `packages/*/src`. Individual services us
 
 Each service needs a `.env` file (copy from `.env.example`). Key variables:
 - `SYSTEM_DATABASE_URL` / `SYSTEM_DIRECT_URL` — Platform PostgreSQL connection
-- `SUPABASE_JWT_SECRET` — JWT validation secret
+- `SUPABASE_JWT_SECRET` — JWT signing secret (legacy name, not related to Supabase)
 - Service host/port pairs for inter-service discovery (e.g., `BUSINESS_SERVICE_HOST`, `BUSINESS_SERVICE_PORT`)
 - `LOKI_*` — Winston/Loki logging config
 - `SMTP_*` — Email configuration
 - `SENTRY_DSN` — Error tracking
+
+### Keycloak Configuration (micro-keycloak-api)
+
+- `KEYCLOAK_BASE_URL` — Keycloak server URL (e.g., `http://dev.blueledgers.com:8080`)
+- `KEYCLOAK_REALM` — Application realm name
+- `KEYCLOAK_CLIENT_ID` — Client ID for user authentication (OIDC Resource Owner Password grant)
+- `KEYCLOAK_ADMIN_CLIENT_ID` — Admin client ID (defaults to `admin-cli` if empty)
+- `KEYCLOAK_ADMIN_CLIENT_SECRET` — Admin client secret (empty for public `admin-cli` client)
+- `KEYCLOAK_ADMIN_USERNAME` — Keycloak **admin** username (NOT a regular user — must have admin access to master realm)
+- `KEYCLOAK_ADMIN_PASSWORD` — Keycloak admin password
+
+**Important**: `KEYCLOAK_ADMIN_USERNAME`/`KEYCLOAK_ADMIN_PASSWORD` must be credentials for a Keycloak administrator account (the account used to log into the Keycloak Admin Console), not a regular application user. These are used for Admin API operations: user CRUD, password resets, role/group management, etc.
+
+## Bruno API Collections
+
+API collections for testing are located at `apps/bruno/carmen-inventory/`. Uses Bruno API client with `.bru` file format.
+
+### Structure
+- `environments/` — Environment configs (`localhost-4000.bru`, `dev.blueledgers.com-4001.bru`)
+- `auth/` — Authentication endpoints (login, logout, refresh, change-password, user-info)
+- `auth/login/` — Login variants for different user roles (test, requestor, HOD, purchaser, FC, GM, Owner)
+- Domain folders: `stock-in/`, `stock-out/`, `transfer/`, `purchase-request/`, `purchase-order/`, `good-received-note/`, etc.
+- `config/` — Configuration endpoints (32 modules)
+- `platform/` — Platform management endpoints (8 modules)
+
+### Conventions
+- All endpoints include `x-app-id: {{x_app_id}}` header
+- Bearer token auth uses `{{access_token}}` environment variable
+- Login scripts auto-set `access_token` and `refresh_token` via post-response scripts
+- Multi-tenant endpoints use `{{bu_code}}` path parameter
+- API response wrapper: `{ data: {...}, status, success, message, timestamp }`
 
 ## Build Dependencies
 
