@@ -1,85 +1,52 @@
-import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
-import {
-  PrismaClient_TENANT,
-  Prisma,
-  enum_period_status,
-} from '@repo/prisma-shared-schema-tenant';
-import { TenantService } from '@/tenant/tenant.service';
-import QueryParams from '@/libs/paginate.query';
-import {
-  ICreatePeriod,
-  IUpdatePeriod,
-} from './interface/period.interface';
-import { BackendLogger } from '@/common/helpers/backend.logger';
-import { Injectable, Inject } from '@nestjs/common';
-import { IPaginate } from '@/common/shared-interface/paginate.interface';
-import {
-  Result,
-  ErrorCode,
-  TryCatch,
-} from '@/common';
+import { PrismaClient_SYSTEM } from "@repo/prisma-shared-schema-platform";
+import { PrismaClient_TENANT, Prisma, enum_period_status } from "@repo/prisma-shared-schema-tenant";
+import { TenantService } from "@/tenant/tenant.service";
+import QueryParams from "@/libs/paginate.query";
+import { ICreatePeriod, IUpdatePeriod } from "./interface/period.interface";
+import { BackendLogger } from "@/common/helpers/backend.logger";
+import { Injectable, Inject } from "@nestjs/common";
+import { IPaginate } from "@/common/shared-interface/paginate.interface";
+import { Result, ErrorCode, TryCatch } from "@/common";
 
 @Injectable()
 export class PeriodService {
-  private readonly logger: BackendLogger = new BackendLogger(
-    PeriodService.name,
-  );
+  private readonly logger: BackendLogger = new BackendLogger(PeriodService.name);
 
   constructor(
-    @Inject('PRISMA_SYSTEM')
+    @Inject("PRISMA_SYSTEM")
     private readonly prismaSystem: typeof PrismaClient_SYSTEM,
-    @Inject('PRISMA_TENANT')
+    @Inject("PRISMA_TENANT")
     private readonly prismaTenant: typeof PrismaClient_TENANT,
     private readonly tenantService: TenantService,
-  ) { }
+  ) {}
 
   @TryCatch
-  async findOne(
-    id: string,
-    user_id: string,
-    tenant_id: string,
-  ): Promise<Result<unknown>> {
-    this.logger.debug(
-      { function: 'findOne', id, user_id, tenant_id },
-      PeriodService.name,
-    );
+  async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
+    this.logger.debug({ function: "findOne", id, user_id, tenant_id }, PeriodService.name);
 
-    const tenant = await this.tenantService.getdb_connection(
-      user_id,
-      tenant_id,
-    );
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
     }
 
-    const prisma = await this.prismaTenant(
-      tenant.tenant_id,
-      tenant.db_connection,
-    );
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
     const period = await prisma.tb_period.findFirst({
       where: { id, deleted_at: null },
     });
 
     if (!period) {
-      return Result.error('Period not found', ErrorCode.NOT_FOUND);
+      return Result.error("Period not found", ErrorCode.NOT_FOUND);
     }
 
     return Result.ok(period);
   }
 
   @TryCatch
-  async findAll(
-    user_id: string,
-    tenant_id: string,
-    paginate: IPaginate,
-  ): Promise<Result<unknown>> {
-    this.logger.debug(
-      { function: 'findAll', user_id, tenant_id, paginate },
-      PeriodService.name,
-    );
+  async findAll(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
+    this.logger.debug({ function: "findAll", user_id, tenant_id, paginate }, PeriodService.name);
 
-    const defaultSearchFields: string[] = ['period'];
+    const defaultSearchFields: string[] = ["period"];
 
     const q = new QueryParams(
       paginate.page,
@@ -92,18 +59,12 @@ export class PeriodService {
       paginate.advance,
     );
 
-    const tenant = await this.tenantService.getdb_connection(
-      user_id,
-      tenant_id,
-    );
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
     }
 
-    const prisma = await this.prismaTenant(
-      tenant.tenant_id,
-      tenant.db_connection,
-    );
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
     const data = await prisma.tb_period.findMany({
       ...q.findMany(),
@@ -132,28 +93,15 @@ export class PeriodService {
   }
 
   @TryCatch
-  async create(
-    data: ICreatePeriod,
-    user_id: string,
-    tenant_id: string,
-  ): Promise<Result<unknown>> {
-    this.logger.debug(
-      { function: 'create', data, user_id, tenant_id },
-      PeriodService.name,
-    );
+  async create(data: ICreatePeriod, user_id: string, tenant_id: string): Promise<Result<unknown>> {
+    this.logger.debug({ function: "create", data, user_id, tenant_id }, PeriodService.name);
 
-    const tenant = await this.tenantService.getdb_connection(
-      user_id,
-      tenant_id,
-    );
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
     }
 
-    const prisma = await this.prismaTenant(
-      tenant.tenant_id,
-      tenant.db_connection,
-    );
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
     const foundPeriod = await prisma.tb_period.findFirst({
       where: {
@@ -163,7 +111,7 @@ export class PeriodService {
     });
 
     if (foundPeriod) {
-      return Result.error('Period already exists', ErrorCode.ALREADY_EXISTS);
+      return Result.error("Period already exists", ErrorCode.ALREADY_EXISTS);
     }
 
     const foundFiscalPeriod = await prisma.tb_period.findFirst({
@@ -175,7 +123,23 @@ export class PeriodService {
     });
 
     if (foundFiscalPeriod) {
-      return Result.error('Fiscal year/month combination already exists', ErrorCode.ALREADY_EXISTS);
+      return Result.error("Fiscal year/month combination already exists", ErrorCode.ALREADY_EXISTS);
+    }
+
+    const startAt =
+      typeof data.start_at === "string"
+        ? new Date(data.start_at)
+        : data.start_at instanceof Date
+          ? data.start_at
+          : null;
+    const endAt =
+      typeof data.end_at === "string" ? new Date(data.end_at) : data.end_at instanceof Date ? data.end_at : null;
+
+    if (!startAt || isNaN(startAt.getTime())) {
+      return Result.error("Invalid start_at date", ErrorCode.INVALID_ARGUMENT);
+    }
+    if (!endAt || isNaN(endAt.getTime())) {
+      return Result.error("Invalid end_at date", ErrorCode.INVALID_ARGUMENT);
     }
 
     const period = await prisma.tb_period.create({
@@ -183,8 +147,8 @@ export class PeriodService {
         period: data.period,
         fiscal_year: data.fiscal_year,
         fiscal_month: data.fiscal_month,
-        start_at: new Date(data.start_at),
-        end_at: new Date(data.end_at),
+        start_at: startAt.toISOString(),
+        end_at: endAt.toISOString(),
         status: (data.status as enum_period_status) || enum_period_status.open,
         note: data.note,
         info: (data.info || {}) as Prisma.InputJsonValue,
@@ -197,35 +161,22 @@ export class PeriodService {
   }
 
   @TryCatch
-  async update(
-    data: IUpdatePeriod,
-    user_id: string,
-    tenant_id: string,
-  ): Promise<Result<unknown>> {
-    this.logger.debug(
-      { function: 'update', data, user_id, tenant_id },
-      PeriodService.name,
-    );
+  async update(data: IUpdatePeriod, user_id: string, tenant_id: string): Promise<Result<unknown>> {
+    this.logger.debug({ function: "update", data, user_id, tenant_id }, PeriodService.name);
 
-    const tenant = await this.tenantService.getdb_connection(
-      user_id,
-      tenant_id,
-    );
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
     }
 
-    const prisma = await this.prismaTenant(
-      tenant.tenant_id,
-      tenant.db_connection,
-    );
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
     const existingPeriod = await prisma.tb_period.findFirst({
       where: { id: data.id, deleted_at: null },
     });
 
     if (!existingPeriod) {
-      return Result.error('Period not found', ErrorCode.NOT_FOUND);
+      return Result.error("Period not found", ErrorCode.NOT_FOUND);
     }
 
     const { id, ...fields } = data;
@@ -254,35 +205,22 @@ export class PeriodService {
   }
 
   @TryCatch
-  async delete(
-    id: string,
-    user_id: string,
-    tenant_id: string,
-  ): Promise<Result<unknown>> {
-    this.logger.debug(
-      { function: 'delete', id, user_id, tenant_id },
-      PeriodService.name,
-    );
+  async delete(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
+    this.logger.debug({ function: "delete", id, user_id, tenant_id }, PeriodService.name);
 
-    const tenant = await this.tenantService.getdb_connection(
-      user_id,
-      tenant_id,
-    );
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
     }
 
-    const prisma = await this.prismaTenant(
-      tenant.tenant_id,
-      tenant.db_connection,
-    );
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
     const existingPeriod = await prisma.tb_period.findFirst({
       where: { id, deleted_at: null },
     });
 
     if (!existingPeriod) {
-      return Result.error('Period not found', ErrorCode.NOT_FOUND);
+      return Result.error("Period not found", ErrorCode.NOT_FOUND);
     }
 
     await prisma.tb_period.update({

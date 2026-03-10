@@ -2,8 +2,6 @@ import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 import { enum_period_status } from '@repo/prisma-shared-schema-tenant';
 
-// ==================== Period Create ====================
-
 export const PeriodCreate = z.object({
   period: z.string(), // YYMM
   fiscal_year: z.number().int(),
