@@ -136,7 +136,7 @@ export class KeycloakService {
     const params = new URLSearchParams();
     params.append('grant_type', 'password');
     params.append('client_id', this.config.clientId); // User client, not admin
-    params.append('username', username);
+    params.append('username', username.toLowerCase());
     params.append('password', password);
     params.append('scope', 'openid');
 
