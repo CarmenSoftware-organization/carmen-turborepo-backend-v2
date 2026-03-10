@@ -1040,12 +1040,17 @@ export class KeycloakService {
     // 1. Get user email from access token
     const userInfo = await this.getUserInfo(accessToken, realm);
     const email = userInfo.email || userInfo.preferred_username;
+    const keycloakUserId = userId || userInfo.sub;
 
     if (!email) {
       throw new Error('Unable to determine user email from token');
     }
 
-    // 2. Login with current password (without scope restriction) → verifies password & gets fresh token with all default scopes
+    if (!keycloakUserId) {
+      throw new Error('Unable to determine user ID from token');
+    }
+
+    // 2. Verify current password by attempting login
     const targetRealm = realm || this.config.realm;
     const tokenUrl = `${this.config.baseUrl}/realms/${targetRealm}/protocol/openid-connect/token`;
 
@@ -1055,7 +1060,6 @@ export class KeycloakService {
     loginParams.append('username', email);
     loginParams.append('password', currentPassword);
 
-    let freshToken: string;
     try {
       const tokenRes = await fetch(tokenUrl, {
         method: 'POST',
@@ -1067,45 +1071,12 @@ export class KeycloakService {
       if (!tokenRes.ok) {
         throw new Error('Login failed');
       }
-
-      const tokenData: KeycloakTokenResponse = await tokenRes.json();
-      freshToken = tokenData.access_token;
     } catch {
       throw new Error('Current password is incorrect');
     }
 
-    // 3. Change password via Keycloak Account API using fresh token
-    const url = `${this.config.baseUrl}/realms/${targetRealm}/account/credentials/password`;
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: `Bearer ${freshToken}`,
-      },
-      body: JSON.stringify({
-        currentPassword,
-        newPassword,
-        confirmation: newPassword,
-      }),
-      signal: AbortSignal.timeout(10000),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '');
-      let errorMessage = 'Failed to change password';
-      try {
-        const errorJson = JSON.parse(errorText);
-        errorMessage = errorJson.errorMessage || errorJson.error || errorMessage;
-      } catch {
-        if (errorText) {
-          errorMessage = errorText;
-        }
-      }
-      this.logger.error(`Change password failed (${response.status}): ${errorMessage}`);
-      throw new Error(errorMessage);
-    }
+    // 3. Set new password via Admin API (bypasses Account API scope issues)
+    await this.resetPassword(keycloakUserId, newPassword, false, realm);
 
     this.logger.log('Password changed successfully');
     return { success: true };
