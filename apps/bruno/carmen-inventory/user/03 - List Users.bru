@@ -1,0 +1,15 @@
+meta {
+  name: 03 - List Users
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/users
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

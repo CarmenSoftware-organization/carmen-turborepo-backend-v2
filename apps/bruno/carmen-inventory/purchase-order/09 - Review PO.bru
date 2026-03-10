@@ -1,0 +1,23 @@
+meta {
+  name: 09 - Review PO
+  type: http
+  seq: 9
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:id/review
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{po_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}

@@ -1,0 +1,27 @@
+meta {
+  name: 05 - Update Physical Count Period
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/physical-count-period/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{physical_count_period_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "",
+    "start_date": "",
+    "end_date": ""
+  }
+}

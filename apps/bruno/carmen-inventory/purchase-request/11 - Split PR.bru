@@ -1,0 +1,23 @@
+meta {
+  name: 11 - Split PR
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/purchase-request/:id/split
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{pr_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}

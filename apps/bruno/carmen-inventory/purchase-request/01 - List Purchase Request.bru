@@ -1,0 +1,15 @@
+meta {
+  name: 01 - List Purchase Request
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/purchase-request
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

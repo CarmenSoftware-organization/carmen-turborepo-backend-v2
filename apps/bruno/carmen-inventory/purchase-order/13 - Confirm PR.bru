@@ -1,0 +1,19 @@
+meta {
+  name: 13 - Confirm PR
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/purchase-order/confirm-pr
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}

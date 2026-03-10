@@ -1,0 +1,23 @@
+meta {
+  name: 03 - Create Period
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/period
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "",
+    "start_date": "",
+    "end_date": ""
+  }
+}

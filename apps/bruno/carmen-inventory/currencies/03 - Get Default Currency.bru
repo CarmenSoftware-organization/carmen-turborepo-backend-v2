@@ -1,0 +1,15 @@
+meta {
+  name: 03 - Get Default Currency
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/currencies/default
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

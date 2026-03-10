@@ -1,0 +1,19 @@
+meta {
+  name: 03 - Get Document Info
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/documents/:filetoken/info
+  body: none
+  auth: bearer
+}
+
+params:path {
+  filetoken: {{filetoken}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

@@ -1,0 +1,19 @@
+meta {
+  name: 03 - Get Products By Item Group
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/products/item-group/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: 
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

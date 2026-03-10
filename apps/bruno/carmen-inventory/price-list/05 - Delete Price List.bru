@@ -1,0 +1,19 @@
+meta {
+  name: 05 - Delete Price List
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/price-list/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{price_list_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

@@ -1,0 +1,23 @@
+meta {
+  name: 07 - Approve SR
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/store-requisition/:id/approve
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{sr_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}

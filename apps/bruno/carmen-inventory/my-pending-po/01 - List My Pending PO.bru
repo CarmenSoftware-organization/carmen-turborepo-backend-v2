@@ -1,0 +1,15 @@
+meta {
+  name: 01 - List My Pending PO
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/my-pending/purchase-order
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

@@ -1,0 +1,32 @@
+meta {
+  name: 04 - Update Stock In
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/stock-in/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{stock_in_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "description": "Stock In Updated",
+    "doc_status": "draft",
+    "note": "updated note",
+    "stock_in_detail": {
+      "add": [],
+      "update": [],
+      "remove": []
+    }
+  }
+}

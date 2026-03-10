@@ -1,0 +1,27 @@
+meta {
+  name: 04 - Update Price List
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{host}}/api/config/{{bu_code}}/price-list/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: 
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "",
+    "code": "",
+    "is_active": true
+  }
+}

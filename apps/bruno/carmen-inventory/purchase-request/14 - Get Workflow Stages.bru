@@ -1,0 +1,15 @@
+meta {
+  name: 14 - Get Workflow Stages
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request/workflow-stages
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

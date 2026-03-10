@@ -1,0 +1,22 @@
+meta {
+  name: 03 - Create Request For Pricing
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/request-for-pricing
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "description": "",
+    "note": ""
+  }
+}

@@ -1,0 +1,25 @@
+meta {
+  name: 07 - Save Spot Check
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/spot-check/:id/save
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{spot_check_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "items": []
+  }
+}

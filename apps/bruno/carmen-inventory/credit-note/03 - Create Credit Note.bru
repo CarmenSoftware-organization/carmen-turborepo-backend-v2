@@ -1,0 +1,22 @@
+meta {
+  name: 03 - Create Credit Note
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/credit-note
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "description": "",
+    "note": ""
+  }
+}

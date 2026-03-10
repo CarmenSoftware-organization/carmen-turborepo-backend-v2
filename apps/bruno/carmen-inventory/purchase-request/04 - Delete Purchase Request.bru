@@ -1,0 +1,19 @@
+meta {
+  name: 04 - Delete Purchase Request
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/purchase-request/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{pr_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

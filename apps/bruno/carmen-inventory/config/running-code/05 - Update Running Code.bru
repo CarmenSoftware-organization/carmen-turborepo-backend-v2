@@ -1,0 +1,27 @@
+meta {
+  name: 05 - Update Running Code
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{host}}/api/config/{{bu_code}}/running-code/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: 
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "",
+    "code": "",
+    "is_active": true
+  }
+}

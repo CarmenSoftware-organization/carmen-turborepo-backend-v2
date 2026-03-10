@@ -1,0 +1,19 @@
+meta {
+  name: 04 - Get Inventory Adjustment
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/inventory-adjustment/:id?type=stock-in
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{inventory_adjustment_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

@@ -1,0 +1,20 @@
+meta {
+  name: 18 - Delete PO Detail
+  type: http
+  seq: 18
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:id/details/:detail_id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{po_id}}
+  detail_id: {{po_detail_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

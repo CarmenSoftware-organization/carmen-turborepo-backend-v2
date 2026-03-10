@@ -1,0 +1,27 @@
+meta {
+  name: 04 - Update News
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{host}}/api/news/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{news_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "title": "",
+    "content": "",
+    "is_active": true
+  }
+}

@@ -1,0 +1,25 @@
+meta {
+  name: 17 - Create GRN Comment
+  type: http
+  seq: 17
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/good-received-note/:id/comments
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{grn_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "comment": ""
+  }
+}

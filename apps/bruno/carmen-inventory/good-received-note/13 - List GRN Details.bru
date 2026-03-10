@@ -1,0 +1,19 @@
+meta {
+  name: 13 - List GRN Details
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/good-received-note/:id/details
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{grn_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

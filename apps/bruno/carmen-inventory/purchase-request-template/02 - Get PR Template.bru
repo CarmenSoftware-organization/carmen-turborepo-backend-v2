@@ -1,0 +1,19 @@
+meta {
+  name: 02 - Get PR Template
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request-template/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{pr_template_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

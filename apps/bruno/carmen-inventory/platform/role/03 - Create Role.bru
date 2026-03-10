@@ -1,0 +1,23 @@
+meta {
+  name: 03 - Create Role
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api-system/role
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "Role 01",
+    "code": "ROLE_01",
+    "is_active": true
+  }
+}

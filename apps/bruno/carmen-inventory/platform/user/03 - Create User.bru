@@ -1,0 +1,23 @@
+meta {
+  name: 03 - Create User
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api-system/user
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "username": "",
+    "email": "",
+    "password": ""
+  }
+}

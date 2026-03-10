@@ -1,0 +1,25 @@
+meta {
+  name: 04 - Update Physical Count
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/physical-count/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{physical_count_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "description": "Physical Count Updated"
+  }
+}

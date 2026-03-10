@@ -1,0 +1,23 @@
+meta {
+  name: 03 - Create News
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/news
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "title": "",
+    "content": "",
+    "is_active": true
+  }
+}

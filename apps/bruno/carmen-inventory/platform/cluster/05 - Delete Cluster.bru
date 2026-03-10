@@ -1,0 +1,19 @@
+meta {
+  name: 05 - Delete Cluster
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{host}}/api-system/cluster/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id:
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

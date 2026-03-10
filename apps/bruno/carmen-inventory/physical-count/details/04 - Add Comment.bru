@@ -1,0 +1,26 @@
+meta {
+  name: 04 - Add Comment
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/physical-count/:id/details/:detail_id/comment
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{physical_count_id}}
+  detail_id: {{physical_count_detail_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "comment": "Test comment"
+  }
+}

@@ -1,0 +1,22 @@
+meta {
+  name: 03 - Create Purchase Request
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/purchase-request
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "description": "",
+    "note": ""
+  }
+}

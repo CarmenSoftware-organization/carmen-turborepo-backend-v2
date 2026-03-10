@@ -1,0 +1,15 @@
+meta {
+  name: 06 - Get Pending GRN
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{host}}/api/good-received-note/pending
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

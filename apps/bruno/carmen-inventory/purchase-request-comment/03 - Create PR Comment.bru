@@ -1,0 +1,22 @@
+meta {
+  name: 03 - Create PR Comment
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/purchase-request-comment
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "purchase_request_id": "{{pr_id}}",
+    "comment": ""
+  }
+}

@@ -1,0 +1,15 @@
+meta {
+  name: 01 - List GRN
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/good-received-note
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

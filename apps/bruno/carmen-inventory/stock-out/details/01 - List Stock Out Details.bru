@@ -1,0 +1,19 @@
+meta {
+  name: 01 - List Stock Out Details
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/stock-out/:id/details
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{stock_out_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

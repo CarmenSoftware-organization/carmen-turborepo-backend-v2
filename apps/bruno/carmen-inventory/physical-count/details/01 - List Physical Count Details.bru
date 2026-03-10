@@ -1,0 +1,19 @@
+meta {
+  name: 01 - List Physical Count Details
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/physical-count/:id/details
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{physical_count_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

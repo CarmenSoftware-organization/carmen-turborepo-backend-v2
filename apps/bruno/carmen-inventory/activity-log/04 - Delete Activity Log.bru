@@ -1,0 +1,19 @@
+meta {
+  name: 04 - Delete Activity Log
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/activity-log/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{activity_log_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

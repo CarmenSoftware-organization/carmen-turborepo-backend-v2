@@ -1,0 +1,25 @@
+meta {
+  name: 03 - Create Permission
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api-system/permission
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "Permission 01",
+    "code": "PERM_01",
+    "resource": "",
+    "action": "",
+    "is_active": true
+  }
+}

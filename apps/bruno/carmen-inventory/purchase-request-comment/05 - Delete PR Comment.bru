@@ -1,0 +1,19 @@
+meta {
+  name: 05 - Delete PR Comment
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/purchase-request-comment/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{pr_comment_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

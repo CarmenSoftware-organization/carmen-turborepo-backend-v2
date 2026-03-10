@@ -1,0 +1,23 @@
+meta {
+  name: 11 - Reject GRN
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/good-received-note/:id/reject
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{grn_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}

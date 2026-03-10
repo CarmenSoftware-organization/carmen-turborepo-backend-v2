@@ -1,0 +1,19 @@
+meta {
+  name: 02 - Get Store Requisition
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/store-requisition/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{sr_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

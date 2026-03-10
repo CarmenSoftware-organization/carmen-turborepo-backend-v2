@@ -1,0 +1,19 @@
+meta {
+  name: 05 - Delete Vendor Product
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/vendor-product/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{vendor_product_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

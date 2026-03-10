@@ -1,0 +1,27 @@
+meta {
+  name: 04 - Update Business Unit
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{host}}/api-system/business-unit/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id:
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "code": "BU-001",
+    "name": "Business Unit 01 Updated",
+    "is_active": true
+  }
+}

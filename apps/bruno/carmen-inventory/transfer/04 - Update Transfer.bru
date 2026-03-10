@@ -1,0 +1,28 @@
+meta {
+  name: 04 - Update Transfer
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/transfer/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{transfer_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "id": "{{transfer_id}}",
+    "description": "Transfer Updated",
+    "doc_status": "draft",
+    "note": "updated note"
+  }
+}

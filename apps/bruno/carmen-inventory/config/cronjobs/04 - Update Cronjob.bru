@@ -1,0 +1,27 @@
+meta {
+  name: 04 - Update Cronjob
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{host}}/api/config/cronjobs/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: 
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "",
+    "code": "",
+    "is_active": true
+  }
+}

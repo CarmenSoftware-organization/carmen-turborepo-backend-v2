@@ -1,0 +1,22 @@
+meta {
+  name: 06 - Remove Permission
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{host}}/api-system/role-permission/remove-permission
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "role_id": "",
+    "permission_id": ""
+  }
+}

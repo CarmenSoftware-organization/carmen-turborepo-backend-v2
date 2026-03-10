@@ -1,0 +1,19 @@
+meta {
+  name: 02 - Get Currency
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/currencies/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{currency_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

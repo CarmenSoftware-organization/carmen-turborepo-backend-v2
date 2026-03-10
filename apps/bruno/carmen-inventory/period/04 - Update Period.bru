@@ -1,0 +1,27 @@
+meta {
+  name: 04 - Update Period
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/period/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{period_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "",
+    "start_date": "",
+    "end_date": ""
+  }
+}

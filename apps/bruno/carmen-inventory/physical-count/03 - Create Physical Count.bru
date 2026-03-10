@@ -1,0 +1,23 @@
+meta {
+  name: 03 - Create Physical Count
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/physical-count
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "period_id": "",
+    "location_id": "",
+    "description": "Physical Count Test"
+  }
+}

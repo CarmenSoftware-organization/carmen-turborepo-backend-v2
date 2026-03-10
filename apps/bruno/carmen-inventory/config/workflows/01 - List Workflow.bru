@@ -1,0 +1,15 @@
+meta {
+  name: 01 - List Workflow
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/workflows
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

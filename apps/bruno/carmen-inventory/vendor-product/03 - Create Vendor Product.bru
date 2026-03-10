@@ -1,0 +1,22 @@
+meta {
+  name: 03 - Create Vendor Product
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/vendor-product
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "vendor_id": "",
+    "product_id": ""
+  }
+}

@@ -1,0 +1,15 @@
+meta {
+  name: 04 - Get ISO Currencies
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{host}}/api/iso
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

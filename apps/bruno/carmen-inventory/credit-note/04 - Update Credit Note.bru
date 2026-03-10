@@ -1,0 +1,26 @@
+meta {
+  name: 04 - Update Credit Note
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/credit-note/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{credit_note_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "description": "",
+    "note": ""
+  }
+}

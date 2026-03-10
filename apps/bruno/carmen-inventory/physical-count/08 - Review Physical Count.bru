@@ -1,0 +1,30 @@
+meta {
+  name: 08 - Review Physical Count
+  type: http
+  seq: 8
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/physical-count/:id/review
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{physical_count_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "items": [
+      {
+        "id": "",
+        "actual_qty": 10
+      }
+    ]
+  }
+}

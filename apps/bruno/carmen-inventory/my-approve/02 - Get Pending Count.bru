@@ -1,0 +1,15 @@
+meta {
+  name: 02 - Get Pending Count
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/my-approve/pending
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

@@ -1,0 +1,23 @@
+meta {
+  name: 06 - Save PO
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:id/save
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{po_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}

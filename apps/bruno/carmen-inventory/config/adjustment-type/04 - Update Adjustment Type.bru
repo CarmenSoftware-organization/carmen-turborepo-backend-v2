@@ -1,0 +1,30 @@
+meta {
+  name: 04 - Update Adjustment Type
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{host}}/api/config/{{bu_code}}/adjustment-type/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{adjustment_type_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "code": "ADJ-001",
+    "name": "Adjustment Type Updated",
+    "type": "STOCK_IN",
+    "description": "Updated adjustment type",
+    "is_active": true,
+    "note": "updated"
+  }
+}

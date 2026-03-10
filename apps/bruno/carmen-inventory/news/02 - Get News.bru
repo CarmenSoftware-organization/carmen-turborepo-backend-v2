@@ -1,0 +1,19 @@
+meta {
+  name: 02 - Get News
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/news/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{news_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

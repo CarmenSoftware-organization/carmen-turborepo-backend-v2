@@ -1,0 +1,28 @@
+meta {
+  name: 04 - Update User Cluster
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{host}}/api-system/user/cluster/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id:
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "user_id": "",
+    "cluster_id": "",
+    "is_active": true,
+    "role": "member"
+  }
+}

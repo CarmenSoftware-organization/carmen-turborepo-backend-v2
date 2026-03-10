@@ -1,0 +1,20 @@
+meta {
+  name: 03 - Get Location Product Inventory
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/locations/:location_id/product/:product_id/inventory
+  body: none
+  auth: bearer
+}
+
+params:path {
+  location_id: {{location_id}}
+  product_id: {{product_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

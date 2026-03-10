@@ -1,0 +1,19 @@
+meta {
+  name: 05 - Delete Cronjob
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{host}}/api/config/cronjobs/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: 
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

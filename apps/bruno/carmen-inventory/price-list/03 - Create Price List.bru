@@ -1,0 +1,22 @@
+meta {
+  name: 03 - Create Price List
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/price-list
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "description": "",
+    "note": ""
+  }
+}

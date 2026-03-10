@@ -1,0 +1,23 @@
+meta {
+  name: 04 - Create Physical Count Period
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/physical-count-period
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "",
+    "start_date": "",
+    "end_date": ""
+  }
+}

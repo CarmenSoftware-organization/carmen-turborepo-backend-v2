@@ -1,0 +1,19 @@
+meta {
+  name: 06 - Delete Product
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{host}}/api/config/{{bu_code}}/products/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: 
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

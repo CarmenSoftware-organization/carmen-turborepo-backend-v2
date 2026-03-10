@@ -1,0 +1,20 @@
+meta {
+  name: 05 - Delete Transfer Detail
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/transfer/:id/details/:detail_id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{transfer_id}}
+  detail_id: {{transfer_detail_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
