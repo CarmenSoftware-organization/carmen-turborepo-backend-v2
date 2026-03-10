@@ -14,6 +14,10 @@ params:path {
   purchase_request_id: {{pr_id}}
 }
 
+headers {
+  x-app-id: {{x_app_id}}
+}
+
 auth:bearer {
   token: {{access_token}}
 }
