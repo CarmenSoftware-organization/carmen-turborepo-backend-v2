@@ -14,10 +14,10 @@ async function bootstrap() {
   const logger = new BackendLogger(bootstrap.name);
 
   const notificationServiceHost = envConfig.NOTIFICATION_SERVICE_HOST;
-  const notificationServiceHttpsPort = Number(envConfig.NOTIFICATION_SERVICE_HTTPS_PORT);
+  const notificationServiceTcpPort = Number(envConfig.NOTIFICATION_SERVICE_TCP_PORT);
   const notificationServiceHttpPort = Number(envConfig.NOTIFICATION_SERVICE_HTTP_PORT);
 
-  logger.log(`NotificationService is configured to run on ${notificationServiceHost}:${notificationServiceHttpsPort}`);
+  logger.log(`NotificationService is configured to run on ${notificationServiceHost}:${notificationServiceTcpPort}`);
   logger.log(`HTTP server is configured to run on ${notificationServiceHost}:${notificationServiceHttpPort}`);
 
   // Connect TCP microservice
@@ -25,7 +25,7 @@ async function bootstrap() {
     transport: Transport.TCP,
     options: {
       host: notificationServiceHost,
-      port: notificationServiceHttpsPort,
+      port: notificationServiceTcpPort,
     },
   });
 
@@ -38,7 +38,7 @@ async function bootstrap() {
   await app.startAllMicroservices();
   await app.listen(notificationServiceHttpPort);
 
-  logger.log(`NotificationService TCP is running on ${notificationServiceHost}:${notificationServiceHttpsPort}`);
+  logger.log(`NotificationService TCP is running on ${notificationServiceHost}:${notificationServiceTcpPort}`);
   logger.log(`NotificationService HTTP is running on ${notificationServiceHost}:${notificationServiceHttpPort}`);
   logger.log(
     `NotificationService WebSocket is available at ws://${notificationServiceHost}:${notificationServiceHttpPort}`,

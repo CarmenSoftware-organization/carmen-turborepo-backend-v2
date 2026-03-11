@@ -11,7 +11,7 @@ import { envConfig } from 'src/libs/config.env';
         transport: Transport.TCP,
         options: {
           host: envConfig.CLUSTER_SERVICE_HOST,
-          port: Number(envConfig.CLUSTER_SERVICE_HTTP_PORT),
+          port: Number(envConfig.CLUSTER_SERVICE_TCP_PORT),
         },
       },
     ]),

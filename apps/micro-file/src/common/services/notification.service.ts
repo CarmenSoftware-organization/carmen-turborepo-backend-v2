@@ -89,7 +89,7 @@ export class NotificationService {
 
   constructor(config?: NotificationServiceConfig) {
     const host = config?.host || process.env.NOTIFICATION_SERVICE_HOST || 'localhost';
-    const port = config?.port || process.env.NOTIFICATION_SERVICE_HTTP_PORT || '5006';
+    const port = config?.port || process.env.NOTIFICATION_SERVICE_HTTP_PORT || '6006';
     this.baseUrl = `http://${host}:${port}/api/notifications`;
     this.timeout = config?.timeout || 10000;
   }

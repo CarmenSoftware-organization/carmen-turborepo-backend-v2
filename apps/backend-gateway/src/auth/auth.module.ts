@@ -22,7 +22,7 @@ import { UrlTokenGuard } from './guards/url-token.guard';
         transport: Transport.TCP,
         options: {
           host: envConfig.BUSINESS_SERVICE_HOST,
-          port: Number(envConfig.BUSINESS_SERVICE_HTTP_PORT),
+          port: Number(envConfig.BUSINESS_SERVICE_TCP_PORT),
         },
       },
       {
@@ -30,7 +30,7 @@ import { UrlTokenGuard } from './guards/url-token.guard';
         transport: Transport.TCP,
         options: {
           host: envConfig.KEYCLOAK_API_SERVICE_HOST,
-          port: Number(envConfig.KEYCLOAK_API_SERVICE_HTTP_PORT),
+          port: Number(envConfig.KEYCLOAK_API_SERVICE_TCP_PORT),
         },
       },
     ]),

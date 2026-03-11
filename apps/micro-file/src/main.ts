@@ -17,11 +17,11 @@ async function bootstrap() {
   logger.verbose({ envConfig: envConfig, process_env: process.env }, 'env');
 
   const fileServiceHost = envConfig.FILE_SERVICE_HOST;
-  const fileServiceHttpsPort = Number(envConfig.FILE_SERVICE_HTTPS_PORT);
+  const fileServiceTcpPort = Number(envConfig.FILE_SERVICE_TCP_PORT);
   const fileServiceHttpPort = Number(envConfig.FILE_SERVICE_HTTP_PORT);
 
   logger.log(
-    `FileService is configured to run on ${fileServiceHost}:${fileServiceHttpsPort}`,
+    `FileService is configured to run on ${fileServiceHost}:${fileServiceTcpPort}`,
   );
   logger.log(
     `HTTP server is configured to run on ${fileServiceHost}:${fileServiceHttpPort}`,
@@ -31,7 +31,7 @@ async function bootstrap() {
     transport: Transport.TCP,
     options: {
       host: fileServiceHost,
-      port: fileServiceHttpsPort,
+      port: fileServiceTcpPort,
     },
   });
 
@@ -39,7 +39,7 @@ async function bootstrap() {
   await app.listen(fileServiceHttpPort);
 
   logger.log(
-    `FileService is running on ${fileServiceHost}:${fileServiceHttpsPort}`,
+    `FileService TCP is running on ${fileServiceHost}:${fileServiceTcpPort}`,
   );
   logger.log(
     `HTTP server is running on ${fileServiceHost}:${fileServiceHttpPort}`,
