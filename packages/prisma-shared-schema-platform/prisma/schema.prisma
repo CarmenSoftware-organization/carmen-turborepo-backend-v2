@@ -85,11 +85,11 @@ model tb_business_unit {
   description String?
   info        Json?
 
-  is_hq               Boolean?               @default(true)
-  is_active           Boolean?               @default(true)
+  is_hq               Boolean?                @default(true)
+  is_active           Boolean?                @default(true)
   db_connection       Json?
   config              Json?
-  default_currency_id String?                @db.Uuid
+  default_currency_id String?                 @db.Uuid
   calculation_method  enum_calculation_method @default(average)
 
   // Company info
@@ -109,16 +109,16 @@ model tb_business_unit {
   hotel_zip_code String?
 
   // Format settings
-  date_format      String? @default("yyyy-MM-dd")
-  date_time_format String? @default("yyyy-MM-dd HH:mm:ss")
-  time_format      String? @default("HH:mm:ss")
+  date_format       String? @default("yyyy-MM-dd")
+  date_time_format  String? @default("yyyy-MM-dd HH:mm:ss")
+  time_format       String? @default("HH:mm:ss")
   short_time_format String? @default("HH:mm")
   long_time_format  String? @default("HH:mm:ss")
-  timezone         String? @default("Asia/Bangkok")
-  amount_format    Json?
-  quantity_format  Json?
-  perpage_format   Json?
-  recipe_format    Json?
+  timezone          String? @default("Asia/Bangkok")
+  amount_format     Json?
+  quantity_format   Json?
+  perpage_format    Json?
+  recipe_format     Json?
 
   created_at    DateTime? @default(now()) @db.Timestamptz(6)
   created_by_id String?   @db.Uuid
@@ -581,14 +581,20 @@ enum enum_user_business_unit_role {
 // ==================== Report ====================
 
 model tb_report_template {
-  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String  @db.VarChar(255)
-  report_type String  @db.VarChar(100)
-  description String?
-  filters     Json?   @default("{}") @db.JsonB
-  options     Json?   @default("{}") @db.JsonB
-  is_default  Boolean @default(false)
-  is_active   Boolean @default(true)
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String  @db.VarChar(255)
+  description  String?
+  report_group String  @db.VarChar(100)
+
+  dialog  String @db.Text
+  content String @db.Text
+
+  is_standard Boolean @default(true)
+
+  allow_business_unit Json? @db.JsonB
+  deny_business_unit  Json? @db.JsonB
+
+  is_active Boolean @default(true)
 
   // Audit Fields
   created_at    DateTime? @default(now()) @db.Timestamptz(6)
@@ -598,7 +604,8 @@ model tb_report_template {
   deleted_at    DateTime? @db.Timestamptz(6)
   deleted_by_id String?   @db.Uuid
 
-  @@index([report_type], map: "idx_report_template_type")
+  @@unique([name, deleted_at], map: "report_template_name_deleted_at_u")
+  @@index([report_group], map: "idx_report_template_report_group")
 }
 
 model tb_news {
