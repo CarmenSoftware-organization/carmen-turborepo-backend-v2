@@ -4,7 +4,7 @@ import { RequestForPricingService } from './request-for-pricing.service';
 import { RequestForPricingController } from './request-for-pricing.controller';
 import { TenantModule } from '@/tenant/tenant.module';
 import { CommonModule } from '@/common/common.module';
-import { envConfig } from '@/common/libs/config.env';
+import { envConfig } from '@/libs/config.env';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 
 @Module({
@@ -12,7 +12,7 @@ import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
     TenantModule,
     CommonModule,
     JwtModule.register({
-      secret: envConfig.SUPABASE_JWT_SECRET,
+      secret: envConfig.JWT_SECRET,
       signOptions: { expiresIn: parseInt(envConfig.JWT_EXPIRES_IN, 10) },
     }),
   ],

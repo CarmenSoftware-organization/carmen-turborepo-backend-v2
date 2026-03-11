@@ -21,8 +21,8 @@ import { UrlTokenGuard } from './guards/url-token.guard';
         name: 'AUTH_SERVICE',
         transport: Transport.TCP,
         options: {
-          host: envConfig.AUTH_SERVICE_HOST,
-          port: Number(envConfig.AUTH_SERVICE_PORT),
+          host: envConfig.BUSINESS_SERVICE_HOST,
+          port: Number(envConfig.BUSINESS_SERVICE_PORT),
         },
       },
       {
@@ -35,7 +35,7 @@ import { UrlTokenGuard } from './guards/url-token.guard';
       },
     ]),
     JwtModule.register({
-      secret: envConfig.SUPABASE_JWT_SECRET,
+      secret: envConfig.JWT_SECRET,
     }),
     PassportModule,
     ConfigModule,

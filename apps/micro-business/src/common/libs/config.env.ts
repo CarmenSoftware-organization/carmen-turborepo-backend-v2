@@ -2,25 +2,23 @@ import { z } from 'zod';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-const DEFAULT_HOST = 'localhost';
-
 const envSchema = z.object({
   // Required
-  SUPABASE_JWT_SECRET: z.string().min(1, 'SUPABASE_JWT_SECRET is required'),
+  JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
 
   // Business service (consolidated)
-  BUSINESS_SERVICE_HOST: z.string().default(DEFAULT_HOST),
+  BUSINESS_SERVICE_HOST: z.string().min(1),
   BUSINESS_SERVICE_PORT: z.coerce.number().default(5020),
   BUSINESS_SERVICE_HTTP_PORT: z.coerce.number().default(6020),
 
   // External services (not consolidated)
-  KEYCLOAK_API_SERVICE_HOST: z.string().default(DEFAULT_HOST),
+  KEYCLOAK_API_SERVICE_HOST: z.string().min(1),
   KEYCLOAK_API_SERVICE_PORT: z.coerce.number().default(5013),
-  FILE_SERVICE_HOST: z.string().default(DEFAULT_HOST),
+  FILE_SERVICE_HOST: z.string().min(1),
   FILE_SERVICE_PORT: z.coerce.number().default(5007),
-  REPORT_SERVICE_HOST: z.string().default(DEFAULT_HOST),
+  REPORT_SERVICE_HOST: z.string().min(1),
   REPORT_SERVICE_PORT: z.coerce.number().default(5004),
-  CRONJOB_SERVICE_HOST: z.string().default(DEFAULT_HOST),
+  CRONJOB_SERVICE_HOST: z.string().min(1),
   CRONJOB_SERVICE_PORT: z.coerce.number().default(5012),
 
   // JWT configuration
@@ -43,29 +41,11 @@ if (!parsed.success) {
 
 const env = parsed.data;
 
-// Since all services are consolidated, they all use the same business service port
-const BUSINESS_PORT = env.BUSINESS_SERVICE_PORT;
-
 export const envConfig = {
   // Business service (consolidated)
   BUSINESS_SERVICE_HOST: env.BUSINESS_SERVICE_HOST,
-  BUSINESS_SERVICE_PORT: BUSINESS_PORT,
+  BUSINESS_SERVICE_PORT: env.BUSINESS_SERVICE_PORT,
   BUSINESS_SERVICE_HTTP_PORT: env.BUSINESS_SERVICE_HTTP_PORT,
-
-  // Legacy service references (all point to consolidated business service)
-  AUTH_SERVICE_HOST: env.BUSINESS_SERVICE_HOST,
-  AUTH_SERVICE_PORT: BUSINESS_PORT,
-  MASTER_SERVICE_HOST: env.BUSINESS_SERVICE_HOST,
-  MASTER_SERVICE_PORT: BUSINESS_PORT,
-  MASTER_SERVICE_HTTP_PORT: env.BUSINESS_SERVICE_HTTP_PORT,
-  INVENTORY_SERVICE_HOST: env.BUSINESS_SERVICE_HOST,
-  INVENTORY_SERVICE_PORT: BUSINESS_PORT,
-  PROCUREMENT_SERVICE_HOST: env.BUSINESS_SERVICE_HOST,
-  PROCUREMENT_SERVICE_PORT: BUSINESS_PORT,
-  NOTIFICATION_SERVICE_HOST: env.BUSINESS_SERVICE_HOST,
-  NOTIFICATION_SERVICE_PORT: BUSINESS_PORT,
-  LOG_SERVICE_HOST: env.BUSINESS_SERVICE_HOST,
-  LOG_SERVICE_PORT: BUSINESS_PORT,
 
   // External services (not consolidated)
   KEYCLOAK_API_SERVICE_HOST: env.KEYCLOAK_API_SERVICE_HOST,
@@ -78,7 +58,7 @@ export const envConfig = {
   CRONJOB_SERVICE_PORT: env.CRONJOB_SERVICE_PORT,
 
   // JWT configuration
-  SUPABASE_JWT_SECRET: env.SUPABASE_JWT_SECRET,
+  JWT_SECRET: env.JWT_SECRET,
   JWT_EXPIRES_IN: env.JWT_EXPIRES_IN,
   JWT_REFRESH_EXPIRES_IN: env.JWT_REFRESH_EXPIRES_IN,
   JWT_INVITE_EXPIRES_IN: env.JWT_INVITE_EXPIRES_IN,

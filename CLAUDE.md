@@ -83,7 +83,7 @@ The gateway organizes routes into domain modules under `src/config/`, `src/appli
 
 Keycloak-based authentication via Passport.js:
 - **Keycloak**: Bearer token forwarded to micro-keycloak-api via TCP for validation
-- `SUPABASE_JWT_SECRET` env var is a legacy name — it holds the JWT signing secret (not related to Supabase)
+- `JWT_SECRET` env var holds the JWT signing secret
 
 Guards are applied at the route level: `KeycloakGuard` → `PermissionGuard` (order matters — PermissionGuard depends on user context set by KeycloakGuard).
 
@@ -116,7 +116,7 @@ TypeScript path alias `@repo/*` maps to `packages/*/src`. Individual services us
 
 Each service needs a `.env` file (copy from `.env.example`). Key variables:
 - `SYSTEM_DATABASE_URL` / `SYSTEM_DIRECT_URL` — Platform PostgreSQL connection
-- `SUPABASE_JWT_SECRET` — JWT signing secret (legacy name, not related to Supabase)
+- `JWT_SECRET` — JWT signing secret
 - Service host/port pairs for inter-service discovery (e.g., `BUSINESS_SERVICE_HOST`, `BUSINESS_SERVICE_PORT`)
 - `LOKI_*` — Winston/Loki logging config
 - `SMTP_*` — Email configuration

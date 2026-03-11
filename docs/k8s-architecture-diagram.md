@@ -85,7 +85,7 @@
 |  |  |  | ConfigMap        |  | External Secrets            |  |  |  |
 |  |  |  | - service hosts  |  | (AWS Secrets Manager)       |  |  |  |
 |  |  |  | - service ports  |  | - DATABASE_URL              |  |  |  |
-|  |  |  | - NODE_ENV       |  | - SUPABASE_JWT_SECRET       |  |  |  |
+|  |  |  | - NODE_ENV       |  | - JWT_SECRET       |  |  |  |
 |  |  |  | - LOKI_*         |  | - KEYCLOAK_*                |  |  |  |
 |  |  |  +------------------+  | - SMTP_*                    |  |  |  |
 |  |  |                        | - SENTRY_DSN                |  |  |  |

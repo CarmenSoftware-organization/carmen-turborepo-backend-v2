@@ -1,45 +1,55 @@
-import { Elysia } from 'elysia'
-import { cors } from '@elysiajs/cors'
-import { routes } from './routes'
-import { cronJobManager } from './jobs/cronJobManager'
-import { swagger } from '@elysiajs/swagger'
-import { envConfig } from './libs/config.env'
+import { Elysia } from 'elysia';
+import { cors } from '@elysiajs/cors';
+import { routes } from './routes';
+import { cronJobManager } from './jobs/cronJobManager';
+import { swagger } from '@elysiajs/swagger';
+import { envConfig } from './libs/config.env';
 
-const service_host = envConfig.CRONJOB_SERVICE_HOST || 'localhost'
-const service_port = envConfig.CRONJOB_SERVICE_PORT || 5012
+const service_host = envConfig.CRONJOB_SERVICE_HOST;
+const service_Https_port = envConfig.CRONJOB_SERVICE_HTTPS_PORT;
+const service_Http_port = envConfig.CRONJOB_SERVICE_PORT;
 
-const app = new Elysia()  
-  .use(cors({
-    origin: true, // Allow all origins in development
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  }))
-  .use(swagger({
-    documentation: {
-      info: {
-        title: 'Notification System API',
-        version: '1.0.0',
-        description: 'Real-time notification system with WebSocket and CronJob management'
-      },
-      servers: [
-        {
-          url: `http://${service_host}:${service_port}`,
-          description: 'Development server'
+const app = new Elysia()
+  .use(
+    cors({
+      origin: true, // Allow all origins in development
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    }),
+  )
+  .use(
+    swagger({
+      documentation: {
+        info: {
+          title: 'Notification System API',
+          version: '1.0.0',
+          description:
+            'Real-time notification system with WebSocket and CronJob management',
         },
-        {
-          url: `http://dev.blueledgers.com`,
-          description: 'Production server'
-        }
-      ],
-      tags: [
-        {
-          name: 'cronjobs',
-          description: 'CronJob management endpoints'
-        }
-      ]
-    }
-  }))
+        servers: [
+          {
+            url: `https://${service_host}:${service_Https_port}`,
+            description: 'Development server',
+          },
+          {
+            url: `http://${service_host}:${service_Http_port}`,
+            description: 'Development server',
+          },
+          {
+            url: `http://dev.blueledgers.com`,
+            description: 'Production server',
+          },
+        ],
+        tags: [
+          {
+            name: 'cronjobs',
+            description: 'CronJob management endpoints',
+          },
+        ],
+      },
+    }),
+  )
   .get('/', () => ({
     message: '🚀 Notification System API',
     status: 'ระบบพร้อมใช้งาน!',
@@ -49,33 +59,48 @@ const app = new Elysia()
       notifications: '/api/notifications',
       cronjobs: '/api/cronjobs',
       websocket: '/ws',
-      docs: '/swagger'
+      docs: '/swagger',
     },
     users: {
       description: 'Select user for dashboard testing',
       available: [
-        { id: 'user1', name: 'Alice Johnson', role: 'admin', email: 'alice@example.com'},
-        { id: 'user2', name: 'Bob Smith', role: 'user', email: 'bob@example.com'},
-        { id: 'user3', name: 'Charlie Brown', role: 'user', email: 'charlie@example.com'}
-      ]
+        {
+          id: 'user1',
+          name: 'Alice Johnson',
+          role: 'admin',
+          email: 'alice@example.com',
+        },
+        {
+          id: 'user2',
+          name: 'Bob Smith',
+          role: 'user',
+          email: 'bob@example.com',
+        },
+        {
+          id: 'user3',
+          name: 'Charlie Brown',
+          role: 'user',
+          email: 'charlie@example.com',
+        },
+      ],
     },
-    fun_fact: 'Server นี้ใช้ Bun + Elysia เร็วมากกก! ⚡️'
+    fun_fact: 'Server นี้ใช้ Bun + Elysia เร็วมากกก! ⚡️',
   }))
   .get('/ping', () => 'pong')
   .get('/health', () => 'OK')
   .use(routes)
-  .listen(service_port)
+  .listen(service_Https_port);
 
 // Initialize dynamic cron job manager
-cronJobManager.loadCronJobs()
+cronJobManager.loadCronJobs();
 
 // Graceful shutdown
 process.on('SIGINT', () => {
-  cronJobManager.stopAllJobs()
-  process.exit(0)
-})
+  cronJobManager.stopAllJobs();
+  process.exit(0);
+});
 
 process.on('SIGTERM', () => {
-  cronJobManager.stopAllJobs()
-  process.exit(0)
-})
+  cronJobManager.stopAllJobs();
+  process.exit(0);
+});

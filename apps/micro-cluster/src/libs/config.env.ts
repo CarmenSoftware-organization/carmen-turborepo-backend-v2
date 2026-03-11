@@ -2,30 +2,107 @@ import { z } from 'zod';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-const DEFAULT_HOST = 'localhost';
+const DEFAULT_PORTS = {
+  GATEWAY: 4000,
+  GATEWAY_HTTPS: 4001,
+  BUSINESS: 5020,
+  BUSINESS_HTTPS: 6020,
+  CLUSTER: 5014,
+  CLUSTER_HTTPS: 6014,
+  NOTIFICATION: 5006,
+  NOTIFICATION_HTTPS: 6006,
+  FILE: 5007,
+  FILE_HTTPS: 6007,
+  CRONJOB: 5012,
+  CRONJOB_HTTPS: 6012,
+  KEYCLOAK_API: 5013,
+  KEYCLOAK_API_HTTPS: 6013,
+  REPORT: 5015,
+  REPORT_HTTPS: 6015,
+  REPORT_GRPC: 4015,
+  REPORT_RENDER: 8001,
+  REPORT_RENDER_HTTPS: 8002,
+} as const;
+
+// ─── Zod helpers ─────────────────────────────────────────────────────────────
+
+const host = () => z.string().min(1);
+const port = (defaultValue: number) => z.coerce.number().default(defaultValue);
+
+// ─── Schema ──────────────────────────────────────────────────────────────────
 
 const envSchema = z.object({
-  // Required
+  // Gateway
+  GATEWAY_SERVICE_HOST: host(),
+  GATEWAY_SERVICE_PORT: port(DEFAULT_PORTS.GATEWAY),
+  GATEWAY_SERVICE_HTTPS_PORT: port(DEFAULT_PORTS.GATEWAY_HTTPS),
+
+  // Business
+  BUSINESS_SERVICE_HOST: host(),
+  BUSINESS_SERVICE_PORT: port(DEFAULT_PORTS.BUSINESS),
+  BUSINESS_SERVICE_HTTPS_PORT: port(DEFAULT_PORTS.BUSINESS_HTTPS),
+
+  // Cluster
+  CLUSTER_SERVICE_HOST: host(),
+  CLUSTER_SERVICE_PORT: port(DEFAULT_PORTS.CLUSTER),
+  CLUSTER_SERVICE_HTTPS_PORT: port(DEFAULT_PORTS.CLUSTER_HTTPS),
+
+  // Notification
+  NOTIFICATION_SERVICE_HOST: host(),
+  NOTIFICATION_SERVICE_PORT: port(DEFAULT_PORTS.NOTIFICATION),
+  NOTIFICATION_SERVICE_HTTPS_PORT: port(DEFAULT_PORTS.NOTIFICATION_HTTPS),
+
+  // File
+  FILE_SERVICE_HOST: host(),
+  FILE_SERVICE_PORT: port(DEFAULT_PORTS.FILE),
+  FILE_SERVICE_HTTPS_PORT: port(DEFAULT_PORTS.FILE_HTTPS),
+
+  // Cronjob
+  CRONJOB_SERVICE_HOST: host(),
+  CRONJOB_SERVICE_PORT: port(DEFAULT_PORTS.CRONJOB),
+  CRONJOB_SERVICE_HTTPS_PORT: port(DEFAULT_PORTS.CRONJOB_HTTPS),
+
+  // Keycloak API
+  KEYCLOAK_API_SERVICE_HOST: host(),
+  KEYCLOAK_API_SERVICE_PORT: port(DEFAULT_PORTS.KEYCLOAK_API),
+  KEYCLOAK_API_SERVICE_HTTPS_PORT: port(DEFAULT_PORTS.KEYCLOAK_API_HTTPS),
+
+  // Report
+  REPORT_SERVICE_HOST: host(),
+  REPORT_SERVICE_PORT: port(DEFAULT_PORTS.REPORT),
+  REPORT_SERVICE_HTTPS_PORT: port(DEFAULT_PORTS.REPORT_HTTPS),
+  REPORT_SERVICE_GRPC_PORT: port(DEFAULT_PORTS.REPORT_GRPC),
+
+  // Report Render
+  REPORT_RENDER_HOST: host(),
+  REPORT_RENDER_PORT: port(DEFAULT_PORTS.REPORT_RENDER),
+  REPORT_RENDER_HTTPS_PORT: port(DEFAULT_PORTS.REPORT_RENDER_HTTPS),
+
+  // Database
   SYSTEM_DATABASE_URL: z.string().min(1, 'SYSTEM_DATABASE_URL is required'),
-  SUPABASE_JWT_SECRET: z.string().min(1, 'SUPABASE_JWT_SECRET is required'),
+  SYSTEM_DIRECT_URL: z.string().min(1, 'SYSTEM_DIRECT_URL is required'),
 
-  // Cluster service
-  CLUSTER_SERVICE_HOST: z.string().default(DEFAULT_HOST),
-  CLUSTER_SERVICE_PORT: z.coerce.number().default(5014),
-  CLUSTER_SERVICE_HTTP_PORT: z.coerce.number().default(6014),
+  // User invitation/registration
+  INVITATION_LIMIT_HOURS: z.coerce.number().default(24),
+  REGISTER_BASE_URL: z.string().default('http://localhost:3000'),
+  RESET_PASSWORD_LIMIT_HOURS: z.coerce.number().default(24),
+  RESET_PASSWORD_BASE_URL: z.string().default('http://localhost:3000'),
 
-  // External services
-  KEYCLOAK_API_SERVICE_HOST: z.string().default(DEFAULT_HOST),
-  KEYCLOAK_API_SERVICE_PORT: z.coerce.number().default(5013),
+  // SMTP
+  SMTP_HOST: z.string().default('smtp.example.com'),
+  SMTP_PORT: z.coerce.number().default(587),
+  SMTP_USER: z.string().default(''),
+  SMTP_PASS: z.string().default(''),
+  SMTP_FROM: z.string().default('noreply@example.com'),
 
-  // JWT configuration
-  JWT_EXPIRES_IN: z.string().default('1d'),
-  JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
-  JWT_INVITE_EXPIRES_IN: z.string().default('1d'),
+  // Logging
+  LOG_LEVEL: z.string().default('info'),
 
-  // Database (optional)
-  SYSTEM_DIRECT_URL: z.string().optional(),
+  // Sentry
+  SENTRY_DSN: z.string().optional(),
 });
+
+// ─── Parse & validate ────────────────────────────────────────────────────────
 
 const parsed = envSchema.safeParse(process.env);
 
@@ -41,23 +118,75 @@ if (!parsed.success) {
 
 const env = parsed.data;
 
+// ─── Export ──────────────────────────────────────────────────────────────────
+
 export const envConfig = {
-  // Cluster service
+  // Gateway
+  GATEWAY_SERVICE_HOST: env.GATEWAY_SERVICE_HOST,
+  GATEWAY_SERVICE_PORT: env.GATEWAY_SERVICE_PORT,
+  GATEWAY_SERVICE_HTTPS_PORT: env.GATEWAY_SERVICE_HTTPS_PORT,
+
+  // Business
+  BUSINESS_SERVICE_HOST: env.BUSINESS_SERVICE_HOST,
+  BUSINESS_SERVICE_PORT: env.BUSINESS_SERVICE_PORT,
+  BUSINESS_SERVICE_HTTPS_PORT: env.BUSINESS_SERVICE_HTTPS_PORT,
+
+  // Cluster
   CLUSTER_SERVICE_HOST: env.CLUSTER_SERVICE_HOST,
   CLUSTER_SERVICE_PORT: env.CLUSTER_SERVICE_PORT,
-  CLUSTER_SERVICE_HTTP_PORT: env.CLUSTER_SERVICE_HTTP_PORT,
+  CLUSTER_SERVICE_HTTPS_PORT: env.CLUSTER_SERVICE_HTTPS_PORT,
 
-  // External services
+  // Notification
+  NOTIFICATION_SERVICE_HOST: env.NOTIFICATION_SERVICE_HOST,
+  NOTIFICATION_SERVICE_PORT: env.NOTIFICATION_SERVICE_PORT,
+  NOTIFICATION_SERVICE_HTTPS_PORT: env.NOTIFICATION_SERVICE_HTTPS_PORT,
+
+  // File
+  FILE_SERVICE_HOST: env.FILE_SERVICE_HOST,
+  FILE_SERVICE_PORT: env.FILE_SERVICE_PORT,
+  FILE_SERVICE_HTTPS_PORT: env.FILE_SERVICE_HTTPS_PORT,
+
+  // Cronjob
+  CRONJOB_SERVICE_HOST: env.CRONJOB_SERVICE_HOST,
+  CRONJOB_SERVICE_PORT: env.CRONJOB_SERVICE_PORT,
+  CRONJOB_SERVICE_HTTPS_PORT: env.CRONJOB_SERVICE_HTTPS_PORT,
+
+  // Keycloak API
   KEYCLOAK_API_SERVICE_HOST: env.KEYCLOAK_API_SERVICE_HOST,
   KEYCLOAK_API_SERVICE_PORT: env.KEYCLOAK_API_SERVICE_PORT,
+  KEYCLOAK_API_SERVICE_HTTPS_PORT: env.KEYCLOAK_API_SERVICE_HTTPS_PORT,
 
-  // JWT configuration
-  SUPABASE_JWT_SECRET: env.SUPABASE_JWT_SECRET,
-  JWT_EXPIRES_IN: env.JWT_EXPIRES_IN,
-  JWT_REFRESH_EXPIRES_IN: env.JWT_REFRESH_EXPIRES_IN,
-  JWT_INVITE_EXPIRES_IN: env.JWT_INVITE_EXPIRES_IN,
+  // Report
+  REPORT_SERVICE_HOST: env.REPORT_SERVICE_HOST,
+  REPORT_SERVICE_PORT: env.REPORT_SERVICE_PORT,
+  REPORT_SERVICE_HTTPS_PORT: env.REPORT_SERVICE_HTTPS_PORT,
+  REPORT_SERVICE_GRPC_PORT: env.REPORT_SERVICE_GRPC_PORT,
+
+  // Report Render
+  REPORT_RENDER_HOST: env.REPORT_RENDER_HOST,
+  REPORT_RENDER_PORT: env.REPORT_RENDER_PORT,
+  REPORT_RENDER_HTTPS_PORT: env.REPORT_RENDER_HTTPS_PORT,
 
   // Database
   SYSTEM_DATABASE_URL: env.SYSTEM_DATABASE_URL,
   SYSTEM_DIRECT_URL: env.SYSTEM_DIRECT_URL,
+
+  // User invitation/registration
+  INVITATION_LIMIT_HOURS: env.INVITATION_LIMIT_HOURS,
+  REGISTER_BASE_URL: env.REGISTER_BASE_URL,
+  RESET_PASSWORD_LIMIT_HOURS: env.RESET_PASSWORD_LIMIT_HOURS,
+  RESET_PASSWORD_BASE_URL: env.RESET_PASSWORD_BASE_URL,
+
+  // SMTP
+  SMTP_HOST: env.SMTP_HOST,
+  SMTP_PORT: env.SMTP_PORT,
+  SMTP_USER: env.SMTP_USER,
+  SMTP_PASS: env.SMTP_PASS,
+  SMTP_FROM: env.SMTP_FROM,
+
+  // Logging
+  LOG_LEVEL: env.LOG_LEVEL,
+
+  // Sentry
+  SENTRY_DSN: env.SENTRY_DSN,
 };

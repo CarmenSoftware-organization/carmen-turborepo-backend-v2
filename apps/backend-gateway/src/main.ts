@@ -51,20 +51,24 @@ async function bootstrap() {
     .setTitle('CarmenSoftware')
     .setDescription('CarmenSoftware API Gateway')
     .setVersion('1.0.1')
-    .addServer(`http://localhost:${gatewayPort}`, 'local environment')
+    .addServer(`http://localhost:${gatewayPort}`, 'local environment (http)')
     .addServer(
       `https://localhost:${gatewayPortHttps}`,
       'local environment (https)',
     )
     .addServer(
       `https://dev.blueledgers.com:${gatewayPortHttps}`,
-      'dev environment',
+      'dev environment (https)',
     )
-    .addServer(`https://carmen-api.semapru.com`, 'TEST environment')
+    .addServer(
+      `http://dev.blueledgers.com:${gatewayPort}`,
+      'dev environment (http)',
+    )
     .addServer('https://43.209.126.252', 'UAT environment')
     .addBearerAuth({
       type: 'http',
       scheme: 'bearer',
+      bearerFormat: 'JWT',
       in: 'header',
     })
     .build();
@@ -77,24 +81,6 @@ async function bootstrap() {
     app_https as unknown as Parameters<typeof SwaggerModule.createDocument>[0],
     config,
   );
-
-  // SwaggerModule.setup('swagger', app_http as unknown as Parameters<typeof SwaggerModule.createDocument>[0], document_http);
-  // SwaggerModule.setup('swagger', app_https as unknown as Parameters<typeof SwaggerModule.createDocument>[0], document_https);
-
-  // fs.writeFileSync('./swagger.json', JSON.stringify(document_http, null, 2));
-  // fs.writeFileSync('./swagger_https.json', JSON.stringify(document_https));
-
-  // // Serve static files from the "public" folder
-  // app_http.useStaticAssets(join(__dirname, '..', 'public'));
-  // app_https.useStaticAssets(join(__dirname, '..', 'public'));
-
-  // SwaggerModule.setup('swagger', app_http, document_http, {
-  //   jsonDocumentUrl: 'swagger/json',
-  // });
-
-  // SwaggerModule.setup('swagger', app_https, document_https, {
-  //   jsonDocumentUrl: 'swagger/json',
-  // });
 
   app_http.use(
     '/swagger',
