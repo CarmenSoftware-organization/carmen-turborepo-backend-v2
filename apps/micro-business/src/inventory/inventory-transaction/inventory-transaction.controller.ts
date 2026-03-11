@@ -182,6 +182,31 @@ export class InventoryTransactionController extends BaseMicroserviceController {
   }
 
   @MessagePattern({
+    cmd: 'inventory-transaction.test-credit-note-qty',
+    service: 'inventory-transaction',
+  })
+  async testCreditNoteQty(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'testCreditNoteQty', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const data = payload.data || {};
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.createCreditNoteQtyTransaction(
+        {
+          bu_code: tenant_id,
+          grn_id: data.grn_id,
+          detail_items: data.detail_items || [],
+          user_id,
+        },
+        user_id,
+        tenant_id,
+      )
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
     cmd: 'inventory-transaction.get-cost-layers',
     service: 'inventory-transaction',
   })

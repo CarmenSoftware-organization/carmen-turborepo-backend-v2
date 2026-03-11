@@ -88,6 +88,11 @@ export class InventoryTransactionService {
     return this.sendCommand('inventory-transaction.test-transfer', { data, user_id, tenant_id });
   }
 
+  async testCreditNoteQty(data: Record<string, unknown>, user_id: string, tenant_id: string): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'testCreditNoteQty', user_id, tenant_id }, InventoryTransactionService.name);
+    return this.sendCommand('inventory-transaction.test-credit-note-qty', { data, user_id, tenant_id });
+  }
+
   async getCostLayers(product_id: string | undefined, location_id: string | undefined, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'getCostLayers', user_id, tenant_id }, InventoryTransactionService.name);
     return this.sendCommand('inventory-transaction.get-cost-layers', { product_id, location_id, user_id, tenant_id });

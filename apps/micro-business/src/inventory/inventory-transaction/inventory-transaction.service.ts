@@ -94,6 +94,21 @@ export interface ITestAdjustmentOutPayload {
   user_id: string;
 }
 
+export interface ICreditNoteQtyDetailItem {
+  product_id: string;
+  location_id: string;
+  location_code: string | null;
+  qty: number;
+  cost_per_unit: number;
+}
+
+export interface ICreditNoteQtyPayload {
+  bu_code: string;
+  grn_id: string;
+  detail_items: ICreditNoteQtyDetailItem[];
+  user_id: string;
+}
+
 export interface ICostLayerQuery {
   bu_code: string;
   product_id?: string;
@@ -1153,6 +1168,398 @@ export class InventoryTransactionService {
   }
 
   // ============================================================
+  // CREDIT NOTE QUANTITY (FIFO / AVERAGE)
+  // ============================================================
+
+  @TryCatch
+  async createCreditNoteQtyTransaction(
+    data: ICreditNoteQtyPayload,
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'createCreditNoteQtyTransaction', data }, InventoryTransactionService.name);
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    let transactionId = '';
+
+    const method = await this.getCalculationMethod(data.bu_code);
+
+    await prisma.$transaction(async (tx: unknown) => {
+      if (method === 'average') {
+        transactionId = await this.createAverageCreditNoteQty(tx, data);
+      } else {
+        transactionId = await this.createFifoCreditNoteQty(tx, data);
+      }
+    });
+
+    return Result.ok({ id: transactionId });
+  }
+
+  /**
+   * FIFO Credit Note Quantity — deduct stock referencing a specific GRN.
+   *
+   * Priority order for deduction:
+   *   1. Cost layers from the original GRN lot (FIFO within that lot)
+   *   2. Other available lots for the same product+location (FIFO)
+   *   3. If no stock anywhere → out_qty = 0, diff_amount = cn_cost × remaining_qty
+   *
+   * Cost layer records:
+   *   - cost_per_unit  = CN's cost (user-provided)
+   *   - total_cost     = CN's cost × out_qty
+   *   - diff_amount    = (CN cost − lot cost) × out_qty
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async createFifoCreditNoteQty(
+    tx: any,
+    payload: ICreditNoteQtyPayload,
+  ): Promise<string> {
+    const now = new Date();
+    const nowIso = now.toISOString();
+    const atPeriod = format(now, 'yyMM');
+    const year = now.getFullYear().toString();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+
+    // 1. Create transaction header
+    const inventoryTransaction = await tx.tb_inventory_transaction.create({
+      data: {
+        inventory_doc_type: enum_inventory_doc_type.credit_note,
+        inventory_doc_no: payload.grn_id,
+        note: `Credit Note (qty) for GRN ${payload.grn_id}`,
+        created_by_id: payload.user_id,
+        created_at: nowIso,
+        updated_by_id: payload.user_id,
+        updated_at: nowIso,
+      },
+    });
+
+    // 2. Find the original GRN transaction to get its lot numbers
+    const grnTransaction = await tx.tb_inventory_transaction.findFirst({
+      where: {
+        inventory_doc_type: enum_inventory_doc_type.good_received_note,
+        inventory_doc_no: payload.grn_id,
+        deleted_at: null,
+      },
+      select: { id: true },
+    });
+
+    const grnLotNosPerProduct = new Map<string, string[]>();
+    if (grnTransaction) {
+      const grnDetails = await tx.tb_inventory_transaction_detail.findMany({
+        where: {
+          inventory_transaction_id: grnTransaction.id,
+          deleted_at: null,
+        },
+        select: { product_id: true, current_lot_no: true },
+      });
+      for (const d of grnDetails) {
+        const existing = grnLotNosPerProduct.get(d.product_id) || [];
+        if (d.current_lot_no) existing.push(d.current_lot_no);
+        grnLotNosPerProduct.set(d.product_id, existing);
+      }
+    }
+
+    // 3. Process each CN detail item
+    for (const item of payload.detail_items) {
+      if (item.qty <= 0) continue;
+
+      const cnCost = item.cost_per_unit;
+      const cnQty = item.qty;
+      const cnTotalCost = Math.round(cnCost * cnQty * 100) / 100;
+
+      const lotSeqNo = await this.getNextLotSeqNo(tx, atPeriod);
+      const cnLotNo = `CNQ-${year}-${month}-${lotSeqNo.toString().padStart(4, '0')}`;
+
+      // Transaction detail (negative qty for outgoing)
+      const txnDetail = await tx.tb_inventory_transaction_detail.create({
+        data: {
+          inventory_transaction_id: inventoryTransaction.id,
+          product_id: item.product_id,
+          location_id: item.location_id,
+          location_code: item.location_code,
+          current_lot_no: cnLotNo,
+          qty: -cnQty,
+          cost_per_unit: cnCost,
+          total_cost: cnTotalCost,
+          created_by_id: payload.user_id,
+          created_at: nowIso,
+          updated_by_id: payload.user_id,
+          updated_at: nowIso,
+        },
+      });
+
+      // Get all available FIFO lots for this product+location
+      const allAvailableLots = await this.getAvailableFifoLots(tx, item.product_id, item.location_id);
+
+      // Prioritize: GRN lots first (FIFO), then other lots (FIFO)
+      const grnLotNos = grnLotNosPerProduct.get(item.product_id) || [];
+      const grnLots = allAvailableLots.filter(l => grnLotNos.includes(l.lotNo));
+      const otherLots = allAvailableLots.filter(l => !grnLotNos.includes(l.lotNo));
+      const prioritizedLots = [...grnLots, ...otherLots];
+
+      // Consume without throwing on insufficient stock
+      let remaining = cnQty;
+      const consumptions: { lotNo: string; qty: number; costPerUnit: number }[] = [];
+
+      for (const lot of prioritizedLots) {
+        if (remaining <= 0) break;
+        const consume = Math.min(lot.available, remaining);
+        consumptions.push({ lotNo: lot.lotNo, qty: consume, costPerUnit: lot.costPerUnit });
+        remaining -= consume;
+      }
+
+      // Create cost layers for each consumed lot
+      let layerIndex = 1;
+      for (const c of consumptions) {
+        const diffAmount = Math.round((cnCost - c.costPerUnit) * c.qty * 100) / 100;
+
+        await tx.tb_inventory_transaction_cost_layer.create({
+          data: {
+            inventory_transaction_detail_id: txnDetail.id,
+            lot_no: cnLotNo,
+            lot_index: layerIndex++,
+            location_id: item.location_id,
+            location_code: item.location_code,
+            lot_at_date: nowIso,
+            lot_seq_no: lotSeqNo,
+            product_id: item.product_id,
+            parent_lot_no: c.lotNo,
+            at_period: atPeriod,
+            transaction_type: enum_transaction_type.credit_note_quantity,
+            in_qty: 0,
+            out_qty: c.qty,
+            cost_per_unit: cnCost,
+            total_cost: Math.round(cnCost * c.qty * 100) / 100,
+            diff_amount: diffAmount,
+            average_cost_per_unit: 0,
+            created_by_id: payload.user_id,
+            created_at: nowIso,
+          },
+        });
+      }
+
+      // Case 3: No stock available — record with out_qty = 0
+      if (remaining > 0) {
+        const diffAmount = Math.round(cnCost * remaining * 100) / 100;
+
+        await tx.tb_inventory_transaction_cost_layer.create({
+          data: {
+            inventory_transaction_detail_id: txnDetail.id,
+            lot_no: cnLotNo,
+            lot_index: layerIndex++,
+            location_id: item.location_id,
+            location_code: item.location_code,
+            lot_at_date: nowIso,
+            lot_seq_no: lotSeqNo,
+            product_id: item.product_id,
+            at_period: atPeriod,
+            transaction_type: enum_transaction_type.credit_note_quantity,
+            in_qty: 0,
+            out_qty: 0,
+            cost_per_unit: cnCost,
+            total_cost: 0,
+            diff_amount: diffAmount,
+            average_cost_per_unit: 0,
+            note: `No stock available for ${remaining} units`,
+            created_by_id: payload.user_id,
+            created_at: nowIso,
+          },
+        });
+      }
+    }
+
+    return inventoryTransaction.id;
+  }
+
+  // ============================================================
+  // CREDIT NOTE QUANTITY (AVERAGE)
+  // ============================================================
+
+  /**
+   * Average Credit Note Quantity — same lot deduction logic as FIFO,
+   * but uses average cost for diff_amount calculation.
+   *
+   * Priority order for deduction:
+   *   1. Cost layers from the original GRN lot (FIFO within that lot)
+   *   2. Other available lots for the same product+location (FIFO)
+   *   3. If no stock anywhere → out_qty = 0, diff_amount = cn_cost × remaining_qty
+   *
+   * Cost layer records:
+   *   - cost_per_unit         = CN's cost (user-provided)
+   *   - total_cost            = CN's cost × out_qty
+   *   - diff_amount           = (CN cost − average cost) × out_qty
+   *   - average_cost_per_unit = current weighted average cost
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async createAverageCreditNoteQty(
+    tx: any,
+    payload: ICreditNoteQtyPayload,
+  ): Promise<string> {
+    const now = new Date();
+    const nowIso = now.toISOString();
+    const atPeriod = format(now, 'yyMM');
+    const year = now.getFullYear().toString();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+
+    // 1. Create transaction header
+    const inventoryTransaction = await tx.tb_inventory_transaction.create({
+      data: {
+        inventory_doc_type: enum_inventory_doc_type.credit_note,
+        inventory_doc_no: payload.grn_id,
+        note: `Credit Note (qty) for GRN ${payload.grn_id}`,
+        created_by_id: payload.user_id,
+        created_at: nowIso,
+        updated_by_id: payload.user_id,
+        updated_at: nowIso,
+      },
+    });
+
+    // 2. Find the original GRN transaction to get its lot numbers
+    const grnTransaction = await tx.tb_inventory_transaction.findFirst({
+      where: {
+        inventory_doc_type: enum_inventory_doc_type.good_received_note,
+        inventory_doc_no: payload.grn_id,
+        deleted_at: null,
+      },
+      select: { id: true },
+    });
+
+    const grnLotNosPerProduct = new Map<string, string[]>();
+    if (grnTransaction) {
+      const grnDetails = await tx.tb_inventory_transaction_detail.findMany({
+        where: {
+          inventory_transaction_id: grnTransaction.id,
+          deleted_at: null,
+        },
+        select: { product_id: true, current_lot_no: true },
+      });
+      for (const d of grnDetails) {
+        const existing = grnLotNosPerProduct.get(d.product_id) || [];
+        if (d.current_lot_no) existing.push(d.current_lot_no);
+        grnLotNosPerProduct.set(d.product_id, existing);
+      }
+    }
+
+    // 3. Process each CN detail item
+    for (const item of payload.detail_items) {
+      if (item.qty <= 0) continue;
+
+      const cnCost = item.cost_per_unit;
+      const cnQty = item.qty;
+      const cnTotalCost = Math.round(cnCost * cnQty * 100) / 100;
+
+      const lotSeqNo = await this.getNextLotSeqNo(tx, atPeriod);
+      const cnLotNo = `CNQ-${year}-${month}-${lotSeqNo.toString().padStart(4, '0')}`;
+
+      // Get current average cost for this product
+      const avgCost = await this.getCurrentAverageCost(tx, item.product_id);
+
+      // Transaction detail (negative qty for outgoing)
+      const txnDetail = await tx.tb_inventory_transaction_detail.create({
+        data: {
+          inventory_transaction_id: inventoryTransaction.id,
+          product_id: item.product_id,
+          location_id: item.location_id,
+          location_code: item.location_code,
+          current_lot_no: cnLotNo,
+          qty: -cnQty,
+          cost_per_unit: cnCost,
+          total_cost: cnTotalCost,
+          created_by_id: payload.user_id,
+          created_at: nowIso,
+          updated_by_id: payload.user_id,
+          updated_at: nowIso,
+        },
+      });
+
+      // Get all available FIFO lots for this product+location
+      const allAvailableLots = await this.getAvailableFifoLots(tx, item.product_id, item.location_id);
+
+      // Prioritize: GRN lots first (FIFO), then other lots (FIFO)
+      const grnLotNos = grnLotNosPerProduct.get(item.product_id) || [];
+      const grnLots = allAvailableLots.filter(l => grnLotNos.includes(l.lotNo));
+      const otherLots = allAvailableLots.filter(l => !grnLotNos.includes(l.lotNo));
+      const prioritizedLots = [...grnLots, ...otherLots];
+
+      // Consume without throwing on insufficient stock
+      let remaining = cnQty;
+      const consumptions: { lotNo: string; qty: number; costPerUnit: number }[] = [];
+
+      for (const lot of prioritizedLots) {
+        if (remaining <= 0) break;
+        const consume = Math.min(lot.available, remaining);
+        consumptions.push({ lotNo: lot.lotNo, qty: consume, costPerUnit: lot.costPerUnit });
+        remaining -= consume;
+      }
+
+      // Create cost layers for each consumed lot
+      let layerIndex = 1;
+      for (const c of consumptions) {
+        // Use average cost for diff calculation instead of individual lot cost
+        const diffAmount = Math.round((cnCost - avgCost) * c.qty * 100) / 100;
+
+        await tx.tb_inventory_transaction_cost_layer.create({
+          data: {
+            inventory_transaction_detail_id: txnDetail.id,
+            lot_no: cnLotNo,
+            lot_index: layerIndex++,
+            location_id: item.location_id,
+            location_code: item.location_code,
+            lot_at_date: nowIso,
+            lot_seq_no: lotSeqNo,
+            product_id: item.product_id,
+            parent_lot_no: c.lotNo,
+            at_period: atPeriod,
+            transaction_type: enum_transaction_type.credit_note_quantity,
+            in_qty: 0,
+            out_qty: c.qty,
+            cost_per_unit: cnCost,
+            total_cost: Math.round(cnCost * c.qty * 100) / 100,
+            diff_amount: diffAmount,
+            average_cost_per_unit: avgCost,
+            created_by_id: payload.user_id,
+            created_at: nowIso,
+          },
+        });
+      }
+
+      // Case 3: No stock available — record with out_qty = 0
+      if (remaining > 0) {
+        const diffAmount = Math.round(cnCost * remaining * 100) / 100;
+
+        await tx.tb_inventory_transaction_cost_layer.create({
+          data: {
+            inventory_transaction_detail_id: txnDetail.id,
+            lot_no: cnLotNo,
+            lot_index: layerIndex++,
+            location_id: item.location_id,
+            location_code: item.location_code,
+            lot_at_date: nowIso,
+            lot_seq_no: lotSeqNo,
+            product_id: item.product_id,
+            at_period: atPeriod,
+            transaction_type: enum_transaction_type.credit_note_quantity,
+            in_qty: 0,
+            out_qty: 0,
+            cost_per_unit: cnCost,
+            total_cost: 0,
+            diff_amount: diffAmount,
+            average_cost_per_unit: avgCost,
+            note: `No stock available for ${remaining} units`,
+            created_by_id: payload.user_id,
+            created_at: nowIso,
+          },
+        });
+      }
+    }
+
+    return inventoryTransaction.id;
+  }
+
+  // ============================================================
   // QUERY METHODS
   // ============================================================
 
@@ -1198,8 +1605,9 @@ export class InventoryTransactionService {
       out_qty: Number(layer.out_qty),
       balance: Number(layer.in_qty) - Number(layer.out_qty),
       cost_per_unit: Number(layer.cost_per_unit),
-      average_cost_per_unit: Number(layer.average_cost_per_unit),
       total_cost: Number(layer.total_cost),
+      diff_amount: Number(layer.diff_amount),
+      average_cost_per_unit: Number(layer.average_cost_per_unit),
       lot_at_date: layer.lot_at_date,
       lot_seq_no: layer.lot_seq_no,
       at_period: layer.at_period,

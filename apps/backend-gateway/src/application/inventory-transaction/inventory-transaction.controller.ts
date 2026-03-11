@@ -196,6 +196,41 @@ export class InventoryTransactionController extends BaseHttpController {
   }
 
   /**
+   * POST /api/:bu_code/inventory-transaction/test-credit-note-qty
+   * Body:
+   * {
+   *   "grn_id": "uuid (the GRN that originated the lots)",
+   *   "detail_items": [
+   *     {
+   *       "product_id": "uuid",
+   *       "location_id": "uuid",
+   *       "location_code": "WH-01",
+   *       "qty": 10,
+   *       "cost_per_unit": 100
+   *     }
+   *   ]
+   * }
+   */
+  @Post('test-credit-note-qty')
+  @Serialize(InventoryTransactionMutationResponseSchema)
+  @ApiOperation({
+    summary: 'TEST — Credit Note Quantity (deduct stock from GRN lot)',
+    operationId: 'testCreditNoteQtyTransaction',
+    tags: ['[Method] Post'],
+  })
+  @HttpCode(HttpStatus.OK)
+  async testCreditNoteQty(
+    @Param('bu_code') bu_code: string,
+    @Body() body: Record<string, unknown>,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.inventoryTransactionService.testCreditNoteQty(body, user_id, bu_code);
+    this.respond(res, result);
+  }
+
+  /**
    * GET /api/:bu_code/inventory-transaction/cost-layers?product_id=xxx&location_id=xxx
    */
   @Get('cost-layers')
