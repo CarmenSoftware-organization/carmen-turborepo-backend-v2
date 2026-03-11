@@ -26,6 +26,9 @@
     "db:seed:reset": "prisma migrate reset --force && ts-node -r tsconfig-paths/register prisma/seed.ts",
     "db:seed.permission": "ts-node -r tsconfig-paths/register prisma/seed.permission.ts",
     "db:seed.role-permission": "ts-node -r tsconfig-paths/register prisma/seed.role-permission.ts",
+    "db:seed.report-template": "ts-node -r tsconfig-paths/register prisma/seed.report-template.ts",
+    "db:seed.report-template-upload": "ts-node -r tsconfig-paths/register prisma/seed.report-template-upload.ts",
+    "db:seed.report-template-migrate-s3": "ts-node -r tsconfig-paths/register prisma/seed.report-template-migrate-s3.ts",
     "db:mock": "ts-node -r tsconfig-paths/register prisma/seed.ts && ts-node -r tsconfig-paths/register prisma/mock.ts",
     "db:mock:reset": "prisma migrate reset --force && ts-node -r tsconfig-paths/register prisma/seed.ts && ts-node -r tsconfig-paths/register prisma/mock.ts"
   },
