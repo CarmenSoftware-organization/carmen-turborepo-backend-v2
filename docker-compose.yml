@@ -84,7 +84,7 @@ services:
     depends_on:
       - api-backend-gateway
     healthcheck:
-      test: ["CMD", "bun", "-e", "fetch('http://localhost:6006/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      test: ["CMD", "bun", "-e", "fetch('http://localhost:5006/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -106,7 +106,7 @@ services:
     depends_on:
       - api-backend-gateway
     healthcheck:
-      test: ["CMD", "bun", "-e", "fetch('http://localhost:6014/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      test: ["CMD", "bun", "-e", "fetch('http://localhost:5014/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -128,7 +128,7 @@ services:
     depends_on:
       - api-backend-gateway
     healthcheck:
-      test: ["CMD", "bun", "-e", "fetch('http://localhost:6020/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      test: ["CMD", "bun", "-e", "fetch('http://localhost:5020/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
       interval: 30s
       timeout: 10s
       retries: 3
