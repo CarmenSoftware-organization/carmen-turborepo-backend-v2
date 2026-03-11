@@ -70,6 +70,8 @@ swagger-spec.json
 
 # Backup files
 backups/
+*.env.bak
+.env.bak
 
 # Python cache
 __pycache__/
