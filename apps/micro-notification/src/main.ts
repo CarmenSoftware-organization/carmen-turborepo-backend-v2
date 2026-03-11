@@ -15,7 +15,7 @@ async function bootstrap() {
 
   const notificationServiceHost = envConfig.NOTIFICATION_SERVICE_HOST;
   const notificationServiceHttpsPort = Number(envConfig.NOTIFICATION_SERVICE_HTTPS_PORT);
-  const notificationServiceHttpPort = Number(envConfig.NOTIFICATION_SERVICE_PORT);
+  const notificationServiceHttpPort = Number(envConfig.NOTIFICATION_SERVICE_HTTP_PORT);
 
   logger.log(`NotificationService is configured to run on ${notificationServiceHost}:${notificationServiceHttpsPort}`);
   logger.log(`HTTP server is configured to run on ${notificationServiceHost}:${notificationServiceHttpPort}`);

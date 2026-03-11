@@ -13,7 +13,7 @@ import { ConfigPermissionService } from './config_permission.service';
         transport: Transport.TCP,
         options: {
           host: envConfig.BUSINESS_SERVICE_HOST,
-          port: Number(envConfig.BUSINESS_SERVICE_PORT),
+          port: Number(envConfig.BUSINESS_SERVICE_HTTP_PORT),
         },
       },
     ]),

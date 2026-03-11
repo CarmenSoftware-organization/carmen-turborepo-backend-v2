@@ -37,7 +37,7 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
   }
 
   private connectToNotificationService() {
-    const notificationServiceUrl = `ws://${envConfig.NOTIFICATION_SERVICE_HOST}:${envConfig.NOTIFICATION_SERVICE_PORT}`;
+    const notificationServiceUrl = `ws://${envConfig.NOTIFICATION_SERVICE_HOST}:${envConfig.NOTIFICATION_SERVICE_HTTP_PORT}`;
 
     this.logger.log(`Connecting to notification service at ${notificationServiceUrl}/ws`);
 

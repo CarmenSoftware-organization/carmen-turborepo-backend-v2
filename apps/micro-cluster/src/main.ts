@@ -15,7 +15,7 @@ async function bootstrap() {
 
   const clusterServiceHost = envConfig.CLUSTER_SERVICE_HOST;
   const clusterServiceHttpsPort = Number(envConfig.CLUSTER_SERVICE_HTTPS_PORT);
-  const clusterServiceHttpPort = Number(envConfig.CLUSTER_SERVICE_PORT);
+  const clusterServiceHttpPort = Number(envConfig.CLUSTER_SERVICE_HTTP_PORT);
 
   logger.log(
     `ClusterService is configured to run on ${clusterServiceHost}:${clusterServiceHttpsPort}`,

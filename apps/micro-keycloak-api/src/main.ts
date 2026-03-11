@@ -17,7 +17,7 @@ async function bootstrap() {
 
   const keycloakApiServiceHost = envConfig.KEYCLOAK_API_SERVICE_HOST;
   const keycloakApiServiceHttpsPort = envConfig.KEYCLOAK_API_SERVICE_HTTPS_PORT;
-  const keycloakApiServiceHttpPort = envConfig.KEYCLOAK_API_SERVICE_PORT;
+  const keycloakApiServiceHttpPort = envConfig.KEYCLOAK_API_SERVICE_HTTP_PORT;
 
   logger.log(
     `KeycloakApiService is configured to run on ${keycloakApiServiceHost}:${keycloakApiServiceHttpsPort}`,

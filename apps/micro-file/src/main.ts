@@ -18,7 +18,7 @@ async function bootstrap() {
 
   const fileServiceHost = envConfig.FILE_SERVICE_HOST;
   const fileServiceHttpsPort = Number(envConfig.FILE_SERVICE_HTTPS_PORT);
-  const fileServiceHttpPort = Number(envConfig.FILE_SERVICE_PORT);
+  const fileServiceHttpPort = Number(envConfig.FILE_SERVICE_HTTP_PORT);
 
   logger.log(
     `FileService is configured to run on ${fileServiceHost}:${fileServiceHttpsPort}`,
