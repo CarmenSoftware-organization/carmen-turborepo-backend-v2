@@ -16,7 +16,7 @@ describe('CreditNoteController', () => {
       providers: [
         CreditNoteService,
         {
-          provide: 'PROCUREMENT_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockProcurementService,
         },
       ],

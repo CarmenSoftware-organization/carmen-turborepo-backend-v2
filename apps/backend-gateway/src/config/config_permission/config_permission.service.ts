@@ -14,7 +14,7 @@ export class ConfigPermissionService {
   );
 
   constructor(
-    @Inject('AUTH_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly authService: ClientProxy,
   ) { }
 

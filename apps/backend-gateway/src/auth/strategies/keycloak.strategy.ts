@@ -13,7 +13,7 @@ export class KeycloakStrategy extends PassportStrategy(Strategy, 'keycloak') {
 
   constructor(
     @Inject('KEYCLOAK_SERVICE') private readonly keycloakService: ClientProxy,
-    @Inject('AUTH_SERVICE') private readonly authService: ClientProxy,
+    @Inject('BUSINESS_SERVICE') private readonly authService: ClientProxy,
   ) {
     super();
   }

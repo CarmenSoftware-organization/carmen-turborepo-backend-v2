@@ -22,7 +22,7 @@ export class MyPendingStoreRequisitionService {
   );
 
   constructor(
-    @Inject('INVENTORY_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly inventoryService: ClientProxy,
   ) {}
 

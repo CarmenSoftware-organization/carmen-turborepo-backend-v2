@@ -28,7 +28,7 @@ import { RequestForPricingModule } from './application/request-for-pricing/reque
     DatabaseModule,
     ClientsModule.register([
       {
-        name: 'AUTH_SERVICE',
+        name: 'BUSINESS_SERVICE',
         transport: Transport.TCP,
         options: {
           host: envConfig.BUSINESS_SERVICE_HOST,
@@ -43,14 +43,6 @@ import { RequestForPricingModule } from './application/request-for-pricing/reque
           port: Number(envConfig.CLUSTER_SERVICE_PORT),
         },
       },
-      {
-        name: 'MASTER_SERVICE',
-        transport: Transport.TCP,
-        options: {
-          host: envConfig.BUSINESS_SERVICE_HOST,
-          port: Number(envConfig.BUSINESS_SERVICE_PORT),
-        },
-      }
     ]),
     ConfigModule.forRoot({
       isGlobal: true, // ทำให้ ConfigModule ใช้ได้ทั่วทั้งแอป

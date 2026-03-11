@@ -16,7 +16,7 @@ describe('Config_ProductsController', () => {
       providers: [
         Config_ProductsService,
         {
-          provide: 'MASTER_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockMasterService,
         },
       ],

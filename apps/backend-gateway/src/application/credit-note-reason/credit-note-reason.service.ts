@@ -13,7 +13,7 @@ export class CreditNoteReasonService {
   );
 
   constructor(
-    @Inject('PROCUREMENT_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly procurementService: ClientProxy,
   ) {}
 

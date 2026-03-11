@@ -16,7 +16,7 @@ describe('UserController', () => {
       providers: [
         UserService,
         {
-          provide: 'AUTH_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockAuthService,
         },
       ],

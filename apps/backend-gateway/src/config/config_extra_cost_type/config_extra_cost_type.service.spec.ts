@@ -14,7 +14,7 @@ describe('Config_ExtraCostTypeService', () => {
       providers: [
         Config_ExtraCostTypeService,
         {
-          provide: 'MASTER_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockMasterService,
         },
       ],

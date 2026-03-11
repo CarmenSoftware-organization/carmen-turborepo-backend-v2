@@ -9,7 +9,7 @@ import { envConfig } from 'src/libs/config.env';
   imports: [
     ClientsModule.register([
       {
-        name: 'MASTER_SERVICE',
+        name: 'BUSINESS_SERVICE',
         transport: Transport.TCP,
         options: {
           host: envConfig.BUSINESS_SERVICE_HOST,

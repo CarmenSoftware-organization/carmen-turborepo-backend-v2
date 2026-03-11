@@ -14,7 +14,7 @@ describe('Config_ProductItemGroupService', () => {
       providers: [
         Config_ProductItemGroupService,
         {
-          provide: 'MASTER_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockMasterService,
         },
       ],

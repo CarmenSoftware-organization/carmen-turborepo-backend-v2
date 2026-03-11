@@ -16,7 +16,7 @@ describe('Config_UserLocationController', () => {
       providers: [
         Config_UserLocationService,
         {
-          provide: 'MASTER_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockMasterService,
         },
       ],

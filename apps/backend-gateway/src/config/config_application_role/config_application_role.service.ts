@@ -12,7 +12,7 @@ export class ConfigApplicationRoleService {
     ConfigApplicationRoleService.name,
   );
   constructor(
-    @Inject('AUTH_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly authService: ClientProxy,
   ) { }
   async findAll(paginate, user_id: string, bu_code: string, version: string) {

@@ -8,7 +8,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
   imports: [
         ClientsModule.register([
           {
-            name: 'MASTER_SERVICE',
+            name: 'BUSINESS_SERVICE',
             transport: Transport.TCP,
             options: {
               host: envConfig.BUSINESS_SERVICE_HOST,

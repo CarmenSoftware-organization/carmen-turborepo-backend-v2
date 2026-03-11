@@ -17,7 +17,7 @@ export class PlatformUserService {
   );
 
   constructor(
-    @Inject('AUTH_SERVICE') private readonly authService: ClientProxy,
+    @Inject('BUSINESS_SERVICE') private readonly authService: ClientProxy,
     @Inject('CLUSTER_SERVICE') private readonly clusterService: ClientProxy,
   ) {}
 

@@ -17,7 +17,7 @@ export class Config_VendorBusinessTypeService {
   );
 
   constructor(
-    @Inject('MASTER_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly masterService: ClientProxy,
   ) {}
 

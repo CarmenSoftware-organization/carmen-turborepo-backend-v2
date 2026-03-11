@@ -15,7 +15,7 @@ export class PeriodService {
     PeriodService.name,
   );
   constructor(
-    @Inject('INVENTORY_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly inventoryService: ClientProxy,
   ) {}
 

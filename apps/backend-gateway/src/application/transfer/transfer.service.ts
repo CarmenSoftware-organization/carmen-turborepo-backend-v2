@@ -20,7 +20,7 @@ export class TransferService {
   private readonly logger: BackendLogger = new BackendLogger(TransferService.name);
 
   constructor(
-    @Inject('INVENTORY_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly inventoryService: ClientProxy,
   ) {}
 

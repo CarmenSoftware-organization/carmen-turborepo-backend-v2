@@ -16,7 +16,7 @@ describe('Config_RunningCodeController', () => {
       providers: [
         Config_RunningCodeService,
         {
-          provide: 'MASTER_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockMasterService,
         },
       ],

@@ -14,7 +14,7 @@ describe('Config_CreditTermService', () => {
       providers: [
         Config_CreditTermService,
         {
-          provide: 'MASTER_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockMasterService,
         },
       ],

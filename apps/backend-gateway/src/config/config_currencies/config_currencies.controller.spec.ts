@@ -16,7 +16,7 @@ describe('Config_CurrenciesController', () => {
       providers: [
         Config_CurrenciesService,
         {
-          provide: 'MASTER_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockMasterService,
         },
       ],

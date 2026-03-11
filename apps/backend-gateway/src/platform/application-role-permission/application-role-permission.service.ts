@@ -22,7 +22,7 @@ export class ApplicationRolePermissionService {
   );
 
   constructor(
-    @Inject('AUTH_SERVICE') private readonly authService: ClientProxy,
+    @Inject('BUSINESS_SERVICE') private readonly authService: ClientProxy,
   ) {}
 
   /**

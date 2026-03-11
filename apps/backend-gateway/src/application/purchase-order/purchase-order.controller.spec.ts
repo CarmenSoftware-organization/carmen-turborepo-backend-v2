@@ -21,7 +21,7 @@ describe('PurchaseOrderController', () => {
       providers: [
         PurchaseOrderService,
         {
-          provide: 'PROCUREMENT_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockProcurementService,
         },
         {

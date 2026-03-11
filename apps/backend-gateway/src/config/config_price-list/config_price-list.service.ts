@@ -18,7 +18,7 @@ export class Config_PriceListService {
   );
 
   constructor(
-    @Inject('MASTER_SERVICE') private readonly masterService: ClientProxy,
+    @Inject('BUSINESS_SERVICE') private readonly masterService: ClientProxy,
   ) {}
 
   async findOne(
