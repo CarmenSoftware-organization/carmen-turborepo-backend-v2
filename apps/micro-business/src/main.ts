@@ -17,10 +17,10 @@ async function bootstrap() {
   logger.verbose({ envConfig: envConfig, process_env: process.env }, "env");
 
   const businessServiceHost = envConfig.BUSINESS_SERVICE_HOST;
-  const businessServiceHttpsPort = Number(envConfig.BUSINESS_SERVICE_HTTPS_PORT);
+  const businessServiceTcpPort = Number(envConfig.BUSINESS_SERVICE_TCP_PORT);
   const businessServiceHttpPort = Number(envConfig.BUSINESS_SERVICE_HTTP_PORT);
 
-  logger.log(`BusinessService is configured to run on ${businessServiceHost}:${businessServiceHttpsPort}`);
+  logger.log(`BusinessService is configured to run on ${businessServiceHost}:${businessServiceTcpPort}`);
   logger.log(`HTTP server is configured to run on ${businessServiceHost}:${businessServiceHttpPort}`);
 
   // Connect TCP microservice
@@ -28,7 +28,7 @@ async function bootstrap() {
     transport: Transport.TCP,
     options: {
       host: businessServiceHost,
-      port: businessServiceHttpsPort,
+      port: businessServiceTcpPort,
     },
   });
 
@@ -41,7 +41,7 @@ async function bootstrap() {
   await app.startAllMicroservices();
   await app.listen(businessServiceHttpPort);
 
-  logger.log(`BusinessService TCP is running on ${businessServiceHost}:${businessServiceHttpsPort}`);
+  logger.log(`BusinessService TCP is running on ${businessServiceHost}:${businessServiceTcpPort}`);
   logger.log(`BusinessService HTTP is running on ${businessServiceHost}:${businessServiceHttpPort}`);
   logger.log(`BusinessService WebSocket is available at ws://${businessServiceHost}:${businessServiceHttpPort}`);
 }

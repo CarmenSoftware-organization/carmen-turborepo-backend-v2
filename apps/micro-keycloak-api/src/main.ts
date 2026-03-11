@@ -16,11 +16,11 @@ async function bootstrap() {
   logger.verbose({ envConfig: envConfig, process_env: process.env }, 'env');
 
   const keycloakApiServiceHost = envConfig.KEYCLOAK_API_SERVICE_HOST;
-  const keycloakApiServiceHttpsPort = envConfig.KEYCLOAK_API_SERVICE_HTTPS_PORT;
+  const keycloakApiServiceTcpPort = envConfig.KEYCLOAK_API_SERVICE_TCP_PORT;
   const keycloakApiServiceHttpPort = envConfig.KEYCLOAK_API_SERVICE_HTTP_PORT;
 
   logger.log(
-    `KeycloakApiService is configured to run on ${keycloakApiServiceHost}:${keycloakApiServiceHttpsPort}`,
+    `KeycloakApiService is configured to run on ${keycloakApiServiceHost}:${keycloakApiServiceTcpPort}`,
   );
   logger.log(
     `HTTP server is configured to run on ${keycloakApiServiceHost}:${keycloakApiServiceHttpPort}`,
@@ -30,7 +30,7 @@ async function bootstrap() {
     transport: Transport.TCP,
     options: {
       host: keycloakApiServiceHost,
-      port: Number(keycloakApiServiceHttpsPort),
+      port: Number(keycloakApiServiceTcpPort),
     },
   });
 
@@ -38,7 +38,7 @@ async function bootstrap() {
   await app.listen(keycloakApiServiceHttpPort);
 
   logger.log(
-    `KeycloakApiService is running on ${keycloakApiServiceHost}:${keycloakApiServiceHttpsPort}`,
+    `KeycloakApiService TCP is running on ${keycloakApiServiceHost}:${keycloakApiServiceTcpPort}`,
   );
   logger.log(
     `HTTP server is running on ${keycloakApiServiceHost}:${keycloakApiServiceHttpPort}`,

@@ -14,11 +14,11 @@ async function bootstrap() {
   const logger = new BackendLogger(bootstrap.name);
 
   const clusterServiceHost = envConfig.CLUSTER_SERVICE_HOST;
-  const clusterServiceHttpsPort = Number(envConfig.CLUSTER_SERVICE_HTTPS_PORT);
+  const clusterServiceTcpPort = Number(envConfig.CLUSTER_SERVICE_TCP_PORT);
   const clusterServiceHttpPort = Number(envConfig.CLUSTER_SERVICE_HTTP_PORT);
 
   logger.log(
-    `ClusterService is configured to run on ${clusterServiceHost}:${clusterServiceHttpsPort}`,
+    `ClusterService is configured to run on ${clusterServiceHost}:${clusterServiceTcpPort}`,
   );
   logger.log(
     `HTTP server is configured to run on ${clusterServiceHost}:${clusterServiceHttpPort}`,
@@ -29,7 +29,7 @@ async function bootstrap() {
     transport: Transport.TCP,
     options: {
       host: clusterServiceHost,
-      port: clusterServiceHttpsPort,
+      port: clusterServiceTcpPort,
     },
   });
 
@@ -37,7 +37,7 @@ async function bootstrap() {
   await app.listen(clusterServiceHttpPort);
 
   logger.log(
-    `ClusterService TCP is running on ${clusterServiceHost}:${clusterServiceHttpsPort}`,
+    `ClusterService TCP is running on ${clusterServiceHost}:${clusterServiceTcpPort}`,
   );
   logger.log(
     `ClusterService HTTP is running on ${clusterServiceHost}:${clusterServiceHttpPort}`,
