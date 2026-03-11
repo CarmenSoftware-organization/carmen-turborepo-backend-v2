@@ -13,7 +13,7 @@ export const NOTIFICATION_SERVICE_OPTIONS = 'NOTIFICATION_SERVICE_OPTIONS';
  *   imports: [
  *     NotificationModule.forRoot({
  *       host: process.env.NOTIFICATION_SERVICE_HOST,
- *       port: process.env.NOTIFICATION_SERVICE_PORT,
+ *       port: process.env.NOTIFICATION_SERVICE_HTTP_PORT,
  *     }),
  *   ],
  * })

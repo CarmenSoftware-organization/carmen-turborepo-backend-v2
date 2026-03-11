@@ -1,7 +1,7 @@
 import { envConfig } from '@/libs/config.env';
 
 const notify_host = envConfig.NOTIFICATION_SERVICE_HOST || 'localhost';
-const notify_port = envConfig.NOTIFICATION_SERVICE_PORT || '5006';
+const notify_port = envConfig.NOTIFICATION_SERVICE_HTTP_PORT || '5006';
 export async function sendNotification(data: {
   title: string;
   message: string;

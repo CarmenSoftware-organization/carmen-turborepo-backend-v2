@@ -7,7 +7,7 @@ import { envConfig } from './libs/config.env';
 
 const service_host = envConfig.CRONJOB_SERVICE_HOST;
 const service_Https_port = envConfig.CRONJOB_SERVICE_HTTPS_PORT;
-const service_Http_port = envConfig.CRONJOB_SERVICE_PORT;
+const service_Http_port = envConfig.CRONJOB_SERVICE_HTTP_PORT;
 
 const app = new Elysia()
   .use(

@@ -11,7 +11,7 @@ import { ApiTags } from '@nestjs/swagger';
 @Controller('api/notifications')
 export class NotificationController {
   private readonly logger = new BackendLogger(NotificationController.name);
-  private readonly notificationServiceUrl = `http://${envConfig.NOTIFICATION_SERVICE_HOST}:${envConfig.NOTIFICATION_SERVICE_PORT}`;
+  private readonly notificationServiceUrl = `http://${envConfig.NOTIFICATION_SERVICE_HOST}:${envConfig.NOTIFICATION_SERVICE_HTTP_PORT}`;
 
   // Proxy /api/notifications (exact match)
   @All('/')

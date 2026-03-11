@@ -13,7 +13,7 @@ import { envConfig } from '@/libs/config.env';
     CommonModule,
     NotificationModule.forRoot({
       host: envConfig.NOTIFICATION_SERVICE_HOST,
-      port: envConfig.NOTIFICATION_SERVICE_PORT,
+      port: envConfig.NOTIFICATION_SERVICE_HTTP_PORT,
     }),
   ],
   controllers: [CreditNoteController],

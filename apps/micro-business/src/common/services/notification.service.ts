@@ -66,7 +66,7 @@ export interface SendBusinessUnitOptions extends SendNotificationOptions {
  *   constructor() {
  *     this.notificationService = new NotificationService({
  *       host: process.env.NOTIFICATION_SERVICE_HOST,
- *       port: process.env.NOTIFICATION_SERVICE_PORT,
+ *       port: process.env.NOTIFICATION_SERVICE_HTTP_PORT,
  *     });
  *   }
  *
@@ -89,7 +89,7 @@ export class NotificationService {
 
   constructor(config?: NotificationServiceConfig) {
     const host = config?.host || process.env.NOTIFICATION_SERVICE_HOST || 'localhost';
-    const port = config?.port || process.env.NOTIFICATION_SERVICE_PORT || '5006';
+    const port = config?.port || process.env.NOTIFICATION_SERVICE_HTTP_PORT || '5006';
     this.baseUrl = `http://${host}:${port}/api/notifications`;
     this.timeout = config?.timeout || 10000;
   }

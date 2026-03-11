@@ -14,7 +14,7 @@ import { envConfig } from 'src/libs/config.env';
         transport: Transport.TCP,
         options: {
           host: envConfig.KEYCLOAK_API_SERVICE_HOST,
-          port: Number(envConfig.KEYCLOAK_API_SERVICE_PORT),
+          port: Number(envConfig.KEYCLOAK_API_SERVICE_HTTP_PORT),
         },
       },
     ]),
