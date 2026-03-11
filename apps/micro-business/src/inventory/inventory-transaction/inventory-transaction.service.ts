@@ -1820,32 +1820,41 @@ export class InventoryTransactionService {
   }
 
   /**
-   * ⚠️ TEST ONLY — DELETE. Clears all inventory transactions for a product.
+   * ⚠️ TEST ONLY — DELETE. Clears inventory transactions by product or by transaction ID.
    */
   @TryCatch
   async clearProductTransactions(
-    data: { product_id: string },
+    data: { product_id?: string; inventory_transaction_id?: string },
     user_id: string,
     tenant_id: string,
   ): Promise<Result<unknown>> {
+    if (!data.product_id && !data.inventory_transaction_id) {
+      return Result.error('Either product_id or inventory_transaction_id is required', ErrorCode.INVALID_ARGUMENT);
+    }
+
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
-    // 1. Delete cost layers for this product
-    const deletedLayers = await prisma.tb_inventory_transaction_cost_layer.deleteMany({
-      where: { product_id: data.product_id },
-    });
+    // Build detail filter based on input
+    const detailWhere = data.inventory_transaction_id
+      ? { inventory_transaction_id: data.inventory_transaction_id }
+      : { product_id: data.product_id };
 
-    // 2. Find transaction details for this product
+    // 1. Find transaction details matching the filter
     const details = await prisma.tb_inventory_transaction_detail.findMany({
-      where: { product_id: data.product_id },
-      select: { id: true, inventory_transaction_id: true },
+      where: detailWhere,
+      select: { id: true, product_id: true, inventory_transaction_id: true },
     });
 
     const detailIds = details.map((d) => d.id);
     const transactionIds = [...new Set(details.map((d) => d.inventory_transaction_id))];
+
+    // 2. Delete cost layers linked to affected details
+    const deletedLayers = await prisma.tb_inventory_transaction_cost_layer.deleteMany({
+      where: { inventory_transaction_detail_id: { in: detailIds } },
+    });
 
     // 3. Delete transaction details
     const deletedDetails = await prisma.tb_inventory_transaction_detail.deleteMany({

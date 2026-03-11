@@ -328,7 +328,7 @@ export class InventoryTransactionController extends BaseMicroserviceController {
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
       this.inventoryTransactionService.clearProductTransactions(
-        { product_id: data.product_id },
+        { product_id: data.product_id, inventory_transaction_id: data.inventory_transaction_id },
         user_id,
         tenant_id,
       )
