@@ -196,20 +196,8 @@ export class ClusterService {
         },
         _count: {
           select: {
-            tb_business_unit: {
-              where: {
-                cluster_id: {
-                  in: q.where().id as string[],
-                },
-              },
-            },
-            tb_cluster_user: {
-              where: {
-                cluster_id: {
-                  in: q.where().id as string[],
-                },
-              },
-            },
+            tb_business_unit: true,
+            tb_cluster_user: true,
           },
         },
       },
