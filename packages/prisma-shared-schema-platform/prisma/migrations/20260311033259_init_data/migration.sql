@@ -285,6 +285,7 @@ CREATE TABLE "tb_user" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "username" VARCHAR NOT NULL,
     "email" VARCHAR NOT NULL,
+    "alias_name" VARCHAR,
     "platform_role" "enum_platform_role" NOT NULL DEFAULT 'user',
     "is_active" BOOLEAN DEFAULT false,
     "is_consent" BOOLEAN DEFAULT false,
@@ -390,6 +391,28 @@ CREATE TABLE "tb_temp_bu_user" (
 );
 
 -- CreateTable
+CREATE TABLE "tb_report_template" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "name" VARCHAR(255) NOT NULL,
+    "description" TEXT,
+    "report_group" VARCHAR(100) NOT NULL,
+    "dialog" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "is_standard" BOOLEAN NOT NULL DEFAULT true,
+    "allow_business_unit" JSONB,
+    "deny_business_unit" JSONB,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "created_by_id" UUID,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_by_id" UUID,
+    "deleted_at" TIMESTAMPTZ(6),
+    "deleted_by_id" UUID,
+
+    CONSTRAINT "tb_report_template_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "tb_news" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "title" VARCHAR NOT NULL,
@@ -483,6 +506,12 @@ CREATE UNIQUE INDEX "user_businessunit_user_business_unit_deleted_at_u" ON "tb_u
 
 -- CreateIndex
 CREATE UNIQUE INDEX "shot_url_token_deleted_at_u" ON "tb_shot_url"("url_token", "deleted_at");
+
+-- CreateIndex
+CREATE INDEX "idx_report_template_report_group" ON "tb_report_template"("report_group");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "report_template_name_deleted_at_u" ON "tb_report_template"("name", "deleted_at");
 
 -- AddForeignKey
 ALTER TABLE "tb_application_role" ADD CONSTRAINT "tb_application_role_business_unit_id_fkey" FOREIGN KEY ("business_unit_id") REFERENCES "tb_business_unit"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
