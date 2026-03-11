@@ -16,7 +16,7 @@ describe('Config_DepartmentUserController', () => {
       providers: [
         Config_DepartmentUserService,
         {
-          provide: 'MASTER_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockMasterService,
         },
       ],

@@ -8,15 +8,7 @@ import { envConfig } from 'src/libs/config.env';
   imports: [
     ClientsModule.register([
       {
-        name: 'INVENTORY_SERVICE',
-        transport: Transport.TCP,
-        options: {
-          host: envConfig.BUSINESS_SERVICE_HOST,
-          port: Number(envConfig.BUSINESS_SERVICE_PORT),
-        },
-      },
-      {
-        name: 'PROCUREMENT_SERVICE',
+        name: 'BUSINESS_SERVICE',
         transport: Transport.TCP,
         options: {
           host: envConfig.BUSINESS_SERVICE_HOST,

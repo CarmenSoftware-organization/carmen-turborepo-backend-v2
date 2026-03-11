@@ -14,7 +14,7 @@ describe('Config_UnitsService', () => {
       providers: [
         Config_UnitsService,
         {
-          provide: 'MASTER_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockMasterService,
         },
       ],

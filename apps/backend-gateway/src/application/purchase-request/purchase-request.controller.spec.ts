@@ -44,7 +44,7 @@ describe('PurchaseRequestController', () => {
           useValue: mockPurchaseRequestService,
         },
         {
-          provide: 'PROCUREMENT_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockProcurementService,
         },
         {

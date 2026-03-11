@@ -16,7 +16,7 @@ describe('Config_UnitCommentController', () => {
       providers: [
         Config_UnitCommentService,
         {
-          provide: 'MASTER_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockMasterService,
         },
       ],

@@ -24,7 +24,7 @@ describe('CurrenciesController', () => {
           useValue: mockClusterService,
         },
         {
-          provide: 'MASTER_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockMasterService,
         },
       ],

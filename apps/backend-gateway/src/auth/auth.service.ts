@@ -18,7 +18,7 @@ export class AuthService implements OnModuleInit {
   private readonly logger: BackendLogger = new BackendLogger(AuthService.name);
 
   constructor(
-    @Inject('AUTH_SERVICE') private readonly authService: ClientProxy,
+    @Inject('BUSINESS_SERVICE') private readonly authService: ClientProxy,
   ) { }
 
   async onModuleInit() {

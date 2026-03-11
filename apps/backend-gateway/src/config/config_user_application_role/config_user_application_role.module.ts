@@ -8,7 +8,7 @@ import { ConfigUserApplicationRoleController } from './config_user_application_r
   imports: [
     ClientsModule.register([
       {
-        name: 'AUTH_SERVICE',
+        name: 'BUSINESS_SERVICE',
         transport: Transport.TCP,
         options: {
           host: envConfig.BUSINESS_SERVICE_HOST,

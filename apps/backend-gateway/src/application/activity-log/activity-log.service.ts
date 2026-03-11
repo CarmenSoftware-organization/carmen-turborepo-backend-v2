@@ -24,7 +24,7 @@ export class ActivityLogService {
   );
 
   constructor(
-    @Inject('LOG_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly logService: ClientProxy,
   ) {}
 

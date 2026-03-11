@@ -16,7 +16,7 @@ describe('Config_ExchangeRateController', () => {
       providers: [
         Config_ExchangeRateService,
         {
-          provide: 'MASTER_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockMasterService,
         },
       ],

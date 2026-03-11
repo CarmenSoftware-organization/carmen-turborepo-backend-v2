@@ -12,7 +12,7 @@ export class Config_RecipeEquipmentService {
   private readonly logger: BackendLogger = new BackendLogger(Config_RecipeEquipmentService.name);
 
   constructor(
-    @Inject('MASTER_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly masterService: ClientProxy,
   ) { }
 

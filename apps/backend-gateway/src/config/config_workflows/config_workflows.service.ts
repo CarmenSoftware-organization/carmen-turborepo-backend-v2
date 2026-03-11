@@ -12,7 +12,7 @@ export class Config_WorkflowsService {
     Config_WorkflowsService.name,
   );
   constructor(
-    @Inject('MASTER_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly masterService: ClientProxy,
   ) {}
 

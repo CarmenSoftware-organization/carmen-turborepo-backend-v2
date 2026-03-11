@@ -13,7 +13,7 @@ export class TransferDetailService {
   private readonly logger: BackendLogger = new BackendLogger(TransferDetailService.name);
 
   constructor(
-    @Inject('INVENTORY_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly inventoryService: ClientProxy,
   ) {}
 

@@ -7,7 +7,7 @@ import { CreditNoteReasonController } from './credit-note-reason.controller';
   imports: [
     ClientsModule.register([
       {
-        name: 'PROCUREMENT_SERVICE',
+        name: 'BUSINESS_SERVICE',
         transport: Transport.TCP,
         options: {
           host: envConfig.BUSINESS_SERVICE_HOST,

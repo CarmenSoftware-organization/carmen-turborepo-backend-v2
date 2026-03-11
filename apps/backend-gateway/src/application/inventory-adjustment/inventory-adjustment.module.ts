@@ -9,7 +9,7 @@ import { ClientsModule } from '@nestjs/microservices';
   imports: [
     ClientsModule.register([
       {
-        name: 'INVENTORY_SERVICE',
+        name: 'BUSINESS_SERVICE',
         transport: Transport.TCP,
         options: {
           host: envConfig.BUSINESS_SERVICE_HOST,

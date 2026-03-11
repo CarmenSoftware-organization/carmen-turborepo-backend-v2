@@ -14,7 +14,7 @@ describe('ProductsService', () => {
       providers: [
         ProductsService,
         {
-          provide: 'MASTER_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockMasterService,
         },
       ],

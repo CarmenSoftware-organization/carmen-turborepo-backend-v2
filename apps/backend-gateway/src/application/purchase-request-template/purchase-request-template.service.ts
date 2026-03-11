@@ -15,7 +15,7 @@ export class PurchaseRequestTemplateService {
   );
 
   constructor(
-    @Inject('PROCUREMENT_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly procurementService: ClientProxy,
   ) {}
 

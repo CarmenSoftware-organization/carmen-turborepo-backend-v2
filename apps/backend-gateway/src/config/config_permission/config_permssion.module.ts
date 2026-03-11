@@ -9,7 +9,7 @@ import { ConfigPermissionService } from './config_permission.service';
   imports: [
     ClientsModule.register([
       {
-        name: 'AUTH_SERVICE',
+        name: 'BUSINESS_SERVICE',
         transport: Transport.TCP,
         options: {
           host: envConfig.BUSINESS_SERVICE_HOST,

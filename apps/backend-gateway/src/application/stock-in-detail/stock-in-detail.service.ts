@@ -13,7 +13,7 @@ export class StockInDetailService {
   private readonly logger: BackendLogger = new BackendLogger(StockInDetailService.name);
 
   constructor(
-    @Inject('INVENTORY_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly inventoryService: ClientProxy,
   ) {}
 

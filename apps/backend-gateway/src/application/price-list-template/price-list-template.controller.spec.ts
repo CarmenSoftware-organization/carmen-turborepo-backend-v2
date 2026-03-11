@@ -16,7 +16,7 @@ describe('PriceListTemplateController', () => {
       providers: [
         PriceListTemplateService,
         {
-          provide: 'MASTER_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockMasterService,
         },
       ],

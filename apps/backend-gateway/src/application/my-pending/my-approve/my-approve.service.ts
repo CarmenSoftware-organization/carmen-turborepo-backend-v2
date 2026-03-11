@@ -12,9 +12,9 @@ export class MyApproveService {
   );
 
   constructor(
-    @Inject('INVENTORY_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly inventoryService: ClientProxy,
-    @Inject('PROCUREMENT_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly procurementService: ClientProxy,
   ) {}
 

@@ -18,7 +18,7 @@ describe('AuthController', () => {
       providers: [
         AuthService,
         {
-          provide: 'AUTH_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockAuthServiceClient,
         },
       ],

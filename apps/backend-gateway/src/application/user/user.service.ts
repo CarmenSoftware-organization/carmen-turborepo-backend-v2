@@ -13,7 +13,7 @@ export class UserService implements OnModuleInit {
   private readonly logger: BackendLogger = new BackendLogger(UserService.name);
 
   constructor(
-    @Inject('AUTH_SERVICE') private readonly authService: ClientProxy,
+    @Inject('BUSINESS_SERVICE') private readonly authService: ClientProxy,
   ) {}
 
   async onModuleInit() {

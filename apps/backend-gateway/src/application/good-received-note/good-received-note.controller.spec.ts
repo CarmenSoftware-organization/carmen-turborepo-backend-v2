@@ -16,7 +16,7 @@ describe('GoodReceivedNoteController', () => {
       providers: [
         GoodReceivedNoteService,
         {
-          provide: 'INVENTORY_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockInventoryService,
         },
       ],

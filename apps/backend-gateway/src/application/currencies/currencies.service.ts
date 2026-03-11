@@ -13,7 +13,7 @@ export class CurrenciesService {
   );
 
   constructor(
-    @Inject('MASTER_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly masterService: ClientProxy,
     @Inject('CLUSTER_SERVICE')
     private readonly clusterService: ClientProxy,

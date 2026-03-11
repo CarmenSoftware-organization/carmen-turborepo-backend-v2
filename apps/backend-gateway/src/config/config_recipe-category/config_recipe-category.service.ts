@@ -14,7 +14,7 @@ export class Config_RecipeCategoryService {
   );
 
   constructor(
-    @Inject('MASTER_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly masterService: ClientProxy,
   ) { }
 

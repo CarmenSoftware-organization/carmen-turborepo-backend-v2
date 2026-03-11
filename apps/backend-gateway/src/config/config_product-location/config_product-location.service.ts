@@ -9,7 +9,7 @@ export class Config_ProductLocationService {
   );
 
   constructor(
-    @Inject('MASTER_SERVICE')
+    @Inject('BUSINESS_SERVICE')
     private readonly masterService: ClientProxy,
   ) {}
 

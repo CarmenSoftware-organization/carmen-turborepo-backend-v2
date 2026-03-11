@@ -16,7 +16,7 @@ describe('Config_ProductCategoryController', () => {
       providers: [
         Config_ProductCategoryService,
         {
-          provide: 'MASTER_SERVICE',
+          provide: 'BUSINESS_SERVICE',
           useValue: mockMasterService,
         },
       ],
