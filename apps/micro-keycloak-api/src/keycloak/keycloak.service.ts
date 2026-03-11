@@ -50,7 +50,7 @@ export class KeycloakService {
   private readonly config: KeycloakAdminConfig = {
     baseUrl: envConfig.KEYCLOAK_BASE_URL,
     realm: envConfig.KEYCLOAK_REALM,
-    clientId: envConfig.KEYCLOAK_CLIENT_ID,
+    clientId: envConfig.KEYCLOAK_ADMIN_CLIENT_ID,
     adminClientId: envConfig.KEYCLOAK_ADMIN_CLIENT_ID,
     adminClientSecret: envConfig.KEYCLOAK_ADMIN_CLIENT_SECRET,
     adminUsername: envConfig.KEYCLOAK_ADMIN_USERNAME,

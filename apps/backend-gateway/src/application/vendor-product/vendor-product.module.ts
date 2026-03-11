@@ -11,8 +11,8 @@ import { envConfig } from 'src/libs/config.env';
         name: 'PROCUREMENT_SERVICE',
         transport: Transport.TCP,
         options: {
-          host: envConfig.PROCUREMENT_SERVICE_HOST,
-          port: Number(envConfig.PROCUREMENT_SERVICE_PORT),
+          host: envConfig.BUSINESS_SERVICE_HOST,
+          port: Number(envConfig.BUSINESS_SERVICE_PORT),
         },
       },
     ]),

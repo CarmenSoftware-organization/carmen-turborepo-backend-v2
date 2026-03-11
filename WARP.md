@@ -168,7 +168,7 @@ The gateway organizes routes into domain modules under `src/config/`, `src/appli
 ### Environment Configuration
 - Each microservice has its own `.env.example` file
 - Services discover each other via host/port configuration (e.g., `BUSINESS_SERVICE_HOST`, `BUSINESS_SERVICE_PORT`)
-- Key env vars: `SYSTEM_DATABASE_URL`, `SUPABASE_JWT_SECRET`, `LOKI_*`, `SMTP_*`, `SENTRY_DSN`
+- Key env vars: `SYSTEM_DATABASE_URL`, `JWT_SECRET`, `LOKI_*`, `SMTP_*`, `SENTRY_DSN`
 
 ### Build Pipeline
 Turborepo enforces: `db:generate` → `build:package` → `build`/`dev`. If Prisma clients are missing, run `bun run db:generate`. If shared packages fail to resolve, run `bun run build:package`.

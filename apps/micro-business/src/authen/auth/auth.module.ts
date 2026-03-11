@@ -21,7 +21,7 @@ import { TenantModule } from '@/tenant/tenant.module';
       },
     ]),
     JwtModule.register({
-      secret: envConfig.SUPABASE_JWT_SECRET,
+      secret: envConfig.JWT_SECRET,
     }),
     TenantModule,
   ],

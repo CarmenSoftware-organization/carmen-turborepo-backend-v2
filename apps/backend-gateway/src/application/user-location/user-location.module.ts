@@ -12,8 +12,8 @@ import { envConfig } from 'src/libs/config.env';
         name: 'MASTER_SERVICE',
         transport: Transport.TCP,
         options: {
-          host: envConfig.MASTER_SERVICE_HOST,
-          port: Number(envConfig.MASTER_SERVICE_PORT),
+          host: envConfig.BUSINESS_SERVICE_HOST,
+          port: Number(envConfig.BUSINESS_SERVICE_PORT),
         },
       },
     ]),

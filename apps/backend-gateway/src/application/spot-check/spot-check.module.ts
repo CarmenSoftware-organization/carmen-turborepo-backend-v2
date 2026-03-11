@@ -12,8 +12,8 @@ import { ClientsModule } from '@nestjs/microservices';
         name: 'INVENTORY_SERVICE',
         transport: Transport.TCP,
         options: {
-          host: envConfig.INVENTORY_SERVICE_HOST,
-          port: Number(envConfig.INVENTORY_SERVICE_PORT),
+          host: envConfig.BUSINESS_SERVICE_HOST,
+          port: Number(envConfig.BUSINESS_SERVICE_PORT),
         },
       },
     ]),

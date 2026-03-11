@@ -13,16 +13,23 @@ async function bootstrap() {
   });
   const logger = new BackendLogger(bootstrap.name);
 
-  const clusterServiceHost = envConfig.CLUSTER_SERVICE_HOST ?? 'localhost';
-  const clusterServicePort = Number(envConfig.CLUSTER_SERVICE_PORT ?? 5014);
-  const clusterServiceHttpPort = Number(envConfig.CLUSTER_SERVICE_HTTP_PORT ?? 6014);
+  const clusterServiceHost = envConfig.CLUSTER_SERVICE_HOST;
+  const clusterServiceHttpsPort = Number(envConfig.CLUSTER_SERVICE_HTTPS_PORT);
+  const clusterServiceHttpPort = Number(envConfig.CLUSTER_SERVICE_PORT);
+
+  logger.log(
+    `ClusterService is configured to run on ${clusterServiceHost}:${clusterServiceHttpsPort}`,
+  );
+  logger.log(
+    `HTTP server is configured to run on ${clusterServiceHost}:${clusterServiceHttpPort}`,
+  );
 
   // Connect TCP microservice
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP,
     options: {
       host: clusterServiceHost,
-      port: clusterServicePort,
+      port: clusterServiceHttpsPort,
     },
   });
 
@@ -30,7 +37,7 @@ async function bootstrap() {
   await app.listen(clusterServiceHttpPort);
 
   logger.log(
-    `ClusterService TCP is running on ${clusterServiceHost}:${clusterServicePort}`,
+    `ClusterService TCP is running on ${clusterServiceHost}:${clusterServiceHttpsPort}`,
   );
   logger.log(
     `ClusterService HTTP is running on ${clusterServiceHost}:${clusterServiceHttpPort}`,

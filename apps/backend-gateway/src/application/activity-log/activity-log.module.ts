@@ -11,8 +11,8 @@ import { envConfig } from 'src/libs/config.env';
         name: 'LOG_SERVICE',
         transport: Transport.TCP,
         options: {
-          host: envConfig.LOG_SERVICE_HOST,
-          port: Number(envConfig.LOG_SERVICE_PORT),
+          host: envConfig.BUSINESS_SERVICE_HOST,
+          port: Number(envConfig.BUSINESS_SERVICE_PORT),
         },
       },
     ]),

@@ -28,24 +28,24 @@ import { TaxProfileMapper } from './mapper/tax-profile.mapper';
         name: 'AUTH_SERVICE',
         transport: Transport.TCP,
         options: {
-          host: envConfig.AUTH_SERVICE_HOST,
-          port: Number(envConfig.AUTH_SERVICE_PORT),
+          host: envConfig.BUSINESS_SERVICE_HOST,
+          port: Number(envConfig.BUSINESS_SERVICE_PORT),
         },
       },
       {
         name: 'MASTER_SERVICE',
         transport: Transport.TCP,
         options: {
-          host: envConfig.MASTER_SERVICE_HOST,
-          port: Number(envConfig.MASTER_SERVICE_PORT),
+          host: envConfig.BUSINESS_SERVICE_HOST,
+          port: Number(envConfig.BUSINESS_SERVICE_PORT),
         },
       },
       {
         name: 'INVENTORY_SERVICE',
         transport: Transport.TCP,
         options: {
-          host: envConfig.INVENTORY_SERVICE_HOST,
-          port: Number(envConfig.INVENTORY_SERVICE_PORT),
+          host: envConfig.BUSINESS_SERVICE_HOST,
+          port: Number(envConfig.BUSINESS_SERVICE_PORT),
         },
       },
     ]),
