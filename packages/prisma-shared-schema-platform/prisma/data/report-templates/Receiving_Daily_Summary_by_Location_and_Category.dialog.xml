@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<dialog>
-  <field name="TextDate1" type="date" label="From Date" />
-  <field name="TextDate2" type="date" label="To Date" />
-</dialog>
