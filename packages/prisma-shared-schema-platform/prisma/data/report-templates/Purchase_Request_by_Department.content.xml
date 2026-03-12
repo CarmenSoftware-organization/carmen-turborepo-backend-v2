@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp">
+  <Dictionary>
+    <TableDataSource Name="ADMIN_Bu" ReferenceName="ADMIN_Bu.ADMIN_Bu" DataType="System.Int32" Enabled="true">
+      <Column Name="Name" DataType="System.String"/>
+    </TableDataSource>
+    <TableDataSource Name="TextDate1" ReferenceName="TextDate1.TextDate1" DataType="System.Int32" Enabled="true">
+      <Column Name="Text" DataType="System.String"/>
+    </TableDataSource>
+    <TableDataSource Name="TextDate2" ReferenceName="TextDate2.TextDate2" DataType="System.Int32" Enabled="true">
+      <Column Name="Text" DataType="System.String"/>
+    </TableDataSource>
+    <TableDataSource Name="prd" ReferenceName="prd.prd" DataType="System.Int32" Enabled="true">
+      <Column Name="VendorCode" DataType="System.String"/>
+      <Column Name="ProductCode" DataType="System.String"/>
+      <Column Name="ProductDesc1" DataType="System.String"/>
+      <Column Name="CreatedBy" DataType="System.String"/>
+      <Column Name="LocationName" DataType="System.String"/>
+      <Column Name="PRDate" DataType="System.String"/>
+      <Column Name="PRNo" DataType="System.String"/>
+      <Column Name="TotalAmt" DataType="System.String"/>
+      <Column Name="JobCode" DataType="System.String"/>
+      <Column Name="Name" DataType="System.String"/>
+      <Column Name="LocationCode" DataType="System.String"/>
+      <Column Name="PONo" DataType="System.String"/>
+      <Column Name="Description" DataType="System.String"/>
+      <Column Name="DocStatus" DataType="System.String"/>
+    </TableDataSource>
+    <Total Name="p_Tproduct" Expression="0" Evaluator="Data1"/>
+    <Total Name="sumcreateamt" Expression="0" Evaluator="Data1"/>
+    <Total Name="SumlocationAmt" Expression="0" Evaluator="Data1"/>
+    <Total Name="p_Tlocation" Expression="0" Evaluator="Data1"/>
+    <Total Name="p_Fcat" Expression="0" Evaluator="Data1"/>
+    <Total Name="p_Tcat" Expression="0" Evaluator="Data1"/>
+    <Total Name="p_Created" Expression="0" Evaluator="Data1"/>
+    <Total Name="Date" Expression="0" Evaluator="Data1"/>
+    <Total Name="p_Flocation" Expression="0" Evaluator="Data1"/>
+    <Total Name="p_Fproduct" Expression="0" Evaluator="Data1"/>
+  </Dictionary>
+
+    <ReportPage Name="Page1" RawPaperSize="9" LeftMargin="5" RightMargin="5" FirstPageSource="15" OtherPagesSource="15">
+      <PageHeaderBand Name="PageHeader1" Width="756" Height="125.01">
+        <PictureObject Name="Picture1" Top="-3.97" Width="173.88" Height="94.5" DataColumn="ADMIN_Bu.BuLogo"/>
+        <TextObject Name="Text3" Left="203.36" Top="8.86" Width="357.21" Height="30.24" Text="Purchase Request By Department" HorzAlign="Center" Font="Tahoma, 14pt"/>
+        <TextObject Name="Text4" Top="93.08" Width="238.14" Height="18.9" Text="[ADMIN_Bu.Name]" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text19" Left="465.09" Top="49.19" Width="281.5" Height="72.84" Text="From Date [TextDate1.Text] To [TextDate2.Text]&#13;&#10;Location From [p_Flocation] To [p_Tlocation]&#13;&#10;Category From [p_Fcat] To [p_Tcat]&#13;&#10;Product From [p_Fproduct] To [p_Tproduct]&#13;&#10;Created By [p_Created]" HorzAlign="Right" Font="Tahoma, 8pt"/>
+      </PageHeaderBand>
+      <ColumnHeaderBand Name="ColumnHeader1" Top="128.1" Width="756" Height="9.45"/>
+      <GroupHeaderBand Name="GroupHeader1" Top="140.63" Width="756" Height="35.91" Border.Lines="Top" Fill.Color="Gainsboro" KeepWithData="true" RepeatOnEveryPage="true" Condition="Trim([prd.LocationCode])" KeepTogether="true">
+        <TextObject Name="Text5" Top="7.56" Width="71.82" Height="18.9" Text="PO.NO" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text6" Left="70.6" Top="7.56" Width="58.59" Height="18.9" Text="PR DATE" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text7" Left="127.3" Top="7.56" Width="71.82" Height="18.9" Text="PR.NO." VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text8" Left="200.67" Top="7.56" Width="274.05" Height="18.9" Text="Description" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text26" Left="472.5" Top="7.45" Width="66.15" Height="18.9" Text="Status" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text27" Left="536.65" Top="7.45" Width="47.25" Height="18.9" Text="Vendor" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text28" Left="676.85" Top="7.45" Width="73.71" Height="18.9" Text="Job Code" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text36" Left="582.9" Top="7.45" Width="94.5" Height="18.9" Text="Vendor Name" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <GroupHeaderBand Name="GroupHeader2" Top="179.63" Width="756" Height="24.57" Fill.Color="WhiteSmoke" Condition="[prd.LocationCode]">
+          <TextObject Name="Text11" Left="3.78" Top="5.67" Width="94.5" Height="18.9" Text="To Location :" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+          <TextObject Name="Text10" Left="100.17" Top="5.67" Width="529.2" Height="18.9" Text="[prd.LocationCode] [prd.LocationName]" VertAlign="Center" Font="Tahoma, 8pt"/>
+          <DataBand Name="Data1" Top="207.28" Width="756" Height="78.82" BeforePrintEvent="Data1_BeforePrint">
+            <TextObject Name="Text12" Top="7.56" Width="71.82" Height="17.01" Text="[prd.PONo]" Font="Tahoma, 8pt"/>
+            <TextObject Name="Text13" Left="70.6" Top="7.56" Width="58.59" Height="17.01" Text="[prd.PRDate]" Format="Date" Format.Format="d" Font="Tahoma, 8pt"/>
+            <TextObject Name="Text14" Left="127.3" Top="7.56" Width="71.82" Height="17.01" Text="[prd.PRNo]" Font="Tahoma, 8pt"/>
+            <TextObject Name="Text16" Left="672.84" Top="52.36" Width="73.71" Height="18.9" Text="[prd.TotalAmt]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" Font="Tahoma, 8pt"/>
+            <TextObject Name="Text15" Left="200.67" Top="7.56" Width="270.27" Height="37.8" CanShrink="true" Text="[prd.Description]" Font="Tahoma, 8pt"/>
+            <TextObject Name="Text17" Left="472.5" Top="7.56" Width="66.15" Height="18.9" Text="[prd.DocStatus]" Font="Arial, 8pt"/>
+            <TextObject Name="Text29" Left="676.85" Top="7.56" Width="73.71" Height="18.9" Text="[prd.JobCode]" HorzAlign="Right" Font="Tahoma, 8pt"/>
+            <TextObject Name="Text31" Left="536.65" Top="7.56" Width="47.25" Height="18.9" Text="[prd.VendorCode]" Font="Arial, 8pt"/>
+            <TextObject Name="Text32" Left="245.7" Top="52.36" Width="75.6" Height="17.01" Text="[prd.ProductCode]" Font="Tahoma, 8pt"/>
+            <TextObject Name="Text33" Left="321.3" Top="52.36" Width="274.05" Height="26.46" Text="[prd.ProductDesc1]" Font="Tahoma, 8pt"/>
+            <TextObject Name="Text34" Left="132.3" Top="52.36" Width="113.4" Height="18.9" Text="Item Description :" Font="Tahoma, 8pt, style=Bold"/>
+            <TextObject Name="Text35" Left="604.8" Top="52.36" Width="66.15" Height="18.9" Text="Amount :" Font="Tahoma, 8pt, style=Bold"/>
+            <TextObject Name="Text37" Left="582.9" Top="7.56" Width="94.5" Height="28.35" Text="[prd.Name]" Font="Arial, 8pt"/>
+            <Sort>
+              <Sort Expression="[prd.PRNo]"/>
+            </Sort>
+          </DataBand>
+          <GroupFooterBand Name="GroupFooter2" Top="289.19" Width="756" Height="37.8">
+            <TextObject Name="Text23" Left="217.35" Top="9.45" Width="141.75" Height="18.9" Text="Total Of Created By :" Font="Tahoma, 8pt, style=Bold"/>
+            <TextObject Name="Text24" Left="633.15" Top="9.45" Width="122.85" Height="18.9" Border.Lines="Bottom" Border.Style="Double" Text="[sumcreateamt]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" Font="Tahoma, 9pt"/>
+            <TextObject Name="Text25" Left="368.55" Top="9.45" Width="179.55" Height="18.9" Text="[prd.CreatedBy]" Font="Tahoma, 8pt"/>
+          </GroupFooterBand>
+        </GroupHeaderBand>
+        <GroupFooterBand Name="GroupFooter1" Top="330.08" Width="756" Height="47.25" Border.Lines="Bottom" Fill.Color="Gainsboro" KeepWithData="true">
+          <TextObject Name="Text21" Left="311.85" Top="9.45" Width="283.5" Height="18.9" Text="[prd.LocationCode]: [prd.LocationName]" Font="Tahoma, 8pt"/>
+          <TextObject Name="Text20" Left="623.7" Top="9.45" Width="132.3" Height="18.9" Border.Lines="Bottom" Border.Style="Double" Text="[SumlocationAmt]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" Font="Tahoma, 9pt"/>
+          <TextObject Name="Text22" Left="189" Top="9.45" Width="113.4" Height="18.9" Text="Total Of Location :" Font="Tahoma, 8pt, style=Bold"/>
+          <ChildBand Name="Child3" Top="380.41" Width="756" Height="18.9"/>
+        </GroupFooterBand>
+      </GroupHeaderBand>
+      <PageFooterBand Name="PageFooter1" Top="402.4" Width="756" Height="6.58">
+        <ChildBand Name="Child1" Top="412.07" Width="756" Height="42.78" Border.Lines="Top">
+          <TextObject Name="Text1" Left="6.58" Top="9.45" Width="132.3" Height="27.66" Text="Report Detailed&#13;&#10;Print On [Date]" Format="Date" Format.Format="d" Font="Arial, 8pt"/>
+          <TextObject Name="Text2" Left="544.32" Top="13.23" Width="207.9" Height="24.64" Text="Page [Page#] Of [TotalPages#]" HorzAlign="Right" Font="Arial, 8pt"/>
+        </ChildBand>
+      </PageFooterBand>
+    </ReportPage>
+  
+</Report>

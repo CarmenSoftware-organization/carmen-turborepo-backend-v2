@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp">
+  <Dictionary>
+    <TableDataSource Name="Data" ReferenceName="Data.Data" DataType="System.Int32" Enabled="true">
+      <Column Name="RankNo" DataType="System.String"/>
+      <Column Name="ProductCode" DataType="System.String"/>
+      <Column Name="ProductDesc1" DataType="System.String"/>
+      <Column Name="TotalAmt" DataType="System.String"/>
+    </TableDataSource>
+    <TableDataSource Name="textdate1" ReferenceName="textdate1.textdate1" DataType="System.Int32" Enabled="true">
+      <Column Name="Text" DataType="System.String"/>
+    </TableDataSource>
+    <TableDataSource Name="textdate2" ReferenceName="textdate2.textdate2" DataType="System.Int32" Enabled="true">
+      <Column Name="Text" DataType="System.String"/>
+    </TableDataSource>
+    <TableDataSource Name="ComboBox1" ReferenceName="ComboBox1.ComboBox1" DataType="System.Int32" Enabled="true">
+      <Column Name="Text" DataType="System.String"/>
+    </TableDataSource>
+    <Total Name="Total" Expression="0" Evaluator="Data1"/>
+    <Total Name="Date" Expression="0" Evaluator="Data1"/>
+  </Dictionary>
+
+    <ReportPage Name="Page1" RawPaperSize="9" FirstPageSource="15" OtherPagesSource="15">
+      <PageHeaderBand Name="PageHeader1" Width="718.2" Height="113.4">
+        <PictureObject Name="Picture1" Width="132.3" Height="94.5" DataColumn="ADMIN_Bu.BuLogo"/>
+        <TextObject Name="Text3" Left="184.28" Top="1.89" Width="349.65" Height="28.35" Text="Top Receiving by Product" HorzAlign="Center" Font="Tahoma, 14pt"/>
+        <TextObject Name="Text4" Left="184.28" Top="37.8" Width="349.65" Height="56.7" CanGrow="true" Text="From [textdate1.Text] to [textdate2.Text]&#13;&#10;Status [IIf(CheckBox1.Checked,&quot;Received&quot;,&quot;&quot;)] [IIf(CheckBox1.Checked &amp;&amp; CheckBox2.Checked ,&quot;and&quot;,&quot;&quot;)] [IIf(CheckBox2.Checked,&quot;Committed&quot;,&quot;&quot;)]&#13;&#10;Top [ComboBox1.Text] Ranking" HorzAlign="Center" Font="Tahoma, 10pt"/>
+      </PageHeaderBand>
+      <ColumnHeaderBand Name="ColumnHeader1" Top="117.4" Width="718.2" Height="37.8" Border.Lines="Top, Bottom" Fill.Color="WhiteSmoke">
+        <TextObject Name="Text12" Top="9.45" Width="37.8" Height="18.9" Text="No" Font="Tahoma, 10pt, style=Bold"/>
+        <TextObject Name="Text13" Left="37.8" Top="9.45" Width="425.25" Height="18.9" Text="Product" Font="Tahoma, 10pt, style=Bold"/>
+        <TextObject Name="Text15" Left="576.45" Top="9.45" Width="141.75" Height="18.9" Text="Total Amount" Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Font="Tahoma, 10pt, style=Bold" Trimming="EllipsisCharacter"/>
+      </ColumnHeaderBand>
+      <DataBand Name="Data1" Top="159.2" Width="718.2" Height="28.35" Border.Lines="Bottom" Border.Style="Dot" CanGrow="true" BeforePrintEvent="Data1_BeforePrint">
+        <TextObject Name="Text5" Top="9.45" Width="37.8" Height="18.9" Text="[Data.RankNo]" Font="Tahoma, 10pt"/>
+        <TextObject Name="Text6" Left="37.8" Top="9.45" Width="94.5" Height="18.9" Text="[Data.ProductCode]" Font="Tahoma, 10pt"/>
+        <TextObject Name="Text7" Left="132.3" Top="9.45" Width="330.75" Height="18.9" CanGrow="true" Text="[Data.ProductDesc1]" Font="Tahoma, 10pt"/>
+        <TextObject Name="Text9" Left="576.45" Top="9.45" Width="141.75" Height="18.9" Text="[Data.TotalAmt]" Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Font="Tahoma, 10pt" Trimming="EllipsisCharacter"/>
+      </DataBand>
+      <ReportSummaryBand Name="ReportSummary1" Top="191.55" Width="718.2" Height="37.8">
+        <LineObject Name="Line1" Left="576.45" Width="141.75"/>
+        <TextObject Name="Text17" Left="576.45" Top="9.45" Width="141.75" Height="18.9" Border.Lines="Bottom" Border.Style="Double" Text="[Total]" Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Font="Tahoma, 10pt" Trimming="EllipsisCharacter"/>
+      </ReportSummaryBand>
+      <PageFooterBand Name="PageFooter1" Top="233.35" Width="718.2" Height="37.8">
+        <TextObject Name="Text1" Top="9.45" Width="132.3" Height="18.9" Text="[Date]" Font="Arial, 8pt, style=Italic"/>
+        <TextObject Name="Text2" Left="604.8" Top="9.45" Width="113.4" Height="18.9" Text="[Page#]/[TotalPages#]" HorzAlign="Right" Font="Arial, 8pt"/>
+      </PageFooterBand>
+    </ReportPage>
+  
+</Report>

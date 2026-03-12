@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp">
+  <Dictionary>
+    <TableDataSource Name="ADMIN_Bu" ReferenceName="ADMIN_Bu.ADMIN_Bu" DataType="System.Int32" Enabled="true">
+      <Column Name="Name" DataType="System.String"/>
+    </TableDataSource>
+    <TableDataSource Name="Stockcard" ReferenceName="Stockcard.Stockcard" DataType="System.Int32" Enabled="true">
+      <Column Name="InQty" DataType="System.String"/>
+      <Column Name="BaseCost" DataType="System.String"/>
+      <Column Name="ProductCode" DataType="System.String"/>
+      <Column Name="DocType" DataType="System.String"/>
+      <Column Name="NetQty" DataType="System.String"/>
+      <Column Name="BaseAmount" DataType="System.String"/>
+      <Column Name="UnitCost" DataType="System.String"/>
+      <Column Name="LocationCode" DataType="System.String"/>
+      <Column Name="CommittedDate" DataType="System.String"/>
+      <Column Name="HdrNo" DataType="System.String"/>
+      <Column Name="OutQty" DataType="System.String"/>
+      <Column Name="Amount" DataType="System.String"/>
+      <Column Name="LocationName" DataType="System.String"/>
+      <Column Name="ProductDesc1" DataType="System.String"/>
+      <Column Name="DocDate" DataType="System.String"/>
+      <Column Name="AdjCode" DataType="System.String"/>
+      <Column Name="InventoryUnit" DataType="System.String"/>
+    </TableDataSource>
+    <Total Name="p_FProduct" Expression="0" Evaluator="Data1"/>
+    <Total Name="p_ShowBalance" Expression="0" Evaluator="Data1"/>
+    <Total Name="Date" Expression="0" Evaluator="Data1"/>
+    <Total Name="p_TLocation" Expression="0" Evaluator="Data1"/>
+    <Total Name="GF2_TotalOfProduct" Expression="0" Evaluator="Data1"/>
+    <Total Name="SUM_OUT" Expression="0" Evaluator="Data1"/>
+    <Total Name="SUM_OUTLocate" Expression="0" Evaluator="Data1"/>
+    <Total Name="p_FDate" Expression="0" Evaluator="Data1"/>
+    <Total Name="p_FLocation" Expression="0" Evaluator="Data1"/>
+    <Total Name="p_TProduct" Expression="0" Evaluator="Data1"/>
+    <Total Name="CF" Expression="0" Evaluator="Data1"/>
+    <Total Name="SUM_IN" Expression="0" Evaluator="Data1"/>
+    <Total Name="GF2_TotalOfLocation" Expression="0" Evaluator="Data1"/>
+    <Total Name="GF1_TotalOfLocation" Expression="0" Evaluator="Data1"/>
+    <Total Name="GF1_TotalOfProduct" Expression="0" Evaluator="Data1"/>
+    <Total Name="p_TDate" Expression="0" Evaluator="Data1"/>
+    <Total Name="p_ShowGroup" Expression="0" Evaluator="Data1"/>
+    <Total Name="SUM_INLocate" Expression="0" Evaluator="Data1"/>
+  </Dictionary>
+
+    <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" FirstPageSource="15" OtherPagesSource="15" StartPageEvent="_StartReport">
+      <PageHeaderBand Name="PageHeader1" Width="1047.06" Height="122.85" Border.Lines="Bottom">
+        <TextObject Name="Text50" Top="75.6" Width="151.2" Height="37.8" Text="[ADMIN_Bu.Name]" HorzAlign="Center"/>
+        <TextObject Name="Text43" Left="296.73" Top="63.48" Width="453.6" Height="18.9" Text="Date from [p_FDate] to [p_TDate]&#13;&#10;&#13;&#10;" HorzAlign="Center" Font="Tahoma, 10pt">
+          <Formats>
+            <DateFormat/>
+            <DateFormat/>
+          </Formats>
+        </TextObject>
+        <TextObject Name="Text3" Left="774.9" Top="28.35" Width="274.05" Height="56.7" Text="Location: [p_FLocation] to [p_TLocation]&#13;&#10;Product:  [p_FProduct] to [p_TProduct]&#13;&#10;Show Balance [p_ShowBalance]&#13;&#10;Group by [p_ShowGroup]" HorzAlign="Right" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text42" Left="296.73" Top="23.62" Width="453.6" Height="28.35" Text="Stock Card Detail Report " HorzAlign="Center" Font="Tahoma, 16pt"/>
+        <PictureObject Name="Picture2" Width="151.2" Height="75.6" DataColumn="ADMIN_Bu.BuLogo"/>
+        <ChildBand Name="Child2" Top="126.85" Width="1047.06" Height="7.56"/>
+      </PageHeaderBand>
+      <GroupHeaderBand Name="GH1" Top="138.41" Width="1047.06" Height="26.46" Visible="false" Fill.Color="LightGray" Condition="[Stockcard.ProductCode]" SortOrder="None">
+        <TextObject Name="GH1_lblTopic" Top="3.78" Width="66.15" Height="18.9" Text="Location:" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="GH1_lblCode" Left="66.15" Top="3.78" Width="699.3" Height="18.9" Text="[Stockcard.LocationCode] : [Stockcard.LocationName]" AutoWidth="true" WordWrap="false" Font="Tahoma, 8pt"/>
+        <ChildBand Name="GH1_Product" Top="168.87" Width="1047.06" Height="26.46" Fill.Color="LightGray">
+          <TextObject Name="Text57" Top="3.78" Width="66.15" Height="18.9" Text="Product:" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+          <TextObject Name="Text58" Left="66.15" Top="3.78" Width="699.3" Height="18.9" Text="[Stockcard.ProductCode] : [Stockcard.ProductDesc1]" AutoWidth="true" WordWrap="false" Font="Tahoma, 8pt"/>
+        </ChildBand>
+        <GroupHeaderBand Name="GH2" Top="199.33" Width="1047.06" Height="20.79" Visible="false" Border.Lines="Bottom" Condition="[Stockcard.LocationCode]" SortOrder="None">
+          <TextObject Name="GH2_lblCode" Left="66.15" Top="1.89" Width="699.3" Height="18.9" Text="[Stockcard.ProductCode] : [Stockcard.ProductDesc1]" AutoWidth="true" WordWrap="false" Font="Tahoma, 8pt"/>
+          <TextObject Name="GH2_lblTopic" Top="1.89" Width="66.15" Height="18.9" Text="Product:" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+          <TextObject Name="Text82" Left="793.8" Top="1.89" Width="255.15" Height="18.9" Text="Balance" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+          <ChildBand Name="GH2_Location" Top="224.12" Width="1047.06" Height="21.75" Border.Lines="Bottom">
+            <TextObject Name="Text60" Left="66.15" Top="2.85" Width="699.3" Height="18.9" Text="[Stockcard.LocationCode] : [Stockcard.LocationName]" AutoWidth="true" WordWrap="false" Font="Tahoma, 8pt"/>
+            <TextObject Name="Text62" Top="2.85" Width="66.15" Height="18.9" Text="Location:" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+            <TextObject Name="Text24" Left="793.8" Top="2.85" Width="255.15" Height="18.9" Text="Balance" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+            <ChildBand Name="Child3" Top="249.87" Width="1047.06" Height="22.68" Border.Lines="Bottom" Border.Style="Dot">
+              <TextObject Name="Text10" Left="470.5" Top="3.78" Width="69.93" Height="18.9" Text="OUT" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+              <TextObject Name="Text11" Left="615.25" Top="3.78" Width="69.93" Height="18.9" Text="Cost/Unit" Format="Number" Format.UseLocale="false" Format.DecimalDigits="4" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+              <TextObject Name="Text4" Top="3.78" Width="69.93" Height="18.9" Text="Trans. Date" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+              <TextObject Name="Text5" Left="66.15" Top="3.78" Width="68.04" Height="18.9" Text="Doc. Date" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+              <TextObject Name="Text6" Left="132.3" Top="3.78" Width="94.5" Height="18.9" Text="Document No." WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+              <TextObject Name="Text7" Left="226.8" Top="3.78" Width="37.8" Height="18.9" Text="Type" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+              <TextObject Name="Text8" Left="264.6" Top="3.78" Width="56.7" Height="18.9" Text="Unit" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+              <TextObject Name="Text9" Left="397.8" Top="3.78" Width="69.93" Height="18.9" Text="IN" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+              <TextObject Name="Text12" Left="855.22" Top="3.78" Width="69.93" Height="18.9" Text="Avg. Cost" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+              <TextObject Name="Text35" Left="689.85" Top="3.78" Width="94.5" Height="18.9" Text="Amount" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+              <TextObject Name="Text81" Left="787.8" Top="3.78" Width="68.04" Height="18.9" Text="Quantity" Format="Number" Format.UseLocale="false" Format.DecimalDigits="4" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+              <TextObject Name="Text48" Left="541.65" Top="3.78" Width="69.93" Height="18.9" Text="C/F Qty" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+              <TextObject Name="Text47" Left="323.75" Top="3.78" Width="69.93" Height="18.9" Text="B/F Qty" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+              <TextObject Name="Text13" Left="926.1" Top="3.78" Width="122.85" Height="18.9" Text="Total" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt, style=Bold"/>
+            </ChildBand>
+          </ChildBand>
+          <DataBand Name="Data1" Top="276.55" Width="1047.06" Height="22.68" CanGrow="true" BeforePrintEvent="Data1_BeforePrint">
+            <TextObject Name="Text19" Top="3.78" Width="68.04" Height="18.9" Text="[Stockcard.CommittedDate]" Format="Date" Format.Format="d" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+            <TextObject Name="Text20" Left="66.15" Top="3.78" Width="66.15" Height="18.9" Text="[IIf(([Stockcard.DocDate]==null), [Stockcard.CommittedDate], [Stockcard.DocDate])]&#13;&#10;&#13;&#10;" Format="Date" Format.Format="d" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+            <TextObject Name="Text21" Left="132.3" Top="3.78" Width="94.5" Height="18.9" Text="[IIf([Stockcard.HdrNo] == &quot;B/F&quot;,&quot;Opening Balance&quot;,[Stockcard.HdrNo])]&#13;&#10;&#13;&#10;" WordWrap="false" Font="Tahoma, 8pt"/>
+            <TextObject Name="Text23" Left="226.8" Top="3.78" Width="37.8" Height="18.9" Text="[IIf([Stockcard.DocType]==&quot;SR&quot;, [Stockcard.AdjCode], IIf([Stockcard.DocType]==&quot;BF&quot;,&quot;&quot;,[Stockcard.DocType]))]   &#13;&#10;&#13;&#10;" WordWrap="false" Font="Tahoma, 8pt"/>
+            <TextObject Name="Text25" Left="264.6" Top="3.78" Width="56.7" Height="18.9" Text="[Stockcard.InventoryUnit]" WordWrap="false" Font="Tahoma, 8pt"/>
+            <TextObject Name="Text26" Left="397.8" Top="3.78" Width="69.93" Height="18.9" Text="[Stockcard.InQty]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="4" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt" Trimming="EllipsisCharacter"/>
+            <TextObject Name="Text28" Left="470.5" Top="3.78" Width="69.93" Height="18.9" Text="[Stockcard.OutQty]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="4" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt" Trimming="EllipsisCharacter"/>
+            <TextObject Name="Text30" Left="615.25" Top="3.78" Width="69.93" Height="18.9" Text="[Stockcard.BaseCost]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt" Trimming="EllipsisCharacter"/>
+            <TextObject Name="Text32" Left="787.8" Top="3.78" Width="68.04" Height="18.9" Text="[[CF]+[Stockcard.NetQty]]&#13;&#10;&#13;&#10;" Format="Number" Format.UseLocale="false" Format.DecimalDigits="4" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt" Trimming="EllipsisCharacter"/>
+            <TextObject Name="Text22" Left="926.1" Top="3.78" Width="122.85" Height="18.9" Text="[[Stockcard.Amount] + [GF2_TotalOfProduct]]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+            <TextObject Name="Text36" Left="689.85" Top="3.78" Width="94.5" Height="18.9" Text="[Stockcard.BaseAmount]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt" Trimming="EllipsisCharacter"/>
+            <TextObject Name="Text49" Left="541.65" Top="3.78" Width="69.93" Height="18.9" Text="[[CF]+[Stockcard.NetQty]]&#13;&#10;&#13;&#10;" Format="Number" Format.UseLocale="false" Format.DecimalDigits="4" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt" Trimming="EllipsisCharacter"/>
+            <TextObject Name="Text51" Left="323.75" Top="3.78" Width="69.93" Height="18.9" Text="[[CF]+[Stockcard.NetQty]+[Stockcard.OutQty]-[Stockcard.InQty]]&#13;&#10;&#13;&#10;" Format="Number" Format.UseLocale="false" Format.DecimalDigits="4" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt" Trimming="EllipsisCharacter"/>
+            <TextObject Name="Text1" Left="855.22" Top="3.78" Width="69.93" Height="18.9" Text="[Stockcard.UnitCost]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt" Trimming="EllipsisCharacter"/>
+          </DataBand>
+          <GroupFooterBand Name="GF2" Top="303.23" Width="1047.06" Height="22.68" Visible="false" Border.Lines="Top" Border.Style="Dot">
+            <TextObject Name="GF_lblSum" Left="18.9" Top="3.78" Width="245.7" Height="18.9" Text="Sum of Product No. : [Stockcard.ProductCode]" AutoWidth="true" WordWrap="false" Font="Tahoma, 8pt, style=Italic"/>
+            <TextObject Name="Text37" Left="397.8" Top="3.78" Width="69.93" Height="18.9" Text="[SUM_IN]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="4" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt" Trimming="EllipsisCharacter"/>
+            <TextObject Name="Text38" Left="470.5" Top="3.78" Width="69.93" Height="18.9" Text="[SUM_OUT]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="4" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt" Trimming="EllipsisCharacter"/>
+            <TextObject Name="Text39" Left="787.8" Top="3.78" Width="68.04" Height="18.9" Text="[[SUM_IN]-[SUM_OUT]]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="4" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt" Trimming="EllipsisCharacter"/>
+            <TextObject Name="Text40" Left="926.1" Top="3.78" Width="122.85" Height="18.9" Text="[GF2_TotalOfProduct]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+            <ChildBand Name="GF2_Location" Top="329.91" Width="1047.06" Height="22.68" Border.Lines="Top" Border.Style="Dot">
+              <TextObject Name="Text52" Left="18.9" Top="3.78" Width="245.7" Height="18.9" Text="Sum of Location : [Stockcard.LocationCode]" AutoWidth="true" WordWrap="false" Font="Tahoma, 8pt, style=Italic"/>
+              <TextObject Name="Text55" Left="787.8" Top="3.78" Width="68.04" Height="18.9" Text="[[SUM_INLocate]-[SUM_OUTLocate]]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="4" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt" Trimming="EllipsisCharacter"/>
+              <TextObject Name="Text56" Left="926.1" Top="3.78" Width="122.85" Height="18.9" Text="[GF2_TotalOfLocation]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+              <TextObject Name="Text79" Left="397.8" Top="3.78" Width="69.93" Height="18.9" Text="[SUM_INLocate]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="4" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt" Trimming="EllipsisCharacter"/>
+              <TextObject Name="Text80" Left="470.5" Top="3.78" Width="69.93" Height="18.9" Text="[SUM_OUTLocate]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="4" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt" Trimming="EllipsisCharacter"/>
+            </ChildBand>
+          </GroupFooterBand>
+        </GroupHeaderBand>
+        <GroupFooterBand Name="GF1" Top="356.59" Width="1047.06" Height="20.79" Visible="false" Fill.Color="LightGray">
+          <TextObject Name="Text27" Left="926.1" Top="0.95" Width="122.85" Height="18.9" Border.Lines="Bottom" Border.Style="Double" Text="[GF1_TotalOfLocation]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" Font="Tahoma, 8pt"/>
+          <TextObject Name="Text31" Top="0.95" Width="264.6" Height="18.9" Text="Sum of Location [Stockcard.LocationCode]" AutoWidth="true" WordWrap="false" Font="Tahoma, 8pt"/>
+          <TextObject Name="Text45" Left="321.3" Top="0.95" Width="425.25" Height="18.9" Text="------------- Physical Count Ending of Month [Month([Stockcard.CommittedDate])] ------------------" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Arial, 8pt" Trimming="EllipsisCharacter"/>
+          <ChildBand Name="GF1_Product" Top="381.38" Width="1047.06" Height="20.79" Fill.Color="LightGray">
+            <TextObject Name="Text63" Left="926.1" Top="0.85" Width="122.85" Height="18.9" Border.Lines="Bottom" Border.Style="Double" Text="[GF1_TotalOfProduct]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" Font="Tahoma, 8pt"/>
+            <TextObject Name="Text64" Top="0.85" Width="264.6" Height="18.9" Text="Sum of Product No. [Stockcard.ProductCode]" AutoWidth="true" WordWrap="false" Font="Tahoma, 8pt"/>
+            <TextObject Name="Text65" Left="321.3" Top="0.85" Width="425.25" Height="18.9" Text="------------- Physical Count Ending of Month [Month([Stockcard.CommittedDate])] ------------------" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Arial, 8pt" Trimming="EllipsisCharacter"/>
+            <ChildBand Name="Child1" Top="406.17" Width="1047.06" Height="5.67"/>
+          </ChildBand>
+        </GroupFooterBand>
+      </GroupHeaderBand>
+      <PageFooterBand Name="PageFooter1" Top="415.84" Width="1047.06" Height="18.9" Exportable="false">
+        <TextObject Name="Text33" Left="859.95" Width="189" Height="18.9" Text="[Page#]/[TotalPages#]" HorzAlign="Right" Font="Tahoma, 8pt" TextFill.Color="Gray"/>
+        <TextObject Name="Text41" Width="207.9" Height="18.9" Text="Print On [Date]" Format="Date" Format.Format="d" AutoWidth="true" Font="Tahoma, 8pt" TextFill.Color="Gray"/>
+      </PageFooterBand>
+    </ReportPage>
+  
+</Report>

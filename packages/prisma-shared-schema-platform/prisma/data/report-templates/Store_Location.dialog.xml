@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog>
+  <field name="ComboBox1" type="select" label="Location From">
+    <option value="1AG01 : Store General" selected="true">1AG01 : Store General</option>
+    <option value="1AG02 : Store Printing and Stationary">1AG02 : Store Printing and Stationary</option>
+    <option value="1BV01 : Store Beverage">1BV01 : Store Beverage</option>
+    <option value="1EN01 : Store-EN Tool">1EN01 : Store-EN Tool</option>
+    <option value="1FB01 : RPD-Store The Café">1FB01 : RPD-Store The Café</option>
+    <option value="1FB02 : RPD-Store Bake &amp; Bev">1FB02 : RPD-Store Bake &amp; Bev</option>
+    <option value="1FB03 : RPD-Store Pool Deck">1FB03 : RPD-Store Pool Deck</option>
+    <option value="1FB04 : DPR-Store Dalah">1FB04 : DPR-Store Dalah</option>
+    <option value="1FB05 : DPR-Store Deluxe Pool">1FB05 : DPR-Store Deluxe Pool</option>
+    <option value="1FB06 : DPR-Store Garden Pool">1FB06 : DPR-Store Garden Pool</option>
+    <option value="1FB07 : DPP-Store Phuket Café">1FB07 : DPP-Store Phuket Café</option>
+    <option value="1FB08 : DPP-Store D Boulangerie">1FB08 : DPP-Store D Boulangerie</option>
+    <option value="1FB09 : DPP-Store Terrace Bar&amp;Bistro">1FB09 : DPP-Store Terrace Bar&amp;Bistro</option>
+    <option value="1FB10 : DPP-Store Banquet">1FB10 : DPP-Store Banquet</option>
+    <option value="1FB11 : DPR-Store Banquet">1FB11 : DPR-Store Banquet</option>
+    <option value="1FB12 : RPD-Store Banquet">1FB12 : RPD-Store Banquet</option>
+    <option value="1FB13 : Store DPR Coffee Works">1FB13 : Store DPR Coffee Works</option>
+    <option value="1FD01 : Store Food">1FD01 : Store Food</option>
+    <option value="1SP01 : Store Spa">1SP01 : Store Spa</option>
+    <option value="1WC01 : Store Wine Consignment">1WC01 : Store Wine Consignment</option>
+  </field>
+  <field name="ComboBox2" type="select" label="Location To">
+    <option value="1AG01 : Store General" selected="true">1AG01 : Store General</option>
+    <option value="1AG02 : Store Printing and Stationary">1AG02 : Store Printing and Stationary</option>
+    <option value="1BV01 : Store Beverage">1BV01 : Store Beverage</option>
+    <option value="1EN01 : Store-EN Tool">1EN01 : Store-EN Tool</option>
+    <option value="1FB01 : RPD-Store The Café">1FB01 : RPD-Store The Café</option>
+    <option value="1FB02 : RPD-Store Bake &amp; Bev">1FB02 : RPD-Store Bake &amp; Bev</option>
+    <option value="1FB03 : RPD-Store Pool Deck">1FB03 : RPD-Store Pool Deck</option>
+    <option value="1FB04 : DPR-Store Dalah">1FB04 : DPR-Store Dalah</option>
+    <option value="1FB05 : DPR-Store Deluxe Pool">1FB05 : DPR-Store Deluxe Pool</option>
+    <option value="1FB06 : DPR-Store Garden Pool">1FB06 : DPR-Store Garden Pool</option>
+    <option value="1FB07 : DPP-Store Phuket Café">1FB07 : DPP-Store Phuket Café</option>
+    <option value="1FB08 : DPP-Store D Boulangerie">1FB08 : DPP-Store D Boulangerie</option>
+    <option value="1FB09 : DPP-Store Terrace Bar&amp;Bistro">1FB09 : DPP-Store Terrace Bar&amp;Bistro</option>
+    <option value="1FB10 : DPP-Store Banquet">1FB10 : DPP-Store Banquet</option>
+    <option value="1FB11 : DPR-Store Banquet">1FB11 : DPR-Store Banquet</option>
+    <option value="1FB12 : RPD-Store Banquet">1FB12 : RPD-Store Banquet</option>
+    <option value="1FB13 : Store DPR Coffee Works">1FB13 : Store DPR Coffee Works</option>
+    <option value="1FD01 : Store Food">1FD01 : Store Food</option>
+    <option value="1SP01 : Store Spa">1SP01 : Store Spa</option>
+    <option value="1WC01 : Store Wine Consignment">1WC01 : Store Wine Consignment</option>
+  </field>
+</dialog>
