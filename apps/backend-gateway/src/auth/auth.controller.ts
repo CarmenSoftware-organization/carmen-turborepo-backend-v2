@@ -128,12 +128,13 @@ export class AuthController {
   @ApiBody({
     schema: {
       type: 'object',
+      required: ['refresh_token'],
       properties: {
-        refresh_token: { type: 'string', description: 'Refresh token to invalidate', example: 'eyJhbGciOi...' },
+        refresh_token: { type: 'string', description: 'Refresh token obtained from login response, required to invalidate the session', example: 'eyJhbGciOi...' },
       },
     },
-    description: 'Logout request body',
-    required: false,
+    description: 'Provide the refresh_token to revoke the user session via Keycloak OIDC logout',
+    required: true,
   })
   @ApiOperation({
     summary: 'Logout',
