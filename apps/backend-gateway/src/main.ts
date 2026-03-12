@@ -80,6 +80,17 @@ async function bootstrap() {
       },
       'x-app-id',
     )
+    .addTag('Authentication')
+    .addTag('App')
+    .addTag('Configuration')
+    .addTag('Document & Log')
+    .addTag('Inventory')
+    .addTag('Master Data')
+    .addTag('Notification')
+    .addTag('Platform Admin')
+    .addTag('Procurement')
+    .addTag('User & Access')
+    .addTag('Workflow & Approval')
     .build();
 
   const document_http = SwaggerModule.createDocument(
