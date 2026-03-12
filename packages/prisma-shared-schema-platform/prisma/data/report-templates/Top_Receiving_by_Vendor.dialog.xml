@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog>
+  <field name="textdate1" type="date" label="From Date" />
+  <field name="textdate2" type="date" label="To Date" />
+  <field name="ComboBox1" type="select" label="Top Ranking">
+    <option value="10" selected="true">10</option>
+    <option value="20">20</option>
+    <option value="30">30</option>
+    <option value="40">40</option>
+    <option value="50">50</option>
+    <option value="60">60</option>
+    <option value="70">70</option>
+    <option value="80">80</option>
+    <option value="90">90</option>
+    <option value="100">100</option>
+  </field>
+</dialog>

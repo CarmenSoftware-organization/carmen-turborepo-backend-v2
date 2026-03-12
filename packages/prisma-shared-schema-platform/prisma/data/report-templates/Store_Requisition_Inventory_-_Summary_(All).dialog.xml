@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog>
+  <field name="textdate1" type="date" label="Issue Date From" />
+  <field name="textdate2" type="date" label="Issue Date To" />
+  <field name="ComboBox1" type="select" label="Issue From">
+    <option value="1AG01 : Store General" selected="true">1AG01 : Store General</option>
+    <option value="1AG02 : Store Printing and Stationary">1AG02 : Store Printing and Stationary</option>
+    <option value="1BV01 : Store Beverage">1BV01 : Store Beverage</option>
+    <option value="1EN01 : Store-EN Tool">1EN01 : Store-EN Tool</option>
+    <option value="1FB01 : RPD-Store The Café">1FB01 : RPD-Store The Café</option>
+    <option value="1FB02 : RPD-Store Bake &amp; Bev">1FB02 : RPD-Store Bake &amp; Bev</option>
+    <option value="1FB03 : RPD-Store Pool Deck">1FB03 : RPD-Store Pool Deck</option>
+    <option value="1FB04 : DPR-Store Dalah">1FB04 : DPR-Store Dalah</option>
+    <option value="1FB05 : DPR-Store Deluxe Pool">1FB05 : DPR-Store Deluxe Pool</option>
+    <option value="1FB06 : DPR-Store Garden Pool">1FB06 : DPR-Store Garden Pool</option>
+    <option value="1FB07 : DPP-Store Phuket Café">1FB07 : DPP-Store Phuket Café</option>
+    <option value="1FB08 : DPP-Store D Boulangerie">1FB08 : DPP-Store D Boulangerie</option>
+    <option value="1FB09 : DPP-Store Terrace Bar&amp;Bistro">1FB09 : DPP-Store Terrace Bar&amp;Bistro</option>
+    <option value="1FB10 : DPP-Store Banquet">1FB10 : DPP-Store Banquet</option>
+    <option value="1FB11 : DPR-Store Banquet">1FB11 : DPR-Store Banquet</option>
+    <option value="1FB12 : RPD-Store Banquet">1FB12 : RPD-Store Banquet</option>
+    <option value="1FB13 : Store DPR Coffee Works">1FB13 : Store DPR Coffee Works</option>
+    <option value="1FD01 : Store Food">1FD01 : Store Food</option>
+    <option value="1SP01 : Store Spa">1SP01 : Store Spa</option>
+    <option value="1WC01 : Store Wine Consignment">1WC01 : Store Wine Consignment</option>
+  </field>
+  <field name="ComboBox3" type="select" label="Request To">
+    <option value="1AG01 : Store General" selected="true">1AG01 : Store General</option>
+    <option value="1AG02 : Store Printing and Stationary">1AG02 : Store Printing and Stationary</option>
+    <option value="1BV01 : Store Beverage">1BV01 : Store Beverage</option>
+    <option value="1EN01 : Store-EN Tool">1EN01 : Store-EN Tool</option>
+    <option value="1FB01 : RPD-Store The Café">1FB01 : RPD-Store The Café</option>
+    <option value="1FB02 : RPD-Store Bake &amp; Bev">1FB02 : RPD-Store Bake &amp; Bev</option>
+    <option value="1FB03 : RPD-Store Pool Deck">1FB03 : RPD-Store Pool Deck</option>
+    <option value="1FB04 : DPR-Store Dalah">1FB04 : DPR-Store Dalah</option>
+    <option value="1FB05 : DPR-Store Deluxe Pool">1FB05 : DPR-Store Deluxe Pool</option>
+    <option value="1FB06 : DPR-Store Garden Pool">1FB06 : DPR-Store Garden Pool</option>
+    <option value="1FB07 : DPP-Store Phuket Café">1FB07 : DPP-Store Phuket Café</option>
+    <option value="1FB08 : DPP-Store D Boulangerie">1FB08 : DPP-Store D Boulangerie</option>
+    <option value="1FB09 : DPP-Store Terrace Bar&amp;Bistro">1FB09 : DPP-Store Terrace Bar&amp;Bistro</option>
+    <option value="1FB10 : DPP-Store Banquet">1FB10 : DPP-Store Banquet</option>
+    <option value="1FB11 : DPR-Store Banquet">1FB11 : DPR-Store Banquet</option>
+    <option value="1FB12 : RPD-Store Banquet">1FB12 : RPD-Store Banquet</option>
+    <option value="1FB13 : Store DPR Coffee Works">1FB13 : Store DPR Coffee Works</option>
+    <option value="1FD01 : Store Food">1FD01 : Store Food</option>
+    <option value="1SP01 : Store Spa">1SP01 : Store Spa</option>
+    <option value="1WC01 : Store Wine Consignment">1WC01 : Store Wine Consignment</option>
+    <option value="2AC01 : Accounting">2AC01 : Accounting</option>
+    <option value="2AC02 : Expense Printing and Stationary">2AC02 : Expense Printing and Stationary</option>
+    <option value="2AG01 : Administrative &amp; General">2AG01 : Administrative &amp; General</option>
+    <option value="2EN01 : En-Contract Service">2EN01 : En-Contract Service</option>
+    <option value="2EN02 : EN-Buildings Contract">2EN02 : EN-Buildings Contract</option>
+    <option value="2EN03 : EN-Maintenance Curtains / Draperies">2EN03 : EN-Maintenance Curtains / Draperies</option>
+    <option value="2EN04 : EN-Maintenance Air Conditioning">2EN04 : EN-Maintenance Air Conditioning</option>
+    <option value="2EN05 : EN-Maintenance Kitchen Equipment">2EN05 : EN-Maintenance Kitchen Equipment</option>
+    <option value="2EN06 : EN-Maintenance Laundry Equipment">2EN06 : EN-Maintenance Laundry Equipment</option>
+    <option value="2EN07 : EN-Maintenance Electrical / Mech. Equipt.">2EN07 : EN-Maintenance Electrical / Mech. Equipt.</option>
+    <option value="2EN08 : EN-Maintenance Plumbing / Heating">2EN08 : EN-Maintenance Plumbing / Heating</option>
+    <option value="2EN09 : EN-Maintenance Elevators / Escalators">2EN09 : EN-Maintenance Elevators / Escalators</option>
+    <option value="2EN10 : EN-Maintenance Floor Covering">2EN10 : EN-Maintenance Floor Covering</option>
+    <option value="2EN11 : EN-Maintenance Grounds / Landscape">2EN11 : EN-Maintenance Grounds / Landscape</option>
+    <option value="2EN12 : EN-Maintenance Painting / Decoration">2EN12 : EN-Maintenance Painting / Decoration</option>
+    <option value="2EN13 : EN-Maintenance Furniture &amp; Fitting">2EN13 : EN-Maintenance Furniture &amp; Fitting</option>
+    <option value="2EN14 : EN-Maintenance Swimming Pool / Recreation">2EN14 : EN-Maintenance Swimming Pool / Recreation</option>
+    <option value="2EN15 : EN-Maintenance Vehicle">2EN15 : EN-Maintenance Vehicle</option>
+    <option value="2EN16 : EN-Maintenance Telephone">2EN16 : EN-Maintenance Telephone</option>
+    <option value="2EN17 : EN-Fire Safety">2EN17 : EN-Fire Safety</option>
+    <option value="2EN18 : EN-Pest Control">2EN18 : EN-Pest Control</option>
+    <option value="2EN19 : EN-Hygiene">2EN19 : EN-Hygiene</option>
+    <option value="2EN20 : EN-Uniforms">2EN20 : EN-Uniforms</option>
+    <option value="2EN21 : EN-Cleaning Supplies">2EN21 : EN-Cleaning Supplies</option>
+    <option value="2EN22 : EN-Engineering Supplies">2EN22 : EN-Engineering Supplies</option>
+    <option value="2EN23 : EN-Bulbs &amp; Lighting Equipment">2EN23 : EN-Bulbs &amp; Lighting Equipment</option>
+    <option value="2EN24 : EN-Printing &amp; Stationery">2EN24 : EN-Printing &amp; Stationery</option>
+    <option value="2EN25 : EN-Telephone, Postage &amp; Cable">2EN25 : EN-Telephone, Postage &amp; Cable</option>
+    <option value="2EN26 : EN-Courier">2EN26 : EN-Courier</option>
+    <option value="2EN27 : EN-Training">2EN27 : EN-Training</option>
+    <option value="2EN28 : EN-Travelling Expenses">2EN28 : EN-Travelling Expenses</option>
+    <option value="2EN29 : EN-Waste Removal">2EN29 : EN-Waste Removal</option>
+    <option value="2EN30 : EN-Miscellaneous">2EN30 : EN-Miscellaneous</option>
+    <option value="2EN31 : EN-IT Maintenance Contract Hardware">2EN31 : EN-IT Maintenance Contract Hardware</option>
+    <option value="2EN32 : EN-IT Maintenance Contract Software">2EN32 : EN-IT Maintenance Contract Software</option>
+    <option value="2EN33 : EN-IT Maintenance Communication Cost contract software">2EN33 : EN-IT Maintenance Communication Cost contract software</option>
+    <option value="2EN34 : EN-IT Maintenance Costs">2EN34 : EN-IT Maintenance Costs</option>
+    <option value="2FB01 : Main Kitchen - ABF">2FB01 : Main Kitchen - ABF</option>
+    <option value="2FB02 : Main Kitchen - A la Carte">2FB02 : Main Kitchen - A la Carte</option>
+    <option value="2FB03 : Room Service">2FB03 : Room Service</option>
+    <option value="2FB04 : DPP-Banquet">2FB04 : DPP-Banquet</option>
+    <option value="2FB05 : RPD-The Café Bar">2FB05 : RPD-The Café Bar</option>
+    <option value="2FB06 : RPD-Bake &amp; Bev Bar">2FB06 : RPD-Bake &amp; Bev Bar</option>
+    <option value="2FB07 : RPD-Pool Deck Bar">2FB07 : RPD-Pool Deck Bar</option>
+    <option value="2FB08 : DPR-Dalah Bar">2FB08 : DPR-Dalah Bar</option>
+    <option value="2FB09 : DPR-Deluxe Pool Bar">2FB09 : DPR-Deluxe Pool Bar</option>
+    <option value="2FB10 : DPR-Garden Pool Bar">2FB10 : DPR-Garden Pool Bar</option>
+    <option value="2FB11 : DPP-Phuket Café Bar">2FB11 : DPP-Phuket Café Bar</option>
+    <option value="2FB12 : DPP-D Boulangerie Bar">2FB12 : DPP-D Boulangerie Bar</option>
+    <option value="2FB13 : DPP-Terrace Bar&amp;Bistro">2FB13 : DPP-Terrace Bar&amp;Bistro</option>
+    <option value="2FB14 : Bakery">2FB14 : Bakery</option>
+    <option value="2FB15 : Fitness Center">2FB15 : Fitness Center</option>
+    <option value="2FB16 : DPR-Banquet">2FB16 : DPR-Banquet</option>
+    <option value="2FB17 : RPD-Banquet">2FB17 : RPD-Banquet</option>
+    <option value="2FB18 : DPR Coffee Corner">2FB18 : DPR Coffee Corner</option>
+    <option value="2FB19 : DPP-Delivery/Street Food">2FB19 : DPP-Delivery/Street Food</option>
+    <option value="2FO01 : Front Office">2FO01 : Front Office</option>
+    <option value="2HK01 : Housekeeping">2HK01 : Housekeeping</option>
+    <option value="2HK02 : Housekeeping Cleaning">2HK02 : Housekeeping Cleaning</option>
+    <option value="2HR01 : Human Resources">2HR01 : Human Resources</option>
+    <option value="2HR02 : Cluster Human Resources">2HR02 : Cluster Human Resources</option>
+    <option value="2HR03 : Staff Canteen">2HR03 : Staff Canteen</option>
+    <option value="2MK01 : Marketing">2MK01 : Marketing</option>
+    <option value="2SL01 : Sales">2SL01 : Sales</option>
+    <option value="2SP01 : OS Hotel - Expense">2SP01 : OS Hotel - Expense</option>
+    <option value="2SP02 : OS Hotel - Cost of sales">2SP02 : OS Hotel - Cost of sales</option>
+    <option value="2SP03 : OSP - Expense">2SP03 : OSP - Expense</option>
+    <option value="2SP04 : OSP - Cost of sales">2SP04 : OSP - Cost of sales</option>
+    <option value="3FA01 : Fixed Asset / S.O.E">3FA01 : Fixed Asset / S.O.E</option>
+    <option value="ZZZZZ : All Location Select">ZZZZZ : All Location Select</option>
+  </field>
+</dialog>

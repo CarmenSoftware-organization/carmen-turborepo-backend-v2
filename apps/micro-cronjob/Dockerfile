@@ -14,16 +14,24 @@ COPY bun.lock .
 COPY tsconfig.json .
 COPY turbo.json .
 
-# Copy all packages
+# Copy packages and this app only
 COPY packages ./packages
-
-# Copy app
 COPY apps/micro-cronjob ./apps/micro-cronjob
 
-# Install dependencies (turbo postinstall generates Prisma clients)
-RUN bun install
+# Remove root postinstall script to prevent premature turbo build:package during install
+# (prisma-types-generator has a known bug with @default("") fields)
+RUN node -e "const p=require('./package.json'); delete p.scripts.postinstall; require('fs').writeFileSync('./package.json', JSON.stringify(p, null, 2))"
 
+# Install dependencies (|| true tolerates bun workspace hoisting warnings for non-critical packages)
+RUN bun install || true
+
+# Generate Prisma clients and build shared packages
+RUN bun run db:generate && bun run build:package
+
+# Fix broken bun workspace symlinks: rebuild local node_modules with npm
+# (bun build bundler can't follow bun's .bun cache symlinks)
 WORKDIR /app/apps/micro-cronjob
+RUN rm -rf node_modules && npm install --legacy-peer-deps
 RUN npm run build
 
 FROM node:22-bookworm-slim AS runner
@@ -52,7 +60,7 @@ COPY --from=builder /app/apps/micro-cronjob/prisma ./apps/micro-cronjob/prisma
 
 # Install production dependencies
 ENV NODE_ENV=production
-RUN bun install --no-save --ignore-scripts
+RUN bun install --no-save --ignore-scripts || true
 
 
 WORKDIR /app/apps/micro-cronjob

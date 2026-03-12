@@ -1,0 +1,514 @@
+[
+  {
+    "id": "a658e4e4-008b-41db-b1e8-4ae49274e766",
+    "name": "End Of Month Balanced",
+    "description": "End Of Month Balanced",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "06f1be2d-a0ed-485d-84f9-d831a696a10b",
+    "name": "EOP Adjustment Report",
+    "description": "EOP Adjustment Report",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "a05618b3-c6d6-4035-8569-7b8eeb0a3bfa",
+    "name": "Inventory Aging Detailed",
+    "description": "Inventory Aging Detailed",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "b8d1d957-6385-4ec1-963d-bd3c9a61c9bc",
+    "name": "Inventory Aging Summary",
+    "description": "Inventory Aging Summary",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "f367c872-114b-4a69-8814-623c71a4dacb",
+    "name": "Inventory Balance",
+    "description": "Inventory Balance",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "d30d2442-3dcf-4ee4-87c6-1cac07c2f019",
+    "name": "Inventory Balance Summary by Category",
+    "description": "Inventory Balance Summary by Category",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "af2e0f81-7e15-401a-a7c3-1bbde555d3cd",
+    "name": "Inventory Balance Summary by Item",
+    "description": "Inventory Balance Summary by Item",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "5b2b5dce-732c-4214-92aa-5e1beec1c14f",
+    "name": "Inventory By ExpiryDate",
+    "description": "Inventory By ExpiryDate",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "b82281df-4210-4a41-8001-8235a64352f2",
+    "name": "Inventory Movement Detailed By Product",
+    "description": "Inventory Movement Detailed By Product",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "21892d11-10a9-4c72-86df-14f6ace1de3f",
+    "name": "Inventory Movement Summary By Location",
+    "description": "Inventory Movement Summary By Location",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "04960af7-a762-423d-9b76-34e0a518ff80",
+    "name": "Issue Detail",
+    "description": "Issue Detail",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "81616496-5eda-420a-aadb-9d15820fa24b",
+    "name": "Physical Count Qty Difference Report",
+    "description": "Physical Count Qty Difference Report",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "2e41ccdd-3698-4a6b-a1b5-fd75451b3bd8",
+    "name": "Slow Moving Report",
+    "description": "Slow Moving Report",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "3100624e-9bab-4711-9615-ad54eda99253",
+    "name": "Stock Card Detailed",
+    "description": "Stock Card Detailed",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "f59fa751-f97e-4fdb-9a70-b693390ba574",
+    "name": "Stock Card Summary",
+    "description": "Stock Card Summary",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "b005ac29-9452-4fa9-96e6-bdc57ab30f62",
+    "name": "Stock In Detail",
+    "description": "Stock In Detail",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "25fe9b00-c57c-49e9-9ec6-1640972c6122",
+    "name": "Stock Out Detail",
+    "description": "Stock Out Detail",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "27881354-0152-44d2-b932-571f62ce3cfb",
+    "name": "Store Requisition By Request Store Is Void",
+    "description": "Store Requisition By Request Store Is Void",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "8c157e01-a8bb-431a-9b4c-ffeacaf36194",
+    "name": "Store Requisition By Request Store On Daily Summary Void",
+    "description": "Store Requisition By Request Store On Daily Summary Void",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "b150709a-5931-4525-8d3c-c36bd6a7b067",
+    "name": "Store Requisition By Request Store On Summary",
+    "description": "Store Requisition By Request Store On Summary",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "6b8c111d-aba1-4016-ad9f-44c1a113d56b",
+    "name": "Store Requisition By Request Store On Summary (Show Void Only)",
+    "description": "Store Requisition By Request Store On Summary (Show Void Only)",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "0f036054-4dae-402b-acfb-d24a19fee4db",
+    "name": "Store Requisition Detail",
+    "description": "Store Requisition Detail",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "e00d75c4-13eb-430a-b472-21f8df4af441",
+    "name": "Store Requisition Details – Issue from any/some location",
+    "description": "Store Requisition Details – Issue from any/some location",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "a72a12be-af88-4415-9257-e01816e6f618",
+    "name": "Store Requisition Details – Request to any/some location",
+    "description": "Store Requisition Details – Request to any/some location",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "7a26d50c-4426-4fa9-bf30-c5a92be3ec7c",
+    "name": "Store Requisition Inventory - Summary (All)",
+    "description": "Store Requisition Inventory - Summary (All)",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "727b8031-006e-4f0e-b0d1-a14dbf7aa74f",
+    "name": "Store Requisition Inventory - Summary (Type Shipment)",
+    "description": "Store Requisition Inventory - Summary (Type Shipment)",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "54d623bd-55c0-492e-89ed-68c203697707",
+    "name": "Store Requisition Inventory - Summary (Type Transfer)",
+    "description": "Store Requisition Inventory - Summary (Type Transfer)",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "9e1ff4fe-83bc-454f-8cf7-11abb53266e5",
+    "name": "Store Requisition Summary – Issue from any/some location",
+    "description": "Store Requisition Summary – Issue from any/some location",
+    "report_group": "IN",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "450bad1d-279d-45f2-9019-71a987180f80",
+    "name": "Project Job Function",
+    "description": "Project Job Function",
+    "report_group": "OT",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "2474ac63-da24-468f-859e-a0c5b1b6619d",
+    "name": "Vat Report",
+    "description": "Vat Report",
+    "report_group": "OT",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "baa73273-e365-415a-99eb-5fb94a401e12",
+    "name": "Credit Note Detail",
+    "description": "Credit Note Detail",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "3ca46586-6310-41cb-aea5-7ff5b79a6c29",
+    "name": "Deviation by Item",
+    "description": "Deviation by Item",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "6150d931-ea30-4ed0-9597-382183429035",
+    "name": "Extra Cost Summary By Type",
+    "description": "Extra Cost Summary By Type",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "fab73a62-f16f-4696-86d7-8ff0ef9e1e7a",
+    "name": "Item Expiry",
+    "description": "Item Expiry",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "5e08a69f-e357-4312-a361-f5e4637ce2c3",
+    "name": "Order Pending By Item report",
+    "description": "Order Pending By Item report",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "522ec44d-d627-4ef8-99c7-f444b4b8e125",
+    "name": "Order Pending By Vendor Report",
+    "description": "Order Pending By Vendor Report",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "c9aab287-c1a9-4575-b0c4-d20cfa56c887",
+    "name": "PO Log Book Report",
+    "description": "PO Log Book Report",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "053ed9a8-1974-41a0-b66f-39210f459287",
+    "name": "Pricelist Comparison by Vendor",
+    "description": "Pricelist Comparison by Vendor",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "5d2b9923-cdb9-4f81-9d5c-58bbab6c1ead",
+    "name": "Price List Detail by Product Report",
+    "description": "Price List Detail by Product Report",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "5a2a9e4b-ff1f-43c7-86b2-4da10374c18f",
+    "name": "Product Category",
+    "description": "Product Category",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "a2739b0d-d215-488a-80f1-eedd4ce7c8e0",
+    "name": "Product List",
+    "description": "Product List",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "35b89b27-37d4-424a-9861-e7ac0c3f3df3",
+    "name": "Purchase Analysis by Item Report",
+    "description": "Purchase Analysis by Item Report",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "b24cd89f-cc4e-4ce0-aa75-0439a915df3a",
+    "name": "Purchase Order By Department",
+    "description": "Purchase Order By Department",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "222976ef-ed1c-4c6c-88ca-0a314c552b18",
+    "name": "Purchase Order Detail by Date",
+    "description": "Purchase Order Detail by Date",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "89d611e4-2047-45e8-a528-a635f398f232",
+    "name": "Purchase Request by Department",
+    "description": "Purchase Request by Department",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "b0aaa575-f1b7-42d7-8aaf-b12041bb58b5",
+    "name": "Receiving Audit Report - (Committed Date)",
+    "description": "Receiving Audit Report - (Committed Date)",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "cb4b8824-22f9-4d0e-893e-9df9485decfc",
+    "name": "Receiving Daily Detailed Summary Report by Location Type",
+    "description": "Receiving Daily Detailed Summary Report by Location Type",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "0e928d7d-bf9a-4ca3-bf90-abdc1ae9cfbd",
+    "name": "Receiving Daily Summary by Location and Category",
+    "description": "Receiving Daily Summary by Location and Category",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "e0182593-0fba-443e-b330-05d0e2f8c82d",
+    "name": "Receiving Detail",
+    "description": "Receiving Detail",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "bf9e6b51-9e6d-4f2e-aff9-32f232d518a4",
+    "name": "Receiving Detail with Currency",
+    "description": "Receiving Detail with Currency",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "adf82e38-979a-416b-9ebf-38b45125fcc7",
+    "name": "Receiving Monthly Summary by Location and Category",
+    "description": "Receiving Monthly Summary by Location and Category",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "ffec68a6-0a2c-4911-aa3b-7b7ac5fb7cce",
+    "name": "Receiving Monthly Summary by Receving Date and Category",
+    "description": "Receiving Monthly Summary by Receving Date and Category",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "5dfea185-8f62-40e1-a548-2b5eae52c360",
+    "name": "Receiving Summary",
+    "description": "Receiving Summary",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "93c2cc26-49a4-4089-9977-b1cdabe0088e",
+    "name": "Receiving Summary with Currency",
+    "description": "Receiving Summary with Currency",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "36e64763-6fd7-4381-9570-18d393e488b0",
+    "name": "Reject Purchase Request Report Report",
+    "description": "Reject Purchase Request Report Report",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "2d8ca1f9-00a6-4ff3-8cdc-df9eb7e748c5",
+    "name": "Store Location",
+    "description": "Store Location",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "d2c0fc88-b8ad-49fb-b352-9ede5f659213",
+    "name": "Summary Cost Receiving Report",
+    "description": "Summary Cost Receiving Report",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "263091c1-062b-4c02-acd4-f2b21a663d85",
+    "name": "Top Receiving by Product",
+    "description": "Top Receiving by Product",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "50948f19-04ed-4a4e-8083-8ad6d4cb1bb5",
+    "name": "Top Receiving by Vendor",
+    "description": "Top Receiving by Vendor",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "70e47df4-dfcd-4ca4-9c28-0eaea8ecc4f0",
+    "name": "Total Purchase by Vendor Report",
+    "description": "Total Purchase by Vendor Report",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "bb7409b2-1537-4bc3-9a38-4a81a7ee5e1e",
+    "name": "Transaction Summary",
+    "description": "Transaction Summary",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "3bd20a53-31c2-4a3a-9725-8b921d53011a",
+    "name": "Vendor by Purchase Order",
+    "description": "Vendor by Purchase Order",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "900307a7-076b-4596-84cd-59aa8bbb3ae0",
+    "name": "Vendor Detailed",
+    "description": "Vendor Detailed",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  },
+  {
+    "id": "11b5f8c2-9fc0-42ee-a5e6-24f4885329d5",
+    "name": "Vendor List",
+    "description": "Vendor List",
+    "report_group": "PC",
+    "is_standard": true,
+    "is_active": true
+  }
+]

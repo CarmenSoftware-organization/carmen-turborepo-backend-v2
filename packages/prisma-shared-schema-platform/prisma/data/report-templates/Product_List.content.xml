@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp">
+  <Dictionary>
+    <TableDataSource Name="ADMIN_Bu" ReferenceName="ADMIN_Bu.ADMIN_Bu" DataType="System.Int32" Enabled="true">
+      <Column Name="Name" DataType="System.String"/>
+    </TableDataSource>
+    <TableDataSource Name="Data" ReferenceName="Data.Data" DataType="System.Int32" Enabled="true">
+      <Column Name="IUName" DataType="System.String"/>
+      <Column Name="OUName" DataType="System.String"/>
+      <Column Name="TaxTypeName" DataType="System.String"/>
+      <Column Name="TaxAccCode" DataType="System.String"/>
+      <Column Name="ItemGroupName" DataType="System.String"/>
+      <Column Name="ProductCode" DataType="System.String"/>
+      <Column Name="SubCategoryName" DataType="System.String"/>
+      <Column Name="TaxType" DataType="System.String"/>
+      <Column Name="TaxRate" DataType="System.String"/>
+      <Column Name="LastCost" DataType="System.String"/>
+      <Column Name="ProductDesc1" DataType="System.String"/>
+      <Column Name="ProductDesc2" DataType="System.String"/>
+      <Column Name="CategoryName" DataType="System.String"/>
+    </TableDataSource>
+    <Total Name="Total" Expression="0" Evaluator="Data1"/>
+    <Total Name="Date" Expression="0" Evaluator="Data1"/>
+  </Dictionary>
+
+    <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" FirstPageSource="15" OtherPagesSource="15" Guides="75.6,321.3,585.9,699.3,774.9,850.5,922.32,979.02">
+      <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="109.31">
+        <PictureObject Name="Picture2" Width="151.2" Height="75.6" DataColumn="ADMIN_Bu.BuLogo"/>
+        <TextObject Name="Text14" Left="433.76" Top="14.17" Width="217.35" Height="37.8" Text="Product List" HorzAlign="Center" VertAlign="Center" Font="Arial, 14pt, style=Bold"/>
+        <TextObject Name="Text9" Top="90.41" Width="280.48" Height="18.9" Text="[ADMIN_Bu.Name]" AutoWidth="true" Font="Arial, 10pt, style=Bold"/>
+      </ReportTitleBand>
+      <PageHeaderBand Name="PageHeader1" Top="113.31" Width="1047.06"/>
+      <ColumnHeaderBand Name="ColumnHeader1" Top="117.31" Width="1047.06" Height="42.53" Border.Lines="Top, Bottom" Fill.Color="DarkGray" Guides="3.78">
+        <TextObject Name="Text2" Left="37.8" Top="4.73" Width="75.6" Height="18.9" Text="Code" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text3" Left="113.4" Top="4.73" Width="321.3" Height="18.9" Text="Description" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text5" Left="434.7" Top="4.73" Width="113.4" Height="18.9" Text="Category /" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text6" Left="661.5" Top="23.63" Width="75.6" Height="18.9" Text="Inventory&#13;&#10;" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text7" Left="737.1" Top="23.63" Width="75.6" Height="18.9" Text="Order" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text8" Left="969.57" Top="4.73" Width="75.6" Height="18.9" Text="Last Cost" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text28" Left="661.5" Top="4.73" Width="151.2" Height="18.9" Border.Lines="Bottom" Text="Unit" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text11" Left="812.7" Top="4.73" Width="94.5" Height="18.9" Border.Lines="Bottom" Text="Tax" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text26" Left="812.7" Top="23.63" Width="94.5" Height="18.9" Text="Account Code" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text12" Left="907.2" Top="4.73" Width="56.7" Height="18.9" Text="Active" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text35" Left="548.1" Top="4.73" Width="113.4" Height="18.9" Text="Item Group" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text37" Left="434.7" Top="23.63" Width="113.4" Height="18.9" Text="Sub-Category" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text38" Top="4.73" Width="37.8" Height="18.9" Text="#" Font="Tahoma, 8pt, style=Bold"/>
+      </ColumnHeaderBand>
+      <DataBand Name="Data1" Top="163.84" Width="1047.06" Height="22.68" Border.Lines="Bottom" Border.Style="Dot" CanGrow="true" CanShrink="true" BeforePrintEvent="Data1_BeforePrint" Guides="3.78,22.68">
+        <TextObject Name="Text1" Left="37.8" Top="3.78" Width="75.6" Height="18.9" Text="[Data.ProductCode]" WordWrap="false" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text13" Left="113.4" Top="3.78" Width="321.3" Height="18.9" CanGrow="true" Text="[Data.ProductDesc1]&#13;&#10;[IIf([Data.ProductDesc2]==&quot;&quot;,&quot;&quot;,&quot;*&quot;)][Data.ProductDesc2]" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text18" Left="434.7" Top="3.78" Width="113.4" Height="18.9" CanGrow="true" Text="[Data.CategoryName] /&#13;&#10;[Data.SubCategoryName]" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text30" Left="661.5" Top="3.78" Width="75.6" Height="18.9" CanGrow="true" Text="[Data.IUName]" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text31" Left="737.1" Top="3.78" Width="75.6" Height="18.9" CanGrow="true" Text="[Data.OUName]" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text32" Left="812.7" Top="3.78" Width="94.5" Height="18.9" CanGrow="true" Text="[Data.TaxTypeName] [IIf([Data.TaxType]==&quot;N&quot;,&quot;&quot;,[Data.TaxRate] + &quot;%&quot;)]&#13;&#10;[Data.TaxAccCode]" Font="Tahoma, 8pt">
+          <Formats>
+            <GeneralFormat/>
+            <NumberFormat/>
+            <GeneralFormat/>
+          </Formats>
+        </TextObject>
+        <CheckBoxObject Name="CheckBox1" Left="926.1" Top="3.78" Width="18.9" Height="18.9" UncheckedSymbol="Cross" DataColumn="Data.IsActive"/>
+        <TextObject Name="Text33" Left="969.57" Top="3.78" Width="75.6" Height="18.9" Text="[Data.LastCost]" Format="Number" Format.UseLocale="true" HorzAlign="Right" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text36" Left="548.1" Top="3.78" Width="113.4" Height="18.9" CanGrow="true" Text="[Data.ItemGroupName]" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text10" Top="3.78" Width="37.8" Height="18.9" Text="[Row#]" Font="Tahoma, 8pt"/>
+      </DataBand>
+      <ReportSummaryBand Name="ReportSummary1" Top="190.52" Width="1047.06" Height="28.35">
+        <TextObject Name="Text4" Top="9.45" Width="434.7" Height="18.9" Text="[Total] item(s)" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" WordWrap="false" Font="Tahoma, 8pt"/>
+      </ReportSummaryBand>
+      <PageFooterBand Name="PageFooter1" Top="222.87" Width="1047.06" Height="39.69" Exportable="false" Border.Lines="Top">
+        <TextObject Name="Text24" Top="9.45" Width="141.75" Height="30.24" Text="Report Summary&#13;&#10;Print On [Date]" Format="Date" Format.Format="d" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text25" Left="872.16" Top="8.62" Width="170.1" Height="25.19" Text="Page[Page#] Of [TotalPages#]" HorzAlign="Right" Font="Arial, 8pt"/>
+      </PageFooterBand>
+    </ReportPage>
+  
+</Report>

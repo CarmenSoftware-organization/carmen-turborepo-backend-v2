@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog>
+  <field name="TextDate1" type="date" label="Date From" />
+  <field name="TextDate2" type="date" label="Date To" />
+  <field name="cb_FVendor" type="select" label="Vendor From">
+    <option value="ALL" selected="true">ALL</option>
+    <option value="A001 : เอ-วัน ฟู้ดโปรดักส์ บจก.">A001 : เอ-วัน ฟู้ดโปรดักส์ บจก.</option>
+    <option value="B002 : บางกอกเบียร์ แอนด์ เบเวอร์เรจ บจก.">B002 : บางกอกเบียร์ แอนด์ เบเวอร์เรจ บจก.</option>
+    <option value="B005 : เบทาโกร เกษตรอุตสาหกรรม บจก.">B005 : เบทาโกร เกษตรอุตสาหกรรม บจก.</option>
+    <option value="C007 : ซีพี แอ็กซ์ตร้า บมจ.">C007 : ซีพี แอ็กซ์ตร้า บมจ.</option>
+    <option value="C021 : ไซเบอร์ ซิสเต็ม เซอร์วิส บจก.">C021 : ไซเบอร์ ซิสเต็ม เซอร์วิส บจก.</option>
+    <option value="D007 : ดีพลาสติก แอนด์ เบเกอรี่ ซัพพลาย บจก.">D007 : ดีพลาสติก แอนด์ เบเกอรี่ ซัพพลาย บจก.</option>
+    <option value="D008 : ดัชมิลล์ บจก.">D008 : ดัชมิลล์ บจก.</option>
+    <option value="F003 : ฝรั่งฟู้ด พาราไดส์ บจก.">F003 : ฝรั่งฟู้ด พาราไดส์ บจก.</option>
+    <option value="J003 : จาโกต้า บราเดอร์ส เทรดดิ้ง บจก.">J003 : จาโกต้า บราเดอร์ส เทรดดิ้ง บจก.</option>
+    <option value="P014 : ภูเก็ตสมายฟรุ๊ตส์ บจก.">P014 : ภูเก็ตสมายฟรุ๊ตส์ บจก.</option>
+    <option value="P020 : ป่าตอง มาร์ท บจก.">P020 : ป่าตอง มาร์ท บจก.</option>
+    <option value="P022 : ภูเก็ตอมรภัณฑ์ บจก.">P022 : ภูเก็ตอมรภัณฑ์ บจก.</option>
+    <option value="P076 : ภูเก็ตสีวลี บจก.">P076 : ภูเก็ตสีวลี บจก.</option>
+    <option value="S011 : ซุปเปอร์ชีป บจก.">S011 : ซุปเปอร์ชีป บจก.</option>
+    <option value="T026 : ที.พี.โอ.ภูเก็ต การ์ดโฟน บจก.">T026 : ที.พี.โอ.ภูเก็ต การ์ดโฟน บจก.</option>
+    <option value="V001 : วี.ดับบลิว.เอฟ หจก.">V001 : วี.ดับบลิว.เอฟ หจก.</option>
+  </field>
+  <field name="cb_TVendor" type="select" label="Vendor To">
+    <option value="ALL" selected="true">ALL</option>
+    <option value="A001 : เอ-วัน ฟู้ดโปรดักส์ บจก.">A001 : เอ-วัน ฟู้ดโปรดักส์ บจก.</option>
+    <option value="B002 : บางกอกเบียร์ แอนด์ เบเวอร์เรจ บจก.">B002 : บางกอกเบียร์ แอนด์ เบเวอร์เรจ บจก.</option>
+    <option value="B005 : เบทาโกร เกษตรอุตสาหกรรม บจก.">B005 : เบทาโกร เกษตรอุตสาหกรรม บจก.</option>
+    <option value="C007 : ซีพี แอ็กซ์ตร้า บมจ.">C007 : ซีพี แอ็กซ์ตร้า บมจ.</option>
+    <option value="C021 : ไซเบอร์ ซิสเต็ม เซอร์วิส บจก.">C021 : ไซเบอร์ ซิสเต็ม เซอร์วิส บจก.</option>
+    <option value="D007 : ดีพลาสติก แอนด์ เบเกอรี่ ซัพพลาย บจก.">D007 : ดีพลาสติก แอนด์ เบเกอรี่ ซัพพลาย บจก.</option>
+    <option value="D008 : ดัชมิลล์ บจก.">D008 : ดัชมิลล์ บจก.</option>
+    <option value="F003 : ฝรั่งฟู้ด พาราไดส์ บจก.">F003 : ฝรั่งฟู้ด พาราไดส์ บจก.</option>
+    <option value="J003 : จาโกต้า บราเดอร์ส เทรดดิ้ง บจก.">J003 : จาโกต้า บราเดอร์ส เทรดดิ้ง บจก.</option>
+    <option value="P014 : ภูเก็ตสมายฟรุ๊ตส์ บจก.">P014 : ภูเก็ตสมายฟรุ๊ตส์ บจก.</option>
+    <option value="P020 : ป่าตอง มาร์ท บจก.">P020 : ป่าตอง มาร์ท บจก.</option>
+    <option value="P022 : ภูเก็ตอมรภัณฑ์ บจก.">P022 : ภูเก็ตอมรภัณฑ์ บจก.</option>
+    <option value="P076 : ภูเก็ตสีวลี บจก.">P076 : ภูเก็ตสีวลี บจก.</option>
+    <option value="S011 : ซุปเปอร์ชีป บจก.">S011 : ซุปเปอร์ชีป บจก.</option>
+    <option value="T026 : ที.พี.โอ.ภูเก็ต การ์ดโฟน บจก.">T026 : ที.พี.โอ.ภูเก็ต การ์ดโฟน บจก.</option>
+    <option value="V001 : วี.ดับบลิว.เอฟ หจก.">V001 : วี.ดับบลิว.เอฟ หจก.</option>
+  </field>
+  <field name="cb_DocStatus" type="select" label="Status">
+    <option value="ALL" selected="true">ALL</option>
+    <option value="Committed">Committed</option>
+    <option value="Saved">Saved</option>
+  </field>
+  <field name="cb_OrderBy" type="select" label="Order By">
+    <option value="CN Date" selected="true">CN Date</option>
+    <option value="CN No.">CN No.</option>
+  </field>
+</dialog>

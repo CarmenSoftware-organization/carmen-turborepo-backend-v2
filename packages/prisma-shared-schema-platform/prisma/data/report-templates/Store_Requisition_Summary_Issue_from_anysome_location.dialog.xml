@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog>
+  <field name="TextDate1" type="date" label="From" />
+  <field name="TextDate2" type="date" label="To" />
+  <field name="ComboBox3" type="select" label="Movement From">
+    <option value="ADJIN : Adjust In" selected="true">ADJIN : Adjust In</option>
+    <option value="ADJO : Adjust Out">ADJO : Adjust Out</option>
+    <option value="BFO : B/F Opening">BFO : B/F Opening</option>
+    <option value="DMA : BREAKAGE / DAMAGE">DMA : BREAKAGE / DAMAGE</option>
+    <option value="LOST : LOST">LOST : LOST</option>
+    <option value="SALE : SALE">SALE : SALE</option>
+    <option value="SPO : SPOILED / EXPIRED">SPO : SPOILED / EXPIRED</option>
+    <option value="SR : Issue">SR : Issue</option>
+    <option value="TR : Transfer">TR : Transfer</option>
+  </field>
+  <field name="ComboBox4" type="select" label="Movement To">
+    <option value="ADJIN : Adjust In" selected="true">ADJIN : Adjust In</option>
+    <option value="ADJO : Adjust Out">ADJO : Adjust Out</option>
+    <option value="BFO : B/F Opening">BFO : B/F Opening</option>
+    <option value="DMA : BREAKAGE / DAMAGE">DMA : BREAKAGE / DAMAGE</option>
+    <option value="LOST : LOST">LOST : LOST</option>
+    <option value="SALE : SALE">SALE : SALE</option>
+    <option value="SPO : SPOILED / EXPIRED">SPO : SPOILED / EXPIRED</option>
+    <option value="SR : Issue">SR : Issue</option>
+    <option value="TR : Transfer">TR : Transfer</option>
+  </field>
+</dialog>

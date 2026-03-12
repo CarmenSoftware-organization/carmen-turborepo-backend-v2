@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp">
+  <Dictionary>
+    <TableDataSource Name="Data" ReferenceName="Data.Data" DataType="System.Int32" Enabled="true">
+      <Column Name="Price" DataType="System.String"/>
+      <Column Name="NetAmt" DataType="System.String"/>
+      <Column Name="CnNo" DataType="System.String"/>
+      <Column Name="VendorCode" DataType="System.String"/>
+      <Column Name="Description" DataType="System.String"/>
+      <Column Name="RecQty" DataType="System.String"/>
+      <Column Name="VendorName" DataType="System.String"/>
+      <Column Name="DocStatus" DataType="System.String"/>
+      <Column Name="DocDate" DataType="System.String"/>
+      <Column Name="ExRateAudit" DataType="System.String"/>
+      <Column Name="LocationName" DataType="System.String"/>
+      <Column Name="ProductDesc1" DataType="System.String"/>
+      <Column Name="RefNo" DataType="System.String"/>
+      <Column Name="CurrencyCode" DataType="System.String"/>
+      <Column Name="RecNo" DataType="System.String"/>
+      <Column Name="CnType" DataType="System.String"/>
+      <Column Name="UnitCode" DataType="System.String"/>
+      <Column Name="TaxAmt" DataType="System.String"/>
+      <Column Name="TotalAmt" DataType="System.String"/>
+      <Column Name="CnDate" DataType="System.String"/>
+      <Column Name="LocationCode" DataType="System.String"/>
+      <Column Name="ProductCode" DataType="System.String"/>
+    </TableDataSource>
+    <Total Name="Total_TaxAmt" Expression="0" Evaluator="Data1"/>
+    <Total Name="Total_TotalAmt" Expression="0" Evaluator="Data1"/>
+    <Total Name="Total_RecQty" Expression="0" Evaluator="Data1"/>
+    <Total Name="Sum_NetAmt" Expression="0" Evaluator="Data1"/>
+    <Total Name="Sum_TaxAmt" Expression="0" Evaluator="Data1"/>
+    <Total Name="Sum_TotalAmt" Expression="0" Evaluator="Data1"/>
+    <Total Name="Date" Expression="0" Evaluator="Data1"/>
+    <Total Name="Total_NetAmt" Expression="0" Evaluator="Data1"/>
+  </Dictionary>
+
+    <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9">
+      <PageHeaderBand Name="PageHeader1" Width="1047.06" Height="98.28">
+        <PictureObject Name="Picture1" Top="2" Width="132.3" Height="94.5" DataColumn="ADMIN_Bu.BuLogo"/>
+        <TextObject Name="Text3" Left="348.71" Top="39.69" Width="349.65" Height="18.9" Text="Credit Note Detail" HorzAlign="Center" Font="Tahoma, 14pt"/>
+      </PageHeaderBand>
+      <GroupHeaderBand Name="GroupHeader1" Top="102.28" Width="1047.06" Height="86.94" Border.Lines="Bottom" Border.Style="Dash" Fill.Color="LightGray" CanGrow="true" Condition="[Data.CnNo]" SortOrder="None">
+        <TextObject Name="Text4" Top="9.56" Width="94.5" Height="18.9" Text="CN No." Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text5" Top="28.46" Width="94.5" Height="18.9" Text="Date" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text6" Top="49.14" Width="94.5" Height="18.9" Text="Vendor" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text7" Top="68.04" Width="94.5" Height="18.9" Text="Description" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text8" Left="94.5" Top="9.45" Width="113.4" Height="18.9" Text="[Data.CnNo]" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text9" Left="94.5" Top="28.35" Width="113.4" Height="18.9" Text="[Data.CnDate]" Format="Date" Format.Format="d" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text10" Left="94.5" Top="49.14" Width="737.1" Height="18.9" Text="[Data.VendorCode] - [Data.VendorName]" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text11" Left="94.5" Top="68.04" Width="737.1" Height="18.9" CanGrow="true" Text="[Data.Description]" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text12" Left="850.5" Top="9.56" Width="94.5" Height="18.9" Text="Status" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text13" Left="850.5" Top="28.46" Width="94.5" Height="18.9" Text="Document Date" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text14" Left="850.5" Top="49.14" Width="94.5" Height="18.9" Text="Document No." Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text15" Left="850.5" Top="68.04" Width="94.5" Height="18.9" Text="Currency" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text16" Left="945" Top="9.45" Width="94.5" Height="18.9" CanGrow="true" Text="[Data.DocStatus]" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text17" Left="945" Top="28.35" Width="94.5" Height="18.9" Text="[Data.DocDate]" Format="Date" Format.Format="d" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text18" Left="945" Top="49.14" Width="94.5" Height="18.9" Text="[Data.RefNo]" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text19" Left="945" Top="68.04" Width="94.5" Height="18.9" Text="[Data.CurrencyCode] @[Data.ExRateAudit]" WordWrap="false" Font="Tahoma, 8pt"/>
+        <ChildBand Name="Child1" Top="193.22" Width="1047.06" Height="22.68">
+          <TextObject Name="Text20" Top="3.78" Width="94.5" Height="18.9" Text="Rec No." Font="Tahoma, 8pt, style=Bold"/>
+          <TextObject Name="Text21" Left="94.5" Top="3.78" Width="189" Height="18.9" Text="Location" Font="Tahoma, 8pt, style=Bold"/>
+          <TextObject Name="Text22" Left="283.5" Top="3.78" Width="245.7" Height="18.9" Text="Item" Font="Tahoma, 8pt, style=Bold"/>
+          <TextObject Name="Text23" Left="567" Top="3.78" Width="37.8" Height="18.9" Text="Type" Font="Tahoma, 8pt, style=Bold"/>
+          <TextObject Name="Text24" Left="529.2" Top="3.78" Width="37.8" Height="18.9" Text="Unit" Font="Tahoma, 8pt, style=Bold"/>
+          <TextObject Name="Text25" Left="604.8" Top="3.78" Width="75.6" Height="18.9" Text="Qty" Format="Number" Format.UseLocale="true" HorzAlign="Right" Font="Tahoma, 8pt, style=Bold"/>
+          <TextObject Name="Text26" Left="680.4" Top="3.78" Width="75.6" Height="18.9" Text="Price/Unit" Format="Number" Format.UseLocale="true" HorzAlign="Right" Font="Tahoma, 8pt, style=Bold"/>
+          <TextObject Name="Text27" Left="756" Top="3.78" Width="94.5" Height="18.9" Text="Net Amt" Format="Number" Format.UseLocale="true" HorzAlign="Right" Font="Tahoma, 8pt, style=Bold"/>
+          <TextObject Name="Text28" Left="850.5" Top="3.78" Width="94.5" Height="18.9" Text="Tax" Format="Number" Format.UseLocale="true" HorzAlign="Right" Font="Tahoma, 8pt, style=Bold"/>
+          <TextObject Name="Text29" Left="945" Top="3.78" Width="94.5" Height="18.9" Text="Total" Format="Number" Format.UseLocale="true" HorzAlign="Right" Font="Tahoma, 8pt, style=Bold"/>
+        </ChildBand>
+        <DataBand Name="Data1" Top="219.9" Width="1047.06" Height="20.79" CanGrow="true" BeforePrintEvent="Data1_BeforePrint">
+          <TextObject Name="Text30" Top="1.89" Width="94.5" Height="18.9" Text="[Data.RecNo]" WordWrap="false" Font="Tahoma, 8pt"/>
+          <TextObject Name="Text31" Left="94.5" Top="1.89" Width="189" Height="18.9" CanGrow="true" Text="[Data.LocationCode] - [Data.LocationName]" Font="Tahoma, 8pt"/>
+          <TextObject Name="Text32" Left="283.5" Top="1.89" Width="245.7" Height="18.9" CanGrow="true" Text="[Data.ProductCode] - [Data.ProductDesc1]" Font="Tahoma, 8pt"/>
+          <TextObject Name="Text33" Left="567" Top="1.89" Width="37.8" Height="18.9" Text="[Data.CnType]" HorzAlign="Center" WordWrap="false" Font="Tahoma, 8pt"/>
+          <TextObject Name="Text34" Left="529.2" Top="1.89" Width="37.8" Height="18.9" Text="[Data.UnitCode]" WordWrap="false" Font="Tahoma, 8pt"/>
+          <TextObject Name="Text35" Left="604.8" Top="1.89" Width="75.6" Height="18.9" Text="[Data.RecQty]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+          <TextObject Name="Text36" Left="680.4" Top="1.89" Width="75.6" Height="18.9" Text="[Data.Price]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+          <TextObject Name="Text37" Left="756" Top="1.89" Width="94.5" Height="18.9" Text="[Data.NetAmt]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+          <TextObject Name="Text38" Left="850.5" Top="1.89" Width="94.5" Height="18.9" Text="[Data.TaxAmt]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+          <TextObject Name="Text39" Left="945" Top="1.89" Width="94.5" Height="18.9" Text="[Data.TotalAmt]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+        </DataBand>
+        <GroupFooterBand Name="GroupFooter1" Top="244.69" Width="1047.06" Height="30.24" Border.Lines="Top" Border.Style="Dash">
+          <TextObject Name="Text40" Left="756" Top="3.78" Width="94.5" Height="18.9" Text="[Total_NetAmt]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+          <TextObject Name="Text41" Left="850.5" Top="3.78" Width="94.5" Height="18.9" Text="[Total_TaxAmt]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+          <TextObject Name="Text42" Left="945" Top="3.78" Width="94.5" Height="18.9" Text="[Total_TotalAmt]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+          <TextObject Name="Text43" Left="604.8" Top="3.78" Width="75.6" Height="18.9" Text="[Total_RecQty]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+          <TextObject Name="Text44" Left="283.5" Top="3.78" Width="245.7" Height="18.9" Text="Total" HorzAlign="Right" Font="Tahoma, 8pt, style=Bold"/>
+        </GroupFooterBand>
+      </GroupHeaderBand>
+      <ReportSummaryBand Name="ReportSummary1" Top="278.93" Width="1047.06" Height="37.8" Border.Lines="All">
+        <TextObject Name="Text45" Left="756" Width="94.5" Height="18.9" Text="Net Amt" Format="Number" Format.UseLocale="true" HorzAlign="Right" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text46" Left="850.5" Width="94.5" Height="18.9" Text="Tax" Format="Number" Format.UseLocale="true" HorzAlign="Right" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text47" Left="945" Width="94.5" Height="18.9" Text="Total" Format="Number" Format.UseLocale="true" HorzAlign="Right" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text48" Left="756" Top="18.9" Width="94.5" Height="18.9" Border.Lines="Top" Text="[Sum_NetAmt]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text49" Left="850.5" Top="18.9" Width="94.5" Height="18.9" Border.Lines="Top" Text="[Sum_TaxAmt]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text50" Left="945" Top="18.9" Width="94.5" Height="18.9" Border.Lines="Top" Text="[Sum_TotalAmt]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text51" Left="283.5" Top="18.9" Width="245.7" Height="18.9" Text="Grand Total" HorzAlign="Right" Font="Tahoma, 8pt, style=Bold"/>
+      </ReportSummaryBand>
+      <PageFooterBand Name="PageFooter1" Top="320.73" Width="1047.06" Height="37.8">
+        <TextObject Name="Text1" Top="3.78" Width="132.3" Height="18.9" Text="[Date]" WordWrap="false" Font="Tahoma, 8pt, style=Italic"/>
+        <TextObject Name="Text2" Left="926.1" Top="3.78" Width="113.4" Height="18.9" Text="[Page#]/[TotalPages#]" HorzAlign="Right" WordWrap="false" Font="Tahoma, 8pt"/>
+      </PageFooterBand>
+    </ReportPage>
+  
+</Report>

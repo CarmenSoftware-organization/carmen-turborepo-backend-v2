@@ -1,564 +1,1409 @@
 import { PrismaClient } from '@repo/prisma-shared-schema-platform';
-import { execSync } from 'child_process';
-import { writeFileSync, unlinkSync, readFileSync, existsSync } from 'fs';
-import { gunzipSync } from 'zlib';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const prisma_platform = new PrismaClient({
+const prisma = new PrismaClient({
   datasources: {
-    db: {
-      url: process.env.SYSTEM_DIRECT_URL,
-    },
+    db: { url: process.env.SYSTEM_DIRECT_URL },
   },
 });
 
-// ==================== Blueledgers Configuration ====================
+// ─── Helper: FastReport XML generator ────────────────────────────────────────
 
-const BLUELEDGERS_BASE_URL =
-  'https://dev.blueledgers.com/support/DeevanaPhuket/Blueledgers';
-
-const BL_USERNAME = 'support@carmen';
-const BL_PASSWORD = 'alpha2011';
-
-const COOKIE_FILE = '/tmp/bl_seed_cookies.txt';
-
-// ==================== Report Map: Blueledgers ID -> { name, report_group } ====================
-
-const REPORT_MAP: Record<string, { name: string; report_group: string }> = {
-  // === Procurement (PC) ===
-  '864B40AF-2202-4894-A7BE-E4CB8F2204F0': { name: 'Credit Note Detail', report_group: 'PC' },
-  'FB243B5E-FA57-4CA6-8EC1-A071910321DC': { name: 'Deviation by Item', report_group: 'PC' },
-  '8A5F1E34-C27C-4583-BF84-77347D40DEAF': { name: 'Extra Cost Summary By Type', report_group: 'PC' },
-  '877438AD-5818-405E-8C6A-CA069E80AAD8': { name: 'Item Expiry', report_group: 'PC' },
-  '585794F2-100B-453E-AA69-706B172062CE': { name: 'Order Pending By Item report', report_group: 'PC' },
-  'DB34256C-B9EB-4E4D-9FE8-9E80ABF8703C': { name: 'Order Pending By Vendor Report', report_group: 'PC' },
-  'F56D6233-EEEA-4EE9-9B19-98616461D5E9': { name: 'PO Log Book Report', report_group: 'PC' },
-  '265F1095-8053-4F27-8CC6-5FEF86259FC3': { name: 'Price List Detail by Product Report', report_group: 'PC' },
-  '21CD4DEA-E5C7-4FCA-9B51-A5ADF5C4FFD5': { name: 'Pricelist Comparison by Vendor', report_group: 'PC' },
-  'AA0E1E07-D909-4BA3-BC95-FA0154B2F4A9': { name: 'Product Category', report_group: 'PC' },
-  '177AC38A-B320-4962-A88C-A908E4B2A6FA': { name: 'Product List', report_group: 'PC' },
-  '9BB660CA-EDD7-488B-B209-FA009E98EADF': { name: 'Purchase Analysis by Item Report', report_group: 'PC' },
-  'CA04701A-9D3D-4532-82B3-A31356194F1F': { name: 'Purchase Order By Department', report_group: 'PC' },
-  '747CCE5C-ADB0-4126-A490-751D44F68543': { name: 'Purchase Order Detail by Date', report_group: 'PC' },
-  'AB203D41-9394-40A6-857D-372C0682F5E3': { name: 'Purchase Request by Department', report_group: 'PC' },
-  '303B78EF-FE9F-4378-8714-518DE51A0DAA': { name: 'Receiving Audit Report - (Committed Date)', report_group: 'PC' },
-  '555C2406-37C6-4BE6-8E8D-CC9ED1EBB9B7': { name: 'Receiving Daily Detailed Summary Report by Location Type', report_group: 'PC' },
-  '0B8DBC79-F8CE-4EDC-846E-9C4C727EE1CF': { name: 'Receiving Daily Summary by Location and Category', report_group: 'PC' },
-  '7EF577CC-BA31-467F-B979-BC4DEBEEA8FB': { name: 'Receiving Detail', report_group: 'PC' },
-  '21DE2E80-1F6E-46BB-86DF-17EC4D9B26C9': { name: 'Receiving Detail with Currency', report_group: 'PC' },
-  '48BFC093-74CC-45F7-9313-55F33D17B72D': { name: 'Receiving Monthly Summary by Location and Category', report_group: 'PC' },
-  'EE851565-059C-453B-BBB2-12F9FE265CCB': { name: 'Receiving Monthly Summary by Receving Date and Category', report_group: 'PC' },
-  '025218DE-B5C7-4AA2-93D3-EB3736107C84': { name: 'Receiving Summary', report_group: 'PC' },
-  'D05CC687-F4C7-4285-A47D-2359C4799E89': { name: 'Receiving Summary with Currency', report_group: 'PC' },
-  'FC14D023-2DA1-4399-A707-0DF5B15FD07C': { name: 'Reject Purchase Request Report Report', report_group: 'PC' },
-  '70F40213-3159-4B5F-9F51-0A1A5B05A20E': { name: 'Store Location', report_group: 'PC' },
-  'A7EA8272-51CC-4AC5-B4BA-671D49FEF210': { name: 'Summary Cost Receiving Report', report_group: 'PC' },
-  'FC5F93EA-1EA8-4795-8491-07FF83712654': { name: 'Top Receiving by Product', report_group: 'PC' },
-  '3D947571-51D0-4ADA-82EF-0FEA206F5B7B': { name: 'Top Receiving by Vendor', report_group: 'PC' },
-  '42D1E497-B29E-4A5A-BB1D-C025295EA283': { name: 'Total Purchase by Vendor Report', report_group: 'PC' },
-  'B0255CFB-84A4-445C-9EA6-C48F22223D92': { name: 'Transaction Summary', report_group: 'PC' },
-  '31FB0D6C-F243-4E6F-B385-42D1445EACBF': { name: 'Vendor by Purchase Order', report_group: 'PC' },
-  '0DDC1AEF-B908-4E16-A433-DBBA9955FD5F': { name: 'Vendor Detailed', report_group: 'PC' },
-  'D92B8607-5538-4B71-9FB3-81F3B2C68F09': { name: 'Vendor List', report_group: 'PC' },
-
-  // === Inventory (IN) ===
-  'D33094D9-7C56-412F-83E3-F71520284D9A': { name: 'End Of Month Balanced', report_group: 'IN' },
-  '3DB3DD73-54C6-4ACD-82E4-31D5CACB5D5B': { name: 'EOP Adjustment Report', report_group: 'IN' },
-  'C3BC3BE3-349B-452E-91FE-AA673D781C94': { name: 'Inventory Aging Detailed', report_group: 'IN' },
-  'EB49A685-3553-41B8-89C0-589612E4CA15': { name: 'Inventory Aging Summary', report_group: 'IN' },
-  '49F579C5-3927-4D08-93BE-A26C7F6B2635': { name: 'Inventory Balance', report_group: 'IN' },
-  '201D9A8E-3CE8-4264-838C-22E34B1081ED': { name: 'Inventory Balance Summary by Category', report_group: 'IN' },
-  '1AA68C25-D3D8-4FF6-BD14-4B7D2368C7E8': { name: 'Inventory Balance Summary by Item', report_group: 'IN' },
-  '9E529B13-6BA6-451A-AF5A-9F0B0E4378EB': { name: 'Inventory By ExpiryDate', report_group: 'IN' },
-  'B8EE945E-99E1-4E14-9A08-EEED519EFFFC': { name: 'Inventory Movement Detailed By Product', report_group: 'IN' },
-  '8AD03C96-DC8E-453C-83D2-8DBB4F4698B1': { name: 'Inventory Movement Summary By Location', report_group: 'IN' },
-  'DDD51537-F289-472C-862F-F9649C575157': { name: 'Issue Detail', report_group: 'IN' },
-  '15FC9F5E-EE29-42A6-8C3E-0A18049B0C3D': { name: 'Physical Count Qty Difference Report', report_group: 'IN' },
-  'DCF858C8-21F7-4033-9E93-8E0DCB3B2C7A': { name: 'Slow Moving Report', report_group: 'IN' },
-  '1BAEFCBE-67BE-49E0-9C90-660E391691EE': { name: 'Stock Card Detailed', report_group: 'IN' },
-  '87826B1C-2AA9-4E5B-BD59-8662070FB126': { name: 'Stock Card Summary', report_group: 'IN' },
-  'E8E21178-F1D8-4309-8BA9-1F4A24A38E36': { name: 'Stock In Detail', report_group: 'IN' },
-  'B7B0001B-2AD0-44EC-B61B-79D1373EF362': { name: 'Stock Out Detail', report_group: 'IN' },
-  'EA4867FA-FC86-42AD-A51A-2F49CC2595D5': { name: 'Store Requisition By Request Store Is Void', report_group: 'IN' },
-  'A97B16CA-0C8E-4E5A-B997-0DAE6EE57BE3': { name: 'Store Requisition By Request Store On Daily Summary Void', report_group: 'IN' },
-  '920A925B-D250-4BEB-894F-CAE4C82FBF53': { name: 'Store Requisition By Request Store On Summary', report_group: 'IN' },
-  '0FCB892B-B8CF-4725-AB37-5A28C0712B56': { name: 'Store Requisition By Request Store On Summary (Show Void Only)', report_group: 'IN' },
-  'D2B40155-397B-463C-AA2F-6621C889F271': { name: 'Store Requisition Detail', report_group: 'IN' },
-  '59D7DA4C-F189-443A-B031-99A55E22AC6D': { name: 'Store Requisition Details \u2013 Issue from any/some location', report_group: 'IN' },
-  '177604A4-DD5B-4C3B-B1FD-C379B49B4C71': { name: 'Store Requisition Details \u2013 Request to any/some location', report_group: 'IN' },
-  '5196BEEC-BFAC-4515-A23F-F2AF205690E9': { name: 'Store Requisition Inventory - Summary (All)', report_group: 'IN' },
-  'B9D5CB4B-8135-4A02-AFE7-8AB2966A555B': { name: 'Store Requisition Inventory - Summary (Type Shipment)', report_group: 'IN' },
-  '2F0CC70A-3FEC-43E2-B9EA-6ED4DEE73F3F': { name: 'Store Requisition Inventory - Summary (Type Transfer)', report_group: 'IN' },
-  '692555A6-CE40-46A9-A54D-8AEA5A6D7E10': { name: 'Store Requisition Summary \u2013 Issue from any/some location', report_group: 'IN' },
-
-  // === Others (OT) ===
-  'EECBCA7F-66AE-41EB-A65A-6C31E6191CCE': { name: 'Project Job Function', report_group: 'OT' },
-  'C82288F7-02DA-47B5-846D-BA00461808B6': { name: 'Vat Report', report_group: 'OT' },
-};
-
-// ==================== Curl Helpers ====================
-
-function curl(args: string): string {
-  return execSync(`curl -sk ${args}`, { encoding: 'utf-8', maxBuffer: 50 * 1024 * 1024 });
+interface ColDef {
+  name: string;
+  label: string;
+  type: 'string' | 'number' | 'date';
+  width?: number;
 }
 
-function curlBinary(args: string, outputFile: string): void {
-  execSync(`curl -sk ${args} -o "${outputFile}"`, { maxBuffer: 50 * 1024 * 1024 });
+interface FilterDef {
+  name: string;
+  label: string;
 }
 
-// ==================== XML Helpers ====================
+interface ReportXmlConfig {
+  title: string;
+  dataSource: string;
+  columns: ColDef[];
+  filters?: FilterDef[];
+  groupBy?: { column: string; label: string };
+  landscape?: boolean;
+  totals?: string[]; // column names to sum
+}
 
-function escapeXml(str: string): string {
-  return str
+function escapeXml(s: string): string {
+  return s
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 }
 
-/**
- * Parse FastReport dialog HTML into structured XML
- *
- * Extracts labels, text inputs, date inputs, and select/dropdown controls
- * from the rendered HTML dialog and converts them into:
- *
- * <dialog>
- *   <field name="TextDate1" type="date" label="Date From" />
- *   <field name="cb_Vendor" type="select" label="Vendor">
- *     <option value="ALL">ALL</option>
- *   </field>
- * </dialog>
- */
-function parseDialogHtmlToXml(html: string, previewObj: string): string {
-  // Extract only the Dialog div
-  const dialogDivMatch = html.match(
-    new RegExp(`<div id="${previewObj}Dialog"[\\s\\S]*$`),
-  );
-  const dialogHtml = dialogDivMatch ? dialogDivMatch[0] : html;
-
-  // Extract labels with their positions
-  const labelRegex =
-    /<div[^>]*style="[^"]*left:(\d+(?:\.\d+)?)px[^"]*top:(\d+(?:\.\d+)?)px[^"]*"[^>]*>([A-Za-z][A-Za-z0-9 /()]+?)<\/div>/g;
-  const labels: Array<{ text: string; left: number; top: number }> = [];
-  let labelMatch;
-  while ((labelMatch = labelRegex.exec(dialogHtml)) !== null) {
-    labels.push({
-      left: parseFloat(labelMatch[1]),
-      top: parseFloat(labelMatch[2]),
-      text: labelMatch[3].trim(),
-    });
-  }
-
-  // Extract text/date inputs with positions
-  const inputRegex =
-    /<input[^>]*style="[^"]*left:(\d+(?:\.\d+)?)px[^"]*top:(\d+(?:\.\d+)?)px[^"]*"[^>]*name="([^"]*)"[^>]*(?:value="([^"]*)")?[^>]*\/>/g;
-  const inputs: Array<{
-    name: string;
-    value: string;
-    left: number;
-    top: number;
-  }> = [];
-  let inputMatch;
-  while ((inputMatch = inputRegex.exec(dialogHtml)) !== null) {
-    const name = inputMatch[3];
-    if (name === 'btnOk' || name === 'btnCancel' || name === 'object') continue;
-    inputs.push({
-      left: parseFloat(inputMatch[1]),
-      top: parseFloat(inputMatch[2]),
-      name,
-      value: inputMatch[4] || '',
-    });
-  }
-
-  // Also try alternate input format (style with top before left)
-  const inputRegex2 =
-    /<input[^>]*name="([^"]*)"[^>]*style="[^"]*left:(\d+(?:\.\d+)?)px[^"]*top:(\d+(?:\.\d+)?)px[^"]*"[^>]*(?:value="([^"]*)")?[^>]*\/>/g;
-  let inputMatch2;
-  while ((inputMatch2 = inputRegex2.exec(dialogHtml)) !== null) {
-    const name = inputMatch2[1];
-    if (
-      name === 'btnOk' ||
-      name === 'btnCancel' ||
-      name === 'object' ||
-      inputs.find((i) => i.name === name)
-    )
-      continue;
-    inputs.push({
-      left: parseFloat(inputMatch2[2]),
-      top: parseFloat(inputMatch2[3]),
-      name,
-      value: inputMatch2[4] || '',
-    });
-  }
-
-  // Extract select/dropdown controls with positions and options
-  const selectRegex =
-    /<select[^>]*style="[^"]*left:(\d+(?:\.\d+)?)px[^"]*top:(\d+(?:\.\d+)?)px[^"]*"[^>]*name="([^"]*)"[^>]*>([\s\S]*?)<\/select>/g;
-  const selects: Array<{
-    name: string;
-    left: number;
-    top: number;
-    options: Array<{ value: string; text: string; selected: boolean }>;
-  }> = [];
-  let selectMatch;
-  while ((selectMatch = selectRegex.exec(dialogHtml)) !== null) {
-    const optionsHtml = selectMatch[4];
-    const optionRegex =
-      /<option\s*(selected)?[^>]*value="([^"]*)"[^>]*>([^<]*)<\/option>/g;
-    const options: Array<{ value: string; text: string; selected: boolean }> =
-      [];
-    let optMatch;
-    while ((optMatch = optionRegex.exec(optionsHtml)) !== null) {
-      options.push({
-        selected: !!optMatch[1],
-        value: optMatch[2].trim(),
-        text: optMatch[3].trim(),
-      });
-    }
-    selects.push({
-      left: parseFloat(selectMatch[1]),
-      top: parseFloat(selectMatch[2]),
-      name: selectMatch[3],
-      options,
-    });
-  }
-
-  // Extract checkbox controls
-  const checkboxRegex =
-    /<input[^>]*type="checkbox"[^>]*style="[^"]*left:(\d+(?:\.\d+)?)px[^"]*top:(\d+(?:\.\d+)?)px[^"]*"[^>]*name="([^"]*)"[^>]*(checked)?[^>]*\/>/g;
-  const checkboxes: Array<{
-    name: string;
-    left: number;
-    top: number;
-    checked: boolean;
-  }> = [];
-  let cbMatch;
-  while ((cbMatch = checkboxRegex.exec(dialogHtml)) !== null) {
-    checkboxes.push({
-      left: parseFloat(cbMatch[1]),
-      top: parseFloat(cbMatch[2]),
-      name: cbMatch[3],
-      checked: !!cbMatch[4],
-    });
-  }
-
-  // Match labels to controls by proximity (same row = similar top position)
-  function findLabel(
-    controlTop: number,
-    controlLeft: number,
-  ): string | undefined {
-    const tolerance = 12;
-    const candidates = labels.filter(
-      (l) => Math.abs(l.top - controlTop) <= tolerance && l.left < controlLeft,
-    );
-    if (candidates.length === 0) return undefined;
-    // Pick the closest label to the left
-    candidates.sort((a, b) => b.left - a.left);
-    return candidates[0].text;
-  }
-
-  // Determine field type
-  function getFieldType(name: string, value: string): string {
-    const lower = name.toLowerCase();
-    if (lower.includes('date') || /^\d{1,2}\/\d{2}\/\d{4}$/.test(value))
-      return 'date';
-    if (lower.includes('text') || lower.includes('txt')) return 'text';
-    return 'text';
-  }
-
-  // Build XML
-  const xmlLines: string[] = ['<?xml version="1.0" encoding="utf-8"?>', '<dialog>'];
-
-  // Add text/date inputs
-  for (const input of inputs) {
-    const label = findLabel(input.top, input.left);
-    const type = getFieldType(input.name, input.value);
-    const labelAttr = label ? ` label="${escapeXml(label)}"` : '';
-    const defaultAttr = input.value
-      ? ` default="${escapeXml(input.value)}"`
-      : '';
-    xmlLines.push(
-      `  <field name="${escapeXml(input.name)}" type="${type}"${labelAttr}${defaultAttr} />`,
-    );
-  }
-
-  // Add selects
-  for (const select of selects) {
-    const label = findLabel(select.top, select.left);
-    const labelAttr = label ? ` label="${escapeXml(label)}"` : '';
-    xmlLines.push(
-      `  <field name="${escapeXml(select.name)}" type="select"${labelAttr}>`,
-    );
-    for (const opt of select.options) {
-      const selectedAttr = opt.selected ? ' selected="true"' : '';
-      xmlLines.push(
-        `    <option value="${escapeXml(opt.value)}"${selectedAttr}>${escapeXml(opt.text)}</option>`,
-      );
-    }
-    xmlLines.push('  </field>');
-  }
-
-  // Add checkboxes
-  for (const cb of checkboxes) {
-    const label = findLabel(cb.top, cb.left);
-    const labelAttr = label ? ` label="${escapeXml(label)}"` : '';
-    const checkedAttr = cb.checked ? ' default="true"' : ' default="false"';
-    xmlLines.push(
-      `  <field name="${escapeXml(cb.name)}" type="checkbox"${labelAttr}${checkedAttr} />`,
-    );
-  }
-
-  xmlLines.push('</dialog>');
-  return xmlLines.join('\n');
+function numFmt(decimals = 2): string {
+  return `Format="Number" Format.UseLocale="false" Format.DecimalDigits="${decimals}" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1"`;
 }
 
-/**
- * Decompress FPX (gzip) to XML string
- * FPX = gzip compressed FastReport prepared report XML
- */
-function decompressFpxToXml(buffer: Buffer): string | null {
-  try {
-    // Check gzip magic number
-    if (buffer[0] !== 0x1f || buffer[1] !== 0x8b) {
-      console.log('    Not gzip format');
-      return null;
-    }
-    const decompressed = gunzipSync(buffer);
-    const xml = decompressed.toString('utf-8');
-    // Verify it's XML
-    if (!xml.includes('<?xml') && !xml.includes('<preparedreport')) {
-      console.log('    Decompressed content is not XML');
-      return null;
-    }
-    return xml;
-  } catch (err) {
-    console.log(`    Decompress error: ${(err as Error).message}`);
-    return null;
-  }
+function dateFmt(): string {
+  return `Format="Date" Format.Format="d"`;
 }
 
-// ==================== Blueledgers Auth ====================
+function generateContentXml(cfg: ReportXmlConfig): string {
+  const pageWidth = cfg.landscape ? 1047.06 : 718.2;
+  const paperAttrs = cfg.landscape
+    ? 'Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9"'
+    : 'RawPaperSize="9"';
 
-function loginBlueledgers(): void {
-  console.log('Logging in to Blueledgers...');
+  // Calculate column widths
+  const totalCols = cfg.columns.length;
+  const defaultWidth = Math.floor(pageWidth / totalCols);
+  const cols = cfg.columns.map((c) => ({
+    ...c,
+    w: c.width || (c.type === 'number' ? Math.min(85, defaultWidth) : defaultWidth),
+  }));
+  // Adjust first column to fill remaining space
+  const usedWidth = cols.slice(1).reduce((s, c) => s + c.w, 0);
+  cols[0].w = Math.max(100, pageWidth - usedWidth);
 
-  const loginHtml = curl(`-c ${COOKIE_FILE} "${BLUELEDGERS_BASE_URL}/login.aspx"`);
-
-  const viewState = loginHtml.match(/__VIEWSTATE" id="__VIEWSTATE" value="([^"]*)/)?.[1] || '';
-  const viewStateGen =
-    loginHtml.match(/__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="([^"]*)/)?.[1] || '';
-  const eventValidation =
-    loginHtml.match(/__EVENTVALIDATION" id="__EVENTVALIDATION" value="([^"]*)/)?.[1] || '';
-
-  const formData = [
-    `__VIEWSTATE=${encodeURIComponent(viewState)}`,
-    `__VIEWSTATEGENERATOR=${encodeURIComponent(viewStateGen)}`,
-    `__EVENTVALIDATION=${encodeURIComponent(eventValidation)}`,
-    `LoginControl%24UserName=${encodeURIComponent(BL_USERNAME)}`,
-    `LoginControl%24Password=${encodeURIComponent(BL_PASSWORD)}`,
-    `LoginControl%24LoginButton=${encodeURIComponent('Log In')}`,
-  ].join('&');
-
-  const formFile = '/tmp/bl_seed_form.txt';
-  writeFileSync(formFile, formData);
-
-  const loginResult = curl(
-    `-b ${COOKIE_FILE} -c ${COOKIE_FILE} -D - ` +
-      `"${BLUELEDGERS_BASE_URL}/login.aspx" ` +
-      `-d @${formFile}`,
-  );
-
-  unlinkSync(formFile);
-
-  if (loginResult.includes('302') || loginResult.includes('.ASPXAUTH')) {
-    console.log('Login successful!\n');
-  } else {
-    throw new Error('Login failed');
-  }
-}
-
-// ==================== Fetch Report List from Blueledgers ====================
-
-function fetchReportListFromBlueledgers(): Array<{ id: string; name: string }> {
-  console.log('Fetching report list from Blueledgers...');
-
-  const html = curl(
-    `-b ${COOKIE_FILE} -c ${COOKIE_FILE} ` +
-      `"${BLUELEDGERS_BASE_URL}/RPT/ReportList2.aspx"`,
-  );
-
-  const matches = html.matchAll(
-    /href="Report\.aspx\?id=([A-F0-9\-]{36})"[^>]*>([^<]*)<\/a>/gi,
-  );
-
-  const reports: Array<{ id: string; name: string }> = [];
-  for (const match of matches) {
-    reports.push({ id: match[1], name: match[2].trim() });
+  // Build left positions
+  const positions: number[] = [];
+  let x = 0;
+  for (const c of cols) {
+    positions.push(parseFloat(x.toFixed(2)));
+    x += c.w;
   }
 
-  console.log(`Found ${reports.length} reports on Blueledgers.\n`);
-  return reports;
-}
+  // Filter/parameter text
+  const filterText = (cfg.filters || [])
+    .map((f) => `${f.label}: [p_${f.name}]`)
+    .join('&#13;&#10;');
 
-// ==================== Fetch Dialog & Content as XML ====================
+  // Totals to compute
+  const totalNames = cfg.totals || cols.filter((c) => c.type === 'number').map((c) => c.name);
 
-function fetchDialogAndContent(
-  reportId: string,
-): { dialog: string; content: string } | null {
-  const tmpFile = `/tmp/bl_rpt_${reportId}.fpx`;
+  // ── Dictionary ──
+  let dict = '';
+  dict += `    <TableDataSource Name="ADMIN_Bu" ReferenceName="ADMIN_Bu.ADMIN_Bu" DataType="System.Int32" Enabled="true">\n`;
+  dict += `      <Column Name="Name" DataType="System.String"/>\n`;
+  dict += `    </TableDataSource>\n`;
+  dict += `    <TableDataSource Name="${cfg.dataSource}" ReferenceName="${cfg.dataSource}.${cfg.dataSource}" DataType="System.Int32" Enabled="true">\n`;
+  for (const c of cfg.columns) {
+    dict += `      <Column Name="${c.name}" DataType="System.String"/>\n`;
+  }
+  dict += `    </TableDataSource>\n`;
 
-  try {
-    // Step 1: Load report page to get preview object
-    const reportHtml = curl(
-      `-b ${COOKIE_FILE} -c ${COOKIE_FILE} ` +
-        `"${BLUELEDGERS_BASE_URL}/RPT/Report.aspx?id=${reportId}"`,
-    );
-
-    const previewMatch = reportHtml.match(/previewobject=(fr[A-Za-z0-9_\-]+)/);
-    if (!previewMatch) {
-      console.log('    Could not find preview object');
-      return null;
+  // Parameter totals
+  dict += `    <Total Name="Date" Expression="0" Evaluator="Data1"/>\n`;
+  for (const f of cfg.filters || []) {
+    dict += `    <Total Name="p_${f.name}" Expression="0" Evaluator="Data1"/>\n`;
+  }
+  for (const t of totalNames) {
+    dict += `    <Total Name="Sum_${t}" Expression="0" Evaluator="Data1"/>\n`;
+  }
+  if (cfg.groupBy) {
+    for (const t of totalNames) {
+      dict += `    <Total Name="Group_${t}" Expression="0" Evaluator="Data1"/>\n`;
     }
-    const previewObj = previewMatch[1];
+  }
 
-    // Step 2: Fetch the FastReport dialog HTML
-    const dialogHtml = curl(
-      `-b ${COOKIE_FILE} -c ${COOKIE_FILE} ` +
-        `"${BLUELEDGERS_BASE_URL}/FastReport.Export.axd?previewobject=${previewObj}"`,
-    );
+  // ── Column Header Band ──
+  let colHeaderObjs = '';
+  let textIdx = 100;
+  for (let i = 0; i < cols.length; i++) {
+    const c = cols[i];
+    const align = c.type === 'number' ? ' HorzAlign="Right"' : '';
+    colHeaderObjs += `        <TextObject Name="Text${textIdx++}" Left="${positions[i]}" Width="${c.w}" Height="22.68" Text="${escapeXml(c.label)}"${align} VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>\n`;
+  }
 
-    // Parse dialog HTML to structured XML
-    const dialogXml = parseDialogHtmlToXml(dialogHtml, previewObj);
+  // ── Data Band ──
+  let dataObjs = '';
+  for (let i = 0; i < cols.length; i++) {
+    const c = cols[i];
+    const align = c.type === 'number' ? ' HorzAlign="Right"' : '';
+    let fmt = '';
+    if (c.type === 'number') fmt = ` ${numFmt()}`;
+    if (c.type === 'date') fmt = ` ${dateFmt()}`;
+    dataObjs += `          <TextObject Name="Text${textIdx++}" Left="${positions[i]}" Top="1.89" Width="${c.w}" Height="18.9" CanGrow="true" Text="[${cfg.dataSource}.${c.name}]"${fmt}${align} WordWrap="false" Font="Tahoma, 8pt"/>\n`;
+  }
 
-    // Step 3: Submit dialog OK to prepare the report
-    curl(
-      `-b ${COOKIE_FILE} -c ${COOKIE_FILE} ` +
-        `"${BLUELEDGERS_BASE_URL}/FastReport.Export.axd?object=${previewObj}&dialog=0&control=btnOk&event=onclick&data="`,
-    );
+  // ── Group Footer ──
+  let groupHeaderStart = '';
+  let groupFooterEnd = '';
+  let dataBandTop: number;
 
-    // Step 4: Download FPX file (gzip compressed XML report template)
-    curlBinary(
-      `-L --max-time 120 -b ${COOKIE_FILE} -c ${COOKIE_FILE} ` +
-        `"${BLUELEDGERS_BASE_URL}/FastReport.Export.axd?previewobject=${previewObj}&export_fpx=1&s=${Date.now()}"`,
-      tmpFile,
-    );
+  if (cfg.groupBy) {
+    const ghTop = 132.08;
+    const childTop = ghTop + 30;
+    dataBandTop = childTop + 26.68;
+    const gfTop = dataBandTop + 26.69;
 
-    let contentXml = '';
-    if (existsSync(tmpFile)) {
-      const buffer = readFileSync(tmpFile);
-      unlinkSync(tmpFile);
-
-      if (buffer.length >= 100) {
-        const xml = decompressFpxToXml(buffer);
-        if (xml) {
-          contentXml = xml;
-          console.log(
-            `    Dialog XML: ${(dialogXml.length / 1024).toFixed(1)} KB, Content XML: ${(contentXml.length / 1024).toFixed(1)} KB`,
-          );
-        } else {
-          console.log(`    FPX decompress failed, content will be empty`);
-        }
-      } else {
-        console.log(
-          `    FPX too small (${buffer.length} bytes), content will be empty`,
-        );
+    let gfObjs = '';
+    for (let i = 0; i < cols.length; i++) {
+      const c = cols[i];
+      if (totalNames.includes(c.name)) {
+        gfObjs += `          <TextObject Name="Text${textIdx++}" Left="${positions[i]}" Top="3.78" Width="${c.w}" Height="18.9" Text="[Group_${c.name}]" ${numFmt()} HorzAlign="Right" Font="Tahoma, 8pt, style=Bold"/>\n`;
       }
-    } else {
-      console.log('    FPX file not created, content will be empty');
     }
+    gfObjs += `          <TextObject Name="Text${textIdx++}" Left="${positions[0]}" Top="3.78" Width="${cols[0].w}" Height="18.9" Text="Total [${cfg.dataSource}.${cfg.groupBy.column}]" Font="Tahoma, 8pt, style=Bold"/>\n`;
 
-    return { dialog: dialogXml, content: contentXml };
-  } catch (err) {
-    console.log(`    Error: ${(err as Error).message}`);
-    if (existsSync(tmpFile)) unlinkSync(tmpFile);
-    return null;
+    groupHeaderStart = `      <GroupHeaderBand Name="GroupHeader1" Top="${ghTop}" Width="${pageWidth}" Height="26.46" Border.Lines="Bottom" Fill.Color="WhiteSmoke" Condition="[${cfg.dataSource}.${cfg.groupBy.column}]" SortOrder="None">
+        <TextObject Name="Text${textIdx++}" Width="75.6" Height="26.46" Text="${escapeXml(cfg.groupBy.label)}:" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text${textIdx++}" Left="75.6" Width="${pageWidth - 75.6}" Height="26.46" Text="[${cfg.dataSource}.${cfg.groupBy.column}]" VertAlign="Center" Font="Tahoma, 8pt"/>
+`;
+
+    groupFooterEnd = `        <GroupFooterBand Name="GroupFooter1" Top="${gfTop}" Width="${pageWidth}" Height="26.46" Border.Lines="Top" Border.Style="Dot" Fill.Color="WhiteSmoke">
+${gfObjs}        </GroupFooterBand>
+      </GroupHeaderBand>
+`;
+  } else {
+    dataBandTop = 158.76;
   }
+
+  // ── Report Summary ──
+  const summaryTop = cfg.groupBy ? 300 : 200;
+  let summaryObjs = '';
+  for (let i = 0; i < cols.length; i++) {
+    const c = cols[i];
+    if (totalNames.includes(c.name)) {
+      summaryObjs += `        <TextObject Name="Text${textIdx++}" Left="${positions[i]}" Top="3.78" Width="${c.w}" Height="18.9" Text="[Sum_${c.name}]" ${numFmt()} HorzAlign="Right" Font="Tahoma, 8pt, style=Bold"/>\n`;
+    }
+  }
+  summaryObjs += `        <TextObject Name="Text${textIdx++}" Left="${positions[0]}" Top="3.78" Width="${cols[0].w}" Height="18.9" Text="Grand Total" Font="Tahoma, 8pt, style=Bold"/>\n`;
+
+  // ── Assemble XML ──
+  let xml = `<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp">
+  <Dictionary>
+${dict}  </Dictionary>
+
+  <ReportPage Name="Page1" ${paperAttrs}>
+    <PageHeaderBand Name="PageHeader1" Width="${pageWidth}" Height="98.28" Border.Lines="Bottom">
+      <PictureObject Name="Picture1" Width="151.2" Height="75.6" DataColumn="ADMIN_Bu.BuLogo"/>
+      <TextObject Name="Text1" Left="170.5" Top="2.83" Width="${pageWidth - 340}" Height="28.35" Text="${escapeXml(cfg.title)}" HorzAlign="Center" Font="Tahoma, 16pt"/>
+      <TextObject Name="Text2" Top="79.38" Width="302.4" Height="18.9" Text="[ADMIN_Bu.Name]" Font="Tahoma, 8pt"/>
+${filterText ? `      <TextObject Name="Text3" Left="${pageWidth - 300}" Top="40" Width="300" Height="56.7" Text="${filterText}" HorzAlign="Right" Font="Tahoma, 8pt"/>\n` : ''}    </PageHeaderBand>
+    <ColumnHeaderBand Name="ColumnHeader1" Top="102.28" Width="${pageWidth}" Height="22.68" Border.Lines="Top, Bottom" Fill.Color="WhiteSmoke">
+${colHeaderObjs}    </ColumnHeaderBand>
+`;
+
+  if (cfg.groupBy) {
+    xml += groupHeaderStart;
+    xml += `        <DataBand Name="Data1" Top="${dataBandTop}" Width="${pageWidth}" Height="22.68" CanGrow="true">
+${dataObjs}        </DataBand>
+`;
+    xml += groupFooterEnd;
+  } else {
+    xml += `    <DataBand Name="Data1" Top="${dataBandTop}" Width="${pageWidth}" Height="22.68" CanGrow="true">
+${dataObjs}    </DataBand>
+`;
+  }
+
+  xml += `    <ReportSummaryBand Name="ReportSummary1" Top="${summaryTop}" Width="${pageWidth}" Height="28.35" Border.Lines="Top" Border.Style="Dash">
+${summaryObjs}    </ReportSummaryBand>
+    <PageFooterBand Name="PageFooter1" Top="${summaryTop + 32}" Width="${pageWidth}" Height="37.8">
+      <TextObject Name="Text98" Top="3.78" Width="207.9" Height="22.68" Text="Print On [Date]" ${dateFmt()} AutoWidth="true" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text99" Left="${pageWidth - 200}" Top="3.78" Width="200" Height="22.68" Text="Page [Page#] Of [TotalPages#]" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+
+</Report>`;
+
+  return xml;
 }
 
-// ==================== Main ====================
+// ─── Report Template Definitions ─────────────────────────────────────────────
+
+interface ReportTemplate {
+  name: string;
+  description: string;
+  report_group: string;
+  is_standard: boolean;
+  contentConfig: ReportXmlConfig;
+}
+
+const reportTemplates: ReportTemplate[] = [
+  // ===================== Purchasing (PR) =====================
+  {
+    name: 'Purchase Request List Report',
+    description:
+      'รายงานแสดงข้อมูลของ PR แสดงยอด Summary ของ PR แต่ละใบ โดยเป็นการแสดงข้อมูลตามที่ user บันทึกข้อมูลลงในระบบ',
+    report_group: 'PR',
+    is_standard: true,
+    contentConfig: {
+      title: 'Purchase Request List Report',
+      dataSource: 'PurchaseRequest',
+      columns: [
+        { name: 'DocDate', label: 'Date', type: 'date', width: 70 },
+        { name: 'PrNo', label: 'PR No.', type: 'string', width: 90 },
+        { name: 'Description', label: 'Description', type: 'string', width: 150 },
+        { name: 'DepartmentRequest', label: 'Department', type: 'string', width: 100 },
+        { name: 'DeliveryDate', label: 'Delivery Date', type: 'date', width: 80 },
+        { name: 'PrType', label: 'PR Type', type: 'string', width: 70 },
+        { name: 'DocStatus', label: 'Status', type: 'string', width: 70 },
+        { name: 'TotalAmount', label: 'Total', type: 'number', width: 85 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+        { name: 'FStatus', label: 'Status' },
+      ],
+      groupBy: { column: 'DocStatus', label: 'Status' },
+      totals: ['TotalAmount'],
+    },
+  },
+  {
+    name: 'Purchase Request Detail Report',
+    description:
+      'รายงานแสดงข้อมูล PR แสดงรายละเอียด Product, Qty, Tax, Amount โดยเป็นการแสดงข้อมูลตามที่ user บันทึกข้อมูลลงในระบบ',
+    report_group: 'PR',
+    is_standard: true,
+    contentConfig: {
+      title: 'Purchase Request Detail Report',
+      dataSource: 'PurchaseRequestDetail',
+      landscape: true,
+      columns: [
+        { name: 'LocationCode', label: 'Store Location', type: 'string', width: 120 },
+        { name: 'ProductCode', label: 'Product ID', type: 'string', width: 80 },
+        { name: 'ProductDesc1', label: 'Description', type: 'string', width: 160 },
+        { name: 'OrderQty', label: 'Order Qty', type: 'number', width: 75 },
+        { name: 'OrderUnit', label: 'Order Unit', type: 'string', width: 65 },
+        { name: 'FocQty', label: 'FOC Qty', type: 'number', width: 65 },
+        { name: 'Price', label: 'Price', type: 'number', width: 80 },
+        { name: 'Discount', label: 'Discount', type: 'number', width: 70 },
+        { name: 'TaxAmt', label: 'Tax', type: 'number', width: 75 },
+        { name: 'NetAmt', label: 'Net Amount', type: 'number', width: 90 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+        { name: 'FStatus', label: 'Status' },
+      ],
+      groupBy: { column: 'PrNo', label: 'PR No' },
+      totals: ['OrderQty', 'TaxAmt', 'NetAmt'],
+    },
+  },
+  {
+    name: 'Price List Detail by Product Report',
+    description:
+      'รายงานแสดงข้อมูลรายการที่มีใน Price list โดยนำข้อมูลจากหลายร้านค้ามาเปรียบเทียบกัน เพื่อให้ user review ได้ว่าในช่วงเวลาที่กำหนด vendor ไหนเสนอราคาต่ำที่สุด',
+    report_group: 'PR',
+    is_standard: true,
+    contentConfig: {
+      title: 'Price List Detail by Product Report',
+      dataSource: 'PriceList',
+      landscape: true,
+      columns: [
+        { name: 'ProductCode', label: 'Product Code', type: 'string', width: 90 },
+        { name: 'ProductDesc1', label: 'Product Name', type: 'string', width: 160 },
+        { name: 'OrderUnit', label: 'Unit', type: 'string', width: 60 },
+        { name: 'VendorCode', label: 'Vendor Code', type: 'string', width: 80 },
+        { name: 'VendorName', label: 'Vendor Name', type: 'string', width: 160 },
+        { name: 'Price', label: 'Price', type: 'number', width: 80 },
+        { name: 'EffectiveDate', label: 'Effective Date', type: 'date', width: 80 },
+        { name: 'ExpiryDate', label: 'Expiry Date', type: 'date', width: 80 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+        { name: 'FProduct', label: 'Product From' },
+        { name: 'TProduct', label: 'Product To' },
+      ],
+      groupBy: { column: 'ProductCode', label: 'Product' },
+      totals: [],
+    },
+  },
+
+  // ===================== Purchase Order (PO) =====================
+  {
+    name: 'Order Pending Report',
+    description:
+      'รายงานแสดงข้อมูล PO ที่ยังค้างรับสินค้า สามารถ Group by Vendor, Product, Location',
+    report_group: 'PO',
+    is_standard: true,
+    contentConfig: {
+      title: 'Purchase Order Pending Report',
+      dataSource: 'OrderPending',
+      landscape: true,
+      columns: [
+        { name: 'PoNo', label: 'PO No.', type: 'string', width: 80 },
+        { name: 'PoDate', label: 'PO Date', type: 'date', width: 70 },
+        { name: 'DeliveryDate', label: 'Delivery Date', type: 'date', width: 75 },
+        { name: 'ProductDesc1', label: 'Product', type: 'string', width: 160 },
+        { name: 'LocationName', label: 'Location', type: 'string', width: 100 },
+        { name: 'OrderQty', label: 'Order Qty', type: 'number', width: 70 },
+        { name: 'ReceivedQty', label: 'Received', type: 'number', width: 70 },
+        { name: 'PendingQty', label: 'Pending', type: 'number', width: 70 },
+        { name: 'Price', label: 'Price', type: 'number', width: 75 },
+        { name: 'Amount', label: 'Amount', type: 'number', width: 85 },
+        { name: 'DocStatus', label: 'Status', type: 'string', width: 70 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+      ],
+      groupBy: { column: 'VendorName', label: 'Vendor' },
+      totals: ['OrderQty', 'ReceivedQty', 'PendingQty', 'Amount'],
+    },
+  },
+  {
+    name: 'Purchase Order Detail Report',
+    description:
+      'รายงานแสดงข้อมูลรายละเอียดของ PO เช่น product, location, qty, tax, amount โดยแสดงข้อมูลตามจริงที่มีการบันทึกลงในระบบ',
+    report_group: 'PO',
+    is_standard: true,
+    contentConfig: {
+      title: 'Purchase Order Detail Report',
+      dataSource: 'PurchaseOrderDetail',
+      landscape: true,
+      columns: [
+        { name: 'RefPrNo', label: 'Ref PR No.', type: 'string', width: 80 },
+        { name: 'LocationCode', label: 'Store Location', type: 'string', width: 110 },
+        { name: 'ProductCode', label: 'Product ID', type: 'string', width: 75 },
+        { name: 'ProductDesc1', label: 'Description', type: 'string', width: 140 },
+        { name: 'OrderQty', label: 'Order Qty', type: 'number', width: 70 },
+        { name: 'OrderUnit', label: 'Unit', type: 'string', width: 55 },
+        { name: 'FocQty', label: 'FOC', type: 'number', width: 55 },
+        { name: 'Price', label: 'Price', type: 'number', width: 75 },
+        { name: 'Discount', label: 'Discount', type: 'number', width: 65 },
+        { name: 'TaxAmt', label: 'Tax', type: 'number', width: 70 },
+        { name: 'NetAmt', label: 'Net Amount', type: 'number', width: 85 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+        { name: 'FCategory', label: 'Category' },
+        { name: 'FStatus', label: 'Status' },
+      ],
+      groupBy: { column: 'PoNo', label: 'PO No' },
+      totals: ['OrderQty', 'TaxAmt', 'NetAmt'],
+    },
+  },
+  {
+    name: 'Purchase Order List Report',
+    description:
+      'รายงานแสดงข้อมูลของ PO แสดงยอด Summary ของ PO แต่ละใบ โดยเป็นการแสดงข้อมูลตามที่ user บันทึกข้อมูลลงในระบบ',
+    report_group: 'PO',
+    is_standard: true,
+    contentConfig: {
+      title: 'Purchase Order List Report',
+      dataSource: 'PurchaseOrder',
+      columns: [
+        { name: 'PoDate', label: 'PO Date', type: 'date', width: 70 },
+        { name: 'PoNo', label: 'PO No.', type: 'string', width: 90 },
+        { name: 'Description', label: 'Description', type: 'string', width: 130 },
+        { name: 'VendorName', label: 'Vendor', type: 'string', width: 120 },
+        { name: 'DocStatus', label: 'Status', type: 'string', width: 70 },
+        { name: 'DeliveryDate', label: 'Delivery Date', type: 'date', width: 75 },
+        { name: 'TotalAmount', label: 'Total', type: 'number', width: 90 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+      ],
+      groupBy: { column: 'DocStatus', label: 'Status' },
+      totals: ['TotalAmount'],
+    },
+  },
+
+  // ===================== Receiving (RC) =====================
+  {
+    name: 'Extra Cost Report',
+    description:
+      'รายงานแสดงการบันทึก Extra Cost (Landed Cost) ใน Receiving แสดง Receiving No, Product, Qty, Price, Amount, Extra Cost Amt, Status',
+    report_group: 'RC',
+    is_standard: true,
+    contentConfig: {
+      title: 'Extra Cost Report',
+      dataSource: 'ExtraCost',
+      landscape: true,
+      columns: [
+        { name: 'RecNo', label: 'Receiving No.', type: 'string', width: 90 },
+        { name: 'ProductCode', label: 'Product Code', type: 'string', width: 80 },
+        { name: 'ProductDesc1', label: 'Product Name', type: 'string', width: 160 },
+        { name: 'Qty', label: 'Qty', type: 'number', width: 60 },
+        { name: 'Price', label: 'Price', type: 'number', width: 75 },
+        { name: 'Amount', label: 'Amount', type: 'number', width: 85 },
+        { name: 'ExtraCostAmt', label: 'Extra Cost', type: 'number', width: 85 },
+        { name: 'CalcBy', label: 'Calc By', type: 'string', width: 80 },
+        { name: 'DocStatus', label: 'Status', type: 'string', width: 70 },
+        { name: 'CommitDate', label: 'Commit Date', type: 'date', width: 80 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Receiving Date From' },
+        { name: 'TDate', label: 'Receiving Date To' },
+      ],
+      totals: ['Amount', 'ExtraCostAmt'],
+    },
+  },
+  {
+    name: 'Receiving List Report',
+    description:
+      'รายงานแสดงการทำรับสินค้าแบบ summary แสดง Currency โดยเป็นการแสดงข้อมูลตามที่ user บันทึกข้อมูลลงในระบบ',
+    report_group: 'RC',
+    is_standard: true,
+    contentConfig: {
+      title: 'Receiving List Report',
+      dataSource: 'ReceivingList',
+      landscape: true,
+      columns: [
+        { name: 'RecNo', label: 'Receiving No.', type: 'string', width: 85 },
+        { name: 'RecDate', label: 'Rec. Date', type: 'date', width: 70 },
+        { name: 'InvoiceNo', label: 'Inv. No.', type: 'string', width: 75 },
+        { name: 'InvoiceDate', label: 'Inv. Date', type: 'date', width: 70 },
+        { name: 'VendorName', label: 'Vendor', type: 'string', width: 140 },
+        { name: 'CurrencyRate', label: 'Currency', type: 'string', width: 65 },
+        { name: 'NetAmt', label: 'Net Amount', type: 'number', width: 85 },
+        { name: 'TaxAmt', label: 'Tax', type: 'number', width: 75 },
+        { name: 'TotalAmt', label: 'Total', type: 'number', width: 85 },
+        { name: 'ExtraCostAmt', label: 'Extra Cost', type: 'number', width: 80 },
+        { name: 'DocStatus', label: 'Status', type: 'string', width: 70 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+      ],
+      groupBy: { column: 'DocStatus', label: 'Status' },
+      totals: ['NetAmt', 'TaxAmt', 'TotalAmt', 'ExtraCostAmt'],
+    },
+  },
+  {
+    name: 'Receiving Detail Report',
+    description:
+      'รายงานแสดงรายละเอียดของ Receiving แต่ละใบ แยกตาม Status, Vendor และแสดงรายละเอียด product, location, qty, tax, amount',
+    report_group: 'RC',
+    is_standard: true,
+    contentConfig: {
+      title: 'Receiving Detail Report',
+      dataSource: 'ReceivingDetail',
+      landscape: true,
+      columns: [
+        { name: 'PoNo', label: 'PO No.', type: 'string', width: 75 },
+        { name: 'LocationCode', label: 'Location', type: 'string', width: 90 },
+        { name: 'ProductDesc1', label: 'Product', type: 'string', width: 130 },
+        { name: 'OrderQty', label: 'Order Qty', type: 'number', width: 65 },
+        { name: 'OrderUnit', label: 'O.Unit', type: 'string', width: 50 },
+        { name: 'RecQty', label: 'Rec Qty', type: 'number', width: 65 },
+        { name: 'RecUnit', label: 'R.Unit', type: 'string', width: 50 },
+        { name: 'FocQty', label: 'FOC', type: 'number', width: 50 },
+        { name: 'Discount', label: 'Discount', type: 'number', width: 65 },
+        { name: 'Price', label: 'Price/Unit', type: 'number', width: 70 },
+        { name: 'NetAmt', label: 'Net', type: 'number', width: 75 },
+        { name: 'TaxAmt', label: 'Tax', type: 'number', width: 65 },
+        { name: 'TotalAmt', label: 'Total', type: 'number', width: 80 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+        { name: 'FItemGroup', label: 'Item Group' },
+      ],
+      groupBy: { column: 'RecNo', label: 'Receiving No' },
+      totals: ['RecQty', 'NetAmt', 'TaxAmt', 'TotalAmt'],
+    },
+  },
+  {
+    name: 'Receiving Detail Summary by Product Report',
+    description:
+      'รายงานแสดงสรุปรายละเอียดการทำรับสินค้าแยกตาม Product โดย Location แสดง Product Code, Name, Unit, Qty, Price/Unit, Total',
+    report_group: 'RC',
+    is_standard: true,
+    contentConfig: {
+      title: 'Receiving Detail Summary by Product',
+      dataSource: 'ReceivingDetailSummary',
+      columns: [
+        { name: 'ProductCode', label: 'Product Code', type: 'string', width: 100 },
+        { name: 'ProductDesc1', label: 'Product Name', type: 'string', width: 200 },
+        { name: 'OrderUnit', label: 'Unit', type: 'string', width: 60 },
+        { name: 'Qty', label: 'Qty', type: 'number', width: 80 },
+        { name: 'PricePerUnit', label: 'Price/Unit', type: 'number', width: 90 },
+        { name: 'TotalAmt', label: 'Total', type: 'number', width: 100 },
+      ],
+      filters: [
+        { name: 'FLocation', label: 'Location From' },
+        { name: 'TLocation', label: 'Location To' },
+      ],
+      groupBy: { column: 'LocationCode', label: 'Location' },
+      totals: ['Qty', 'TotalAmt'],
+    },
+  },
+  {
+    name: 'Top Purchasing Report',
+    description:
+      'รายงานแสดงรายการสินค้าที่มีการสั่งซื้อมากที่สุด สามารถเลือกได้ 10-100 อันดับ group by vendor (amount) / product (Qty)',
+    report_group: 'RC',
+    is_standard: true,
+    contentConfig: {
+      title: 'Top Purchasing Report',
+      dataSource: 'TopReceiving',
+      columns: [
+        { name: 'RowNo', label: 'No.', type: 'string', width: 50 },
+        { name: 'VendorName', label: 'Vendor', type: 'string', width: 350 },
+        { name: 'Amount', label: 'Amount', type: 'number', width: 120 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+        { name: 'TopN', label: 'Top' },
+      ],
+      totals: ['Amount'],
+    },
+  },
+  {
+    name: 'Purchase Analysis by Item Report',
+    description:
+      'รายงานแสดงการวิเคราะห์ข้อมูลที่มีการซื้อสินค้า รายการไหน ราคาเท่าไหร่ เข้า location ไหนบ้าง',
+    report_group: 'RC',
+    is_standard: true,
+    contentConfig: {
+      title: 'Purchase Analysis by Item Report',
+      dataSource: 'PurchaseAnalysis',
+      landscape: true,
+      columns: [
+        { name: 'VendorName', label: 'Vendor', type: 'string', width: 130 },
+        { name: 'RecNo', label: 'Rec No.', type: 'string', width: 80 },
+        { name: 'RecDate', label: 'Rec Date', type: 'date', width: 70 },
+        { name: 'LocationName', label: 'Location', type: 'string', width: 100 },
+        { name: 'Qty', label: 'Qty', type: 'number', width: 60 },
+        { name: 'UnitCode', label: 'Unit', type: 'string', width: 50 },
+        { name: 'PricePerUnit', label: 'Price/Unit', type: 'number', width: 75 },
+        { name: 'Discount', label: 'Discount', type: 'number', width: 65 },
+        { name: 'NetAmt', label: 'Net', type: 'number', width: 80 },
+        { name: 'TaxAmt', label: 'Tax', type: 'number', width: 70 },
+        { name: 'TotalAmt', label: 'Total', type: 'number', width: 85 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+      ],
+      groupBy: { column: 'ProductCode', label: 'Product' },
+      totals: ['Qty', 'NetAmt', 'TaxAmt', 'TotalAmt'],
+    },
+  },
+
+  // ===================== Credit Note (CR) =====================
+  {
+    name: 'Credit Note List Report',
+    description:
+      'รายงานแสดงรายการ CN แบบ summary โดยเป็นการแสดงข้อมูลตามที่ user บันทึกข้อมูลลงในระบบ',
+    report_group: 'CR',
+    is_standard: true,
+    contentConfig: {
+      title: 'Credit Note List Report',
+      dataSource: 'CreditNoteList',
+      landscape: true,
+      columns: [
+        { name: 'CnDate', label: 'CN Date', type: 'date', width: 70 },
+        { name: 'CnNo', label: 'CN No.', type: 'string', width: 85 },
+        { name: 'RefNo', label: 'Ref. Doc', type: 'string', width: 80 },
+        { name: 'Description', label: 'Description', type: 'string', width: 140 },
+        { name: 'VendorName', label: 'Vendor', type: 'string', width: 130 },
+        { name: 'CnType', label: 'CN Type', type: 'string', width: 70 },
+        { name: 'DocStatus', label: 'Status', type: 'string', width: 65 },
+        { name: 'NetAmt', label: 'Net Amount', type: 'number', width: 80 },
+        { name: 'TaxAmt', label: 'Tax', type: 'number', width: 70 },
+        { name: 'TotalAmt', label: 'Total', type: 'number', width: 85 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+      ],
+      groupBy: { column: 'DocStatus', label: 'Status' },
+      totals: ['NetAmt', 'TaxAmt', 'TotalAmt'],
+    },
+  },
+  {
+    name: 'Credit Note Detail Report',
+    description:
+      'รายงานแสดงรายละเอียดของ CN แต่ละใบ และแสดงรายละเอียด product, location, qty, tax, amount',
+    report_group: 'CR',
+    is_standard: true,
+    contentConfig: {
+      title: 'Credit Note Detail Report',
+      dataSource: 'CreditNoteDetail',
+      landscape: true,
+      columns: [
+        { name: 'RecNo', label: 'Receiving No.', type: 'string', width: 90 },
+        { name: 'LocationName', label: 'Location', type: 'string', width: 130 },
+        { name: 'ProductDesc1', label: 'Product', type: 'string', width: 160 },
+        { name: 'CnType', label: 'CN Type', type: 'string', width: 70 },
+        { name: 'RecQty', label: 'Qty', type: 'number', width: 65 },
+        { name: 'NetAmt', label: 'Net Amount', type: 'number', width: 90 },
+        { name: 'TaxAmt', label: 'Tax', type: 'number', width: 80 },
+        { name: 'TotalAmt', label: 'Total', type: 'number', width: 90 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+      ],
+      groupBy: { column: 'CnNo', label: 'CN No' },
+      totals: ['RecQty', 'NetAmt', 'TaxAmt', 'TotalAmt'],
+    },
+  },
+
+  // ===================== Vendor =====================
+  {
+    name: 'Vendor List Report',
+    description:
+      'รายงานแสดงข้อมูลร้านค้า Credit Term, Tax ID, Discount, Rating, Status',
+    report_group: 'Vendor',
+    is_standard: true,
+    contentConfig: {
+      title: 'Vendor List Report',
+      dataSource: 'VendorList',
+      columns: [
+        { name: 'VendorCode', label: 'Code', type: 'string', width: 70 },
+        { name: 'VendorName', label: 'Vendor Name', type: 'string', width: 200 },
+        { name: 'TaxId', label: 'Tax ID', type: 'string', width: 110 },
+        { name: 'CreditTerm', label: 'Credit Term', type: 'string', width: 80 },
+        { name: 'Discount', label: 'Discount', type: 'number', width: 70 },
+        { name: 'DocStatus', label: 'Status', type: 'string', width: 70 },
+      ],
+      filters: [
+        { name: 'FVendor', label: 'Vendor From' },
+        { name: 'TVendor', label: 'Vendor To' },
+      ],
+      totals: [],
+    },
+  },
+  {
+    name: 'Vendor Detail Report',
+    description:
+      'รายงานแสดงข้อมูลของร้านค้า ที่อยู่ เบอร์ติดต่อ เครดิต Category, Telephone, Fax, Status',
+    report_group: 'Vendor',
+    is_standard: true,
+    contentConfig: {
+      title: 'Vendor Detail Report',
+      dataSource: 'VendorDetail',
+      columns: [
+        { name: 'VendorCode', label: 'Code', type: 'string', width: 70 },
+        { name: 'VendorName', label: 'Vendor Name', type: 'string', width: 140 },
+        { name: 'VendorCategory', label: 'Category', type: 'string', width: 90 },
+        { name: 'TaxId', label: 'Tax ID', type: 'string', width: 100 },
+        { name: 'Telephone', label: 'Telephone', type: 'string', width: 90 },
+        { name: 'Fax', label: 'Fax', type: 'string', width: 80 },
+        { name: 'DocStatus', label: 'Status', type: 'string', width: 60 },
+      ],
+      filters: [
+        { name: 'FVendor', label: 'Vendor From' },
+        { name: 'TVendor', label: 'Vendor To' },
+      ],
+      totals: [],
+    },
+  },
+
+  // ===================== Product =====================
+  {
+    name: 'Product List Report',
+    description:
+      'รายงานแสดง list ของสินค้า และแสดงข้อมูล Product, Inventory Unit, Order Unit, Last Cost, Status',
+    report_group: 'Product',
+    is_standard: true,
+    contentConfig: {
+      title: 'Product List Report',
+      dataSource: 'ProductList',
+      landscape: true,
+      columns: [
+        { name: 'ProductCode', label: 'Product ID', type: 'string', width: 80 },
+        { name: 'ProductDesc1', label: 'Name (EN)', type: 'string', width: 130 },
+        { name: 'ProductDesc2', label: 'Name (Local)', type: 'string', width: 120 },
+        { name: 'CategoryName', label: 'Category', type: 'string', width: 90 },
+        { name: 'SubCategoryName', label: 'Sub Category', type: 'string', width: 90 },
+        { name: 'ItemGroupName', label: 'Item Group', type: 'string', width: 90 },
+        { name: 'InventoryUnit', label: 'Inv. Unit', type: 'string', width: 60 },
+        { name: 'OrderUnit', label: 'Ord. Unit', type: 'string', width: 60 },
+        { name: 'LastCost', label: 'Last Cost', type: 'number', width: 80 },
+        { name: 'DocStatus', label: 'Status', type: 'string', width: 60 },
+      ],
+      filters: [
+        { name: 'FProduct', label: 'Product From' },
+        { name: 'TProduct', label: 'Product To' },
+      ],
+      totals: [],
+    },
+  },
+  {
+    name: 'Product Category Report',
+    description:
+      'รายงานแสดงข้อมูลหมวดหมู่สินค้า Category, Sub Category, Item Group ว่าแต่ละ Item Group มี Product อะไรบ้าง',
+    report_group: 'Product',
+    is_standard: true,
+    contentConfig: {
+      title: 'Product Category Report',
+      dataSource: 'ProductCategory',
+      columns: [
+        { name: 'ProductCode', label: 'Product Code', type: 'string', width: 90 },
+        { name: 'ProductDesc1', label: 'Product Name', type: 'string', width: 200 },
+        { name: 'ItemGroupName', label: 'Item Group', type: 'string', width: 120 },
+        { name: 'DocStatus', label: 'Status', type: 'string', width: 70 },
+      ],
+      filters: [],
+      groupBy: { column: 'CategoryName', label: 'Category' },
+      totals: [],
+    },
+  },
+
+  // ===================== Store Requisition (SR) =====================
+  {
+    name: 'Store Requisition Detail Report',
+    description:
+      'รายงานแสดงรายละเอียดของ SR แต่ละใบ เช่น product, location from, location to, qty, amount สามารถเลือก filter movement type ได้',
+    report_group: 'SR',
+    is_standard: true,
+    contentConfig: {
+      title: 'Store Requisition Detail Report',
+      dataSource: 'StoreRequisition',
+      landscape: true,
+      columns: [
+        { name: 'SrNo', label: 'SR No.', type: 'string', width: 80 },
+        { name: 'SrDate', label: 'Date', type: 'date', width: 70 },
+        { name: 'ProductDesc1', label: 'Product', type: 'string', width: 150 },
+        { name: 'LocationFrom', label: 'From Location', type: 'string', width: 100 },
+        { name: 'LocationTo', label: 'To Location', type: 'string', width: 100 },
+        { name: 'MovementType', label: 'Movement', type: 'string', width: 70 },
+        { name: 'Qty', label: 'Qty', type: 'number', width: 65 },
+        { name: 'UnitCode', label: 'Unit', type: 'string', width: 50 },
+        { name: 'CostPerUnit', label: 'Cost/Unit', type: 'number', width: 75 },
+        { name: 'Amount', label: 'Amount', type: 'number', width: 85 },
+        { name: 'DocStatus', label: 'Status', type: 'string', width: 65 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+        { name: 'FMovementType', label: 'Movement Type' },
+        { name: 'FStatus', label: 'Status' },
+      ],
+      groupBy: { column: 'SrNo', label: 'SR No' },
+      totals: ['Qty', 'Amount'],
+    },
+  },
+  {
+    name: 'Requisition Cost Summary Report',
+    description:
+      'รายงานเพื่อตรวจสอบการบันทึก cost หรือ inventory โดยดูว่าข้อมูลถูกกระจายไปที่ location ใดบ้าง',
+    report_group: 'SR',
+    is_standard: true,
+    contentConfig: {
+      title: 'Requisition Cost Summary Report',
+      dataSource: 'CostSummary',
+      columns: [
+        { name: 'LocationName', label: 'Location', type: 'string', width: 150 },
+        { name: 'ItemGroupName', label: 'Item Group', type: 'string', width: 130 },
+        { name: 'ReceivingAmt', label: 'Receiving', type: 'number', width: 90 },
+        { name: 'CreditNoteAmt', label: 'Credit Note', type: 'number', width: 90 },
+        { name: 'SrIssueAmt', label: 'SR-Issue', type: 'number', width: 90 },
+        { name: 'TotalAmt', label: 'Total', type: 'number', width: 100 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+        { name: 'FLocation', label: 'Location From' },
+        { name: 'TLocation', label: 'Location To' },
+      ],
+      groupBy: { column: 'LocationName', label: 'Location' },
+      totals: ['ReceivingAmt', 'CreditNoteAmt', 'SrIssueAmt', 'TotalAmt'],
+    },
+  },
+  {
+    name: 'Store Requisition List Report',
+    description:
+      'รายงานแสดงรายการ SR แบบ summary Group by location โดยเป็นการแสดงข้อมูลตามที่ user บันทึกข้อมูลลงในระบบ',
+    report_group: 'SR',
+    is_standard: true,
+    contentConfig: {
+      title: 'Store Requisition List Report',
+      dataSource: 'StoreRequisitionList',
+      columns: [
+        { name: 'SrDate', label: 'Date', type: 'date', width: 70 },
+        { name: 'SrNo', label: 'SR No.', type: 'string', width: 100 },
+        { name: 'Description', label: 'Description', type: 'string', width: 180 },
+        { name: 'MovementType', label: 'Movement', type: 'string', width: 80 },
+        { name: 'DocStatus', label: 'Status', type: 'string', width: 70 },
+        { name: 'TotalAmount', label: 'Total', type: 'number', width: 90 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+      ],
+      groupBy: { column: 'LocationName', label: 'Location' },
+      totals: ['TotalAmount'],
+    },
+  },
+  {
+    name: 'Issue Detail Report',
+    description:
+      'รายงานแสดงรายละเอียดของ SR (Issue) แต่ละใบ เช่น product, location from, location to, qty, amount สามารถเลือก filter movement type ได้',
+    report_group: 'SR',
+    is_standard: true,
+    contentConfig: {
+      title: 'Issue Detail Report',
+      dataSource: 'IssueDetail',
+      landscape: true,
+      columns: [
+        { name: 'SrNo', label: 'SR No.', type: 'string', width: 80 },
+        { name: 'CommitDate', label: 'Commit Date', type: 'date', width: 75 },
+        { name: 'ProductDesc1', label: 'Product', type: 'string', width: 150 },
+        { name: 'LocationFrom', label: 'From', type: 'string', width: 100 },
+        { name: 'LocationTo', label: 'To', type: 'string', width: 100 },
+        { name: 'MovementType', label: 'Movement', type: 'string', width: 70 },
+        { name: 'Qty', label: 'Qty', type: 'number', width: 65 },
+        { name: 'UnitCode', label: 'Unit', type: 'string', width: 50 },
+        { name: 'CostPerUnit', label: 'Cost/Unit', type: 'number', width: 75 },
+        { name: 'Amount', label: 'Amount', type: 'number', width: 85 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+        { name: 'FMovementType', label: 'Movement Type' },
+      ],
+      groupBy: { column: 'SrNo', label: 'SR No' },
+      totals: ['Qty', 'Amount'],
+    },
+  },
+  {
+    name: 'Store Requisition Summary by Cost Report',
+    description:
+      'รายงานแสดงสรุปยอดต้นทุนแยกตาม Location และ Item Group แสดง Receiving, Credit Note, SR-Issue, Total',
+    report_group: 'SR',
+    is_standard: true,
+    contentConfig: {
+      title: 'Direct Cost Summary Report',
+      dataSource: 'DirectCostSummary',
+      columns: [
+        { name: 'LocationName', label: 'Location', type: 'string', width: 140 },
+        { name: 'ItemGroupName', label: 'Item Group', type: 'string', width: 130 },
+        { name: 'ReceivingAmt', label: 'Receiving', type: 'number', width: 100 },
+        { name: 'CreditNoteAmt', label: 'Credit Note', type: 'number', width: 100 },
+        { name: 'SrIssueAmt', label: 'SR-Issue', type: 'number', width: 100 },
+        { name: 'TotalAmt', label: 'Total', type: 'number', width: 100 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+      ],
+      groupBy: { column: 'LocationName', label: 'Location' },
+      totals: ['ReceivingAmt', 'CreditNoteAmt', 'SrIssueAmt', 'TotalAmt'],
+    },
+  },
+
+  // ===================== Stock In (SI) =====================
+  {
+    name: 'Stock In Detail Report',
+    description:
+      'รายงานแสดงรายละเอียดของ Stock In แต่ละใบ เช่น product, location, qty, amount Group by Movement Type',
+    report_group: 'SI',
+    is_standard: true,
+    contentConfig: {
+      title: 'Stock In Detail Report',
+      dataSource: 'StockIn',
+      landscape: true,
+      columns: [
+        { name: 'DocNo', label: 'Doc No.', type: 'string', width: 90 },
+        { name: 'DocDate', label: 'Date', type: 'date', width: 70 },
+        { name: 'ProductCode', label: 'Product Code', type: 'string', width: 80 },
+        { name: 'ProductDesc1', label: 'Product Name', type: 'string', width: 160 },
+        { name: 'LocationName', label: 'Location', type: 'string', width: 110 },
+        { name: 'Qty', label: 'Qty', type: 'number', width: 65 },
+        { name: 'UnitCode', label: 'Unit', type: 'string', width: 55 },
+        { name: 'CostPerUnit', label: 'Cost/Unit', type: 'number', width: 80 },
+        { name: 'Amount', label: 'Amount', type: 'number', width: 90 },
+        { name: 'Remark', label: 'Remark', type: 'string', width: 120 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+      ],
+      groupBy: { column: 'MovementType', label: 'Movement Type' },
+      totals: ['Qty', 'Amount'],
+    },
+  },
+
+  // ===================== Stock Out (SO) =====================
+  {
+    name: 'Stock Out Detail Report',
+    description:
+      'รายงานแสดงรายละเอียดของ Stock Out แต่ละใบ เช่น product, location, qty, amount Group by Movement Type',
+    report_group: 'SO',
+    is_standard: true,
+    contentConfig: {
+      title: 'Stock Out Detail Report',
+      dataSource: 'StockOut',
+      landscape: true,
+      columns: [
+        { name: 'DocNo', label: 'Doc No.', type: 'string', width: 90 },
+        { name: 'DocDate', label: 'Date', type: 'date', width: 70 },
+        { name: 'ProductCode', label: 'Product Code', type: 'string', width: 80 },
+        { name: 'ProductDesc1', label: 'Product Name', type: 'string', width: 160 },
+        { name: 'LocationName', label: 'Location', type: 'string', width: 110 },
+        { name: 'Qty', label: 'Qty', type: 'number', width: 65 },
+        { name: 'UnitCode', label: 'Unit', type: 'string', width: 55 },
+        { name: 'CostPerUnit', label: 'Cost/Unit', type: 'number', width: 80 },
+        { name: 'Amount', label: 'Amount', type: 'number', width: 90 },
+        { name: 'Remark', label: 'Remark', type: 'string', width: 120 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+      ],
+      groupBy: { column: 'MovementType', label: 'Movement Type' },
+      totals: ['Qty', 'Amount'],
+    },
+  },
+
+  // ===================== Inventory =====================
+  {
+    name: 'EOP Adjustment Report',
+    description:
+      'รายงานแสดงข้อมูลการทำ Closing Balance แสดงยอดคงเหลือตามระบบ ยอดที่นับได้ ส่วนต่าง รวมถึง Cost/Unit และ Amount',
+    report_group: 'Inventory',
+    is_standard: true,
+    contentConfig: {
+      title: 'EOP Adjustment Report',
+      dataSource: 'EOPAdjustment',
+      landscape: true,
+      columns: [
+        { name: 'ProductCode', label: 'Product Code', type: 'string', width: 80 },
+        { name: 'ProductDesc1', label: 'Product Name', type: 'string', width: 160 },
+        { name: 'UnitCode', label: 'Unit', type: 'string', width: 50 },
+        { name: 'SystemQty', label: 'System Qty', type: 'number', width: 80 },
+        { name: 'CountQty', label: 'Count Qty', type: 'number', width: 80 },
+        { name: 'DiffQty', label: 'Diff Qty', type: 'number', width: 75 },
+        { name: 'CostPerUnit', label: 'Cost/Unit', type: 'number', width: 80 },
+        { name: 'DiffAmount', label: 'Diff Amount', type: 'number', width: 90 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Period' },
+        { name: 'FLocation', label: 'Location' },
+      ],
+      groupBy: { column: 'LocationName', label: 'Location' },
+      totals: ['DiffQty', 'DiffAmount'],
+    },
+  },
+  {
+    name: 'Inventory Balance Report',
+    description:
+      'รายงานแสดงยอดคงเหลือ แบบ summary โดย group ด้วยเงื่อนไข Location, Product แสดง Min, Max, On hand, Unit, Cost/Unit, Balance Amount',
+    report_group: 'Inventory',
+    is_standard: true,
+    contentConfig: {
+      title: 'Inventory Balance Report',
+      dataSource: 'Inventory',
+      columns: [
+        { name: 'ProductCode', label: 'Product', type: 'string', width: 200 },
+        { name: 'InventoryUnit', label: 'Unit', type: 'string', width: 50 },
+        { name: 'MinQty', label: 'Min', type: 'number', width: 60 },
+        { name: 'MaxQty', label: 'Max', type: 'number', width: 60 },
+        { name: 'NetQty', label: 'On Hand', type: 'number', width: 80 },
+        { name: 'UnitCost', label: 'Cost/Unit', type: 'number', width: 80 },
+        { name: 'Amount', label: 'Balance Amt', type: 'number', width: 100 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'As at Date' },
+        { name: 'FLocation', label: 'Location From' },
+        { name: 'TLocation', label: 'Location To' },
+        { name: 'FProduct', label: 'Product From' },
+        { name: 'TProduct', label: 'Product To' },
+      ],
+      groupBy: { column: 'LocationCode', label: 'Location' },
+      totals: ['NetQty', 'Amount'],
+    },
+  },
+  {
+    name: 'Monthly Inventory Movement Report',
+    description:
+      'รายงานแสดง summary โดย transaction ว่าสินค้าจากแต่ละ location ถูกใช้ไปกับ transaction ประเภทใดบ้าง แสดงยอดยกมาและคงเหลือ',
+    report_group: 'Inventory',
+    is_standard: true,
+    contentConfig: {
+      title: 'Monthly Inventory Movement Report',
+      dataSource: 'InventoryMovement',
+      landscape: true,
+      columns: [
+        { name: 'ProductDesc1', label: 'Product', type: 'string', width: 140 },
+        { name: 'BFQty', label: 'B/F Qty', type: 'number', width: 65 },
+        { name: 'BFAmt', label: 'B/F Amt', type: 'number', width: 70 },
+        { name: 'RecQty', label: 'Rec Qty', type: 'number', width: 60 },
+        { name: 'RecAmt', label: 'Rec Amt', type: 'number', width: 70 },
+        { name: 'CnQty', label: 'CN Qty', type: 'number', width: 55 },
+        { name: 'CnAmt', label: 'CN Amt', type: 'number', width: 65 },
+        { name: 'TrInQty', label: 'Tr.In Qty', type: 'number', width: 60 },
+        { name: 'TrOutQty', label: 'Tr.Out Qty', type: 'number', width: 65 },
+        { name: 'IssueQty', label: 'Issue Qty', type: 'number', width: 60 },
+        { name: 'SiQty', label: 'SI Qty', type: 'number', width: 55 },
+        { name: 'SoQty', label: 'SO Qty', type: 'number', width: 55 },
+        { name: 'CFQty', label: 'C/F Qty', type: 'number', width: 65 },
+        { name: 'CFAmt', label: 'C/F Amt', type: 'number', width: 75 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+        { name: 'FLocation', label: 'Location' },
+        { name: 'FCategory', label: 'Category' },
+      ],
+      groupBy: { column: 'LocationCode', label: 'Location' },
+      totals: ['BFAmt', 'RecAmt', 'CnAmt', 'CFAmt'],
+    },
+  },
+  {
+    name: 'Inventory Movement Summary by Location Report',
+    description:
+      'รายงานแสดง Inventory Movement summary ตาม Location แสดง B/F, Receiving, Credit Note, Transfer In/Out, Issue, Stock In/Out, Extra Cost, C/F',
+    report_group: 'Inventory',
+    is_standard: true,
+    contentConfig: {
+      title: 'Inventory Movement Summary by Location',
+      dataSource: 'InventoryMovementSummary',
+      landscape: true,
+      columns: [
+        { name: 'LocationName', label: 'Location', type: 'string', width: 120 },
+        { name: 'BFAmt', label: 'B/F', type: 'number', width: 75 },
+        { name: 'RecAmt', label: 'Receiving', type: 'number', width: 75 },
+        { name: 'CnAmt', label: 'Credit Note', type: 'number', width: 75 },
+        { name: 'TrInAmt', label: 'Transfer In', type: 'number', width: 75 },
+        { name: 'TrOutAmt', label: 'Transfer Out', type: 'number', width: 80 },
+        { name: 'IssueAmt', label: 'Issue Out', type: 'number', width: 75 },
+        { name: 'SiAmt', label: 'Stock In', type: 'number', width: 70 },
+        { name: 'SoAmt', label: 'Stock Out', type: 'number', width: 70 },
+        { name: 'ExtraCostAmt', label: 'Extra Cost', type: 'number', width: 75 },
+        { name: 'CFAmt', label: 'C/F', type: 'number', width: 80 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+      ],
+      totals: ['BFAmt', 'RecAmt', 'CnAmt', 'TrInAmt', 'TrOutAmt', 'IssueAmt', 'SiAmt', 'SoAmt', 'ExtraCostAmt', 'CFAmt'],
+    },
+  },
+  {
+    name: 'Slow Moving Report',
+    description:
+      'รายงานแสดงสินค้าที่ไม่มีการเคลื่อนไหวในช่วงระยะเวลาที่กำหนด แสดง Product, Last Active, On hand, Cost/Unit, Amount',
+    report_group: 'Inventory',
+    is_standard: true,
+    contentConfig: {
+      title: 'Slow Moving Report',
+      dataSource: 'SlowMoving',
+      landscape: true,
+      columns: [
+        { name: 'RowNo', label: 'No.', type: 'string', width: 40 },
+        { name: 'ProductCode', label: 'Product ID', type: 'string', width: 80 },
+        { name: 'ProductDesc1', label: 'Description', type: 'string', width: 180 },
+        { name: 'LastActiveDate', label: 'Last Active', type: 'date', width: 80 },
+        { name: 'LastActiveType', label: 'Type', type: 'string', width: 60 },
+        { name: 'InventoryUnit', label: 'Unit', type: 'string', width: 50 },
+        { name: 'OnHandQty', label: 'On Hand', type: 'number', width: 75 },
+        { name: 'CostPerUnit', label: 'Cost/Unit', type: 'number', width: 80 },
+        { name: 'Amount', label: 'Amount', type: 'number', width: 90 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'As at Date' },
+        { name: 'FGroupBy', label: 'Group By' },
+      ],
+      groupBy: { column: 'LocationName', label: 'Location' },
+      totals: ['OnHandQty', 'Amount'],
+    },
+  },
+  {
+    name: 'Stock Card Detailed Report',
+    description:
+      'รายงานแสดง Movement ของ Product แยกตาม Location แสดงยอดยกมา In/Out ยอดยกไป Cost/Unit Amount',
+    report_group: 'Inventory',
+    is_standard: true,
+    contentConfig: {
+      title: 'Stock Card Detail Report',
+      dataSource: 'Stockcard',
+      landscape: true,
+      columns: [
+        { name: 'DocDate', label: 'Date', type: 'date', width: 70 },
+        { name: 'HdrNo', label: 'Document No.', type: 'string', width: 100 },
+        { name: 'DocType', label: 'Type', type: 'string', width: 45 },
+        { name: 'InventoryUnit', label: 'Unit', type: 'string', width: 50 },
+        { name: 'BFQty', label: 'B/F Qty', type: 'number', width: 70 },
+        { name: 'InQty', label: 'In', type: 'number', width: 65 },
+        { name: 'OutQty', label: 'Out', type: 'number', width: 65 },
+        { name: 'CFQty', label: 'C/F Qty', type: 'number', width: 70 },
+        { name: 'BaseCost', label: 'Cost/Unit', type: 'number', width: 75 },
+        { name: 'BaseAmount', label: 'Amount', type: 'number', width: 85 },
+        { name: 'UnitCost', label: 'Avg. Cost', type: 'number', width: 75 },
+        { name: 'Amount', label: 'Total', type: 'number', width: 90 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'As at Date' },
+        { name: 'FLocation', label: 'Location From' },
+        { name: 'TLocation', label: 'Location To' },
+        { name: 'FProduct', label: 'Product From' },
+        { name: 'TProduct', label: 'Product To' },
+      ],
+      groupBy: { column: 'ProductCode', label: 'Product' },
+      totals: ['InQty', 'OutQty', 'Amount'],
+    },
+  },
+  {
+    name: 'Stock Card Summary Report',
+    description:
+      'รายงานแสดง Movement ของ Product แยกตาม Location แบบสรุป แสดง B/F, In, Out, C/F, Amount',
+    report_group: 'Inventory',
+    is_standard: true,
+    contentConfig: {
+      title: 'Stock Card Summary Report',
+      dataSource: 'StockcardSummary',
+      landscape: true,
+      columns: [
+        { name: 'LocationName', label: 'Location', type: 'string', width: 120 },
+        { name: 'InventoryUnit', label: 'Unit', type: 'string', width: 50 },
+        { name: 'UnitCost', label: 'Cost/Unit', type: 'number', width: 80 },
+        { name: 'BFQty', label: 'B/F Qty', type: 'number', width: 75 },
+        { name: 'InQty', label: 'In', type: 'number', width: 70 },
+        { name: 'OutQty', label: 'Out', type: 'number', width: 70 },
+        { name: 'CFQty', label: 'C/F Qty', type: 'number', width: 75 },
+        { name: 'Amount', label: 'Amount', type: 'number', width: 90 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'As at Date' },
+        { name: 'FProduct', label: 'Product From' },
+        { name: 'TProduct', label: 'Product To' },
+        { name: 'FLocation', label: 'Location From' },
+        { name: 'TLocation', label: 'Location To' },
+      ],
+      groupBy: { column: 'ProductCode', label: 'Product' },
+      totals: ['InQty', 'OutQty', 'Amount'],
+    },
+  },
+  {
+    name: 'Deviation by Item Report',
+    description:
+      'รายงานแสดงความแตกต่างระหว่าง PO และ Receiving ว่ามีรายการใดรับสินค้ามากกว่า PO',
+    report_group: 'Inventory',
+    is_standard: true,
+    contentConfig: {
+      title: 'Deviation by Item Report',
+      dataSource: 'Deviation',
+      landscape: true,
+      columns: [
+        { name: 'PoNo', label: 'PO No.', type: 'string', width: 75 },
+        { name: 'RecNo', label: 'Rec No.', type: 'string', width: 75 },
+        { name: 'InvoiceNo', label: 'Inv. No.', type: 'string', width: 70 },
+        { name: 'VendorName', label: 'Vendor', type: 'string', width: 120 },
+        { name: 'ProductDesc1', label: 'Product', type: 'string', width: 130 },
+        { name: 'PoQty', label: 'PO Qty', type: 'number', width: 60 },
+        { name: 'RecQty', label: 'Rec Qty', type: 'number', width: 60 },
+        { name: 'DiffQty', label: 'Diff Qty', type: 'number', width: 60 },
+        { name: 'RecDevPct', label: 'Dev %', type: 'number', width: 55 },
+        { name: 'AllowDevPct', label: 'Allow %', type: 'number', width: 55 },
+        { name: 'PoPrice', label: 'PO Price', type: 'number', width: 70 },
+        { name: 'RecPrice', label: 'Rec Price', type: 'number', width: 70 },
+        { name: 'DiffPrice', label: 'Diff Price', type: 'number', width: 70 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Rec Date From' },
+        { name: 'TDate', label: 'Rec Date To' },
+        { name: 'FVendor', label: 'Vendor From' },
+        { name: 'TVendor', label: 'Vendor To' },
+      ],
+      totals: [],
+    },
+  },
+  {
+    name: 'Inventory Aging Report',
+    description:
+      'รายงานแสดงอายุของสินค้าที่ไม่มีการเคลื่อนไหวในระบบ เป็นช่วงเวลา 30, 60, 90 วัน',
+    report_group: 'Inventory',
+    is_standard: true,
+    contentConfig: {
+      title: 'Inventory Aging Report',
+      dataSource: 'InventoryAging',
+      landscape: true,
+      columns: [
+        { name: 'ProductCode', label: 'Product', type: 'string', width: 150 },
+        { name: 'Qty30', label: '0-30 Qty', type: 'number', width: 65 },
+        { name: 'Amt30', label: '0-30 Amt', type: 'number', width: 75 },
+        { name: 'Qty60', label: '31-60 Qty', type: 'number', width: 65 },
+        { name: 'Amt60', label: '31-60 Amt', type: 'number', width: 75 },
+        { name: 'Qty90', label: '61-90 Qty', type: 'number', width: 65 },
+        { name: 'Amt90', label: '61-90 Amt', type: 'number', width: 75 },
+        { name: 'QtyOver', label: '>90 Qty', type: 'number', width: 65 },
+        { name: 'AmtOver', label: '>90 Amt', type: 'number', width: 75 },
+        { name: 'TotalQty', label: 'Total Qty', type: 'number', width: 70 },
+        { name: 'TotalAmt', label: 'Total Amt', type: 'number', width: 80 },
+      ],
+      filters: [
+        { name: 'FProduct', label: 'Product From' },
+        { name: 'TProduct', label: 'Product To' },
+        { name: 'FGroupBy', label: 'Group By' },
+      ],
+      groupBy: { column: 'LocationName', label: 'Location' },
+      totals: ['Amt30', 'Amt60', 'Amt90', 'AmtOver', 'TotalAmt'],
+    },
+  },
+  {
+    name: 'Expired Items Report',
+    description:
+      'รายงานแสดงสินค้าที่มีวัน Expiry Date ในช่วงเวลาที่กำหนด',
+    report_group: 'Inventory',
+    is_standard: true,
+    contentConfig: {
+      title: 'Expired Items Report',
+      dataSource: 'ExpiredItems',
+      columns: [
+        { name: 'ProductCode', label: 'Product Code', type: 'string', width: 90 },
+        { name: 'ProductDesc1', label: 'Description', type: 'string', width: 200 },
+        { name: 'Qty', label: 'Qty', type: 'number', width: 70 },
+        { name: 'UnitCode', label: 'Unit', type: 'string', width: 55 },
+        { name: 'ReceivedDate', label: 'Received Date', type: 'date', width: 85 },
+        { name: 'ExpiredDate', label: 'Expired Date', type: 'date', width: 85 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Expired Within' },
+        { name: 'FCategory', label: 'Category' },
+      ],
+      totals: ['Qty'],
+    },
+  },
+
+  // ===================== Recipe =====================
+  {
+    name: 'Recipe List Report',
+    description:
+      'รายงานแสดง list รายการ Recipe เช่น Recipe Code, Name, Category, Unit, Status',
+    report_group: 'Recipe',
+    is_standard: true,
+    contentConfig: {
+      title: 'Recipe List Report',
+      dataSource: 'RecipeList',
+      columns: [
+        { name: 'RecipeCode', label: 'Recipe Code', type: 'string', width: 90 },
+        { name: 'RecipeNameEn', label: 'Name (EN)', type: 'string', width: 160 },
+        { name: 'RecipeNameTh', label: 'Name (TH)', type: 'string', width: 140 },
+        { name: 'CategoryName', label: 'Category', type: 'string', width: 100 },
+        { name: 'UnitCode', label: 'Unit', type: 'string', width: 55 },
+        { name: 'DocStatus', label: 'Status', type: 'string', width: 65 },
+      ],
+      filters: [
+        { name: 'FCategory', label: 'Category From' },
+        { name: 'TCategory', label: 'Category To' },
+      ],
+      totals: [],
+    },
+  },
+  {
+    name: 'Recipe Card Report',
+    description:
+      'รายงานแสดงรายละเอียดของ Recipe ที่บันทึก เช่น product, qty, cost, total cost',
+    report_group: 'Recipe',
+    is_standard: true,
+    contentConfig: {
+      title: 'Recipe Card Report',
+      dataSource: 'RecipeCard',
+      landscape: true,
+      columns: [
+        { name: 'ProductCode', label: 'Product Code', type: 'string', width: 90 },
+        { name: 'ProductDesc1', label: 'Ingredient', type: 'string', width: 200 },
+        { name: 'Qty', label: 'Qty', type: 'number', width: 70 },
+        { name: 'UnitCode', label: 'Unit', type: 'string', width: 55 },
+        { name: 'CostPerUnit', label: 'Cost/Unit', type: 'number', width: 80 },
+        { name: 'Amount', label: 'Amount', type: 'number', width: 90 },
+      ],
+      filters: [
+        { name: 'FCategory', label: 'Category From' },
+        { name: 'TCategory', label: 'Category To' },
+        { name: 'FRecipe', label: 'Recipe Code From' },
+        { name: 'TRecipe', label: 'Recipe Code To' },
+      ],
+      groupBy: { column: 'RecipeCode', label: 'Recipe' },
+      totals: ['Amount'],
+    },
+  },
+  {
+    name: 'Material Consumption Report',
+    description:
+      'รายงานเอา Qty จาก POS เทียบกับ Recipe เพื่อประเมินว่าจะมีการตัดวัตถุดิบอะไรไปบ้าง',
+    report_group: 'Recipe',
+    is_standard: true,
+    contentConfig: {
+      title: 'Material Consumption Report',
+      dataSource: 'MaterialConsumption',
+      landscape: true,
+      columns: [
+        { name: 'RecipeName', label: 'Recipe', type: 'string', width: 180 },
+        { name: 'RecipeQty', label: 'Recipe Qty', type: 'number', width: 80 },
+        { name: 'RecipeUnit', label: 'Recipe Unit', type: 'string', width: 70 },
+        { name: 'InventoryQty', label: 'Inv. Qty', type: 'number', width: 80 },
+        { name: 'InventoryUnit', label: 'Inv. Unit', type: 'string', width: 70 },
+        { name: 'CostPerUnit', label: 'Cost/Unit', type: 'number', width: 80 },
+        { name: 'Amount', label: 'Amount', type: 'number', width: 90 },
+      ],
+      filters: [
+        { name: 'FLocation', label: 'Location' },
+      ],
+      groupBy: { column: 'RecipeCode', label: 'Recipe' },
+      totals: ['Amount'],
+    },
+  },
+  {
+    name: 'Menu Engineering Report',
+    description:
+      'รายงานเอาข้อมูลยอดขาย ต้นทุน เพื่อหากำไรขาดทุน แบ่งเป็นหมวดหมู่ STAR, DOG, PUZZLE, PLOWHORSE',
+    report_group: 'Recipe',
+    is_standard: true,
+    contentConfig: {
+      title: 'Menu Engineering Report',
+      dataSource: 'MenuEngineering',
+      landscape: true,
+      columns: [
+        { name: 'RecipeCode', label: 'Recipe Code', type: 'string', width: 90 },
+        { name: 'RecipeName', label: 'Recipe Name', type: 'string', width: 160 },
+        { name: 'SalesQty', label: 'Qty Sold', type: 'number', width: 70 },
+        { name: 'Cost', label: 'Cost', type: 'number', width: 80 },
+        { name: 'Price', label: 'Price', type: 'number', width: 80 },
+        { name: 'Profit', label: 'Profit', type: 'number', width: 80 },
+        { name: 'ProfitPct', label: 'Profit %', type: 'number', width: 65 },
+        { name: 'Model', label: 'Model', type: 'string', width: 80 },
+      ],
+      filters: [
+        { name: 'FDate', label: 'Date From' },
+        { name: 'TDate', label: 'Date To' },
+        { name: 'FCategory', label: 'Category' },
+      ],
+      groupBy: { column: 'Model', label: 'Model' },
+      totals: ['SalesQty', 'Cost', 'Profit'],
+    },
+  },
+];
+
+// ─── Main ────────────────────────────────────────────────────────────────────
 
 async function main() {
-  // Get all existing report templates from DB
-  const existing = await prisma_platform.tb_report_template.findMany({
-    where: { deleted_at: null },
-    select: { id: true, name: true },
-  });
-  const existingByName = new Map(existing.map((r) => [r.name, r]));
+  console.log('Deleting existing report templates...');
+  const deleted = await prisma.tb_report_template.deleteMany({});
+  console.log(`Deleted ${deleted.count} records.\n`);
 
-  console.log(`Found ${existing.length} existing report templates in DB.`);
-
-  // Login to Blueledgers
-  loginBlueledgers();
-
-  // Fetch live report list from Blueledgers
-  const blReports = fetchReportListFromBlueledgers();
+  console.log(`Seeding ${reportTemplates.length} report templates...\n`);
 
   let createdCount = 0;
-  let updatedCount = 0;
-  let skippedCount = 0;
-  let failedCount = 0;
 
-  for (let i = 0; i < blReports.length; i++) {
-    const { id: reportId, name } = blReports[i];
-    const progress = `[${i + 1}/${blReports.length}]`;
+  for (let i = 0; i < reportTemplates.length; i++) {
+    const t = reportTemplates[i];
+    const progress = `[${i + 1}/${reportTemplates.length}]`;
+    const contentXml = generateContentXml(t.contentConfig);
 
-    const mapping = REPORT_MAP[reportId];
-    if (!mapping) {
-      console.log(`${progress} SKIP (unknown): ${name}`);
-      skippedCount++;
-      continue;
-    }
+    await prisma.tb_report_template.create({
+      data: {
+        name: t.name,
+        description: t.description,
+        report_group: t.report_group,
+        dialog: '',
+        content: contentXml,
+        is_standard: t.is_standard,
+        is_active: true,
+      },
+    });
 
-    console.log(`${progress} Fetching: ${name}...`);
-
-    const result = fetchDialogAndContent(reportId);
-    if (!result) {
-      console.log(`${progress} FAILED: ${name}`);
-      failedCount++;
-      continue;
-    }
-
-    const existingRecord = existingByName.get(name);
-
-    if (existingRecord) {
-      await prisma_platform.tb_report_template.update({
-        where: { id: existingRecord.id },
-        data: {
-          dialog: result.dialog,
-          content: result.content,
-        },
-      });
-      console.log(`    UPDATE: ${name} -> ${existingRecord.id}`);
-      updatedCount++;
-    } else {
-      const record = await prisma_platform.tb_report_template.create({
-        data: {
-          name: mapping.name,
-          description: mapping.name,
-          report_group: mapping.report_group,
-          dialog: result.dialog,
-          content: result.content,
-          is_standard: true,
-          is_active: true,
-        },
-      });
-      console.log(`    CREATE: ${name} (${mapping.report_group}) -> ${record.id}`);
-      createdCount++;
-    }
+    console.log(`${progress} CREATE: ${t.name} (${t.report_group})`);
+    createdCount++;
   }
 
   console.log(`\n==================== Summary ====================`);
+  console.log(`Deleted: ${deleted.count}`);
   console.log(`Created: ${createdCount}`);
-  console.log(`Updated: ${updatedCount}`);
-  console.log(`Skipped: ${skippedCount}`);
-  console.log(`Failed:  ${failedCount}`);
-  console.log(`Total:   ${blReports.length}`);
-
-  try {
-    unlinkSync(COOKIE_FILE);
-  } catch {}
 }
 
 main()
@@ -567,5 +1412,5 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    await prisma_platform.$disconnect();
+    await prisma.$disconnect();
   });

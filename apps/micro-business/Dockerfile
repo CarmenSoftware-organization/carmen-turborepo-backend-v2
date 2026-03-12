@@ -14,14 +14,16 @@ COPY bun.lock .
 COPY tsconfig.json .
 COPY turbo.json .
 
-# Copy all packages
+# Copy all packages and apps (bun workspace requires all workspace members)
 COPY packages ./packages
+COPY apps ./apps
 
-# Copy app
-COPY apps/micro-business ./apps/micro-business
+# Install dependencies (--ignore-scripts prevents premature postinstall db:generate,
+# || true tolerates bun workspace hoisting warnings that exit non-zero)
+RUN bun install --ignore-scripts || true
 
-# Install dependencies (turbo postinstall generates Prisma clients)
-RUN bun install
+# Generate Prisma clients and build shared packages
+RUN bun run db:generate && bun run build:package
 
 WORKDIR /app/apps/micro-business
 RUN npm run build
@@ -51,7 +53,7 @@ COPY --from=builder /app/apps/micro-business/dist ./apps/micro-business/dist
 
 # Install production dependencies
 ENV NODE_ENV=production
-RUN bun install --no-save --ignore-scripts
+RUN bun install --no-save --ignore-scripts || true
 
 WORKDIR /app/apps/micro-business
 
