@@ -1,6 +1,6 @@
 services:
   api-backend-gateway:
-    image: ${ECR_REGISTRY}/${IMAGE_PREFIX}-backend-gateway:${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY:-local}/carmen-backend-gateway:${IMAGE_TAG:-latest}
     container_name: carmen-api-backend-gateway
     restart: unless-stopped
     ports:
@@ -10,6 +10,32 @@ services:
       - ./apps/backend-gateway/.env
     environment:
       - NODE_ENV=production
+      # Service discovery — ใช้ Docker network hostname
+      - GATEWAY_SERVICE_HOST=0.0.0.0
+      - BUSINESS_SERVICE_HOST=api-micro-business
+      - BUSINESS_SERVICE_TCP_PORT=5020
+      - BUSINESS_SERVICE_HTTP_PORT=6020
+      - CLUSTER_SERVICE_HOST=api-micro-cluster
+      - CLUSTER_SERVICE_TCP_PORT=5014
+      - CLUSTER_SERVICE_HTTP_PORT=6014
+      - FILE_SERVICE_HOST=api-micro-file
+      - FILE_SERVICE_TCP_PORT=5007
+      - FILE_SERVICE_HTTP_PORT=6007
+      - CRONJOB_SERVICE_HOST=api-micro-cronjob
+      - CRONJOB_SERVICE_TCP_PORT=5012
+      - CRONJOB_SERVICE_HTTP_PORT=6012
+      - KEYCLOAK_API_SERVICE_HOST=api-micro-keycloak-api
+      - KEYCLOAK_API_SERVICE_TCP_PORT=5013
+      - KEYCLOAK_API_SERVICE_HTTP_PORT=6013
+      - NOTIFICATION_SERVICE_HOST=api-micro-notification
+      - NOTIFICATION_SERVICE_TCP_PORT=5006
+      - NOTIFICATION_SERVICE_HTTP_PORT=6006
+      - REPORT_SERVICE_HOST=api-micro-report
+      - REPORT_SERVICE_TCP_PORT=5015
+      - REPORT_SERVICE_HTTP_PORT=6015
+      - REPORT_SERVICE_GRPC_PORT=4015
+      - REPORT_RENDER_HOST=api-micro-report
+      - REPORT_RENDER_TCP_PORT=8001
     networks:
       - carmen-network
     healthcheck:
@@ -20,7 +46,7 @@ services:
       start_period: 40s
 
   api-micro-file:
-    image: ${ECR_REGISTRY}/${IMAGE_PREFIX}-micro-file:${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY:-local}/carmen-micro-file:${IMAGE_TAG:-latest}
     container_name: carmen-api-micro-file
     restart: unless-stopped
     ports:
@@ -30,13 +56,23 @@ services:
       - ./apps/micro-file/.env
     environment:
       - NODE_ENV=production
+      # Service discovery
+      - GATEWAY_SERVICE_HOST=api-backend-gateway
+      - BUSINESS_SERVICE_HOST=api-micro-business
+      - CLUSTER_SERVICE_HOST=api-micro-cluster
+      - CRONJOB_SERVICE_HOST=api-micro-cronjob
+      - FILE_SERVICE_HOST=api-micro-file
+      - KEYCLOAK_API_SERVICE_HOST=api-micro-keycloak-api
+      - NOTIFICATION_SERVICE_HOST=api-micro-notification
+      - REPORT_SERVICE_HOST=api-micro-report
+      - REPORT_RENDER_HOST=api-micro-report
     networks:
       - carmen-network
     depends_on:
       - api-backend-gateway
 
   api-micro-cronjob:
-    image: ${ECR_REGISTRY}/${IMAGE_PREFIX}-micro-cronjob:${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY:-local}/carmen-micro-cronjob:${IMAGE_TAG:-latest}
     container_name: carmen-api-micro-cronjob
     restart: unless-stopped
     ports:
@@ -46,13 +82,24 @@ services:
       - ./apps/micro-cronjob/.env
     environment:
       - NODE_ENV=production
+      # Service discovery
+      - GATEWAY_SERVICE_HOST=api-backend-gateway
+      - BUSINESS_SERVICE_HOST=api-micro-business
+      - CLUSTER_SERVICE_HOST=api-micro-cluster
+      - CRONJOB_SERVICE_HOST=api-micro-cronjob
+      - FILE_SERVICE_HOST=api-micro-file
+      - KEYCLOAK_API_SERVICE_HOST=api-micro-keycloak-api
+      - NOTIFICATION_SERVICE_HOST=api-micro-notification
+      - NOTIFICATION_SERVICE_TCP_PORT=5006
+      - REPORT_SERVICE_HOST=api-micro-report
+      - REPORT_RENDER_HOST=api-micro-report
     networks:
       - carmen-network
     depends_on:
       - api-backend-gateway
 
   api-micro-keycloak-api:
-    image: ${ECR_REGISTRY}/${IMAGE_PREFIX}-micro-keycloak-api:${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY:-local}/carmen-micro-keycloak-api:${IMAGE_TAG:-latest}
     container_name: carmen-api-micro-keycloak-api
     restart: unless-stopped
     ports:
@@ -62,6 +109,16 @@ services:
       - ./apps/micro-keycloak-api/.env
     environment:
       - NODE_ENV=production
+      # Service discovery
+      - GATEWAY_SERVICE_HOST=api-backend-gateway
+      - BUSINESS_SERVICE_HOST=api-micro-business
+      - CLUSTER_SERVICE_HOST=api-micro-cluster
+      - CRONJOB_SERVICE_HOST=api-micro-cronjob
+      - FILE_SERVICE_HOST=api-micro-file
+      - KEYCLOAK_API_SERVICE_HOST=api-micro-keycloak-api
+      - NOTIFICATION_SERVICE_HOST=api-micro-notification
+      - REPORT_SERVICE_HOST=api-micro-report
+      - REPORT_RENDER_HOST=api-micro-report
     networks:
       - carmen-network
     depends_on:
@@ -69,7 +126,7 @@ services:
 
   # Notification service (separated from micro-business)
   api-micro-notification:
-    image: ${ECR_REGISTRY}/${IMAGE_PREFIX}-micro-notification:${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY:-local}/carmen-micro-notification:${IMAGE_TAG:-latest}
     container_name: carmen-api-micro-notification
     restart: unless-stopped
     ports:
@@ -79,6 +136,18 @@ services:
       - ./apps/micro-notification/.env
     environment:
       - NODE_ENV=production
+      # Service discovery
+      - GATEWAY_SERVICE_HOST=api-backend-gateway
+      - BUSINESS_SERVICE_HOST=api-micro-business
+      - CLUSTER_SERVICE_HOST=api-micro-cluster
+      - CRONJOB_SERVICE_HOST=api-micro-cronjob
+      - FILE_SERVICE_HOST=api-micro-file
+      - KEYCLOAK_API_SERVICE_HOST=api-micro-keycloak-api
+      - NOTIFICATION_SERVICE_HOST=0.0.0.0
+      - NOTIFICATION_SERVICE_TCP_PORT=5006
+      - NOTIFICATION_SERVICE_HTTP_PORT=6006
+      - REPORT_SERVICE_HOST=api-micro-report
+      - REPORT_RENDER_HOST=api-micro-report
     networks:
       - carmen-network
     depends_on:
@@ -91,7 +160,7 @@ services:
       start_period: 40s
 
   api-micro-cluster:
-    image: ${ECR_REGISTRY}/${IMAGE_PREFIX}-micro-cluster:${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY:-local}/carmen-micro-cluster:${IMAGE_TAG:-latest}
     container_name: carmen-api-micro-cluster
     restart: unless-stopped
     ports:
@@ -101,6 +170,17 @@ services:
       - ./apps/micro-cluster/.env
     environment:
       - NODE_ENV=production
+      # Service discovery
+      - GATEWAY_SERVICE_HOST=api-backend-gateway
+      - BUSINESS_SERVICE_HOST=api-micro-business
+      - CLUSTER_SERVICE_HOST=0.0.0.0
+      - CRONJOB_SERVICE_HOST=api-micro-cronjob
+      - FILE_SERVICE_HOST=api-micro-file
+      - KEYCLOAK_API_SERVICE_HOST=api-micro-keycloak-api
+      - KEYCLOAK_API_SERVICE_TCP_PORT=5013
+      - NOTIFICATION_SERVICE_HOST=api-micro-notification
+      - REPORT_SERVICE_HOST=api-micro-report
+      - REPORT_RENDER_HOST=api-micro-report
     networks:
       - carmen-network
     depends_on:
@@ -113,7 +193,7 @@ services:
       start_period: 40s
 
   api-micro-business:
-    image: ${ECR_REGISTRY}/${IMAGE_PREFIX}-micro-business:${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY:-local}/carmen-micro-business:${IMAGE_TAG:-latest}
     container_name: carmen-api-micro-business
     restart: unless-stopped
     ports:
@@ -123,6 +203,23 @@ services:
       - ./apps/micro-business/.env
     environment:
       - NODE_ENV=production
+      # Service discovery
+      - GATEWAY_SERVICE_HOST=api-backend-gateway
+      - BUSINESS_SERVICE_HOST=api-micro-business
+      - CLUSTER_SERVICE_HOST=api-micro-cluster
+      - CRONJOB_SERVICE_HOST=api-micro-cronjob
+      - CRONJOB_SERVICE_TCP_PORT=5012
+      - FILE_SERVICE_HOST=api-micro-file
+      - FILE_SERVICE_TCP_PORT=5007
+      - KEYCLOAK_API_SERVICE_HOST=api-micro-keycloak-api
+      - KEYCLOAK_API_SERVICE_TCP_PORT=5013
+      - NOTIFICATION_SERVICE_HOST=api-micro-notification
+      - NOTIFICATION_SERVICE_TCP_PORT=5006
+      - REPORT_SERVICE_HOST=api-micro-report
+      - REPORT_SERVICE_TCP_PORT=5015
+      - REPORT_SERVICE_GRPC_PORT=4015
+      - REPORT_RENDER_HOST=api-micro-report
+      - REPORT_RENDER_TCP_PORT=8001
     networks:
       - carmen-network
     depends_on:
