@@ -105,6 +105,7 @@ export interface KeycloakAdminConfig {
   baseUrl: string;
   realm: string;
   clientId: string;
+  clientSecret?: string;
   adminClientSecret?: string;
   adminUsername?: string;
   adminPassword?: string;

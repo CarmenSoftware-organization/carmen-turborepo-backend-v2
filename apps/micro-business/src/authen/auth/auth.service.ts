@@ -272,11 +272,11 @@ export class AuthService {
     );
 
     try {
-      // Call Keycloak via TCP service
+      // Call Keycloak via TCP service using refresh token (OIDC logout)
       const response = await firstValueFrom(
         this.keycloakService.send(
-          { cmd: 'keycloak.auth.logoutById', service: 'keycloak' },
-          { user_id: logoutDto.user_id },
+          { cmd: 'keycloak.auth.logout', service: 'keycloak' },
+          { refresh_token: logoutDto.refresh_token },
         ),
       );
 

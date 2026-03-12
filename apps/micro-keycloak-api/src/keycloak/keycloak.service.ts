@@ -50,7 +50,8 @@ export class KeycloakService {
   private readonly config: KeycloakAdminConfig = {
     baseUrl: envConfig.KEYCLOAK_BASE_URL,
     realm: envConfig.KEYCLOAK_REALM,
-    clientId: envConfig.KEYCLOAK_ADMIN_CLIENT_ID,
+    clientId: envConfig.KEYCLOAK_CLIENT_ID,
+    clientSecret: envConfig.KEYCLOAK_CLIENT_SECRET,
     adminClientId: envConfig.KEYCLOAK_ADMIN_CLIENT_ID,
     adminClientSecret: envConfig.KEYCLOAK_ADMIN_CLIENT_SECRET,
     adminUsername: envConfig.KEYCLOAK_ADMIN_USERNAME,
@@ -860,7 +861,9 @@ export class KeycloakService {
 
     const params = new URLSearchParams();
     params.append('client_id', this.config.clientId);
-    params.append('client_secret', this.config.adminClientSecret);
+    if (this.config.clientSecret) {
+      params.append('client_secret', this.config.clientSecret);
+    }
     params.append('refresh_token', refreshToken);
 
     const response = await fetch(logoutUrl, {

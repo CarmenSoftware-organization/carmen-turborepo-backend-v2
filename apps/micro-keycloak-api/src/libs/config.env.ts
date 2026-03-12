@@ -81,6 +81,8 @@ const envSchema = z.object({
   // Keycloak Configuration
   KEYCLOAK_BASE_URL: z.string().min(1, 'KEYCLOAK_BASE_URL is required'),
   KEYCLOAK_REALM: z.string().default('master'),
+  KEYCLOAK_CLIENT_ID: z.string().default('account'),
+  KEYCLOAK_CLIENT_SECRET: z.string().default(''),
   KEYCLOAK_ADMIN_CLIENT_ID: z.string().default('admin-cli'),
   KEYCLOAK_ADMIN_CLIENT_SECRET: z.string().default(''),
   KEYCLOAK_ADMIN_CLI: z.string().default('admin-cli'),
@@ -161,6 +163,8 @@ export const envConfig = {
   // Keycloak Configuration
   KEYCLOAK_BASE_URL: env.KEYCLOAK_BASE_URL,
   KEYCLOAK_REALM: env.KEYCLOAK_REALM,
+  KEYCLOAK_CLIENT_ID: env.KEYCLOAK_CLIENT_ID,
+  KEYCLOAK_CLIENT_SECRET: env.KEYCLOAK_CLIENT_SECRET,
   KEYCLOAK_ADMIN_CLIENT_ID: env.KEYCLOAK_ADMIN_CLIENT_ID,
   KEYCLOAK_ADMIN_CLIENT_SECRET: env.KEYCLOAK_ADMIN_CLIENT_SECRET,
   KEYCLOAK_ADMIN_CLI: env.KEYCLOAK_ADMIN_CLI,
