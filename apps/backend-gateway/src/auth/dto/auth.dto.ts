@@ -31,11 +31,17 @@ export class RegisterConfirmDto extends createZodDto(RegisterConfirmSchema) { }
 
 export const LoginSchema = z.object({
   email: z
-    .string({ required_error: 'Email field is required' })
-    .email({ message: 'Invalid email address' }),
+    .string()
+    .email({ message: 'Invalid email address' })
+    .optional(),
+  username: z
+    .string()
+    .optional(),
   password: z
     .string({ required_error: 'Password field is required' })
     .min(6, { message: 'Password must be at least 6 characters long' }),
+}).refine((data) => data.email || data.username, {
+  message: 'Either email or username is required',
 });
 
 export type ILogin = z.infer<typeof LoginSchema>;

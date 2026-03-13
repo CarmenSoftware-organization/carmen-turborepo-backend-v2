@@ -60,18 +60,18 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiBody({
     type: LoginDto,
-    description: 'Login',
+    description: 'Login with email or username',
     examples: {
-      Login: {
+      'Login with email': {
         value: {
           email: 'test@test.com',
           password: '12345678',
         },
       },
-      'Login with wrong email': {
+      'Login with username': {
         value: {
-          email: 'test@test.com',
-          password: 'password',
+          username: 'john.doe',
+          password: '12345678',
         },
       },
     },
@@ -79,7 +79,7 @@ export class AuthController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Login',
-    description: 'Authenticates a user against Keycloak using email and password credentials, returning JWT access and refresh tokens for subsequent API requests across all ERP modules.',
+    description: 'Authenticates a user against Keycloak using email or username with password credentials, returning JWT access and refresh tokens for subsequent API requests across all ERP modules.',
     operationId: 'login',
     tags: ['Authentication'],
     deprecated: false,
