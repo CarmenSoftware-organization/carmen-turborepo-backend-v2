@@ -1286,8 +1286,6 @@ model tb_location {
   tb_purchase_request_template_detail tb_purchase_request_template_detail[]
   tb_user_location                    tb_user_location[]
   tb_credit_note_detail               tb_credit_note_detail[]
-  tb_stock_in_detail                  tb_stock_in_detail[]
-  tb_stock_out_detail                 tb_stock_out_detail[]
   tb_store_requisition_from           tb_store_requisition[]                @relation("store_requisition_from_location")
   tb_store_requisition_to             tb_store_requisition[]                @relation("store_requisition_to_location")
   tb_transfer_from                    tb_transfer[]                         @relation("transfer_from_location")
@@ -1297,6 +1295,8 @@ model tb_location {
   tb_location_comment                 tb_location_comment[]
   tb_stock_in                         tb_stock_in[]
   tb_stock_out                        tb_stock_out[]
+  tbStockInDetails                    tb_stock_in_detail[]
+  tbStockOutDetails                   tb_stock_out_detail[]
 
   @@unique([code, name, deleted_at], map: "location_code_name_u")
   @@index([name], map: "location_name_idx")
@@ -2500,11 +2500,11 @@ model tb_stock_in {
   adjustment_type_code String?             @db.VarChar
   adjustment_type      tb_adjustment_type? @relation(fields: [adjustment_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  doc_status enum_doc_status @default(draft)
-
   location_id   String? @db.Uuid
   location_code String? @db.VarChar
   location_name String? @db.VarChar
+
+  doc_status enum_doc_status @default(draft)
 
   workflow_id             String? @db.Uuid
   workflow_name           String? @db.VarChar
@@ -2585,10 +2585,6 @@ model tb_stock_in_detail {
   stock_in_id              String  @db.Uuid
   sequence_no              Int?    @default(1)
   description              String? @db.VarChar
-
-  // location_id   String? @db.Uuid
-  // location_code String? @db.VarChar
-  // location_name String? @db.VarChar
 
   product_id         String  @db.Uuid
   product_name       String? @db.VarChar
@@ -2750,10 +2746,6 @@ model tb_stock_out_detail {
   stock_out_id             String  @db.Uuid
   sequence_no              Int?    @default(1)
   description              String? @db.VarChar
-
-  // location_id   String? @db.Uuid
-  // location_code String? @db.VarChar
-  // location_name String? @db.VarChar
 
   product_id         String  @db.Uuid
   product_name       String? @db.VarChar

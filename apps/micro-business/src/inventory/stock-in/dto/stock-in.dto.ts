@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 import { enum_doc_status, PrismaClient } from '@repo/prisma-shared-schema-tenant';
-import { EmbeddedProductSchema, EmbeddedWorkflowSchema, InfoSchema } from '@/common/dto/embedded.dto';
+import { EmbeddedLocationSchema, EmbeddedProductSchema, EmbeddedWorkflowSchema, InfoSchema } from '@/common/dto/embedded.dto';
 
 import {
   validateProductIdExists,
@@ -35,8 +35,12 @@ const StockInDetailBaseSchema = z.object({
   // Denormalized product fields (populated by service)
   product_name: z.string().optional().nullable(),
   product_local_name: z.string().optional().nullable(),
+  // Denormalized location fields (populated by service)
+  location_code: z.string().optional().nullable(),
+  location_name: z.string().optional().nullable(),
 })
 .merge(EmbeddedProductSchema)
+.merge(EmbeddedLocationSchema)
 .merge(InfoSchema);
 
 // Stock In Schema
@@ -47,9 +51,6 @@ export const StockInSchema = z.object({
   adjustment_type_id: z.string().uuid().optional().nullable(),
   adjustment_type_code: z.string().optional().nullable(),
   doc_status: z.enum(Object.values(enum_doc_status) as [string, ...string[]]).optional().default('draft'),
-  location_id: z.string().uuid().optional().nullable(),
-  location_code: z.string().optional().nullable(),
-  location_name: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
   doc_version: z.number().int().optional().default(0),
 })
@@ -97,9 +98,6 @@ export const StockInUpdate = z.object({
   adjustment_type_id: z.string().uuid().optional().nullable(),
   adjustment_type_code: z.string().optional().nullable(),
   doc_status: z.enum(Object.values(enum_doc_status) as [string, ...string[]]).optional(),
-  location_id: z.string().uuid().optional().nullable(),
-  location_code: z.string().optional().nullable(),
-  location_name: z.string().optional().nullable(),
   // workflow_id: z.string().uuid().optional().nullable(),
   note: z.string().optional().nullable(),
   info: z.any().optional(),
@@ -119,7 +117,7 @@ export class StockInUpdateDto extends createZodDto(StockInUpdate) {}
 
 async function validateStockInDetailItems(
   prisma: PrismaClient,
-  items: Array<{ product_id?: string }> | undefined,
+  items: Array<{ product_id?: string; location_id?: string }> | undefined,
   ctx: z.RefinementCtx,
   basePath: string[],
 ) {
@@ -138,21 +136,32 @@ async function validateStockInDetailItems(
         });
       }
     }
+
+    if (item.location_id) {
+      const location = await validateLocationIdExists(prisma, item.location_id);
+      if (!location) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Location not found',
+          path: [...basePath, i.toString(), 'location_id'],
+        });
+      }
+    }
   }
 }
 
 export function createStockInCreateValidation(prisma: PrismaClient) {
   return StockInCreate.superRefine(async (data, ctx) => {
-    if (data.location_id) {
-      const location = await validateLocationIdExists(prisma, data.location_id);
-      if (!location) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Location not found',
-          path: ['location_id'],
-        });
-      }
-    }
+    // if (data.workflow_id) {
+    //   const workflow = await validateWorkflowIdExists(prisma, data.workflow_id);
+    //   if (!workflow) {
+    //     ctx.addIssue({
+    //       code: z.ZodIssueCode.custom,
+    //       message: 'Workflow not found',
+    //       path: ['workflow_id'],
+    //     });
+    //   }
+    // }
 
     await validateStockInDetailItems(
       prisma,
@@ -165,16 +174,16 @@ export function createStockInCreateValidation(prisma: PrismaClient) {
 
 export function createStockInUpdateValidation(prisma: PrismaClient) {
   return StockInUpdate.superRefine(async (data, ctx) => {
-    if (data.location_id) {
-      const location = await validateLocationIdExists(prisma, data.location_id);
-      if (!location) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Location not found',
-          path: ['location_id'],
-        });
-      }
-    }
+    // if (data.workflow_id) {
+    //   const workflow = await validateWorkflowIdExists(prisma, data.workflow_id);
+    //   if (!workflow) {
+    //     ctx.addIssue({
+    //       code: z.ZodIssueCode.custom,
+    //       message: 'Workflow not found',
+    //       path: ['workflow_id'],
+    //     });
+    //   }
+    // }
 
     await validateStockInDetailItems(
       prisma,
