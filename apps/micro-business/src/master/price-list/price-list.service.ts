@@ -78,6 +78,12 @@ export class PriceListService {
     private readonly commonLogic: CommonLogic,
   ) { }
 
+  /**
+   * Find a single price list by ID with details and vendor info
+   * ค้นหารายการราคาเดียวตาม ID พร้อมรายละเอียดและข้อมูลผู้ขาย
+   * @param id - Price list ID / ID ของรายการราคา
+   * @returns Price list detail or error if not found / รายละเอียดรายการราคา หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -226,6 +232,12 @@ export class PriceListService {
     return Result.ok(null);
   }
 
+  /**
+   * Find all price lists with pagination
+   * ค้นหารายการราคาทั้งหมดพร้อมการแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of price lists / รายการราคาพร้อมการแบ่งหน้า
+   */
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
@@ -371,6 +383,13 @@ export class PriceListService {
     });
   }
 
+  /**
+   * Find multiple price lists by IDs with pagination
+   * ค้นหารายการราคาหลายรายการตาม ID พร้อมการแบ่งหน้า
+   * @param ids - Array of price list IDs / รายการ ID ของรายการราคา
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of price lists / รายการราคาพร้อมการแบ่งหน้า
+   */
   @TryCatch
   async findAllById(
     ids: string[],
@@ -517,6 +536,12 @@ export class PriceListService {
     });
   }
 
+  /**
+   * Compare prices across vendors for a specific product
+   * เปรียบเทียบราคาจากผู้ขายหลายรายสำหรับสินค้าที่กำหนด
+   * @param data - Product ID and vendor IDs for comparison / ID ของสินค้าและ ID ของผู้ขายสำหรับการเปรียบเทียบ
+   * @returns Price comparison results / ผลการเปรียบเทียบราคา
+   */
   @TryCatch
   async priceCompare(data: {
     product_id: string;
@@ -592,6 +617,12 @@ export class PriceListService {
     });
   }
 
+  /**
+   * Create a new price list with details
+   * สร้างรายการราคาใหม่พร้อมรายละเอียด
+   * @param data - Price list creation data / ข้อมูลการสร้างรายการราคา
+   * @returns Created price list ID or error if duplicate / ID ของรายการราคาที่สร้างขึ้น หรือข้อผิดพลาดหากซ้ำ
+   */
   @TryCatch
   async create(data: any): Promise<Result<unknown>> {
     this.logger.debug(
@@ -705,6 +736,12 @@ export class PriceListService {
     return Result.ok({ id: priceList.id });
   }
 
+  /**
+   * Update an existing price list with details
+   * อัปเดตรายการราคาที่มีอยู่พร้อมรายละเอียด
+   * @param data - Price list update data / ข้อมูลการอัปเดตรายการราคา
+   * @returns Updated price list ID or error if not found / ID ของรายการราคาที่อัปเดต หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async update(data: any): Promise<Result<unknown>> {
     this.logger.debug(
@@ -888,6 +925,12 @@ export class PriceListService {
     return Result.ok({ id: updatedPriceList.id });
   }
 
+  /**
+   * Delete a price list (soft delete)
+   * ลบรายการราคา (ลบแบบซอฟต์)
+   * @param id - Price list ID / ID ของรายการราคา
+   * @returns Empty object on success or error if not found / อ็อบเจกต์ว่างเมื่อสำเร็จ หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async remove(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'remove', id, user_id: this.userId, tenant_id: this.bu_code }, PriceListService.name);
@@ -904,6 +947,12 @@ export class PriceListService {
     return Result.ok({ id: priceList.id });
   }
 
+  /**
+   * Upload and process price list from Excel file
+   * อัปโหลดและประมวลผลรายการราคาจากไฟล์ Excel
+   * @param data - Excel file data / ข้อมูลไฟล์ Excel
+   * @returns Upload result / ผลการอัปโหลด
+   */
   @TryCatch
   async uploadExcel(
     data: any,
@@ -919,6 +968,12 @@ export class PriceListService {
     return Result.ok({ id: priceList.id });
   }
 
+  /**
+   * Download price list as Excel file
+   * ดาวน์โหลดรายการราคาเป็นไฟล์ Excel
+   * @param id - Price list ID / ID ของรายการราคา
+   * @returns Excel file data / ข้อมูลไฟล์ Excel
+   */
   @TryCatch
   async downloadExcel(
     id: string,
@@ -939,6 +994,12 @@ export class PriceListService {
     return Result.ok(priceList);
   }
 
+  /**
+   * Find all price lists by detail IDs
+   * ค้นหารายการราคาทั้งหมดตาม ID ของรายละเอียด
+   * @param price_list_detail_ids - Array of price list detail IDs / รายการ ID ของรายละเอียดรายการราคา
+   * @returns List of price list details / รายการรายละเอียดรายการราคา
+   */
   @TryCatch
   async findAllByDetail(
     price_list_detail_ids: string[],
@@ -971,6 +1032,12 @@ export class PriceListService {
     return Result.ok(priceListData);
   }
 
+  /**
+   * Import price list data from CSV content
+   * นำเข้าข้อมูลรายการราคาจากเนื้อหา CSV
+   * @param csvContent - CSV file content as string / เนื้อหาไฟล์ CSV เป็นสตริง
+   * @returns Import result with created records / ผลการนำเข้าพร้อมรายการที่สร้างขึ้น
+   */
   @TryCatch
   async importCsv(csvContent: string): Promise<Result<unknown>> {
     this.logger.debug(

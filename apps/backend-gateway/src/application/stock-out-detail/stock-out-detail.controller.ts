@@ -56,8 +56,12 @@ export class StockOutDetailController extends BaseHttpController {
   }
 
   /**
-   * Lists all line items across stock-out transactions, showing products
-   * and quantities issued from inventory to hotel departments.
+   * List all stock-out detail records with pagination.
+   * ค้นหารายการย่อยจ่ายสินค้าออกคลังทั้งหมดพร้อมการแบ่งหน้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination and filter parameters / พารามิเตอร์การแบ่งหน้าและตัวกรอง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of stock-out details / รายการย่อยจ่ายสินค้าออกคลังพร้อมการแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('stockOutDetail.findAll'))
@@ -89,8 +93,12 @@ export class StockOutDetailController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific stock-out line item including the product,
-   * issued quantity, and the department or cost center consuming the inventory.
+   * Retrieve a stock-out detail record by ID.
+   * ค้นหารายการย่อยจ่ายสินค้าออกคลังเดียวตาม ID
+   * @param id - Stock out detail ID / รหัสรายการย่อยจ่ายสินค้าออกคลัง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Stock-out detail record / รายการย่อยจ่ายสินค้าออกคลัง
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('stockOutDetail.findOne'))
@@ -124,8 +132,12 @@ export class StockOutDetailController extends BaseHttpController {
   }
 
   /**
-   * Adds a new product line item to a draft stock-out transaction, specifying
-   * the product and quantity being issued to a department such as kitchen or housekeeping.
+   * Create a new standalone stock-out detail record.
+   * สร้างรายการย่อยจ่ายสินค้าออกคลังแบบแยกเดี่ยวใหม่
+   * @param createDto - Detail creation data / ข้อมูลสำหรับสร้างรายการย่อย
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created stock-out detail / รายการย่อยจ่ายสินค้าออกคลังที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('stockOutDetail.create'))
@@ -159,8 +171,13 @@ export class StockOutDetailController extends BaseHttpController {
   }
 
   /**
-   * Modifies a stock-out line item in a draft transaction, allowing corrections
-   * to issued quantities or units before inventory balances are deducted.
+   * Update an existing stock-out detail record.
+   * อัปเดตรายการย่อยจ่ายสินค้าออกคลังที่มีอยู่
+   * @param id - Stock out detail ID / รหัสรายการย่อยจ่ายสินค้าออกคลัง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Detail update data / ข้อมูลสำหรับอัปเดตรายการย่อย
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated stock-out detail / รายการย่อยจ่ายสินค้าออกคลังที่อัปเดตแล้ว
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('stockOutDetail.update'))
@@ -198,8 +215,12 @@ export class StockOutDetailController extends BaseHttpController {
   }
 
   /**
-   * Removes a product line item from a draft stock-out transaction,
-   * used when an item was added in error or is no longer needed for issuance.
+   * Delete a stock-out detail record.
+   * ลบรายการย่อยจ่ายสินค้าออกคลัง
+   * @param id - Stock out detail ID / รหัสรายการย่อยจ่ายสินค้าออกคลัง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('stockOutDetail.delete'))

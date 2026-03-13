@@ -76,6 +76,12 @@ export class VendorsService {
 
   constructor(private readonly tenantService: TenantService) { }
 
+  /**
+   * Find a single vendor by ID with addresses and contacts
+   * ค้นหารายการผู้ขายเดียวตาม ID พร้อมที่อยู่และผู้ติดต่อ
+   * @param id - Vendor ID / ID ของผู้ขาย
+   * @returns Vendor detail with addresses and contacts, or error if not found / รายละเอียดผู้ขายพร้อมที่อยู่และผู้ติดต่อ หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -139,6 +145,12 @@ export class VendorsService {
     return Result.ok(serializedVendor);
   }
 
+  /**
+   * Find all vendors with pagination
+   * ค้นหารายการผู้ขายทั้งหมดพร้อมการแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of vendors / รายการผู้ขายพร้อมการแบ่งหน้า
+   */
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
@@ -214,6 +226,12 @@ export class VendorsService {
     });
   }
 
+  /**
+   * Find multiple vendors by IDs
+   * ค้นหารายการผู้ขายหลายรายการตาม ID
+   * @param ids - Array of vendor IDs / รายการ ID ของผู้ขาย
+   * @returns List of vendors / รายการผู้ขาย
+   */
   @TryCatch
   async findAllById(ids: string[]): Promise<Result<unknown>> {
     this.logger.debug(
@@ -233,6 +251,12 @@ export class VendorsService {
     return Result.ok(serializedVendors);
   }
 
+  /**
+   * Create a new vendor with addresses and contacts
+   * สร้างผู้ขายใหม่พร้อมที่อยู่และผู้ติดต่อ
+   * @param data - Vendor creation data including addresses and contacts / ข้อมูลการสร้างผู้ขายรวมถึงที่อยู่และผู้ติดต่อ
+   * @returns Created vendor ID or error if duplicate / ID ของผู้ขายที่สร้างขึ้น หรือข้อผิดพลาดหากซ้ำ
+   */
   @TryCatch
   async create(data: ICreateVendor): Promise<Result<unknown>> {
     this.logger.debug(
@@ -325,6 +349,12 @@ export class VendorsService {
     return Result.ok(tx);
   }
 
+  /**
+   * Update an existing vendor with addresses and contacts
+   * อัปเดตผู้ขายที่มีอยู่พร้อมที่อยู่และผู้ติดต่อ
+   * @param data - Vendor update data including add/update/remove for addresses and contacts / ข้อมูลการอัปเดตผู้ขายรวมถึงเพิ่ม/อัปเดต/ลบสำหรับที่อยู่และผู้ติดต่อ
+   * @returns Updated vendor ID or error if not found / ID ของผู้ขายที่อัปเดต หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async update(data: IUpdateVendor): Promise<Result<unknown>> {
     this.logger.debug(
@@ -591,6 +621,12 @@ export class VendorsService {
     return Result.ok(tx);
   }
 
+  /**
+   * Delete a vendor (soft delete)
+   * ลบผู้ขาย (ลบแบบซอฟต์)
+   * @param id - Vendor ID / ID ของผู้ขาย
+   * @returns Empty object on success or error if not found / อ็อบเจกต์ว่างเมื่อสำเร็จ หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(

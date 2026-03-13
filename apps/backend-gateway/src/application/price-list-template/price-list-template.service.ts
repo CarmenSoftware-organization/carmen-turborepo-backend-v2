@@ -17,6 +17,15 @@ export class PriceListTemplateService {
     @Inject('BUSINESS_SERVICE') private readonly masterService: ClientProxy,
   ) {}
 
+  /**
+   * Find a specific price list template by ID via microservice
+   * ค้นหาเทมเพลตรายการราคาเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Price list template ID / รหัสเทมเพลตรายการราคา
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Price list template details / รายละเอียดเทมเพลตรายการราคา
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -51,6 +60,15 @@ export class PriceListTemplateService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all price list templates for a business unit via microservice
+   * ค้นหาเทมเพลตรายการราคาทั้งหมดของหน่วยธุรกิจผ่านไมโครเซอร์วิส
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of price list templates / รายการเทมเพลตรายการราคาแบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -89,6 +107,15 @@ export class PriceListTemplateService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new price list template via microservice
+   * สร้างเทมเพลตรายการราคาใหม่ผ่านไมโครเซอร์วิส
+   * @param data - Price list template creation data / ข้อมูลสำหรับสร้างเทมเพลตรายการราคา
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created price list template / เทมเพลตรายการราคาที่สร้างแล้ว
+   */
   async create(
     data: PriceListTemplateCreateDto,
     user_id: string,
@@ -122,6 +149,15 @@ export class PriceListTemplateService {
     return Result.ok(response);
   }
 
+  /**
+   * Update an existing price list template via microservice
+   * อัปเดตเทมเพลตรายการราคาที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param data - Price list template update data / ข้อมูลสำหรับอัปเดตเทมเพลตรายการราคา
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated price list template / เทมเพลตรายการราคาที่อัปเดตแล้ว
+   */
   async update(
     data: PriceListTemplateUpdateDto,
     user_id: string,
@@ -156,6 +192,15 @@ export class PriceListTemplateService {
     return Result.ok(response);
   }
 
+  /**
+   * Delete a price list template by ID via microservice
+   * ลบเทมเพลตรายการราคาตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Price list template ID / รหัสเทมเพลตรายการราคา
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async remove(
     id: string,
     user_id: string,
@@ -190,6 +235,16 @@ export class PriceListTemplateService {
     return Result.ok(response);
   }
 
+  /**
+   * Update the status of a price list template via microservice
+   * อัปเดตสถานะของเทมเพลตรายการราคาผ่านไมโครเซอร์วิส
+   * @param id - Price list template ID / รหัสเทมเพลตรายการราคา
+   * @param status - New status value / ค่าสถานะใหม่
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated template status / สถานะเทมเพลตที่อัปเดตแล้ว
+   */
   async updateStatus(
     id: string,
     status: string,

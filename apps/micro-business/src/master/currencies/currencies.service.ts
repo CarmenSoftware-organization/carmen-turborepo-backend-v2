@@ -74,6 +74,12 @@ export class CurrenciesService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a single currency by ID
+   * ค้นหารายการสกุลเงินเดียวตาม ID
+   * @param id - Currency ID / ID ของสกุลเงิน
+   * @returns Currency detail or error if not found / รายละเอียดสกุลเงิน หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -106,6 +112,12 @@ export class CurrenciesService {
     return Result.ok(serializedCurrency);
   }
 
+  /**
+   * Find all currencies with pagination, search, and sorting
+   * ค้นหารายการสกุลเงินทั้งหมดพร้อมการแบ่งหน้า ค้นหา และเรียงลำดับ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of currencies / รายการสกุลเงินพร้อมการแบ่งหน้า
+   */
   @TryCatch
   async findAll(
     paginate: IPaginate,
@@ -155,6 +167,12 @@ export class CurrenciesService {
     });
   }
 
+  /**
+   * Find all active currencies with pagination
+   * ค้นหารายการสกุลเงินที่ใช้งานอยู่ทั้งหมดพร้อมการแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of active currencies / รายการสกุลเงินที่ใช้งานอยู่พร้อมการแบ่งหน้า
+   */
   @TryCatch
   async findAllActive(
     paginate: IPaginate,
@@ -213,6 +231,12 @@ export class CurrenciesService {
     });
   }
 
+  /**
+   * Find multiple currencies by their IDs
+   * ค้นหารายการสกุลเงินหลายรายการตาม ID
+   * @param ids - Array of currency IDs / อาร์เรย์ของ ID สกุลเงิน
+   * @returns List of currencies matching the IDs / รายการสกุลเงินที่ตรงกับ ID
+   */
   @TryCatch
   async findAllById(
     ids: string[],
@@ -241,6 +265,12 @@ export class CurrenciesService {
     return Result.ok(serializedCurrencies);
   }
 
+  /**
+   * Create a new currency with duplicate code check
+   * สร้างสกุลเงินใหม่พร้อมตรวจสอบรหัสซ้ำ
+   * @param data - Currency creation data / ข้อมูลสำหรับสร้างสกุลเงิน
+   * @returns Created currency ID / ID ของสกุลเงินที่สร้างขึ้น
+   */
   @TryCatch
   async create(
     data: ICreateCurrencies,
@@ -271,6 +301,12 @@ export class CurrenciesService {
     return Result.ok({ id: createCurrency.id });
   }
 
+  /**
+   * Update an existing currency
+   * อัปเดตสกุลเงินที่มีอยู่
+   * @param data - Currency update data / ข้อมูลสำหรับอัปเดตสกุลเงิน
+   * @returns Updated currency ID / ID ของสกุลเงินที่อัปเดต
+   */
   @TryCatch
   async update(
     data: IUpdateCurrencies,
@@ -303,6 +339,12 @@ export class CurrenciesService {
     return Result.ok({ id: updateCurrency.id });
   }
 
+  /**
+   * Partially update a currency
+   * อัปเดตสกุลเงินบางส่วน
+   * @param data - Partial currency update data / ข้อมูลสำหรับอัปเดตสกุลเงินบางส่วน
+   * @returns Updated currency ID / ID ของสกุลเงินที่อัปเดต
+   */
   @TryCatch
   async patch(
     data: IUpdateCurrencies,
@@ -334,6 +376,12 @@ export class CurrenciesService {
     return Result.ok({ id: updateCurrency.id });
   }
 
+  /**
+   * Delete a currency (soft delete)
+   * ลบสกุลเงิน (ลบแบบซอฟต์)
+   * @param id - Currency ID / ID ของสกุลเงิน
+   * @returns Deleted currency ID / ID ของสกุลเงินที่ลบ
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -366,6 +414,11 @@ export class CurrenciesService {
     return Result.ok({ id });
   }
 
+  /**
+   * Get the default currency for the business unit from platform database
+   * ดึงสกุลเงินเริ่มต้นของหน่วยธุรกิจจากฐานข้อมูลแพลตฟอร์ม
+   * @returns Default currency detail / รายละเอียดสกุลเงินเริ่มต้น
+   */
   @TryCatch
   async getDefault(): Promise<Result<unknown>> {
     this.logger.debug({ function: 'getDefault', user_id: this.userId, tenant_id: this.bu_code }, CurrenciesService.name);

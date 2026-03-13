@@ -35,8 +35,14 @@ export class WorkflowController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the configurable approval workflow for a given document type
-   * (e.g., purchase request, store requisition), including approval stages and assigned roles.
+   * Find a workflow by document type
+   * ค้นหาขั้นตอนการทำงานตามประเภทเอกสาร
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param workflowType - Workflow type parameter / พารามิเตอร์ประเภทขั้นตอนการทำงาน
+   * @param version - API version / เวอร์ชัน API
+   * @returns Workflow configuration details / รายละเอียดการกำหนดค่าขั้นตอนการทำงาน
    */
   @Get('/type/:type')
   @UseGuards(new AppIdGuard('workflow.findByType'))
@@ -81,8 +87,15 @@ export class WorkflowController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the previous approval stages of a workflow relative to the current stage,
-   * used to determine revert/return-to options in the approval chain.
+   * Get previous approval stages of a workflow
+   * ดึงขั้นตอนอนุมัติก่อนหน้าของขั้นตอนการทำงาน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param workflow_id - Workflow ID / รหัสขั้นตอนการทำงาน
+   * @param stage - Current stage / ขั้นตอนปัจจุบัน
+   * @param version - API version / เวอร์ชัน API
+   * @returns Previous workflow stages / ขั้นตอนการทำงานก่อนหน้า
    */
   @Get(':workflow_id/previous_stages')
   @UseGuards(KeycloakGuard)

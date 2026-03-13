@@ -24,6 +24,12 @@ export class ExtraCostTypeController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a single extra cost type by ID
+   * ค้นหารายการประเภทค่าใช้จ่ายเพิ่มเติมเดียวตาม ID
+   * @param payload - Microservice payload containing extra cost type ID / ข้อมูล payload ที่มี ID ของประเภทค่าใช้จ่ายเพิ่มเติม
+   * @returns Extra cost type detail / รายละเอียดประเภทค่าใช้จ่ายเพิ่มเติม
+   */
   @MessagePattern({
     cmd: 'extra-cost-type.findOne',
     service: 'extra-cost-type',
@@ -40,6 +46,12 @@ export class ExtraCostTypeController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all extra cost types with pagination
+   * ค้นหารายการประเภทค่าใช้จ่ายเพิ่มเติมทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing pagination parameters / ข้อมูล payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of extra cost types / รายการประเภทค่าใช้จ่ายเพิ่มเติมพร้อมการแบ่งหน้า
+   */
   @MessagePattern({
     cmd: 'extra-cost-type.findAll',
     service: 'extra-cost-type',
@@ -56,6 +68,12 @@ export class ExtraCostTypeController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Create a new extra cost type
+   * สร้างประเภทค่าใช้จ่ายเพิ่มเติมใหม่
+   * @param payload - Microservice payload containing extra cost type data / ข้อมูล payload ที่มีข้อมูลประเภทค่าใช้จ่ายเพิ่มเติม
+   * @returns Created extra cost type ID / ID ของประเภทค่าใช้จ่ายเพิ่มเติมที่สร้างขึ้น
+   */
   @MessagePattern({ cmd: 'extra-cost-type.create', service: 'extra-cost-type' })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, ExtraCostTypeController.name);
@@ -69,6 +87,12 @@ export class ExtraCostTypeController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an existing extra cost type
+   * อัปเดตประเภทค่าใช้จ่ายเพิ่มเติมที่มีอยู่
+   * @param payload - Microservice payload containing updated extra cost type data / ข้อมูล payload ที่มีข้อมูลประเภทค่าใช้จ่ายเพิ่มเติมที่อัปเดต
+   * @returns Updated extra cost type ID / ID ของประเภทค่าใช้จ่ายเพิ่มเติมที่อัปเดต
+   */
   @MessagePattern({ cmd: 'extra-cost-type.update', service: 'extra-cost-type' })
   async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, ExtraCostTypeController.name);
@@ -82,6 +106,12 @@ export class ExtraCostTypeController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete an extra cost type (soft delete)
+   * ลบประเภทค่าใช้จ่ายเพิ่มเติม (ลบแบบซอฟต์)
+   * @param payload - Microservice payload containing extra cost type ID / ข้อมูล payload ที่มี ID ของประเภทค่าใช้จ่ายเพิ่มเติม
+   * @returns Deleted extra cost type ID / ID ของประเภทค่าใช้จ่ายเพิ่มเติมที่ลบ
+   */
   @MessagePattern({ cmd: 'extra-cost-type.delete', service: 'extra-cost-type' })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, ExtraCostTypeController.name);

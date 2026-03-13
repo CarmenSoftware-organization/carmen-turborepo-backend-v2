@@ -3,7 +3,15 @@ import { Result } from '../result/result';
 import { HttpStatus } from '@nestjs/common/enums/http-status.enum';
 import { StdResponse } from '../std-response/std-response';
 
+/**
+ * Base HTTP controller with standardized response handling
+ * คอนโทรลเลอร์ HTTP พื้นฐานพร้อมการจัดการการตอบกลับมาตรฐาน
+ */
 export abstract class BaseHttpController {
+  /**
+   * Send a standardized HTTP response from a Result or plain object
+   * ส่งการตอบกลับ HTTP มาตรฐานจาก Result หรือออบเจกต์ทั่วไป
+   */
   protected respond(
     response: Response,
     result: Result<unknown> | unknown,

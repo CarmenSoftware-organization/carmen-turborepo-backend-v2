@@ -16,6 +16,14 @@ export class NewsService {
     private readonly clusterService: ClientProxy,
   ) {}
 
+  /**
+   * List all news articles with pagination
+   * ค้นหารายการข่าวสารทั้งหมดแบบแบ่งหน้า
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of news / รายการข่าวสารแบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     paginate: IPaginate,
@@ -57,6 +65,14 @@ export class NewsService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Find a news article by ID
+   * ค้นหาข่าวสารรายการเดียวตาม ID
+   * @param id - News article ID / รหัสข่าวสาร
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns News article details / รายละเอียดข่าวสาร
+   */
   async findOne(id: string, user_id: string, version: string): Promise<unknown> {
     this.logger.debug(
       {
@@ -91,6 +107,14 @@ export class NewsService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Create a new news article
+   * สร้างข่าวสารใหม่
+   * @param createNewsDto - News data to create / ข้อมูลข่าวสารที่จะสร้าง
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created news article / ข่าวสารที่สร้างแล้ว
+   */
   async create(
     createNewsDto: Record<string, unknown>,
     user_id: string,
@@ -130,6 +154,15 @@ export class NewsService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update a news article by ID
+   * อัปเดตข่าวสารตาม ID
+   * @param id - News article ID / รหัสข่าวสาร
+   * @param updateNewsDto - News data to update / ข้อมูลข่าวสารที่จะอัปเดต
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated news article / ข่าวสารที่อัปเดตแล้ว
+   */
   async update(
     id: string,
     updateNewsDto: Record<string, unknown>,
@@ -171,6 +204,14 @@ export class NewsService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a news article by ID
+   * ลบข่าวสารตาม ID
+   * @param id - News article ID / รหัสข่าวสาร
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Delete result / ผลลัพธ์การลบ
+   */
   async delete(id: string, user_id: string, version: string): Promise<unknown> {
     this.logger.debug(
       {

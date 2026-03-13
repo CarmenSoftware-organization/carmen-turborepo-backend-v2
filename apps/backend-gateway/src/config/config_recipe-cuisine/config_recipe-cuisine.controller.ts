@@ -32,8 +32,13 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific cuisine type definition (e.g., Thai, Italian, Japanese, Continental)
-   * used to classify recipes by culinary origin for menu diversity management.
+   * Retrieves a specific recipe cuisine type by ID
+   * ค้นหาประเภทอาหารเดียวตาม ID สำหรับจำแนกสูตรอาหารตามต้นกำเนิดการทำอาหาร
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Recipe cuisine ID / รหัสประเภทอาหาร
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('recipe-cuisine.findOne'))
@@ -49,8 +54,13 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   }
 
   /**
-   * Lists all cuisine types configured for recipe classification, used to tag recipes
-   * by culinary tradition for menu planning and kitchen specialization management.
+   * Lists all recipe cuisine types for the business unit
+   * ค้นหาประเภทอาหารทั้งหมดสำหรับการจัดหมวดหมู่สูตรอาหารและการวางแผนเมนู
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
    */
   @Get()
   @UseGuards(new AppIdGuard('recipe-cuisine.findAll'))
@@ -68,8 +78,13 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   }
 
   /**
-   * Defines a new cuisine type for recipe classification (e.g., Mediterranean, Mexican).
-   * Recipes can then be tagged with this cuisine for organized menu planning.
+   * Creates a new cuisine type for recipe classification
+   * สร้างประเภทอาหารใหม่สำหรับจัดหมวดหมู่สูตรอาหาร
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Recipe cuisine creation data / ข้อมูลสำหรับสร้างประเภทอาหาร
+   * @param version - API version / เวอร์ชัน API
    */
   @Post()
   @UseGuards(new AppIdGuard('recipe-cuisine.create'))
@@ -86,8 +101,14 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   }
 
   /**
-   * Fully updates an existing cuisine type definition. Changes affect how recipes
-   * tagged with this cuisine are categorized in the menu catalog.
+   * Fully updates an existing cuisine type definition
+   * อัปเดตประเภทอาหารทั้งหมด การเปลี่ยนแปลงส่งผลต่อสูตรอาหารที่ใช้ประเภทนี้
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Recipe cuisine ID / รหัสประเภทอาหาร
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param version - API version / เวอร์ชัน API
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('recipe-cuisine.update'))
@@ -105,8 +126,14 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   }
 
   /**
-   * Partially updates specific fields of a cuisine type definition without replacing
-   * the entire record.
+   * Partially updates specific fields of a cuisine type
+   * อัปเดตบางฟิลด์ของประเภทอาหารโดยไม่แทนที่ข้อมูลทั้งหมด
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Recipe cuisine ID / รหัสประเภทอาหาร
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Partial update data / ข้อมูลสำหรับอัปเดตบางส่วน
+   * @param version - API version / เวอร์ชัน API
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('recipe-cuisine.patch'))
@@ -124,8 +151,13 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   }
 
   /**
-   * Removes a cuisine type from the system. Recipes currently tagged with this cuisine
-   * should be reassigned before deletion.
+   * Removes a cuisine type from the system
+   * ลบประเภทอาหารออกจากระบบ ควรย้ายสูตรอาหารไปประเภทอื่นก่อนลบ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Recipe cuisine ID / รหัสประเภทอาหาร
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('recipe-cuisine.delete'))

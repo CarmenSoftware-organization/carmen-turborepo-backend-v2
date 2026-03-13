@@ -24,6 +24,12 @@ export class DepartmentUserController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find all users in a department
+   * ค้นหาผู้ใช้ทั้งหมดในแผนก
+   * @param payload - Microservice payload containing department ID / ข้อมูล payload ที่มี ID ของแผนก
+   * @returns List of users in the department / รายการผู้ใช้ในแผนก
+   */
   @MessagePattern({ cmd: 'department-users.find-by-department', service: 'department-users' })
   async findAllUserInDepartment(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, DepartmentUserController.name);
@@ -37,6 +43,12 @@ export class DepartmentUserController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Check if a department has a Head of Department (HOD)
+   * ตรวจสอบว่าแผนกมีหัวหน้าแผนก (HOD) หรือไม่
+   * @param payload - Microservice payload containing department ID / ข้อมูล payload ที่มี ID ของแผนก
+   * @returns Boolean indicating HOD existence / ค่าบูลีนที่ระบุว่ามี HOD หรือไม่
+   */
   @MessagePattern({ cmd: 'department-users.has-hod-in-department', service: 'department-users' })
   async hasHodInDepartment(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'hasHodInDepartment', payload }, DepartmentUserController.name);
@@ -50,6 +62,12 @@ export class DepartmentUserController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Get the Head of Department (HOD) for a department
+   * ดึงข้อมูลหัวหน้าแผนก (HOD) ของแผนก
+   * @param payload - Microservice payload containing department ID / ข้อมูล payload ที่มี ID ของแผนก
+   * @returns HOD user detail / รายละเอียดผู้ใช้หัวหน้าแผนก
+   */
   @MessagePattern({ cmd: 'department-users.get-hod-in-department', service: 'department-users' })
   async getHodInDepartment(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'getHodInDepartment', payload }, DepartmentUserController.name);

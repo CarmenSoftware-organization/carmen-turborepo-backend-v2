@@ -129,6 +129,13 @@ export class AuthService {
     }
   }
 
+  /**
+   * Authenticate user via Keycloak and generate JWT tokens
+   * ยืนยันตัวตนผู้ใช้ผ่าน Keycloak และสร้าง JWT token
+   * @param loginDto - Login credentials / ข้อมูลการเข้าสู่ระบบ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Authentication tokens and user info / โทเค็นยืนยันตัวตนและข้อมูลผู้ใช้
+   */
   async login(loginDto: LoginDto, version: string): Promise<any> {
     this.logger.debug(
       { function: 'login', loginDto: loginDto, version: version },
@@ -239,6 +246,13 @@ export class AuthService {
     }
   }
 
+  /**
+   * Log out user and invalidate tokens via Keycloak
+   * ออกจากระบบและยกเลิกโทเค็นผ่าน Keycloak
+   * @param logoutDto - Logout data including refresh token / ข้อมูลการออกจากระบบรวมถึง refresh token
+   * @param version - API version / เวอร์ชัน API
+   * @returns Logout result / ผลลัพธ์การออกจากระบบ
+   */
   async logout(logoutDto: LogoutDto, version: string): Promise<any> {
     this.logger.debug(
       { function: 'logout', logoutDto: logoutDto, version: version },
@@ -349,6 +363,14 @@ export class AuthService {
     }
   }
 
+  /**
+   * Invite a new user to the system via email
+   * เชิญผู้ใช้ใหม่เข้าสู่ระบบผ่านอีเมล
+   * @param inviteUserDto - Invitation details / ข้อมูลการเชิญผู้ใช้
+   * @param user_id - Inviting user ID / ID ผู้ใช้ที่เชิญ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Invitation result / ผลลัพธ์การเชิญผู้ใช้
+   */
   async inviteUser(
     inviteUserDto: IInviteUser,
     user_id: string,
@@ -423,6 +445,13 @@ export class AuthService {
     };
   }
 
+  /**
+   * Register a new user account in Keycloak and the system database
+   * ลงทะเบียนบัญชีผู้ใช้ใหม่ใน Keycloak และฐานข้อมูลระบบ
+   * @param registerDto - Registration data / ข้อมูลการลงทะเบียน
+   * @param version - API version / เวอร์ชัน API
+   * @returns Registration result / ผลลัพธ์การลงทะเบียน
+   */
   async register(registerDto: IRegister, version: string): Promise<any> {
     this.logger.debug(
       {
@@ -603,6 +632,13 @@ export class AuthService {
     }
   }
 
+  /**
+   * Confirm user registration and activate the account
+   * ยืนยันการลงทะเบียนและเปิดใช้งานบัญชีผู้ใช้
+   * @param registerConfirmDto - Registration confirmation data / ข้อมูลยืนยันการลงทะเบียน
+   * @param version - API version / เวอร์ชัน API
+   * @returns Confirmation result / ผลลัพธ์การยืนยัน
+   */
   async registerConfirm(
     registerConfirmDto: IRegisterConfirm,
     version: string,
@@ -820,6 +856,13 @@ export class AuthService {
     }
   }
 
+  /**
+   * Refresh authentication tokens using a refresh token
+   * รีเฟรชโทเค็นยืนยันตัวตนโดยใช้ refresh token
+   * @param refreshTokenDto - Refresh token data / ข้อมูล refresh token
+   * @param version - API version / เวอร์ชัน API
+   * @returns New authentication tokens / โทเค็นยืนยันตัวตนใหม่
+   */
   async refreshToken(refreshTokenDto: Record<string, unknown>, version: string): Promise<any> {
     this.logger.debug(
       {
@@ -893,6 +936,13 @@ export class AuthService {
     }
   }
 
+  /**
+   * Validate a JWT token and return decoded user information
+   * ตรวจสอบ JWT token และส่งคืนข้อมูลผู้ใช้ที่ถอดรหัสแล้ว
+   * @param validateTokenDto - Token string to validate / สตริงโทเค็นที่ต้องตรวจสอบ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Decoded token payload / ข้อมูลโทเค็นที่ถอดรหัสแล้ว
+   */
   async validateToken(validateTokenDto: string, version: string): Promise<any> {
     this.logger.debug(
       {
@@ -916,6 +966,13 @@ export class AuthService {
     }
   }
 
+  /**
+   * Initiate forgot password flow and send reset email
+   * เริ่มขั้นตอนลืมรหัสผ่านและส่งอีเมลรีเซ็ต
+   * @param forgotPasswordDto - Forgot password request data / ข้อมูลคำขอลืมรหัสผ่าน
+   * @param version - API version / เวอร์ชัน API
+   * @returns Forgot password result / ผลลัพธ์การขอลืมรหัสผ่าน
+   */
   async forgotPassword(
     forgotPasswordDto: ForgotPasswordDto,
     version: string,
@@ -1265,6 +1322,13 @@ export class AuthService {
     }
   }
 
+  /**
+   * Change user password via Keycloak
+   * เปลี่ยนรหัสผ่านผู้ใช้ผ่าน Keycloak
+   * @param changePasswordDto - Password change data / ข้อมูลการเปลี่ยนรหัสผ่าน
+   * @param version - API version / เวอร์ชัน API
+   * @returns Password change result / ผลลัพธ์การเปลี่ยนรหัสผ่าน
+   */
   async changePassword(
     changePasswordDto: ChangePasswordDto,
     version: string,
@@ -1330,6 +1394,13 @@ export class AuthService {
     }
   }
 
+  /**
+   * Change user email address
+   * เปลี่ยนที่อยู่อีเมลผู้ใช้
+   * @param changeEmailDto - Email change data / ข้อมูลการเปลี่ยนอีเมล
+   * @param version - API version / เวอร์ชัน API
+   * @returns Email change result / ผลลัพธ์การเปลี่ยนอีเมล
+   */
   async changeEmail(changeEmailDto: Record<string, unknown>, version: string): Promise<any> {
     this.logger.debug(
       {
@@ -1370,6 +1441,12 @@ export class AuthService {
     };
   }
 
+  /**
+   * Get user display name by user ID
+   * ดึงชื่อที่แสดงของผู้ใช้ตาม ID
+   * @param id - User ID / ID ผู้ใช้
+   * @returns User name / ชื่อผู้ใช้
+   */
   async getNameById(id: string): Promise<any> {
     const user = await this.prismaSystem.tb_user.findFirst({
       where: {
@@ -1406,6 +1483,13 @@ export class AuthService {
     };
   }
 
+  /**
+   * Get multiple user profiles by their IDs
+   * ดึงโปรไฟล์ผู้ใช้หลายคนตาม ID
+   * @param user_ids - Array of user IDs / อาร์เรย์ของ ID ผู้ใช้
+   * @param department - Optional department filter / ตัวกรองแผนก (ถ้ามี)
+   * @returns List of user profiles / รายการโปรไฟล์ผู้ใช้
+   */
   async getUserProfilesByIds(
     user_ids: string[],
     department?: { id: string; name: string },
@@ -1478,6 +1562,13 @@ export class AuthService {
     };
   }
 
+  /**
+   * Get all users belonging to a specific tenant
+   * ดึงผู้ใช้ทั้งหมดที่อยู่ในผู้เช่าที่ระบุ
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of users in the tenant / รายการผู้ใช้ในผู้เช่า
+   */
   async getByTenant(tenant_id: string, version: string): Promise<any> {
     this.logger.debug(
       { function: 'getByTenant', tenant_id: tenant_id, version: version },
@@ -1526,6 +1617,13 @@ export class AuthService {
     };
   }
 
+  /**
+   * Get detailed user profile including business units and roles
+   * ดึงโปรไฟล์ผู้ใช้โดยละเอียดรวมถึงหน่วยธุรกิจและบทบาท
+   * @param id - User ID / ID ผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns User profile details / รายละเอียดโปรไฟล์ผู้ใช้
+   */
   async getUserProfile(id: string, version: string): Promise<any> {
     this.logger.debug(
       { function: 'getUserProfile', id: id, version: version },
@@ -1689,6 +1787,15 @@ export class AuthService {
     };
   }
 
+  /**
+   * Get all users in a tenant's business unit with pagination
+   * ดึงผู้ใช้ทั้งหมดในหน่วยธุรกิจของผู้เช่าพร้อมการแบ่งหน้า
+   * @param user_id - Current user ID / ID ผู้ใช้ปัจจุบัน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of users / รายการผู้ใช้แบบแบ่งหน้า
+   */
   async getAllUserInTenant(
     user_id: string,
     bu_code: string,
@@ -1895,6 +2002,12 @@ export class AuthService {
     };
   }
 
+  /**
+   * Get all users in the system (platform-level)
+   * ดึงผู้ใช้ทั้งหมดในระบบ (ระดับแพลตฟอร์ม)
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of all users / รายการผู้ใช้ทั้งหมด
+   */
   async getAllUsers(version: string): Promise<any> {
     this.logger.debug(
       { function: 'getAllUsers', version: version },
@@ -1933,6 +2046,12 @@ export class AuthService {
     };
   }
 
+  /**
+   * Send push notification to user (placeholder)
+   * ส่งการแจ้งเตือนแบบพุชไปยังผู้ใช้ (ตัวแทน)
+   * @param token - Notification token / โทเค็นการแจ้งเตือน
+   * @param url - Notification URL / URL การแจ้งเตือน
+   */
   onPushNotification(token: string, url: string): void {
     // TODO: implement push notification to user via email or other methods
   }
@@ -2035,6 +2154,14 @@ export class AuthService {
     }
   }
 
+  /**
+   * Update user profile information
+   * อัปเดตข้อมูลโปรไฟล์ผู้ใช้
+   * @param userId - User ID / ID ผู้ใช้
+   * @param updateData - Profile fields to update / ฟิลด์โปรไฟล์ที่ต้องการอัปเดต
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated user profile / โปรไฟล์ผู้ใช้ที่อัปเดตแล้ว
+   */
   async updateUserProfile(
     userId: string,
     updateData: {
@@ -2195,6 +2322,14 @@ export class AuthService {
     }
   }
 
+  /**
+   * Get business units associated with a user
+   * ดึงหน่วยธุรกิจที่เชื่อมโยงกับผู้ใช้
+   * @param userId - User ID / ID ผู้ใช้
+   * @param is_active - Filter by active status / กรองตามสถานะใช้งาน
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of business units / รายการหน่วยธุรกิจ
+   */
   async getBus(
     userId: string,
     is_active: boolean = true,
@@ -2267,6 +2402,14 @@ export class AuthService {
     }
   }
 
+  /**
+   * Get roles assigned to a user within a business unit
+   * ดึงบทบาทที่กำหนดให้ผู้ใช้ภายในหน่วยธุรกิจ
+   * @param userId - User ID / ID ผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of user roles / รายการบทบาทผู้ใช้
+   */
   async getRoles(
     userId: string,
     bu_code: string,
@@ -2309,6 +2452,13 @@ export class AuthService {
     }
   }
 
+  /**
+   * Get all permissions for a user
+   * ดึงสิทธิ์ทั้งหมดของผู้ใช้
+   * @param userId - User ID / ID ผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of user permissions / รายการสิทธิ์ผู้ใช้
+   */
   async getPermissions(userId: string, version: string): Promise<any> {
     this.logger.debug(
       {

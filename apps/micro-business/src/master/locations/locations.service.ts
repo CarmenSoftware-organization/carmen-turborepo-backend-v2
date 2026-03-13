@@ -66,6 +66,12 @@ export class LocationsService {
     LocationsService.name,
   );
 
+  /**
+   * Initialize the Prisma service for the tenant
+   * เริ่มต้นบริการ Prisma สำหรับผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / รหัสผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
   }
@@ -88,6 +94,15 @@ export class LocationsService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a single location by ID with optional users and products
+   * ค้นหาสถานที่รายการเดียวตาม ID พร้อมผู้ใช้และสินค้า (ถ้าระบุ)
+   * @param id - Location ID / รหัสสถานที่
+   * @param withUsers - Include assigned users / รวมผู้ใช้ที่มอบหมาย
+   * @param withProducts - Include assigned products / รวมสินค้าที่มอบหมาย
+   * @param version - API version / เวอร์ชัน API
+   * @returns Location detail / รายละเอียดสถานที่
+   */
   @TryCatch
   async findOne(
     id: string,
@@ -241,6 +256,13 @@ export class LocationsService {
     return Result.ok(serializedLocation);
   }
 
+  /**
+   * Find multiple locations by their IDs
+   * ค้นหาสถานที่หลายรายการตามรหัส ID
+   * @param ids - Array of location IDs / อาร์เรย์ของรหัสสถานที่
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of locations / รายการสถานที่
+   */
   @TryCatch
   async findManyById(
     ids: string[],
@@ -270,6 +292,14 @@ export class LocationsService {
     return Result.ok(serializedLocations);
   }
 
+  /**
+   * Find all locations with pagination
+   * ค้นหาสถานที่ทั้งหมดแบบแบ่งหน้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of locations / รายการสถานที่แบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(
     bu_code: string,
@@ -339,6 +369,12 @@ export class LocationsService {
     });
   }
 
+  /**
+   * Find all active locations assigned to the current user
+   * ค้นหาสถานที่ที่ใช้งานอยู่ทั้งหมดที่มอบหมายให้ผู้ใช้ปัจจุบัน
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of locations assigned to user / รายการสถานที่ที่มอบหมายให้ผู้ใช้
+   */
   @TryCatch
   async findAllByUser(
     version: string = 'latest',
@@ -398,6 +434,14 @@ export class LocationsService {
     return Result.ok(serializedLocations);
   }
 
+  /**
+   * Get product inventory information for a specific location and product
+   * ดึงข้อมูลสินค้าคงคลังสำหรับสถานที่และสินค้าที่ระบุ
+   * @param location_id - Location ID / รหัสสถานที่
+   * @param product_id - Product ID / รหัสสินค้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Product inventory info (on-hand, on-order, reorder, restock) / ข้อมูลสินค้าคงคลัง
+   */
   @TryCatch
   async getProductInventory(location_id: string, product_id: string, version: string = 'latest'): Promise<any> {
     this.logger.debug(
@@ -450,6 +494,13 @@ export class LocationsService {
     return Result.ok(productInventory);
   }
 
+  /**
+   * Create a new location with optional user and product assignments
+   * สร้างสถานที่ใหม่พร้อมมอบหมายผู้ใช้และสินค้า (ถ้ามี)
+   * @param data - Location creation data / ข้อมูลสำหรับสร้างสถานที่
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created location ID / รหัสสถานที่ที่สร้างแล้ว
+   */
   @TryCatch
   async create(
     data: ICreateLocation,
@@ -536,6 +587,13 @@ export class LocationsService {
     return Result.ok({ id: createLocation.id });
   }
 
+  /**
+   * Update an existing location with user and product add/remove/update operations
+   * อัปเดตสถานที่ที่มีอยู่พร้อมเพิ่ม/ลบ/อัปเดตผู้ใช้และสินค้า
+   * @param data - Location update data / ข้อมูลสำหรับอัปเดตสถานที่
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated location ID / รหัสสถานที่ที่อัปเดตแล้ว
+   */
   @TryCatch
   async update(
     data: IUpdateLocation,
@@ -679,6 +737,13 @@ export class LocationsService {
     return Result.ok({ id: updateLocation.id });
   }
 
+  /**
+   * Soft delete a location
+   * ลบสถานที่แบบ soft delete
+   * @param id - Location ID / รหัสสถานที่
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deleted location ID / รหัสสถานที่ที่ลบแล้ว
+   */
   @TryCatch
   async delete(
     id: string,

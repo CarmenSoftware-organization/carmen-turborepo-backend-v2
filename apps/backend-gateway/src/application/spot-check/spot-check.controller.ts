@@ -58,8 +58,12 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   /**
-   * Returns the count of random inventory spot checks awaiting the current user,
-   * used for dashboard alerts on quality-control verification tasks.
+   * Get pending spot check total for the current user
+   * ดึงจำนวนการตรวจสอบแบบสุ่มที่รอดำเนินการของผู้ใช้ปัจจุบัน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Pending spot check count / จำนวนการตรวจสอบแบบสุ่มที่รอดำเนินการ
    */
   @Get('spot-check/pending')
   @UseGuards(new AppIdGuard('spotCheck.findAllPending.count'))
@@ -96,8 +100,12 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the full details of a random inventory spot check, including
-   * target location, selected products, and recorded quantities.
+   * Get a spot check by ID with full details
+   * ค้นหารายการตรวจสอบแบบสุ่มเดียวตาม ID พร้อมรายละเอียดทั้งหมด
+   * @param id - Spot check ID / รหัสการตรวจสอบแบบสุ่ม
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Spot check details / รายละเอียดการตรวจสอบแบบสุ่ม
    */
   @Get(':bu_code/spot-check/:id')
   @UseGuards(new AppIdGuard('spotCheck.findOne'))
@@ -144,8 +152,12 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   /**
-   * Lists all inventory spot checks for a business unit with pagination,
-   * enabling managers to track random stock verification activities.
+   * List all spot checks with pagination
+   * ค้นหารายการตรวจสอบแบบสุ่มทั้งหมดพร้อมการแบ่งหน้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated spot check list / รายการตรวจสอบแบบสุ่มแบบแบ่งหน้า
    */
   @Get(':bu_code/spot-check/')
   @UseGuards(new AppIdGuard('spotCheck.findAll'))
@@ -192,8 +204,12 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   /**
-   * Initiates a random inventory spot check at a specific storage location,
-   * selecting products to verify actual stock against system records.
+   * Create a new spot check for a storage location
+   * สร้างรายการตรวจสอบแบบสุ่มใหม่สำหรับสถานที่จัดเก็บ
+   * @param createDto - Spot check creation data / ข้อมูลสำหรับสร้างการตรวจสอบแบบสุ่ม
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created spot check / การตรวจสอบแบบสุ่มที่สร้างขึ้น
    */
   @Post(':bu_code/spot-check')
   @UseGuards(new AppIdGuard('spotCheck.create'))
@@ -240,8 +256,13 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   /**
-   * Modifies a spot check record before submission, such as updating the
-   * location or adjusting which products are included in the verification.
+   * Update a spot check before submission
+   * อัปเดตการตรวจสอบแบบสุ่มก่อนการส่ง
+   * @param id - Spot check ID / รหัสการตรวจสอบแบบสุ่ม
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Fields to update / ข้อมูลที่ต้องการอัปเดต
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated spot check / การตรวจสอบแบบสุ่มที่อัปเดตแล้ว
    */
   @Patch(':bu_code/spot-check/:id')
   @UseGuards(new AppIdGuard('spotCheck.update'))
@@ -292,8 +313,12 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   /**
-   * Removes a spot check that was created in error or is no longer
-   * required for inventory quality control.
+   * Delete a spot check by ID
+   * ลบการตรวจสอบแบบสุ่มตาม ID
+   * @param id - Spot check ID / รหัสการตรวจสอบแบบสุ่ม
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':bu_code/spot-check/:id')
   @UseGuards(new AppIdGuard('spotCheck.delete'))
@@ -337,8 +362,12 @@ export class SpotCheckController extends BaseHttpController {
   // ==================== Spot Check Detail CRUD ====================
 
   /**
-   * Returns all product line items selected for a spot check, showing system
-   * quantities and recorded actual quantities for variance analysis.
+   * Get all line items for a spot check
+   * ค้นหารายการสินค้าทั้งหมดในการตรวจสอบแบบสุ่ม
+   * @param id - Spot check ID / รหัสการตรวจสอบแบบสุ่ม
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Spot check detail items / รายการรายละเอียดการตรวจสอบแบบสุ่ม
    */
   @Get(':bu_code/spot-check/:id/details')
   @UseGuards(new AppIdGuard('spotCheck.findOne'))
@@ -377,8 +406,13 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific product line item from a spot check, including its
-   * system quantity, actual counted quantity, and variance.
+   * Get a specific line item from a spot check by detail ID
+   * ค้นหารายการสินค้าเฉพาะรายการเดียวตาม ID ของรายละเอียดการตรวจสอบแบบสุ่ม
+   * @param id - Spot check ID / รหัสการตรวจสอบแบบสุ่ม
+   * @param detailId - Spot check detail ID / รหัสรายละเอียดการตรวจสอบ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Spot check detail item / รายละเอียดรายการตรวจสอบแบบสุ่ม
    */
   @Get(':bu_code/spot-check/:id/details/:detail_id')
   @UseGuards(new AppIdGuard('spotCheck.findOne'))
@@ -419,8 +453,13 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   /**
-   * Removes a product from a draft spot check when it was incorrectly
-   * selected for the random verification.
+   * Delete a line item from a draft spot check
+   * ลบรายการสินค้าจากการตรวจสอบแบบสุ่มสถานะร่าง
+   * @param id - Spot check ID / รหัสการตรวจสอบแบบสุ่ม
+   * @param detailId - Spot check detail ID / รหัสรายละเอียดการตรวจสอบ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':bu_code/spot-check/:id/details/:detail_id')
   @UseGuards(new AppIdGuard('spotCheck.update'))
@@ -464,8 +503,13 @@ export class SpotCheckController extends BaseHttpController {
   // ==================== Mobile-specific endpoints ====================
 
   /**
-   * Persists actual counted quantities from a mobile device as a draft,
-   * allowing staff to pause and resume the spot check without finalizing.
+   * Save counted quantities as draft from mobile device
+   * บันทึกจำนวนที่นับได้เป็นร่างจากอุปกรณ์มือถือ
+   * @param id - Spot check ID / รหัสการตรวจสอบแบบสุ่ม
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param data - Items with actual quantities / รายการสินค้าพร้อมจำนวนจริง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Save result / ผลลัพธ์การบันทึก
    */
   @Patch(':bu_code/spot-check/:id/save')
   @UseGuards(new AppIdGuard('spotCheck.save'))
@@ -508,8 +552,13 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   /**
-   * Compares actual counted quantities against system stock levels and calculates
-   * variances for each spot-checked item before submission.
+   * Calculate variances between actual and system quantities for spot check
+   * คำนวณผลต่างระหว่างจำนวนจริงกับจำนวนในระบบสำหรับการตรวจสอบแบบสุ่ม
+   * @param id - Spot check ID / รหัสการตรวจสอบแบบสุ่ม
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param data - Items with actual quantities / รายการสินค้าพร้อมจำนวนจริง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Variance review result / ผลลัพธ์การตรวจสอบผลต่าง
    */
   @Patch(':bu_code/spot-check/:id/review')
   @UseGuards(new AppIdGuard('spotCheck.review'))
@@ -552,8 +601,12 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the previously calculated variance report for a spot check,
-   * showing differences between system and actual quantities for management review.
+   * Get the variance report for a spot check
+   * ดึงรายงานผลต่างของการตรวจสอบแบบสุ่ม
+   * @param id - Spot check ID / รหัสการตรวจสอบแบบสุ่ม
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Variance report / รายงานผลต่าง
    */
   @Get(':bu_code/spot-check/:id/review')
   @UseGuards(new AppIdGuard('spotCheck.getReview'))
@@ -593,8 +646,12 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   /**
-   * Finalizes a spot check by recording verified quantities as the official result.
-   * Discrepancies may trigger further investigation or inventory adjustments.
+   * Submit a spot check and finalize results
+   * ส่งการตรวจสอบแบบสุ่มและสรุปผลลัพธ์ขั้นสุดท้าย
+   * @param id - Spot check ID / รหัสการตรวจสอบแบบสุ่ม
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Submission result / ผลลัพธ์การส่ง
    */
   @Patch(':bu_code/spot-check/:id/submit')
   @UseGuards(new AppIdGuard('spotCheck.submit'))
@@ -635,8 +692,12 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   /**
-   * Clears all recorded actual quantities and resets the spot check to draft state,
-   * allowing staff to restart the verification process from scratch.
+   * Reset a spot check to draft state
+   * รีเซ็ตการตรวจสอบแบบสุ่มกลับเป็นสถานะร่าง
+   * @param id - Spot check ID / รหัสการตรวจสอบแบบสุ่ม
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Reset result / ผลลัพธ์การรีเซ็ต
    */
   @Post(':bu_code/spot-check/:id/reset')
   @UseGuards(new AppIdGuard('spotCheck.reset'))
@@ -677,8 +738,12 @@ export class SpotCheckController extends BaseHttpController {
   }
 
   /**
-   * Retrieves products stocked at a specific storage location, enabling staff
-   * to select items for a new spot check or verify location inventory assignments.
+   * Get products stocked at a specific location
+   * ดึงรายการสินค้าที่จัดเก็บในสถานที่เฉพาะ
+   * @param locationId - Location ID / รหัสสถานที่จัดเก็บ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Products at location / สินค้าในสถานที่จัดเก็บ
    */
   @Get(':bu_code/locations/:location_id/products')
   @UseGuards(new AppIdGuard('spotCheck.getProductsByLocation'))

@@ -17,6 +17,12 @@ export class PermissionController extends BaseMicroserviceController {
     super();
   }
 
+  /**
+   * Create audit context from payload
+   * สร้างบริบทการตรวจสอบจาก payload
+   * @param payload - Microservice payload / ข้อมูล payload จากไมโครเซอร์วิส
+   * @returns Audit context object / ออบเจกต์บริบทการตรวจสอบ
+   */
   private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
@@ -27,6 +33,12 @@ export class PermissionController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a permission by ID
+   * ค้นหาสิทธิ์รายการเดียวตาม ID
+   * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id
+   * @returns Permission detail / รายละเอียดสิทธิ์
+   */
   @MessagePattern({ cmd: 'permission.findOne', service: 'permission' })
   async findOne(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
@@ -42,6 +54,12 @@ export class PermissionController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all permissions with pagination
+   * ค้นหาสิทธิ์ทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Contains user_id, tenant_id, paginate / ประกอบด้วย user_id, tenant_id, paginate
+   * @returns Paginated list of permissions / รายการสิทธิ์แบบแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'permission.findAll', service: 'permission' })
   async findAll(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
@@ -57,6 +75,12 @@ export class PermissionController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Create a new permission
+   * สร้างสิทธิ์ใหม่
+   * @param payload - Contains data, user_id, tenant_id / ประกอบด้วย data, user_id, tenant_id
+   * @returns Created permission / สิทธิ์ที่สร้างแล้ว
+   */
   @MessagePattern({ cmd: 'permission.create', service: 'permission' })
   async create(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
@@ -72,6 +96,12 @@ export class PermissionController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update a permission
+   * แก้ไขสิทธิ์
+   * @param payload - Contains data, user_id, tenant_id / ประกอบด้วย data, user_id, tenant_id
+   * @returns Updated permission / สิทธิ์ที่แก้ไขแล้ว
+   */
   @MessagePattern({ cmd: 'permission.update', service: 'permission' })
   async update(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
@@ -87,6 +117,12 @@ export class PermissionController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Remove a permission
+   * ลบสิทธิ์
+   * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   @MessagePattern({ cmd: 'permission.remove', service: 'permission' })
   async remove(@Payload() payload: MicroservicePayload) {
     this.logger.debug(

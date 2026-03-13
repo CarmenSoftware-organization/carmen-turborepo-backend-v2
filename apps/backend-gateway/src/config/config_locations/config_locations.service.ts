@@ -17,6 +17,17 @@ export class Config_LocationsService {
     private readonly masterService: ClientProxy,
   ) { }
 
+  /**
+   * Find a single location by ID via microservice
+   * ค้นหาสถานที่เดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Location ID / รหัสสถานที่
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param withUser - Include assigned users / รวมผู้ใช้ที่ได้รับมอบหมาย
+   * @param withProducts - Include stocked products / รวมสินค้าในสต็อก
+   * @param version - API version / เวอร์ชัน API
+   * @returns Location detail or error / รายละเอียดสถานที่หรือข้อผิดพลาด
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -60,6 +71,15 @@ export class Config_LocationsService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all locations with pagination via microservice
+   * ค้นหารายการสถานที่ทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated locations or error / รายการสถานที่พร้อมการแบ่งหน้าหรือข้อผิดพลาด
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -97,6 +117,15 @@ export class Config_LocationsService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new location via microservice
+   * สร้างสถานที่ใหม่ผ่านไมโครเซอร์วิส
+   * @param createDto - Location creation data / ข้อมูลสำหรับสร้างสถานที่
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created location or error / สถานที่ที่สร้างแล้วหรือข้อผิดพลาด
+   */
   async create(
     createDto: ICreateLocation,
     user_id: string,
@@ -134,6 +163,15 @@ export class Config_LocationsService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update a location via microservice
+   * อัปเดตสถานที่ผ่านไมโครเซอร์วิส
+   * @param updateDto - Location update data / ข้อมูลสำหรับอัปเดตสถานที่
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated location or error / สถานที่ที่อัปเดตแล้วหรือข้อผิดพลาด
+   */
   async update(
     updateDto: IUpdateLocation,
     user_id: string,
@@ -171,6 +209,15 @@ export class Config_LocationsService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a location via microservice
+   * ลบสถานที่ผ่านไมโครเซอร์วิส
+   * @param id - Location ID / รหัสสถานที่
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result or error / ผลลัพธ์การลบหรือข้อผิดพลาด
+   */
   async delete(
     id: string,
     user_id: string,

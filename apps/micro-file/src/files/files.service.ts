@@ -102,6 +102,10 @@ export class FilesService implements OnModuleInit {
     this.bucketName = envConfig.MINIO_BUCKET_NAME;
   }
 
+  /**
+   * Initialize MinIO bucket on module startup
+   * เริ่มต้น MinIO bucket เมื่อโมดูลเริ่มทำงาน
+   */
   async onModuleInit() {
     try {
       const exists = await this.minioClient.bucketExists(this.bucketName);
@@ -118,7 +122,11 @@ export class FilesService implements OnModuleInit {
   }
 
   /**
-   * Upload a file with token-based naming
+   * Upload a file with token-based naming to MinIO
+   * อัปโหลดไฟล์ไปยัง MinIO โดยใช้ระบบตั้งชื่อแบบ token
+   * @param file - Multer file object / อ็อบเจกต์ไฟล์ Multer
+   * @param buCode - Business unit code for file organization / รหัสหน่วยธุรกิจสำหรับจัดระเบียบไฟล์
+   * @returns Upload result with file token and metadata / ผลลัพธ์การอัปโหลดพร้อม token และข้อมูลไฟล์
    */
   async uploadFile(
     file: Express.Multer.File,
@@ -163,6 +171,10 @@ export class FilesService implements OnModuleInit {
 
   /**
    * Upload a file with optional folder prefix (legacy support)
+   * อัปโหลดไฟล์โดยมีตัวเลือก prefix โฟลเดอร์ (รองรับแบบเก่า)
+   * @param file - Multer file object / อ็อบเจกต์ไฟล์ Multer
+   * @param folder - Optional folder prefix / prefix โฟลเดอร์ (ถ้ามี)
+   * @returns Upload result with file token and metadata / ผลลัพธ์การอัปโหลดพร้อม token และข้อมูลไฟล์
    */
   async uploadFileWithFolder(
     file: Express.Multer.File,
@@ -208,7 +220,10 @@ export class FilesService implements OnModuleInit {
   }
 
   /**
-   * Get file stream by file token
+   * Get file stream by file token from MinIO
+   * ดึง stream ของไฟล์จาก MinIO โดยใช้ file token
+   * @param fileToken - Unique file token / token เฉพาะของไฟล์
+   * @returns File stream with metadata / stream ของไฟล์พร้อมข้อมูลเมตา
    */
   async getFile(fileToken: string): Promise<{
     stream: Readable;
@@ -257,7 +272,10 @@ export class FilesService implements OnModuleInit {
   }
 
   /**
-   * Get file buffer by file token
+   * Get file buffer by file token from MinIO
+   * ดึง buffer ของไฟล์จาก MinIO โดยใช้ file token
+   * @param fileToken - Unique file token / token เฉพาะของไฟล์
+   * @returns File buffer with metadata / buffer ของไฟล์พร้อมข้อมูลเมตา
    */
   async getFileBuffer(fileToken: string): Promise<{
     buffer: Buffer;
@@ -284,6 +302,9 @@ export class FilesService implements OnModuleInit {
 
   /**
    * Get file info by file token
+   * ค้นหารายการเดียวตาม ID ข้อมูลไฟล์โดยใช้ file token
+   * @param fileToken - Unique file token / token เฉพาะของไฟล์
+   * @returns File information object / อ็อบเจกต์ข้อมูลไฟล์
    */
   async getFileInfo(fileToken: string): Promise<FileInfo> {
     const fileInfo = this.fileTokenMap.get(fileToken);
@@ -333,7 +354,9 @@ export class FilesService implements OnModuleInit {
   }
 
   /**
-   * Delete file by file token
+   * Delete file by file token from MinIO
+   * ลบไฟล์จาก MinIO โดยใช้ file token
+   * @param fileToken - Unique file token / token เฉพาะของไฟล์
    */
   async deleteFile(fileToken: string): Promise<void> {
     const fileInfo = this.fileTokenMap.get(fileToken);
@@ -357,7 +380,10 @@ export class FilesService implements OnModuleInit {
   }
 
   /**
-   * List files with pagination support
+   * List files with pagination support from MinIO
+   * ค้นหารายการไฟล์ทั้งหมดพร้อมการแบ่งหน้าจาก MinIO
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated file list / รายการไฟล์แบบแบ่งหน้า
    */
   async listFiles(paginate: IPaginate): Promise<PaginatedResult<FileInfo>> {
     const bu_code = paginate.bu_code[0];
@@ -504,6 +530,9 @@ export class FilesService implements OnModuleInit {
 
   /**
    * List files with simple prefix (legacy support)
+   * ค้นหารายการไฟล์ทั้งหมดโดยใช้ prefix (รองรับแบบเก่า)
+   * @param prefix - Optional prefix to filter files / prefix สำหรับกรองไฟล์ (ถ้ามี)
+   * @returns Array of file info objects / อาร์เรย์ของอ็อบเจกต์ข้อมูลไฟล์
    */
   async listFilesSimple(prefix?: string): Promise<FileInfo[]> {
     return new Promise((resolve, reject) => {
@@ -544,7 +573,11 @@ export class FilesService implements OnModuleInit {
   }
 
   /**
-   * Get presigned URL for file download
+   * Get presigned URL for file download from MinIO
+   * สร้าง presigned URL สำหรับดาวน์โหลดไฟล์จาก MinIO
+   * @param fileToken - Unique file token / token เฉพาะของไฟล์
+   * @param expirySeconds - URL expiry time in seconds (default: 3600) / เวลาหมดอายุของ URL เป็นวินาที (ค่าเริ่มต้น: 3600)
+   * @returns Presigned URL string / URL สำหรับดาวน์โหลด
    */
   async getPresignedUrl(
     fileToken: string,
@@ -572,7 +605,10 @@ export class FilesService implements OnModuleInit {
   }
 
   /**
-   * Helper to find objects by prefix
+   * Helper to find objects by prefix in MinIO bucket
+   * ค้นหาอ็อบเจกต์ใน MinIO bucket โดยใช้ prefix
+   * @param prefix - Prefix string to match / prefix สำหรับค้นหา
+   * @returns Array of matching object names / อาร์เรย์ของชื่ออ็อบเจกต์ที่ตรงกัน
    */
   private async findObjectsByPrefix(prefix: string): Promise<string[]> {
     return new Promise((resolve, reject) => {
@@ -593,6 +629,9 @@ export class FilesService implements OnModuleInit {
 
   /**
    * Encode content disposition helper (exposed for controller use)
+   * สร้าง Content-Disposition header สำหรับการดาวน์โหลดไฟล์
+   * @param filename - Original filename / ชื่อไฟล์ต้นฉบับ
+   * @returns Content-Disposition header value / ค่า Content-Disposition header
    */
   getContentDisposition(filename: string): string {
     return encodeContentDisposition(filename);

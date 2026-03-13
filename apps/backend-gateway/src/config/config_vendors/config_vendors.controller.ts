@@ -57,8 +57,14 @@ export class Config_VendorsController extends BaseHttpController {
   }
 
   /**
-   * Retrieves complete vendor/supplier profile including company details,
-   * contact information, and payment terms for procurement operations.
+   * Get a vendor by ID
+   * ค้นหาผู้ขายเดียวตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Vendor ID / รหัสผู้ขาย
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Vendor detail / รายละเอียดผู้ขาย
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('vendor.findOne'))
@@ -93,8 +99,14 @@ export class Config_VendorsController extends BaseHttpController {
   }
 
   /**
-   * Lists all registered vendors/suppliers in the approved directory
-   * for sourcing and purchase order creation.
+   * Get all vendors with pagination
+   * ค้นหารายการผู้ขายทั้งหมดพร้อมการแบ่งหน้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of vendors / รายการผู้ขายพร้อมการแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('vendor.findAll'))
@@ -136,8 +148,14 @@ export class Config_VendorsController extends BaseHttpController {
   }
 
   /**
-   * Registers a new vendor/supplier with company details, contact info, and payment terms.
-   * Once created, the vendor is available for purchase orders and price lists.
+   * Create a new vendor
+   * สร้างผู้ขายใหม่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Vendor creation data / ข้อมูลสำหรับสร้างผู้ขาย
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created vendor / ผู้ขายที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('vendor.create'))
@@ -178,8 +196,15 @@ export class Config_VendorsController extends BaseHttpController {
   }
 
   /**
-   * Updates an existing vendor/supplier record such as contact details,
-   * payment terms, or business classification.
+   * Update a vendor
+   * อัปเดตผู้ขาย
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Vendor ID / รหัสผู้ขาย
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Vendor update data / ข้อมูลสำหรับอัปเดตผู้ขาย
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated vendor / ผู้ขายที่อัปเดตแล้ว
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('vendor.update'))
@@ -221,8 +246,14 @@ export class Config_VendorsController extends BaseHttpController {
   }
 
   /**
-   * Removes a vendor/supplier from the active directory.
-   * Historical procurement records referencing this vendor are preserved.
+   * Delete a vendor
+   * ลบผู้ขาย
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Vendor ID / รหัสผู้ขาย
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('vendor.delete'))

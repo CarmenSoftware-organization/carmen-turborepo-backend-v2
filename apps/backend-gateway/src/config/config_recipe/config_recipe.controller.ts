@@ -51,8 +51,13 @@ export class Config_RecipeController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific recipe with its full ingredient list, quantities,
-   * preparation steps, and yield information for kitchen cost control.
+   * Retrieves a specific recipe with full ingredient details
+   * ค้นหาสูตรอาหารเดียวตาม ID พร้อมรายการส่วนผสม ปริมาณ และขั้นตอนการเตรียม
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Recipe ID / รหัสสูตรอาหาร
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('recipe.findOne'))
@@ -83,8 +88,13 @@ export class Config_RecipeController extends BaseHttpController {
   }
 
   /**
-   * Lists all configured recipes with ingredient compositions for menu costing
-   * and ingredient demand forecasting.
+   * Lists all configured recipes with ingredient compositions
+   * ค้นหาสูตรอาหารทั้งหมดพร้อมส่วนผสมสำหรับการคำนวณต้นทุนเมนู
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
    */
   @Get()
   @UseGuards(new AppIdGuard('recipe.findAll'))
@@ -117,8 +127,13 @@ export class Config_RecipeController extends BaseHttpController {
   }
 
   /**
-   * Creates a new recipe linking products as ingredients with quantities and preparation steps
-   * for menu costing, food cost analysis, and inventory consumption tracking.
+   * Creates a new recipe linking products as ingredients
+   * สร้างสูตรอาหารใหม่เชื่อมโยงสินค้าเป็นส่วนผสมพร้อมปริมาณและขั้นตอนการเตรียม
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Recipe creation data / ข้อมูลสำหรับสร้างสูตรอาหาร
+   * @param version - API version / เวอร์ชัน API
    */
   @Post()
   @UseGuards(new AppIdGuard('recipe.create'))
@@ -150,7 +165,14 @@ export class Config_RecipeController extends BaseHttpController {
   }
 
   /**
-   * Fully updates a recipe including its ingredient list, quantities, and preparation instructions.
+   * Fully updates a recipe including ingredients and preparation instructions
+   * อัปเดตสูตรอาหารทั้งหมดรวมถึงรายการส่วนผสม ปริมาณ และคำแนะนำการเตรียม
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Recipe ID / รหัสสูตรอาหาร
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param version - API version / เวอร์ชัน API
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('recipe.update'))
@@ -184,8 +206,14 @@ export class Config_RecipeController extends BaseHttpController {
   }
 
   /**
-   * Partially updates specific fields of a recipe such as individual ingredient quantities
-   * or active status without replacing the entire record.
+   * Partially updates specific fields of a recipe
+   * อัปเดตบางฟิลด์ของสูตรอาหาร เช่น ปริมาณส่วนผสมหรือสถานะการใช้งาน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Recipe ID / รหัสสูตรอาหาร
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Partial update data / ข้อมูลสำหรับอัปเดตบางส่วน
+   * @param version - API version / เวอร์ชัน API
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('recipe.patch'))
@@ -219,7 +247,13 @@ export class Config_RecipeController extends BaseHttpController {
   }
 
   /**
-   * Removes a recipe from the active catalog. Historical cost data is preserved.
+   * Removes a recipe from the active catalog
+   * ลบสูตรอาหารออกจากแค็ตตาล็อก ข้อมูลต้นทุนในอดีตยังคงอยู่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Recipe ID / รหัสสูตรอาหาร
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('recipe.delete'))

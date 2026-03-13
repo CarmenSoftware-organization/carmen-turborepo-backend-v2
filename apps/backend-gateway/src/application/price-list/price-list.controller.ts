@@ -62,8 +62,14 @@ export class PriceListController extends BaseHttpController {
   }
 
   /**
-   * Compares vendor prices for a specific product across all active price lists,
-   * helping procurement staff identify the best-value supplier for purchase orders.
+   * Compare vendor prices for a product across active price lists
+   * เปรียบเทียบราคาสินค้าจากผู้ขายข้ามรายการราคาที่ใช้งานอยู่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Query with product_id, at_date, unit_id, currency_id / คิวรีที่มี product_id, at_date, unit_id, currency_id
+   * @param version - API version / เวอร์ชัน API
+   * @returns Price comparison results / ผลลัพธ์การเปรียบเทียบราคา
    */
   @Get('price-compare')
   @UseGuards(new AppIdGuard('priceList.priceCompare'))
@@ -127,8 +133,14 @@ export class PriceListController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the full details of a vendor price list including all product prices,
-   * validity dates, and terms for reviewing or editing procurement pricing.
+   * Get a specific price list by ID
+   * ค้นหารายการราคาเดียวตาม ID
+   * @param id - Price list ID / รหัสรายการราคา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Price list details / รายละเอียดรายการราคา
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('priceList.findOne'))
@@ -184,8 +196,14 @@ export class PriceListController extends BaseHttpController {
   }
 
   /**
-   * Lists all active vendor price lists for the business unit, allowing
-   * procurement staff to browse current pricing agreements and compare vendors.
+   * List all price lists for the business unit
+   * ค้นหารายการราคาทั้งหมดของหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination query parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of price lists / รายการราคาแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('priceList.findAll'))
@@ -238,8 +256,14 @@ export class PriceListController extends BaseHttpController {
   }
 
   /**
-   * Records a new vendor price list with product prices and validity dates,
-   * establishing the pricing basis for procurement purchase orders.
+   * Create a new vendor price list
+   * สร้างรายการราคาผู้ขายใหม่
+   * @param data - Price list creation data / ข้อมูลสำหรับสร้างรายการราคา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created price list / รายการราคาที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('priceList.create'))
@@ -289,8 +313,15 @@ export class PriceListController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing vendor price list, such as adjusting product prices,
-   * extending validity dates, or correcting pricing errors.
+   * Update an existing price list
+   * อัปเดตรายการราคาที่มีอยู่
+   * @param id - Price list ID / รหัสรายการราคา
+   * @param data - Price list update data / ข้อมูลสำหรับอัปเดตรายการราคา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated price list / รายการราคาที่อัปเดตแล้ว
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('priceList.update'))
@@ -349,8 +380,14 @@ export class PriceListController extends BaseHttpController {
   }
 
   /**
-   * Removes an outdated or incorrect vendor price list from active use.
-   * Historical pricing data is retained for audit purposes.
+   * Delete a price list by ID
+   * ลบรายการราคาตาม ID
+   * @param id - Price list ID / รหัสรายการราคา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('priceList.delete'))

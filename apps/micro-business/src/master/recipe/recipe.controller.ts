@@ -25,6 +25,12 @@ export class RecipeController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a single recipe by ID
+   * ค้นหารายการสูตรอาหารเดียวตาม ID
+   * @param payload - Microservice payload containing recipe ID / ข้อมูล payload ที่มี ID ของสูตรอาหาร
+   * @returns Recipe detail / รายละเอียดสูตรอาหาร
+   */
   @MessagePattern({ cmd: 'recipe.findOne', service: 'recipe' })
   async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, RecipeController.name);
@@ -38,6 +44,12 @@ export class RecipeController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all recipes with pagination
+   * ค้นหารายการสูตรอาหารทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing pagination parameters / ข้อมูล payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of recipes / รายการสูตรอาหารพร้อมการแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'recipe.findAll', service: 'recipe' })
   async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, RecipeController.name);
@@ -51,6 +63,12 @@ export class RecipeController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Create a new recipe
+   * สร้างสูตรอาหารใหม่
+   * @param payload - Microservice payload containing recipe data / ข้อมูล payload ที่มีข้อมูลสูตรอาหาร
+   * @returns Created recipe ID / ID ของสูตรอาหารที่สร้างขึ้น
+   */
   @MessagePattern({ cmd: 'recipe.create', service: 'recipe' })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, RecipeController.name);
@@ -64,6 +82,12 @@ export class RecipeController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an existing recipe
+   * อัปเดตสูตรอาหารที่มีอยู่
+   * @param payload - Microservice payload containing updated recipe data / ข้อมูล payload ที่มีข้อมูลสูตรอาหารที่อัปเดต
+   * @returns Updated recipe ID / ID ของสูตรอาหารที่อัปเดต
+   */
   @MessagePattern({ cmd: 'recipe.update', service: 'recipe' })
   async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, RecipeController.name);
@@ -77,6 +101,12 @@ export class RecipeController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Partially update a recipe
+   * อัปเดตบางส่วนของสูตรอาหาร
+   * @param payload - Microservice payload containing partial recipe data / ข้อมูล payload ที่มีข้อมูลสูตรอาหารบางส่วน
+   * @returns Updated recipe / สูตรอาหารที่อัปเดต
+   */
   @MessagePattern({ cmd: 'recipe.patch', service: 'recipe' })
   async patch(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'patch', payload }, RecipeController.name);
@@ -90,6 +120,12 @@ export class RecipeController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a recipe (soft delete)
+   * ลบสูตรอาหาร (ลบแบบซอฟต์)
+   * @param payload - Microservice payload containing recipe ID / ข้อมูล payload ที่มี ID ของสูตรอาหาร
+   * @returns Deleted recipe ID / ID ของสูตรอาหารที่ลบ
+   */
   @MessagePattern({ cmd: 'recipe.delete', service: 'recipe' })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, RecipeController.name);

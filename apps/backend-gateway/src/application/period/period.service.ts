@@ -19,6 +19,15 @@ export class PeriodService {
     private readonly inventoryService: ClientProxy,
   ) {}
 
+  /**
+   * Find a period by ID via the business microservice
+   * ค้นหางวด/รอบบัญชีรายการเดียวตาม ID ผ่านไมโครเซอร์วิสธุรกิจ
+   * @param id - Period ID / รหัสงวด
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID / รหัส tenant
+   * @param version - API version / เวอร์ชัน API
+   * @returns Period details / รายละเอียดงวด/รอบบัญชี
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -47,6 +56,15 @@ export class PeriodService {
     return Result.ok(response.data);
   }
 
+  /**
+   * List all periods in the business unit
+   * ค้นหารายการงวด/รอบบัญชีทั้งหมดในหน่วยธุรกิจ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID / รหัส tenant
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of periods / รายการงวดแบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     tenant_id: string,
@@ -75,6 +93,15 @@ export class PeriodService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new fiscal/accounting period
+   * สร้างงวด/รอบบัญชีใหม่
+   * @param data - Period creation data / ข้อมูลสำหรับสร้างงวด
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID / รหัส tenant
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created period / งวดที่สร้างแล้ว
+   */
   async create(
     data: IPeriodCreate,
     user_id: string,
@@ -103,6 +130,16 @@ export class PeriodService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update an existing fiscal/accounting period
+   * อัปเดตงวด/รอบบัญชีที่มีอยู่
+   * @param id - Period ID / รหัสงวด
+   * @param data - Period update data / ข้อมูลสำหรับอัปเดตงวด
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID / รหัส tenant
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated period / งวดที่อัปเดตแล้ว
+   */
   async update(
     id: string,
     data: IPeriodUpdate,
@@ -132,6 +169,16 @@ export class PeriodService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Bulk-generate the next N fiscal periods
+   * สร้างงวด/รอบบัญชีถัดไปจำนวน N งวดแบบกลุ่ม
+   * @param count - Number of periods to generate / จำนวนงวดที่จะสร้าง
+   * @param start_day - Start day of each period / วันเริ่มต้นของแต่ละงวด
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID / รหัส tenant
+   * @param version - API version / เวอร์ชัน API
+   * @returns Generated periods / งวดที่สร้างแล้ว
+   */
   async generateNext(
     count: number,
     start_day: number,
@@ -161,6 +208,15 @@ export class PeriodService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a fiscal/accounting period
+   * ลบงวด/รอบบัญชี
+   * @param id - Period ID / รหัสงวด
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID / รหัส tenant
+   * @param version - API version / เวอร์ชัน API
+   * @returns Delete result / ผลลัพธ์การลบ
+   */
   async delete(
     id: string,
     user_id: string,

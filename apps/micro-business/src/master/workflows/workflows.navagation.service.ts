@@ -35,6 +35,9 @@ export class WorkflowNavigatorService {
 
   /**
    * Load existing history (useful for restoring session from frontend)
+   * โหลดประวัติที่มีอยู่ (ใช้สำหรับกู้คืนเซสชันจากฝั่ง frontend)
+   * @param history - Array of stage names / อาร์เรย์ของชื่อขั้นตอน
+   * @param currentIndex - Current position in history / ตำแหน่งปัจจุบันในประวัติ
    */
   loadHistory(history: string[], currentIndex?: number): void {
     this.history = [...history];
@@ -43,13 +46,17 @@ export class WorkflowNavigatorService {
 
   /**
    * Get current stage name
+   * ดึงชื่อขั้นตอนปัจจุบัน
+   * @returns Current stage name or null / ชื่อขั้นตอนปัจจุบันหรือ null
    */
   getCurrentStage(): string | null {
     return this.currentIndex === -1 ? null : this.history[this.currentIndex];
   }
 
   /**
-   * Get current stage name
+   * Get current stage detail object
+   * ดึงข้อมูลรายละเอียดขั้นตอนปัจจุบัน
+   * @returns Current stage detail or null / รายละเอียดขั้นตอนปัจจุบันหรือ null
    */
   getCurrentStageDetail(): Stage | null {
     const currentStageName = this.getCurrentStage();
@@ -61,7 +68,9 @@ export class WorkflowNavigatorService {
 
   /**
    * Navigate forward to next stage based on routing rules
-   * If currentStatus is empty, returns the first stage of the workflow
+   * นำทางไปยังขั้นตอนถัดไปตามกฎการกำหนดเส้นทาง
+   * @param requestData - Request data for routing rule evaluation / ข้อมูลคำขอสำหรับประเมินกฎการกำหนดเส้นทาง
+   * @returns Navigation result with previous/current stage and history / ผลลัพธ์การนำทางพร้อมขั้นตอนก่อนหน้า/ปัจจุบันและประวัติ
    */
   navigateForward(requestData: Record<string, unknown> = {}): NavigateForwardResult {
     const currentStatus = this.getCurrentStage();
@@ -107,6 +116,10 @@ export class WorkflowNavigatorService {
 
   /**
    * Navigate back to a specific stage by name (primary method for "Send Back" feature)
+   * นำทางย้อนกลับไปยังขั้นตอนที่ระบุตามชื่อ (ใช้สำหรับฟีเจอร์ "ส่งกลับ")
+   * @param stageName - Target stage name to navigate back to / ชื่อขั้นตอนเป้าหมายที่จะนำทางย้อนกลับ
+   * @param requestData - Request data for routing rule evaluation / ข้อมูลคำขอสำหรับประเมินกฎการกำหนดเส้นทาง
+   * @returns Navigation result with previous/current stage and history / ผลลัพธ์การนำทางพร้อมขั้นตอนก่อนหน้า/ปัจจุบันและประวัติ
    */
   navigateBackToStage(stageName: string, requestData: Record<string, unknown> = {}): NavigateBackResult {
     const targetIndex = this.findMostRecentStageIndex(stageName);
@@ -119,8 +132,9 @@ export class WorkflowNavigatorService {
   }
 
   /**
-   * Get stage names for dropdown (for "Send Back" feature)
-   * This returns stages from actual navigation history
+   * Get stage names for dropdown (for "Send Back" feature) from actual navigation history
+   * ดึงชื่อขั้นตอนสำหรับ dropdown (สำหรับฟีเจอร์ "ส่งกลับ") จากประวัติการนำทางจริง
+   * @returns Array of previous stage names / อาร์เรย์ของชื่อขั้นตอนก่อนหน้า
    */
   getPreviousStageNames(): string[] {
     return this.getAvailablePreviousStages().map(item => item.stage);
@@ -128,7 +142,9 @@ export class WorkflowNavigatorService {
 
   /**
    * Get all previous stages based on workflow structure (not history)
-   * Returns all stages that come before the current stage in the workflow definition
+   * ดึงขั้นตอนก่อนหน้าทั้งหมดตามโครงสร้างขั้นตอนการทำงาน (ไม่ใช่ประวัติ)
+   * @param currentStageName - Current stage name / ชื่อขั้นตอนปัจจุบัน
+   * @returns Array of stage names before current stage / อาร์เรย์ของชื่อขั้นตอนก่อนขั้นตอนปัจจุบัน
    */
   getPreviousStageNamesByStructure(currentStageName: string): string[] {
     const currentStageIndex = this.workflowData.stages.findIndex(
@@ -146,7 +162,9 @@ export class WorkflowNavigatorService {
   }
 
   /**
-   * Get all previous stages with their indices
+   * Get all previous stages with their indices from navigation history
+   * ดึงขั้นตอนก่อนหน้าทั้งหมดพร้อมดัชนีจากประวัติการนำทาง
+   * @returns Array of previous stage items with stage name and index / อาร์เรย์ของรายการขั้นตอนก่อนหน้าพร้อมชื่อและดัชนี
    */
   getAvailablePreviousStages(): PreviousStageItem[] {
     const available: PreviousStageItem[] = [];
@@ -164,7 +182,9 @@ export class WorkflowNavigatorService {
   }
 
   /**
-   * Get full navigation history
+   * Get full navigation history with current state
+   * ดึงประวัติการนำทางทั้งหมดพร้อมสถานะปัจจุบัน
+   * @returns Navigation history object / อ็อบเจกต์ประวัติการนำทาง
    */
   getHistory(): NavigationHistory {
     return {
@@ -178,13 +198,19 @@ export class WorkflowNavigatorService {
 
   /**
    * Get all unique visited stages
+   * ดึงขั้นตอนทั้งหมดที่เยี่ยมชมแล้ว (ไม่ซ้ำ)
+   * @returns Array of unique visited stage names / อาร์เรย์ของชื่อขั้นตอนที่เยี่ยมชมแล้ว (ไม่ซ้ำ)
    */
   getVisitedStages(): string[] {
     return [...new Set(this.history)];
   }
 
   /**
-   * Get navigation info for a specific stage
+   * Get navigation info for a specific stage including next/previous steps and actions
+   * ดึงข้อมูลการนำทางสำหรับขั้นตอนที่ระบุ รวมถึงขั้นตอนถัดไป/ก่อนหน้าและการดำเนินการ
+   * @param currentStatus - Current stage name / ชื่อขั้นตอนปัจจุบัน
+   * @param requestData - Request data for routing rule evaluation / ข้อมูลคำขอสำหรับประเมินกฎการกำหนดเส้นทาง
+   * @returns Navigation info object / อ็อบเจกต์ข้อมูลการนำทาง
    */
   getNavigationInfo(currentStatus: string, requestData: Record<string, unknown> = {}): NavigationInfo {
     const currentStage = this.findStageByName(currentStatus);
@@ -201,6 +227,11 @@ export class WorkflowNavigatorService {
     };
   }
 
+  /**
+   * Get all stage names defined in the workflow
+   * ดึงชื่อขั้นตอนทั้งหมดที่กำหนดในขั้นตอนการทำงาน
+   * @returns Array of all stage names / อาร์เรย์ของชื่อขั้นตอนทั้งหมด
+   */
   getALLStageName(): string[] {
     return this.workflowData.stages.map(s => s.name);
   }

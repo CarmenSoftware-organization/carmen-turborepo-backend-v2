@@ -27,6 +27,13 @@ export class SpotCheckService {
     private readonly spotCheckLogic: SpotCheckLogic,
   ) { }
 
+  /**
+   * Get Prisma client for the tenant
+   * ดึง Prisma client สำหรับผู้เช่า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Prisma client instance or null / Prisma client instance หรือ null
+   */
   private async getPrisma(user_id: string, tenant_id: string) {
     const tenant = await this.tenantService.getdb_connection(
       user_id,
@@ -36,6 +43,14 @@ export class SpotCheckService {
     return this.prismaTenant(tenant.tenant_id, tenant.db_connection);
   }
 
+  /**
+   * Find a spot check by ID
+   * ค้นหาการตรวจสอบจุดรายการเดียวตาม ID
+   * @param id - Spot check ID / ID การตรวจสอบจุด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Spot check detail with location and items / รายละเอียดการตรวจสอบจุดพร้อมสถานที่และรายการ
+   */
   @TryCatch
   async findOne(
     id: string,
@@ -71,6 +86,14 @@ export class SpotCheckService {
     return Result.ok(spotCheck);
   }
 
+  /**
+   * Find all spot checks with pagination
+   * ค้นหาการตรวจสอบจุดทั้งหมดพร้อมการแบ่งหน้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of spot checks / รายการการตรวจสอบจุดแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(
     user_id: string,
@@ -122,6 +145,14 @@ export class SpotCheckService {
     });
   }
 
+  /**
+   * Create a new spot check
+   * สร้างการตรวจสอบจุดใหม่
+   * @param data - Spot check creation data (location, method, items) / ข้อมูลสร้างการตรวจสอบจุด (สถานที่, วิธีการ, รายการ)
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created spot check ID / ID การตรวจสอบจุดที่สร้างแล้ว
+   */
   @TryCatch
   async create(
     data: {
@@ -247,6 +278,15 @@ export class SpotCheckService {
     return Result.ok({ id: spotCheck.id });
   }
 
+  /**
+   * Update a spot check
+   * แก้ไขการตรวจสอบจุด
+   * @param id - Spot check ID / ID การตรวจสอบจุด
+   * @param data - Spot check update data / ข้อมูลแก้ไขการตรวจสอบจุด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Updated spot check / การตรวจสอบจุดที่แก้ไขแล้ว
+   */
   @TryCatch
   async update(
     id: string,
@@ -292,6 +332,14 @@ export class SpotCheckService {
     return Result.ok(updated);
   }
 
+  /**
+   * Soft delete a spot check
+   * ลบการตรวจสอบจุดแบบซอฟต์ดีลีท
+   * @param id - Spot check ID / ID การตรวจสอบจุด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Deleted spot check ID / ID การตรวจสอบจุดที่ลบแล้ว
+   */
   @TryCatch
   async delete(
     id: string,
@@ -324,6 +372,14 @@ export class SpotCheckService {
     return Result.ok({ id });
   }
 
+  /**
+   * Generate spot check document number
+   * สร้างเลขที่เอกสารการตรวจสอบจุด
+   * @param scDate - Spot check date / วันที่ตรวจสอบจุด
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param user_id - User ID / ID ผู้ใช้
+   * @returns Generated document number / เลขที่เอกสารที่สร้างขึ้น
+   */
   private async generateSCNo(
     scDate: string,
     bu_code: string,

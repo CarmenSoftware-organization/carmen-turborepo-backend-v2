@@ -32,8 +32,13 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific kitchen equipment definition (e.g., oven, mixer, blender, sous vide)
-   * that can be associated with recipes to track required equipment for preparation.
+   * Retrieves a specific recipe equipment by ID
+   * ค้นหาอุปกรณ์ครัวเดียวตาม ID สำหรับติดตามอุปกรณ์ที่จำเป็นในการเตรียมสูตรอาหาร
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Recipe equipment ID / รหัสอุปกรณ์ครัว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('recipe-equipment.findOne'))
@@ -49,8 +54,13 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   }
 
   /**
-   * Lists all kitchen equipment types configured for the business unit, used to tag
-   * recipes with required equipment for kitchen capacity planning and feasibility assessment.
+   * Lists all recipe equipment types for the business unit
+   * ค้นหาอุปกรณ์ครัวทั้งหมดสำหรับการวางแผนกำลังการผลิตครัวและการประเมินความเป็นไปได้
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
    */
   @Get()
   @UseGuards(new AppIdGuard('recipe-equipment.findAll'))
@@ -68,8 +78,13 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   }
 
   /**
-   * Defines a new kitchen equipment type that can be associated with recipes,
-   * helping track which tools and appliances are needed for recipe preparation.
+   * Creates a new kitchen equipment type for recipe association
+   * สร้างอุปกรณ์ครัวใหม่สำหรับเชื่อมโยงกับสูตรอาหาร
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Recipe equipment creation data / ข้อมูลสำหรับสร้างอุปกรณ์ครัว
+   * @param version - API version / เวอร์ชัน API
    */
   @Post()
   @UseGuards(new AppIdGuard('recipe-equipment.create'))
@@ -86,8 +101,14 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   }
 
   /**
-   * Fully updates an existing kitchen equipment type definition.
-   * Changes affect how recipes reference this equipment.
+   * Fully updates an existing kitchen equipment type
+   * อัปเดตอุปกรณ์ครัวทั้งหมด การเปลี่ยนแปลงส่งผลต่อสูตรอาหารที่อ้างอิงอุปกรณ์นี้
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Recipe equipment ID / รหัสอุปกรณ์ครัว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param version - API version / เวอร์ชัน API
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('recipe-equipment.update'))
@@ -105,8 +126,14 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   }
 
   /**
-   * Partially updates specific fields of a kitchen equipment definition without
-   * replacing the entire record.
+   * Partially updates specific fields of a kitchen equipment type
+   * อัปเดตบางฟิลด์ของอุปกรณ์ครัวโดยไม่แทนที่ข้อมูลทั้งหมด
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Recipe equipment ID / รหัสอุปกรณ์ครัว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Partial update data / ข้อมูลสำหรับอัปเดตบางส่วน
+   * @param version - API version / เวอร์ชัน API
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('recipe-equipment.patch'))
@@ -124,8 +151,13 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   }
 
   /**
-   * Removes a kitchen equipment type from the system. Recipes referencing this
-   * equipment should be updated before deletion.
+   * Removes a kitchen equipment type from the system
+   * ลบอุปกรณ์ครัวออกจากระบบ ควรอัปเดตสูตรอาหารที่อ้างอิงอุปกรณ์นี้ก่อนลบ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Recipe equipment ID / รหัสอุปกรณ์ครัว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('recipe-equipment.delete'))

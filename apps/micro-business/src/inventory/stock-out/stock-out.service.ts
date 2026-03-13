@@ -32,6 +32,14 @@ export class StockOutService {
     private readonly tenantService: TenantService,
   ) {}
 
+  /**
+   * Find a stock out by ID
+   * ค้นหาใบเบิกสินค้าออกรายการเดียวตาม ID
+   * @param id - Stock out ID / ID ใบเบิกสินค้าออก
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Stock out detail with items / รายละเอียดใบเบิกสินค้าออกพร้อมรายการ
+   */
   @TryCatch
   async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findOne', id, user_id, tenant_id }, StockOutService.name);
@@ -65,6 +73,14 @@ export class StockOutService {
     return Result.ok(serializedData);
   }
 
+  /**
+   * Find all stock outs with pagination
+   * ค้นหาใบเบิกสินค้าออกทั้งหมดพร้อมการแบ่งหน้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of stock outs / รายการใบเบิกสินค้าออกแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAll', user_id, tenant_id, paginate }, StockOutService.name);
@@ -129,6 +145,14 @@ export class StockOutService {
     });
   }
 
+  /**
+   * Create a new stock out with optional detail lines
+   * สร้างใบเบิกสินค้าออกใหม่พร้อมรายการรายละเอียด (ไม่บังคับ)
+   * @param data - Stock out creation data / ข้อมูลสร้างใบเบิกสินค้าออก
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created stock out ID and number / ID และเลขที่ใบเบิกสินค้าออกที่สร้างแล้ว
+   */
   @TryCatch
   async create(data: IStockOutCreate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'create', data, user_id, tenant_id }, StockOutService.name);
@@ -216,6 +240,14 @@ export class StockOutService {
     return Result.ok(tx);
   }
 
+  /**
+   * Update a stock out
+   * แก้ไขใบเบิกสินค้าออก
+   * @param data - Stock out update data / ข้อมูลแก้ไขใบเบิกสินค้าออก
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Updated stock out / ใบเบิกสินค้าออกที่แก้ไขแล้ว
+   */
   @TryCatch
   async update(data: IStockOutUpdate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'update', data, user_id, tenant_id }, StockOutService.name);
@@ -389,6 +421,14 @@ export class StockOutService {
     return Result.ok(tx);
   }
 
+  /**
+   * Soft delete a stock out and its details
+   * ลบใบเบิกสินค้าออกและรายการรายละเอียดแบบซอฟต์ดีลีท
+   * @param id - Stock out ID / ID ใบเบิกสินค้าออก
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Deleted stock out / ใบเบิกสินค้าออกที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id, tenant_id }, StockOutService.name);
@@ -437,6 +477,14 @@ export class StockOutService {
     return Result.ok({ id });
   }
 
+  /**
+   * Find the latest stock out by document number pattern
+   * ค้นหาใบเบิกสินค้าออกล่าสุดตามรูปแบบเลขที่เอกสาร
+   * @param pattern - Document number pattern / รูปแบบเลขที่เอกสาร
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @returns Latest stock out matching the pattern / ใบเบิกสินค้าออกล่าสุดที่ตรงกับรูปแบบ
+   */
   async findLatestSOByPattern(pattern: string, tenant_id: string, user_id: string): Promise<any> {
     this.logger.debug({ function: 'findLatestSOByPattern', pattern, tenant_id, user_id }, StockOutService.name);
 
@@ -457,6 +505,14 @@ export class StockOutService {
     return stockOut;
   }
 
+  /**
+   * Generate stock out document number
+   * สร้างเลขที่เอกสารใบเบิกสินค้าออก
+   * @param soDate - Stock out date / วันที่เบิกสินค้าออก
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @returns Generated document number / เลขที่เอกสารที่สร้างขึ้น
+   */
   private async generateSONo(soDate: string, tenant_id: string, user_id: string): Promise<string> {
     this.logger.debug({ function: 'generateSONo', soDate, tenant_id, user_id }, StockOutService.name);
 
@@ -504,6 +560,14 @@ export class StockOutService {
 
   // ==================== Stock Out Detail CRUD ====================
 
+  /**
+   * Find a stock out detail by ID
+   * ค้นหารายการรายละเอียดใบเบิกสินค้าออกตาม ID
+   * @param detailId - Stock out detail ID / ID รายการรายละเอียดใบเบิกสินค้าออก
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Stock out detail / รายการรายละเอียดใบเบิกสินค้าออก
+   */
   @TryCatch
   async findDetailById(detailId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findDetailById', detailId, user_id, tenant_id }, StockOutService.name);
@@ -534,6 +598,14 @@ export class StockOutService {
     return Result.ok(detail);
   }
 
+  /**
+   * Find all details by stock out ID
+   * ค้นหารายการรายละเอียดทั้งหมดตาม ID ใบเบิกสินค้าออก
+   * @param stockOutId - Stock out ID / ID ใบเบิกสินค้าออก
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns List of stock out details / รายการรายละเอียดใบเบิกสินค้าออก
+   */
   @TryCatch
   async findDetailsByStockOutId(stockOutId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findDetailsByStockOutId', stockOutId, user_id, tenant_id }, StockOutService.name);
@@ -566,6 +638,15 @@ export class StockOutService {
     return Result.ok(details);
   }
 
+  /**
+   * Create a stock out detail line
+   * สร้างรายการรายละเอียดใบเบิกสินค้าออก
+   * @param stockOutId - Stock out ID / ID ใบเบิกสินค้าออก
+   * @param data - Detail creation data / ข้อมูลสร้างรายการรายละเอียด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created detail / รายการรายละเอียดที่สร้างแล้ว
+   */
   @TryCatch
   async createDetail(
     stockOutId: string,
@@ -631,6 +712,15 @@ export class StockOutService {
     return Result.ok(detail);
   }
 
+  /**
+   * Update a stock out detail line
+   * แก้ไขรายการรายละเอียดใบเบิกสินค้าออก
+   * @param detailId - Stock out detail ID / ID รายการรายละเอียดใบเบิกสินค้าออก
+   * @param data - Detail update data / ข้อมูลแก้ไขรายการรายละเอียด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Updated detail / รายการรายละเอียดที่แก้ไขแล้ว
+   */
   @TryCatch
   async updateDetail(
     detailId: string,
@@ -674,6 +764,14 @@ export class StockOutService {
     return Result.ok(updatedDetail);
   }
 
+  /**
+   * Soft delete a stock out detail line
+   * ลบรายการรายละเอียดใบเบิกสินค้าออกแบบซอฟต์ดีลีท
+   * @param detailId - Stock out detail ID / ID รายการรายละเอียดใบเบิกสินค้าออก
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Deleted detail / รายการรายละเอียดที่ลบแล้ว
+   */
   @TryCatch
   async deleteDetail(detailId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'deleteDetail', detailId, user_id, tenant_id }, StockOutService.name);
@@ -711,6 +809,14 @@ export class StockOutService {
 
   // ==================== Standalone Stock Out Detail API ====================
 
+  /**
+   * Find all stock out details with pagination (standalone API)
+   * ค้นหารายการรายละเอียดใบเบิกสินค้าออกทั้งหมดพร้อมการแบ่งหน้า (API แบบอิสระ)
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of stock out details / รายการรายละเอียดใบเบิกสินค้าออกแบบแบ่งหน้า
+   */
   @TryCatch
   async findAllDetails(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAllDetails', user_id, tenant_id, paginate }, StockOutService.name);
@@ -783,6 +889,14 @@ export class StockOutService {
     });
   }
 
+  /**
+   * Create a standalone stock out detail (requires stock_out_id in data)
+   * สร้างรายการรายละเอียดใบเบิกสินค้าออกแบบอิสระ (ต้องระบุ stock_out_id ในข้อมูล)
+   * @param data - Detail creation data with stock_out_id / ข้อมูลสร้างรายการรายละเอียดพร้อม stock_out_id
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created detail / รายการรายละเอียดที่สร้างแล้ว
+   */
   @TryCatch
   async createStandaloneDetail(
     data: IStockOutDetailCreate & { stock_out_id: string },

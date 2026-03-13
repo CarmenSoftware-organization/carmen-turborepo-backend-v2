@@ -19,6 +19,12 @@ export class UrlTokenGuard implements CanActivate {
     private readonly jwtService: JwtService,
   ) {}
 
+  /**
+   * Validate a URL-based token from query/params/body, check expiration, and attach decoded data to request
+   * ตรวจสอบโทเค็นจาก URL (query/params/body) ตรวจสอบการหมดอายุ และแนบข้อมูลที่ถอดรหัสแล้วไปกับคำขอ
+   * @param context - NestJS execution context / บริบทการทำงานของ NestJS
+   * @returns Whether the URL token is valid and not expired / โทเค็น URL ถูกต้องและยังไม่หมดอายุหรือไม่
+   */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const urlToken =

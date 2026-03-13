@@ -82,6 +82,12 @@ export class StoreRequisitionService {
     StoreRequisitionService.name,
   );
 
+  /**
+   * Initialize Prisma service for the tenant
+   * เริ่มต้น Prisma service สำหรับผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / ID ผู้ใช้
+   */
   async initializePrismaService(
     bu_code: string,
     userId: string,
@@ -122,6 +128,13 @@ export class StoreRequisitionService {
     private readonly tenantService: TenantService,
   ) {}
 
+  /**
+   * Find a store requisition by ID
+   * ค้นหาใบเบิกสินค้ารายการเดียวตาม ID
+   * @param id - Store requisition ID / ID ใบเบิกสินค้า
+   * @param userData - User data with business unit info / ข้อมูลผู้ใช้พร้อมข้อมูลหน่วยธุรกิจ
+   * @returns Store requisition detail / รายละเอียดใบเบิกสินค้า
+   */
   @TryCatch
   async findById(
     id: string,
@@ -232,6 +245,15 @@ export class StoreRequisitionService {
     return Result.ok(serializedStoreRequisition);
   }
 
+  /**
+   * Find all store requisitions with pagination
+   * ค้นหาใบเบิกสินค้าทั้งหมดพร้อมการแบ่งหน้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param bu_code - Business unit codes / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param userDatas - User data with department and HOD info / ข้อมูลผู้ใช้พร้อมข้อมูลแผนกและหัวหน้าแผนก
+   * @returns Paginated list of store requisitions / รายการใบเบิกสินค้าแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(
     user_id: string,
@@ -391,6 +413,12 @@ export class StoreRequisitionService {
     return Result.ok(results);
   }
 
+  /**
+   * Create a new store requisition
+   * สร้างใบเบิกสินค้าใหม่
+   * @param data - Store requisition creation data / ข้อมูลสร้างใบเบิกสินค้า
+   * @returns Created store requisition ID / ID ใบเบิกสินค้าที่สร้างแล้ว
+   */
   @TryCatch
   async create(
     createSR: IStoreRequisition,
@@ -446,6 +474,14 @@ export class StoreRequisitionService {
     return Result.ok(tx);
   }
 
+  /**
+   * Submit a store requisition for approval
+   * ส่งใบเบิกสินค้าเพื่อขออนุมัติ
+   * @param id - Store requisition ID / ID ใบเบิกสินค้า
+   * @param payload - Submit data / ข้อมูลการส่ง
+   * @param workflowHeader - Workflow header configuration / การตั้งค่าส่วนหัวเวิร์กโฟลว์
+   * @returns Submitted store requisition / ใบเบิกสินค้าที่ส่งแล้ว
+   */
   @TryCatch
   async submit(
     id: string,
@@ -561,6 +597,14 @@ export class StoreRequisitionService {
     return Result.ok({ id: tx.id });
   }
 
+  /**
+   * Update a store requisition with detail lines
+   * แก้ไขใบเบิกสินค้าพร้อมรายการรายละเอียด
+   * @param id - Store requisition ID / ID ใบเบิกสินค้า
+   * @param updatePayload - Update data / ข้อมูลแก้ไข
+   * @param updateSRDetail - Detail update data / ข้อมูลแก้ไขรายการรายละเอียด
+   * @returns Updated store requisition / ใบเบิกสินค้าที่แก้ไขแล้ว
+   */
   @TryCatch
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async update(
@@ -668,6 +712,12 @@ export class StoreRequisitionService {
     return Result.ok(tx);
   }
 
+  /**
+   * Find the latest store requisition by document number pattern
+   * ค้นหาใบเบิกสินค้าล่าสุดตามรูปแบบเลขที่เอกสาร
+   * @param pattern - Document number pattern / รูปแบบเลขที่เอกสาร
+   * @returns Latest store requisition matching the pattern / ใบเบิกสินค้าล่าสุดที่ตรงกับรูปแบบ
+   */
   async findLatestSrByPattern(pattern: string): Promise<any> {
     this.logger.debug(
       {
@@ -694,6 +744,12 @@ export class StoreRequisitionService {
     return storeRequisition;
   }
 
+  /**
+   * Soft delete a store requisition
+   * ลบใบเบิกสินค้าแบบซอฟต์ดีลีท
+   * @param id - Store requisition ID / ID ใบเบิกสินค้า
+   * @returns Deleted store requisition ID / ID ใบเบิกสินค้าที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -723,6 +779,14 @@ export class StoreRequisitionService {
     return Result.ok(tx);
   }
 
+  /**
+   * Approve a store requisition
+   * อนุมัติใบเบิกสินค้า
+   * @param id - Store requisition ID / ID ใบเบิกสินค้า
+   * @param workflow - Workflow configuration / การตั้งค่าเวิร์กโฟลว์
+   * @param payload - Approval payload / ข้อมูลการอนุมัติ
+   * @returns Approved store requisition / ใบเบิกสินค้าที่อนุมัติแล้ว
+   */
   @TryCatch
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async approve(id: string, workflow: any, payload: any[]): Promise<Result<unknown>> {
@@ -849,6 +913,13 @@ export class StoreRequisitionService {
     return Result.ok({ id: storeRequisition.id });
   }
 
+  /**
+   * Reject a store requisition
+   * ปฏิเสธใบเบิกสินค้า
+   * @param id - Store requisition ID / ID ใบเบิกสินค้า
+   * @param payload - Rejection data with reason / ข้อมูลการปฏิเสธพร้อมเหตุผล
+   * @returns Rejected store requisition / ใบเบิกสินค้าที่ปฏิเสธแล้ว
+   */
   @TryCatch
   async reject(
     id: string,
@@ -924,6 +995,13 @@ export class StoreRequisitionService {
     return Result.ok({ id: storeRequisition.id });
   }
 
+  /**
+   * Review a store requisition
+   * ตรวจสอบใบเบิกสินค้า
+   * @param id - Store requisition ID / ID ใบเบิกสินค้า
+   * @param payload - Review data / ข้อมูลการตรวจสอบ
+   * @returns Reviewed store requisition / ใบเบิกสินค้าที่ตรวจสอบแล้ว
+   */
   async review(
     id: string,
     payload: ReviewStoreRequisitionDto,
@@ -1042,6 +1120,13 @@ export class StoreRequisitionService {
     return srNo;
   }
 
+  /**
+   * Find all store requisitions by status with pagination
+   * ค้นหาใบเบิกสินค้าทั้งหมดตามสถานะพร้อมการแบ่งหน้า
+   * @param status - Document status to filter by / สถานะเอกสารที่จะกรอง
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of store requisitions by status / รายการใบเบิกสินค้าตามสถานะแบบแบ่งหน้า
+   */
   @TryCatch
   async findAllByStatus(
     status: string,
@@ -1121,6 +1206,14 @@ export class StoreRequisitionService {
     });
   }
 
+  /**
+   * Find all pending store requisitions for the current user
+   * ค้นหาใบเบิกสินค้าที่รอดำเนินการทั้งหมดสำหรับผู้ใช้ปัจจุบัน
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param bu_code - Business unit code(s) / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of pending store requisitions / รายการใบเบิกสินค้าที่รอดำเนินการแบบแบ่งหน้า
+   */
   @TryCatch
   async findAllMyPending(
     user_id: string,
@@ -1292,6 +1385,14 @@ export class StoreRequisitionService {
     });
   }
 
+  /**
+   * Get business units for a user
+   * ดึงหน่วยธุรกิจสำหรับผู้ใช้
+   * @param userId - User ID / ID ผู้ใช้
+   * @param is_active - Active status filter / ตัวกรองสถานะใช้งาน
+   * @param version - API version / เวอร์ชัน API
+   * @returns Business units / หน่วยธุรกิจ
+   */
   async getBus(
     userId: string,
     is_active: boolean = true,
@@ -1363,6 +1464,13 @@ export class StoreRequisitionService {
     }
   }
 
+  /**
+   * Get count of pending store requisitions for the current user
+   * ดึงจำนวนใบเบิกสินค้าที่รอดำเนินการสำหรับผู้ใช้ปัจจุบัน
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Pending count / จำนวนที่รอดำเนินการ
+   */
   async findAllMyPendingCount(user_id: string, bu_code: string): Promise<any> {
     this.logger.debug(
       { function: 'findAll', user_id, bu_code },

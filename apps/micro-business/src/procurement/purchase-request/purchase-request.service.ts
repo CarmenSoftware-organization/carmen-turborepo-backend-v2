@@ -96,6 +96,12 @@ export class PurchaseRequestService {
     PurchaseRequestService.name,
   );
 
+  /**
+   * Initialize the Prisma service for tenant-specific database access
+   * เริ่มต้นบริการ Prisma สำหรับการเข้าถึงฐานข้อมูลเฉพาะผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / ID ผู้ใช้
+   */
   async initializePrismaService(
     bu_code: string,
     userId: string,
@@ -134,6 +140,13 @@ export class PurchaseRequestService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a purchase request by ID with workflow stages and user permissions
+   * ค้นหาใบขอซื้อตาม ID พร้อมขั้นตอนการทำงานและสิทธิ์ผู้ใช้
+   * @param id - Purchase request ID / ID ของใบขอซื้อ
+   * @param userData - User data with roles and permissions / ข้อมูลผู้ใช้พร้อมบทบาทและสิทธิ์
+   * @returns Purchase request data with workflow info / ข้อมูลใบขอซื้อพร้อมข้อมูลขั้นตอนการทำงาน
+   */
   @TryCatch
   async findById(
     id: string,
@@ -273,6 +286,15 @@ export class PurchaseRequestService {
     return Result.ok(serializedPurchaseRequest);
   }
 
+  /**
+   * Find all purchase requests across multiple business units with pagination
+   * ค้นหาใบขอซื้อทั้งหมดจากหลายหน่วยธุรกิจพร้อมการแบ่งหน้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param bu_code - Array of business unit codes / อาร์เรย์ของรหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param userDatas - User data per business unit with roles and permissions / ข้อมูลผู้ใช้ต่อหน่วยธุรกิจพร้อมบทบาทและสิทธิ์
+   * @returns Paginated list of purchase requests / รายการใบขอซื้อที่แบ่งหน้าแล้ว
+   */
   @TryCatch
   async findAll(
     user_id: string,
@@ -456,6 +478,13 @@ export class PurchaseRequestService {
     return Result.ok(results);
   }
 
+  /**
+   * Find all workflow stages associated with purchase requests
+   * ค้นหาขั้นตอนการทำงานทั้งหมดที่เกี่ยวข้องกับใบขอซื้อ
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns List of workflow stages / รายการขั้นตอนการทำงาน
+   */
   @TryCatch
   async findAllWorkflowStagesByPr(
     user_id: string,
@@ -496,6 +525,14 @@ export class PurchaseRequestService {
     return Result.ok(CallCurrentWorkflowDetail.data);
   }
 
+  /**
+   * Get business units accessible by a user
+   * ดึงหน่วยธุรกิจที่ผู้ใช้สามารถเข้าถึงได้
+   * @param userId - User ID / ID ผู้ใช้
+   * @param is_active - Filter by active status / กรองตามสถานะใช้งาน
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of business units / รายการหน่วยธุรกิจ
+   */
   async getBus(
     userId: string,
     is_active: boolean = true,
@@ -567,6 +604,14 @@ export class PurchaseRequestService {
     }
   }
 
+  /**
+   * Find all purchase requests pending approval for the current user across business units
+   * ค้นหาใบขอซื้อทั้งหมดที่รอการอนุมัติของผู้ใช้ปัจจุบันจากทุกหน่วยธุรกิจ
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param bu_code - Business unit code(s) / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of pending purchase requests / รายการใบขอซื้อที่รออนุมัติที่แบ่งหน้าแล้ว
+   */
   @TryCatch
   async findAllMyPending(
     user_id: string,
@@ -759,6 +804,13 @@ export class PurchaseRequestService {
     return Result.ok(results);
   }
 
+  /**
+   * Create a new purchase request with header, detail lines, and generate a running PR number
+   * สร้างใบขอซื้อใหม่พร้อมส่วนหัว รายการรายละเอียด และสร้างเลขที่ใบขอซื้ออัตโนมัติ
+   * @param createPR - Purchase request header data / ข้อมูลส่วนหัวใบขอซื้อ
+   * @param createPRDetail - Purchase request detail lines / รายการรายละเอียดใบขอซื้อ
+   * @returns Created purchase request ID and PR number / ID และเลขที่ใบขอซื้อที่สร้างแล้ว
+   */
   @TryCatch
   async create(
     createPR: IPurchaseRequest,
@@ -816,6 +868,14 @@ export class PurchaseRequestService {
     return Result.ok(tx);
   }
 
+  /**
+   * Submit a purchase request for approval and initialize the workflow
+   * ส่งใบขอซื้อเพื่อขออนุมัติและเริ่มต้นขั้นตอนการทำงาน
+   * @param id - Purchase request ID / ID ของใบขอซื้อ
+   * @param payload - Submission data / ข้อมูลการส่ง
+   * @param workflowHeader - Workflow header configuration / การตั้งค่าส่วนหัวขั้นตอนการทำงาน
+   * @returns Submitted purchase request ID / ID ของใบขอซื้อที่ส่งแล้ว
+   */
   @TryCatch
   async submit(
     id: string,
@@ -940,6 +1000,13 @@ export class PurchaseRequestService {
     return Result.ok({ id: tx.id });
   }
 
+  /**
+   * Update a purchase request header, manage detail lines (add, update, delete), and handle workflow state
+   * อัปเดตส่วนหัวใบขอซื้อ จัดการรายการรายละเอียด (เพิ่ม อัปเดต ลบ) และจัดการสถานะขั้นตอนการทำงาน
+   * @param id - Purchase request ID / ID ของใบขอซื้อ
+   * @param updatePPayload - Updated purchase request data / ข้อมูลใบขอซื้อที่อัปเดต
+   * @returns Updated purchase request ID / ID ของใบขอซื้อที่อัปเดตแล้ว
+   */
   @TryCatch
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async update(
@@ -1058,6 +1125,12 @@ export class PurchaseRequestService {
     return Result.ok(tx);
   }
 
+  /**
+   * Find the latest purchase request matching a pattern for running number generation
+   * ค้นหาใบขอซื้อล่าสุดที่ตรงกับรูปแบบสำหรับสร้างเลขที่เอกสาร
+   * @param pattern - Pattern string to match against PR number / รูปแบบข้อความที่ใช้จับคู่กับเลขที่ใบขอซื้อ
+   * @returns Latest purchase request matching the pattern / ใบขอซื้อล่าสุดที่ตรงกับรูปแบบ
+   */
   async findLatestPrByPattern(pattern: string): Promise<any> {
     this.logger.debug(
       {
@@ -1084,6 +1157,14 @@ export class PurchaseRequestService {
     return purchaseRequest;
   }
 
+  /**
+   * Duplicate existing purchase requests by creating copies with new PR numbers
+   * สำเนาใบขอซื้อที่มีอยู่โดยสร้างสำเนาใหม่พร้อมเลขที่ใบขอซื้อใหม่
+   * @param ids - Array of purchase request IDs to duplicate / อาร์เรย์ของ ID ใบขอซื้อที่ต้องการสำเนา
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Duplicated purchase request IDs / ID ของใบขอซื้อที่สำเนาแล้ว
+   */
   @TryCatch
   async duplicatePr(
     ids: string[],
@@ -1192,6 +1273,15 @@ export class PurchaseRequestService {
     return Result.ok(tx);
   }
 
+  /**
+   * Split a purchase request by moving selected detail lines to a new purchase request
+   * แยกใบขอซื้อโดยย้ายรายการรายละเอียดที่เลือกไปยังใบขอซื้อใหม่
+   * @param id - Source purchase request ID / ID ของใบขอซื้อต้นทาง
+   * @param detailIds - Detail line IDs to split off / ID ของรายการรายละเอียดที่ต้องการแยก
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns New purchase request ID created from the split / ID ของใบขอซื้อใหม่ที่สร้างจากการแยก
+   */
   @TryCatch
   async splitPr(
     id: string,
@@ -1335,6 +1425,12 @@ export class PurchaseRequestService {
     return Result.ok(tx);
   }
 
+  /**
+   * Delete a purchase request and all its detail lines
+   * ลบใบขอซื้อและรายการรายละเอียดทั้งหมด
+   * @param id - Purchase request ID to delete / ID ของใบขอซื้อที่ต้องการลบ
+   * @returns Deleted purchase request ID / ID ของใบขอซื้อที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -1364,6 +1460,14 @@ export class PurchaseRequestService {
     return Result.ok(tx);
   }
 
+  /**
+   * Approve a purchase request and advance the workflow stage
+   * อนุมัติใบขอซื้อและเลื่อนขั้นตอนการทำงานไปข้างหน้า
+   * @param id - Purchase request ID / ID ของใบขอซื้อ
+   * @param workflow - Workflow state data / ข้อมูลสถานะขั้นตอนการทำงาน
+   * @param payload - Approval detail data / ข้อมูลรายละเอียดการอนุมัติ
+   * @returns Approved purchase request ID / ID ของใบขอซื้อที่อนุมัติแล้ว
+   */
   @TryCatch
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async approve(id: string, workflow: any, payload: any[]): Promise<Result<unknown>> {
@@ -1488,6 +1592,14 @@ export class PurchaseRequestService {
     return Result.ok({ id: purchaseRequest.id });
   }
 
+  /**
+   * Review a purchase request and forward it to the next workflow stage
+   * ตรวจสอบใบขอซื้อและส่งต่อไปยังขั้นตอนการทำงานถัดไป
+   * @param id - Purchase request ID / ID ของใบขอซื้อ
+   * @param payload - Review data / ข้อมูลการตรวจสอบ
+   * @param workflow - Workflow header configuration / การตั้งค่าส่วนหัวขั้นตอนการทำงาน
+   * @returns Reviewed purchase request result / ผลลัพธ์การตรวจสอบใบขอซื้อ
+   */
   @TryCatch
   async review(
     id,
@@ -1586,6 +1698,13 @@ export class PurchaseRequestService {
     return Result.ok({ id: purchaseRequest.id });
   }
 
+  /**
+   * Reject a purchase request and update its workflow status
+   * ปฏิเสธใบขอซื้อและอัปเดตสถานะขั้นตอนการทำงาน
+   * @param id - Purchase request ID / ID ของใบขอซื้อ
+   * @param payload - Rejection data with reason / ข้อมูลการปฏิเสธพร้อมเหตุผล
+   * @returns Rejected purchase request ID / ID ของใบขอซื้อที่ปฏิเสธแล้ว
+   */
   @TryCatch
   async reject(
     id: string,
@@ -1660,6 +1779,12 @@ export class PurchaseRequestService {
     return Result.ok({ id: purchaseRequest.id });
   }
 
+  /**
+   * Generate a running purchase request number based on date pattern configuration
+   * สร้างเลขที่ใบขอซื้อแบบเรียงลำดับตามการตั้งค่ารูปแบบวันที่
+   * @param PRDate - Purchase request date for pattern generation / วันที่ใบขอซื้อสำหรับสร้างรูปแบบ
+   * @returns Generated PR number / เลขที่ใบขอซื้อที่สร้างแล้ว
+   */
   private async generatePRNo(PRDate: string): Promise<any> {
     this.logger.debug(
       {
@@ -1705,6 +1830,13 @@ export class PurchaseRequestService {
     return prNo;
   }
 
+  /**
+   * Find all purchase requests filtered by document status with pagination
+   * ค้นหาใบขอซื้อทั้งหมดตามสถานะเอกสารพร้อมการแบ่งหน้า
+   * @param status - Document status to filter by / สถานะเอกสารที่ใช้กรอง
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of purchase requests by status / รายการใบขอซื้อตามสถานะที่แบ่งหน้าแล้ว
+   */
   @TryCatch
   async findAllByStatus(
     status: string,
@@ -1784,6 +1916,11 @@ export class PurchaseRequestService {
     });
   }
 
+  /**
+   * Find all distinct pending workflow stages for purchase requests
+   * ค้นหาขั้นตอนการทำงานที่รอดำเนินการทั้งหมด (ไม่ซ้ำ) ของใบขอซื้อ
+   * @returns List of distinct pending workflow stages / รายการขั้นตอนการทำงานที่รอดำเนินการที่ไม่ซ้ำ
+   */
   @TryCatch
   async findAllMyPendingStages(): Promise<Result<unknown>> {
     this.logger.debug(
@@ -1821,7 +1958,10 @@ export class PurchaseRequestService {
   }
 
   /**
-   * Export Purchase Request to Excel format
+   * Export a purchase request to Excel spreadsheet format
+   * ส่งออกใบขอซื้อเป็นไฟล์สเปรดชีต Excel
+   * @param id - Purchase request ID to export / ID ของใบขอซื้อที่ต้องการส่งออก
+   * @returns Excel file buffer and filename / บัฟเฟอร์ไฟล์ Excel และชื่อไฟล์
    */
   @TryCatch
   async exportToExcel(
@@ -2046,7 +2186,10 @@ export class PurchaseRequestService {
   }
 
   /**
-   * Print Purchase Request to PDF format
+   * Print a purchase request to PDF format
+   * พิมพ์ใบขอซื้อเป็นไฟล์ PDF
+   * @param id - Purchase request ID to print / ID ของใบขอซื้อที่ต้องการพิมพ์
+   * @returns PDF file buffer and filename / บัฟเฟอร์ไฟล์ PDF และชื่อไฟล์
    */
   @TryCatch
   async printToPdf(
@@ -2252,6 +2395,12 @@ export class PurchaseRequestService {
     });
   }
 
+  /**
+   * Find dimensions associated with a purchase request detail line
+   * ค้นหามิติที่เกี่ยวข้องกับรายการรายละเอียดใบขอซื้อ
+   * @param detail_id - Purchase request detail ID / ID ของรายละเอียดใบขอซื้อ
+   * @returns Dimension data for the detail / ข้อมูลมิติของรายละเอียด
+   */
   async findDimensionsByDetailId(detail_id: string): Promise<any> {
     this.logger.debug(
       {
@@ -2301,6 +2450,13 @@ export class PurchaseRequestService {
     }
   }
 
+  /**
+   * Get the count of purchase requests pending approval for the current user
+   * นับจำนวนใบขอซื้อที่รอการอนุมัติของผู้ใช้ปัจจุบัน
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Count of pending purchase requests / จำนวนใบขอซื้อที่รออนุมัติ
+   */
   async findAllMyPendingCount(user_id: string, bu_code: string): Promise<any> {
     this.logger.debug(
       { function: 'findAll', user_id, bu_code },
@@ -2415,6 +2571,12 @@ export class PurchaseRequestService {
     return Result.ok({ pending: total });
   }
 
+  /**
+   * Find price history for a purchase request detail line
+   * ค้นหาประวัติราคาของรายการรายละเอียดใบขอซื้อ
+   * @param detail_id - Purchase request detail ID / ID ของรายละเอียดใบขอซื้อ
+   * @returns Price history data / ข้อมูลประวัติราคา
+   */
   async findHistoryByDetailId(detail_id: string): Promise<any> {
     this.logger.debug(
       {
@@ -2464,6 +2626,13 @@ export class PurchaseRequestService {
     }
   }
 
+  /**
+   * Get calculated price information for a purchase request detail (taxes, discounts, totals)
+   * ดึงข้อมูลราคาที่คำนวณแล้วสำหรับรายละเอียดใบขอซื้อ (ภาษี ส่วนลด ยอดรวม)
+   * @param detail_id - Purchase request detail ID / ID ของรายละเอียดใบขอซื้อ
+   * @param data - Calculation parameters / พารามิเตอร์การคำนวณ
+   * @returns Calculated price info / ข้อมูลราคาที่คำนวณแล้ว
+   */
   async findCalculatePriceInfoByDetailId(
     detail_id: string,
     data: CalculatePurchaseRequestDetail,

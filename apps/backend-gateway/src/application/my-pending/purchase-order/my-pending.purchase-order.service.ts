@@ -17,6 +17,15 @@ export class MyPendingPurchaseOrderService {
     private readonly procurementService: ClientProxy,
   ) {}
 
+  /**
+   * Find a purchase order by ID
+   * ค้นหาใบสั่งซื้อรายการเดียวตาม ID
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID / รหัส tenant
+   * @param version - API version / เวอร์ชัน API
+   * @returns Purchase order details / รายละเอียดใบสั่งซื้อ
+   */
   async findById(
     id: string,
     user_id: string,
@@ -49,6 +58,15 @@ export class MyPendingPurchaseOrderService {
     return Result.ok(response.data);
   }
 
+  /**
+   * List all pending purchase orders for the user
+   * ค้นหารายการใบสั่งซื้อที่รอดำเนินการทั้งหมดของผู้ใช้
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit codes / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of pending purchase orders / รายการใบสั่งซื้อที่รอดำเนินการแบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     bu_code: string[],
@@ -88,6 +106,13 @@ export class MyPendingPurchaseOrderService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Get count of pending purchase orders for the user
+   * ดึงจำนวนใบสั่งซื้อที่รอดำเนินการของผู้ใช้
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Pending purchase order count / จำนวนใบสั่งซื้อที่รอดำเนินการ
+   */
   async findAllMyPendingPurchaseOrdersCount(
     user_id: string,
     version: string,

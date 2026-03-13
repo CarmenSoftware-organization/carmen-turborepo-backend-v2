@@ -17,6 +17,15 @@ export class DepartmentService {
     private readonly masterService: ClientProxy,
   ) {}
 
+  /**
+   * Find a specific department by ID via microservice
+   * ค้นหารายการแผนกเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Department ID / รหัสแผนก
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Department details / รายละเอียดแผนก
+   */
   async getDepartment(
     id: string,
     user_id: string,
@@ -51,6 +60,15 @@ export class DepartmentService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all departments for a business unit via microservice
+   * ค้นหารายการแผนกทั้งหมดของหน่วยธุรกิจผ่านไมโครเซอร์วิส
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of departments / รายการแผนกแบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     bu_code: string,

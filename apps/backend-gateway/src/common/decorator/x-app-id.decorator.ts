@@ -2,6 +2,10 @@ import { applyDecorators } from '@nestjs/common';
 import { ApiHeader } from '@nestjs/swagger';
 import { BackendLogger } from '../helpers/backend.logger';
 
+/**
+ * Swagger decorator to add x-app-id header documentation
+ * เดคอเรเตอร์ Swagger สำหรับเพิ่มเอกสาร header x-app-id
+ */
 export function ApiHeaderRequiredXAppId() {
   const logger = new BackendLogger(ApiHeaderRequiredXAppId.name);
 

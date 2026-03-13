@@ -39,10 +39,21 @@ export class NotificationService {
     this.prismaPromise = PrismaClient_SYSTEM_CUSTOM(process.env.SYSTEM_DATABASE_URL!);
   }
 
+  /**
+   * Get Prisma client instance
+   * ดึง Prisma client instance
+   * @returns Prisma client / Prisma client
+   */
   private async getPrisma() {
     return this.prismaPromise;
   }
 
+  /**
+   * Create system notifications for all or specific users
+   * สร้างการแจ้งเตือนระบบสำหรับผู้ใช้ทั้งหมดหรือเฉพาะราย
+   * @param data - System notification data / ข้อมูลการแจ้งเตือนระบบ
+   * @returns Created notifications array / อาร์เรย์การแจ้งเตือนที่สร้างแล้ว
+   */
   async createSystemNotification(data: CreateSystemNotificationData) {
     const prisma = await this.getPrisma();
 
@@ -78,6 +89,12 @@ export class NotificationService {
     return notifications;
   }
 
+  /**
+   * Create a user-to-user notification
+   * สร้างการแจ้งเตือนระหว่างผู้ใช้
+   * @param data - User notification data / ข้อมูลการแจ้งเตือนผู้ใช้
+   * @returns Created notification / การแจ้งเตือนที่สร้างแล้ว
+   */
   async createUserNotification(data: CreateUserNotificationData) {
     const prisma = await this.getPrisma();
 
@@ -95,6 +112,12 @@ export class NotificationService {
     });
   }
 
+  /**
+   * Get all users belonging to a business unit
+   * ดึงผู้ใช้ทั้งหมดที่อยู่ในหน่วยธุรกิจ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Array of users / อาร์เรย์ผู้ใช้
+   */
   async getUsersByBusinessUnitCode(bu_code: string) {
     const prisma = await this.getPrisma();
 
@@ -124,6 +147,12 @@ export class NotificationService {
     return users;
   }
 
+  /**
+   * Create notifications for all users in a business unit
+   * สร้างการแจ้งเตือนสำหรับผู้ใช้ทั้งหมดในหน่วยธุรกิจ
+   * @param data - Business unit notification data / ข้อมูลการแจ้งเตือนหน่วยธุรกิจ
+   * @returns Created notifications array / อาร์เรย์การแจ้งเตือนที่สร้างแล้ว
+   */
   async createBusinessUnitNotification(data: CreateBusinessUnitNotificationData) {
     const prisma = await this.getPrisma();
 
@@ -152,6 +181,12 @@ export class NotificationService {
     return notifications;
   }
 
+  /**
+   * Get unread notifications for a user
+   * ดึงการแจ้งเตือนที่ยังไม่ได้อ่านของผู้ใช้
+   * @param user_id - User ID / ID ผู้ใช้
+   * @returns Unread notifications / การแจ้งเตือนที่ยังไม่ได้อ่าน
+   */
   async getUnreadNotifications(user_id: string) {
     const prisma = await this.getPrisma();
     return await prisma.tb_notification.findMany({
@@ -165,6 +200,12 @@ export class NotificationService {
     });
   }
 
+  /**
+   * Mark a notification as read
+   * ทำเครื่องหมายการแจ้งเตือนว่าอ่านแล้ว
+   * @param notificationId - Notification ID / ID การแจ้งเตือน
+   * @returns Updated notification / การแจ้งเตือนที่อัปเดตแล้ว
+   */
   async markNotificationAsRead(notificationId: string) {
     const prisma = await this.getPrisma();
     return await prisma.tb_notification.update({
@@ -173,6 +214,12 @@ export class NotificationService {
     });
   }
 
+  /**
+   * Mark all notifications as read for a user
+   * ทำเครื่องหมายการแจ้งเตือนทั้งหมดว่าอ่านแล้วสำหรับผู้ใช้
+   * @param user_id - User ID / ID ผู้ใช้
+   * @returns Count of marked notifications / จำนวนการแจ้งเตือนที่ทำเครื่องหมาย
+   */
   async markAllNotificationsAsRead(user_id: string) {
     const prisma = await this.getPrisma();
     return await prisma.tb_notification.updateMany({
@@ -184,6 +231,11 @@ export class NotificationService {
     });
   }
 
+  /**
+   * Get scheduled notifications that are ready to send
+   * ดึงการแจ้งเตือนตามกำหนดการที่พร้อมส่ง
+   * @returns Scheduled notifications with user data / การแจ้งเตือนตามกำหนดการพร้อมข้อมูลผู้ใช้
+   */
   async getScheduledNotifications() {
     const prisma = await this.getPrisma();
     const now = new Date();
@@ -200,6 +252,12 @@ export class NotificationService {
     });
   }
 
+  /**
+   * Mark a notification as sent
+   * ทำเครื่องหมายการแจ้งเตือนว่าส่งแล้ว
+   * @param notificationId - Notification ID / ID การแจ้งเตือน
+   * @returns Updated notification / การแจ้งเตือนที่อัปเดตแล้ว
+   */
   async markNotificationAsSent(notificationId: string) {
     const prisma = await this.getPrisma();
     return await prisma.tb_notification.update({
@@ -208,6 +266,11 @@ export class NotificationService {
     });
   }
 
+  /**
+   * Get all users who have unread notifications
+   * ดึงผู้ใช้ทั้งหมดที่มีการแจ้งเตือนที่ยังไม่ได้อ่าน
+   * @returns Users with unread notifications / ผู้ใช้ที่มีการแจ้งเตือนที่ยังไม่ได้อ่าน
+   */
   async getUsersWithUnreadNotifications() {
     const prisma = await this.getPrisma();
     return await prisma.tb_user.findMany({
@@ -228,11 +291,22 @@ export class NotificationService {
     });
   }
 
+  /**
+   * Get all users
+   * ดึงผู้ใช้ทั้งหมด
+   * @returns All users / ผู้ใช้ทั้งหมด
+   */
   async getAllUsers() {
     const prisma = await this.getPrisma();
     return await prisma.tb_user.findMany();
   }
 
+  /**
+   * Get a user by ID
+   * ดึงผู้ใช้ตาม ID
+   * @param userId - User ID / ID ผู้ใช้
+   * @returns User data / ข้อมูลผู้ใช้
+   */
   async getUserById(userId: string) {
     const prisma = await this.getPrisma();
     return await prisma.tb_user.findFirst({
@@ -240,6 +314,12 @@ export class NotificationService {
     });
   }
 
+  /**
+   * Get all notifications for a user
+   * ดึงการแจ้งเตือนทั้งหมดของผู้ใช้
+   * @param userId - User ID / ID ผู้ใช้
+   * @returns All notifications / การแจ้งเตือนทั้งหมด
+   */
   async getAllNotifications(userId: string) {
     const prisma = await this.getPrisma();
     return await prisma.tb_notification.findMany({
@@ -247,6 +327,13 @@ export class NotificationService {
     });
   }
 
+  /**
+   * Update user online status
+   * อัปเดตสถานะออนไลน์ของผู้ใช้
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param isOnline - Online status / สถานะออนไลน์
+   * @returns Updated user / ผู้ใช้ที่อัปเดตแล้ว
+   */
   async updateUserOnlineStatus(user_id: string, isOnline: boolean) {
     const prisma = await this.getPrisma();
     return await prisma.tb_user.update({

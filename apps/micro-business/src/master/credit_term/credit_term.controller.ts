@@ -24,6 +24,12 @@ export class CreditTermController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a single credit term by ID
+   * ค้นหารายการเงื่อนไขเครดิตเดียวตาม ID
+   * @param payload - Microservice payload containing credit term ID and version / ข้อมูล payload ที่มี ID ของเงื่อนไขเครดิตและเวอร์ชัน
+   * @returns Credit term detail / รายละเอียดเงื่อนไขเครดิต
+   */
   @MessagePattern({ cmd: 'credit-term.findOne', service: 'credit-term' })
   async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, CreditTermController.name);
@@ -37,6 +43,12 @@ export class CreditTermController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all credit terms with pagination
+   * ค้นหารายการเงื่อนไขเครดิตทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing pagination parameters and version / ข้อมูล payload ที่มีพารามิเตอร์การแบ่งหน้าและเวอร์ชัน
+   * @returns Paginated list of credit terms / รายการเงื่อนไขเครดิตพร้อมการแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'credit-term.findAll', service: 'credit-term' })
   async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, CreditTermController.name);
@@ -50,6 +62,12 @@ export class CreditTermController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Create a new credit term
+   * สร้างเงื่อนไขเครดิตใหม่
+   * @param payload - Microservice payload containing credit term data and version / ข้อมูล payload ที่มีข้อมูลเงื่อนไขเครดิตและเวอร์ชัน
+   * @returns Created credit term ID / ID ของเงื่อนไขเครดิตที่สร้างขึ้น
+   */
   @MessagePattern({ cmd: 'credit-term.create', service: 'credit-term' })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, CreditTermController.name);
@@ -63,6 +81,12 @@ export class CreditTermController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an existing credit term
+   * อัปเดตเงื่อนไขเครดิตที่มีอยู่
+   * @param payload - Microservice payload containing updated credit term data and version / ข้อมูล payload ที่มีข้อมูลเงื่อนไขเครดิตที่อัปเดตและเวอร์ชัน
+   * @returns Updated credit term ID / ID ของเงื่อนไขเครดิตที่อัปเดต
+   */
   @MessagePattern({ cmd: 'credit-term.update', service: 'credit-term' })
   async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, CreditTermController.name);
@@ -76,6 +100,12 @@ export class CreditTermController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a credit term (soft delete)
+   * ลบเงื่อนไขเครดิต (ลบแบบซอฟต์)
+   * @param payload - Microservice payload containing credit term ID and version / ข้อมูล payload ที่มี ID ของเงื่อนไขเครดิตและเวอร์ชัน
+   * @returns Deleted credit term ID / ID ของเงื่อนไขเครดิตที่ลบ
+   */
   @MessagePattern({ cmd: 'credit-term.delete', service: 'credit-term' })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, CreditTermController.name);

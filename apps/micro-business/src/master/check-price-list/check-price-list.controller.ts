@@ -14,6 +14,12 @@ export class CheckPriceListController extends BaseMicroserviceController {
     super();
   }
 
+  /**
+   * Check and validate a price list by URL token
+   * ตรวจสอบและยืนยันรายการราคาตาม URL token
+   * @param payload - Microservice payload containing URL token and decoded token / ข้อมูล payload ที่มี URL token และ token ที่ถอดรหัสแล้ว
+   * @returns Price list validation result / ผลการตรวจสอบรายการราคา
+   */
   @MessagePattern({ cmd: 'check-price-list.check', service: 'check-price-list' })
   async checkPriceList(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(

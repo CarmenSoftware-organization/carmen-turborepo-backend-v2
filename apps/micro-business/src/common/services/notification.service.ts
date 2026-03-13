@@ -96,6 +96,9 @@ export class NotificationService {
 
   /**
    * Send notification to a specific user
+   * ส่งการแจ้งเตือนไปยังผู้ใช้ที่ระบุ
+   * @param options - Notification options including recipient / ตัวเลือกการแจ้งเตือนรวมถึงผู้รับ
+   * @returns Notification response or null / การตอบกลับการแจ้งเตือนหรือ null
    */
   async sendToUser(options: SendToUserOptions): Promise<NotificationResponseModel | null> {
     const payload: CreateUserNotificationModel = {
@@ -114,6 +117,9 @@ export class NotificationService {
 
   /**
    * Send notification to multiple users
+   * ส่งการแจ้งเตือนไปยังผู้ใช้หลายคน
+   * @param options - Notification options including recipient IDs / ตัวเลือกการแจ้งเตือนรวมถึง ID ผู้รับ
+   * @returns Array of notification responses / อาร์เรย์ของการตอบกลับการแจ้งเตือน
    */
   async sendToUsers(options: SendToUsersOptions): Promise<(NotificationResponseModel | null)[]> {
     const results: (NotificationResponseModel | null)[] = [];
@@ -131,6 +137,9 @@ export class NotificationService {
 
   /**
    * Send system-wide notification (broadcast)
+   * ส่งการแจ้งเตือนทั่วทั้งระบบ (ประกาศ)
+   * @param options - System notification options / ตัวเลือกการแจ้งเตือนระบบ
+   * @returns Array of notification responses or null / อาร์เรย์ของการตอบกลับการแจ้งเตือนหรือ null
    */
   async sendSystem(options: SendSystemOptions): Promise<NotificationResponseModel[] | null> {
     const payload: CreateSystemNotificationModel = {
@@ -148,6 +157,9 @@ export class NotificationService {
 
   /**
    * Send notification to all users in a Business Unit
+   * ส่งการแจ้งเตือนไปยังผู้ใช้ทั้งหมดในหน่วยธุรกิจ
+   * @param options - Business unit notification options / ตัวเลือกการแจ้งเตือนหน่วยธุรกิจ
+   * @returns Array of notification responses or null / อาร์เรย์ของการตอบกลับการแจ้งเตือนหรือ null
    */
   async sendToBusinessUnit(options: SendBusinessUnitOptions): Promise<NotificationResponseModel[] | null> {
     const payload: CreateBusinessUnitNotificationModel = {
@@ -170,13 +182,15 @@ export class NotificationService {
 
   /**
    * Send direct 1-to-1 notification
-   * @param type Notification type (e.g., 'PR', 'PO', 'SR', 'GRN', 'CN', 'SYS_INFO')
-   * @param from Sender user ID
-   * @param to Recipient user ID
-   * @param title Notification title
-   * @param message Notification message
-   * @param metadata Optional additional data
-   * @param schedule Optional scheduled time (ISO date string)
+   * ส่งการแจ้งเตือนโดยตรงแบบ 1 ต่อ 1
+   * @param type - Notification type (e.g., 'PR', 'PO', 'SR', 'GRN', 'CN', 'SYS_INFO') / ประเภทการแจ้งเตือน
+   * @param from - Sender user ID / ID ผู้ส่ง
+   * @param to - Recipient user ID / ID ผู้รับ
+   * @param title - Notification title / หัวข้อการแจ้งเตือน
+   * @param message - Notification message / ข้อความการแจ้งเตือน
+   * @param metadata - Optional additional data / ข้อมูลเพิ่มเติม (ถ้ามี)
+   * @param schedule - Optional scheduled time (ISO date string) / เวลาที่กำหนดส่ง (ถ้ามี)
+   * @returns Notification response or null / การตอบกลับการแจ้งเตือนหรือ null
    */
   async sendNoti(
     type: string,
@@ -200,12 +214,14 @@ export class NotificationService {
 
   /**
    * Send system notification to all users
-   * @param type Notification type (e.g., 'SYS_INFO', 'BU_INFO')
-   * @param from Sender identifier (for logging/tracking, not used in notification)
-   * @param title Notification title
-   * @param message Notification message
-   * @param metadata Optional additional data
-   * @param schedule Optional scheduled time (ISO date string)
+   * ส่งการแจ้งเตือนระบบไปยังผู้ใช้ทั้งหมด
+   * @param type - Notification type (e.g., 'SYS_INFO', 'BU_INFO') / ประเภทการแจ้งเตือน
+   * @param from - Sender identifier (for logging/tracking) / ตัวระบุผู้ส่ง (สำหรับบันทึก/ติดตาม)
+   * @param title - Notification title / หัวข้อการแจ้งเตือน
+   * @param message - Notification message / ข้อความการแจ้งเตือน
+   * @param metadata - Optional additional data / ข้อมูลเพิ่มเติม (ถ้ามี)
+   * @param schedule - Optional scheduled time (ISO date string) / เวลาที่กำหนดส่ง (ถ้ามี)
+   * @returns Array of notification responses or null / อาร์เรย์ของการตอบกลับการแจ้งเตือนหรือ null
    */
   async sendNoti_SYS(
     type: string,
@@ -226,13 +242,15 @@ export class NotificationService {
 
   /**
    * Send notification to all users in a Business Unit
-   * @param type Notification type (e.g., 'BU_INFO', 'SYS_INFO')
-   * @param from Sender user ID
-   * @param bu Business Unit code
-   * @param title Notification title
-   * @param message Notification message
-   * @param metadata Optional additional data
-   * @param schedule Optional scheduled time (ISO date string)
+   * ส่งการแจ้งเตือนไปยังผู้ใช้ทั้งหมดในหน่วยธุรกิจ
+   * @param type - Notification type (e.g., 'BU_INFO', 'SYS_INFO') / ประเภทการแจ้งเตือน
+   * @param from - Sender user ID / ID ผู้ส่ง
+   * @param bu - Business Unit code / รหัสหน่วยธุรกิจ
+   * @param title - Notification title / หัวข้อการแจ้งเตือน
+   * @param message - Notification message / ข้อความการแจ้งเตือน
+   * @param metadata - Optional additional data / ข้อมูลเพิ่มเติม (ถ้ามี)
+   * @param schedule - Optional scheduled time (ISO date string) / เวลาที่กำหนดส่ง (ถ้ามี)
+   * @returns Array of notification responses or null / อาร์เรย์ของการตอบกลับการแจ้งเตือนหรือ null
    */
   async sendNoti_BU(
     type: string,
@@ -256,6 +274,13 @@ export class NotificationService {
 
   /**
    * Send Purchase Request notification
+   * ส่งการแจ้งเตือนใบขอซื้อ
+   * @param to_user_id - Recipient user ID / ID ผู้รับ
+   * @param title - Notification title / หัวข้อการแจ้งเตือน
+   * @param message - Notification message / ข้อความการแจ้งเตือน
+   * @param metadata - Optional additional data / ข้อมูลเพิ่มเติม (ถ้ามี)
+   * @param from_user_id - Sender user ID / ID ผู้ส่ง
+   * @returns Notification response or null / การตอบกลับการแจ้งเตือนหรือ null
    */
   async sendPRNotification(
     to_user_id: string,
@@ -276,6 +301,13 @@ export class NotificationService {
 
   /**
    * Send Purchase Order notification
+   * ส่งการแจ้งเตือนใบสั่งซื้อ
+   * @param to_user_id - Recipient user ID / ID ผู้รับ
+   * @param title - Notification title / หัวข้อการแจ้งเตือน
+   * @param message - Notification message / ข้อความการแจ้งเตือน
+   * @param metadata - Optional additional data / ข้อมูลเพิ่มเติม (ถ้ามี)
+   * @param from_user_id - Sender user ID / ID ผู้ส่ง
+   * @returns Notification response or null / การตอบกลับการแจ้งเตือนหรือ null
    */
   async sendPONotification(
     to_user_id: string,
@@ -296,6 +328,13 @@ export class NotificationService {
 
   /**
    * Send Store Requisition notification
+   * ส่งการแจ้งเตือนใบเบิกสินค้า
+   * @param to_user_id - Recipient user ID / ID ผู้รับ
+   * @param title - Notification title / หัวข้อการแจ้งเตือน
+   * @param message - Notification message / ข้อความการแจ้งเตือน
+   * @param metadata - Optional additional data / ข้อมูลเพิ่มเติม (ถ้ามี)
+   * @param from_user_id - Sender user ID / ID ผู้ส่ง
+   * @returns Notification response or null / การตอบกลับการแจ้งเตือนหรือ null
    */
   async sendSRNotification(
     to_user_id: string,
@@ -316,6 +355,13 @@ export class NotificationService {
 
   /**
    * Send Good Received Note notification
+   * ส่งการแจ้งเตือนใบรับสินค้า
+   * @param to_user_id - Recipient user ID / ID ผู้รับ
+   * @param title - Notification title / หัวข้อการแจ้งเตือน
+   * @param message - Notification message / ข้อความการแจ้งเตือน
+   * @param metadata - Optional additional data / ข้อมูลเพิ่มเติม (ถ้ามี)
+   * @param from_user_id - Sender user ID / ID ผู้ส่ง
+   * @returns Notification response or null / การตอบกลับการแจ้งเตือนหรือ null
    */
   async sendGRNNotification(
     to_user_id: string,
@@ -336,6 +382,13 @@ export class NotificationService {
 
   /**
    * Send Credit Note notification
+   * ส่งการแจ้งเตือนใบลดหนี้
+   * @param to_user_id - Recipient user ID / ID ผู้รับ
+   * @param title - Notification title / หัวข้อการแจ้งเตือน
+   * @param message - Notification message / ข้อความการแจ้งเตือน
+   * @param metadata - Optional additional data / ข้อมูลเพิ่มเติม (ถ้ามี)
+   * @param from_user_id - Sender user ID / ID ผู้ส่ง
+   * @returns Notification response or null / การตอบกลับการแจ้งเตือนหรือ null
    */
   async sendCNNotification(
     to_user_id: string,
@@ -356,6 +409,9 @@ export class NotificationService {
 
   /**
    * Get unread notifications for a user
+   * ดึงการแจ้งเตือนที่ยังไม่ได้อ่านของผู้ใช้
+   * @param user_id - User ID / ID ผู้ใช้
+   * @returns List of unread notifications or null / รายการการแจ้งเตือนที่ยังไม่ได้อ่านหรือ null
    */
   async getUnread(user_id: string): Promise<NotificationResponseModel[] | null> {
     try {
@@ -379,6 +435,9 @@ export class NotificationService {
 
   /**
    * Get all notifications for a user
+   * ดึงการแจ้งเตือนทั้งหมดของผู้ใช้
+   * @param user_id - User ID / ID ผู้ใช้
+   * @returns List of all notifications or null / รายการการแจ้งเตือนทั้งหมดหรือ null
    */
   async getAll(user_id: string): Promise<NotificationResponseModel[] | null> {
     try {
@@ -402,6 +461,9 @@ export class NotificationService {
 
   /**
    * Mark notification as read
+   * ทำเครื่องหมายว่าอ่านการแจ้งเตือนแล้ว
+   * @param notification_id - Notification ID / ID การแจ้งเตือน
+   * @returns Success status / สถานะความสำเร็จ
    */
   async markAsRead(notification_id: string): Promise<boolean> {
     try {
@@ -425,6 +487,9 @@ export class NotificationService {
 
   /**
    * Mark all notifications as read for a user
+   * ทำเครื่องหมายว่าอ่านการแจ้งเตือนทั้งหมดของผู้ใช้แล้ว
+   * @param user_id - User ID / ID ผู้ใช้
+   * @returns Success status / สถานะความสำเร็จ
    */
   async markAllAsRead(user_id: string): Promise<boolean> {
     try {
@@ -447,7 +512,10 @@ export class NotificationService {
   }
 
   /**
-   * Internal method to send notification
+   * Internal method to send notification via HTTP
+   * เมธอดภายในสำหรับส่งการแจ้งเตือนผ่าน HTTP
+   * @param payload - Notification payload / ข้อมูลการแจ้งเตือน
+   * @returns Notification response or null / การตอบกลับการแจ้งเตือนหรือ null
    */
   private async send<T>(payload: Record<string, unknown>): Promise<T | null> {
     try {
@@ -476,6 +544,9 @@ export class NotificationService {
 
 /**
  * Create a notification service instance with custom config
+ * สร้างอินสแตนซ์บริการการแจ้งเตือนพร้อมการตั้งค่าที่กำหนดเอง
+ * @param config - Optional service configuration / การตั้งค่าบริการ (ถ้ามี)
+ * @returns NotificationService instance / อินสแตนซ์ NotificationService
  */
 export function createNotificationService(config?: NotificationServiceConfig): NotificationService {
   return new NotificationService(config);

@@ -53,8 +53,13 @@ export class UserBusinessUnitController extends BaseHttpController {
   }
 
   /**
-   * Sets the user's default business unit (tenant), determining which
-   * hotel property's data and procurement operations are loaded upon login.
+   * Set the user's default business unit (tenant)
+   * ตั้งค่าหน่วยธุรกิจเริ่มต้นของผู้ใช้ (tenant)
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param body - Request body containing tenant_id / เนื้อหาคำขอที่มี tenant_id
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated default tenant / หน่วยธุรกิจเริ่มต้นที่อัปเดตแล้ว
    */
   @Post('default')
   @UseGuards(new AppIdGuard('userBusinessUnit.setDefaultTenant'))

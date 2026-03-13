@@ -17,6 +17,15 @@ export class CreditTermService {
     private readonly masterService: ClientProxy,
   ) {}
 
+  /**
+   * Find a credit term by ID via microservice
+   * ค้นหาเงื่อนไขการชำระเงินเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Credit term ID / รหัสเงื่อนไขการชำระเงิน
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Credit term details / รายละเอียดเงื่อนไขการชำระเงิน
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -47,6 +56,15 @@ export class CreditTermService {
     }
     return Result.ok(response.data);
   }
+  /**
+   * Find all credit terms with pagination via microservice
+   * ค้นหาเงื่อนไขการชำระเงินทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated credit term list / รายการเงื่อนไขการชำระเงินแบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     bu_code: string,

@@ -61,8 +61,13 @@ export class Config_DeliveryPointController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific delivery point where vendors deliver goods to the property,
-   * used in purchase orders to specify the receiving location.
+   * Retrieves a specific delivery point where vendors deliver goods
+   * ค้นหาจุดรับสินค้าเดียวตาม ID ที่ผู้ขายส่งสินค้ามายังสถานที่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Delivery point ID / รหัสจุดรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('delivery-point.findOne'))
@@ -128,8 +133,13 @@ export class Config_DeliveryPointController extends BaseHttpController {
   }
 
   /**
-   * Lists all delivery points at the property (e.g., loading dock, back entrance, kitchen door)
-   * where vendors can deliver goods.
+   * Lists all delivery points at the property for vendor shipments
+   * ค้นหาจุดรับสินค้าทั้งหมดที่สถานที่ (เช่น ท่าเทียบ ทางเข้าหลังอาคาร ประตูครัว)
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
    */
   @Get()
   @UseGuards(new AppIdGuard('delivery-point.findAll'))
@@ -192,8 +202,13 @@ export class Config_DeliveryPointController extends BaseHttpController {
   }
 
   /**
-   * Defines a new delivery location at the property for vendor shipments.
-   * Once created, it can be specified in purchase orders.
+   * Defines a new delivery location at the property for vendor shipments
+   * สร้างจุดรับสินค้าใหม่ที่สถานที่สำหรับการจัดส่งจากผู้ขาย
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Creation data / ข้อมูลสำหรับสร้าง
+   * @param version - API version / เวอร์ชัน API
    */
   @Post()
   @UseGuards(new AppIdGuard('delivery-point.create'))
@@ -252,7 +267,14 @@ export class Config_DeliveryPointController extends BaseHttpController {
   }
 
   /**
-   * Fully updates an existing delivery point configuration such as name, address, or operating hours.
+   * Fully updates an existing delivery point configuration
+   * อัปเดตการกำหนดค่าจุดรับสินค้าที่มีอยู่ทั้งหมด เช่น ชื่อ ที่อยู่ หรือเวลาทำการ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Delivery point ID / รหัสจุดรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param version - API version / เวอร์ชัน API
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('delivery-point.update'))
@@ -325,7 +347,14 @@ export class Config_DeliveryPointController extends BaseHttpController {
   }
 
   /**
-   * Partially updates specific fields of a delivery point such as toggling active status.
+   * Partially updates specific fields of a delivery point
+   * อัปเดตบางฟิลด์ของจุดรับสินค้า เช่น เปิด/ปิดสถานะการใช้งาน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Delivery point ID / รหัสจุดรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Partial update data / ข้อมูลสำหรับอัปเดตบางส่วน
+   * @param version - API version / เวอร์ชัน API
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('delivery-point.patch'))
@@ -398,7 +427,13 @@ export class Config_DeliveryPointController extends BaseHttpController {
   }
 
   /**
-   * Removes a delivery point from active use. Historical procurement records are preserved.
+   * Removes a delivery point from active use
+   * ลบจุดรับสินค้าออกจากการใช้งาน บันทึกการจัดซื้อในอดีตยังคงอยู่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Delivery point ID / รหัสจุดรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('delivery-point.delete'))

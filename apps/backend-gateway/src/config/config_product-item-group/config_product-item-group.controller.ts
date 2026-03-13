@@ -59,8 +59,14 @@ export class Config_ProductItemGroupController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific product item group definition used to group products for
-   * procurement reporting and analysis (e.g., Food Items, Beverage Items, Operating Supplies).
+   * Retrieve a product item group by ID
+   * ค้นหารายการเดียวตาม ID ของกลุ่มสินค้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Product item group ID / รหัสกลุ่มสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Product item group detail / รายละเอียดกลุ่มสินค้า
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('productItemGroup.findOne'))
@@ -95,8 +101,14 @@ export class Config_ProductItemGroupController extends BaseHttpController {
   }
 
   /**
-   * Lists all product item groups configured for the business unit, used to classify
-   * products for aggregated procurement reporting, spend analysis, and inventory valuation.
+   * List all product item groups with pagination
+   * ค้นหารายการทั้งหมดของกลุ่มสินค้าพร้อมการแบ่งหน้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination query parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of product item groups / รายการกลุ่มสินค้าแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('productItemGroup.findAll'))
@@ -133,8 +145,14 @@ export class Config_ProductItemGroupController extends BaseHttpController {
   }
 
   /**
-   * Defines a new product grouping for reporting and procurement analysis. Products
-   * assigned to this group will be aggregated together in spend reports and inventory summaries.
+   * Create a new product item group
+   * สร้างกลุ่มสินค้าใหม่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Product item group creation data / ข้อมูลสำหรับสร้างกลุ่มสินค้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created product item group / กลุ่มสินค้าที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('productItemGroup.create'))
@@ -170,8 +188,15 @@ export class Config_ProductItemGroupController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing product item group, such as renaming it or adjusting its classification.
-   * Changes affect how products are grouped in procurement and inventory reports.
+   * Update an existing product item group
+   * อัปเดตกลุ่มสินค้าที่มีอยู่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Product item group ID / รหัสกลุ่มสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Product item group update data / ข้อมูลสำหรับอัปเดตกลุ่มสินค้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated product item group / กลุ่มสินค้าที่อัปเดตแล้ว
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('productItemGroup.update'))
@@ -213,8 +238,14 @@ export class Config_ProductItemGroupController extends BaseHttpController {
   }
 
   /**
-   * Removes a product item group from the system. Products currently assigned to this
-   * group should be reassigned before deletion to maintain reporting accuracy.
+   * Delete a product item group by ID
+   * ลบกลุ่มสินค้าตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Product item group ID / รหัสกลุ่มสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('productItemGroup.delete'))

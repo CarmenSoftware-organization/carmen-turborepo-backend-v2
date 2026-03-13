@@ -16,6 +16,15 @@ export class Config_RecipeCuisineService {
     private readonly masterService: ClientProxy,
   ) { }
 
+  /**
+   * Find a recipe cuisine by ID via microservice
+   * ค้นหาประเภทอาหารเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Recipe cuisine ID / รหัสประเภทอาหาร
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Recipe cuisine data or error / ข้อมูลประเภทอาหารหรือข้อผิดพลาด
+   */
   async findOne(id: string, user_id: string, bu_code: string, version: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findOne', id, version }, Config_RecipeCuisineService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(
@@ -29,6 +38,15 @@ export class Config_RecipeCuisineService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all recipe cuisines with pagination via microservice
+   * ค้นหาประเภทอาหารทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated recipe cuisine data or error / ข้อมูลประเภทอาหารพร้อมการแบ่งหน้าหรือข้อผิดพลาด
+   */
   async findAll(user_id: string, bu_code: string, paginate: IPaginate, version: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAll', paginate, version }, Config_RecipeCuisineService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(
@@ -42,6 +60,15 @@ export class Config_RecipeCuisineService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new recipe cuisine via microservice
+   * สร้างประเภทอาหารใหม่ผ่านไมโครเซอร์วิส
+   * @param createDto - Recipe cuisine creation data / ข้อมูลสำหรับสร้างประเภทอาหาร
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created recipe cuisine or error / ประเภทอาหารที่สร้างแล้วหรือข้อผิดพลาด
+   */
   async create(createDto: ICreateRecipeCuisine, user_id: string, bu_code: string, version: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'create', createDto, version }, Config_RecipeCuisineService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(
@@ -55,6 +82,15 @@ export class Config_RecipeCuisineService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update an existing recipe cuisine via microservice
+   * อัปเดตประเภทอาหารที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param updateDto - Recipe cuisine update data / ข้อมูลสำหรับอัปเดตประเภทอาหาร
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated recipe cuisine or error / ประเภทอาหารที่อัปเดตแล้วหรือข้อผิดพลาด
+   */
   async update(updateDto: IUpdateRecipeCuisine, user_id: string, bu_code: string, version: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'update', updateDto, version }, Config_RecipeCuisineService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(
@@ -68,6 +104,15 @@ export class Config_RecipeCuisineService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Partially update a recipe cuisine via microservice
+   * อัปเดตประเภทอาหารบางส่วนผ่านไมโครเซอร์วิส
+   * @param updateDto - Partial update data / ข้อมูลสำหรับอัปเดตบางส่วน
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Patched recipe cuisine or error / ประเภทอาหารที่อัปเดตบางส่วนแล้วหรือข้อผิดพลาด
+   */
   async patch(updateDto: IUpdateRecipeCuisine, user_id: string, bu_code: string, version: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'patch', updateDto, version }, Config_RecipeCuisineService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(
@@ -81,6 +126,15 @@ export class Config_RecipeCuisineService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a recipe cuisine by ID via microservice
+   * ลบประเภทอาหารตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Recipe cuisine ID / รหัสประเภทอาหาร
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result or error / ผลการลบหรือข้อผิดพลาด
+   */
   async delete(id: string, user_id: string, bu_code: string, version: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, version }, Config_RecipeCuisineService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(

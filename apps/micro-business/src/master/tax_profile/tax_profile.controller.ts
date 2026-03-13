@@ -26,6 +26,12 @@ export class TaxProfileController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a single tax profile by ID
+   * ค้นหารายการโปรไฟล์ภาษีเดียวตาม ID
+   * @param payload - Microservice payload containing tax profile ID / ข้อมูล payload ที่มี ID ของโปรไฟล์ภาษี
+   * @returns Tax profile detail / รายละเอียดโปรไฟล์ภาษี
+   */
   @MessagePattern({
     cmd: 'tax-profile.findOne',
     service: 'tax-profile',
@@ -42,6 +48,12 @@ export class TaxProfileController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all tax profiles with pagination
+   * ค้นหารายการโปรไฟล์ภาษีทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing pagination parameters / ข้อมูล payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of tax profiles / รายการโปรไฟล์ภาษีพร้อมการแบ่งหน้า
+   */
   @MessagePattern({
     cmd: 'tax-profile.findAll',
     service: 'tax-profile',
@@ -58,6 +70,12 @@ export class TaxProfileController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Find multiple tax profiles by their IDs
+   * ค้นหารายการโปรไฟล์ภาษีหลายรายการตาม ID
+   * @param payload - Microservice payload containing array of tax profile IDs / ข้อมูล payload ที่มีอาร์เรย์ของ ID โปรไฟล์ภาษี
+   * @returns List of tax profiles matching the IDs / รายการโปรไฟล์ภาษีที่ตรงกับ ID
+   */
   @MessagePattern({
     cmd: 'tax-profile.find-all-by-id',
     service: 'tax-profile',
@@ -74,6 +92,12 @@ export class TaxProfileController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Create a new tax profile
+   * สร้างโปรไฟล์ภาษีใหม่
+   * @param payload - Microservice payload containing tax profile data / ข้อมูล payload ที่มีข้อมูลโปรไฟล์ภาษี
+   * @returns Created tax profile ID / ID ของโปรไฟล์ภาษีที่สร้างขึ้น
+   */
   @MessagePattern({
     cmd: 'tax-profile.create',
     service: 'tax-profile',
@@ -90,6 +114,12 @@ export class TaxProfileController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an existing tax profile
+   * อัปเดตโปรไฟล์ภาษีที่มีอยู่
+   * @param payload - Microservice payload containing updated tax profile data / ข้อมูล payload ที่มีข้อมูลโปรไฟล์ภาษีที่อัปเดต
+   * @returns Updated tax profile ID / ID ของโปรไฟล์ภาษีที่อัปเดต
+   */
   @MessagePattern({
     cmd: 'tax-profile.update',
     service: 'tax-profile',
@@ -107,6 +137,12 @@ export class TaxProfileController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a tax profile (soft delete)
+   * ลบโปรไฟล์ภาษี (ลบแบบซอฟต์)
+   * @param payload - Microservice payload containing tax profile ID / ข้อมูล payload ที่มี ID ของโปรไฟล์ภาษี
+   * @returns Deleted tax profile ID / ID ของโปรไฟล์ภาษีที่ลบ
+   */
   @MessagePattern({
     cmd: 'tax-profile.delete',
     service: 'tax-profile',

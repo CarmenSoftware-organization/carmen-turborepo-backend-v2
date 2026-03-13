@@ -55,8 +55,13 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific inventory adjustment type (e.g., spoilage, breakage, theft)
-   * that categorizes reasons for stock quantity changes outside normal operations.
+   * Retrieves a specific inventory adjustment type
+   * ค้นหาประเภทการปรับสต๊อกเดียวตาม ID (เช่น เสียหาย แตกหัก สูญหาย)
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Adjustment type ID / รหัสประเภทการปรับสต๊อก
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('adjustment-type.findOne'))
@@ -89,8 +94,13 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
   }
 
   /**
-   * Lists all configured inventory adjustment type categories used when recording
-   * stock discrepancies in warehouse operations.
+   * Lists all configured inventory adjustment type categories
+   * ค้นหาประเภทการปรับสต๊อกทั้งหมดที่ใช้ในการบันทึกความคลาดเคลื่อนของสต๊อก
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
    */
   @Get()
   @UseGuards(new AppIdGuard('adjustment-type.findAll'))
@@ -125,8 +135,13 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
   }
 
   /**
-   * Defines a new inventory adjustment category (e.g., spoilage, breakage, theft)
-   * for warehouse staff to select when recording inventory discrepancies.
+   * Defines a new inventory adjustment category
+   * สร้างประเภทการปรับสต๊อกใหม่ (เช่น เสียหาย แตกหัก สูญหาย) สำหรับเจ้าหน้าที่คลังสินค้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Creation data / ข้อมูลสำหรับสร้าง
+   * @param version - API version / เวอร์ชัน API
    */
   @Post()
   @UseGuards(new AppIdGuard('adjustment-type.create'))
@@ -160,7 +175,14 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing inventory adjustment type definition such as renaming or reclassifying.
+   * Modifies an existing inventory adjustment type definition
+   * อัปเดตประเภทการปรับสต๊อกที่มีอยู่ เช่น เปลี่ยนชื่อหรือจัดหมวดหมู่ใหม่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Adjustment type ID / รหัสประเภทการปรับสต๊อก
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param version - API version / เวอร์ชัน API
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('adjustment-type.update'))
@@ -200,7 +222,13 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
   }
 
   /**
-   * Removes an inventory adjustment type from active use. Historical records are preserved.
+   * Removes an inventory adjustment type from active use
+   * ลบประเภทการปรับสต๊อกออกจากการใช้งาน บันทึกในอดีตยังคงอยู่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Adjustment type ID / รหัสประเภทการปรับสต๊อก
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('adjustment-type.delete'))

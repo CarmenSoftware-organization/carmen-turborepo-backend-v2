@@ -77,6 +77,12 @@ export class CreditTermService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a single credit term by ID
+   * ค้นหารายการเงื่อนไขเครดิตเดียวตาม ID
+   * @param id - Credit term ID / ID ของเงื่อนไขเครดิต
+   * @returns Credit term detail or error if not found / รายละเอียดเงื่อนไขเครดิต หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async findOne(
     id: string,
@@ -111,6 +117,13 @@ export class CreditTermService {
     return Result.ok(serializedCreditTerm);
   }
 
+  /**
+   * Find all credit terms with pagination
+   * ค้นหารายการเงื่อนไขเครดิตทั้งหมดพร้อมการแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of credit terms / รายการเงื่อนไขเครดิตพร้อมการแบ่งหน้า
+   */
   @TryCatch
   async findAll(
     paginate: IPaginate,
@@ -161,6 +174,12 @@ export class CreditTermService {
     });
   }
 
+  /**
+   * Create a new credit term
+   * สร้างเงื่อนไขเครดิตใหม่
+   * @param data - Credit term creation data / ข้อมูลการสร้างเงื่อนไขเครดิต
+   * @returns Created credit term ID or error if duplicate / ID ของเงื่อนไขเครดิตที่สร้างขึ้น หรือข้อผิดพลาดหากซ้ำ
+   */
   @TryCatch
   async create(
     data: ICreateCreditTerm,
@@ -193,6 +212,12 @@ export class CreditTermService {
     return Result.ok({ id: createCreditTerm.id });
   }
 
+  /**
+   * Update an existing credit term
+   * อัปเดตเงื่อนไขเครดิตที่มีอยู่
+   * @param data - Credit term update data / ข้อมูลการอัปเดตเงื่อนไขเครดิต
+   * @returns Updated credit term ID or error if not found / ID ของเงื่อนไขเครดิตที่อัปเดต หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async update(
     data: IUpdateCreditTerm,
@@ -243,6 +268,12 @@ export class CreditTermService {
     return Result.ok({ id: updateCreditTerm.id });
   }
 
+  /**
+   * Delete a credit term (soft delete)
+   * ลบเงื่อนไขเครดิต (ลบแบบซอฟต์)
+   * @param id - Credit term ID / ID ของเงื่อนไขเครดิต
+   * @returns Empty object on success or error if not found / อ็อบเจกต์ว่างเมื่อสำเร็จ หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async delete(
     id: string,

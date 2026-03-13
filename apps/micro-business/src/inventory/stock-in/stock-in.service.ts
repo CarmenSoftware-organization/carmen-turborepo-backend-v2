@@ -32,6 +32,14 @@ export class StockInService {
     private readonly tenantService: TenantService,
   ) {}
 
+  /**
+   * Find a stock in by ID
+   * ค้นหาใบรับสินค้าเข้ารายการเดียวตาม ID
+   * @param id - Stock in ID / ID ใบรับสินค้าเข้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Stock in detail with items / รายละเอียดใบรับสินค้าเข้าพร้อมรายการ
+   */
   @TryCatch
   async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findOne', id, user_id, tenant_id }, StockInService.name);
@@ -65,6 +73,14 @@ export class StockInService {
     return Result.ok(serializedData);
   }
 
+  /**
+   * Find all stock ins with pagination
+   * ค้นหาใบรับสินค้าเข้าทั้งหมดพร้อมการแบ่งหน้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of stock ins / รายการใบรับสินค้าเข้าแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAll', user_id, tenant_id, paginate }, StockInService.name);
@@ -129,6 +145,14 @@ export class StockInService {
     });
   }
 
+  /**
+   * Create a new stock in with optional detail lines
+   * สร้างใบรับสินค้าเข้าใหม่พร้อมรายการรายละเอียด (ไม่บังคับ)
+   * @param data - Stock in creation data / ข้อมูลสร้างใบรับสินค้าเข้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created stock in ID and number / ID และเลขที่ใบรับสินค้าเข้าที่สร้างแล้ว
+   */
   @TryCatch
   async create(data: IStockInCreate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'create', data, user_id, tenant_id }, StockInService.name);
@@ -218,6 +242,14 @@ export class StockInService {
     return Result.ok(tx);
   }
 
+  /**
+   * Update a stock in
+   * แก้ไขใบรับสินค้าเข้า
+   * @param data - Stock in update data / ข้อมูลแก้ไขใบรับสินค้าเข้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Updated stock in / ใบรับสินค้าเข้าที่แก้ไขแล้ว
+   */
   @TryCatch
   async update(data: IStockInUpdate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'update', data, user_id, tenant_id }, StockInService.name);
@@ -394,6 +426,14 @@ export class StockInService {
     return Result.ok(tx);
   }
 
+  /**
+   * Soft delete a stock in and its details
+   * ลบใบรับสินค้าเข้าและรายการรายละเอียดแบบซอฟต์ดีลีท
+   * @param id - Stock in ID / ID ใบรับสินค้าเข้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Deleted stock in / ใบรับสินค้าเข้าที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id, tenant_id }, StockInService.name);
@@ -445,6 +485,14 @@ export class StockInService {
     return Result.ok({ id });
   }
 
+  /**
+   * Find the latest stock in by document number pattern
+   * ค้นหาใบรับสินค้าเข้าล่าสุดตามรูปแบบเลขที่เอกสาร
+   * @param pattern - Document number pattern / รูปแบบเลขที่เอกสาร
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @returns Latest stock in matching the pattern / ใบรับสินค้าเข้าล่าสุดที่ตรงกับรูปแบบ
+   */
   async findLatestSIByPattern(pattern: string, tenant_id: string, user_id: string): Promise<any> {
     this.logger.debug({ function: 'findLatestSIByPattern', pattern, tenant_id, user_id }, StockInService.name);
 
@@ -465,6 +513,14 @@ export class StockInService {
     return stockIn;
   }
 
+  /**
+   * Generate stock in document number
+   * สร้างเลขที่เอกสารใบรับสินค้าเข้า
+   * @param siDate - Stock in date / วันที่รับสินค้าเข้า
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @returns Generated document number / เลขที่เอกสารที่สร้างขึ้น
+   */
   private async generateSINo(siDate: string, tenant_id: string, user_id: string): Promise<string> {
     this.logger.debug({ function: 'generateSINo', siDate, tenant_id, user_id }, StockInService.name);
 
@@ -512,6 +568,14 @@ export class StockInService {
 
   // ==================== Stock In Detail CRUD ====================
 
+  /**
+   * Find a stock in detail by ID
+   * ค้นหารายการรายละเอียดใบรับสินค้าเข้าตาม ID
+   * @param detailId - Stock in detail ID / ID รายการรายละเอียดใบรับสินค้าเข้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Stock in detail / รายการรายละเอียดใบรับสินค้าเข้า
+   */
   @TryCatch
   async findDetailById(detailId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findDetailById', detailId, user_id, tenant_id }, StockInService.name);
@@ -542,6 +606,14 @@ export class StockInService {
     return Result.ok(detail);
   }
 
+  /**
+   * Find all details by stock in ID
+   * ค้นหารายการรายละเอียดทั้งหมดตาม ID ใบรับสินค้าเข้า
+   * @param stockInId - Stock in ID / ID ใบรับสินค้าเข้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns List of stock in details / รายการรายละเอียดใบรับสินค้าเข้า
+   */
   @TryCatch
   async findDetailsByStockInId(stockInId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findDetailsByStockInId', stockInId, user_id, tenant_id }, StockInService.name);
@@ -574,6 +646,15 @@ export class StockInService {
     return Result.ok(details);
   }
 
+  /**
+   * Create a stock in detail line
+   * สร้างรายการรายละเอียดใบรับสินค้าเข้า
+   * @param stockInId - Stock in ID / ID ใบรับสินค้าเข้า
+   * @param data - Detail creation data / ข้อมูลสร้างรายการรายละเอียด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created detail / รายการรายละเอียดที่สร้างแล้ว
+   */
   @TryCatch
   async createDetail(
     stockInId: string,
@@ -642,6 +723,15 @@ export class StockInService {
     return Result.ok(detail);
   }
 
+  /**
+   * Update a stock in detail line
+   * แก้ไขรายการรายละเอียดใบรับสินค้าเข้า
+   * @param detailId - Stock in detail ID / ID รายการรายละเอียดใบรับสินค้าเข้า
+   * @param data - Detail update data / ข้อมูลแก้ไขรายการรายละเอียด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Updated detail / รายการรายละเอียดที่แก้ไขแล้ว
+   */
   @TryCatch
   async updateDetail(
     detailId: string,
@@ -685,6 +775,14 @@ export class StockInService {
     return Result.ok(updatedDetail);
   }
 
+  /**
+   * Soft delete a stock in detail line
+   * ลบรายการรายละเอียดใบรับสินค้าเข้าแบบซอฟต์ดีลีท
+   * @param detailId - Stock in detail ID / ID รายการรายละเอียดใบรับสินค้าเข้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Deleted detail / รายการรายละเอียดที่ลบแล้ว
+   */
   @TryCatch
   async deleteDetail(detailId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'deleteDetail', detailId, user_id, tenant_id }, StockInService.name);
@@ -722,6 +820,14 @@ export class StockInService {
 
   // ==================== Standalone Stock In Detail API ====================
 
+  /**
+   * Find all stock in details with pagination (standalone API)
+   * ค้นหารายการรายละเอียดใบรับสินค้าเข้าทั้งหมดพร้อมการแบ่งหน้า (API แบบอิสระ)
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of stock in details / รายการรายละเอียดใบรับสินค้าเข้าแบบแบ่งหน้า
+   */
   @TryCatch
   async findAllDetails(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAllDetails', user_id, tenant_id, paginate }, StockInService.name);
@@ -796,6 +902,14 @@ export class StockInService {
     });
   }
 
+  /**
+   * Create a standalone stock in detail (requires stock_in_id in data)
+   * สร้างรายการรายละเอียดใบรับสินค้าเข้าแบบอิสระ (ต้องระบุ stock_in_id ในข้อมูล)
+   * @param data - Detail creation data with stock_in_id / ข้อมูลสร้างรายการรายละเอียดพร้อม stock_in_id
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created detail / รายการรายละเอียดที่สร้างแล้ว
+   */
   @TryCatch
   async createStandaloneDetail(
     data: IStockInDetailCreate & { stock_in_id: string },

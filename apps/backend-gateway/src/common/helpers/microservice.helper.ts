@@ -8,9 +8,15 @@ const DEFAULT_TIMEOUT_MS = 15000; // 15 seconds
 const logger = new BackendLogger('MicroserviceHelper');
 
 /**
- * Sends a message to a microservice with timeout and error handling.
+ * Send a message to a microservice with timeout and error handling
+ * ส่งข้อความไปยังไมโครเซอร์วิสพร้อมการจัดการ timeout และข้อผิดพลาด
  * On timeout, attempts to reconnect and retry once before failing.
- * Use this instead of raw firstValueFrom() to prevent hanging requests.
+ * เมื่อ timeout จะพยายามเชื่อมต่อใหม่และลองอีกครั้งก่อนที่จะล้มเหลว
+ * @param client - Microservice client proxy / พร็อกซีไคลเอนต์ไมโครเซอร์วิส
+ * @param pattern - Message pattern / รูปแบบข้อความ
+ * @param data - Payload data / ข้อมูลที่ส่งไป
+ * @param timeoutMs - Timeout in milliseconds / ระยะเวลา timeout เป็นมิลลิวินาที
+ * @returns Response from microservice / การตอบกลับจากไมโครเซอร์วิส
  */
 export async function sendToService<T = unknown>(
   client: ClientProxy,
@@ -63,6 +69,15 @@ export async function sendToService<T = unknown>(
   }
 }
 
+/**
+ * Attempt to send a message to a microservice with timeout
+ * พยายามส่งข้อความไปยังไมโครเซอร์วิสพร้อม timeout
+ * @param client - Microservice client proxy / พร็อกซีไคลเอนต์ไมโครเซอร์วิส
+ * @param pattern - Message pattern / รูปแบบข้อความ
+ * @param data - Payload data / ข้อมูลที่ส่งไป
+ * @param timeoutMs - Timeout in milliseconds / ระยะเวลา timeout เป็นมิลลิวินาที
+ * @returns Response from microservice / การตอบกลับจากไมโครเซอร์วิส
+ */
 async function attemptSend<T>(
   client: ClientProxy,
   pattern: Record<string, string>,

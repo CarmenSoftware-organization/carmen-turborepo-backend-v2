@@ -47,6 +47,12 @@ export class RecipeEquipmentService {
     RecipeEquipmentService.name,
   );
 
+  /**
+   * Initialize the Prisma service for the tenant
+   * เริ่มต้นบริการ Prisma สำหรับผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / รหัสผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
   }
@@ -67,6 +73,12 @@ export class RecipeEquipmentService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a single recipe equipment by ID with category info
+   * ค้นหาอุปกรณ์สูตรอาหารรายการเดียวตาม ID พร้อมข้อมูลหมวดหมู่
+   * @param id - Recipe equipment ID / รหัสอุปกรณ์สูตรอาหาร
+   * @returns Recipe equipment detail / รายละเอียดอุปกรณ์สูตรอาหาร
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -98,6 +110,12 @@ export class RecipeEquipmentService {
     });
   }
 
+  /**
+   * Find all recipe equipment with pagination
+   * ค้นหาอุปกรณ์สูตรอาหารทั้งหมดแบบแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of recipe equipment / รายการอุปกรณ์สูตรอาหารแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
@@ -151,6 +169,12 @@ export class RecipeEquipmentService {
     });
   }
 
+  /**
+   * Create a new recipe equipment with category validation
+   * สร้างอุปกรณ์สูตรอาหารใหม่พร้อมตรวจสอบหมวดหมู่
+   * @param data - Recipe equipment creation data / ข้อมูลสำหรับสร้างอุปกรณ์สูตรอาหาร
+   * @returns Created recipe equipment ID / รหัสอุปกรณ์สูตรอาหารที่สร้างแล้ว
+   */
   @TryCatch
   async create(data: ICreateRecipeEquipment): Promise<Result<unknown>> {
     this.logger.debug(
@@ -219,6 +243,12 @@ export class RecipeEquipmentService {
     return Result.ok({ id: created.id });
   }
 
+  /**
+   * Update an existing recipe equipment with category validation
+   * อัปเดตอุปกรณ์สูตรอาหารที่มีอยู่พร้อมตรวจสอบหมวดหมู่
+   * @param data - Recipe equipment update data / ข้อมูลสำหรับอัปเดตอุปกรณ์สูตรอาหาร
+   * @returns Updated recipe equipment ID / รหัสอุปกรณ์สูตรอาหารที่อัปเดตแล้ว
+   */
   @TryCatch
   async update(data: IUpdateRecipeEquipment): Promise<Result<unknown>> {
     this.logger.debug(
@@ -278,6 +308,12 @@ export class RecipeEquipmentService {
     return Result.ok({ id: updated.id });
   }
 
+  /**
+   * Partially update a recipe equipment (patch specific fields only)
+   * อัปเดตบางส่วนของอุปกรณ์สูตรอาหาร (เฉพาะฟิลด์ที่ระบุ)
+   * @param data - Partial recipe equipment update data / ข้อมูลสำหรับอัปเดตบางส่วนของอุปกรณ์สูตรอาหาร
+   * @returns Updated recipe equipment ID / รหัสอุปกรณ์สูตรอาหารที่อัปเดตแล้ว
+   */
   @TryCatch
   async patch(data: IUpdateRecipeEquipment): Promise<Result<unknown>> {
     this.logger.debug(
@@ -335,6 +371,12 @@ export class RecipeEquipmentService {
     return Result.ok({ id: updated.id });
   }
 
+  /**
+   * Soft delete a recipe equipment
+   * ลบอุปกรณ์สูตรอาหารแบบ soft delete
+   * @param id - Recipe equipment ID / รหัสอุปกรณ์สูตรอาหาร
+   * @returns Deleted recipe equipment ID / รหัสอุปกรณ์สูตรอาหารที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(

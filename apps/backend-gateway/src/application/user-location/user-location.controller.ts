@@ -32,8 +32,13 @@ export class UserLocationController extends BaseHttpController {
   }
 
   /**
-   * Retrieves all storage locations the current user has access to
-   * (e.g., main warehouse, kitchen storeroom), controlling where inventory operations can be performed.
+   * List all locations accessible by the current user
+   * ค้นหารายการสถานที่จัดเก็บทั้งหมดที่ผู้ใช้ปัจจุบันเข้าถึงได้
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of user-accessible locations / รายการสถานที่ที่ผู้ใช้เข้าถึงได้
    */
   @Get()
   @UseGuards(new AppIdGuard('userLocation.findAll'))

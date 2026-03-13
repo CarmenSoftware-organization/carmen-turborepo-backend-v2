@@ -26,6 +26,14 @@ export class PhysicalCountPeriodService {
     private readonly tenantService: TenantService,
   ) {}
 
+  /**
+   * Find a physical count period by ID
+   * ค้นหารอบการตรวจนับสินค้ารายการเดียวตาม ID
+   * @param id - Physical count period ID / ID รอบการตรวจนับ
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Physical count period detail / รายละเอียดรอบการตรวจนับสินค้า
+   */
   @TryCatch
   async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: "findOne", id, user_id, tenant_id }, PhysicalCountPeriodService.name);
@@ -66,6 +74,14 @@ export class PhysicalCountPeriodService {
     return Result.ok(period);
   }
 
+  /**
+   * Find all physical count periods with pagination
+   * ค้นหารอบการตรวจนับสินค้าทั้งหมดพร้อมการแบ่งหน้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of physical count periods / รายการรอบการตรวจนับแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: "findAll", user_id, tenant_id, paginate }, PhysicalCountPeriodService.name);
@@ -141,6 +157,13 @@ export class PhysicalCountPeriodService {
     });
   }
 
+  /**
+   * Find the current active physical count period with location statuses
+   * ค้นหารอบการตรวจนับสินค้าปัจจุบันพร้อมสถานะสถานที่
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Current period with locations and their count statuses / รอบปัจจุบันพร้อมสถานที่และสถานะการนับ
+   */
   @TryCatch
   async findCurrent(user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: "findCurrent", user_id, tenant_id }, PhysicalCountPeriodService.name);
@@ -247,6 +270,14 @@ export class PhysicalCountPeriodService {
     return Result.ok(response);
   }
 
+  /**
+   * Create a new physical count period
+   * สร้างรอบการตรวจนับสินค้าใหม่
+   * @param data - Physical count period creation data / ข้อมูลสร้างรอบการตรวจนับ
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created period ID / ID รอบที่สร้างแล้ว
+   */
   @TryCatch
   async create(data: IPhysicalCountPeriodCreate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: "create", data, user_id, tenant_id }, PhysicalCountPeriodService.name);
@@ -269,6 +300,14 @@ export class PhysicalCountPeriodService {
     return Result.ok({ id: period.id });
   }
 
+  /**
+   * Update a physical count period
+   * แก้ไขรอบการตรวจนับสินค้า
+   * @param data - Physical count period update data / ข้อมูลแก้ไขรอบการตรวจนับ
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Updated period ID / ID รอบที่แก้ไขแล้ว
+   */
   @TryCatch
   async update(data: IPhysicalCountPeriodUpdate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: "update", data, user_id, tenant_id }, PhysicalCountPeriodService.name);
@@ -310,6 +349,14 @@ export class PhysicalCountPeriodService {
     return Result.ok({ id: data.id });
   }
 
+  /**
+   * Soft delete a physical count period
+   * ลบรอบการตรวจนับสินค้าแบบซอฟต์ดีลีท
+   * @param id - Physical count period ID / ID รอบการตรวจนับ
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Deleted period ID / ID รอบที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: "delete", id, user_id, tenant_id }, PhysicalCountPeriodService.name);

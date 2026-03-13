@@ -23,6 +23,12 @@ export class NotificationController {
     private readonly notificationGateway: NotificationGateway,
   ) {}
 
+  /**
+   * Create a notification (system, user-to-user, or business-unit)
+   * สร้างการแจ้งเตือน (ระบบ, ผู้ใช้ถึงผู้ใช้, หรือหน่วยธุรกิจ)
+   * @param data - Notification creation payload / ข้อมูลสำหรับสร้างการแจ้งเตือน
+   * @returns Created notification(s) / การแจ้งเตือนที่สร้างแล้ว
+   */
   @MessagePattern({ cmd: 'notification.create', service: 'notification' })
   async create(data: CreateNotificationPayload) {
     try {
@@ -110,6 +116,12 @@ export class NotificationController {
     }
   }
 
+  /**
+   * Get unread notifications by user ID
+   * ดึงการแจ้งเตือนที่ยังไม่ได้อ่านตาม ID ผู้ใช้
+   * @param data - Payload with user_id / ข้อมูลพร้อม user_id
+   * @returns Unread notifications for the user / การแจ้งเตือนที่ยังไม่ได้อ่านของผู้ใช้
+   */
   @MessagePattern({ cmd: 'notification.getByUserId', service: 'notification' })
   async getByUserId(data: { user_id: string }) {
     try {
@@ -120,6 +132,12 @@ export class NotificationController {
     }
   }
 
+  /**
+   * Get all notifications by user ID
+   * ค้นหารายการแจ้งเตือนทั้งหมดตาม ID ผู้ใช้
+   * @param data - Payload with user_id / ข้อมูลพร้อม user_id
+   * @returns All notifications for the user / การแจ้งเตือนทั้งหมดของผู้ใช้
+   */
   @MessagePattern({ cmd: 'notification.getAllByUserId', service: 'notification' })
   async getAllByUserId(data: { user_id: string }) {
     try {
@@ -130,6 +148,12 @@ export class NotificationController {
     }
   }
 
+  /**
+   * Mark a notification as read
+   * ทำเครื่องหมายการแจ้งเตือนว่าอ่านแล้ว
+   * @param data - Payload with notification id / ข้อมูลพร้อม ID การแจ้งเตือน
+   * @returns Updated notification / การแจ้งเตือนที่อัปเดตแล้ว
+   */
   @MessagePattern({ cmd: 'notification.markAsRead', service: 'notification' })
   async markAsRead(data: { id: string }) {
     try {
@@ -140,6 +164,12 @@ export class NotificationController {
     }
   }
 
+  /**
+   * Mark all notifications as read for a user
+   * ทำเครื่องหมายการแจ้งเตือนทั้งหมดของผู้ใช้ว่าอ่านแล้ว
+   * @param data - Payload with user_id / ข้อมูลพร้อม user_id
+   * @returns Count of marked notifications / จำนวนการแจ้งเตือนที่ถูกทำเครื่องหมาย
+   */
   @MessagePattern({ cmd: 'notification.markAllAsRead', service: 'notification' })
   async markAllAsRead(data: { user_id: string }) {
     try {

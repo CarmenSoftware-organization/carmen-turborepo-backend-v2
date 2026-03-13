@@ -67,8 +67,12 @@ export class CreditNoteController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the full details of a vendor credit note, including returned/damaged
-   * items and credited amounts, for accounts payable reconciliation.
+   * Get a credit note by ID with full details
+   * ค้นหาใบลดหนี้เดียวตาม ID พร้อมรายละเอียดทั้งหมด
+   * @param id - Credit note ID / รหัสใบลดหนี้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Credit note details / รายละเอียดใบลดหนี้
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('creditNote.findOne'))
@@ -103,8 +107,12 @@ export class CreditNoteController extends BaseHttpController {
   }
 
   /**
-   * Lists all vendor credit notes for the business unit with pagination,
-   * used to track credits issued for returned or damaged goods.
+   * List all credit notes with pagination
+   * ค้นหาใบลดหนี้ทั้งหมดพร้อมการแบ่งหน้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated credit note list / รายการใบลดหนี้แบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('creditNote.findAll'))
@@ -147,8 +155,12 @@ export class CreditNoteController extends BaseHttpController {
   }
 
   /**
-   * Creates a new vendor credit note to record credits for returned, damaged,
-   * or incorrect goods received from a supplier.
+   * Create a new credit note for a vendor
+   * สร้างใบลดหนี้ใหม่สำหรับผู้ขาย
+   * @param createDto - Credit note creation data / ข้อมูลสำหรับสร้างใบลดหนี้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created credit note / ใบลดหนี้ที่สร้างขึ้น
    */
   @Post()
   @UseGuards(new AppIdGuard('creditNote.create'))
@@ -189,8 +201,13 @@ export class CreditNoteController extends BaseHttpController {
   }
 
   /**
-   * Updates an existing vendor credit note, such as correcting item quantities
-   * or adjusting credited amounts before final processing.
+   * Update a credit note before finalization
+   * อัปเดตใบลดหนี้ก่อนการดำเนินการขั้นสุดท้าย
+   * @param id - Credit note ID / รหัสใบลดหนี้
+   * @param updateDto - Fields to update / ข้อมูลที่ต้องการอัปเดต
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated credit note / ใบลดหนี้ที่อัปเดตแล้ว
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('creditNote.update'))
@@ -232,8 +249,12 @@ export class CreditNoteController extends BaseHttpController {
   }
 
   /**
-   * Soft-deletes a vendor credit note by ID, marking it as removed
-   * while preserving the record for audit trail purposes.
+   * Delete a credit note by ID
+   * ลบใบลดหนี้ตาม ID
+   * @param id - Credit note ID / รหัสใบลดหนี้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('creditNote.delete'))

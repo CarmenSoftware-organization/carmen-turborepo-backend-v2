@@ -4,6 +4,13 @@ import { HttpStatus } from '@nestjs/common/enums/http-status.enum';
 import { StdResponse } from '../std-response/std-response';
 
 export abstract class BaseHttpController {
+  /**
+   * Send a standardized HTTP response from a Result object or plain data
+   * ส่ง HTTP response มาตรฐานจาก Result object หรือข้อมูลทั่วไป
+   * @param response - Express response object / อ็อบเจกต์ response ของ Express
+   * @param result - Result object or plain response data / Result object หรือข้อมูล response ทั่วไป
+   * @param customStatus - Optional custom HTTP status code / รหัสสถานะ HTTP ที่กำหนดเอง (ถ้ามี)
+   */
   protected respond(
     response: Response,
     result: Result<unknown> | unknown,

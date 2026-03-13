@@ -24,6 +24,12 @@ export class VendorsController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a single vendor by ID
+   * ค้นหารายการผู้ขายเดียวตาม ID
+   * @param payload - Microservice payload containing vendor ID / ข้อมูล payload ที่มี ID ของผู้ขาย
+   * @returns Vendor detail / รายละเอียดผู้ขาย
+   */
   @MessagePattern({ cmd: 'vendors.findOne', service: 'vendors' })
   async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, VendorsController.name);
@@ -37,6 +43,12 @@ export class VendorsController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all vendors with pagination
+   * ค้นหารายการผู้ขายทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing pagination parameters / ข้อมูล payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of vendors / รายการผู้ขายพร้อมการแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'vendors.findAll', service: 'vendors' })
   async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, VendorsController.name);
@@ -50,6 +62,12 @@ export class VendorsController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Find multiple vendors by their IDs
+   * ค้นหารายการผู้ขายหลายรายการตาม ID
+   * @param payload - Microservice payload containing array of vendor IDs / ข้อมูล payload ที่มีอาร์เรย์ของ ID ผู้ขาย
+   * @returns List of vendors matching the IDs / รายการผู้ขายที่ตรงกับ ID
+   */
   @MessagePattern({ cmd: 'vendors.find-all-by-id', service: 'vendors' })
   async findAllById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAllById', payload }, VendorsController.name);
@@ -63,6 +81,12 @@ export class VendorsController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Create a new vendor
+   * สร้างผู้ขายใหม่
+   * @param payload - Microservice payload containing vendor data / ข้อมูล payload ที่มีข้อมูลผู้ขาย
+   * @returns Created vendor ID / ID ของผู้ขายที่สร้างขึ้น
+   */
   @MessagePattern({ cmd: 'vendors.create', service: 'vendors' })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, VendorsController.name);
@@ -76,6 +100,12 @@ export class VendorsController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an existing vendor
+   * อัปเดตผู้ขายที่มีอยู่
+   * @param payload - Microservice payload containing updated vendor data / ข้อมูล payload ที่มีข้อมูลผู้ขายที่อัปเดต
+   * @returns Updated vendor ID / ID ของผู้ขายที่อัปเดต
+   */
   @MessagePattern({ cmd: 'vendors.update', service: 'vendors' })
   async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, VendorsController.name);
@@ -89,6 +119,12 @@ export class VendorsController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a vendor (soft delete)
+   * ลบผู้ขาย (ลบแบบซอฟต์)
+   * @param payload - Microservice payload containing vendor ID / ข้อมูล payload ที่มี ID ของผู้ขาย
+   * @returns Deleted vendor ID / ID ของผู้ขายที่ลบ
+   */
   @MessagePattern({ cmd: 'vendors.delete', service: 'vendors' })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, VendorsController.name);

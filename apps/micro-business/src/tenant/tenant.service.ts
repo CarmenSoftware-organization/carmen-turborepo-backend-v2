@@ -15,6 +15,12 @@ export class TenantService {
     private readonly prismaTenant: typeof PrismaClient_TENANT,
   ) { }
 
+  /**
+   * Get tenant connection info for the user's default business unit
+   * ดึงข้อมูลการเชื่อมต่อผู้เช่าจากหน่วยธุรกิจเริ่มต้นของผู้ใช้
+   * @param userId - User ID / ID ผู้ใช้
+   * @returns Tenant connection details / รายละเอียดการเชื่อมต่อผู้เช่า
+   */
   async getTenantInfo(userId: string): Promise<TenantConnection> {
     this.logger.debug({ function: 'getTenantInfo', userId }, TenantService.name);
     const tenant = await this.prismaSystem.tb_user_tb_business_unit
@@ -44,6 +50,13 @@ export class TenantService {
     return tenant;
   }
 
+  /**
+   * Get the department of a user in a tenant
+   * ดึงแผนกของผู้ใช้ในผู้เช่า
+   * @param userId - User ID / ID ผู้ใช้
+   * @param tenantId - Tenant ID / ID ผู้เช่า
+   * @returns Department info with is_hod flag / ข้อมูลแผนกพร้อมสถานะหัวหน้าแผนก
+   */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getUserDepartment(userId: string, tenantId: string): Promise<any> {
     this.logger.debug(
@@ -115,6 +128,13 @@ export class TenantService {
     }
   }
 
+  /**
+   * Get the HOD (Head of Department) department of a user
+   * ดึงแผนกที่ผู้ใช้เป็นหัวหน้าแผนก
+   * @param userId - User ID / ID ผู้ใช้
+   * @param tenantId - Tenant ID / ID ผู้เช่า
+   * @returns HOD department info or null / ข้อมูลแผนกที่เป็นหัวหน้าหรือ null
+   */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getUserHodDepartment(userId: string, tenantId: string): Promise<any> {
     this.logger.debug(
@@ -180,6 +200,13 @@ export class TenantService {
     }
   }
 
+  /**
+   * Get tenant/business unit by code
+   * ดึงข้อมูลผู้เช่า/หน่วยธุรกิจตามรหัส
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param user_id - User ID / ID ผู้ใช้
+   * @returns Business unit data / ข้อมูลหน่วยธุรกิจ
+   */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getTenantByCode(bu_code: string, user_id: string): Promise<any> {
     this.logger.debug(
@@ -200,6 +227,13 @@ export class TenantService {
     return tenant;
   }
 
+  /**
+   * Get database connection by business unit code
+   * ดึงการเชื่อมต่อฐานข้อมูลตามรหัสหน่วยธุรกิจ
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenantId - Tenant/business unit code / รหัสผู้เช่า/หน่วยธุรกิจ
+   * @returns Tenant connection details / รายละเอียดการเชื่อมต่อผู้เช่า
+   */
   async getdbConnectionByCode(user_id: string, tenantId: string): Promise<TenantConnection> {
     this.logger.debug(
       { function: 'getdb_connection', user_id, tenantId },
@@ -243,6 +277,13 @@ export class TenantService {
 
     return tenant;
   }
+  /**
+   * Get database connection by UUID or business unit code
+   * ดึงการเชื่อมต่อฐานข้อมูลตาม UUID หรือรหัสหน่วยธุรกิจ
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenantId - Tenant ID (UUID) or business unit code / ID ผู้เช่า (UUID) หรือรหัสหน่วยธุรกิจ
+   * @returns Tenant connection details / รายละเอียดการเชื่อมต่อผู้เช่า
+   */
   async getdb_connection(user_id: string, tenantId: string): Promise<TenantConnection> {
     this.logger.debug(
       { function: 'getdb_connection', user_id, tenantId },
@@ -294,6 +335,12 @@ export class TenantService {
     return tenant;
   }
 
+  /**
+   * Build database connection string from config
+   * สร้างสตริงการเชื่อมต่อฐานข้อมูลจากการตั้งค่า
+   * @param db_connection - Database configuration / การตั้งค่าฐานข้อมูล
+   * @returns Connection string / สตริงการเชื่อมต่อ
+   */
   getConnectionString(db_connection: databaseConfig): string {
 
     switch (db_connection.provider) {
@@ -308,6 +355,13 @@ export class TenantService {
     }
   }
 
+  /**
+   * Get a Prisma client instance for the tenant
+   * ดึง Prisma client instance สำหรับผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param user_id - User ID / ID ผู้ใช้
+   * @returns Prisma client for the tenant / Prisma client สำหรับผู้เช่า
+   */
   async prismaTenantInstance(
     bu_code: string,
     user_id: string,
@@ -338,6 +392,13 @@ export class TenantService {
     }
   }
 
+  /**
+   * Get database connection for external applications (no user validation)
+   * ดึงการเชื่อมต่อฐานข้อมูลสำหรับแอปพลิเคชันภายนอก (ไม่ต้องตรวจสอบผู้ใช้)
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param application - Application name / ชื่อแอปพลิเคชัน
+   * @returns Prisma client for the tenant / Prisma client สำหรับผู้เช่า
+   */
   async getdb_connection_for_external(bu_code: string, application: string): Promise<PrismaClient> {
     this.logger.debug(
       { function: `getdb_connection_for_external bu_code: ${bu_code} application: ${application}` },

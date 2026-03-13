@@ -16,6 +16,15 @@ export class WorkflowService {
     @Inject('BUSINESS_SERVICE') private readonly masterService: ClientProxy,
   ) { }
 
+  /**
+   * Find a workflow configuration by document type
+   * ค้นหาการกำหนดค่าขั้นตอนการทำงานตามประเภทเอกสาร
+   * @param workflowType - Workflow type / ประเภทขั้นตอนการทำงาน
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Workflow configuration / การกำหนดค่าขั้นตอนการทำงาน
+   */
   async findByType(
     workflowType: string,
     user_id: string,
@@ -54,6 +63,16 @@ export class WorkflowService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Get previous approval stages relative to the current stage
+   * ดึงขั้นตอนอนุมัติก่อนหน้าเทียบกับขั้นตอนปัจจุบัน
+   * @param workflow_id - Workflow ID / รหัสขั้นตอนการทำงาน
+   * @param stage - Current stage / ขั้นตอนปัจจุบัน
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Previous workflow stages / ขั้นตอนการทำงานก่อนหน้า
+   */
   async getPreviousStages(
     workflow_id: string,
     stage: string,

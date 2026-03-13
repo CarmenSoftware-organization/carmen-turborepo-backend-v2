@@ -15,6 +15,15 @@ export class UnitConversionService {
     @Inject('BUSINESS_SERVICE') private readonly masterService: ClientProxy,
   ) { }
 
+  /**
+   * Get available ordering units for a product via microservice
+   * ดึงหน่วยสั่งซื้อที่ใช้ได้สำหรับสินค้าผ่านไมโครเซอร์วิส
+   * @param productId - Product ID / รหัสสินค้า
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of order units / รายการหน่วยสั่งซื้อ
+   */
   async getOrderUnitProduct(
     productId: string,
     user_id: string,
@@ -47,6 +56,15 @@ export class UnitConversionService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Get available ingredient units for a product via microservice
+   * ดึงหน่วยส่วนผสมที่ใช้ได้สำหรับสินค้าผ่านไมโครเซอร์วิส
+   * @param productId - Product ID / รหัสสินค้า
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of ingredient units / รายการหน่วยส่วนผสม
+   */
   async getIngredientUnitProduct(
     productId: string,
     user_id: string,
@@ -79,6 +97,15 @@ export class UnitConversionService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Get all available unit conversions for a product via microservice
+   * ดึงการแปลงหน่วยทั้งหมดที่ใช้ได้สำหรับสินค้าผ่านไมโครเซอร์วิส
+   * @param productId - Product ID / รหัสสินค้า
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of available unit conversions / รายการการแปลงหน่วยที่ใช้ได้
+   */
   async getAvailableUnitProduct(
     productId: string,
     user_id: string,

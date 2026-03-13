@@ -224,11 +224,24 @@ export class KeycloakService {
 
   // ==================== User Management (Admin Token Required) ====================
 
+  /**
+   * Get all users from Keycloak realm
+   * ค้นหารายการผู้ใช้ทั้งหมดจาก Keycloak realm
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns Array of Keycloak users / อาร์เรย์ของผู้ใช้ Keycloak
+   */
   async getUsers(realm?: string): Promise<KeycloakUser[]> {
     this.logger.log('Fetching all users from Keycloak');
     return this.request<KeycloakUser[]>('GET', '/users', undefined, realm);
   }
 
+  /**
+   * Get a user by their Keycloak ID
+   * ค้นหารายการเดียวตาม ID ผู้ใช้ใน Keycloak
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns Keycloak user / ผู้ใช้ Keycloak
+   */
   async getUserById(userId: string, realm?: string): Promise<KeycloakUser> {
     this.logger.log(`Fetching user by ID: ${userId}`);
     return this.request<KeycloakUser>(
@@ -239,6 +252,13 @@ export class KeycloakService {
     );
   }
 
+  /**
+   * Get a user by their username
+   * ค้นหาผู้ใช้ตามชื่อผู้ใช้
+   * @param username - Username to search / ชื่อผู้ใช้ที่ต้องการค้นหา
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns Keycloak user or null if not found / ผู้ใช้ Keycloak หรือ null ถ้าไม่พบ
+   */
   async getUserByUsername(
     username: string,
     realm?: string,
@@ -253,6 +273,13 @@ export class KeycloakService {
     return users.length > 0 ? users[0] : null;
   }
 
+  /**
+   * Get a user by their email address
+   * ค้นหาผู้ใช้ตามอีเมล
+   * @param email - Email address to search / อีเมลที่ต้องการค้นหา
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns Keycloak user or null if not found / ผู้ใช้ Keycloak หรือ null ถ้าไม่พบ
+   */
   async getUserByEmail(
     email: string,
     realm?: string,
@@ -267,6 +294,13 @@ export class KeycloakService {
     return users.length > 0 ? users[0] : null;
   }
 
+  /**
+   * Create a new user in Keycloak
+   * สร้างผู้ใช้ใหม่ใน Keycloak
+   * @param userData - User creation data / ข้อมูลสำหรับสร้างผู้ใช้
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns Created user ID / ID ผู้ใช้ที่สร้างแล้ว
+   */
   async createUser(
     userData: CreateKeycloakUserDto,
     realm?: string,
@@ -303,10 +337,11 @@ export class KeycloakService {
   }
 
   /**
-   * Update user in Keycloak
-   *
-   * Strategy: GET full user → merge with update data → PUT full user back
-   * This ensures we don't accidentally remove existing fields when doing partial updates.
+   * Update user in Keycloak using GET-merge-PUT strategy
+   * อัปเดตผู้ใช้ใน Keycloak โดยใช้กลยุทธ์ GET-merge-PUT
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param userData - Partial user data to update / ข้อมูลผู้ใช้บางส่วนที่ต้องการอัปเดต
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
    */
   async updateUser(
     userId: string,
@@ -339,11 +374,25 @@ export class KeycloakService {
     await this.request<void>('PUT', `/users/${userId}`, updatePayload, realm);
   }
 
+  /**
+   * Delete a user from Keycloak
+   * ลบผู้ใช้จาก Keycloak
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   */
   async deleteUser(userId: string, realm?: string): Promise<void> {
     this.logger.log(`Deleting user: ${userId}`);
     await this.request<void>('DELETE', `/users/${userId}`, undefined, realm);
   }
 
+  /**
+   * Reset user password in Keycloak
+   * รีเซ็ตรหัสผ่านผู้ใช้ใน Keycloak
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param password - New password / รหัสผ่านใหม่
+   * @param temporary - Whether password is temporary (user must change on next login) / รหัสผ่านเป็นแบบชั่วคราวหรือไม่
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   */
   async resetPassword(
     userId: string,
     password: string,
@@ -375,10 +424,11 @@ export class KeycloakService {
    */
 
   /**
-   * Add a BU to user's bu attribute
-   * If BU with same bu_id exists, it will be updated
-   *
-   * Strategy: GET full user → modify BU attribute → PUT full user back
+   * Add a BU to user's bu attribute. If BU with same bu_id exists, it will be updated
+   * เพิ่มหน่วยธุรกิจให้ผู้ใช้ ถ้ามี bu_id ซ้ำจะอัปเดตแทน
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param bu - Business unit data / ข้อมูลหน่วยธุรกิจ
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
    */
   async addUserBu(
     userId: string,
@@ -429,8 +479,10 @@ export class KeycloakService {
 
   /**
    * Remove a BU from user's bu attribute by bu_id
-   *
-   * Strategy: GET full user → modify BU attribute → PUT full user back
+   * ลบหน่วยธุรกิจจากผู้ใช้ตาม bu_id
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param buId - Business unit ID to remove / ID หน่วยธุรกิจที่ต้องการลบ
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
    */
   async removeUserBu(
     userId: string,
@@ -487,7 +539,11 @@ export class KeycloakService {
   }
 
   /**
-   * Get user's BU list
+   * Get user's BU list from Keycloak attributes
+   * ค้นหารายการหน่วยธุรกิจทั้งหมดของผู้ใช้จาก Keycloak attributes
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns Array of BU objects / อาร์เรย์ของอ็อบเจกต์หน่วยธุรกิจ
    */
   async getUserBuList(
     userId: string,
@@ -515,8 +571,11 @@ export class KeycloakService {
 
   /**
    * Manage user BU attribute (add or remove)
-   * @param action 'add' | 'remove'
-   * @param bu For 'add': { bu_id, bu_code, role }, For 'remove': { bu_id }
+   * จัดการ attribute หน่วยธุรกิจของผู้ใช้ (เพิ่มหรือลบ)
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param action - 'add' or 'remove' / 'add' หรือ 'remove'
+   * @param bu - BU data. For 'add': { bu_id, bu_code, role }, For 'remove': { bu_id } / ข้อมูลหน่วยธุรกิจ
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
    */
   async manageUserBu(
     userId: string,
@@ -551,10 +610,11 @@ export class KeycloakService {
    */
 
   /**
-   * Add a Cluster to user's Cluster attribute
-   * If Cluster with same cluster_id exists, it will be updated
-   *
-   * Strategy: GET full user → modify Cluster attribute → PUT full user back
+   * Add a Cluster to user's Cluster attribute. If same cluster_id exists, it will be updated
+   * เพิ่ม Cluster ให้ผู้ใช้ ถ้ามี cluster_id ซ้ำจะอัปเดตแทน
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param cluster - Cluster data / ข้อมูล Cluster
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
    */
   async addUserCluster(
     userId: string,
@@ -612,8 +672,10 @@ export class KeycloakService {
 
   /**
    * Remove a Cluster from user's Cluster attribute by cluster_id
-   *
-   * Strategy: GET full user → modify Cluster attribute → PUT full user back
+   * ลบ Cluster จากผู้ใช้ตาม cluster_id
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param clusterId - Cluster ID to remove / ID Cluster ที่ต้องการลบ
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
    */
   async removeUserCluster(
     userId: string,
@@ -667,7 +729,11 @@ export class KeycloakService {
   }
 
   /**
-   * Get user's Cluster list
+   * Get user's Cluster list from Keycloak attributes
+   * ค้นหารายการ Cluster ทั้งหมดของผู้ใช้จาก Keycloak attributes
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns Array of Cluster objects / อาร์เรย์ของอ็อบเจกต์ Cluster
    */
   async getUserClusterList(
     userId: string,
@@ -693,8 +759,11 @@ export class KeycloakService {
 
   /**
    * Manage user Cluster attribute (add or remove)
-   * @param action 'add' | 'remove'
-   * @param cluster For 'add': { cluster_id, cluster_code, role }, For 'remove': { cluster_id }
+   * จัดการ attribute Cluster ของผู้ใช้ (เพิ่มหรือลบ)
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param action - 'add' or 'remove' / 'add' หรือ 'remove'
+   * @param cluster - Cluster data. For 'add': { cluster_id, cluster_code, role }, For 'remove': { cluster_id } / ข้อมูล Cluster
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
    */
   async manageUserCluster(
     userId: string,
@@ -724,11 +793,24 @@ export class KeycloakService {
 
   // ==================== Role Management (Admin Token Required) ====================
 
+  /**
+   * Get all realm roles from Keycloak
+   * ค้นหารายการ role ทั้งหมดจาก Keycloak realm
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns Array of realm roles / อาร์เรย์ของ role
+   */
   async getRealmRoles(realm?: string): Promise<KeycloakRole[]> {
     this.logger.log('Fetching realm roles');
     return this.request<KeycloakRole[]>('GET', '/roles', undefined, realm);
   }
 
+  /**
+   * Get roles assigned to a user
+   * ค้นหารายการ role ทั้งหมดที่กำหนดให้ผู้ใช้
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns Array of user roles / อาร์เรย์ของ role ผู้ใช้
+   */
   async getUserRoles(userId: string, realm?: string): Promise<KeycloakRole[]> {
     this.logger.log(`Fetching roles for user: ${userId}`);
     return this.request<KeycloakRole[]>(
@@ -739,6 +821,13 @@ export class KeycloakService {
     );
   }
 
+  /**
+   * Assign realm roles to a user
+   * กำหนด role ให้ผู้ใช้
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param roles - Roles to assign / role ที่ต้องการกำหนด
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   */
   async assignRealmRolesToUser(
     userId: string,
     roles: KeycloakRole[],
@@ -753,6 +842,13 @@ export class KeycloakService {
     );
   }
 
+  /**
+   * Remove realm roles from a user
+   * ลบ role จากผู้ใช้
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param roles - Roles to remove / role ที่ต้องการลบ
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   */
   async removeRealmRolesFromUser(
     userId: string,
     roles: KeycloakRole[],
@@ -769,11 +865,24 @@ export class KeycloakService {
 
   // ==================== Group Management (Admin Token Required) ====================
 
+  /**
+   * Get all groups from Keycloak
+   * ค้นหารายการกลุ่มทั้งหมดจาก Keycloak
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns Array of groups / อาร์เรย์ของกลุ่ม
+   */
   async getGroups(realm?: string): Promise<KeycloakGroup[]> {
     this.logger.log('Fetching all groups');
     return this.request<KeycloakGroup[]>('GET', '/groups', undefined, realm);
   }
 
+  /**
+   * Get a group by its ID
+   * ค้นหารายการเดียวตาม ID กลุ่ม
+   * @param groupId - Keycloak group ID / ID กลุ่ม Keycloak
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns Keycloak group / กลุ่ม Keycloak
+   */
   async getGroupById(groupId: string, realm?: string): Promise<KeycloakGroup> {
     this.logger.log(`Fetching group by ID: ${groupId}`);
     return this.request<KeycloakGroup>(
@@ -784,6 +893,13 @@ export class KeycloakService {
     );
   }
 
+  /**
+   * Get groups assigned to a user
+   * ค้นหารายการกลุ่มทั้งหมดที่กำหนดให้ผู้ใช้
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns Array of user groups / อาร์เรย์ของกลุ่มผู้ใช้
+   */
   async getUserGroups(
     userId: string,
     realm?: string,
@@ -797,6 +913,13 @@ export class KeycloakService {
     );
   }
 
+  /**
+   * Add a user to a group in Keycloak
+   * เพิ่มผู้ใช้เข้ากลุ่มใน Keycloak
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param groupId - Keycloak group ID / ID กลุ่ม Keycloak
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   */
   async addUserToGroup(
     userId: string,
     groupId: string,
@@ -811,6 +934,13 @@ export class KeycloakService {
     );
   }
 
+  /**
+   * Remove a user from a group in Keycloak
+   * ลบผู้ใช้ออกจากกลุ่มใน Keycloak
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param groupId - Keycloak group ID / ID กลุ่ม Keycloak
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   */
   async removeUserFromGroup(
     userId: string,
     groupId: string,
@@ -830,10 +960,12 @@ export class KeycloakService {
   // They do NOT require admin credentials - they work with user's own credentials or tokens.
 
   /**
-   * Authenticate a user and get their tokens.
-   * Uses getUserToken internally with the regular client_id (not admin).
-   *
-   * This is a standard OIDC Resource Owner Password Credentials flow.
+   * Authenticate a user and get their tokens via OIDC Resource Owner Password Credentials flow
+   * ยืนยันตัวตนผู้ใช้และรับ token ผ่าน OIDC Resource Owner Password Credentials flow
+   * @param email - User email / อีเมลผู้ใช้
+   * @param password - User password / รหัสผ่านผู้ใช้
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns Token response with access and refresh tokens / response ที่มี access และ refresh token
    */
   async login(
     email: string,
@@ -848,8 +980,10 @@ export class KeycloakService {
   }
 
   /**
-   * Logout user using their refresh token.
-   * Uses the user client_id (not admin) - this is an OIDC logout endpoint.
+   * Logout user using their refresh token via OIDC logout endpoint
+   * ออกจากระบบผู้ใช้โดยใช้ refresh token ผ่าน OIDC logout endpoint
+   * @param refreshToken - User's refresh token / refresh token ของผู้ใช้
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
    */
   async logoutWithRefreshToken(
     refreshToken: string,
@@ -921,8 +1055,11 @@ export class KeycloakService {
   // }
 
   /**
-   * Logout user by their ID using admin token.
-   * This is an admin operation and requires admin credentials.
+   * Logout user by their ID using admin token (admin operation)
+   * ออกจากระบบผู้ใช้ตาม ID โดยใช้ admin token (ต้องใช้สิทธิ์ admin)
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns True if logout successful / true ถ้าออกจากระบบสำเร็จ
    */
   async logoutUserById(userId: string, realm?: string) {
     // First get admin token
@@ -951,8 +1088,11 @@ export class KeycloakService {
   }
 
   /**
-   * Refresh user's access token using their refresh token.
-   * Uses the user client_id (not admin) - this is an OIDC token refresh.
+   * Refresh user's access token using their refresh token via OIDC token refresh
+   * รีเฟรช access token ของผู้ใช้โดยใช้ refresh token ผ่าน OIDC token refresh
+   * @param refreshToken - User's refresh token / refresh token ของผู้ใช้
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns New token response / token response ใหม่
    */
   async refreshToken(
     refreshToken: string,
@@ -993,8 +1133,11 @@ export class KeycloakService {
   // Token introspection uses client credentials but doesn't need admin privileges
 
   /**
-   * Verify/introspect a token.
-   * Uses client credentials to introspect - does NOT require admin token.
+   * Verify/introspect a token using client credentials (no admin token required)
+   * ตรวจสอบ/introspect token โดยใช้ client credentials (ไม่ต้องใช้ admin token)
+   * @param token - Token to verify / token ที่ต้องการตรวจสอบ
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns Token introspection result / ผลการตรวจสอบ token
    */
   async verifyToken(
     token: string,
@@ -1025,8 +1168,10 @@ export class KeycloakService {
   }
 
   /**
-   * Force logout a user by userId (Admin API).
-   * Requires ADMIN token - this terminates all sessions for the user.
+   * Force logout a user by userId via Admin API (terminates all sessions)
+   * บังคับออกจากระบบผู้ใช้ตาม userId ผ่าน Admin API (ยกเลิกทุก session)
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
    */
   async logout(userId: string, realm?: string): Promise<void> {
     this.logger.log(`Logging out user: ${userId}`);
@@ -1040,6 +1185,13 @@ export class KeycloakService {
 
   // ==================== Session Management (Admin Token Required) ====================
 
+  /**
+   * Get active sessions for a user
+   * ค้นหารายการ session ที่ใช้งานอยู่ทั้งหมดของผู้ใช้
+   * @param userId - Keycloak user ID / ID ผู้ใช้ Keycloak
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns Array of user sessions / อาร์เรย์ของ session ผู้ใช้
+   */
   async getUserSessions(
     userId: string,
     realm?: string,
@@ -1053,6 +1205,12 @@ export class KeycloakService {
     );
   }
 
+  /**
+   * Delete a specific user session
+   * ลบ session ของผู้ใช้ที่ระบุ
+   * @param sessionId - Session ID to delete / ID session ที่ต้องการลบ
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   */
   async deleteUserSession(sessionId: string, realm?: string): Promise<void> {
     this.logger.log(`Deleting session: ${sessionId}`);
     await this.request<void>(
@@ -1066,9 +1224,11 @@ export class KeycloakService {
   // ==================== User Info (User Token - No Admin Required) ====================
 
   /**
-   * Get user info from access token via userinfo endpoint.
-   * Uses the user's own access token directly - does NOT require admin token.
-   * This is a standard OIDC userinfo endpoint.
+   * Get user info from access token via OIDC userinfo endpoint (no admin token required)
+   * ดึงข้อมูลผู้ใช้จาก access token ผ่าน OIDC userinfo endpoint (ไม่ต้องใช้ admin token)
+   * @param accessToken - User's access token / access token ของผู้ใช้
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns User info / ข้อมูลผู้ใช้
    */
   async getUserInfo(
     accessToken: string,
@@ -1106,13 +1266,14 @@ export class KeycloakService {
   // ==================== Change Password ====================
 
   /**
-   * Change password by verifying current password via login,
-   * then using the fresh token to call Keycloak Account API.
-   *
-   * Strategy:
-   * 1. Get user email from accessToken
-   * 2. Login with email + currentPassword → verifies current password & gets fresh token
-   * 3. Use fresh token to call Account API to set new password
+   * Change password by verifying current password via login, then reset via Admin API
+   * เปลี่ยนรหัสผ่านโดยตรวจสอบรหัสผ่านปัจจุบันก่อน แล้วรีเซ็ตผ่าน Admin API
+   * @param accessToken - User's current access token / access token ปัจจุบันของผู้ใช้
+   * @param currentPassword - Current password for verification / รหัสผ่านปัจจุบันสำหรับตรวจสอบ
+   * @param newPassword - New password to set / รหัสผ่านใหม่ที่ต้องการตั้ง
+   * @param userId - Optional Keycloak user ID (falls back to token sub) / ID ผู้ใช้ Keycloak (ถ้ามี)
+   * @param realm - Optional realm name / ชื่อ realm (ถ้ามี)
+   * @returns Success status / สถานะสำเร็จ
    */
   async changePassword(
     accessToken: string,
@@ -1171,8 +1332,9 @@ export class KeycloakService {
   // ==================== Health Check (No Auth Required) ====================
 
   /**
-   * Check Keycloak server health.
-   * Uses public .well-known endpoint - no authentication required.
+   * Check Keycloak server health via public .well-known endpoint (no auth required)
+   * ตรวจสอบสถานะ Keycloak server ผ่าน .well-known endpoint สาธารณะ (ไม่ต้องยืนยันตัวตน)
+   * @returns Health status with timestamp / สถานะสุขภาพพร้อม timestamp
    */
   async healthCheck(): Promise<{ status: string; timestamp: string }> {
     try {

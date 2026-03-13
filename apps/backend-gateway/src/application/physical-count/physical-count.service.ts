@@ -19,6 +19,15 @@ export class PhysicalCountService {
     private readonly inventoryService: ClientProxy,
   ) {}
 
+  /**
+   * Find a physical count by ID via microservice
+   * ค้นหารายการตรวจนับสินค้าเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Physical count details / รายละเอียดการตรวจนับสินค้า
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -53,6 +62,15 @@ export class PhysicalCountService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all physical counts with pagination via microservice
+   * ค้นหารายการตรวจนับสินค้าทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated physical count list / รายการตรวจนับสินค้าแบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     tenant_id: string,
@@ -92,6 +110,15 @@ export class PhysicalCountService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new physical count via microservice
+   * สร้างรายการตรวจนับสินค้าใหม่ผ่านไมโครเซอร์วิส
+   * @param data - Physical count creation data / ข้อมูลสำหรับสร้างการตรวจนับสินค้า
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created physical count / การตรวจนับสินค้าที่สร้างขึ้น
+   */
   async create(
     data: Record<string, unknown>,
     user_id: string,
@@ -126,6 +153,16 @@ export class PhysicalCountService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update an existing physical count via microservice
+   * อัปเดตรายการตรวจนับสินค้าที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param data - Fields to update / ข้อมูลที่ต้องการอัปเดต
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated physical count / การตรวจนับสินค้าที่อัปเดตแล้ว
+   */
   async update(
     id: string,
     data: Record<string, unknown>,
@@ -162,6 +199,15 @@ export class PhysicalCountService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a physical count by ID via microservice
+   * ลบรายการตรวจนับสินค้าตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async delete(
     id: string,
     user_id: string,
@@ -198,6 +244,15 @@ export class PhysicalCountService {
 
   // ==================== Physical Count Detail CRUD ====================
 
+  /**
+   * Find a physical count detail by ID via microservice
+   * ค้นหารายละเอียดการตรวจนับสินค้าเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param detailId - Physical count detail ID / รหัสรายละเอียดการตรวจนับ
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Physical count detail / รายละเอียดการตรวจนับสินค้า
+   */
   async findDetailById(
     detailId: string,
     user_id: string,
@@ -226,6 +281,15 @@ export class PhysicalCountService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all details for a physical count via microservice
+   * ค้นหารายละเอียดทั้งหมดของการตรวจนับสินค้าผ่านไมโครเซอร์วิส
+   * @param physicalCountId - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Physical count detail items / รายการรายละเอียดการตรวจนับสินค้า
+   */
   async findDetailsByPhysicalCountId(
     physicalCountId: string,
     user_id: string,
@@ -254,6 +318,15 @@ export class PhysicalCountService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a physical count detail item via microservice
+   * ลบรายละเอียดการตรวจนับสินค้าผ่านไมโครเซอร์วิส
+   * @param detailId - Physical count detail ID / รหัสรายละเอียดการตรวจนับ
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async deleteDetail(
     detailId: string,
     user_id: string,
@@ -284,6 +357,16 @@ export class PhysicalCountService {
 
   // ==================== Mobile-specific endpoints ====================
 
+  /**
+   * Save counted item quantities as draft via microservice
+   * บันทึกจำนวนสินค้าที่นับได้เป็นร่างผ่านไมโครเซอร์วิส
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param data - Items with actual quantities / รายการสินค้าพร้อมจำนวนจริง
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Save result / ผลลัพธ์การบันทึก
+   */
   async saveItems(
     id: string,
     data: { items: Array<{ id: string; actual_qty: number }> },
@@ -313,6 +396,16 @@ export class PhysicalCountService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Calculate variances between actual and system quantities via microservice
+   * คำนวณผลต่างระหว่างจำนวนจริงกับจำนวนในระบบผ่านไมโครเซอร์วิส
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param data - Items with actual quantities / รายการสินค้าพร้อมจำนวนจริง
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Variance review result / ผลลัพธ์การตรวจสอบผลต่าง
+   */
   async reviewItems(
     id: string,
     data: { items: Array<{ id: string; actual_qty: number }> },
@@ -342,6 +435,15 @@ export class PhysicalCountService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Get the variance report for a physical count via microservice
+   * ดึงรายงานผลต่างของการตรวจนับสินค้าผ่านไมโครเซอร์วิส
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Variance report / รายงานผลต่าง
+   */
   async getReview(
     id: string,
     user_id: string,
@@ -370,6 +472,15 @@ export class PhysicalCountService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Submit a physical count and trigger inventory adjustments via microservice
+   * ส่งการตรวจนับสินค้าและสร้างรายการปรับปรุงสินค้าคงคลังผ่านไมโครเซอร์วิส
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Submission result / ผลลัพธ์การส่ง
+   */
   async submit(
     id: string,
     user_id: string,
@@ -398,6 +509,16 @@ export class PhysicalCountService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Add a comment to a physical count detail via microservice
+   * เพิ่มความคิดเห็นในรายละเอียดการตรวจนับสินค้าผ่านไมโครเซอร์วิส
+   * @param detailId - Physical count detail ID / รหัสรายละเอียดการตรวจนับ
+   * @param data - Comment content / เนื้อหาความคิดเห็น
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created comment / ความคิดเห็นที่สร้างขึ้น
+   */
   async createComment(
     detailId: string,
     data: { comment: string },
@@ -427,6 +548,13 @@ export class PhysicalCountService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Get the count of pending physical counts for the current user
+   * ดึงจำนวนการตรวจนับสินค้าที่รอดำเนินการของผู้ใช้ปัจจุบัน
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param version - API version / เวอร์ชัน API
+   * @returns Pending count number / จำนวนที่รอดำเนินการ
+   */
    async findAllPendingPhysicalCountCount(
     user_id: string,
     version: string,

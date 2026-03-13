@@ -17,6 +17,14 @@ export class ConfigUserApplicationRoleService {
     private readonly authService: ClientProxy,
   ) { }
 
+  /**
+   * Find application roles assigned to a user via microservice
+   * ค้นหาบทบาทแอปพลิเคชันที่กำหนดให้ผู้ใช้ผ่านไมโครเซอร์วิส
+   * @param targetUserId - Target user ID / รหัสผู้ใช้เป้าหมาย
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns User role assignments or error / การกำหนดบทบาทผู้ใช้หรือข้อผิดพลาด
+   */
   async findByUser(targetUserId: string, bu_code: string, version: string) {
     this.logger.debug(
       {
@@ -48,6 +56,15 @@ export class ConfigUserApplicationRoleService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Assign application roles to a user via microservice
+   * กำหนดบทบาทแอปพลิเคชันให้ผู้ใช้ผ่านไมโครเซอร์วิส
+   * @param data - Role assignment data / ข้อมูลการกำหนดบทบาท
+   * @param requestUserId - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Assignment result or error / ผลการกำหนดบทบาทหรือข้อผิดพลาด
+   */
   async assign(data: IAssignUserApplicationRole, requestUserId: string, bu_code: string, version: string) {
     this.logger.debug(
       {
@@ -81,6 +98,15 @@ export class ConfigUserApplicationRoleService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update user application role assignments via microservice
+   * อัปเดตการกำหนดบทบาทแอปพลิเคชันของผู้ใช้ผ่านไมโครเซอร์วิส
+   * @param data - Update data / ข้อมูลสำหรับอัปเดต
+   * @param requestUserId - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Update result or error / ผลการอัปเดตหรือข้อผิดพลาด
+   */
   async update(data: IUpdateUserApplicationRole, requestUserId: string, bu_code: string, version: string) {
     this.logger.debug(
       {
@@ -114,6 +140,15 @@ export class ConfigUserApplicationRoleService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Remove application roles from a user via microservice
+   * เพิกถอนบทบาทแอปพลิเคชันจากผู้ใช้ผ่านไมโครเซอร์วิส
+   * @param data - Removal data / ข้อมูลสำหรับเพิกถอน
+   * @param requestUserId - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Removal result or error / ผลการเพิกถอนหรือข้อผิดพลาด
+   */
   async remove(data: IRemoveUserApplicationRole, requestUserId: string, bu_code: string, version: string) {
     this.logger.debug(
       {

@@ -53,8 +53,12 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
   }
 
   /**
-   * Lists all reusable purchase request templates in the business unit,
-   * such as recurring kitchen supply orders or standard stock replenishments.
+   * List all purchase request templates in the business unit
+   * ค้นหารายการทั้งหมดของเทมเพลตใบขอซื้อในหน่วยธุรกิจ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of templates / รายการเทมเพลตแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('purchaseRequestTemplate.findAll'))
@@ -98,8 +102,12 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific purchase request template with its predefined
-   * item list and quantities for review or use in a new procurement request.
+   * Retrieve a purchase request template by ID
+   * ค้นหารายการเดียวตาม ID ของเทมเพลตใบขอซื้อ
+   * @param id - Template ID / รหัสเทมเพลต
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Template details / รายละเอียดเทมเพลต
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('purchaseRequestTemplate.findOne'))
@@ -142,8 +150,12 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
   }
 
   /**
-   * Creates a new reusable template with predefined items and quantities,
-   * streamlining repetitive procurement tasks like weekly kitchen supply orders.
+   * Create a new purchase request template
+   * สร้างเทมเพลตใบขอซื้อใหม่
+   * @param createPurchaseRequestTemplateDto - Template creation data / ข้อมูลสำหรับสร้างเทมเพลต
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created template / เทมเพลตที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('purchaseRequestTemplate.create'))
@@ -186,8 +198,13 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing purchase request template to adjust the predefined
-   * item list, quantities, or name to match current ordering needs.
+   * Update an existing purchase request template
+   * อัปเดตเทมเพลตใบขอซื้อที่มีอยู่
+   * @param id - Template ID / รหัสเทมเพลต
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updatePurchaseRequestTemplateDto - Updated template data / ข้อมูลเทมเพลตที่อัปเดต
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated template / เทมเพลตที่อัปเดตแล้ว
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('purchaseRequestTemplate.update'))
@@ -232,8 +249,12 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
   }
 
   /**
-   * Removes a reusable purchase request template that is no longer needed,
-   * preventing staff from using outdated item sets for new requests.
+   * Delete a purchase request template
+   * ลบเทมเพลตใบขอซื้อ
+   * @param id - Template ID / รหัสเทมเพลต
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('purchaseRequestTemplate.delete'))

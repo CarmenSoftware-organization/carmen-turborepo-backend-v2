@@ -67,6 +67,12 @@ export class PeriodService {
     private readonly tenantService: TenantService,
   ) {}
 
+  /**
+   * Find a single period by ID
+   * ค้นหารายการงวดเดียวตาม ID
+   * @param id - Period ID / ID ของงวด
+   * @returns Period detail or error if not found / รายละเอียดงวด หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -88,6 +94,12 @@ export class PeriodService {
     return Result.ok(period);
   }
 
+  /**
+   * Find all periods with pagination
+   * ค้นหารายการงวดทั้งหมดพร้อมการแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of periods / รายการงวดพร้อมการแบ่งหน้า
+   */
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
@@ -136,6 +148,12 @@ export class PeriodService {
     });
   }
 
+  /**
+   * Create a new period
+   * สร้างงวดใหม่
+   * @param data - Period creation data / ข้อมูลการสร้างงวด
+   * @returns Created period ID or error if duplicate / ID ของงวดที่สร้างขึ้น หรือข้อผิดพลาดหากซ้ำ
+   */
   @TryCatch
   async create(data: ICreatePeriod): Promise<Result<unknown>> {
     this.logger.debug(
@@ -184,6 +202,12 @@ export class PeriodService {
     return Result.ok({ id: createPeriod.id });
   }
 
+  /**
+   * Update an existing period
+   * อัปเดตงวดที่มีอยู่
+   * @param data - Period update data / ข้อมูลการอัปเดตงวด
+   * @returns Updated period ID or error if not found / ID ของงวดที่อัปเดต หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async update(data: IUpdatePeriod): Promise<Result<unknown>> {
     this.logger.debug(
@@ -227,6 +251,12 @@ export class PeriodService {
     return Result.ok({ id: updatePeriod.id });
   }
 
+  /**
+   * Partially update a period
+   * อัปเดตบางส่วนของงวด
+   * @param data - Partial period data / ข้อมูลงวดบางส่วน
+   * @returns Updated period or error if not found / งวดที่อัปเดต หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async patch(data: IUpdatePeriod): Promise<Result<unknown>> {
     this.logger.debug(
@@ -270,6 +300,12 @@ export class PeriodService {
     return Result.ok({ id: updatePeriod.id });
   }
 
+  /**
+   * Delete a period (soft delete)
+   * ลบงวด (ลบแบบซอฟต์)
+   * @param id - Period ID / ID ของงวด
+   * @returns Empty object on success or error if not found / อ็อบเจกต์ว่างเมื่อสำเร็จ หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(

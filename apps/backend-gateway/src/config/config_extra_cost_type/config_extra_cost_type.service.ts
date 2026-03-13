@@ -22,6 +22,15 @@ export class Config_ExtraCostTypeService {
     private readonly masterService: ClientProxy,
   ) {}
 
+  /**
+   * Find an extra cost type by ID via microservice
+   * ค้นหาประเภทค่าใช้จ่ายเพิ่มเติมเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Extra cost type ID / รหัสประเภทค่าใช้จ่ายเพิ่มเติม
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Extra cost type data or error / ข้อมูลประเภทค่าใช้จ่ายเพิ่มเติมหรือข้อผิดพลาด
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -53,6 +62,15 @@ export class Config_ExtraCostTypeService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all extra cost types with pagination via microservice
+   * ค้นหาประเภทค่าใช้จ่ายเพิ่มเติมทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated extra cost type data or error / ข้อมูลประเภทค่าใช้จ่ายเพิ่มเติมพร้อมการแบ่งหน้าหรือข้อผิดพลาด
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -90,6 +108,15 @@ export class Config_ExtraCostTypeService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new extra cost type via microservice
+   * สร้างประเภทค่าใช้จ่ายเพิ่มเติมใหม่ผ่านไมโครเซอร์วิส
+   * @param createDto - Creation data / ข้อมูลสำหรับสร้าง
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created extra cost type or error / ประเภทค่าใช้จ่ายเพิ่มเติมที่สร้างแล้วหรือข้อผิดพลาด
+   */
   async create(
     createDto: ICreateExtraCostType,
     user_id: string,
@@ -126,6 +153,15 @@ export class Config_ExtraCostTypeService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update an existing extra cost type via microservice
+   * อัปเดตประเภทค่าใช้จ่ายเพิ่มเติมที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param updateDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated extra cost type or error / ประเภทค่าใช้จ่ายเพิ่มเติมที่อัปเดตแล้วหรือข้อผิดพลาด
+   */
   async update(
     updateDto: IUpdateExtraCostType,
     user_id: string,
@@ -162,6 +198,15 @@ export class Config_ExtraCostTypeService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete an extra cost type by ID via microservice
+   * ลบประเภทค่าใช้จ่ายเพิ่มเติมตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Extra cost type ID / รหัสประเภทค่าใช้จ่ายเพิ่มเติม
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result or error / ผลการลบหรือข้อผิดพลาด
+   */
   async delete(
     id: string,
     user_id: string,

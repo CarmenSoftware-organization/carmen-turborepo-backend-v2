@@ -42,8 +42,13 @@ export class Config_LocationProductController {
   ) {}
 
   /**
-   * Retrieves all products assigned to a specific storage location, showing which items
-   * are stocked at each warehouse or store for inventory tracking and replenishment.
+   * Retrieve all products assigned to a location
+   * ค้นหารายการสินค้าทั้งหมดที่ผูกกับสถานที่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param locationId - Location ID / รหัสสถานที่
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of products for the location / รายการสินค้าของสถานที่
    */
   @Get(':locationId')
   @UseGuards(new AppIdGuard('locationProduct.getProductByLocationId'))

@@ -45,8 +45,11 @@ export class ApplicationRolePermissionController {
   ) {}
 
   /**
-   * Lists all feature permissions currently assigned to a specific role.
-   * Shows exactly what actions users with this role are authorized to perform.
+   * Get all permissions assigned to a role
+   * ค้นหารายการสิทธิ์การเข้าถึงทั้งหมดที่กำหนดให้บทบาท
+   * @param roleId - Role ID / รหัสบทบาท
+   * @param version - API version / เวอร์ชัน API
+   * @returns Permissions for the role / สิทธิ์การเข้าถึงของบทบาท
    */
   @Get('role/:roleId/permissions')
   @UseGuards(new AppIdGuard('application-role-permission.getPermissionsByRole'))
@@ -114,8 +117,11 @@ export class ApplicationRolePermissionController {
   }
 
   /**
-   * Finds all application roles that include a specific permission.
-   * Enables administrators to audit which roles grant a particular capability.
+   * Get all roles that have a specific permission
+   * ค้นหารายการบทบาททั้งหมดที่มีสิทธิ์การเข้าถึงที่ระบุ
+   * @param permissionId - Permission ID / รหัสสิทธิ์การเข้าถึง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Roles with the permission / บทบาทที่มีสิทธิ์การเข้าถึงนี้
    */
   @Get('permission/:permissionId/roles')
   @UseGuards(new AppIdGuard('application-role-permission.getRolesByPermission'))
@@ -183,8 +189,11 @@ export class ApplicationRolePermissionController {
   }
 
   /**
-   * Grants multiple feature permissions to an application role in a single operation.
-   * Enables bulk configuration of role capabilities across procurement and inventory modules.
+   * Assign multiple permissions to a role in bulk
+   * กำหนดสิทธิ์การเข้าถึงหลายรายการให้บทบาทพร้อมกัน
+   * @param assignPermissionsDto - Bulk assignment data / ข้อมูลการกำหนดสิทธิ์แบบกลุ่ม
+   * @param version - API version / เวอร์ชัน API
+   * @returns Assignment result / ผลลัพธ์การกำหนดสิทธิ์
    */
   @Post('assign-permissions')
   @UseGuards(new AppIdGuard('application-role-permission.assignPermissionsToRole'))
@@ -245,8 +254,11 @@ export class ApplicationRolePermissionController {
   }
 
   /**
-   * Grants a single feature permission to an application role.
-   * Allows fine-grained incremental updates to role capabilities.
+   * Assign a single permission to a role
+   * กำหนดสิทธิ์การเข้าถึงรายการเดียวให้บทบาท
+   * @param assignPermissionDto - Assignment data / ข้อมูลการกำหนดสิทธิ์
+   * @param version - API version / เวอร์ชัน API
+   * @returns Assignment result / ผลลัพธ์การกำหนดสิทธิ์
    */
   @Post('assign-permission')
   @UseGuards(new AppIdGuard('application-role-permission.assignPermissionToRole'))
@@ -307,8 +319,11 @@ export class ApplicationRolePermissionController {
   }
 
   /**
-   * Revokes multiple feature permissions from an application role in a single operation.
-   * Useful when restructuring role access or restricting capabilities.
+   * Remove multiple permissions from a role in bulk
+   * ถอนสิทธิ์การเข้าถึงหลายรายการจากบทบาทพร้อมกัน
+   * @param removePermissionsDto - Bulk removal data / ข้อมูลการถอนสิทธิ์แบบกลุ่ม
+   * @param version - API version / เวอร์ชัน API
+   * @returns Removal result / ผลลัพธ์การถอนสิทธิ์
    */
   @Delete('remove-permissions')
   @UseGuards(new AppIdGuard('application-role-permission.removePermissionsFromRole'))
@@ -369,8 +384,11 @@ export class ApplicationRolePermissionController {
   }
 
   /**
-   * Revokes a single feature permission from an application role.
-   * Allows precise removal of a specific capability without affecting other permissions.
+   * Remove a single permission from a role
+   * ถอนสิทธิ์การเข้าถึงรายการเดียวจากบทบาท
+   * @param removePermissionDto - Removal data / ข้อมูลการถอนสิทธิ์
+   * @param version - API version / เวอร์ชัน API
+   * @returns Removal result / ผลลัพธ์การถอนสิทธิ์
    */
   @Delete('remove-permission')
   @UseGuards(new AppIdGuard('application-role-permission.removePermissionFromRole'))

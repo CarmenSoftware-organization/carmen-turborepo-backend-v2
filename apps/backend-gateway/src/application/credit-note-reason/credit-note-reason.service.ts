@@ -17,6 +17,15 @@ export class CreditNoteReasonService {
     private readonly procurementService: ClientProxy,
   ) {}
 
+  /**
+   * Find all credit note reasons with pagination via microservice
+   * ค้นหาเหตุผลใบลดหนี้ทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated credit note reason list / รายการเหตุผลใบลดหนี้แบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     bu_code: string,

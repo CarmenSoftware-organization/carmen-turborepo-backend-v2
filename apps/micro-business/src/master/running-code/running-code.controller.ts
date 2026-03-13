@@ -25,6 +25,12 @@ export class RunningCodeController {
     };
   }
 
+  /**
+   * Find a single running code configuration by ID
+   * ค้นหารายการการตั้งค่ารหัสลำดับเดียวตาม ID
+   * @param payload - Microservice payload containing running code ID / ข้อมูล payload ที่มี ID ของรหัสลำดับ
+   * @returns Running code detail / รายละเอียดรหัสลำดับ
+   */
   @MessagePattern({ cmd: 'running-code.findOne', service: 'running-codes' })
   async findOne(@Payload() payload: MicroservicePayload) : Promise<ICommonResponse<unknown>> {
     this.logger.debug({ function: 'findOne', payload }, RunningCodeController.name);
@@ -37,6 +43,12 @@ export class RunningCodeController {
     return runWithAuditContext(auditContext, () => this.runningCodeService.findOne(id));
   }
 
+  /**
+   * Find all running code configurations with pagination
+   * ค้นหารายการการตั้งค่ารหัสลำดับทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing pagination parameters / ข้อมูล payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of running codes / รายการรหัสลำดับพร้อมการแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'running-code.findAll', service: 'running-codes' })
   async findAll(@Payload() payload: MicroservicePayload) : Promise<ICommonResponse<unknown>> {
     this.logger.debug({ function: 'findAll', payload }, RunningCodeController.name);
@@ -49,6 +61,12 @@ export class RunningCodeController {
     return runWithAuditContext(auditContext, () => this.runningCodeService.findAll(paginate));
   }
 
+  /**
+   * Find a running code configuration by type
+   * ค้นหาการตั้งค่ารหัสลำดับตามประเภท
+   * @param payload - Microservice payload containing running code type / ข้อมูล payload ที่มีประเภทรหัสลำดับ
+   * @returns Running code configuration for the type / การตั้งค่ารหัสลำดับสำหรับประเภท
+   */
   @MessagePattern({
     cmd: 'running-code.find-by-type',
     service: 'running-codes',
@@ -64,6 +82,12 @@ export class RunningCodeController {
     return runWithAuditContext(auditContext, () => this.runningCodeService.findByType(type));
   }
 
+  /**
+   * Create a new running code configuration
+   * สร้างการตั้งค่ารหัสลำดับใหม่
+   * @param payload - Microservice payload containing running code data / ข้อมูล payload ที่มีข้อมูลรหัสลำดับ
+   * @returns Created running code ID / ID ของรหัสลำดับที่สร้างขึ้น
+   */
   @MessagePattern({ cmd: 'running-code.create', service: 'running-codes' })
   async create(@Payload() payload: MicroservicePayload) : Promise<ICommonResponse<unknown>> {
     this.logger.debug({ function: 'create', payload }, RunningCodeController.name);
@@ -76,6 +100,12 @@ export class RunningCodeController {
     return runWithAuditContext(auditContext, () => this.runningCodeService.create(data));
   }
 
+  /**
+   * Update an existing running code configuration
+   * อัปเดตการตั้งค่ารหัสลำดับที่มีอยู่
+   * @param payload - Microservice payload containing updated running code data / ข้อมูล payload ที่มีข้อมูลรหัสลำดับที่อัปเดต
+   * @returns Updated running code ID / ID ของรหัสลำดับที่อัปเดต
+   */
   @MessagePattern({ cmd: 'running-code.update', service: 'running-codes' })
   async update(@Payload() payload: MicroservicePayload) : Promise<ICommonResponse<unknown>> {
     this.logger.debug({ function: 'update', payload }, RunningCodeController.name);
@@ -88,6 +118,12 @@ export class RunningCodeController {
     return runWithAuditContext(auditContext, () => this.runningCodeService.update(data));
   }
 
+  /**
+   * Delete a running code configuration (soft delete)
+   * ลบการตั้งค่ารหัสลำดับ (ลบแบบซอฟต์)
+   * @param payload - Microservice payload containing running code ID / ข้อมูล payload ที่มี ID ของรหัสลำดับ
+   * @returns Deleted running code ID / ID ของรหัสลำดับที่ลบ
+   */
   @MessagePattern({ cmd: 'running-code.delete', service: 'running-codes' })
   async delete(@Payload() payload: MicroservicePayload) : Promise<ICommonResponse<unknown>> {
     this.logger.debug({ function: 'delete', payload }, RunningCodeController.name);
@@ -100,6 +136,12 @@ export class RunningCodeController {
     return runWithAuditContext(auditContext, () => this.runningCodeService.delete(id));
   }
 
+  /**
+   * Generate a new running code based on type, date, and last number
+   * สร้างรหัสลำดับใหม่ตามประเภท วันที่ และหมายเลขล่าสุด
+   * @param payload - Microservice payload containing type, issueDate, and last_no / ข้อมูล payload ที่มีประเภท วันที่ออก และหมายเลขล่าสุด
+   * @returns Generated code / รหัสที่สร้างขึ้น
+   */
   @MessagePattern({
     cmd: 'running-code.generate-code',
     service: 'running-codes',
@@ -121,6 +163,12 @@ export class RunningCodeController {
     ));
   }
 
+  /**
+   * Get running code pattern configuration by type
+   * ดึงการตั้งค่ารูปแบบรหัสลำดับตามประเภท
+   * @param payload - Microservice payload containing running code type / ข้อมูล payload ที่มีประเภทรหัสลำดับ
+   * @returns Running code pattern / รูปแบบรหัสลำดับ
+   */
   @MessagePattern({
     cmd: 'running-code.get-pattern-by-type',
     service: 'running-codes',

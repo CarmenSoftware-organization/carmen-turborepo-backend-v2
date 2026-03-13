@@ -18,6 +18,15 @@ export class Config_RecipeService {
     private readonly masterService: ClientProxy,
   ) { }
 
+  /**
+   * Find a recipe by ID via microservice
+   * ค้นหาสูตรอาหารเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Recipe ID / รหัสสูตรอาหาร
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Recipe data or error / ข้อมูลสูตรอาหารหรือข้อผิดพลาด
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -45,6 +54,15 @@ export class Config_RecipeService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all recipes with pagination via microservice
+   * ค้นหาสูตรอาหารทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated recipe data or error / ข้อมูลสูตรอาหารพร้อมการแบ่งหน้าหรือข้อผิดพลาด
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -72,6 +90,15 @@ export class Config_RecipeService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new recipe via microservice
+   * สร้างสูตรอาหารใหม่ผ่านไมโครเซอร์วิส
+   * @param createDto - Recipe creation data / ข้อมูลสำหรับสร้างสูตรอาหาร
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created recipe or error / สูตรอาหารที่สร้างแล้วหรือข้อผิดพลาด
+   */
   async create(
     createDto: ICreateRecipe,
     user_id: string,
@@ -99,6 +126,15 @@ export class Config_RecipeService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update an existing recipe via microservice
+   * อัปเดตสูตรอาหารที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param updateDto - Recipe update data / ข้อมูลสำหรับอัปเดตสูตรอาหาร
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated recipe or error / สูตรอาหารที่อัปเดตแล้วหรือข้อผิดพลาด
+   */
   async update(
     updateDto: IUpdateRecipe,
     user_id: string,
@@ -126,6 +162,15 @@ export class Config_RecipeService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Partially update a recipe via microservice
+   * อัปเดตสูตรอาหารบางส่วนผ่านไมโครเซอร์วิส
+   * @param updateDto - Partial recipe update data / ข้อมูลสำหรับอัปเดตสูตรอาหารบางส่วน
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Patched recipe or error / สูตรอาหารที่อัปเดตบางส่วนแล้วหรือข้อผิดพลาด
+   */
   async patch(
     updateDto: IUpdateRecipe,
     user_id: string,
@@ -153,6 +198,15 @@ export class Config_RecipeService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a recipe by ID via microservice
+   * ลบสูตรอาหารตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Recipe ID / รหัสสูตรอาหาร
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result or error / ผลการลบหรือข้อผิดพลาด
+   */
   async delete(
     id: string,
     user_id: string,

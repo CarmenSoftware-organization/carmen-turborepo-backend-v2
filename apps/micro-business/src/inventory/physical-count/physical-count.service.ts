@@ -44,6 +44,14 @@ export class PhysicalCountService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a physical count by ID
+   * ค้นหาการตรวจนับสินค้ารายการเดียวตาม ID
+   * @param id - Physical count ID / ID การตรวจนับ
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Physical count detail with items / รายละเอียดการตรวจนับสินค้าพร้อมรายการ
+   */
   @TryCatch
   async findOne(
     id: string,
@@ -93,6 +101,14 @@ export class PhysicalCountService {
     return Result.ok(responseData);
   }
 
+  /**
+   * Find all physical counts with pagination
+   * ค้นหาการตรวจนับสินค้าทั้งหมดพร้อมการแบ่งหน้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of physical counts / รายการการตรวจนับสินค้าแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(
     user_id: string,
@@ -181,6 +197,14 @@ export class PhysicalCountService {
     });
   }
 
+  /**
+   * Create a new physical count for a location
+   * สร้างการตรวจนับสินค้าใหม่สำหรับสถานที่
+   * @param data - Physical count creation data / ข้อมูลสร้างการตรวจนับสินค้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created physical count ID / ID การตรวจนับสินค้าที่สร้างแล้ว
+   */
   @TryCatch
   async create(
     data: IPhysicalCountCreate,
@@ -313,6 +337,14 @@ export class PhysicalCountService {
     return this.findOne(result.id, user_id, tenant_id);
   }
 
+  /**
+   * Save physical count detail quantities
+   * บันทึกจำนวนรายการรายละเอียดการตรวจนับสินค้า
+   * @param data - Physical count save data with detail items / ข้อมูลบันทึกการตรวจนับพร้อมรายการรายละเอียด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Saved physical count / การตรวจนับสินค้าที่บันทึกแล้ว
+   */
   @TryCatch
   async save(
     data: IPhysicalCountSave,
@@ -397,6 +429,15 @@ export class PhysicalCountService {
     return this.findOne(data.id, user_id, tenant_id);
   }
 
+  /**
+   * Review physical count items with actual quantities
+   * ตรวจสอบรายการตรวจนับสินค้าพร้อมจำนวนจริง
+   * @param id - Physical count ID / ID การตรวจนับ
+   * @param data - Review items with actual quantities / รายการตรวจสอบพร้อมจำนวนจริง
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Updated physical count / การตรวจนับสินค้าที่อัปเดตแล้ว
+   */
   @TryCatch
   async reviewItems(
     id: string,
@@ -494,6 +535,14 @@ export class PhysicalCountService {
     return this.findOne(id, user_id, tenant_id);
   }
 
+  /**
+   * Submit a physical count for approval
+   * ส่งการตรวจนับสินค้าเพื่อขออนุมัติ
+   * @param data - Physical count submit data / ข้อมูลส่งการตรวจนับ
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Submitted physical count / การตรวจนับสินค้าที่ส่งแล้ว
+   */
   @TryCatch
   async submit(
     data: IPhysicalCountSubmit,
@@ -656,6 +705,14 @@ export class PhysicalCountService {
     return this.findOne(data.id, user_id, tenant_id);
   }
 
+  /**
+   * Soft delete a physical count
+   * ลบการตรวจนับสินค้าแบบซอฟต์ดีลีท
+   * @param id - Physical count ID / ID การตรวจนับ
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Deleted physical count ID / ID การตรวจนับที่ลบแล้ว
+   */
   @TryCatch
   async delete(
     id: string,
@@ -718,6 +775,14 @@ export class PhysicalCountService {
 
   // ==================== Detail Comment CRUD ====================
 
+  /**
+   * Find comments for a physical count detail
+   * ค้นหาความคิดเห็นสำหรับรายการรายละเอียดการตรวจนับ
+   * @param physical_count_detail_id - Physical count detail ID / ID รายการรายละเอียดการตรวจนับ
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns List of comments / รายการความคิดเห็น
+   */
   @TryCatch
   async findDetailComments(
     physical_count_detail_id: string,
@@ -751,6 +816,14 @@ export class PhysicalCountService {
   }
 
   @TryCatch
+  /**
+   * Create a comment on a physical count detail
+   * สร้างความคิดเห็นในรายการรายละเอียดการตรวจนับ
+   * @param data - Comment creation data / ข้อมูลสร้างความคิดเห็น
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created comment / ความคิดเห็นที่สร้างแล้ว
+   */
   async createDetailComment(
     data: IPhysicalCountDetailCommentCreate,
     user_id: string,
@@ -796,6 +869,14 @@ export class PhysicalCountService {
     return Result.ok(comment);
   }
 
+  /**
+   * Update a physical count detail comment
+   * แก้ไขความคิดเห็นในรายการรายละเอียดการตรวจนับ
+   * @param data - Comment update data / ข้อมูลแก้ไขความคิดเห็น
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Updated comment / ความคิดเห็นที่แก้ไขแล้ว
+   */
   @TryCatch
   async updateDetailComment(
     data: IPhysicalCountDetailCommentUpdate,
@@ -842,6 +923,14 @@ export class PhysicalCountService {
     return Result.ok(comment);
   }
 
+  /**
+   * Soft delete a physical count detail comment
+   * ลบความคิดเห็นในรายการรายละเอียดการตรวจนับแบบซอฟต์ดีลีท
+   * @param id - Comment ID / ID ความคิดเห็น
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Deleted comment ID / ID ความคิดเห็นที่ลบแล้ว
+   */
   @TryCatch
   async deleteDetailComment(
     id: string,

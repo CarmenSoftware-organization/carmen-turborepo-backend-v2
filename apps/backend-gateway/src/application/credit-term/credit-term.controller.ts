@@ -47,8 +47,12 @@ export class CreditTermController extends BaseHttpController {
   }
 
   /**
-   * Lists all vendor payment terms (e.g., Net 30, Net 60, COD), used when
-   * setting up vendor agreements and calculating payment due dates.
+   * List all credit terms with pagination
+   * ค้นหาเงื่อนไขการชำระเงินทั้งหมดพร้อมการแบ่งหน้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated credit term list / รายการเงื่อนไขการชำระเงินแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('creditTerm.findAll'))
@@ -84,8 +88,12 @@ export class CreditTermController extends BaseHttpController {
   }
 
   /**
-   * Retrieves details of a specific payment term including its code, name,
-   * and number of days for reviewing vendor payment conditions.
+   * Get a credit term by ID
+   * ค้นหาเงื่อนไขการชำระเงินเดียวตาม ID
+   * @param id - Credit term ID / รหัสเงื่อนไขการชำระเงิน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Credit term details / รายละเอียดเงื่อนไขการชำระเงิน
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('creditTerm.findOne'))

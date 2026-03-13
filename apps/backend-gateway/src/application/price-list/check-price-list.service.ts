@@ -15,6 +15,14 @@ export class CheckPriceListService {
     @Inject('BUSINESS_SERVICE') private readonly masterService: ClientProxy,
   ) {}
 
+  /**
+   * Validate a URL token and retrieve price list data via microservice
+   * ตรวจสอบโทเค็น URL และดึงข้อมูลรายการราคาผ่านไมโครเซอร์วิส
+   * @param urlToken - Secure URL token / โทเค็น URL ที่ปลอดภัย
+   * @param version - API version / เวอร์ชัน API
+   * @param decodedToken - Decoded token payload / ข้อมูลโทเค็นที่ถอดรหัสแล้ว
+   * @returns Price list data associated with the token / ข้อมูลรายการราคาที่เชื่อมโยงกับโทเค็น
+   */
   async checkPriceList(urlToken: string, version: string, decodedToken: Record<string, unknown>): Promise<Result<unknown>> {
     this.logger.debug(
       {

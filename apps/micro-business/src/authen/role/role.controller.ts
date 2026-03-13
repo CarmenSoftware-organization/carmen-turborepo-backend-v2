@@ -14,6 +14,12 @@ export class ApplicationRoleController extends BaseMicroserviceController {
     super();
   }
 
+  /**
+   * Create audit context from payload
+   * สร้างบริบทการตรวจสอบจาก payload
+   * @param payload - Microservice payload / ข้อมูล payload จากไมโครเซอร์วิส
+   * @returns Audit context object / ออบเจกต์บริบทการตรวจสอบ
+   */
   private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
@@ -24,6 +30,12 @@ export class ApplicationRoleController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a role by ID
+   * ค้นหาบทบาทรายการเดียวตาม ID
+   * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id
+   * @returns Role detail / รายละเอียดบทบาท
+   */
   @MessagePattern({ cmd: 'role.findOne', service: 'role' })
   async findOne(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
@@ -39,6 +51,12 @@ export class ApplicationRoleController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all roles with pagination
+   * ค้นหาบทบาททั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Contains user_id, tenant_id, paginate / ประกอบด้วย user_id, tenant_id, paginate
+   * @returns Paginated list of roles / รายการบทบาทแบบแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'role.findAll', service: 'role' })
   async findAll(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
@@ -54,6 +72,12 @@ export class ApplicationRoleController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Create a new role
+   * สร้างบทบาทใหม่
+   * @param payload - Contains data, user_id, tenant_id / ประกอบด้วย data, user_id, tenant_id
+   * @returns Created role / บทบาทที่สร้างแล้ว
+   */
   @MessagePattern({ cmd: 'role.create', service: 'role' })
   async create(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
@@ -69,6 +93,12 @@ export class ApplicationRoleController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update a role
+   * แก้ไขบทบาท
+   * @param payload - Contains data, user_id, tenant_id / ประกอบด้วย data, user_id, tenant_id
+   * @returns Updated role / บทบาทที่แก้ไขแล้ว
+   */
   @MessagePattern({ cmd: 'role.update', service: 'role' })
   async update(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
@@ -84,6 +114,12 @@ export class ApplicationRoleController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Remove a role
+   * ลบบทบาท
+   * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   @MessagePattern({ cmd: 'role.remove', service: 'role' })
   async remove(@Payload() payload: MicroservicePayload) {
     this.logger.debug(

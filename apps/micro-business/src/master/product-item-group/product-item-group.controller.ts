@@ -26,6 +26,12 @@ export class ProductItemGroupController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a single product item group by ID
+   * ค้นหารายการกลุ่มสินค้าเดียวตาม ID
+   * @param payload - Microservice payload containing product item group ID / ข้อมูล payload ที่มี ID ของกลุ่มสินค้า
+   * @returns Product item group detail / รายละเอียดกลุ่มสินค้า
+   */
   @MessagePattern({
     cmd: 'product-item-group.findOne',
     service: 'product-item-group',
@@ -42,6 +48,12 @@ export class ProductItemGroupController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all product item groups with pagination
+   * ค้นหารายการกลุ่มสินค้าทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing pagination parameters / ข้อมูล payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of product item groups / รายการกลุ่มสินค้าพร้อมการแบ่งหน้า
+   */
   @MessagePattern({
     cmd: 'product-item-group.findAll',
     service: 'product-item-group',
@@ -58,6 +70,12 @@ export class ProductItemGroupController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Create a new product item group
+   * สร้างกลุ่มสินค้าใหม่
+   * @param payload - Microservice payload containing product item group data / ข้อมูล payload ที่มีข้อมูลกลุ่มสินค้า
+   * @returns Created product item group ID / ID ของกลุ่มสินค้าที่สร้างขึ้น
+   */
   @MessagePattern({
     cmd: 'product-item-group.create',
     service: 'product-item-group',
@@ -74,6 +92,12 @@ export class ProductItemGroupController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an existing product item group
+   * อัปเดตกลุ่มสินค้าที่มีอยู่
+   * @param payload - Microservice payload containing updated product item group data / ข้อมูล payload ที่มีข้อมูลกลุ่มสินค้าที่อัปเดต
+   * @returns Updated product item group ID / ID ของกลุ่มสินค้าที่อัปเดต
+   */
   @MessagePattern({
     cmd: 'product-item-group.update',
     service: 'product-item-group',
@@ -90,6 +114,12 @@ export class ProductItemGroupController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a product item group (soft delete)
+   * ลบกลุ่มสินค้า (ลบแบบซอฟต์)
+   * @param payload - Microservice payload containing product item group ID / ข้อมูล payload ที่มี ID ของกลุ่มสินค้า
+   * @returns Deleted product item group ID / ID ของกลุ่มสินค้าที่ลบ
+   */
   @MessagePattern({
     cmd: 'product-item-group.delete',
     service: 'product-item-group',

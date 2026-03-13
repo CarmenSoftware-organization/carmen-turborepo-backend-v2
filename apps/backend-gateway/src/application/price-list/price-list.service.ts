@@ -17,6 +17,15 @@ export class PriceListService {
     @Inject('BUSINESS_SERVICE') private readonly masterService: ClientProxy,
   ) { }
 
+  /**
+   * Find a specific price list by ID via microservice
+   * ค้นหารายการราคาเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Price list ID / รหัสรายการราคา
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Price list details / รายละเอียดรายการราคา
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -51,6 +60,15 @@ export class PriceListService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all price lists for a business unit via microservice
+   * ค้นหารายการราคาทั้งหมดของหน่วยธุรกิจผ่านไมโครเซอร์วิส
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of price lists / รายการราคาแบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -90,6 +108,15 @@ export class PriceListService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Compare vendor prices for a product across active price lists
+   * เปรียบเทียบราคาสินค้าจากผู้ขายข้ามรายการราคาที่ใช้งานอยู่
+   * @param data - Comparison criteria (product_id, due_date, unit_id, currency_id) / เกณฑ์การเปรียบเทียบ
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Price comparison results / ผลลัพธ์การเปรียบเทียบราคา
+   */
   async priceCompare(
     data: { product_id: string; due_date: string, unit_id?: string; currency_id: string },
     user_id: string,
@@ -124,6 +151,15 @@ export class PriceListService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Create a new price list via microservice
+   * สร้างรายการราคาใหม่ผ่านไมโครเซอร์วิส
+   * @param data - Price list creation data / ข้อมูลสำหรับสร้างรายการราคา
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created price list / รายการราคาที่สร้างแล้ว
+   */
   async create(
     data: Record<string, unknown>,
     user_id: string,
@@ -158,6 +194,15 @@ export class PriceListService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update an existing price list via microservice
+   * อัปเดตรายการราคาที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param data - Price list update data / ข้อมูลสำหรับอัปเดตรายการราคา
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated price list / รายการราคาที่อัปเดตแล้ว
+   */
   async update(
     data: Record<string, unknown>,
     user_id: string,
@@ -192,6 +237,15 @@ export class PriceListService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a price list by ID via microservice
+   * ลบรายการราคาตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Price list ID / รหัสรายการราคา
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async remove(
     id: string,
     user_id: string,

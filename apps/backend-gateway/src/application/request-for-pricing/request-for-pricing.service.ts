@@ -17,6 +17,15 @@ export class RequestForPricingService {
     @Inject('BUSINESS_SERVICE') private readonly masterService: ClientProxy,
   ) {}
 
+  /**
+   * Find a Request for Pricing by ID via microservice
+   * ค้นหารายการเดียวตาม ID ของเอกสารขอราคาผ่านไมโครเซอร์วิส
+   * @param id - Request for Pricing ID / รหัสเอกสารขอราคา
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Request for Pricing data / ข้อมูลเอกสารขอราคา
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -51,6 +60,15 @@ export class RequestForPricingService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all Requests for Pricing with pagination via microservice
+   * ค้นหารายการทั้งหมดของเอกสารขอราคาพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated RFP list / รายการเอกสารขอราคาแบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -89,6 +107,15 @@ export class RequestForPricingService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new Request for Pricing via microservice
+   * สร้างเอกสารขอราคาใหม่ผ่านไมโครเซอร์วิส
+   * @param data - RFP creation data / ข้อมูลสำหรับสร้างเอกสารขอราคา
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created Request for Pricing / เอกสารขอราคาที่สร้างแล้ว
+   */
   async create(
     data: Record<string, unknown>,
     user_id: string,
@@ -122,6 +149,15 @@ export class RequestForPricingService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update a Request for Pricing via microservice
+   * อัปเดตเอกสารขอราคาผ่านไมโครเซอร์วิส
+   * @param data - Updated RFP data / ข้อมูลเอกสารขอราคาที่อัปเดต
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated Request for Pricing / เอกสารขอราคาที่อัปเดตแล้ว
+   */
   async update(
     data: Record<string, unknown>,
     user_id: string,
@@ -156,6 +192,15 @@ export class RequestForPricingService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a Request for Pricing via microservice
+   * ลบเอกสารขอราคาผ่านไมโครเซอร์วิส
+   * @param id - Request for Pricing ID / รหัสเอกสารขอราคา
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async remove(
     id: string,
     user_id: string,

@@ -64,8 +64,12 @@ export class StockInController extends BaseHttpController {
   }
 
   /**
-   * Retrieves full details of a stock-in record including all line items and
-   * quantities added to inventory. Used to review manual inventory adjustments.
+   * Retrieve a stock-in record by ID with full line item details.
+   * ค้นหารายการรับสินค้าเข้าคลังเดียวตาม ID พร้อมรายละเอียดทั้งหมด
+   * @param id - Stock in record ID / รหัสรายการรับสินค้าเข้าคลัง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Stock in record with details / รายการรับสินค้าเข้าคลังพร้อมรายละเอียด
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('stockIn.findOne'))
@@ -100,8 +104,12 @@ export class StockInController extends BaseHttpController {
   }
 
   /**
-   * Lists all stock-in records for the business unit with pagination.
-   * Used by inventory managers to track manual additions to stock levels.
+   * List all stock-in records with pagination.
+   * ค้นหารายการรับสินค้าเข้าคลังทั้งหมดพร้อมการแบ่งหน้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination and filter parameters / พารามิเตอร์การแบ่งหน้าและตัวกรอง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of stock-in records / รายการรับสินค้าเข้าคลังพร้อมการแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('stockIn.findAll'))
@@ -135,9 +143,12 @@ export class StockInController extends BaseHttpController {
   }
 
   /**
-   * Creates a new stock-in record to manually add items to inventory.
-   * Used for inventory adjustments such as opening balances, found items,
-   * or corrections outside the normal GRN receiving process.
+   * Create a new stock-in record for adding items to inventory.
+   * สร้างรายการรับสินค้าเข้าคลังใหม่สำหรับเพิ่มสินค้าในสินค้าคงคลัง
+   * @param createDto - Stock in creation data / ข้อมูลสำหรับสร้างรายการรับสินค้าเข้าคลัง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created stock-in record / รายการรับสินค้าเข้าคลังที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('stockIn.create'))
@@ -170,8 +181,13 @@ export class StockInController extends BaseHttpController {
   }
 
   /**
-   * Updates an existing stock-in record's header or line item details
-   * while it is still in draft status.
+   * Update an existing stock-in record while in draft status.
+   * อัปเดตรายการรับสินค้าเข้าคลังที่มีอยู่ขณะอยู่ในสถานะร่าง
+   * @param id - Stock in record ID / รหัสรายการรับสินค้าเข้าคลัง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Stock in update data / ข้อมูลสำหรับอัปเดตรายการรับสินค้าเข้าคลัง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated stock-in record / รายการรับสินค้าเข้าคลังที่อัปเดตแล้ว
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('stockIn.update'))
@@ -209,7 +225,12 @@ export class StockInController extends BaseHttpController {
   }
 
   /**
-   * Removes a draft stock-in record that was created in error or is no longer needed.
+   * Delete a draft stock-in record.
+   * ลบรายการรับสินค้าเข้าคลังที่เป็นร่าง
+   * @param id - Stock in record ID / รหัสรายการรับสินค้าเข้าคลัง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('stockIn.delete'))
@@ -246,8 +267,12 @@ export class StockInController extends BaseHttpController {
   // ==================== Stock In Detail CRUD ====================
 
   /**
-   * Lists all line items for a specific stock-in record, showing which products
-   * and quantities are being added to inventory.
+   * List all line items for a specific stock-in record.
+   * ค้นหารายการย่อยทั้งหมดของรายการรับสินค้าเข้าคลังที่ระบุ
+   * @param id - Stock in record ID / รหัสรายการรับสินค้าเข้าคลัง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of stock-in detail items / รายการย่อยของรายการรับสินค้าเข้าคลัง
    */
   @Get(':id/details')
   @UseGuards(new AppIdGuard('stockIn.findOne'))
@@ -283,7 +308,13 @@ export class StockInController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a single stock-in line item with full product and quantity details.
+   * Retrieve a single stock-in line item by detail ID.
+   * ค้นหารายการย่อยของรายการรับสินค้าเข้าคลังเดียวตาม ID
+   * @param id - Stock in record ID / รหัสรายการรับสินค้าเข้าคลัง
+   * @param detailId - Stock in detail ID / รหัสรายการย่อยรับสินค้าเข้าคลัง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Stock-in detail item / รายการย่อยของรายการรับสินค้าเข้าคลัง
    */
   @Get(':id/details/:detail_id')
   @UseGuards(new AppIdGuard('stockIn.findOne'))
@@ -321,8 +352,13 @@ export class StockInController extends BaseHttpController {
   }
 
   /**
-   * Adds a new line item to a draft stock-in record, specifying a product
-   * and quantity to be added to inventory.
+   * Create a new line item for a draft stock-in record.
+   * สร้างรายการย่อยใหม่สำหรับรายการรับสินค้าเข้าคลังที่เป็นร่าง
+   * @param id - Stock in record ID / รหัสรายการรับสินค้าเข้าคลัง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param data - Detail creation data / ข้อมูลสำหรับสร้างรายการย่อย
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created stock-in detail / รายการย่อยรับสินค้าเข้าคลังที่สร้างแล้ว
    */
   @Post(':id/details')
   @UseGuards(new AppIdGuard('stockIn.update'))
@@ -362,8 +398,14 @@ export class StockInController extends BaseHttpController {
   }
 
   /**
-   * Updates an existing stock-in line item's product or quantity.
-   * Only applicable while the stock-in record is in draft status.
+   * Update an existing stock-in line item in a draft record.
+   * อัปเดตรายการย่อยของรายการรับสินค้าเข้าคลังที่เป็นร่าง
+   * @param id - Stock in record ID / รหัสรายการรับสินค้าเข้าคลัง
+   * @param detailId - Stock in detail ID / รหัสรายการย่อยรับสินค้าเข้าคลัง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param data - Detail update data / ข้อมูลสำหรับอัปเดตรายการย่อย
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated stock-in detail / รายการย่อยรับสินค้าเข้าคลังที่อัปเดตแล้ว
    */
   @Put(':id/details/:detail_id')
   @UseGuards(new AppIdGuard('stockIn.update'))
@@ -405,7 +447,13 @@ export class StockInController extends BaseHttpController {
   }
 
   /**
-   * Removes a line item from a draft stock-in record.
+   * Delete a line item from a draft stock-in record.
+   * ลบรายการย่อยจากรายการรับสินค้าเข้าคลังที่เป็นร่าง
+   * @param id - Stock in record ID / รหัสรายการรับสินค้าเข้าคลัง
+   * @param detailId - Stock in detail ID / รหัสรายการย่อยรับสินค้าเข้าคลัง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id/details/:detail_id')
   @UseGuards(new AppIdGuard('stockIn.update'))

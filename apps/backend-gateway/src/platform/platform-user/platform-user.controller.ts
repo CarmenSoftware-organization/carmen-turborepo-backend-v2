@@ -55,8 +55,11 @@ export class PlatformUserController extends BaseHttpController {
   }
 
   /**
-   * Synchronizes user accounts from the Keycloak identity provider into the Carmen platform.
-   * Ensures all hotel staff provisioned in Keycloak are available for role and property assignment.
+   * Sync users from Keycloak into the platform
+   * ซิงค์ข้อมูลผู้ใช้จาก Keycloak เข้าสู่ระบบแพลตฟอร์ม
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Sync result / ผลลัพธ์การซิงค์
    */
   @Post('fetch-user')
   @UseGuards(new AppIdGuard('platform-user.fetch'))
@@ -113,8 +116,13 @@ export class PlatformUserController extends BaseHttpController {
   }
 
   /**
-   * Lists all system-wide user accounts across all tenants with pagination.
-   * Used by platform administrators to manage hotel staff and ERP users across the organization.
+   * List all platform users with pagination
+   * ค้นหารายการผู้ใช้ระบบทั้งหมดพร้อมการแบ่งหน้า
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated user list / รายการผู้ใช้แบบแบ่งหน้า
    */
   @Get('user')
   @UseGuards(new AppIdGuard('platform-user.list'))
@@ -159,8 +167,13 @@ export class PlatformUserController extends BaseHttpController {
   }
 
   /**
-   * Retrieves detailed information about a specific platform user.
-   * Includes their profile, role assignments, and associated business units.
+   * Get a platform user by ID
+   * ค้นหารายการผู้ใช้ระบบเดียวตาม ID
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - User ID / รหัสผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns User details / รายละเอียดผู้ใช้
    */
   @Get('user/:id')
   @UseGuards(new AppIdGuard('platform-user.get'))
@@ -205,8 +218,13 @@ export class PlatformUserController extends BaseHttpController {
   }
 
   /**
-   * Provisions a new system-wide user account in the Carmen ERP platform.
-   * The user can then be assigned to clusters and business units for property access.
+   * Create a new platform user
+   * สร้างผู้ใช้ระบบใหม่ในแพลตฟอร์ม
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param data - User creation data / ข้อมูลสำหรับสร้างผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created user / ผู้ใช้ที่ถูกสร้าง
    */
   @Post('user')
   @UseGuards(new AppIdGuard('platform-user.create'))
@@ -251,8 +269,14 @@ export class PlatformUserController extends BaseHttpController {
   }
 
   /**
-   * Updates the profile or account details of an existing platform user.
-   * Used by administrators to maintain accurate user records across the hotel management system.
+   * Update an existing platform user
+   * อัปเดตข้อมูลผู้ใช้ระบบที่มีอยู่
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - User ID / รหัสผู้ใช้
+   * @param data - User update data / ข้อมูลสำหรับอัปเดตผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated user / ผู้ใช้ที่ถูกอัปเดต
    */
   @Put('user/:id')
   @UseGuards(new AppIdGuard('platform-user.update'))
@@ -302,8 +326,13 @@ export class PlatformUserController extends BaseHttpController {
   }
 
   /**
-   * Deactivates or removes a user account from the Carmen platform.
-   * Revokes the user's access to all business units, clusters, and procurement workflows.
+   * Delete a platform user
+   * ลบผู้ใช้ระบบออกจากแพลตฟอร์ม
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - User ID / รหัสผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete('user/:id')
   @UseGuards(new AppIdGuard('platform-user.delete'))

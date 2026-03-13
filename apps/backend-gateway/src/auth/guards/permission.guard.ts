@@ -26,6 +26,12 @@ export class PermissionGuard implements CanActivate {
     private readonly permissionService: PermissionService,
   ) { }
 
+  /**
+   * Check if the authenticated user has the required permissions for all requested business units
+   * ตรวจสอบว่าผู้ใช้ที่ยืนยันตัวตนแล้วมีสิทธิ์การเข้าถึงที่จำเป็นสำหรับหน่วยธุรกิจทั้งหมดที่ร้องขอหรือไม่
+   * @param context - NestJS execution context / บริบทการทำงานของ NestJS
+   * @returns Whether the user has all required permissions / ผู้ใช้มีสิทธิ์การเข้าถึงที่จำเป็นทั้งหมดหรือไม่
+   */
   canActivate(context: ExecutionContext): boolean {
     // Get required permissions from the decorator
     const requiredPermissions = this.reflector.getAllAndOverride<PermissionRequirement>(

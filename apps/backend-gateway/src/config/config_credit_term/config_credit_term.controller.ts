@@ -63,8 +63,14 @@ export class Config_CreditTermController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific payment term definition (e.g., Net 30, Net 60, COD)
-   * including due day calculation rules for vendor invoice payment deadlines.
+   * Get a credit term by ID
+   * ค้นหาเงื่อนไขการชำระเงินเดียวตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Credit term ID / รหัสเงื่อนไขการชำระเงิน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Credit term detail / รายละเอียดเงื่อนไขการชำระเงิน
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('creditTerm.findOne'))
@@ -108,8 +114,14 @@ export class Config_CreditTermController extends BaseHttpController {
   }
 
   /**
-   * Lists all payment term definitions (Net 30, Net 60, COD, etc.) used for
-   * vendor agreements and invoice due date calculations.
+   * Get all credit terms with pagination
+   * ค้นหารายการเงื่อนไขการชำระเงินทั้งหมดพร้อมการแบ่งหน้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of credit terms / รายการเงื่อนไขการชำระเงินพร้อมการแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('creditTerm.findAll'))
@@ -152,8 +164,14 @@ export class Config_CreditTermController extends BaseHttpController {
   }
 
   /**
-   * Defines a new payment term (e.g., Net 30, Net 60, COD) with due date calculation rules.
-   * Once created, it can be assigned to vendors for invoice payment scheduling.
+   * Create a new credit term
+   * สร้างเงื่อนไขการชำระเงินใหม่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Credit term creation data / ข้อมูลสำหรับสร้างเงื่อนไขการชำระเงิน
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created credit term / เงื่อนไขการชำระเงินที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('creditTerm.create'))
@@ -195,7 +213,15 @@ export class Config_CreditTermController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing payment term such as adjusting credit days or payment conditions.
+   * Update a credit term
+   * อัปเดตเงื่อนไขการชำระเงิน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Credit term ID / รหัสเงื่อนไขการชำระเงิน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Credit term update data / ข้อมูลสำหรับอัปเดตเงื่อนไขการชำระเงิน
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated credit term / เงื่อนไขการชำระเงินที่อัปเดตแล้ว
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('creditTerm.update'))
@@ -246,7 +272,14 @@ export class Config_CreditTermController extends BaseHttpController {
   }
 
   /**
-   * Removes a payment term from active use. Existing vendor agreements using it are preserved.
+   * Delete a credit term
+   * ลบเงื่อนไขการชำระเงิน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param id - Credit term ID / รหัสเงื่อนไขการชำระเงิน
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('creditTerm.delete'))

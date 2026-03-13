@@ -18,6 +18,15 @@ export class TaxProfileService {
     @Inject('BUSINESS_SERVICE') private readonly masterService: ClientProxy,
   ) { }
 
+  /**
+   * Find a tax profile by ID via the business microservice
+   * ค้นหาโปรไฟล์ภาษีรายการเดียวตาม ID ผ่านไมโครเซอร์วิสธุรกิจ
+   * @param id - Tax profile ID / รหัสโปรไฟล์ภาษี
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Tax profile details / รายละเอียดโปรไฟล์ภาษี
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -50,6 +59,15 @@ export class TaxProfileService {
     return Result.ok(response.data);
   }
 
+  /**
+   * List all tax profiles in the business unit via the business microservice
+   * ค้นหารายการโปรไฟล์ภาษีทั้งหมดในหน่วยธุรกิจผ่านไมโครเซอร์วิสธุรกิจ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of tax profiles / รายการโปรไฟล์ภาษีแบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     bu_code: string,

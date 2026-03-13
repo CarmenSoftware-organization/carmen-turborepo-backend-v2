@@ -79,6 +79,12 @@ export class ProductCategoryService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a single product category by ID
+   * ค้นหารายการหมวดหมู่สินค้าเดียวตาม ID
+   * @param id - Product category ID / ID ของหมวดหมู่สินค้า
+   * @returns Product category detail or error if not found / รายละเอียดหมวดหมู่สินค้า หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -108,6 +114,12 @@ export class ProductCategoryService {
     return Result.ok(serializedProductCategory);
   }
 
+  /**
+   * Find all product categories with pagination
+   * ค้นหารายการหมวดหมู่สินค้าทั้งหมดพร้อมการแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of product categories / รายการหมวดหมู่สินค้าพร้อมการแบ่งหน้า
+   */
   @TryCatch
   async findAll(
     paginate: IPaginate,
@@ -159,6 +171,12 @@ export class ProductCategoryService {
     });
   }
 
+  /**
+   * Create a new product category
+   * สร้างหมวดหมู่สินค้าใหม่
+   * @param data - Product category creation data / ข้อมูลการสร้างหมวดหมู่สินค้า
+   * @returns Created product category ID or error if duplicate / ID ของหมวดหมู่สินค้าที่สร้างขึ้น หรือข้อผิดพลาดหากซ้ำ
+   */
   @TryCatch
   async create(
     data: ICreateProductCategory,
@@ -201,6 +219,12 @@ export class ProductCategoryService {
     return Result.ok({ id: productCategory.id });
   }
 
+  /**
+   * Update an existing product category
+   * อัปเดตหมวดหมู่สินค้าที่มีอยู่
+   * @param data - Product category update data / ข้อมูลการอัปเดตหมวดหมู่สินค้า
+   * @returns Updated product category ID or error if not found / ID ของหมวดหมู่สินค้าที่อัปเดต หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async update(
     data: IUpdateProductCategory,
@@ -300,6 +324,12 @@ export class ProductCategoryService {
     return Result.ok({ id: updatedProductCategory.id });
   }
 
+  /**
+   * Delete a product category (soft delete)
+   * ลบหมวดหมู่สินค้า (ลบแบบซอฟต์)
+   * @param id - Product category ID / ID ของหมวดหมู่สินค้า
+   * @returns Empty object on success or error if not found / อ็อบเจกต์ว่างเมื่อสำเร็จ หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(

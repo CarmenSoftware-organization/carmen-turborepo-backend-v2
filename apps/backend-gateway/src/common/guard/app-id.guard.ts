@@ -17,6 +17,10 @@ interface AllowedApp {
   allow: string | string[];
 }
 
+/**
+ * Load allowed application configurations from x-app-id.json
+ * โหลดการตั้งค่าแอปพลิเคชันที่อนุญาตจากไฟล์ x-app-id.json
+ */
 const getAllowedApps = (): AllowedApp[] => {
   const logger = new BackendLogger('getAllowedApps');
   try {
@@ -35,14 +39,26 @@ const getAllowedApps = (): AllowedApp[] => {
   }
 };
 
+/**
+ * Check if app ID is not empty
+ * ตรวจสอบว่า app ID ไม่ว่างเปล่า
+ */
 const CheckIsNotEmpty = (appId: string): boolean => {
   return appId && appId.trim() !== '';
 };
 
+/**
+ * Validate that app ID is a valid UUID
+ * ตรวจสอบว่า app ID เป็น UUID ที่ถูกต้อง
+ */
 const CheckAppIdIsUUID = (appId: string): boolean => {
   return uuidValidate(appId);
 };
 
+/**
+ * Check if app ID exists in allowed list and has permission to access the API
+ * ตรวจสอบว่า app ID อยู่ในรายการที่อนุญาตและมีสิทธิ์เข้าถึง API
+ */
 const CheckAppIdIsExistsAndAllow = (
   appId: string,
   api_name: string,
@@ -101,6 +117,10 @@ const CheckAppIdIsExistsAndAllow = (
   return isAllowed;
 };
 
+/**
+ * Guard that validates x-app-id header for API access control
+ * การ์ดที่ตรวจสอบ header x-app-id สำหรับการควบคุมการเข้าถึง API
+ */
 @Injectable()
 export class AppIdGuard implements CanActivate {
   private api_name: string;
@@ -109,6 +129,10 @@ export class AppIdGuard implements CanActivate {
     this.api_name = api_name;
   }
 
+  /**
+   * Validate the x-app-id header from the incoming request
+   * ตรวจสอบ header x-app-id จากคำขอที่เข้ามา
+   */
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {

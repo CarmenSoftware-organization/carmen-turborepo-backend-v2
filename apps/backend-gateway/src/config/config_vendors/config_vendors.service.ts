@@ -17,6 +17,15 @@ export class Config_VendorsService {
     private readonly masterService: ClientProxy,
   ) {}
 
+  /**
+   * Find a single vendor by ID via microservice
+   * ค้นหาผู้ขายเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Vendor ID / รหัสผู้ขาย
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Vendor detail or error / รายละเอียดผู้ขายหรือข้อผิดพลาด
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -48,6 +57,15 @@ export class Config_VendorsService {
     return ResponseLib.success(response.data);
   }
 
+  /**
+   * Find all vendors with pagination via microservice
+   * ค้นหารายการผู้ขายทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated vendors or error / รายการผู้ขายพร้อมการแบ่งหน้าหรือข้อผิดพลาด
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -86,6 +104,15 @@ export class Config_VendorsService {
     return ResponseLib.successWithPaginate(response.data, response.paginate);
   }
 
+  /**
+   * Create a new vendor via microservice
+   * สร้างผู้ขายใหม่ผ่านไมโครเซอร์วิส
+   * @param createDto - Vendor creation data / ข้อมูลสำหรับสร้างผู้ขาย
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created vendor or error / ผู้ขายที่สร้างแล้วหรือข้อผิดพลาด
+   */
   async create(
     createDto: ICreateVendor,
     user_id: string,
@@ -122,6 +149,15 @@ export class Config_VendorsService {
     return ResponseLib.created(response.data);
   }
 
+  /**
+   * Update a vendor via microservice
+   * อัปเดตผู้ขายผ่านไมโครเซอร์วิส
+   * @param updateDto - Vendor update data / ข้อมูลสำหรับอัปเดตผู้ขาย
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated vendor or error / ผู้ขายที่อัปเดตแล้วหรือข้อผิดพลาด
+   */
   async update(
     updateDto: IUpdateVendor,
     user_id: string,
@@ -158,6 +194,15 @@ export class Config_VendorsService {
     return ResponseLib.success(response.data);
   }
 
+  /**
+   * Delete a vendor via microservice
+   * ลบผู้ขายผ่านไมโครเซอร์วิส
+   * @param id - Vendor ID / รหัสผู้ขาย
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result or error / ผลลัพธ์การลบหรือข้อผิดพลาด
+   */
   async delete(
     id: string,
     user_id: string,

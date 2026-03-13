@@ -5,6 +5,13 @@ import type { AuditBufferManager } from '../writers/buffer-manager.js';
 
 const DEFAULT_SENSITIVE_FIELDS = ['password', 'secret', 'token', 'api_key', 'hash'];
 
+/**
+ * Masks sensitive fields in a data object by replacing their values with '[REDACTED]'
+ * ปกปิดฟิลด์ที่เป็นข้อมูลอ่อนไหวในออบเจกต์โดยแทนที่ค่าด้วย '[REDACTED]'
+ * @param data - The data object to mask / ออบเจกต์ข้อมูลที่ต้องการปกปิด
+ * @param sensitiveFields - List of field names to redact / รายชื่อฟิลด์ที่ต้องการปกปิด
+ * @returns A new object with sensitive fields masked, or null if input is null / ออบเจกต์ใหม่ที่ปกปิดฟิลด์อ่อนไหวแล้ว หรือ null ถ้า input เป็น null
+ */
 function maskSensitiveData(
 	data: Record<string, unknown> | null,
 	sensitiveFields: string[],
@@ -20,12 +27,26 @@ function maskSensitiveData(
 	return masked;
 }
 
+/**
+ * Extracts the record ID from a Prisma query result object
+ * ดึง record ID จากผลลัพธ์ของ Prisma query
+ * @param result - The query result object / ออบเจกต์ผลลัพธ์จาก query
+ * @returns The record ID as a string, or null if not found / record ID เป็น string หรือ null ถ้าไม่พบ
+ */
 function extractRecordId(result: unknown): string | null {
 	if (!result || typeof result !== 'object') return null;
 	const obj = result as Record<string, unknown>;
 	return obj.id?.toString() || obj.uuid?.toString() || null;
 }
 
+/**
+ * Creates a Prisma client extension that automatically logs audit events for all CRUD operations
+ * สร้าง Prisma client extension ที่บันทึก audit event อัตโนมัติสำหรับทุกการดำเนินการ CRUD
+ * @param tenantId - The tenant identifier for multi-tenant context / รหัสผู้เช่าสำหรับระบบ multi-tenant
+ * @param bufferManager - The buffer manager for batching audit log writes / buffer manager สำหรับรวมกลุ่มการเขียน audit log
+ * @param config - Log events configuration including sensitive fields and excluded models / การตั้งค่า log events รวมถึงฟิลด์อ่อนไหวและโมเดลที่ยกเว้น
+ * @returns A Prisma extension object with query hooks for all models / Prisma extension object ที่มี query hooks สำหรับทุกโมเดล
+ */
 export function createAuditPrismaExtension(
 	tenantId: string,
 	bufferManager: AuditBufferManager,

@@ -16,6 +16,12 @@ export class KeycloakController extends BaseMicroserviceController {
     super();
   }
 
+  /**
+   * Create audit context from microservice payload
+   * สร้าง audit context จาก payload ของ microservice
+   * @param payload - Microservice payload / ข้อมูล payload ของ microservice
+   * @returns Audit context object / อ็อบเจกต์ audit context
+   */
   private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code || payload.realm,
@@ -28,6 +34,12 @@ export class KeycloakController extends BaseMicroserviceController {
 
   // ==================== Authentication ====================
 
+  /**
+   * Handle user login via Keycloak authentication
+   * จัดการการเข้าสู่ระบบผู้ใช้ผ่านการยืนยันตัวตน Keycloak
+   * @param payload - Payload with email and password / ข้อมูลพร้อมอีเมลและรหัสผ่าน
+   * @returns Token response / response ที่มี token
+   */
   @MessagePattern({ cmd: 'keycloak.auth.login', service: 'keycloak' })
   async handleLogin(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
@@ -53,6 +65,12 @@ export class KeycloakController extends BaseMicroserviceController {
     }
   }
 
+  /**
+   * Handle user logout using refresh token
+   * จัดการการออกจากระบบผู้ใช้โดยใช้ refresh token
+   * @param payload - Payload with refresh_token / ข้อมูลพร้อม refresh_token
+   * @returns Logout result / ผลการออกจากระบบ
+   */
   @MessagePattern({ cmd: 'keycloak.auth.logout', service: 'keycloak' })
   async handleLogout(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
@@ -73,6 +91,12 @@ export class KeycloakController extends BaseMicroserviceController {
     }
   }
 
+  /**
+   * Handle user logout by user ID (admin operation)
+   * จัดการการออกจากระบบผู้ใช้ตาม ID (ต้องใช้สิทธิ์ admin)
+   * @param payload - Payload with user_id / ข้อมูลพร้อม user_id
+   * @returns Logout result / ผลการออกจากระบบ
+   */
   @MessagePattern({ cmd: 'keycloak.auth.logoutById', service: 'keycloak' })
   async handleLogoutById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
@@ -93,6 +117,12 @@ export class KeycloakController extends BaseMicroserviceController {
     }
   }
 
+  /**
+   * Handle access token refresh using refresh token
+   * จัดการการรีเฟรช access token โดยใช้ refresh token
+   * @param payload - Payload with refresh_token / ข้อมูลพร้อม refresh_token
+   * @returns New token response / token response ใหม่
+   */
   @MessagePattern({ cmd: 'keycloak.auth.refresh', service: 'keycloak' })
   async handleRefreshToken(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
@@ -118,6 +148,12 @@ export class KeycloakController extends BaseMicroserviceController {
     }
   }
 
+  /**
+   * Get user info from access token via OIDC userinfo endpoint
+   * ดึงข้อมูลผู้ใช้จาก access token ผ่าน OIDC userinfo endpoint
+   * @param payload - Payload with accessToken / ข้อมูลพร้อม accessToken
+   * @returns User info / ข้อมูลผู้ใช้
+   */
   @MessagePattern({ cmd: 'keycloak.auth.getUserInfo', service: 'keycloak' })
   async handleGetUserInfo(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
@@ -142,6 +178,12 @@ export class KeycloakController extends BaseMicroserviceController {
 
   // ==================== User Management ====================
 
+  /**
+   * Create a new user in Keycloak
+   * สร้างผู้ใช้ใหม่ใน Keycloak
+   * @param payload - Payload with user data / ข้อมูลพร้อมข้อมูลผู้ใช้
+   * @returns Created user ID / ID ผู้ใช้ที่สร้างแล้ว
+   */
   @MessagePattern({ cmd: 'keycloak.users.create', service: 'keycloak' })
   async handleCreateUser(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
@@ -163,6 +205,12 @@ export class KeycloakController extends BaseMicroserviceController {
     }
   }
 
+  /**
+   * Get user by email address from Keycloak
+   * ค้นหาผู้ใช้ตามอีเมลจาก Keycloak
+   * @param payload - Payload with email / ข้อมูลพร้อมอีเมล
+   * @returns User data or not found error / ข้อมูลผู้ใช้หรือข้อผิดพลาดไม่พบ
+   */
   @MessagePattern({ cmd: 'keycloak.users.getByEmail', service: 'keycloak' })
   async handleGetUserByEmail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
@@ -189,10 +237,9 @@ export class KeycloakController extends BaseMicroserviceController {
 
   /**
    * Update user profile in Keycloak
-   * Payload:
-   *   - userId: string (Keycloak user ID)
-   *   - data: UpdateKeycloakUserDto (firstName, lastName, email, etc.)
-   *   - realm?: string
+   * อัปเดตโปรไฟล์ผู้ใช้ใน Keycloak
+   * @param payload - Payload with userId and update data / ข้อมูลพร้อม userId และข้อมูลที่ต้องการอัปเดต
+   * @returns Update result / ผลการอัปเดต
    */
   @MessagePattern({ cmd: 'keycloak.users.update', service: 'keycloak' })
   async handleUpdateUser(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
@@ -215,6 +262,12 @@ export class KeycloakController extends BaseMicroserviceController {
     }
   }
 
+  /**
+   * Reset user password in Keycloak
+   * รีเซ็ตรหัสผ่านผู้ใช้ใน Keycloak
+   * @param payload - Payload with userId, password, and temporary flag / ข้อมูลพร้อม userId, รหัสผ่าน, และ flag ชั่วคราว
+   * @returns Reset result / ผลการรีเซ็ต
+   */
   @MessagePattern({ cmd: 'keycloak.users.resetPassword', service: 'keycloak' })
   async handleResetPassword(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(
@@ -237,17 +290,9 @@ export class KeycloakController extends BaseMicroserviceController {
 
   /**
    * Manage user BU attribute (add or remove)
-   * Payload:
-   *   - userId: string (Keycloak user ID)
-   *   - action: 'add' | 'remove'
-   *   - bu: { bu_id: string, bu_code?: string, role?: string }
-   *   - realm?: string
-   *
-   * Example for adding BU:
-   *   { userId: 'xxx', action: 'add', bu: { bu_id: '...', bu_code: 'C1', role: 'purchasing' } }
-   *
-   * Example for removing BU:
-   *   { userId: 'xxx', action: 'remove', bu: { bu_id: '...' } }
+   * จัดการ attribute หน่วยธุรกิจของผู้ใช้ (เพิ่มหรือลบ)
+   * @param payload - Payload with userId, action, and bu data / ข้อมูลพร้อม userId, action, และข้อมูลหน่วยธุรกิจ
+   * @returns Management result / ผลการจัดการ
    */
   @MessagePattern({ cmd: 'keycloak.users.manageBu', service: 'keycloak' })
   async handleManageUserBu(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
@@ -270,10 +315,10 @@ export class KeycloakController extends BaseMicroserviceController {
   }
 
   /**
-   * Get user's BU list
-   * Payload:
-   *   - userId: string (Keycloak user ID)
-   *   - realm?: string
+   * Get user's BU list from Keycloak
+   * ค้นหารายการหน่วยธุรกิจทั้งหมดของผู้ใช้จาก Keycloak
+   * @param payload - Payload with userId / ข้อมูลพร้อม userId
+   * @returns BU list / รายการหน่วยธุรกิจ
    */
   @MessagePattern({ cmd: 'keycloak.users.getBuList', service: 'keycloak' })
   async handleGetUserBuList(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
@@ -297,11 +342,9 @@ export class KeycloakController extends BaseMicroserviceController {
 
   /**
    * Manage user Cluster attribute (add or remove)
-   * Payload:
-   *   - userId: string (Keycloak user ID)
-   *   - action: 'add' | 'remove'
-   *   - cluster: { cluster_id: string, cluster_code?: string, role?: string }
-   *   - realm?: string
+   * จัดการ attribute Cluster ของผู้ใช้ (เพิ่มหรือลบ)
+   * @param payload - Payload with userId, action, and cluster data / ข้อมูลพร้อม userId, action, และข้อมูล Cluster
+   * @returns Management result / ผลการจัดการ
    */
   @MessagePattern({ cmd: 'keycloak.users.manageCluster', service: 'keycloak' })
   async handleManageUserCluster(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
@@ -324,10 +367,10 @@ export class KeycloakController extends BaseMicroserviceController {
   }
 
   /**
-   * Get user's Cluster list
-   * Payload:
-   *   - userId: string (Keycloak user ID)
-   *   - realm?: string
+   * Get user's Cluster list from Keycloak
+   * ค้นหารายการ Cluster ทั้งหมดของผู้ใช้จาก Keycloak
+   * @param payload - Payload with userId / ข้อมูลพร้อม userId
+   * @returns Cluster list / รายการ Cluster
    */
   @MessagePattern({ cmd: 'keycloak.users.getClusterList', service: 'keycloak' })
   async handleGetUserClusterList(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
@@ -351,11 +394,9 @@ export class KeycloakController extends BaseMicroserviceController {
 
   /**
    * Manage user Keycloak group for Cluster (add/remove user from group)
-   * Payload:
-   *   - userId: string (Keycloak user ID)
-   *   - groupId: string (Keycloak group ID)
-   *   - action: 'add' | 'remove'
-   *   - realm?: string
+   * จัดการกลุ่ม Keycloak สำหรับ Cluster ของผู้ใช้ (เพิ่ม/ลบผู้ใช้จากกลุ่ม)
+   * @param payload - Payload with userId, groupId, and action / ข้อมูลพร้อม userId, groupId, และ action
+   * @returns Management result / ผลการจัดการ
    */
   @MessagePattern({ cmd: 'keycloak.users.manageClusterGroup', service: 'keycloak' })
   async handleManageClusterGroup(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
@@ -390,8 +431,9 @@ export class KeycloakController extends BaseMicroserviceController {
 
   /**
    * Get all users from Keycloak realm
-   * Payload:
-   *   - realm?: string
+   * ค้นหารายการผู้ใช้ทั้งหมดจาก Keycloak realm
+   * @param payload - Payload with optional realm / ข้อมูลพร้อม realm (ถ้ามี)
+   * @returns Array of all users / อาร์เรย์ของผู้ใช้ทั้งหมด
    */
   @MessagePattern({ cmd: 'keycloak.users.getAll', service: 'keycloak' })
   async handleGetAllUsers(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
@@ -417,12 +459,9 @@ export class KeycloakController extends BaseMicroserviceController {
 
   /**
    * Change password: verify current password via login, then reset via Admin API
-   * Payload:
-   *   - accessToken: string (user's access token)
-   *   - currentPassword: string
-   *   - newPassword: string
-   *   - userId?: string (Keycloak user ID, falls back to token sub)
-   *   - realm?: string
+   * เปลี่ยนรหัสผ่าน: ตรวจสอบรหัสผ่านปัจจุบันก่อน แล้วรีเซ็ตผ่าน Admin API
+   * @param payload - Payload with accessToken, currentPassword, and newPassword / ข้อมูลพร้อม accessToken, รหัสผ่านปัจจุบัน, และรหัสผ่านใหม่
+   * @returns Change password result / ผลการเปลี่ยนรหัสผ่าน
    */
   @MessagePattern({ cmd: 'keycloak.auth.changePassword', service: 'keycloak' })
   async handleChangePassword(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
@@ -451,6 +490,11 @@ export class KeycloakController extends BaseMicroserviceController {
 
   // ==================== Health Check ====================
 
+  /**
+   * Check Keycloak server health status
+   * ตรวจสอบสถานะการทำงานของ Keycloak server
+   * @returns Health status / สถานะสุขภาพ
+   */
   @MessagePattern({ cmd: 'keycloak.health', service: 'keycloak' })
   async handleHealthCheck(): Promise<MicroserviceResponse> {
     this.logger.debug(

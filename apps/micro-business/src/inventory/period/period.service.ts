@@ -20,6 +20,14 @@ export class PeriodService {
     private readonly tenantService: TenantService,
   ) {}
 
+  /**
+   * Find a period by ID
+   * ค้นหางวดรายการเดียวตาม ID
+   * @param id - Period ID / ID งวด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Period detail / รายละเอียดงวด
+   */
   @TryCatch
   async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: "findOne", id, user_id, tenant_id }, PeriodService.name);
@@ -42,6 +50,14 @@ export class PeriodService {
     return Result.ok(period);
   }
 
+  /**
+   * Find all periods with pagination
+   * ค้นหางวดทั้งหมดพร้อมการแบ่งหน้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of periods / รายการงวดแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: "findAll", user_id, tenant_id, paginate }, PeriodService.name);
@@ -111,6 +127,14 @@ export class PeriodService {
     });
   }
 
+  /**
+   * Create a new period
+   * สร้างงวดใหม่
+   * @param data - Period creation data / ข้อมูลสร้างงวด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created period ID / ID งวดที่สร้างแล้ว
+   */
   @TryCatch
   async create(data: ICreatePeriod, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: "create", data, user_id, tenant_id }, PeriodService.name);
@@ -178,6 +202,14 @@ export class PeriodService {
     return Result.ok({ id: period.id });
   }
 
+  /**
+   * Update a period
+   * แก้ไขงวด
+   * @param data - Period update data / ข้อมูลแก้ไขงวด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Updated period ID / ID งวดที่แก้ไขแล้ว
+   */
   @TryCatch
   async update(data: IUpdatePeriod, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: "update", data, user_id, tenant_id }, PeriodService.name);
@@ -249,6 +281,15 @@ export class PeriodService {
     return Result.ok({ id: data.id });
   }
 
+  /**
+   * Generate next periods automatically
+   * สร้างงวดถัดไปโดยอัตโนมัติ
+   * @param count - Number of periods to generate / จำนวนงวดที่จะสร้าง
+   * @param start_day - Start day of each period / วันเริ่มต้นของแต่ละงวด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created and skipped period details / รายละเอียดงวดที่สร้างและข้าม
+   */
   @TryCatch
   async generateNextPeriods(count: number, start_day: number, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: "generateNextPeriods", count, start_day, user_id, tenant_id }, PeriodService.name);
@@ -386,6 +427,14 @@ export class PeriodService {
     });
   }
 
+  /**
+   * Soft delete a period
+   * ลบงวดแบบซอฟต์ดีลีท
+   * @param id - Period ID / ID งวด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Deleted period ID / ID งวดที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: "delete", id, user_id, tenant_id }, PeriodService.name);

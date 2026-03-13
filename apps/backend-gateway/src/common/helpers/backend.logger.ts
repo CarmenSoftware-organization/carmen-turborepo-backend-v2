@@ -23,6 +23,10 @@ type LogLevel =
   | 'silly';
 
 const config = defaultLokiConfig;
+/**
+ * Custom backend logger with structured logging and Loki integration
+ * ตัวบันทึกล็อกแบ็กเอนด์พร้อมการบันทึกแบบมีโครงสร้างและการเชื่อมต่อ Loki
+ */
 export class BackendLogger extends ConsoleLogger {
   constructor(context: string) {
     super(context, {
@@ -30,7 +34,10 @@ export class BackendLogger extends ConsoleLogger {
     });
   }
 
-  // level = 0
+  /**
+   * Log error message (level 0)
+   * บันทึกข้อความข้อผิดพลาด (ระดับ 0)
+   */
   error(
     message: unknown,
     trace?: unknown,
@@ -64,7 +71,10 @@ export class BackendLogger extends ConsoleLogger {
     }
   }
 
-  // level = 1
+  /**
+   * Log warning message (level 1)
+   * บันทึกข้อความเตือน (ระดับ 1)
+   */
   warn(message: unknown, context?: unknown, iam?: IAMInfo, meta?: LogMeta): void {
     // ตรวจสอบว่า logMeta มีค่าไหม
     let logMeta = {};
@@ -92,7 +102,10 @@ export class BackendLogger extends ConsoleLogger {
     }
   }
 
-  // level = 2
+  /**
+   * Log info message (level 2)
+   * บันทึกข้อความทั่วไป (ระดับ 2)
+   */
   log(message: unknown, context?: unknown, iam?: IAMInfo, meta?: LogMeta): void {
     // ตรวจสอบว่า logMeta มีค่าไหม
     let logMeta: LogMeta = {};
@@ -120,7 +133,10 @@ export class BackendLogger extends ConsoleLogger {
     }
   }
 
-  // level = 3
+  /**
+   * Log HTTP message (level 3)
+   * บันทึกข้อความ HTTP (ระดับ 3)
+   */
   http(message: unknown, context?: unknown, iam?: IAMInfo, meta?: LogMeta): void {
     // ตรวจสอบว่า logMeta มีค่าไหม
     let logMeta: LogMeta = {};
@@ -148,7 +164,10 @@ export class BackendLogger extends ConsoleLogger {
     }
   }
 
-  // level = 4
+  /**
+   * Log verbose message (level 4)
+   * บันทึกข้อความแบบละเอียด (ระดับ 4)
+   */
   verbose(message: unknown, context?: unknown, iam?: IAMInfo, meta?: LogMeta): void {
     // ตรวจสอบว่า logMeta มีค่าไหม
     let logMeta: LogMeta = {};
@@ -176,12 +195,18 @@ export class BackendLogger extends ConsoleLogger {
     }
   }
 
-  // level = 5
+  /**
+   * Log debug message (level 5)
+   * บันทึกข้อความดีบัก (ระดับ 5)
+   */
   debug(message: unknown, context?: unknown): void {
     super.debug(message, context);
   }
 
-  // level = 6
+  /**
+   * Log silly/trace message (level 6)
+   * บันทึกข้อความระดับต่ำสุด (ระดับ 6)
+   */
   silly(message: unknown, context?: unknown, iam?: IAMInfo, meta?: LogMeta): void {
     // ตรวจสอบว่า logMeta มีค่าไหม
     let logMeta: LogMeta = {};
@@ -209,7 +234,10 @@ export class BackendLogger extends ConsoleLogger {
     }
   }
 
-  // Log Info Action
+  /**
+   * Log an info-level action with structured metadata
+   * บันทึกการกระทำระดับ info พร้อมข้อมูลเมตาแบบมีโครงสร้าง
+   */
   logInfoAction(
     action: string,
     message?: unknown,
@@ -243,7 +271,10 @@ export class BackendLogger extends ConsoleLogger {
     }
   }
 
-  // Custom method for structured logging
+  /**
+   * Log with custom labels for structured logging
+   * บันทึกล็อกพร้อม label กำหนดเองสำหรับการบันทึกแบบมีโครงสร้าง
+   */
   logWithLabels(
     message: unknown,
     labels: Record<string, unknown>,
@@ -276,7 +307,10 @@ export class BackendLogger extends ConsoleLogger {
     }
   }
 
-  // Method for performance logging
+  /**
+   * Log performance metrics for an operation
+   * บันทึกข้อมูลประสิทธิภาพของการดำเนินการ
+   */
   logPerformance(
     operation: string,
     duration: number,
@@ -310,7 +344,10 @@ export class BackendLogger extends ConsoleLogger {
     }
   }
 
-  // Method for business event logging
+  /**
+   * Log a business event with associated data
+   * บันทึกเหตุการณ์ทางธุรกิจพร้อมข้อมูลที่เกี่ยวข้อง
+   */
   logBusinessEvent(
     event: string,
     data: Record<string, unknown>,

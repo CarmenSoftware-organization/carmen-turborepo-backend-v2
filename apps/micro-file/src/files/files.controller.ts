@@ -114,6 +114,12 @@ export class FilesController {
 
   constructor(private readonly filesService: FilesService) {}
 
+  /**
+   * Create audit context from payload for logging
+   * สร้าง audit context จาก payload สำหรับการบันทึก log
+   * @param payload - Audit payload data / ข้อมูล payload สำหรับ audit
+   * @returns Audit context object / อ็อบเจกต์ audit context
+   */
   private createAuditContext(payload: AuditPayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
@@ -128,6 +134,13 @@ export class FilesController {
   // HTTP REST Endpoints
   // ============================================
 
+  /**
+   * Upload a file via HTTP REST endpoint
+   * อัปโหลดไฟล์ผ่าน HTTP REST endpoint
+   * @param file - Uploaded file / ไฟล์ที่อัปโหลด
+   * @param buCode - Optional business unit code / รหัสหน่วยธุรกิจ (ถ้ามี)
+   * @returns Upload result with file token / ผลลัพธ์การอัปโหลดพร้อม file token
+   */
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async httpUploadFile(
@@ -160,6 +173,11 @@ export class FilesController {
     }
   }
 
+  /**
+   * List files with pagination via HTTP REST endpoint
+   * ค้นหารายการไฟล์ทั้งหมดพร้อมการแบ่งหน้าผ่าน HTTP REST endpoint
+   * @returns Paginated file list / รายการไฟล์แบบแบ่งหน้า
+   */
   @Get('list')
   async httpListFiles(
     @Query('page') page?: string,
@@ -208,6 +226,12 @@ export class FilesController {
     }
   }
 
+  /**
+   * Get file information via HTTP REST endpoint
+   * ค้นหารายการเดียวตาม ID ข้อมูลไฟล์ผ่าน HTTP REST endpoint
+   * @param fileToken - Unique file token / token เฉพาะของไฟล์
+   * @returns File information / ข้อมูลไฟล์
+   */
   @Get('info/:filetoken')
   async httpGetFileInfo(@Param('filetoken') fileToken: string) {
     this.logger.debug(
@@ -232,6 +256,12 @@ export class FilesController {
     }
   }
 
+  /**
+   * Download a file via HTTP REST endpoint
+   * ดาวน์โหลดไฟล์ผ่าน HTTP REST endpoint
+   * @param fileToken - Unique file token / token เฉพาะของไฟล์
+   * @param res - Express response object / อ็อบเจกต์ response ของ Express
+   */
   @Get('download/:filetoken')
   async httpDownloadFile(
     @Param('filetoken') fileToken: string,
@@ -269,6 +299,13 @@ export class FilesController {
     }
   }
 
+  /**
+   * Get presigned URL for file download via HTTP REST endpoint
+   * สร้าง presigned URL สำหรับดาวน์โหลดไฟล์ผ่าน HTTP REST endpoint
+   * @param fileToken - Unique file token / token เฉพาะของไฟล์
+   * @param expirySeconds - Optional expiry time in seconds / เวลาหมดอายุเป็นวินาที (ถ้ามี)
+   * @returns Presigned URL with expiry info / presigned URL พร้อมข้อมูลการหมดอายุ
+   */
   @Get('presigned-url/:filetoken')
   async httpGetPresignedUrl(
     @Param('filetoken') fileToken: string,
@@ -305,6 +342,12 @@ export class FilesController {
     }
   }
 
+  /**
+   * Delete a file via HTTP REST endpoint
+   * ลบไฟล์ผ่าน HTTP REST endpoint
+   * @param fileToken - Unique file token / token เฉพาะของไฟล์
+   * @returns Deletion confirmation / การยืนยันการลบ
+   */
   @Delete(':filetoken')
   async httpDeleteFile(@Param('filetoken') fileToken: string) {
     this.logger.debug(
@@ -336,6 +379,12 @@ export class FilesController {
   // TCP Microservice Message Patterns
   // ============================================
 
+  /**
+   * Upload a file via TCP microservice message
+   * อัปโหลดไฟล์ผ่านข้อความ TCP microservice
+   * @param payload - Upload file payload with base64 buffer / ข้อมูลอัปโหลดไฟล์พร้อม buffer แบบ base64
+   * @returns Upload result with file token / ผลลัพธ์การอัปโหลดพร้อม file token
+   */
   @MessagePattern({ cmd: 'file.upload', service: 'files' })
   async uploadFile(@Payload() payload: UploadFilePayload) {
     this.logger.debug(
@@ -378,6 +427,12 @@ export class FilesController {
     }
   }
 
+  /**
+   * Get file content via TCP microservice message
+   * ดึงเนื้อหาไฟล์ผ่านข้อความ TCP microservice
+   * @param payload - Payload with file token / ข้อมูลพร้อม file token
+   * @returns File data as base64 buffer / ข้อมูลไฟล์แบบ base64 buffer
+   */
   @MessagePattern({ cmd: 'file.get', service: 'files' })
   async getFile(@Payload() payload: GetFilePayload) {
     this.logger.debug(
@@ -419,6 +474,12 @@ export class FilesController {
     }
   }
 
+  /**
+   * Get file information via TCP microservice message
+   * ค้นหารายการเดียวตาม ID ข้อมูลไฟล์ผ่านข้อความ TCP microservice
+   * @param payload - Payload with file token / ข้อมูลพร้อม file token
+   * @returns File information / ข้อมูลไฟล์
+   */
   @MessagePattern({ cmd: 'file.info', service: 'files' })
   async getFileInfo(@Payload() payload: FileInfoPayload) {
     this.logger.debug(
@@ -451,6 +512,12 @@ export class FilesController {
     }
   }
 
+  /**
+   * Delete a file via TCP microservice message
+   * ลบไฟล์ผ่านข้อความ TCP microservice
+   * @param payload - Payload with file token / ข้อมูลพร้อม file token
+   * @returns Deletion confirmation / การยืนยันการลบ
+   */
   @MessagePattern({ cmd: 'file.delete', service: 'files' })
   async deleteFile(@Payload() payload: DeleteFilePayload) {
     this.logger.debug(
@@ -486,6 +553,12 @@ export class FilesController {
     }
   }
 
+  /**
+   * List files with pagination via TCP microservice message
+   * ค้นหารายการไฟล์ทั้งหมดพร้อมการแบ่งหน้าผ่านข้อความ TCP microservice
+   * @param payload - Pagination and filter parameters / พารามิเตอร์การแบ่งหน้าและการกรอง
+   * @returns Paginated file list / รายการไฟล์แบบแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'file.list', service: 'files' })
   async listFiles(@Payload() payload: ListFilesPayload) {
     this.logger.debug(
@@ -542,6 +615,12 @@ export class FilesController {
     }
   }
 
+  /**
+   * Get presigned URL for file download via TCP microservice message
+   * สร้าง presigned URL สำหรับดาวน์โหลดไฟล์ผ่านข้อความ TCP microservice
+   * @param payload - Payload with file token and expiry / ข้อมูลพร้อม file token และเวลาหมดอายุ
+   * @returns Presigned URL with expiry info / presigned URL พร้อมข้อมูลการหมดอายุ
+   */
   @MessagePattern({ cmd: 'file.presigned-url', service: 'files' })
   async getPresignedUrl(@Payload() payload: PresignedUrlPayload) {
     this.logger.debug(
@@ -586,7 +665,12 @@ export class FilesController {
     }
   }
 
-  // Legacy support - keeping old message patterns for backward compatibility
+  /**
+   * Upload a file with folder prefix via TCP microservice message (legacy support)
+   * อัปโหลดไฟล์พร้อม prefix โฟลเดอร์ผ่านข้อความ TCP microservice (รองรับแบบเก่า)
+   * @param payload - Upload file payload with folder / ข้อมูลอัปโหลดไฟล์พร้อมโฟลเดอร์
+   * @returns Upload result with file token / ผลลัพธ์การอัปโหลดพร้อม file token
+   */
   @MessagePattern({ cmd: 'file.upload.legacy', service: 'files' })
   async uploadFileLegacy(
     @Payload() payload: UploadFilePayload & { folder?: string },

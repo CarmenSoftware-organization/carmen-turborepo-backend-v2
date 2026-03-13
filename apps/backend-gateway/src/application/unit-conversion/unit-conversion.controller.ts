@@ -33,8 +33,14 @@ export class UnitConversionController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the available ordering units for a product (e.g., case, carton),
-   * used when creating purchase orders to select the vendor ordering unit.
+   * Get available ordering units for a product
+   * ดึงหน่วยสั่งซื้อที่ใช้ได้สำหรับสินค้า
+   * @param productId - Product ID / รหัสสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of order units / รายการหน่วยสั่งซื้อ
    */
   @Get('order/product/:productId')
   @HttpCode(HttpStatus.OK)
@@ -75,8 +81,14 @@ export class UnitConversionController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the available ingredient-level units for a product (e.g., grams, ml),
-   * used in recipe management to define ingredient quantities in cooking measurements.
+   * Get available ingredient units for a product
+   * ดึงหน่วยส่วนผสมที่ใช้ได้สำหรับสินค้า
+   * @param productId - Product ID / รหัสสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of ingredient units / รายการหน่วยส่วนผสม
    */
   @Get('ingredient/product/:productId')
   @HttpCode(HttpStatus.OK)
@@ -117,8 +129,14 @@ export class UnitConversionController extends BaseHttpController {
   }
 
   /**
-   * Retrieves all configured unit conversion rules for a product (e.g., kg to g, case to piece),
-   * enabling accurate quantity conversion across procurement, inventory, and recipe operations.
+   * Get all available unit conversions for a product
+   * ดึงการแปลงหน่วยทั้งหมดที่ใช้ได้สำหรับสินค้า
+   * @param productId - Product ID / รหัสสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of available unit conversions / รายการการแปลงหน่วยที่ใช้ได้
    */
   @Get('available/product/:productId')
   @HttpCode(HttpStatus.OK)

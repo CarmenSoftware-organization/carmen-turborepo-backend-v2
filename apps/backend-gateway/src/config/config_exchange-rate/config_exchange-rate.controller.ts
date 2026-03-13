@@ -65,8 +65,13 @@ export class Config_ExchangeRateController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific currency exchange rate used for converting foreign currency
-   * amounts in multi-currency procurement transactions.
+   * Retrieves a specific currency exchange rate for multi-currency procurement
+   * ค้นหาอัตราแลกเปลี่ยนเดียวตาม ID สำหรับการจัดซื้อหลายสกุลเงิน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Exchange rate ID / รหัสอัตราแลกเปลี่ยน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('exchangeRate.findOne'))
@@ -124,8 +129,13 @@ export class Config_ExchangeRateController extends BaseHttpController {
   }
 
   /**
-   * Lists all currency exchange rates configured for the business unit,
-   * used to convert foreign currency purchase orders to the base currency.
+   * Lists all currency exchange rates for the business unit
+   * ค้นหาอัตราแลกเปลี่ยนทั้งหมดที่กำหนดค่าสำหรับหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
    */
   @Get()
   @UseGuards(new AppIdGuard('exchangeRate.findAll'))
@@ -185,7 +195,13 @@ export class Config_ExchangeRateController extends BaseHttpController {
   }
 
   /**
-   * Creates a new exchange rate between currencies for use in multi-currency procurement calculations.
+   * Creates a new exchange rate between currencies
+   * สร้างอัตราแลกเปลี่ยนใหม่ระหว่างสกุลเงินสำหรับการคำนวณการจัดซื้อหลายสกุลเงิน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Exchange rate creation data / ข้อมูลสำหรับสร้างอัตราแลกเปลี่ยน
+   * @param version - API version / เวอร์ชัน API
    */
   @Post()
   @UseGuards(new AppIdGuard('exchangeRate.create'))
@@ -244,8 +260,14 @@ export class Config_ExchangeRateController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing exchange rate record, such as correcting the conversion factor
-   * or adjusting the effective date for multi-currency procurement calculations.
+   * Modifies an existing exchange rate record
+   * อัปเดตอัตราแลกเปลี่ยนที่มีอยู่ เช่น แก้ไขอัตราการแปลงหรือวันที่มีผลบังคับใช้
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Exchange rate ID / รหัสอัตราแลกเปลี่ยน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param version - API version / เวอร์ชัน API
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('exchangeRate.update'))
@@ -310,8 +332,13 @@ export class Config_ExchangeRateController extends BaseHttpController {
   }
 
   /**
-   * Removes an exchange rate record from the system. Historical procurement documents
-   * that used this rate are unaffected, but it will no longer be available for future conversions.
+   * Removes an exchange rate record from the system
+   * ลบอัตราแลกเปลี่ยนออกจากระบบ เอกสารจัดซื้อในอดีตไม่ได้รับผลกระทบ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Exchange rate ID / รหัสอัตราแลกเปลี่ยน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('exchangeRate.delete'))

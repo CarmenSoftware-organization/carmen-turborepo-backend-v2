@@ -19,6 +19,15 @@ export class CreditNoteService {
     private readonly procurementService: ClientProxy,
   ) {}
 
+  /**
+   * Find a credit note by ID via microservice
+   * ค้นหาใบลดหนี้เดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Credit note ID / รหัสใบลดหนี้
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Credit note details / รายละเอียดใบลดหนี้
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -53,6 +62,15 @@ export class CreditNoteService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all credit notes with pagination via microservice
+   * ค้นหาใบลดหนี้ทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated credit note list / รายการใบลดหนี้แบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -92,6 +110,15 @@ export class CreditNoteService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new credit note via microservice
+   * สร้างใบลดหนี้ใหม่ผ่านไมโครเซอร์วิส
+   * @param createDto - Credit note creation data / ข้อมูลสำหรับสร้างใบลดหนี้
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created credit note / ใบลดหนี้ที่สร้างขึ้น
+   */
   async create(
     createDto: CreateCreditNoteDto,
     user_id: string,
@@ -131,6 +158,15 @@ export class CreditNoteService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update a credit note via microservice
+   * อัปเดตใบลดหนี้ผ่านไมโครเซอร์วิส
+   * @param updateDto - Fields to update / ข้อมูลที่ต้องการอัปเดต
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated credit note / ใบลดหนี้ที่อัปเดตแล้ว
+   */
   async update(
     updateDto: UpdateCreditNoteDto,
     user_id: string,
@@ -170,6 +206,15 @@ export class CreditNoteService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a credit note by ID via microservice
+   * ลบใบลดหนี้ตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Credit note ID / รหัสใบลดหนี้
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async delete(
     id: string,
     user_id: string,

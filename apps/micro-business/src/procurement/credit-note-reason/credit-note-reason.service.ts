@@ -52,6 +52,12 @@ export class CreditNoteReasonService {
 
   private readonly logger: BackendLogger = new BackendLogger(CreditNoteReasonService.name);
 
+  /**
+   * Initialize the Prisma service for tenant-specific database access
+   * เริ่มต้นบริการ Prisma สำหรับการเข้าถึงฐานข้อมูลเฉพาะผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / ID ผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._bu_code = bu_code;
     this._userId = userId;
@@ -74,6 +80,12 @@ export class CreditNoteReasonService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find all credit note reasons with pagination, search, and filtering
+   * ค้นหาเหตุผลใบลดหนี้ทั้งหมดพร้อมการแบ่งหน้า การค้นหา และการกรอง
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of credit note reasons / รายการเหตุผลใบลดหนี้ที่แบ่งหน้าแล้ว
+   */
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate }, CreditNoteReasonService.name);
@@ -117,6 +129,12 @@ export class CreditNoteReasonService {
     });
   }
 
+  /**
+   * Find a single credit note reason by ID
+   * ค้นหาเหตุผลใบลดหนี้รายการเดียวตาม ID
+   * @param id - Credit note reason ID / ID ของเหตุผลใบลดหนี้
+   * @returns Credit note reason data / ข้อมูลเหตุผลใบลดหนี้
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code }, CreditNoteReasonService.name);

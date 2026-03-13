@@ -33,6 +33,12 @@ export class ActivityLogService {
 
   constructor(private readonly tenantService: TenantService) {}
 
+  /**
+   * Initialize Prisma service for the tenant
+   * เริ่มต้น Prisma service สำหรับผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / ID ผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._prismaService = await this.tenantService.prismaTenantInstance(
       bu_code,
@@ -50,6 +56,13 @@ export class ActivityLogService {
     return this._prismaService;
   }
 
+  /**
+   * Find all activity logs with pagination and filters
+   * ค้นหาบันทึกกิจกรรมทั้งหมดพร้อมการแบ่งหน้าและตัวกรอง
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param filters - Optional activity log filters / ตัวกรองบันทึกกิจกรรม (ไม่บังคับ)
+   * @returns Paginated list of activity logs / รายการบันทึกกิจกรรมแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(
     paginate: IPaginate,
@@ -126,6 +139,13 @@ export class ActivityLogService {
     });
   }
 
+  /**
+   * Find activity logs by entity type with pagination
+   * ค้นหาบันทึกกิจกรรมตามประเภทเอนทิตีพร้อมการแบ่งหน้า
+   * @param entityType - Entity type to filter by / ประเภทเอนทิตีที่จะกรอง
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of activity logs / รายการบันทึกกิจกรรมแบบแบ่งหน้า
+   */
   @TryCatch
   async findByEntity(
     entityType: string,
@@ -180,6 +200,12 @@ export class ActivityLogService {
     });
   }
 
+  /**
+   * Find an activity log by ID
+   * ค้นหาบันทึกกิจกรรมรายการเดียวตาม ID
+   * @param id - Activity log ID / ID บันทึกกิจกรรม
+   * @returns Activity log detail / รายละเอียดบันทึกกิจกรรม
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findOne', id }, ActivityLogService.name);
@@ -195,6 +221,13 @@ export class ActivityLogService {
     return Result.ok(activity);
   }
 
+  /**
+   * Soft delete an activity log
+   * ลบบันทึกกิจกรรมแบบซอฟต์ดีลีท
+   * @param id - Activity log ID / ID บันทึกกิจกรรม
+   * @param userId - User ID performing the delete / ID ผู้ใช้ที่ทำการลบ
+   * @returns Deleted activity log ID / ID บันทึกกิจกรรมที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string, userId: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -221,6 +254,13 @@ export class ActivityLogService {
     return Result.ok({ id: activity.id });
   }
 
+  /**
+   * Soft delete multiple activity logs
+   * ลบบันทึกกิจกรรมหลายรายการแบบซอฟต์ดีลีท
+   * @param ids - Array of activity log IDs / อาร์เรย์ ID บันทึกกิจกรรม
+   * @param userId - User ID performing the delete / ID ผู้ใช้ที่ทำการลบ
+   * @returns Count of deleted records / จำนวนที่ลบ
+   */
   @TryCatch
   async deleteMany(ids: string[], userId: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -246,6 +286,12 @@ export class ActivityLogService {
     return Result.ok({ count: result.count });
   }
 
+  /**
+   * Permanently delete an activity log
+   * ลบบันทึกกิจกรรมอย่างถาวร
+   * @param id - Activity log ID / ID บันทึกกิจกรรม
+   * @returns Deleted activity log ID / ID บันทึกกิจกรรมที่ลบแล้ว
+   */
   @TryCatch
   async hardDelete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -268,6 +314,12 @@ export class ActivityLogService {
     return Result.ok({ id: activity.id });
   }
 
+  /**
+   * Permanently delete multiple activity logs
+   * ลบบันทึกกิจกรรมหลายรายการอย่างถาวร
+   * @param ids - Array of activity log IDs / อาร์เรย์ ID บันทึกกิจกรรม
+   * @returns Count of deleted records / จำนวนที่ลบ
+   */
   @TryCatch
   async hardDeleteMany(ids: string[]): Promise<Result<unknown>> {
     this.logger.debug(

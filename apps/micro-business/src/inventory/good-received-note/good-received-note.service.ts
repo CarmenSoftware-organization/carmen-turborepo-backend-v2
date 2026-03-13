@@ -46,6 +46,14 @@ export class GoodReceivedNoteService {
     private readonly inventoryTransactionService: InventoryTransactionService,
   ) { }
 
+  /**
+   * Find a good received note by ID
+   * ค้นหาใบรับสินค้ารายการเดียวตาม ID
+   * @param id - GRN ID / ID ใบรับสินค้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns GRN detail with items / รายละเอียดใบรับสินค้าพร้อมรายการ
+   */
   @TryCatch
   async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -109,6 +117,14 @@ export class GoodReceivedNoteService {
     return Result.ok(serializedData);
   }
 
+  /**
+   * Find all good received notes with pagination
+   * ค้นหาใบรับสินค้าทั้งหมดพร้อมการแบ่งหน้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of GRNs / รายการใบรับสินค้าแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(
     user_id: string,
@@ -209,6 +225,14 @@ export class GoodReceivedNoteService {
     });
   }
 
+  /**
+   * Create a new good received note with details
+   * สร้างใบรับสินค้าใหม่พร้อมรายการรายละเอียด
+   * @param data - GRN creation data / ข้อมูลสร้างใบรับสินค้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created GRN / ใบรับสินค้าที่สร้างแล้ว
+   */
   @TryCatch
   async create(
     data: IGoodReceivedNoteCreate,
@@ -585,6 +609,14 @@ export class GoodReceivedNoteService {
     return Result.ok(tx);
   }
 
+  /**
+   * Update a good received note with details
+   * แก้ไขใบรับสินค้าพร้อมรายการรายละเอียด
+   * @param data - GRN update data / ข้อมูลแก้ไขใบรับสินค้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Updated GRN / ใบรับสินค้าที่แก้ไขแล้ว
+   */
   @TryCatch
   async update(
     data: IGoodReceivedNoteUpdate,
@@ -1329,6 +1361,14 @@ export class GoodReceivedNoteService {
     return Result.ok(tx);
   }
 
+  /**
+   * Soft delete a good received note
+   * ลบใบรับสินค้าแบบซอฟต์ดีลีท
+   * @param id - GRN ID / ID ใบรับสินค้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Deleted GRN ID / ID ใบรับสินค้าที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id, tenant_id }, 'delete');
@@ -1396,6 +1436,14 @@ export class GoodReceivedNoteService {
     return Result.ok({ id });
   }
 
+  /**
+   * Find the latest GRN by document number pattern
+   * ค้นหาใบรับสินค้าล่าสุดตามรูปแบบเลขที่เอกสาร
+   * @param pattern - Document number pattern / รูปแบบเลขที่เอกสาร
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @returns Latest GRN matching the pattern / ใบรับสินค้าล่าสุดที่ตรงกับรูปแบบ
+   */
   async findLatestPrByPattern(
     pattern: string,
     tenant_id: string,
@@ -1524,6 +1572,14 @@ export class GoodReceivedNoteService {
 
   /**
    * Export Good Received Note to Excel
+   */
+  /**
+   * Export good received notes to Excel
+   * ส่งออกใบรับสินค้าเป็น Excel
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Excel buffer / บัฟเฟอร์ Excel
    */
   @TryCatch
   async exportToExcel(
@@ -1663,6 +1719,15 @@ export class GoodReceivedNoteService {
   /**
    * Reject a Good Received Note - changes status to voided
    */
+  /**
+   * Reject a good received note
+   * ปฏิเสธใบรับสินค้า
+   * @param id - GRN ID / ID ใบรับสินค้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param reason - Rejection reason / เหตุผลการปฏิเสธ
+   * @returns Rejected GRN / ใบรับสินค้าที่ปฏิเสธแล้ว
+   */
   @TryCatch
   async reject(
     id: string,
@@ -1767,6 +1832,14 @@ export class GoodReceivedNoteService {
    * Approve a Good Received Note — changes status to committed and creates
    * inventory transactions with FIFO cost layers via InventoryTransactionService.
    */
+  /**
+   * Approve a good received note and create inventory transactions
+   * อนุมัติใบรับสินค้าและสร้างรายการเคลื่อนไหวสินค้าคงคลัง
+   * @param id - GRN ID / ID ใบรับสินค้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Approved GRN / ใบรับสินค้าที่อนุมัติแล้ว
+   */
   @TryCatch
   async approve(
     id: string,
@@ -1864,6 +1937,14 @@ export class GoodReceivedNoteService {
   /**
    * Find a GRN Detail by ID
    */
+  /**
+   * Find a GRN detail by ID
+   * ค้นหารายการรายละเอียดใบรับสินค้าตาม ID
+   * @param detailId - GRN detail ID / ID รายการรายละเอียดใบรับสินค้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns GRN detail / รายการรายละเอียดใบรับสินค้า
+   */
   @TryCatch
   async findDetailById(
     detailId: string,
@@ -1921,6 +2002,14 @@ export class GoodReceivedNoteService {
 
   /**
    * Find all GRN Details by GRN ID
+   */
+  /**
+   * Find all details by GRN ID
+   * ค้นหารายการรายละเอียดทั้งหมดตาม ID ใบรับสินค้า
+   * @param grnId - GRN ID / ID ใบรับสินค้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns List of GRN details / รายการรายละเอียดใบรับสินค้า
    */
   @TryCatch
   async findDetailsByGrnId(
@@ -1980,6 +2069,15 @@ export class GoodReceivedNoteService {
 
   /**
    * Create a new GRN Detail
+   */
+  /**
+   * Create a GRN detail line
+   * สร้างรายการรายละเอียดใบรับสินค้า
+   * @param grnId - GRN ID / ID ใบรับสินค้า
+   * @param data - Detail creation data / ข้อมูลสร้างรายการรายละเอียด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created detail / รายการรายละเอียดที่สร้างแล้ว
    */
   @TryCatch
   async createDetail(
@@ -2079,6 +2177,15 @@ export class GoodReceivedNoteService {
   /**
    * Update a GRN Detail
    */
+  /**
+   * Update a GRN detail line
+   * แก้ไขรายการรายละเอียดใบรับสินค้า
+   * @param detailId - GRN detail ID / ID รายการรายละเอียดใบรับสินค้า
+   * @param data - Detail update data / ข้อมูลแก้ไขรายการรายละเอียด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Updated detail / รายการรายละเอียดที่แก้ไขแล้ว
+   */
   @TryCatch
   async updateDetail(
     detailId: string,
@@ -2171,6 +2278,14 @@ export class GoodReceivedNoteService {
 
   /**
    * Delete a GRN Detail
+   */
+  /**
+   * Soft delete a GRN detail line
+   * ลบรายการรายละเอียดใบรับสินค้าแบบซอฟต์ดีลีท
+   * @param detailId - GRN detail ID / ID รายการรายละเอียดใบรับสินค้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Deleted detail / รายการรายละเอียดที่ลบแล้ว
    */
   @TryCatch
   async deleteDetail(

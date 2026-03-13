@@ -32,8 +32,13 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific recipe category used to classify recipes by meal type or course
-   * (e.g., Appetizers, Main Course, Desserts, Beverages) for menu planning and cost analysis.
+   * Retrieves a specific recipe category by ID
+   * ค้นหาหมวดหมู่สูตรอาหารเดียวตาม ID สำหรับจำแนกประเภทสูตรอาหาร
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Recipe category ID / รหัสหมวดหมู่สูตรอาหาร
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('recipe-category.findOne'))
@@ -49,8 +54,13 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   }
 
   /**
-   * Lists all recipe categories configured for the business unit, used to organize
-   * recipes by meal type or course for structured menu management and kitchen operations.
+   * Lists all recipe categories for the business unit
+   * ค้นหาหมวดหมู่สูตรอาหารทั้งหมดสำหรับการจัดระเบียบเมนูและการดำเนินงานครัว
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
    */
   @Get()
   @UseGuards(new AppIdGuard('recipe-category.findAll'))
@@ -68,8 +78,13 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   }
 
   /**
-   * Defines a new recipe classification category for organizing the recipe catalog.
-   * Recipes can then be assigned to this category for structured menu planning.
+   * Creates a new recipe category for organizing the recipe catalog
+   * สร้างหมวดหมู่สูตรอาหารใหม่สำหรับจัดระเบียบแค็ตตาล็อกสูตรอาหาร
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Recipe category creation data / ข้อมูลสำหรับสร้างหมวดหมู่สูตรอาหาร
+   * @param version - API version / เวอร์ชัน API
    */
   @Post()
   @UseGuards(new AppIdGuard('recipe-category.create'))
@@ -86,8 +101,14 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   }
 
   /**
-   * Fully updates an existing recipe category, such as renaming it.
-   * Changes affect how recipes are organized and filtered in the catalog.
+   * Fully updates an existing recipe category
+   * อัปเดตหมวดหมู่สูตรอาหารทั้งหมด เช่น เปลี่ยนชื่อหมวดหมู่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Recipe category ID / รหัสหมวดหมู่สูตรอาหาร
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param version - API version / เวอร์ชัน API
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('recipe-category.update'))
@@ -105,8 +126,14 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   }
 
   /**
-   * Partially updates specific fields of a recipe category without replacing
-   * the entire record. Useful for toggling active status or making minor adjustments.
+   * Partially updates specific fields of a recipe category
+   * อัปเดตบางฟิลด์ของหมวดหมู่สูตรอาหาร เช่น สถานะการใช้งาน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Recipe category ID / รหัสหมวดหมู่สูตรอาหาร
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Partial update data / ข้อมูลสำหรับอัปเดตบางส่วน
+   * @param version - API version / เวอร์ชัน API
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('recipe-category.patch'))
@@ -124,8 +151,13 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   }
 
   /**
-   * Removes a recipe category from the system. Recipes currently assigned to this
-   * category should be reassigned before deletion.
+   * Removes a recipe category from the system
+   * ลบหมวดหมู่สูตรอาหารออกจากระบบ ควรย้ายสูตรอาหารไปหมวดหมู่อื่นก่อนลบ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Recipe category ID / รหัสหมวดหมู่สูตรอาหาร
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('recipe-category.delete'))

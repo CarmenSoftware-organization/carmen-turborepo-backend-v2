@@ -24,6 +24,15 @@ export class GoodReceivedNoteService {
     private readonly inventoryService: ClientProxy,
   ) {}
 
+  /**
+   * Find a Good Received Note by ID via microservice
+   * ค้นหารายการเดียวตาม ID ของใบรับสินค้าผ่านไมโครเซอร์วิส
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Good Received Note data / ข้อมูลใบรับสินค้า
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -58,6 +67,15 @@ export class GoodReceivedNoteService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all Good Received Notes with pagination via microservice
+   * ค้นหารายการทั้งหมดของใบรับสินค้าพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated GRN list / รายการใบรับสินค้าแบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     tenant_id: string,
@@ -97,6 +115,15 @@ export class GoodReceivedNoteService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new Good Received Note via microservice
+   * สร้างใบรับสินค้าใหม่ผ่านไมโครเซอร์วิส
+   * @param data - GRN creation data / ข้อมูลสำหรับสร้างใบรับสินค้า
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created Good Received Note / ใบรับสินค้าที่สร้างแล้ว
+   */
   async create(
     data: IGoodReceivedNoteCreate,
     user_id: string,
@@ -131,6 +158,15 @@ export class GoodReceivedNoteService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update a Good Received Note via microservice
+   * อัปเดตใบรับสินค้าผ่านไมโครเซอร์วิส
+   * @param data - Updated GRN data / ข้อมูลใบรับสินค้าที่อัปเดต
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated Good Received Note / ใบรับสินค้าที่อัปเดตแล้ว
+   */
   async update(
     data: IGoodReceivedNoteUpdate,
     user_id: string,
@@ -165,6 +201,15 @@ export class GoodReceivedNoteService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a Good Received Note via microservice
+   * ลบใบรับสินค้าผ่านไมโครเซอร์วิส
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async delete(
     id: string,
     user_id: string,
@@ -199,6 +244,15 @@ export class GoodReceivedNoteService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Export a Good Received Note to Excel via microservice
+   * ส่งออกใบรับสินค้าเป็นไฟล์ Excel ผ่านไมโครเซอร์วิส
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Excel file buffer and filename / บัฟเฟอร์ไฟล์ Excel และชื่อไฟล์
+   */
   async exportToExcel(
     id: string,
     user_id: string,
@@ -239,6 +293,16 @@ export class GoodReceivedNoteService {
     return Result.ok(data);
   }
 
+  /**
+   * Reject a Good Received Note via microservice
+   * ปฏิเสธใบรับสินค้าผ่านไมโครเซอร์วิส
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param reason - Rejection reason / เหตุผลในการปฏิเสธ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Rejected Good Received Note / ใบรับสินค้าที่ถูกปฏิเสธ
+   */
   async reject(
     id: string,
     reason: string,
@@ -275,6 +339,15 @@ export class GoodReceivedNoteService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Approve a Good Received Note via microservice
+   * อนุมัติใบรับสินค้าผ่านไมโครเซอร์วิส
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Approved Good Received Note / ใบรับสินค้าที่อนุมัติแล้ว
+   */
   async approve(
     id: string,
     user_id: string,
@@ -311,6 +384,15 @@ export class GoodReceivedNoteService {
 
   // ==================== Good Received Note Detail CRUD ====================
 
+  /**
+   * Find a GRN detail by ID via microservice
+   * ค้นหารายการเดียวตาม ID ของรายละเอียดใบรับสินค้าผ่านไมโครเซอร์วิส
+   * @param detailId - GRN detail ID / รหัสรายละเอียดใบรับสินค้า
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns GRN detail data / ข้อมูลรายละเอียดใบรับสินค้า
+   */
   async findDetailById(
     detailId: string,
     user_id: string,
@@ -339,6 +421,15 @@ export class GoodReceivedNoteService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all details for a Good Received Note via microservice
+   * ค้นหารายการทั้งหมดของรายละเอียดใบรับสินค้าผ่านไมโครเซอร์วิส
+   * @param grnId - Good Received Note ID / รหัสใบรับสินค้า
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of GRN details / รายการรายละเอียดใบรับสินค้า
+   */
   async findDetailsByGrnId(
     grnId: string,
     user_id: string,
@@ -367,6 +458,15 @@ export class GoodReceivedNoteService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a GRN detail via microservice
+   * ลบรายละเอียดใบรับสินค้าผ่านไมโครเซอร์วิส
+   * @param detailId - GRN detail ID / รหัสรายละเอียดใบรับสินค้า
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async deleteDetail(
     detailId: string,
     user_id: string,
@@ -397,6 +497,15 @@ export class GoodReceivedNoteService {
 
   // ==================== Mobile-specific endpoints ====================
 
+  /**
+   * Find a GRN by manual PO number via microservice
+   * ค้นหาใบรับสินค้าตามเลขที่ใบสั่งซื้อผ่านไมโครเซอร์วิส
+   * @param po_no - Purchase order number / เลขที่ใบสั่งซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Good Received Note data / ข้อมูลใบรับสินค้า
+   */
   async findByManualPO(
     po_no: string,
     user_id: string,
@@ -425,6 +534,16 @@ export class GoodReceivedNoteService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Confirm a Good Received Note via microservice
+   * ยืนยันใบรับสินค้าผ่านไมโครเซอร์วิส
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param data - Confirmation data / ข้อมูลการยืนยัน
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Confirmed Good Received Note / ใบรับสินค้าที่ยืนยันแล้ว
+   */
   async confirm(
     id: string,
     data: Record<string, unknown>,
@@ -454,6 +573,15 @@ export class GoodReceivedNoteService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Get all comments for a Good Received Note via microservice
+   * ค้นหารายการทั้งหมดของความคิดเห็นสำหรับใบรับสินค้าผ่านไมโครเซอร์วิส
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of comments / รายการความคิดเห็น
+   */
   async getComments(
     id: string,
     user_id: string,
@@ -482,6 +610,16 @@ export class GoodReceivedNoteService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Create a comment for a Good Received Note via microservice
+   * สร้างความคิดเห็นสำหรับใบรับสินค้าผ่านไมโครเซอร์วิส
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param data - Comment content / เนื้อหาความคิดเห็น
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created comment / ความคิดเห็นที่สร้างแล้ว
+   */
   async createComment(
     id: string,
     data: { comment: string },
@@ -511,6 +649,13 @@ export class GoodReceivedNoteService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Get pending Good Received Notes count via microservice
+   * ค้นหาจำนวนใบรับสินค้าที่รอดำเนินการผ่านไมโครเซอร์วิส
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Pending GRN count / จำนวนใบรับสินค้าที่รอดำเนินการ
+   */
   async findAllPendingGoodReceivedNoteCount(
     user_id: string,
     version: string,

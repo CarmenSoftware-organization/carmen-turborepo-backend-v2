@@ -43,6 +43,12 @@ export class AdjustmentTypeService {
   private _bu_code?: string;
   private _userId?: string;
 
+  /**
+   * Initialize the Prisma service for the tenant
+   * เริ่มต้นบริการ Prisma สำหรับผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / รหัสผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
   }
@@ -65,6 +71,12 @@ export class AdjustmentTypeService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a single adjustment type by ID
+   * ค้นหาประเภทการปรับปรุงรายการเดียวตาม ID
+   * @param id - Adjustment type ID / รหัสประเภทการปรับปรุง
+   * @returns Adjustment type detail / รายละเอียดประเภทการปรับปรุง
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -87,6 +99,12 @@ export class AdjustmentTypeService {
     return Result.ok(adjustmentType);
   }
 
+  /**
+   * Find all adjustment types with pagination
+   * ค้นหาประเภทการปรับปรุงทั้งหมดแบบแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of adjustment types / รายการประเภทการปรับปรุงแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(
     paginate: IPaginate,
@@ -133,6 +151,12 @@ export class AdjustmentTypeService {
     });
   }
 
+  /**
+   * Create a new adjustment type
+   * สร้างประเภทการปรับปรุงใหม่
+   * @param data - Adjustment type creation data / ข้อมูลสำหรับสร้างประเภทการปรับปรุง
+   * @returns Created adjustment type ID / รหัสประเภทการปรับปรุงที่สร้างแล้ว
+   */
   @TryCatch
   async create(
     data: ICreateAdjustmentType,
@@ -165,6 +189,12 @@ export class AdjustmentTypeService {
     return Result.ok({ id: createdAdjustmentType.id });
   }
 
+  /**
+   * Update an existing adjustment type with duplicate code check
+   * อัปเดตประเภทการปรับปรุงที่มีอยู่พร้อมตรวจสอบรหัสซ้ำ
+   * @param data - Adjustment type update data / ข้อมูลสำหรับอัปเดตประเภทการปรับปรุง
+   * @returns Updated adjustment type ID / รหัสประเภทการปรับปรุงที่อัปเดตแล้ว
+   */
   @TryCatch
   async update(
     data: IUpdateAdjustmentType,
@@ -215,6 +245,12 @@ export class AdjustmentTypeService {
     return Result.ok({ id: updatedAdjustmentType.id });
   }
 
+  /**
+   * Soft delete an adjustment type
+   * ลบประเภทการปรับปรุงแบบ soft delete
+   * @param id - Adjustment type ID / รหัสประเภทการปรับปรุง
+   * @returns Deleted adjustment type ID / รหัสประเภทการปรับปรุงที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(

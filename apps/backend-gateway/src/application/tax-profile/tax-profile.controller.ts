@@ -56,8 +56,14 @@ export class TaxProfileController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific tax configuration profile including VAT rates,
-   * withholding tax rules, and calculation parameters for procurement transactions.
+   * Find a tax profile by ID
+   * ค้นหาโปรไฟล์ภาษีรายการเดียวตาม ID
+   * @param id - Tax profile ID / รหัสโปรไฟล์ภาษี
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Tax profile details / รายละเอียดโปรไฟล์ภาษี
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('taxProfile.findOne'))
@@ -100,8 +106,14 @@ export class TaxProfileController extends BaseHttpController {
   }
 
   /**
-   * Lists all tax configuration profiles in the business unit, including
-   * VAT rates and withholding tax settings for purchase orders and vendor payments.
+   * List all tax profiles in the business unit
+   * ค้นหารายการโปรไฟล์ภาษีทั้งหมดในหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination query / คำค้นหาการแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of tax profiles / รายการโปรไฟล์ภาษีแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('taxProfile.findAll'))

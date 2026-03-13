@@ -17,7 +17,15 @@ export interface MicroserviceResponse<T = unknown> {
   };
 }
 
+/**
+ * Base microservice controller with Result-to-response mapping
+ * คอนโทรลเลอร์ไมโครเซอร์วิสพื้นฐานพร้อมการแปลง Result เป็นการตอบกลับ
+ */
 export abstract class BaseMicroserviceController {
+  /**
+   * Handle Result for create operations (HTTP 201)
+   * จัดการ Result สำหรับการสร้างข้อมูล (HTTP 201)
+   */
   protected handleResultCrate<T>(
     result: Result<T, unknown>,
     successStatus: HttpStatus = HttpStatus.CREATED,
@@ -43,6 +51,10 @@ export abstract class BaseMicroserviceController {
     };
   }
 
+  /**
+   * Handle Result for general operations (HTTP 200)
+   * จัดการ Result สำหรับการดำเนินการทั่วไป (HTTP 200)
+   */
   protected handleResult<T>(
     result: Result<T, unknown>,
     successStatus: HttpStatus = HttpStatus.OK,
@@ -68,6 +80,10 @@ export abstract class BaseMicroserviceController {
     };
   }
 
+  /**
+   * Handle Result for multi-item responses without pagination metadata
+   * จัดการ Result สำหรับการตอบกลับหลายรายการโดยไม่มีข้อมูลการแบ่งหน้า
+   */
   protected handleMultiPaginatedResult<T>(
     result: Result<unknown[], unknown>,
   ): MicroserviceResponse<T[]> {
@@ -92,6 +108,10 @@ export abstract class BaseMicroserviceController {
     };
   }
 
+  /**
+   * Handle Result for paginated responses with pagination metadata
+   * จัดการ Result สำหรับการตอบกลับแบบแบ่งหน้าพร้อมข้อมูลการแบ่งหน้า
+   */
   protected handlePaginatedResult<T>(
     result: Result<{ paginate: { total: number; page: number; perpage: number; pages: number }; data: T[] }, unknown>,
   ): MicroserviceResponse<T[]> {

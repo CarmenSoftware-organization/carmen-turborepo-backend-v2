@@ -71,6 +71,12 @@ export class TaxProfileService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a single tax profile by ID
+   * ค้นหารายการโปรไฟล์ภาษีเดียวตาม ID
+   * @param id - Tax profile ID / ID ของโปรไฟล์ภาษี
+   * @returns Tax profile detail or error if not found / รายละเอียดโปรไฟล์ภาษี หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -97,6 +103,12 @@ export class TaxProfileService {
     return Result.ok(serializedTaxProfile);
   }
 
+  /**
+   * Find a single tax profile by name
+   * ค้นหารายการโปรไฟล์ภาษีเดียวตามชื่อ
+   * @param name - Tax profile name / ชื่อของโปรไฟล์ภาษี
+   * @returns Tax profile detail or error if not found / รายละเอียดโปรไฟล์ภาษี หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async findOneByName(
     name: string,
@@ -125,6 +137,12 @@ export class TaxProfileService {
     return Result.ok(serializedTaxProfile);
   }
 
+  /**
+   * Find all tax profiles with pagination
+   * ค้นหารายการโปรไฟล์ภาษีทั้งหมดพร้อมการแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of tax profiles / รายการโปรไฟล์ภาษีพร้อมการแบ่งหน้า
+   */
   @TryCatch
   async findAll(
     paginate: IPaginate,
@@ -176,6 +194,12 @@ export class TaxProfileService {
   }
 
 
+  /**
+   * Find multiple tax profiles by IDs
+   * ค้นหารายการโปรไฟล์ภาษีหลายรายการตาม ID
+   * @param ids - Array of tax profile IDs / รายการ ID ของโปรไฟล์ภาษี
+   * @returns List of tax profiles / รายการโปรไฟล์ภาษี
+   */
   @TryCatch
   async findAllById(
     ids: string[],
@@ -206,6 +230,12 @@ export class TaxProfileService {
     return Result.ok(serializedTaxProfiles);
   }
 
+  /**
+   * Create a new tax profile
+   * สร้างโปรไฟล์ภาษีใหม่
+   * @param data - Tax profile creation data / ข้อมูลการสร้างโปรไฟล์ภาษี
+   * @returns Created tax profile ID or error if duplicate / ID ของโปรไฟล์ภาษีที่สร้างขึ้น หรือข้อผิดพลาดหากซ้ำ
+   */
   @TryCatch
   async create(
     data: ICreateTaxProfile,
@@ -240,6 +270,13 @@ export class TaxProfileService {
     return Result.ok({ id: id });
   }
 
+  /**
+   * Update an existing tax profile
+   * อัปเดตโปรไฟล์ภาษีที่มีอยู่
+   * @param id - Tax profile ID / ID ของโปรไฟล์ภาษี
+   * @param data - Tax profile update data / ข้อมูลการอัปเดตโปรไฟล์ภาษี
+   * @returns Updated tax profile ID or error if not found / ID ของโปรไฟล์ภาษีที่อัปเดต หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async update(
     id: string,
@@ -279,6 +316,12 @@ export class TaxProfileService {
     return Result.ok({ id: taxProfile.id });
   }
 
+  /**
+   * Delete a tax profile (soft delete)
+   * ลบโปรไฟล์ภาษี (ลบแบบซอฟต์)
+   * @param id - Tax profile ID / ID ของโปรไฟล์ภาษี
+   * @returns Empty object on success or error if not found / อ็อบเจกต์ว่างเมื่อสำเร็จ หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code }, 'delete');

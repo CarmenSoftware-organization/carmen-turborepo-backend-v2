@@ -23,6 +23,15 @@ export class MyPendingPurchaseRequestService {
     private readonly procurementService: ClientProxy,
   ) { }
 
+  /**
+   * Find a purchase request by ID
+   * ค้นหาใบขอซื้อรายการเดียวตาม ID
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID / รหัส tenant
+   * @param version - API version / เวอร์ชัน API
+   * @returns Purchase request details / รายละเอียดใบขอซื้อ
+   */
   async findById(
     id: string,
     user_id: string,
@@ -55,6 +64,15 @@ export class MyPendingPurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * List all pending purchase requests for the user
+   * ค้นหารายการใบขอซื้อที่รอดำเนินการทั้งหมดของผู้ใช้
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit codes / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of pending purchase requests / รายการใบขอซื้อที่รอดำเนินการแบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     bu_code: string[],
@@ -94,6 +112,15 @@ export class MyPendingPurchaseRequestService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new purchase request
+   * สร้างใบขอซื้อใหม่
+   * @param createDto - Purchase request data / ข้อมูลใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID / รหัส tenant
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created purchase request / ใบขอซื้อที่สร้างแล้ว
+   */
   async create(
     createDto: CreatePurchaseRequestDto,
     user_id: string,
@@ -134,6 +161,16 @@ export class MyPendingPurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update a draft purchase request
+   * อัปเดตใบขอซื้อฉบับร่าง
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param updateDto - Updated request data / ข้อมูลใบขอที่อัปเดต
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID / รหัส tenant
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated purchase request / ใบขอซื้อที่อัปเดตแล้ว
+   */
   async update(
     id: string,
     updateDto: Record<string, unknown>,
@@ -173,6 +210,15 @@ export class MyPendingPurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Submit a purchase request for approval
+   * ส่งใบขอซื้อเพื่อขออนุมัติ
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID / รหัส tenant
+   * @param version - API version / เวอร์ชัน API
+   * @returns Submitted purchase request / ใบขอซื้อที่ส่งแล้ว
+   */
   async submit(
     id: string,
     user_id: string,
@@ -205,6 +251,16 @@ export class MyPendingPurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Approve a purchase request at the current workflow stage
+   * อนุมัติใบขอซื้อในขั้นตอนการทำงานปัจจุบัน
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param payload - Approval payload / ข้อมูลการอนุมัติ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID / รหัส tenant
+   * @param version - API version / เวอร์ชัน API
+   * @returns Approved purchase request / ใบขอซื้อที่อนุมัติแล้ว
+   */
   async approve(
     id: string,
     payload: Record<string, unknown>,
@@ -245,6 +301,15 @@ export class MyPendingPurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Reject a purchase request at the current workflow stage
+   * ปฏิเสธใบขอซื้อในขั้นตอนการทำงานปัจจุบัน
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID / รหัส tenant
+   * @param version - API version / เวอร์ชัน API
+   * @returns Rejected purchase request / ใบขอซื้อที่ปฏิเสธแล้ว
+   */
   async reject(
     id: string,
     user_id: string,
@@ -277,6 +342,16 @@ export class MyPendingPurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Review a purchase request before final decision
+   * ตรวจสอบใบขอซื้อก่อนตัดสินใจขั้นสุดท้าย
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param body - Review payload / ข้อมูลการตรวจสอบ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID / รหัส tenant
+   * @param version - API version / เวอร์ชัน API
+   * @returns Reviewed purchase request / ใบขอซื้อที่ตรวจสอบแล้ว
+   */
   async review(
     id: string,
     body: Record<string, unknown>,
@@ -316,6 +391,15 @@ export class MyPendingPurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a purchase request
+   * ลบใบขอซื้อ
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID / รหัส tenant
+   * @param version - API version / เวอร์ชัน API
+   * @returns Delete result / ผลลัพธ์การลบ
+   */
   async delete(
     id: string,
     user_id: string,
@@ -348,6 +432,15 @@ export class MyPendingPurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * List purchase requests filtered by status
+   * ค้นหารายการใบขอซื้อตามสถานะ
+   * @param status - Request status / สถานะใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID / รหัส tenant
+   * @param version - API version / เวอร์ชัน API
+   * @returns Purchase requests by status / รายการใบขอซื้อตามสถานะ
+   */
   async findAllByStatus(
     status: string,
     user_id: string,
@@ -388,6 +481,14 @@ export class MyPendingPurchaseRequestService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Get workflow stages for purchase requests
+   * ดึงขั้นตอนการทำงานสำหรับใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Workflow stages / ขั้นตอนการทำงาน
+   */
   async findAllMyPendingStages(
     user_id: string,
     bu_code: string,
@@ -426,6 +527,13 @@ export class MyPendingPurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Get count of pending purchase requests for the user
+   * ดึงจำนวนใบขอซื้อที่รอดำเนินการของผู้ใช้
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Pending purchase request count / จำนวนใบขอซื้อที่รอดำเนินการ
+   */
   async findAllMyPendingPurchaseRequestsCount(
     user_id: string,
     version: string,

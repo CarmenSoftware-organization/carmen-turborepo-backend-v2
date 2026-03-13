@@ -55,8 +55,13 @@ export class DocumentManagementController extends BaseHttpController {
   }
 
   /**
-   * Uploads a procurement document (e.g., invoice, contract, delivery receipt)
-   * to file storage for attachment to purchase orders or goods received notes.
+   * Upload a document to file storage
+   * อัปโหลดเอกสารไปยังที่จัดเก็บไฟล์
+   * @param file - File to upload / ไฟล์ที่จะอัปโหลด
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @returns Uploaded document metadata / ข้อมูลเมตาของเอกสารที่อัปโหลด
    */
   @Post('upload')
   @UseGuards(new AppIdGuard('documents.upload'))
@@ -113,8 +118,13 @@ export class DocumentManagementController extends BaseHttpController {
   }
 
   /**
-   * Lists all uploaded procurement documents for the business unit with pagination,
-   * enabling staff to search and browse stored files.
+   * List all documents in the business unit
+   * ค้นหารายการเอกสารทั้งหมดในหน่วยธุรกิจ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param query - Pagination query / คำค้นหาการแบ่งหน้า
+   * @returns Paginated list of documents / รายการเอกสารแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('documents.list'))
@@ -152,8 +162,13 @@ export class DocumentManagementController extends BaseHttpController {
   }
 
   /**
-   * Downloads a specific procurement document by its unique file token,
-   * used to view attachments linked to transaction records.
+   * Download a document by file token
+   * ดาวน์โหลดเอกสารตาม file token
+   * @param fileToken - Unique file token / โทเค็นไฟล์เฉพาะ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @returns Document content / เนื้อหาเอกสาร
    */
   @Get(':filetoken')
   @UseGuards(new AppIdGuard('documents.get'))
@@ -185,8 +200,13 @@ export class DocumentManagementController extends BaseHttpController {
   }
 
   /**
-   * Retrieves metadata (file name, type, size, upload date) for a document
-   * without downloading the file content, useful for document listing views.
+   * Get document metadata without downloading content
+   * ดึงข้อมูลเมตาของเอกสารโดยไม่ดาวน์โหลดเนื้อหา
+   * @param fileToken - Unique file token / โทเค็นไฟล์เฉพาะ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @returns Document metadata / ข้อมูลเมตาเอกสาร
    */
   @Get(':filetoken/info')
   @UseGuards(new AppIdGuard('documents.info'))
@@ -222,8 +242,14 @@ export class DocumentManagementController extends BaseHttpController {
   }
 
   /**
-   * Generates a time-limited presigned URL for secure, direct access to a
-   * document, enabling browser-based viewing without exposing storage credentials.
+   * Generate a presigned URL for secure document access
+   * สร้าง presigned URL สำหรับเข้าถึงเอกสารอย่างปลอดภัย
+   * @param fileToken - Unique file token / โทเค็นไฟล์เฉพาะ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param expirySeconds - URL expiry in seconds / เวลาหมดอายุ URL เป็นวินาที
+   * @returns Presigned URL / Presigned URL
    */
   @Get(':filetoken/presigned-url')
   @UseGuards(new AppIdGuard('documents.presignedUrl'))
@@ -264,8 +290,13 @@ export class DocumentManagementController extends BaseHttpController {
   }
 
   /**
-   * Permanently removes a procurement document from storage when it was
-   * uploaded in error or is no longer relevant to the transaction.
+   * Delete a document from storage
+   * ลบเอกสารจากที่จัดเก็บ
+   * @param fileToken - Unique file token / โทเค็นไฟล์เฉพาะ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @returns Delete result / ผลลัพธ์การลบ
    */
   @Delete(':filetoken')
   @UseGuards(new AppIdGuard('documents.delete'))

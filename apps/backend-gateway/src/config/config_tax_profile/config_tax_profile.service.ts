@@ -22,6 +22,15 @@ export class Config_TaxProfileService {
     private readonly masterService: ClientProxy,
   ) { }
 
+  /**
+   * Find a single tax profile by ID via microservice
+   * ค้นหาโปรไฟล์ภาษีเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Tax profile ID / รหัสโปรไฟล์ภาษี
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Tax profile detail or error / รายละเอียดโปรไฟล์ภาษีหรือข้อผิดพลาด
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -53,6 +62,15 @@ export class Config_TaxProfileService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all tax profiles with pagination via microservice
+   * ค้นหารายการโปรไฟล์ภาษีทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated tax profiles or error / รายการโปรไฟล์ภาษีพร้อมการแบ่งหน้าหรือข้อผิดพลาด
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -91,6 +109,15 @@ export class Config_TaxProfileService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new tax profile via microservice
+   * สร้างโปรไฟล์ภาษีใหม่ผ่านไมโครเซอร์วิส
+   * @param createDto - Tax profile creation data / ข้อมูลสำหรับสร้างโปรไฟล์ภาษี
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created tax profile or error / โปรไฟล์ภาษีที่สร้างแล้วหรือข้อผิดพลาด
+   */
   async create(
     createDto: ICreateTaxProfile,
     user_id: string,
@@ -127,6 +154,16 @@ export class Config_TaxProfileService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update a tax profile via microservice
+   * อัปเดตโปรไฟล์ภาษีผ่านไมโครเซอร์วิส
+   * @param id - Tax profile ID / รหัสโปรไฟล์ภาษี
+   * @param updateDto - Tax profile update data / ข้อมูลสำหรับอัปเดตโปรไฟล์ภาษี
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated tax profile or error / โปรไฟล์ภาษีที่อัปเดตแล้วหรือข้อผิดพลาด
+   */
   async update(
     id: string,
     updateDto: IUpdateTaxProfile,
@@ -165,6 +202,15 @@ export class Config_TaxProfileService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a tax profile via microservice
+   * ลบโปรไฟล์ภาษีผ่านไมโครเซอร์วิส
+   * @param id - Tax profile ID / รหัสโปรไฟล์ภาษี
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result or error / ผลลัพธ์การลบหรือข้อผิดพลาด
+   */
   async delete(
     id: string,
     user_id: string,

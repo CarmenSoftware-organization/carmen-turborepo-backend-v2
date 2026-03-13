@@ -41,6 +41,12 @@ export class DepartmentUserService {
   private readonly logger: BackendLogger = new BackendLogger(
     DepartmentUserService.name,
   );
+  /**
+   * Initialize the Prisma service for the tenant
+   * เริ่มต้นบริการ Prisma สำหรับผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / รหัสผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
   }
@@ -61,6 +67,12 @@ export class DepartmentUserService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find all users in a department
+   * ค้นหาผู้ใช้ทั้งหมดในแผนก
+   * @param department_id - Department ID / รหัสแผนก
+   * @returns List of user IDs in the department / รายการรหัสผู้ใช้ในแผนก
+   */
   @TryCatch
   async findAllUserInDepartment(
     department_id: string,
@@ -75,6 +87,12 @@ export class DepartmentUserService {
     return Result.ok(res);
   }
 
+  /**
+   * Check if a department has a Head of Department (HOD)
+   * ตรวจสอบว่าแผนกมีหัวหน้าแผนก (HOD) หรือไม่
+   * @param department_id - Department ID / รหัสแผนก
+   * @returns Whether a HOD exists in the department / มีหัวหน้าแผนกในแผนกหรือไม่
+   */
   @TryCatch
   async hasHodInDepartment(
     department_id: string,
@@ -91,6 +109,12 @@ export class DepartmentUserService {
     return Result.ok(!!hodUser);
   }
 
+  /**
+   * Get all HOD user IDs in a department
+   * ดึงรหัสผู้ใช้ของหัวหน้าแผนกทั้งหมดในแผนก
+   * @param department_id - Department ID / รหัสแผนก
+   * @returns List of HOD user IDs / รายการรหัสผู้ใช้หัวหน้าแผนก
+   */
   @TryCatch
   async getHodInDepartment(
     department_id: string,

@@ -26,10 +26,11 @@ export class ApplicationRolePermissionService {
   ) {}
 
   /**
-   * Get all permissions for a role
-   * @param roleId
-   * @param version
-   * @returns
+   * Retrieve all permissions assigned to a specific role
+   * ค้นหารายการสิทธิ์การเข้าถึงทั้งหมดที่กำหนดให้บทบาทที่ระบุ
+   * @param roleId - Role ID / รหัสบทบาท
+   * @param version - API version / เวอร์ชัน API
+   * @returns Permissions for the role / สิทธิ์การเข้าถึงของบทบาท
    */
   async getPermissionsByRole(roleId: string, version: string): Promise<unknown> {
     this.logger.debug(
@@ -59,10 +60,11 @@ export class ApplicationRolePermissionService {
   }
 
   /**
-   * Get all roles that have a specific permission
-   * @param permissionId
-   * @param version
-   * @returns
+   * Retrieve all roles that include a specific permission
+   * ค้นหารายการบทบาททั้งหมดที่มีสิทธิ์การเข้าถึงที่ระบุ
+   * @param permissionId - Permission ID / รหัสสิทธิ์การเข้าถึง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Roles with the permission / บทบาทที่มีสิทธิ์การเข้าถึงนี้
    */
   async getRolesByPermission(
     permissionId: string,
@@ -95,10 +97,11 @@ export class ApplicationRolePermissionService {
   }
 
   /**
-   * Assign permissions to a role
-   * @param assignPermissionsDto
-   * @param version
-   * @returns
+   * Assign multiple permissions to a role via microservice
+   * กำหนดสิทธิ์การเข้าถึงหลายรายการให้บทบาทผ่านไมโครเซอร์วิส
+   * @param assignPermissionsDto - Bulk assignment data / ข้อมูลการกำหนดสิทธิ์แบบกลุ่ม
+   * @param version - API version / เวอร์ชัน API
+   * @returns Assignment result / ผลลัพธ์การกำหนดสิทธิ์
    */
   async assignPermissionsToRole(
     assignPermissionsDto: AssignPermissionsToRoleDto,
@@ -131,10 +134,11 @@ export class ApplicationRolePermissionService {
   }
 
   /**
-   * Remove permissions from a role
-   * @param removePermissionsDto
-   * @param version
-   * @returns
+   * Remove multiple permissions from a role via microservice
+   * ถอนสิทธิ์การเข้าถึงหลายรายการจากบทบาทผ่านไมโครเซอร์วิส
+   * @param removePermissionsDto - Bulk removal data / ข้อมูลการถอนสิทธิ์แบบกลุ่ม
+   * @param version - API version / เวอร์ชัน API
+   * @returns Removal result / ผลลัพธ์การถอนสิทธิ์
    */
   async removePermissionsFromRole(
     removePermissionsDto: RemovePermissionsFromRoleDto,
@@ -167,10 +171,11 @@ export class ApplicationRolePermissionService {
   }
 
   /**
-   * Assign a single permission to a role
-   * @param assignPermissionDto
-   * @param version
-   * @returns
+   * Assign a single permission to a role via microservice
+   * กำหนดสิทธิ์การเข้าถึงรายการเดียวให้บทบาทผ่านไมโครเซอร์วิส
+   * @param assignPermissionDto - Assignment data / ข้อมูลการกำหนดสิทธิ์
+   * @param version - API version / เวอร์ชัน API
+   * @returns Assignment result / ผลลัพธ์การกำหนดสิทธิ์
    */
   async assignPermissionToRole(
     assignPermissionDto: AssignPermissionToRoleDto,
@@ -203,10 +208,11 @@ export class ApplicationRolePermissionService {
   }
 
   /**
-   * Remove a single permission from a role
-   * @param removePermissionDto
-   * @param version
-   * @returns
+   * Remove a single permission from a role via microservice
+   * ถอนสิทธิ์การเข้าถึงรายการเดียวจากบทบาทผ่านไมโครเซอร์วิส
+   * @param removePermissionDto - Removal data / ข้อมูลการถอนสิทธิ์
+   * @param version - API version / เวอร์ชัน API
+   * @returns Removal result / ผลลัพธ์การถอนสิทธิ์
    */
   async removePermissionFromRole(
     removePermissionDto: RemovePermissionFromRoleDto,

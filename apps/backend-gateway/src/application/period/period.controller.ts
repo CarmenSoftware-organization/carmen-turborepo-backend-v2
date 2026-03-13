@@ -47,8 +47,14 @@ export class PeriodController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a fiscal/accounting period by ID, including its open/closed status
-   * and date range, to verify whether inventory transactions can be posted.
+   * Find a period by ID
+   * ค้นหางวด/รอบบัญชีรายการเดียวตาม ID
+   * @param id - Period ID / รหัสงวด
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Period details / รายละเอียดงวด/รอบบัญชี
    */
   @Get(':bu_code/period/:id')
   @UseGuards(new AppIdGuard('period.findOne'))
@@ -87,8 +93,14 @@ export class PeriodController extends BaseHttpController {
   }
 
   /**
-   * Lists all fiscal/accounting periods for the business unit, enabling finance
-   * staff to manage month-end closing cycles and inventory transaction windows.
+   * List all periods in the business unit
+   * ค้นหารายการงวด/รอบบัญชีทั้งหมดในหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination query / คำค้นหาการแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of periods / รายการงวดแบบแบ่งหน้า
    */
   @Get(':bu_code/period')
   @UseGuards(new AppIdGuard('period.findAll'))
@@ -128,8 +140,14 @@ export class PeriodController extends BaseHttpController {
   }
 
   /**
-   * Creates a new fiscal/accounting period that controls when inventory transactions
-   * and valuations can be posted, typically aligned with hotel monthly closing.
+   * Create a new fiscal/accounting period
+   * สร้างงวด/รอบบัญชีใหม่
+   * @param createDto - Period creation data / ข้อมูลสำหรับสร้างงวด
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created period / งวดที่สร้างแล้ว
    */
   @Post(':bu_code/period')
   @UseGuards(new AppIdGuard('period.create'))
@@ -172,8 +190,15 @@ export class PeriodController extends BaseHttpController {
   }
 
   /**
-   * Modifies a fiscal period, such as opening or closing it for inventory
-   * transactions, essential for month-end closing and valuation control.
+   * Update a fiscal/accounting period
+   * อัปเดตงวด/รอบบัญชี
+   * @param id - Period ID / รหัสงวด
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Period update data / ข้อมูลสำหรับอัปเดตงวด
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated period / งวดที่อัปเดตแล้ว
    */
   @Patch(':bu_code/period/:id')
   @UseGuards(new AppIdGuard('period.update'))
@@ -218,8 +243,14 @@ export class PeriodController extends BaseHttpController {
   }
 
   /**
-   * Bulk-generates upcoming fiscal periods for forward planning, automatically
-   * creating the next N monthly periods for inventory and procurement scheduling.
+   * Bulk-generate the next N fiscal periods
+   * สร้างงวด/รอบบัญชีถัดไปจำนวน N งวดแบบกลุ่ม
+   * @param body - Count of periods and start day / จำนวนงวดและวันเริ่มต้น
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Generated periods / งวดที่สร้างแล้ว
    */
   @Post(':bu_code/period/next')
   @UseGuards(new AppIdGuard('period.create'))
@@ -271,8 +302,14 @@ export class PeriodController extends BaseHttpController {
   }
 
   /**
-   * Removes a fiscal period created in error. Periods with existing inventory
-   * transactions cannot be deleted to preserve financial integrity.
+   * Delete a fiscal/accounting period
+   * ลบงวด/รอบบัญชี
+   * @param id - Period ID / รหัสงวด
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Delete result / ผลลัพธ์การลบ
    */
   @Delete(':bu_code/period/:id')
   @UseGuards(new AppIdGuard('period.delete'))

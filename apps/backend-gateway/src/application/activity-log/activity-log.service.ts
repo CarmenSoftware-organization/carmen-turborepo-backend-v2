@@ -28,6 +28,15 @@ export class ActivityLogService {
     private readonly logService: ClientProxy,
   ) {}
 
+  /**
+   * List all activity logs with optional filters
+   * ค้นหารายการบันทึกกิจกรรมทั้งหมดพร้อมตัวกรอง
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param filters - Optional activity log filters / ตัวกรองบันทึกกิจกรรม (ไม่บังคับ)
+   * @returns Paginated activity logs / รายการบันทึกกิจกรรมแบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -67,6 +76,15 @@ export class ActivityLogService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * List activity logs filtered by entity type
+   * ค้นหารายการบันทึกกิจกรรมตามประเภทเอกสาร
+   * @param entity_type - Entity type to filter / ประเภทเอกสารที่จะกรอง
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated activity logs by entity / รายการบันทึกกิจกรรมตามประเภทเอกสารแบบแบ่งหน้า
+   */
   async findByEntity(
     entity_type: string,
     user_id: string,
@@ -106,6 +124,14 @@ export class ActivityLogService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Find an activity log entry by ID
+   * ค้นหารายการบันทึกกิจกรรมรายการเดียวตาม ID
+   * @param id - Activity log ID / รหัสบันทึกกิจกรรม
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Activity log details / รายละเอียดบันทึกกิจกรรม
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -138,6 +164,14 @@ export class ActivityLogService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Soft-delete an activity log entry
+   * ลบบันทึกกิจกรรมแบบ soft delete
+   * @param id - Activity log ID / รหัสบันทึกกิจกรรม
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Delete result / ผลลัพธ์การลบ
+   */
   async delete(
     id: string,
     user_id: string,
@@ -170,6 +204,14 @@ export class ActivityLogService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Batch soft-delete multiple activity log entries
+   * ลบบันทึกกิจกรรมหลายรายการแบบ soft delete เป็นชุด
+   * @param ids - Activity log IDs / รหัสบันทึกกิจกรรม
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Batch delete result / ผลลัพธ์การลบเป็นชุด
+   */
   async deleteMany(
     ids: string[],
     user_id: string,
@@ -202,6 +244,14 @@ export class ActivityLogService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Permanently delete an activity log entry (hard delete)
+   * ลบบันทึกกิจกรรมอย่างถาวร (hard delete)
+   * @param id - Activity log ID / รหัสบันทึกกิจกรรม
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Hard delete result / ผลลัพธ์การลบถาวร
+   */
   async hardDelete(
     id: string,
     user_id: string,
@@ -234,6 +284,14 @@ export class ActivityLogService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Batch permanently delete multiple activity log entries (hard delete)
+   * ลบบันทึกกิจกรรมหลายรายการอย่างถาวร (hard delete) เป็นชุด
+   * @param ids - Activity log IDs / รหัสบันทึกกิจกรรม
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Batch hard delete result / ผลลัพธ์การลบถาวรเป็นชุด
+   */
   async hardDeleteMany(
     ids: string[],
     user_id: string,

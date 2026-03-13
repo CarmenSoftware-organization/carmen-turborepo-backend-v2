@@ -17,6 +17,14 @@ export class UserLocationService {
     private readonly masterService: ClientProxy,
   ) {}
 
+  /**
+   * Find all locations accessible by a user in a business unit
+   * ค้นหารายการสถานที่จัดเก็บทั้งหมดที่ผู้ใช้เข้าถึงได้ในหน่วยธุรกิจ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of locations / รายการสถานที่แบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     bu_code: string,

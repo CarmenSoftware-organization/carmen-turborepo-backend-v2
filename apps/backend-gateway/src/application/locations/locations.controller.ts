@@ -50,8 +50,14 @@ export class LocationsController extends BaseHttpController {
   }
 
   /**
-   * Lists all active storage locations (warehouses, storerooms) assigned to the
-   * current user within the business unit for inventory operations.
+   * List all locations accessible to the current user
+   * ค้นหารายการสถานที่ทั้งหมดที่ผู้ใช้ปัจจุบันเข้าถึงได้
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @param query - Pagination query parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns List of locations for the user / รายการสถานที่ของผู้ใช้
    */
   @Get(':bu_code/locations')
   @UseGuards(new AppIdGuard('locations.findAll'))
@@ -124,8 +130,16 @@ export class LocationsController extends BaseHttpController {
   }
 
   /**
-   * Retrieves full details of a storage location including assigned users and
-   * stocked products, used for warehouse configuration and inventory management.
+   * Get a specific location by ID
+   * ค้นหารายการสถานที่เดียวตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Location ID / รหัสสถานที่
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param withUser - Include assigned users / รวมผู้ใช้ที่ผูกไว้
+   * @param withProducts - Include stocked products / รวมสินค้าที่มีในสต็อก
+   * @param version - API version / เวอร์ชัน API
+   * @returns Location details / รายละเอียดสถานที่
    */
   @Get(':bu_code/locations/:id')
   @UseGuards(new AppIdGuard('locations.findOne'))
@@ -171,8 +185,15 @@ export class LocationsController extends BaseHttpController {
   }
 
   /**
-   * Retrieves real-time inventory levels for a specific product at a given location,
-   * including on-hand, on-order, reorder, and restock quantities.
+   * Get product inventory levels at a specific location
+   * ดึงข้อมูลระดับสินค้าคงคลังของสินค้าที่สถานที่เฉพาะ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param location_id - Location ID / รหัสสถานที่
+   * @param product_id - Product ID / รหัสสินค้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Product inventory info (on-hand, on-order, reorder, restock) / ข้อมูลสินค้าคงคลัง (คงเหลือ, สั่งซื้อ, สั่งเติม, เติมสต็อก)
    */
   @Get(':bu_code/locations/:location_id/product/:product_id/inventory')
   @UseGuards(new AppIdGuard('locations.getProductInventory'))

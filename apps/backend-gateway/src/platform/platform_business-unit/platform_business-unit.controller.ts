@@ -50,10 +50,13 @@ export class Platform_BusinessUnitController extends BaseHttpController {
   }
 
   /**
-   * Lists all hotel properties and operational units within the organization.
-   * Each business unit represents a distinct tenant (e.g., hotel, resort, property)
-   * with its own inventory, procurement, and recipe workflows.
-   * Supports pagination, search, and version filtering.
+   * List all business units with pagination
+   * ค้นหารายการหน่วยธุรกิจทั้งหมดพร้อมการแบ่งหน้า
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated business unit list / รายการหน่วยธุรกิจแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('businessUnit.findAll'))
@@ -96,8 +99,13 @@ export class Platform_BusinessUnitController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the full details of a specific hotel property or operational unit,
-   * including its configuration, cluster membership, currency, and tenant settings.
+   * Get a business unit by ID
+   * ค้นหาหน่วยธุรกิจเดียวตาม ID
+   * @param id - Business unit ID / รหัสหน่วยธุรกิจ
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Business unit details / รายละเอียดหน่วยธุรกิจ
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('businessUnit.findOne'))
@@ -140,9 +148,13 @@ export class Platform_BusinessUnitController extends BaseHttpController {
   }
 
   /**
-   * Registers a new hotel property or operational unit in the platform.
-   * Creates a new tenant context with its own isolated inventory, procurement,
-   * and recipe data, and associates it with a cluster (hotel chain or company).
+   * Create a new business unit
+   * สร้างหน่วยธุรกิจใหม่ในแพลตฟอร์ม
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param createBusinessUnitDto - Business unit creation data / ข้อมูลสำหรับสร้างหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created business unit / หน่วยธุรกิจที่ถูกสร้าง
    */
   @Post()
   @UseGuards(new AppIdGuard('businessUnit.create'))
@@ -185,8 +197,14 @@ export class Platform_BusinessUnitController extends BaseHttpController {
   }
 
   /**
-   * Modifies the configuration or details of an existing hotel property,
-   * such as its name, address, currency, format settings, or cluster association.
+   * Update an existing business unit
+   * อัปเดตข้อมูลหน่วยธุรกิจที่มีอยู่
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - Business unit ID / รหัสหน่วยธุรกิจ
+   * @param updateBusinessUnitDto - Business unit update data / ข้อมูลสำหรับอัปเดตหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated business unit / หน่วยธุรกิจที่ถูกอัปเดต
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('businessUnit.update'))
@@ -234,9 +252,13 @@ export class Platform_BusinessUnitController extends BaseHttpController {
   }
 
   /**
-   * Soft-deletes a hotel property or operational unit from the platform.
-   * The business unit data is retained for audit purposes but becomes inactive,
-   * preventing further inventory and procurement operations.
+   * Delete a business unit
+   * ลบหน่วยธุรกิจออกจากแพลตฟอร์ม
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - Business unit ID / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('businessUnit.delete'))

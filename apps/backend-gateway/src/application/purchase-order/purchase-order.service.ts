@@ -23,6 +23,15 @@ export class PurchaseOrderService {
     private readonly procurementService: ClientProxy,
   ) {}
 
+  /**
+   * Find a purchase order by ID via microservice
+   * ค้นหารายการเดียวตาม ID ของใบสั่งซื้อผ่านไมโครเซอร์วิส
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Purchase order data / ข้อมูลใบสั่งซื้อ
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -55,6 +64,15 @@ export class PurchaseOrderService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all purchase orders with pagination via microservice
+   * ค้นหารายการทั้งหมดของใบสั่งซื้อพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated purchase order list / รายการใบสั่งซื้อแบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -89,6 +107,15 @@ export class PurchaseOrderService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new purchase order via microservice
+   * สร้างใบสั่งซื้อใหม่ผ่านไมโครเซอร์วิส
+   * @param createDto - Purchase order creation data / ข้อมูลสำหรับสร้างใบสั่งซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created purchase order / ใบสั่งซื้อที่สร้างแล้ว
+   */
   async create(
     createDto: Record<string, unknown>,
     user_id: string,
@@ -121,6 +148,16 @@ export class PurchaseOrderService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update a purchase order via microservice
+   * อัปเดตใบสั่งซื้อผ่านไมโครเซอร์วิส
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param updateDto - Updated purchase order data / ข้อมูลใบสั่งซื้อที่อัปเดต
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated purchase order / ใบสั่งซื้อที่อัปเดตแล้ว
+   */
   async update(
     id: string,
     updateDto: PurchaseOrderUpdateDto,
@@ -155,6 +192,15 @@ export class PurchaseOrderService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a purchase order via microservice
+   * ลบใบสั่งซื้อผ่านไมโครเซอร์วิส
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async delete(
     id: string,
     user_id: string,
@@ -187,6 +233,15 @@ export class PurchaseOrderService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Group purchase request items for purchase order creation preview
+   * จัดกลุ่มรายการใบขอซื้อเพื่อแสดงตัวอย่างการสร้างใบสั่งซื้อ
+   * @param pr_ids - Purchase request IDs / รหัสใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Grouped purchase order preview / ตัวอย่างใบสั่งซื้อที่จัดกลุ่มแล้ว
+   */
   async groupPrForPo(
     pr_ids: string[],
     user_id: string,
@@ -219,6 +274,15 @@ export class PurchaseOrderService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Confirm purchase requests and create purchase orders
+   * ยืนยันใบขอซื้อและสร้างใบสั่งซื้อ
+   * @param pr_ids - Purchase request IDs / รหัสใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created purchase orders / ใบสั่งซื้อที่สร้างจากใบขอซื้อ
+   */
   async confirmPrToPo(
     pr_ids: string[],
     user_id: string,
@@ -251,6 +315,15 @@ export class PurchaseOrderService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Cancel a purchase order via microservice
+   * ยกเลิกใบสั่งซื้อผ่านไมโครเซอร์วิส
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Cancelled purchase order / ใบสั่งซื้อที่ยกเลิกแล้ว
+   */
   async cancel(
     id: string,
     user_id: string,
@@ -283,6 +356,15 @@ export class PurchaseOrderService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Close a purchase order via microservice
+   * ปิดใบสั่งซื้อผ่านไมโครเซอร์วิส
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Closed purchase order / ใบสั่งซื้อที่ปิดแล้ว
+   */
   async closePO(
     id: string,
     user_id: string,
@@ -315,6 +397,15 @@ export class PurchaseOrderService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Export a purchase order to Excel via microservice
+   * ส่งออกใบสั่งซื้อเป็นไฟล์ Excel ผ่านไมโครเซอร์วิส
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Excel file buffer and filename / บัฟเฟอร์ไฟล์ Excel และชื่อไฟล์
+   */
   async exportToExcel(
     id: string,
     user_id: string,
@@ -353,6 +444,15 @@ export class PurchaseOrderService {
     return Result.ok(data);
   }
 
+  /**
+   * Print a purchase order to PDF via microservice
+   * พิมพ์ใบสั่งซื้อเป็นไฟล์ PDF ผ่านไมโครเซอร์วิส
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns PDF file buffer and filename / บัฟเฟอร์ไฟล์ PDF และชื่อไฟล์
+   */
   async printToPdf(
     id: string,
     user_id: string,
@@ -391,6 +491,16 @@ export class PurchaseOrderService {
     return Result.ok(data);
   }
 
+  /**
+   * Save incremental changes to a purchase order via microservice
+   * บันทึกการเปลี่ยนแปลงใบสั่งซื้อผ่านไมโครเซอร์วิส
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param data - Save payload / ข้อมูลการบันทึก
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Saved purchase order / ใบสั่งซื้อที่บันทึกแล้ว
+   */
   async save(
     id: string,
     data: SavePurchaseOrderDto,
@@ -424,6 +534,16 @@ export class PurchaseOrderService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Approve a purchase order via microservice
+   * อนุมัติใบสั่งซื้อผ่านไมโครเซอร์วิส
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param data - Approval payload / ข้อมูลการอนุมัติ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Approved purchase order / ใบสั่งซื้อที่อนุมัติแล้ว
+   */
   async approve(
     id: string,
     data: ApprovePurchaseOrderDto,
@@ -457,6 +577,16 @@ export class PurchaseOrderService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Reject a purchase order via microservice
+   * ปฏิเสธใบสั่งซื้อผ่านไมโครเซอร์วิส
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param data - Rejection payload / ข้อมูลการปฏิเสธ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Rejected purchase order / ใบสั่งซื้อที่ถูกปฏิเสธ
+   */
   async reject(
     id: string,
     data: RejectPurchaseOrderDto,
@@ -490,6 +620,16 @@ export class PurchaseOrderService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Send a purchase order back for review via microservice
+   * ส่งใบสั่งซื้อกลับเพื่อตรวจสอบผ่านไมโครเซอร์วิส
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param data - Review payload / ข้อมูลการตรวจสอบ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Reviewed purchase order / ใบสั่งซื้อที่ส่งกลับตรวจสอบ
+   */
   async review(
     id: string,
     data: ReviewPurchaseOrderDto,
@@ -525,6 +665,15 @@ export class PurchaseOrderService {
 
   // ==================== Purchase Order Detail CRUD ====================
 
+  /**
+   * Find a purchase order detail by ID via microservice
+   * ค้นหารายการเดียวตาม ID ของรายละเอียดใบสั่งซื้อผ่านไมโครเซอร์วิส
+   * @param detailId - Detail line item ID / รหัสรายการรายละเอียด
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Purchase order detail / รายละเอียดรายการใบสั่งซื้อ
+   */
   async findDetailById(
     detailId: string,
     user_id: string,
@@ -553,6 +702,15 @@ export class PurchaseOrderService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all details for a purchase order via microservice
+   * ค้นหารายการทั้งหมดของรายละเอียดใบสั่งซื้อผ่านไมโครเซอร์วิส
+   * @param purchaseOrderId - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of purchase order details / รายการรายละเอียดใบสั่งซื้อ
+   */
   async findDetailsByPurchaseOrderId(
     purchaseOrderId: string,
     user_id: string,
@@ -581,6 +739,15 @@ export class PurchaseOrderService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a purchase order detail via microservice
+   * ลบรายละเอียดใบสั่งซื้อผ่านไมโครเซอร์วิส
+   * @param detailId - Detail line item ID / รหัสรายการรายละเอียด
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async deleteDetail(
     detailId: string,
     user_id: string,

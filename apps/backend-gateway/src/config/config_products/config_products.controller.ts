@@ -60,8 +60,14 @@ export class Config_ProductsController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the full details of a product (SKU/ingredient) from the master catalog,
-   * including category, unit of measure, and item group configurations.
+   * Get a product by ID
+   * ค้นหาสินค้าเดียวตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param id - Product ID / รหัสสินค้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Product detail / รายละเอียดสินค้า
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('product.findOne'))
@@ -97,8 +103,14 @@ export class Config_ProductsController extends BaseHttpController {
   }
 
   /**
-   * Lists all products (SKUs, ingredients, supplies) in the master catalog
-   * with pagination, search, and filtering support.
+   * Get all products with pagination
+   * ค้นหารายการสินค้าทั้งหมดพร้อมการแบ่งหน้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of products / รายการสินค้าพร้อมการแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('product.findAll'))
@@ -142,8 +154,14 @@ export class Config_ProductsController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the item group classification for a product, used for
-   * procurement reporting and inventory categorization.
+   * Get product item group by product ID
+   * ค้นหากลุ่มสินค้าตามรหัสสินค้า
+   * @param id - Product ID / รหัสสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Product item group detail / รายละเอียดกลุ่มสินค้า
    */
   @Get('item-group/:id')
   @UseGuards(new AppIdGuard('product.findItemGroup'))
@@ -211,8 +229,14 @@ export class Config_ProductsController extends BaseHttpController {
   // }
 
   /**
-   * Adds a new product to the master catalog with its SKU, category, and unit definitions.
-   * The product becomes available for purchase requests, purchase orders, and inventory.
+   * Create a new product
+   * สร้างสินค้าใหม่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Product creation data / ข้อมูลสำหรับสร้างสินค้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created product / สินค้าที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('product.create'))
@@ -254,8 +278,15 @@ export class Config_ProductsController extends BaseHttpController {
   }
 
   /**
-   * Updates an existing product's details such as description, category, or unit configurations.
-   * Changes affect future procurement and inventory transactions referencing this product.
+   * Update a product
+   * อัปเดตสินค้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Product ID / รหัสสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Product update data / ข้อมูลสำหรับอัปเดตสินค้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated product / สินค้าที่อัปเดตแล้ว
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('product.update'))
@@ -303,8 +334,14 @@ export class Config_ProductsController extends BaseHttpController {
   }
 
   /**
-   * Soft-deletes a product from the master catalog, removing it from future
-   * procurement and inventory use while preserving historical records.
+   * Delete a product
+   * ลบสินค้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Product ID / รหัสสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('product.delete'))

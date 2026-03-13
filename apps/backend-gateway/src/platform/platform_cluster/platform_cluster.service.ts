@@ -17,6 +17,15 @@ export class Platform_ClusterService {
     @Inject('CLUSTER_SERVICE') private readonly clusterService: ClientProxy,
   ) {}
 
+  /**
+   * Create a new cluster via microservice
+   * สร้างคลัสเตอร์ใหม่ผ่านไมโครเซอร์วิส
+   * @param data - Cluster creation data / ข้อมูลสำหรับสร้างคลัสเตอร์
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created cluster / คลัสเตอร์ที่ถูกสร้าง
+   */
   async createCluster(
     data: IClusterCreate,
     user_id: string,
@@ -50,6 +59,15 @@ export class Platform_ClusterService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update an existing cluster via microservice
+   * อัปเดตข้อมูลคลัสเตอร์ที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param data - Cluster update data / ข้อมูลสำหรับอัปเดตคลัสเตอร์
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated cluster / คลัสเตอร์ที่ถูกอัปเดต
+   */
   async updateCluster(
     data: IClusterUpdate,
     user_id: string,
@@ -83,6 +101,15 @@ export class Platform_ClusterService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a cluster via microservice
+   * ลบคลัสเตอร์ผ่านไมโครเซอร์วิส
+   * @param id - Cluster ID / รหัสคลัสเตอร์
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async deleteCluster(
     id: string,
     user_id: string,
@@ -116,6 +143,15 @@ export class Platform_ClusterService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Retrieve all clusters with pagination
+   * ค้นหารายการคลัสเตอร์ทั้งหมดพร้อมการแบ่งหน้า
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated cluster list / รายการคลัสเตอร์แบบแบ่งหน้า
+   */
   async getlistCluster(
     user_id: string,
     tenant_id: string,
@@ -157,6 +193,15 @@ export class Platform_ClusterService {
     });
   }
 
+  /**
+   * Retrieve a single cluster by ID
+   * ค้นหาคลัสเตอร์เดียวตาม ID
+   * @param id - Cluster ID / รหัสคลัสเตอร์
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Cluster details / รายละเอียดคลัสเตอร์
+   */
   async getClusterById(
     id: string,
     user_id: string,

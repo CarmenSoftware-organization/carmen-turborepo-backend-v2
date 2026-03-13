@@ -46,8 +46,12 @@ export class CreditNoteReasonController extends BaseHttpController {
   }
 
   /**
-   * Lists all configurable reasons for issuing vendor credit notes (e.g., damaged
-   * goods, short delivery, quality issues) to populate reason dropdowns.
+   * List all credit note reasons with pagination
+   * ค้นหาเหตุผลใบลดหนี้ทั้งหมดพร้อมการแบ่งหน้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated credit note reason list / รายการเหตุผลใบลดหนี้แบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('creditNoteReason.findAll'))

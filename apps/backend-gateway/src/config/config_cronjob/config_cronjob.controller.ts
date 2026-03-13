@@ -17,8 +17,9 @@ export class ConfigCronjobController extends BaseHttpController {
   }
 
   /**
-   * Returns all scheduled tasks such as automated report generation,
-   * inventory recalculations, and periodic data synchronization jobs.
+   * Returns all scheduled tasks configured in the system
+   * ค้นหางานตั้งเวลาทั้งหมดที่กำหนดค่าในระบบ เช่น การสร้างรายงานอัตโนมัติ
+   * @param res - HTTP response / การตอบกลับ HTTP
    */
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -32,8 +33,10 @@ export class ConfigCronjobController extends BaseHttpController {
   }
 
   /**
-   * Retrieves configuration details of a specific scheduled task including
-   * cron schedule expression, execution status, and last run information.
+   * Retrieves a specific scheduled task configuration
+   * ค้นหางานตั้งเวลาเดียวตาม ID รวมถึงตารางเวลา สถานะ และข้อมูลการรันล่าสุด
+   * @param id - Cron job ID / รหัสงานตั้งเวลา
+   * @param res - HTTP response / การตอบกลับ HTTP
    */
   @Get(':id')
   @HttpCode(HttpStatus.OK)
@@ -48,8 +51,10 @@ export class ConfigCronjobController extends BaseHttpController {
   }
 
   /**
-   * Creates a new scheduled task for automating recurring operations like
-   * report generation, data cleanup, or inventory snapshots.
+   * Creates a new scheduled task for automating recurring operations
+   * สร้างงานตั้งเวลาใหม่สำหรับการดำเนินการอัตโนมัติ เช่น สร้างรายงาน ล้างข้อมูล
+   * @param body - Cron job creation data / ข้อมูลสำหรับสร้างงานตั้งเวลา
+   * @param res - HTTP response / การตอบกลับ HTTP
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -64,8 +69,11 @@ export class ConfigCronjobController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing scheduled task configuration such as cron schedule,
-   * task parameters, or enabled/disabled state.
+   * Modifies an existing scheduled task configuration
+   * อัปเดตการกำหนดค่างานตั้งเวลาที่มีอยู่ เช่น ตารางเวลา พารามิเตอร์ หรือสถานะ
+   * @param id - Cron job ID / รหัสงานตั้งเวลา
+   * @param body - Update data / ข้อมูลสำหรับอัปเดต
+   * @param res - HTTP response / การตอบกลับ HTTP
    */
   @Put(':id')
   @HttpCode(HttpStatus.OK)
@@ -82,7 +90,10 @@ export class ConfigCronjobController extends BaseHttpController {
   }
 
   /**
-   * Permanently removes a scheduled task and stops it from executing.
+   * Permanently removes a scheduled task and stops it from executing
+   * ลบงานตั้งเวลาอย่างถาวรและหยุดการทำงาน
+   * @param id - Cron job ID / รหัสงานตั้งเวลา
+   * @param res - HTTP response / การตอบกลับ HTTP
    */
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
@@ -97,7 +108,10 @@ export class ConfigCronjobController extends BaseHttpController {
   }
 
   /**
-   * Activates a scheduled task so it begins executing at the configured cron intervals.
+   * Activates a scheduled task to begin executing at configured intervals
+   * เปิดใช้งานงานตั้งเวลาให้เริ่มทำงานตามช่วงเวลาที่กำหนด
+   * @param id - Cron job ID / รหัสงานตั้งเวลา
+   * @param res - HTTP response / การตอบกลับ HTTP
    */
   @Post(':id/start')
   @HttpCode(HttpStatus.OK)
@@ -112,7 +126,10 @@ export class ConfigCronjobController extends BaseHttpController {
   }
 
   /**
-   * Pauses a running scheduled task without deleting it. Can be restarted later.
+   * Pauses a running scheduled task without deleting it
+   * หยุดงานตั้งเวลาชั่วคราวโดยไม่ลบ สามารถเริ่มใหม่ได้ภายหลัง
+   * @param id - Cron job ID / รหัสงานตั้งเวลา
+   * @param res - HTTP response / การตอบกลับ HTTP
    */
   @Post(':id/stop')
   @HttpCode(HttpStatus.OK)
@@ -127,8 +144,10 @@ export class ConfigCronjobController extends BaseHttpController {
   }
 
   /**
-   * Manually triggers a scheduled task to run immediately, bypassing the cron schedule.
-   * Useful for testing or urgent on-demand operations.
+   * Manually triggers a scheduled task to run immediately
+   * เรียกใช้งานตั้งเวลาทันทีโดยข้ามตารางเวลา cron สำหรับการทดสอบหรือการดำเนินการเร่งด่วน
+   * @param id - Cron job ID / รหัสงานตั้งเวลา
+   * @param res - HTTP response / การตอบกลับ HTTP
    */
   @Post(':id/execute')
   @HttpCode(HttpStatus.OK)
@@ -143,8 +162,9 @@ export class ConfigCronjobController extends BaseHttpController {
   }
 
   /**
-   * Returns diagnostic information about scheduled tasks currently active in memory
-   * for system monitoring and troubleshooting.
+   * Returns diagnostic information about active scheduled tasks in memory
+   * คืนข้อมูลวินิจฉัยเกี่ยวกับงานตั้งเวลาที่ทำงานอยู่ในหน่วยความจำ
+   * @param res - HTTP response / การตอบกลับ HTTP
    */
   @Get('debug/memory')
   @HttpCode(HttpStatus.OK)

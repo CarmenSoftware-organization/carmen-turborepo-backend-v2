@@ -20,6 +20,14 @@ export class Platform_UserBusinessUnitService {
     @Inject('CLUSTER_SERVICE') private readonly clusterService: ClientProxy,
   ) { }
 
+  /**
+   * Retrieve a single user-business unit mapping by ID
+   * ค้นหาการเชื่อมโยงผู้ใช้กับหน่วยธุรกิจเดียวตาม ID
+   * @param id - Mapping ID / รหัสการเชื่อมโยง
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Mapping details / รายละเอียดการเชื่อมโยง
+   */
   async findOne(id: string, user_id: string, version: string): Promise<unknown> {
     this.logger.debug(
       {
@@ -47,6 +55,14 @@ export class Platform_UserBusinessUnitService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Retrieve all user-business unit mappings with pagination
+   * ค้นหารายการการเชื่อมโยงผู้ใช้กับหน่วยธุรกิจทั้งหมดพร้อมการแบ่งหน้า
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated mapping list / รายการการเชื่อมโยงแบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     paginate: IPaginate,
@@ -82,6 +98,14 @@ export class Platform_UserBusinessUnitService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new user-business unit mapping via microservice
+   * สร้างการเชื่อมโยงผู้ใช้กับหน่วยธุรกิจใหม่ผ่านไมโครเซอร์วิส
+   * @param data - Mapping creation data / ข้อมูลสำหรับสร้างการเชื่อมโยง
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created mapping / การเชื่อมโยงที่ถูกสร้าง
+   */
   async create(
     data: IUserBusinessUnit,
     user_id: string,
@@ -113,6 +137,14 @@ export class Platform_UserBusinessUnitService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update an existing user-business unit mapping via microservice
+   * อัปเดตการเชื่อมโยงผู้ใช้กับหน่วยธุรกิจที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param data - Mapping update data / ข้อมูลสำหรับอัปเดตการเชื่อมโยง
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated mapping / การเชื่อมโยงที่ถูกอัปเดต
+   */
   async update(
     data: IUserBusinessUnitUpdate,
     user_id: string,
@@ -144,6 +176,14 @@ export class Platform_UserBusinessUnitService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a user-business unit mapping via microservice
+   * ลบการเชื่อมโยงผู้ใช้กับหน่วยธุรกิจผ่านไมโครเซอร์วิส
+   * @param id - Mapping ID / รหัสการเชื่อมโยง
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async delete(id: string, user_id: string, version: string): Promise<unknown> {
     this.logger.debug(
       {

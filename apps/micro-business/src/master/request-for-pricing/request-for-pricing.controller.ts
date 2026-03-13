@@ -27,6 +27,12 @@ export class RequestForPricingController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a single request for pricing by ID
+   * ค้นหารายการคำขอราคาเดียวตาม ID
+   * @param payload - Microservice payload containing request for pricing ID / ข้อมูล payload ที่มี ID ของคำขอราคา
+   * @returns Request for pricing detail / รายละเอียดคำขอราคา
+   */
   @MessagePattern({
     cmd: 'request-for-pricing.findOne',
     service: 'request-for-pricing',
@@ -46,6 +52,12 @@ export class RequestForPricingController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all requests for pricing with pagination
+   * ค้นหารายการคำขอราคาทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing pagination parameters / ข้อมูล payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of requests for pricing / รายการคำขอราคาพร้อมการแบ่งหน้า
+   */
   @MessagePattern({
     cmd: 'request-for-pricing.findAll',
     service: 'request-for-pricing',
@@ -65,6 +77,12 @@ export class RequestForPricingController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Create a new request for pricing
+   * สร้างคำขอราคาใหม่
+   * @param payload - Microservice payload containing request for pricing data / ข้อมูล payload ที่มีข้อมูลคำขอราคา
+   * @returns Created request for pricing ID / ID ของคำขอราคาที่สร้างขึ้น
+   */
   @MessagePattern({
     cmd: 'request-for-pricing.create',
     service: 'request-for-pricing',
@@ -84,6 +102,12 @@ export class RequestForPricingController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an existing request for pricing
+   * อัปเดตคำขอราคาที่มีอยู่
+   * @param payload - Microservice payload containing updated request for pricing data / ข้อมูล payload ที่มีข้อมูลคำขอราคาที่อัปเดต
+   * @returns Updated request for pricing / คำขอราคาที่อัปเดต
+   */
   @MessagePattern({
     cmd: 'request-for-pricing.update',
     service: 'request-for-pricing',
@@ -103,6 +127,12 @@ export class RequestForPricingController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a request for pricing (soft delete)
+   * ลบคำขอราคา (ลบแบบซอฟต์)
+   * @param payload - Microservice payload containing request for pricing ID / ข้อมูล payload ที่มี ID ของคำขอราคา
+   * @returns Deleted request for pricing ID / ID ของคำขอราคาที่ลบ
+   */
   @MessagePattern({
     cmd: 'request-for-pricing.remove',
     service: 'request-for-pricing',

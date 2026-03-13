@@ -22,6 +22,12 @@ export class PurchaseRequestCommentController {
     private readonly purchaseRequestCommentService: PurchaseRequestCommentService,
   ) {}
 
+  /**
+   * Create an audit context from the microservice payload
+   * สร้าง audit context จาก payload ของไมโครเซอร์วิส
+   * @param payload - Microservice payload containing tenant and user info / payload ของไมโครเซอร์วิสที่มีข้อมูลผู้เช่าและผู้ใช้
+   * @returns Audit context object / ออบเจกต์ audit context
+   */
   private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
@@ -32,6 +38,12 @@ export class PurchaseRequestCommentController {
     };
   }
 
+  /**
+   * Find a purchase request comment by ID
+   * ค้นหาความคิดเห็นใบขอซื้อรายการเดียวตาม ID
+   * @param payload - Payload containing the comment ID / payload ที่มี ID ของความคิดเห็น
+   * @returns Comment data with user profile / ข้อมูลความคิดเห็นพร้อมโปรไฟล์ผู้ใช้
+   */
   @MessagePattern({
     cmd: 'purchase-request-comment.find-by-id',
     service: 'purchase-request-comment',
@@ -54,6 +66,12 @@ export class PurchaseRequestCommentController {
     );
   }
 
+  /**
+   * Find all comments for a specific purchase request with pagination
+   * ค้นหาความคิดเห็นทั้งหมดของใบขอซื้อที่ระบุพร้อมการแบ่งหน้า
+   * @param payload - Payload containing purchase request ID and pagination / payload ที่มี ID ใบขอซื้อและการแบ่งหน้า
+   * @returns Paginated list of comments / รายการความคิดเห็นที่แบ่งหน้าแล้ว
+   */
   @MessagePattern({
     cmd: 'purchase-request-comment.find-all-by-purchase-request-id',
     service: 'purchase-request-comment',
@@ -79,6 +97,12 @@ export class PurchaseRequestCommentController {
     );
   }
 
+  /**
+   * Create a new comment on a purchase request
+   * สร้างความคิดเห็นใหม่ในใบขอซื้อ
+   * @param payload - Payload containing comment data / payload ที่มีข้อมูลความคิดเห็น
+   * @returns Created comment / ความคิดเห็นที่สร้างแล้ว
+   */
   @MessagePattern({
     cmd: 'purchase-request-comment.create',
     service: 'purchase-request-comment',
@@ -104,6 +128,12 @@ export class PurchaseRequestCommentController {
     );
   }
 
+  /**
+   * Update an existing purchase request comment
+   * อัปเดตความคิดเห็นใบขอซื้อที่มีอยู่
+   * @param payload - Payload containing comment ID and updated data / payload ที่มี ID ความคิดเห็นและข้อมูลที่อัปเดต
+   * @returns Updated comment / ความคิดเห็นที่อัปเดตแล้ว
+   */
   @MessagePattern({
     cmd: 'purchase-request-comment.update',
     service: 'purchase-request-comment',
@@ -129,6 +159,12 @@ export class PurchaseRequestCommentController {
     );
   }
 
+  /**
+   * Delete a purchase request comment (soft delete, own comments only)
+   * ลบความคิดเห็นใบขอซื้อ (ลบแบบซอฟต์ เฉพาะความคิดเห็นของตนเอง)
+   * @param payload - Payload containing the comment ID to delete / payload ที่มี ID ของความคิดเห็นที่ต้องการลบ
+   * @returns Deleted comment ID / ID ของความคิดเห็นที่ลบแล้ว
+   */
   @MessagePattern({
     cmd: 'purchase-request-comment.delete',
     service: 'purchase-request-comment',
@@ -151,6 +187,12 @@ export class PurchaseRequestCommentController {
     );
   }
 
+  /**
+   * Add an attachment to a purchase request comment
+   * เพิ่มไฟล์แนบในความคิดเห็นใบขอซื้อ
+   * @param payload - Payload containing comment ID and attachment data / payload ที่มี ID ความคิดเห็นและข้อมูลไฟล์แนบ
+   * @returns Updated comment with new attachment / ความคิดเห็นที่อัปเดตพร้อมไฟล์แนบใหม่
+   */
   @MessagePattern({
     cmd: 'purchase-request-comment.add-attachment',
     service: 'purchase-request-comment',
@@ -176,6 +218,12 @@ export class PurchaseRequestCommentController {
     );
   }
 
+  /**
+   * Remove an attachment from a purchase request comment
+   * ลบไฟล์แนบจากความคิดเห็นใบขอซื้อ
+   * @param payload - Payload containing comment ID and file token of attachment to remove / payload ที่มี ID ความคิดเห็นและ token ของไฟล์แนบที่ต้องการลบ
+   * @returns Updated comment without the removed attachment / ความคิดเห็นที่อัปเดตโดยไม่มีไฟล์แนบที่ลบ
+   */
   @MessagePattern({
     cmd: 'purchase-request-comment.remove-attachment',
     service: 'purchase-request-comment',

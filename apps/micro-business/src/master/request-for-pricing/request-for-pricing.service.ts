@@ -56,6 +56,12 @@ export class RequestForPricingService {
     RequestForPricingService.name,
   );
 
+  /**
+   * Initialize the Prisma service for the tenant
+   * เริ่มต้นบริการ Prisma สำหรับผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / รหัสผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
   }
@@ -79,10 +85,22 @@ export class RequestForPricingService {
     private readonly prismaSystem: typeof PrismaClient_SYSTEM,
   ) { }
 
+  /**
+   * Generate a random password string
+   * สร้างรหัสผ่านแบบสุ่ม
+   * @param length - Password length / ความยาวรหัสผ่าน
+   * @returns Generated password / รหัสผ่านที่สร้างขึ้น
+   */
   private generatePassword(length: number = 8): string {
     return crypto.randomBytes(length).toString('hex').slice(0, length);
   }
 
+  /**
+   * Generate a JWT token for vendor access
+   * สร้างโทเค็น JWT สำหรับการเข้าถึงของผู้ขาย
+   * @param payload - Token payload with bu, vendor_id, rfp_detail_id, password / ข้อมูลโทเค็น
+   * @returns Signed JWT token / โทเค็น JWT ที่ลงนามแล้ว
+   */
   generateVendorToken(payload: {
     bu: string;
     vendor_id: string;
@@ -92,6 +110,12 @@ export class RequestForPricingService {
     return this.jwtService.sign(payload);
   }
 
+  /**
+   * Verify a vendor JWT token
+   * ตรวจสอบโทเค็น JWT ของผู้ขาย
+   * @param token - JWT token to verify / โทเค็น JWT ที่จะตรวจสอบ
+   * @returns Decoded token payload / ข้อมูลโทเค็นที่ถอดรหัสแล้ว
+   */
   async verifyVendorToken(token: string): Promise<any> {
     try {
       return this.jwtService.verify(token);
@@ -100,6 +124,12 @@ export class RequestForPricingService {
     }
   }
 
+  /**
+   * Generate a random URL token string
+   * สร้างโทเค็น URL แบบสุ่ม
+   * @param length - Token length / ความยาวโทเค็น
+   * @returns Generated URL token / โทเค็น URL ที่สร้างขึ้น
+   */
   private generateUrlToken(length: number = 12): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
@@ -110,6 +140,12 @@ export class RequestForPricingService {
     return result;
   }
 
+  /**
+   * Insert a vendor price list short URL record in the system database
+   * บันทึก URL สั้นของรายการราคาผู้ขายในฐานข้อมูลระบบ
+   * @param data - Token, expiry, receiver email, and URL token / โทเค็น วันหมดอายุ อีเมลผู้รับ และโทเค็น URL
+   * @returns URL token and record ID / โทเค็น URL และรหัสระเบียน
+   */
   async insertVendorPricelist(data: {
     token: string;
     expired_at: Date;
@@ -137,6 +173,12 @@ export class RequestForPricingService {
     };
   }
 
+  /**
+   * Find a single request for pricing by ID with template and vendor details
+   * ค้นหาคำขอราคารายการเดียวตาม ID พร้อมเทมเพลตและรายละเอียดผู้ขาย
+   * @param id - Request for pricing ID / รหัสคำขอราคา
+   * @returns Request for pricing detail / รายละเอียดคำขอราคา
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -296,6 +338,12 @@ export class RequestForPricingService {
     return Result.ok(serializedRequestForPricing);
   }
 
+  /**
+   * Find all requests for pricing with pagination
+   * ค้นหาคำขอราคาทั้งหมดแบบแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of requests for pricing / รายการคำขอราคาแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
@@ -413,6 +461,12 @@ export class RequestForPricingService {
     });
   }
 
+  /**
+   * Create a new request for pricing with vendor token generation
+   * สร้างคำขอราคาใหม่พร้อมสร้างโทเค็นผู้ขาย
+   * @param data - Request for pricing creation data with vendors / ข้อมูลสำหรับสร้างคำขอราคาพร้อมผู้ขาย
+   * @returns Created request ID and vendor tokens / รหัสคำขอที่สร้างแล้วและโทเค็นผู้ขาย
+   */
   @TryCatch
   async create(data: any): Promise<Result<unknown>> {
     this.logger.debug(
@@ -520,6 +574,12 @@ export class RequestForPricingService {
     });
   }
 
+  /**
+   * Update an existing request for pricing with vendor add/remove/update operations
+   * อัปเดตคำขอราคาที่มีอยู่พร้อมเพิ่ม/ลบ/อัปเดตผู้ขาย
+   * @param data - Request for pricing update data / ข้อมูลสำหรับอัปเดตคำขอราคา
+   * @returns Updated request ID / รหัสคำขอที่อัปเดตแล้ว
+   */
   @TryCatch
   async update(data: any): Promise<Result<unknown>> {
     this.logger.debug(
@@ -643,6 +703,12 @@ export class RequestForPricingService {
     return Result.ok({ id: updatedRequest.id });
   }
 
+  /**
+   * Soft delete a request for pricing and all its vendor details
+   * ลบคำขอราคาและรายละเอียดผู้ขายทั้งหมดแบบ soft delete
+   * @param id - Request for pricing ID / รหัสคำขอราคา
+   * @returns Deleted request ID / รหัสคำขอที่ลบแล้ว
+   */
   @TryCatch
   async remove(id: string): Promise<Result<unknown>> {
     this.logger.debug(

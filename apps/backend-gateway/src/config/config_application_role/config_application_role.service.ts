@@ -15,6 +15,15 @@ export class ConfigApplicationRoleService {
     @Inject('BUSINESS_SERVICE')
     private readonly authService: ClientProxy,
   ) { }
+  /**
+   * Find all application roles with pagination via microservice
+   * ค้นหาบทบาทแอปพลิเคชันทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated application role data or error / ข้อมูลบทบาทแอปพลิเคชันพร้อมการแบ่งหน้าหรือข้อผิดพลาด
+   */
   async findAll(paginate, user_id: string, bu_code: string, version: string) {
     this.logger.debug(
       {
@@ -47,6 +56,15 @@ export class ConfigApplicationRoleService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Find an application role by ID via microservice
+   * ค้นหาบทบาทแอปพลิเคชันเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Application role ID / รหัสบทบาทแอปพลิเคชัน
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Application role data or error / ข้อมูลบทบาทแอปพลิเคชันหรือข้อผิดพลาด
+   */
   async findOne(id: string, user_id: string, bu_code: string, version: string) {
     this.logger.debug(
       {
@@ -79,6 +97,15 @@ export class ConfigApplicationRoleService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Create a new application role via microservice
+   * สร้างบทบาทแอปพลิเคชันใหม่ผ่านไมโครเซอร์วิส
+   * @param createConfigApplicationRoleDto - Creation data / ข้อมูลสำหรับสร้าง
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created application role or error / บทบาทแอปพลิเคชันที่สร้างแล้วหรือข้อผิดพลาด
+   */
   async create(createConfigApplicationRoleDto: ICreateConfigApplicationRole, user_id: string, bu_code: string, version: string) {
     this.logger.debug(
       {
@@ -111,6 +138,15 @@ export class ConfigApplicationRoleService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update an existing application role via microservice
+   * อัปเดตบทบาทแอปพลิเคชันที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param updateConfigApplicationRoleDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated application role or error / บทบาทแอปพลิเคชันที่อัปเดตแล้วหรือข้อผิดพลาด
+   */
   async update(updateConfigApplicationRoleDto: IUpdateConfigApplicationRole, user_id: string, bu_code: string, version: string) {
     this.logger.debug(
       {
@@ -143,6 +179,15 @@ export class ConfigApplicationRoleService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Remove an application role by ID via microservice
+   * ลบบทบาทแอปพลิเคชันตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Application role ID / รหัสบทบาทแอปพลิเคชัน
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result or error / ผลการลบหรือข้อผิดพลาด
+   */
   async remove(id: string, user_id: string, bu_code: string, version: string) {
     this.logger.debug(
       {

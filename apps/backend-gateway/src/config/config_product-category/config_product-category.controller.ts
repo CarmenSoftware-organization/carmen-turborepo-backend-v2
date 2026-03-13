@@ -62,8 +62,14 @@ export class Config_ProductCategoryController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific product category used to classify items in the master catalog
-   * (e.g., Fresh Produce, Dry Goods, Beverages, Cleaning Supplies).
+   * Retrieve a product category by ID
+   * ค้นหารายการเดียวตาม ID ของหมวดหมู่สินค้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Product category ID / รหัสหมวดหมู่สินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Product category detail / รายละเอียดหมวดหมู่สินค้า
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('productCategory.findOne'))
@@ -98,8 +104,14 @@ export class Config_ProductCategoryController extends BaseHttpController {
   }
 
   /**
-   * Lists all product categories configured for the business unit, providing the primary
-   * classification for organizing the product catalog and generating procurement reports.
+   * List all product categories with pagination
+   * ค้นหารายการทั้งหมดของหมวดหมู่สินค้าพร้อมการแบ่งหน้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination query parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of product categories / รายการหมวดหมู่สินค้าแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('productCategory.findAll'))
@@ -136,8 +148,14 @@ export class Config_ProductCategoryController extends BaseHttpController {
   }
 
   /**
-   * Defines a new top-level product category for classifying items in the master catalog.
-   * Sub-categories can then be created under this category for more granular classification.
+   * Create a new product category
+   * สร้างหมวดหมู่สินค้าใหม่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Product category creation data / ข้อมูลสำหรับสร้างหมวดหมู่สินค้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created product category / หมวดหมู่สินค้าที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('productCategory.create'))
@@ -173,8 +191,15 @@ export class Config_ProductCategoryController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing product category, such as renaming it or adjusting its display order.
-   * Changes affect how products are organized in the catalog and categorized in reports.
+   * Update an existing product category
+   * อัปเดตหมวดหมู่สินค้าที่มีอยู่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Product category ID / รหัสหมวดหมู่สินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Product category update data / ข้อมูลสำหรับอัปเดตหมวดหมู่สินค้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated product category / หมวดหมู่สินค้าที่อัปเดตแล้ว
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('productCategory.update'))
@@ -216,8 +241,14 @@ export class Config_ProductCategoryController extends BaseHttpController {
   }
 
   /**
-   * Removes a product category from the classification hierarchy. Products currently
-   * assigned to this category should be reassigned before deletion.
+   * Delete a product category by ID
+   * ลบหมวดหมู่สินค้าตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Product category ID / รหัสหมวดหมู่สินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('productCategory.delete'))

@@ -49,8 +49,11 @@ export class ApplicationPermissionController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the full catalog of granular feature permissions available in the ERP system.
-   * Used by platform administrators to review what access controls can be assigned to roles.
+   * List all application permissions
+   * ค้นหารายการสิทธิ์การเข้าถึงทั้งหมด
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Permission list / รายการสิทธิ์การเข้าถึง
    */
   @Get()
   @UseGuards(new AppIdGuard('application-permission.findAll'))
@@ -101,8 +104,12 @@ export class ApplicationPermissionController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the details of a specific feature permission by its ID.
-   * Useful for inspecting individual permission definitions before assigning them to roles.
+   * Get an application permission by ID
+   * ค้นหาสิทธิ์การเข้าถึงเดียวตาม ID
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - Permission ID / รหัสสิทธิ์การเข้าถึง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Permission details / รายละเอียดสิทธิ์การเข้าถึง
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('application-permission.findOne'))
@@ -169,8 +176,12 @@ export class ApplicationPermissionController extends BaseHttpController {
   }
 
   /**
-   * Defines a new granular feature permission in the ERP platform.
-   * Once created, this permission can be assigned to application roles to control user access.
+   * Create a new application permission
+   * สร้างสิทธิ์การเข้าถึงใหม่
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param createApplicationPermissionDto - Permission creation data / ข้อมูลสำหรับสร้างสิทธิ์การเข้าถึง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created permission / สิทธิ์การเข้าถึงที่ถูกสร้าง
    */
   @Post()
   @UseGuards(new AppIdGuard('application-permission.create'))
@@ -233,8 +244,13 @@ export class ApplicationPermissionController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing feature permission definition.
-   * Changes propagate to all roles that reference this permission across tenants.
+   * Update an existing application permission
+   * อัปเดตสิทธิ์การเข้าถึงที่มีอยู่
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - Permission ID / รหัสสิทธิ์การเข้าถึง
+   * @param updateApplicationPermissionDto - Permission update data / ข้อมูลสำหรับอัปเดตสิทธิ์การเข้าถึง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated permission / สิทธิ์การเข้าถึงที่ถูกอัปเดต
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('application-permission.update'))
@@ -314,8 +330,12 @@ export class ApplicationPermissionController extends BaseHttpController {
   }
 
   /**
-   * Removes a feature permission from the ERP platform.
-   * Affects all roles that include this permission, potentially revoking user access.
+   * Delete an application permission
+   * ลบสิทธิ์การเข้าถึงออกจากระบบ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - Permission ID / รหัสสิทธิ์การเข้าถึง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('application-permission.delete'))

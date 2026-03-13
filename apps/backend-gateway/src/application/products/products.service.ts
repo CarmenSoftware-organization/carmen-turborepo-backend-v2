@@ -18,6 +18,16 @@ export class ProductsService {
     private readonly masterService: ClientProxy,
   ) { }
 
+  /**
+   * Get all products assigned to a specific location via microservice
+   * ค้นหารายการสินค้าทั้งหมดที่ผูกกับสถานที่ผ่านไมโครเซอร์วิส
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param location_id - Location ID / รหัสสถานที่
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of products at the location / รายการสินค้าที่สถานที่แบบแบ่งหน้า
+   */
   async getByLocation(
     user_id: string,
     bu_code: string,

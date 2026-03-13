@@ -59,8 +59,14 @@ export class Config_CurrenciesController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific currency configuration including code, symbol, and base currency status
-   * for multi-currency procurement and vendor price lists.
+   * Get a currency by ID
+   * ค้นหาสกุลเงินเดียวตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Currency ID / รหัสสกุลเงิน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Currency detail / รายละเอียดสกุลเงิน
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('currencies.findOne'))
@@ -126,8 +132,14 @@ export class Config_CurrenciesController extends BaseHttpController {
   }
 
   /**
-   * Lists all supported currencies for the business unit, including the base currency,
-   * for international procurement and vendor payments.
+   * Get all currencies with pagination
+   * ค้นหารายการสกุลเงินทั้งหมดพร้อมการแบ่งหน้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of currencies / รายการสกุลเงินพร้อมการแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('currencies.findAll'))
@@ -190,8 +202,14 @@ export class Config_CurrenciesController extends BaseHttpController {
   }
 
   /**
-   * Adds a new currency for multi-currency procurement. The currency can then be
-   * assigned exchange rates and used in purchase orders and vendor price lists.
+   * Create a new currency
+   * สร้างสกุลเงินใหม่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Currency creation data / ข้อมูลสำหรับสร้างสกุลเงิน
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created currency / สกุลเงินที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('currencies.create'))
@@ -250,8 +268,15 @@ export class Config_CurrenciesController extends BaseHttpController {
   }
 
   /**
-   * Fully updates a currency configuration such as symbol, decimal precision,
-   * or base currency designation for procurement documents.
+   * Update a currency (full replacement)
+   * อัปเดตสกุลเงิน (แทนที่ทั้งหมด)
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Currency ID / รหัสสกุลเงิน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Currency update data / ข้อมูลสำหรับอัปเดตสกุลเงิน
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated currency / สกุลเงินที่อัปเดตแล้ว
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('currencies.update'))
@@ -324,8 +349,15 @@ export class Config_CurrenciesController extends BaseHttpController {
   }
 
   /**
-   * Partially updates specific fields of a currency configuration,
-   * such as toggling active status or adjusting display settings.
+   * Partially update a currency
+   * อัปเดตสกุลเงินบางส่วน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Currency ID / รหัสสกุลเงิน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Partial currency update data / ข้อมูลสำหรับอัปเดตสกุลเงินบางส่วน
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated currency / สกุลเงินที่อัปเดตแล้ว
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('currencies.patch'))
@@ -398,7 +430,14 @@ export class Config_CurrenciesController extends BaseHttpController {
   }
 
   /**
-   * Removes a currency from active use. Historical procurement records using it are preserved.
+   * Delete a currency
+   * ลบสกุลเงิน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Currency ID / รหัสสกุลเงิน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('currencies.delete'))

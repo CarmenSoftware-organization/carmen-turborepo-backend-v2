@@ -56,8 +56,14 @@ export class Config_DepartmentUserController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific department-user assignment showing which users
-   * belong to a hotel department for requisition and approval permissions.
+   * Retrieve a department-user assignment by ID
+   * ค้นหารายการเดียวตาม ID ของการกำหนดแผนก-ผู้ใช้
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Department-user assignment ID / รหัสการกำหนดแผนก-ผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Department-user assignment detail / รายละเอียดการกำหนดแผนก-ผู้ใช้
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('departmentUser.findOne'))
@@ -114,8 +120,14 @@ export class Config_DepartmentUserController extends BaseHttpController {
   }
 
   /**
-   * Lists all department-user assignments for managing which staff members
-   * belong to each hotel department for requisition routing.
+   * List all department-user assignments with pagination
+   * ค้นหารายการทั้งหมดของการกำหนดแผนก-ผู้ใช้พร้อมการแบ่งหน้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination query parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of department-user assignments / รายการการกำหนดแผนก-ผู้ใช้แบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('departmentUser.findAll'))
@@ -174,8 +186,14 @@ export class Config_DepartmentUserController extends BaseHttpController {
   }
 
   /**
-   * Creates a new department-user assignment, linking a user to a hotel department
-   * for requisition creation and approval workflow participation.
+   * Create a new department-user assignment
+   * สร้างการกำหนดแผนก-ผู้ใช้ใหม่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Department-user assignment creation data / ข้อมูลสำหรับสร้างการกำหนดแผนก-ผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created department-user assignment / การกำหนดแผนก-ผู้ใช้ที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('departmentUser.create'))
@@ -233,7 +251,15 @@ export class Config_DepartmentUserController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing department-user assignment such as changing the user's role within the department.
+   * Update an existing department-user assignment
+   * อัปเดตการกำหนดแผนก-ผู้ใช้ที่มีอยู่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Department-user assignment ID / รหัสการกำหนดแผนก-ผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Department-user assignment update data / ข้อมูลสำหรับอัปเดตการกำหนดแผนก-ผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated department-user assignment / การกำหนดแผนก-ผู้ใช้ที่อัปเดตแล้ว
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('departmentUser.update'))
@@ -294,7 +320,14 @@ export class Config_DepartmentUserController extends BaseHttpController {
   }
 
   /**
-   * Removes a department-user assignment, unlinking a user from a hotel department.
+   * Delete a department-user assignment by ID
+   * ลบการกำหนดแผนก-ผู้ใช้ตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Department-user assignment ID / รหัสการกำหนดแผนก-ผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('departmentUser.delete'))
