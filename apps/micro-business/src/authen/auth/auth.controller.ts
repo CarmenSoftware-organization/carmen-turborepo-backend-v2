@@ -164,9 +164,10 @@ export class AuthController {
     const version: string = payload.version ?? 'latest';
     const user_id = payload.user_id;
     const bu_code = payload.bu_code;
+    const paginate = payload.paginate;
 
     const auditContext = this.createAuditContext(payload);
-    return runWithAuditContext(auditContext, () => this.authService.getAllUserInTenant(user_id, bu_code, version));
+    return runWithAuditContext(auditContext, () => this.authService.getAllUserInTenant(user_id, bu_code, paginate, version));
   }
 
   @MessagePattern({ cmd: 'get-user-by-id', service: 'auth' })
