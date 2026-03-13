@@ -1,0 +1,19 @@
+meta {
+  name: 01 - List Pending PR
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/my-pending/purchase-request
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

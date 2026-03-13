@@ -1,0 +1,23 @@
+meta {
+  name: 10 - Get Workflow Permission
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/store-requisition/:id/workflow-permission
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{sr_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

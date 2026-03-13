@@ -1,4 +1,4 @@
-# Flowchart Diagram
+# Infrastructure Diagram
 
 Server AWS
 
@@ -11,11 +11,11 @@ Server AWS
 
 ### Front-end
 
-    aws service : s3
+    aws service : S3
     project type : NextJS
     next-build : SSG
 
-### gateway
+### Gateway
 
     aws service : EC2 (ECS)
     Project type : NestJS
@@ -27,133 +27,98 @@ Server AWS
     aws service : ELB
     comment : Load balancing, SSL termination, Proxy
 
-### microservice
+### Microservices (Current Topology)
 
-    - Microservice Authentication
-
-        project type : NestJS
-        protocol : TCP
-        Port number : 5001
-        nest-build : microservice
-
-        OR
-
-        Project type : Keyclock
-        protocol : TCP
-        Port number : 8080
-
-    - Microservice Cluster
+    - micro-business (Consolidated)
 
         project type : NestJS
         protocol : TCP
-        Port number : 5002
+        Port number : 5020 (TCP) / 6020 (HTTP)
+        Modules : auth, cluster, inventory, master, procurement, recipe, log, notification
 
-    - microservice License
-        project type : NestJS
-        protocol : TCP
-        Port number : 5003
-
-    - Microservice File
+    - micro-keycloak-api
 
         project type : NestJS
         protocol : TCP
-        Port number : 5004
+        Port number : 5013 (TCP) / 6013 (HTTP)
+        Integration : Keycloak identity provider
 
-    - Microservice Notification
-
-        project type : NestJS
-        protocol : TCP
-        Port number : 5005
-
-    - Microservice Report
+    - micro-file
 
         project type : NestJS
         protocol : TCP
-        Port number : 5007
+        Port number : 5007 (TCP) / 6007 (HTTP)
+        Storage : MinIO (S3-compatible)
 
-    - Microservice Tenant Master
-        project type : NestJS
-        protocol : TCP
-        Port number : 5008
-        nest-build : microservice
-        
-    - Microservice Tenant Procurement
-        project type : NestJS
-        protocol : TCP
-        Port number : 5009
-        nest-build : microservice
+    - micro-notification
 
-    - Microservice Tenant Inventory
         project type : NestJS
         protocol : TCP
-        Port number : 5010
-        nest-build : microservice
-        
-    - Microservice Tenant Recipe
-        project type : NestJS
+        Port number : 5006 (TCP) / 6006 (HTTP)
+        Real-time : Socket.io
+
+    - micro-cronjob
+
+        project type : Elysia + Bun
         protocol : TCP
-        Port number : 5011
-        nest-build : microservice
+        Port number : 5012 (TCP) / 6012 (HTTP)
+        Scheduled tasks
 
 ### Database
 
     aws service : RDS OR Aurora
     project type : PostgreSQL
     Database : PostgreSQL
-    schema : Multi-tenant (Schema)
+    schema : Dual-schema (Platform + Tenant)
 
 ```mermaid
 
 flowchart TD
 
-    FrontEnd["Front-end\n(Next.JS)\nDocker Port: 3500\nEC2: small size"]
-    FrontEndAPI["Front-end\n(Next.JS)\nAPI"]
-    BackEnd["Back-end\nAPI Gateway\nDocker Port: 4000"]
+    FrontEnd["carmen-inventory-frontend\n(Next.JS)\nDocker Port: 3500"]
+    FrontEndAPI["Frontend API Routes"]
+    BackEnd["backend-gateway\nAPI Gateway\nHTTP: 4000 / HTTPS: 4001"]
     VendorPortal["Vendor Portal\n(Next.JS)"]
-    ExchangeRate["Exchange\nRateService\n(Bank Rate)"]
+    ExchangeRate["Exchange Rate\nService\n(Bank Rate)"]
     Redis[(Redis)]
-    PostgreSQL[(PostgreSQL\nEC2 ?? RDS\nAurora)]
-    S3Storage[(S3 Storage\nAWS)]
-    FileService["File Service"]
-    ClusterService["Cluster Service\nBusiness Unit Service\nUser Service\nLicense Service\nIncident Service\n..."]
-    TenantService["Tenant service\n• Purchase Request\n• Purchase Order\n• Good received note\n• ...\n• config ..."]
-    ReportService["Reports Service\n(Fast Report ??\nReact PDF)"]
-    IdentityService["Identity Service\n(OAuth ?? Supabase)\naws : cognito\nKEYCLOAK"]
-    NotificationService["Notification Service"]
-    MailService["Mail Service\n(Resend)"]
-    ScheduleService["Schedule\n(Cron job)"]
-    InterfaceService["Interface Service\n(Third party\nplatform)"]
-    NoSQL[(NoSQL\nReports and AI)]
-    Aurora["AURORA"]
-    PostgreSQL1[(PostgreSQL)]
-    PostgreSQL2[(PostgreSQL)]
-    PostgreSQL3[(PostgreSQL)]
+    PostgreSQL[(PostgreSQL\nAWS RDS)]
+    S3Storage[(MinIO / S3\nStorage)]
+    FileService["micro-file\nTCP: 5007\nHTTP: 6007"]
+    BusinessService["micro-business\nTCP: 5020 / HTTP: 6020\n• Auth & Roles\n• Clusters & BUs\n• Inventory (GRN, Stock, Transfer)\n• Master Data (Products, Vendors)\n• Procurement (PO, PR, Credit Notes)\n• Recipes\n• Activity Logging\n• Notifications"]
+    KeycloakService["micro-keycloak-api\nTCP: 5013 / HTTP: 6013"]
+    KeycloakServer["Keycloak Server\n:8080"]
+    NotificationService["micro-notification\nTCP: 5006 / HTTP: 6006\nSocket.io"]
+    CronjobService["micro-cronjob\nTCP: 5012 / HTTP: 6012\nElysia + Bun"]
 
     FrontEnd <--> FrontEndAPI
     FrontEndAPI <--> BackEnd
     VendorPortal <--> BackEnd
     BackEnd <--> ExchangeRate
     BackEnd <--> Redis
-    BackEnd --> NotificationService
-    BackEnd --> MailService
-    BackEnd --> ScheduleService
-    BackEnd --> InterfaceService
-    BackEnd <--> IdentityService
-    BackEnd <--> ClusterService
+    BackEnd <--> BusinessService
+    BackEnd <--> KeycloakService
     BackEnd <--> FileService
-    BackEnd <--> TenantService
-    BackEnd <--> ReportService
-    IdentityService <--> PostgreSQL
-    ClusterService <--> PostgreSQL
-    FileService <--> S3Storage
-    TenantService <--> Aurora
-    ReportService <--> NoSQL
-    ReportService <--> Aurora
+    BackEnd <--> NotificationService
+    BackEnd <--> CronjobService
+    KeycloakService <--> KeycloakServer
 
-    subgraph AuroraCluster["AURORA"]
-        PostgreSQL1 <--> PostgreSQL2 <--> PostgreSQL3
+    BusinessService <--> PostgreSQL
+    KeycloakService <--> PostgreSQL
+    FileService <--> S3Storage
+    NotificationService <--> PostgreSQL
+
+    subgraph PlatformDB["Platform Schema"]
+        Users["tb_user, tb_platform_user"]
+        Clusters["tb_cluster, tb_business_unit"]
+        Roles["tb_application_role, tb_permission"]
     end
 
-    TenantService <--> AuroraCluster
-    ReportService <--> AuroraCluster
+    subgraph TenantDB["Tenant Schema"]
+        Products["tb_product, tb_vendor, tb_location"]
+        Inventory["tb_stock_in, tb_stock_out, tb_transfer"]
+        Procurement["tb_purchase_order, tb_purchase_request"]
+    end
+
+    PostgreSQL --- PlatformDB
+    PostgreSQL --- TenantDB
 ```

@@ -1,0 +1,19 @@
+meta {
+  name: 01 - Get User Locations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/user-location
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

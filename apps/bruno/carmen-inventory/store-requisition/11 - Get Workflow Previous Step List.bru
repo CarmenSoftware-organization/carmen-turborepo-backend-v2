@@ -1,0 +1,23 @@
+meta {
+  name: 11 - Get Workflow Previous Step List
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/store-requisition/:id/workflow-previous-step-list
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{sr_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

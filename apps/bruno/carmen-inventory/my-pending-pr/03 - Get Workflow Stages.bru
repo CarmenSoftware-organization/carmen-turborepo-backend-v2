@@ -1,0 +1,23 @@
+meta {
+  name: 03 - Get Workflow Stages
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host}}/api/my-pending/purchase-request/:bu_code/workflow-stages
+  body: none
+  auth: bearer
+}
+
+params:path {
+  bu_code: {{bu_code}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

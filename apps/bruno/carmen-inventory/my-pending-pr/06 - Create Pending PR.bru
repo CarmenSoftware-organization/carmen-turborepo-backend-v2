@@ -1,0 +1,27 @@
+meta {
+  name: 06 - Create Pending PR
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{host}}/api/my-pending/purchase-request/:bu_code
+  body: json
+  auth: bearer
+}
+
+params:path {
+  bu_code: {{bu_code}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}
