@@ -136,11 +136,14 @@ export class AuthService {
     );
 
     try {
+      // Resolve login identifier: support both email and username
+      const loginIdentifier = (loginDto.email || loginDto.username || '').toLowerCase();
+
       // Call Keycloak via TCP service
       const response = await firstValueFrom(
         this.keycloakService.send(
           { cmd: 'keycloak.auth.login', service: 'keycloak' },
-          { email: loginDto.email.toLowerCase(), password: loginDto.password },
+          { email: loginIdentifier, password: loginDto.password },
         ),
       );
 
@@ -171,7 +174,12 @@ export class AuthService {
       }
 
       const user = await this.prismaSystem.tb_user.findFirst({
-        where: { email: loginDto.email.toLowerCase() },
+        where: {
+          OR: [
+            { email: loginIdentifier },
+            { username: loginIdentifier },
+          ],
+        },
         select: { id: true, email: true, platform_role: true },
       });
 
@@ -193,7 +201,7 @@ export class AuthService {
       // Log successful login activity
       try {
         if (user?.id) {
-          await this.logAuthActivity('login', user.id, loginDto.email, {
+          await this.logAuthActivity('login', user.id, user.email, {
             login_time: new Date().toISOString(),
           });
         }
