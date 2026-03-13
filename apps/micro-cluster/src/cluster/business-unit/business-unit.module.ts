@@ -14,7 +14,7 @@ import { BackendLogger } from '@/common/helpers/backend.logger';
         transport: Transport.TCP,
         options: {
           host: envConfig.KEYCLOAK_API_SERVICE_HOST,
-          port: Number(envConfig.KEYCLOAK_API_SERVICE_TCP_PORT),
+          port: Number(envConfig.KEYCLOAK_API_SERVICE_PORT),
         },
       },
     ]),

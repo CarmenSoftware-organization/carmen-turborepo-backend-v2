@@ -14,7 +14,7 @@ import { envConfig } from '@/libs/config.env';
         transport: Transport.TCP,
         options: {
           host: envConfig.BUSINESS_SERVICE_HOST,
-          port: Number(envConfig.BUSINESS_SERVICE_TCP_PORT),
+          port: Number(envConfig.BUSINESS_SERVICE_PORT),
         },
       },
     ]),
