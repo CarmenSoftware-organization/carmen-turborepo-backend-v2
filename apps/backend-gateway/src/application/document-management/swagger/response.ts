@@ -44,6 +44,9 @@ export class DocumentInfoResponseDto {
   @ApiPropertyOptional({ description: 'File size in bytes', example: 204800 })
   size?: number;
 
+  @ApiPropertyOptional({ description: 'Document version', example: 0 })
+  doc_version?: number;
+
   @ApiPropertyOptional({ description: 'Upload timestamp', example: '2026-03-10T00:00:00.000Z' })
   created_at?: Date;
 
@@ -65,4 +68,23 @@ export class DocumentDeleteResponseDto {
 
   @ApiPropertyOptional({ description: 'Deleted file token', example: 'ft_a1b2c3d4e5f67890' })
   fileToken?: string;
+}
+
+export class DocumentListResponseDto {
+  @ApiProperty({ description: 'List of Document records', type: [DocumentListItemResponseDto] })
+  data: DocumentListItemResponseDto[];
+
+  @ApiPropertyOptional({ description: 'Total count of records', example: 50 })
+  total?: number;
+
+  @ApiPropertyOptional({ description: 'Current page number', example: 1 })
+  page?: number;
+
+  @ApiPropertyOptional({ description: 'Records per page', example: 10 })
+  perpage?: number;
+}
+
+export class DocumentMutationResponseDto {
+  @ApiProperty({ description: 'File token', example: 'ft_a1b2c3d4e5f67890' })
+  fileToken: string;
 }

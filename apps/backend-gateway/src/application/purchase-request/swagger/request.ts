@@ -1,49 +1,128 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class CreatePurchaseRequestSwaggerDto {
+export class CreatePurchaseRequestDetailItemSwaggerDto {
+  @ApiPropertyOptional({ description: 'Product ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  product_id?: string;
+
+  @ApiPropertyOptional({ description: 'Description of the line item', example: 'Fresh salmon fillet' })
+  description?: string;
+
+  @ApiPropertyOptional({ description: 'Comment for the line item', example: 'Prefer wild-caught' })
+  comment?: string;
+
+  @ApiPropertyOptional({ description: 'Location ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  location_id?: string;
+
+  @ApiPropertyOptional({ description: 'Delivery point ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  delivery_point_id?: string;
+
+  @ApiPropertyOptional({ description: 'Delivery date (ISO 8601)', example: '2026-03-15T00:00:00.000Z' })
+  delivery_date?: string;
+
+  @ApiPropertyOptional({ description: 'Requested quantity', example: 10 })
+  requested_qty?: number;
+
+  @ApiPropertyOptional({ description: 'Requested unit ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  requested_unit_id?: string;
+
+  @ApiPropertyOptional({ description: 'Requested unit conversion factor', example: 1 })
+  requested_unit_conversion_factor?: number;
+
+  @ApiPropertyOptional({ description: 'FOC (free of charge) quantity', example: 0 })
+  foc_qty?: number;
+
+  @ApiPropertyOptional({ description: 'FOC unit ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  foc_unit_id?: string;
+
+  @ApiPropertyOptional({ description: 'FOC unit conversion rate', example: 1 })
+  foc_unit_conversion_rate?: number;
+
+  @ApiPropertyOptional({ description: 'Currency ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  currency_id?: string;
+
+  @ApiPropertyOptional({ description: 'Exchange rate', example: 1.0 })
+  exchange_rate?: number;
+
+  @ApiPropertyOptional({ description: 'Exchange rate date (ISO 8601)', example: '2026-03-10T00:00:00.000Z' })
+  exchange_rate_date?: string;
+
+  @ApiPropertyOptional({ description: 'Inventory unit ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  inventory_unit_id?: string;
+}
+
+export class UpdatePurchaseRequestDetailItemSwaggerDto extends CreatePurchaseRequestDetailItemSwaggerDto {
+  @ApiProperty({ description: 'Detail line item ID to update', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+}
+
+export class RemovePurchaseRequestDetailItemSwaggerDto {
+  @ApiProperty({ description: 'Detail line item ID to remove', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+}
+
+export class PurchaseRequestDetailOperationsSwaggerDto {
+  @ApiPropertyOptional({
+    description: 'Detail line items to add',
+    type: [CreatePurchaseRequestDetailItemSwaggerDto],
+  })
+  add?: CreatePurchaseRequestDetailItemSwaggerDto[];
+
+  @ApiPropertyOptional({
+    description: 'Detail line items to update',
+    type: [UpdatePurchaseRequestDetailItemSwaggerDto],
+  })
+  update?: UpdatePurchaseRequestDetailItemSwaggerDto[];
+
+  @ApiPropertyOptional({
+    description: 'Detail line items to remove',
+    type: [RemovePurchaseRequestDetailItemSwaggerDto],
+  })
+  remove?: RemovePurchaseRequestDetailItemSwaggerDto[];
+}
+
+export class CreatePurchaseRequestDetailsSwaggerDto {
   @ApiPropertyOptional({ description: 'Purchase request date (ISO 8601)', example: '2026-03-10T00:00:00.000Z' })
   pr_date?: string;
 
   @ApiPropertyOptional({ description: 'Description of the purchase request', example: 'Monthly kitchen supplies order' })
   description?: string;
 
-  @ApiPropertyOptional({ description: 'Department ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  department_id?: string;
-
-  @ApiPropertyOptional({ description: 'Department name', example: 'Kitchen' })
-  department_name?: string;
-
   @ApiPropertyOptional({ description: 'Requestor ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   requestor_id?: string;
 
-  @ApiPropertyOptional({ description: 'Requestor name', example: 'John Doe' })
-  requestor_name?: string;
-
-  @ApiPropertyOptional({ description: 'Note for the purchase request', example: 'Urgent order for next week' })
-  note?: string;
-
-  @ApiPropertyOptional({ description: 'Purchase request details (line items)', type: 'array', example: [] })
-  details?: unknown[];
-}
-
-export class UpdatePurchaseRequestSwaggerDto {
-  @ApiPropertyOptional({ description: 'Purchase request date (ISO 8601)', example: '2026-03-10T00:00:00.000Z' })
-  pr_date?: string;
-
-  @ApiPropertyOptional({ description: 'Description of the purchase request', example: 'Updated kitchen supplies order' })
-  description?: string;
-
   @ApiPropertyOptional({ description: 'Department ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   department_id?: string;
 
-  @ApiPropertyOptional({ description: 'Department name', example: 'Kitchen' })
-  department_name?: string;
+  @ApiPropertyOptional({ description: 'Workflow ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  workflow_id?: string;
 
-  @ApiPropertyOptional({ description: 'Note for the purchase request', example: 'Updated note' })
-  note?: string;
+  @ApiPropertyOptional({
+    description: 'Purchase request detail operations (add, update, remove line items)',
+    type: PurchaseRequestDetailOperationsSwaggerDto,
+  })
+  purchase_request_detail?: PurchaseRequestDetailOperationsSwaggerDto;
+}
 
-  @ApiPropertyOptional({ description: 'Purchase request details (line items)', type: 'array', example: [] })
-  details?: unknown[];
+export class CreatePurchaseRequestSwaggerDto {
+  @ApiProperty({ description: 'Stage role for the action', example: 'create', default: 'create' })
+  stage_role: string;
+
+  @ApiProperty({
+    description: 'Purchase request details including header fields and line item operations',
+    type: CreatePurchaseRequestDetailsSwaggerDto,
+  })
+  details: CreatePurchaseRequestDetailsSwaggerDto;
+}
+
+export class UpdatePurchaseRequestSwaggerDto {
+  @ApiProperty({ description: 'Stage role for the action', example: 'create', default: 'create' })
+  stage_role: string;
+
+  @ApiProperty({
+    description: 'Purchase request details including header fields and line item operations',
+    type: CreatePurchaseRequestDetailsSwaggerDto,
+  })
+  details: CreatePurchaseRequestDetailsSwaggerDto;
 }
 
 export class DuplicatePurchaseRequestSwaggerDto {

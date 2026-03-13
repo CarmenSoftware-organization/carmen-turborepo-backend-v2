@@ -1,6 +1,53 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class CreateStoreRequisitionSwaggerDto {
+export class CreateStoreRequisitionDetailItemSwaggerDto {
+  @ApiPropertyOptional({ description: 'Product ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  product_id?: string;
+
+  @ApiPropertyOptional({ description: 'Product name', example: 'Fresh Salmon Fillet' })
+  product_name?: string;
+
+  @ApiPropertyOptional({ description: 'Product local name', example: 'เนื้อปลาแซลมอนสด' })
+  product_local_name?: string;
+
+  @ApiPropertyOptional({ description: 'Description of the line item', example: 'Weekly salmon order' })
+  description?: string;
+
+  @ApiPropertyOptional({ description: 'Requested quantity', example: 10 })
+  requested_qty?: number;
+}
+
+export class UpdateStoreRequisitionDetailItemSwaggerDto extends CreateStoreRequisitionDetailItemSwaggerDto {
+  @ApiProperty({ description: 'Detail line item ID to update', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+}
+
+export class RemoveStoreRequisitionDetailItemSwaggerDto {
+  @ApiProperty({ description: 'Detail line item ID to remove', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+}
+
+export class StoreRequisitionDetailOperationsSwaggerDto {
+  @ApiPropertyOptional({
+    description: 'Detail line items to add',
+    type: [CreateStoreRequisitionDetailItemSwaggerDto],
+  })
+  add?: CreateStoreRequisitionDetailItemSwaggerDto[];
+
+  @ApiPropertyOptional({
+    description: 'Detail line items to update',
+    type: [UpdateStoreRequisitionDetailItemSwaggerDto],
+  })
+  update?: UpdateStoreRequisitionDetailItemSwaggerDto[];
+
+  @ApiPropertyOptional({
+    description: 'Detail line items to remove',
+    type: [RemoveStoreRequisitionDetailItemSwaggerDto],
+  })
+  remove?: RemoveStoreRequisitionDetailItemSwaggerDto[];
+}
+
+export class CreateStoreRequisitionDetailsSwaggerDto {
   @ApiPropertyOptional({ description: 'Store requisition date (ISO 8601)', example: '2026-03-10T00:00:00.000Z' })
   sr_date?: string;
 
@@ -19,7 +66,7 @@ export class CreateStoreRequisitionSwaggerDto {
   @ApiPropertyOptional({ description: 'From location name', example: 'Main Store' })
   from_location_name?: string;
 
-  @ApiPropertyOptional({ description: 'To location ID', example: 'b2c3d4e5-f6a7-8901-bcde-f12345678901' })
+  @ApiPropertyOptional({ description: 'To location ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   to_location_id?: string;
 
   @ApiPropertyOptional({ description: 'To location code', example: 'KITCHEN' })
@@ -40,28 +87,36 @@ export class CreateStoreRequisitionSwaggerDto {
   @ApiPropertyOptional({ description: 'Department name', example: 'Kitchen' })
   department_name?: string;
 
-  @ApiPropertyOptional({ description: 'Store requisition details (line items)', type: 'array', example: [] })
-  details?: unknown[];
+  @ApiPropertyOptional({ description: 'Workflow ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  workflow_id?: string;
+
+  @ApiPropertyOptional({
+    description: 'Store requisition detail operations (add, update, remove line items)',
+    type: StoreRequisitionDetailOperationsSwaggerDto,
+  })
+  store_requisition_detail?: StoreRequisitionDetailOperationsSwaggerDto;
+}
+
+export class CreateStoreRequisitionSwaggerDto {
+  @ApiProperty({ description: 'Stage role for the action', example: 'create', default: 'create' })
+  stage_role: string;
+
+  @ApiProperty({
+    description: 'Store requisition details including header fields and line item operations',
+    type: CreateStoreRequisitionDetailsSwaggerDto,
+  })
+  details: CreateStoreRequisitionDetailsSwaggerDto;
 }
 
 export class UpdateStoreRequisitionSwaggerDto {
-  @ApiPropertyOptional({ description: 'Store requisition date (ISO 8601)', example: '2026-03-10T00:00:00.000Z' })
-  sr_date?: string;
+  @ApiProperty({ description: 'Stage role for the action', example: 'create', default: 'create' })
+  stage_role: string;
 
-  @ApiPropertyOptional({ description: 'Expected delivery date (ISO 8601)', example: '2026-03-12T00:00:00.000Z' })
-  expected_date?: string;
-
-  @ApiPropertyOptional({ description: 'Description', example: 'Updated store requisition' })
-  description?: string;
-
-  @ApiPropertyOptional({ description: 'From location ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  from_location_id?: string;
-
-  @ApiPropertyOptional({ description: 'To location ID', example: 'b2c3d4e5-f6a7-8901-bcde-f12345678901' })
-  to_location_id?: string;
-
-  @ApiPropertyOptional({ description: 'Store requisition details (line items)', type: 'array', example: [] })
-  details?: unknown[];
+  @ApiProperty({
+    description: 'Store requisition details including header fields and line item operations',
+    type: CreateStoreRequisitionDetailsSwaggerDto,
+  })
+  details: CreateStoreRequisitionDetailsSwaggerDto;
 }
 
 export class SubmitStoreRequisitionSwaggerDto {
@@ -75,6 +130,9 @@ export class ApproveStoreRequisitionSwaggerDto {
 
   @ApiPropertyOptional({ description: 'Approval message', example: 'Approved' })
   message?: string;
+
+  @ApiPropertyOptional({ description: 'Details with approved quantities', type: 'array', example: [] })
+  details?: unknown[];
 }
 
 export class RejectStoreRequisitionSwaggerDto {

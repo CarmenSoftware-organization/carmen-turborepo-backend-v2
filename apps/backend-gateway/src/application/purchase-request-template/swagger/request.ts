@@ -69,7 +69,7 @@ export class CreatePurchaseRequestTemplateRequestDto {
   @ApiPropertyOptional({ description: 'Dimension data (JSON array)', example: [] })
   dimension?: unknown;
 
-  @ApiPropertyOptional({ description: 'Template detail items to add', type: 'object' })
+  @ApiPropertyOptional({ description: 'Template detail items to add' })
   purchase_request_template_detail?: {
     add?: CreatePurchaseRequestTemplateDetailRequestDto[];
   };
@@ -97,7 +97,7 @@ export class UpdatePurchaseRequestTemplateRequestDto {
   @ApiPropertyOptional({ description: 'Dimension data (JSON array)', example: [] })
   dimension?: unknown;
 
-  @ApiPropertyOptional({ description: 'Template detail items to add, update, or delete', type: 'object' })
+  @ApiPropertyOptional({ description: 'Template detail items to add, update, or delete' })
   purchase_request_template_detail?: {
     add?: unknown[];
     update?: unknown[];

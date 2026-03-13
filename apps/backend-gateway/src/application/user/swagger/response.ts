@@ -59,3 +59,17 @@ export class UserListItemResponseDto {
   @ApiPropertyOptional({ description: 'Whether the user is active', example: true })
   is_active?: boolean;
 }
+
+export class UserListResponseDto {
+  @ApiProperty({ description: 'List of user records', type: [UserListItemResponseDto] })
+  data: UserListItemResponseDto[];
+
+  @ApiPropertyOptional({ description: 'Total count of records', example: 50 })
+  total?: number;
+
+  @ApiPropertyOptional({ description: 'Current page number', example: 1 })
+  page?: number;
+
+  @ApiPropertyOptional({ description: 'Records per page', example: 10 })
+  perpage?: number;
+}
