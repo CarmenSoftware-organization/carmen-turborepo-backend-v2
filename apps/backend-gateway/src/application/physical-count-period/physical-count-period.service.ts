@@ -30,7 +30,10 @@ export class PhysicalCountPeriodService {
     );
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
-      { cmd: 'physical-count-period.findOne', service: 'physical-count-period' },
+      {
+        cmd: 'physical-count-period.findOne',
+        service: 'physical-count-period',
+      },
       { id, user_id, tenant_id, version },
     );
 
@@ -58,7 +61,10 @@ export class PhysicalCountPeriodService {
     );
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
-      { cmd: 'physical-count-period.findAll', service: 'physical-count-period' },
+      {
+        cmd: 'physical-count-period.findAll',
+        service: 'physical-count-period',
+      },
       { user_id, tenant_id, paginate, version },
     );
 
@@ -74,18 +80,48 @@ export class PhysicalCountPeriodService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
-  async findNearest(
+  // async findNearest(
+  //   user_id: string,
+  //   tenant_id: string,
+  //   version: string,
+  // ): Promise<Result<unknown>> {
+  //   this.logger.debug(
+  //     { function: 'findNearest', user_id, tenant_id, version },
+  //     PhysicalCountPeriodService.name,
+  //   );
+
+  //   const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+  //     { cmd: 'physical-count-period.nearest', service: 'physical-count-period' },
+  //     { user_id, tenant_id, version },
+  //   );
+
+  //   const response = await firstValueFrom(res);
+
+  //   if (response.response.status !== HttpStatus.OK) {
+  //     return Result.error(
+  //       response.response.message,
+  //       httpStatusToErrorCode(response.response.status),
+  //     );
+  //   }
+
+  //   return Result.ok(response.data);
+  // }
+
+  async findCurrent(
     user_id: string,
     tenant_id: string,
     version: string,
   ): Promise<Result<unknown>> {
     this.logger.debug(
-      { function: 'findNearest', user_id, tenant_id, version },
+      { function: 'findCurrent', user_id, tenant_id, version },
       PhysicalCountPeriodService.name,
     );
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
-      { cmd: 'physical-count-period.nearest', service: 'physical-count-period' },
+      {
+        cmd: 'physical-count-period.current',
+        service: 'physical-count-period',
+      },
       { user_id, tenant_id, version },
     );
 
