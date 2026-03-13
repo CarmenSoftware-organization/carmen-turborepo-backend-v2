@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 import { enum_doc_status, PrismaClient } from '@repo/prisma-shared-schema-tenant';
-import { EmbeddedProductSchema, EmbeddedWorkflowSchema, InfoSchema } from '../embedded.dto';
+import { EmbeddedLocationSchema, EmbeddedProductSchema, EmbeddedWorkflowSchema, InfoSchema } from '../embedded.dto';
 
 // Stock Out Detail Schema with denormalized fields
 const StockOutDetailBaseSchema = z.object({
@@ -15,8 +15,12 @@ const StockOutDetailBaseSchema = z.object({
   // Denormalized product fields (populated by service)
   product_name: z.string().optional().nullable(),
   product_local_name: z.string().optional().nullable(),
+  // Denormalized location fields (populated by service)
+  location_code: z.string().optional().nullable(),
+  location_name: z.string().optional().nullable(),
 })
 .merge(EmbeddedProductSchema)
+.merge(EmbeddedLocationSchema)
 .merge(InfoSchema);
 
 // Stock Out Schema
@@ -27,9 +31,6 @@ export const StockOutSchema = z.object({
   adjustment_type_id: z.string().uuid().optional().nullable(),
   adjustment_type_code: z.string().optional().nullable(),
   doc_status: z.enum(Object.values(enum_doc_status) as [string, ...string[]]).optional().default('draft'),
-  location_id: z.string().uuid().optional().nullable(),
-  location_code: z.string().optional().nullable(),
-  location_name: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
   doc_version: z.number().int().optional().default(0),
 })
@@ -77,9 +78,6 @@ export const StockOutUpdate = z.object({
   adjustment_type_id: z.string().uuid().optional().nullable(),
   adjustment_type_code: z.string().optional().nullable(),
   doc_status: z.enum(Object.values(enum_doc_status) as [string, ...string[]]).optional(),
-  location_id: z.string().uuid().optional().nullable(),
-  location_code: z.string().optional().nullable(),
-  location_name: z.string().optional().nullable(),
   // workflow_id: z.string().uuid().optional().nullable(),
   note: z.string().optional().nullable(),
   info: z.any().optional(),
