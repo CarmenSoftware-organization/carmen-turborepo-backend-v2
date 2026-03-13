@@ -30,7 +30,7 @@ import {
   UserBusinessUnitDto,
   UserBusinessUnitUpdateDto,
 } from './dto/platform_user-business-unit.dto';
-import { ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator';
+import { ApiVersionMinRequest, ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { IPaginateQuery } from 'src/shared-dto/paginate.dto';
 import { PaginateQuery } from 'src/shared-dto/paginate.dto';
@@ -114,6 +114,7 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
   @UseGuards(new AppIdGuard('userBusinessUnit.findAll'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all user-business unit mappings',
     description:

@@ -9,6 +9,7 @@ import { ExtractRequestHeader } from 'src/common/helpers/extract_header'
 import { BackendLogger } from 'src/common/helpers/backend.logger'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator'
+import { ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator'
 
 @Controller('api/config/:bu_code/permissions')
 @ApiTags('Configuration')
@@ -31,6 +32,7 @@ export class ConfigPermissionController extends BaseHttpController {
    */
   @Get()
   @HttpCode(HttpStatus.OK)
+  @ApiUserFilterQueries()
   @ApiOperation({ summary: 'Get all permissions', description: 'Returns all granular permission definitions available in the system. Permissions control access to specific features and actions, and are assigned to application roles for role-based access control.', operationId: 'configPermission_findAll', tags: ['Configuration', 'Permission'] })
   async findAll(
     @Req() req: Request,

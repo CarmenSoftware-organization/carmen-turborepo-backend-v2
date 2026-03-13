@@ -13,7 +13,7 @@ import { MyApproveService } from './my-approve.service';
 import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { BaseHttpController } from '@/common';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator';
+import { ApiVersionMinRequest, ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -108,6 +108,7 @@ export class MyApproveController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('my-approve.findAll'))
   @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all pending approvals (SR + PR + PO) grouped by type',

@@ -22,7 +22,7 @@ import {
   UserClusterDto,
   UserClusterUpdateDto,
 } from './dto/user-cluster.dto';
-import { ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator';
+import { ApiVersionMinRequest, ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { IPaginateQuery } from 'src/shared-dto/paginate.dto';
 import { PaginateQuery } from 'src/shared-dto/paginate.dto';
@@ -101,6 +101,7 @@ export class Platform_UserClusterController extends BaseHttpController {
   @UseGuards(new AppIdGuard('userCluster.findAll'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all user-cluster mappings',
     description: 'Lists all user-to-organization memberships across the platform, showing which users belong to which hotel chains or companies. Used to manage and audit organizational-level access control.',

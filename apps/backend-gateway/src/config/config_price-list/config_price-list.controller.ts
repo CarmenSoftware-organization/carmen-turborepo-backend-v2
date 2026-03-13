@@ -195,6 +195,7 @@ export class Config_PriceListController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('priceList.findAll'))
   @HttpCode(HttpStatus.OK)
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all price lists',
     description: 'Returns all vendor price lists configured for the business unit. Used by procurement staff to compare supplier pricing and manage cost agreements across vendors.',
