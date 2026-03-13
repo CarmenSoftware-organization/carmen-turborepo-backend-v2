@@ -17,14 +17,14 @@ const port = (defaultValue: number) => z.coerce.number().default(defaultValue);
 const envSchema = z.object({
   // Cronjob (this service)
   CRONJOB_SERVICE_HOST: host(),
-  CRONJOB_SERVICE_PORT: port(DEFAULT_PORTS.CRONJOB_TCP),
+  CRONJOB_SERVICE_TCP_PORT: port(DEFAULT_PORTS.CRONJOB_TCP),
 
   // Database
   CRONJOB_DB_URL: z.string().min(1, 'CRONJOB_DB_URL is required'),
 
   // Notification service (for sending notifications)
   NOTIFICATION_SERVICE_HOST: z.string().default('127.0.0.1'),
-  NOTIFICATION_SERVICE_PORT: port(DEFAULT_PORTS.NOTIFICATION_TCP),
+  NOTIFICATION_SERVICE_TCP_PORT: port(DEFAULT_PORTS.NOTIFICATION_TCP),
 
   // Logging (Loki)
   LOKI_HOST: z.string().default('dev.blueledgers.com'),
@@ -57,14 +57,14 @@ const env = parsed.data;
 export const envConfig = {
   // Cronjob (this service)
   CRONJOB_SERVICE_HOST: env.CRONJOB_SERVICE_HOST,
-  CRONJOB_SERVICE_PORT: env.CRONJOB_SERVICE_PORT,
+  CRONJOB_SERVICE_TCP_PORT: env.CRONJOB_SERVICE_TCP_PORT,
 
   // Database
   CRONJOB_DB_URL: env.CRONJOB_DB_URL,
 
   // Notification service
   NOTIFICATION_SERVICE_HOST: env.NOTIFICATION_SERVICE_HOST,
-  NOTIFICATION_SERVICE_PORT: env.NOTIFICATION_SERVICE_PORT,
+  NOTIFICATION_SERVICE_TCP_PORT: env.NOTIFICATION_SERVICE_TCP_PORT,
 
   // Logging
   LOKI_HOST: env.LOKI_HOST,

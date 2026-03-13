@@ -17,7 +17,7 @@ const port = (defaultValue: number) => z.coerce.number().default(defaultValue);
 const envSchema = z.object({
   // File (this service)
   FILE_SERVICE_HOST: host(),
-  FILE_SERVICE_PORT: port(DEFAULT_PORTS.FILE_TCP),
+  FILE_SERVICE_TCP_PORT: port(DEFAULT_PORTS.FILE_TCP),
   FILE_SERVICE_HTTP_PORT: port(DEFAULT_PORTS.FILE_HTTP),
 
   // MinIO
@@ -58,7 +58,7 @@ const env = parsed.data;
 export const envConfig = {
   // File (this service)
   FILE_SERVICE_HOST: env.FILE_SERVICE_HOST,
-  FILE_SERVICE_PORT: env.FILE_SERVICE_PORT,
+  FILE_SERVICE_TCP_PORT: env.FILE_SERVICE_TCP_PORT,
   FILE_SERVICE_HTTP_PORT: env.FILE_SERVICE_HTTP_PORT,
 
   // MinIO

@@ -16,7 +16,7 @@ async function bootstrap() {
   logger.verbose({ envConfig: envConfig, process_env: process.env }, 'env');
 
   const keycloakApiServiceHost = envConfig.KEYCLOAK_API_SERVICE_HOST;
-  const keycloakApiServiceTcpPort = envConfig.KEYCLOAK_API_SERVICE_PORT;
+  const keycloakApiServiceTcpPort = envConfig.KEYCLOAK_API_SERVICE_TCP_PORT;
   const keycloakApiServiceHttpPort = envConfig.KEYCLOAK_API_SERVICE_HTTP_PORT;
 
   logger.log(

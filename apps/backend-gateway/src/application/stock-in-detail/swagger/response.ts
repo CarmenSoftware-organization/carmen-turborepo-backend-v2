@@ -16,15 +16,6 @@ export class StockInDetailResponseDto {
   @ApiPropertyOptional({ description: 'Description', example: 'Chicken breast delivery' })
   description?: string;
 
-  @ApiPropertyOptional({ description: 'Location ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  location_id?: string;
-
-  @ApiPropertyOptional({ description: 'Location code', example: 'LOC-001' })
-  location_code?: string;
-
-  @ApiPropertyOptional({ description: 'Location name', example: 'Main Kitchen' })
-  location_name?: string;
-
   @ApiProperty({ description: 'Product ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   product_id: string;
 

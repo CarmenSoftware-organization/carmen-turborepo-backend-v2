@@ -10,9 +10,6 @@ export class StockInDetailCreateRequestDto {
   @ApiPropertyOptional({ description: 'Description', example: 'Chicken breast delivery' })
   description?: string;
 
-  @ApiPropertyOptional({ description: 'Location ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  location_id?: string;
-
   @ApiProperty({ description: 'Product ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   product_id: string;
 
@@ -41,9 +38,6 @@ export class StockInDetailUpdateRequestDto {
 
   @ApiPropertyOptional({ description: 'Description', example: 'Updated description' })
   description?: string;
-
-  @ApiPropertyOptional({ description: 'Location ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  location_id?: string;
 
   @ApiPropertyOptional({ description: 'Product ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   product_id?: string;

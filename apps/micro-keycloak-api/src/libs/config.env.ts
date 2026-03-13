@@ -17,7 +17,7 @@ const port = (defaultValue: number) => z.coerce.number().default(defaultValue);
 const envSchema = z.object({
   // Keycloak API (this service)
   KEYCLOAK_API_SERVICE_HOST: host(),
-  KEYCLOAK_API_SERVICE_PORT: port(DEFAULT_PORTS.KEYCLOAK_API_TCP),
+  KEYCLOAK_API_SERVICE_TCP_PORT: port(DEFAULT_PORTS.KEYCLOAK_API_TCP),
   KEYCLOAK_API_SERVICE_HTTP_PORT: port(DEFAULT_PORTS.KEYCLOAK_API_HTTP),
 
   // Keycloak Configuration
@@ -64,7 +64,7 @@ const env = parsed.data;
 export const envConfig = {
   // Keycloak API (this service)
   KEYCLOAK_API_SERVICE_HOST: env.KEYCLOAK_API_SERVICE_HOST,
-  KEYCLOAK_API_SERVICE_PORT: env.KEYCLOAK_API_SERVICE_PORT,
+  KEYCLOAK_API_SERVICE_TCP_PORT: env.KEYCLOAK_API_SERVICE_TCP_PORT,
   KEYCLOAK_API_SERVICE_HTTP_PORT: env.KEYCLOAK_API_SERVICE_HTTP_PORT,
 
   // Keycloak Configuration

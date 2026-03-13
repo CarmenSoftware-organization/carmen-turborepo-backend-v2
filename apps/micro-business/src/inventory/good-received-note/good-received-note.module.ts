@@ -19,13 +19,13 @@ import { InventoryTransactionModule } from '@/inventory/inventory-transaction/in
         transport: Transport.TCP,
         options: {
           host: envConfig.BUSINESS_SERVICE_HOST,
-          port: Number(envConfig.BUSINESS_SERVICE_PORT),
+          port: Number(envConfig.BUSINESS_SERVICE_TCP_PORT),
         },
       },
     ]),
     NotificationModule.forRoot({
       host: envConfig.NOTIFICATION_SERVICE_HOST,
-      port: envConfig.NOTIFICATION_SERVICE_PORT,
+      port: envConfig.NOTIFICATION_SERVICE_TCP_PORT,
     }),
   ],
   controllers: [GoodReceivedNoteController],
