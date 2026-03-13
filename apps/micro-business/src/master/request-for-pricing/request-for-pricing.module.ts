@@ -12,7 +12,7 @@ import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
     TenantModule,
     CommonModule,
     JwtModule.register({
-      secret: envConfig.SUPABASE_JWT_SECRET,
+      secret: envConfig.JWT_SECRET,
       signOptions: { expiresIn: parseInt(envConfig.JWT_EXPIRES_IN, 10) },
     }),
   ],

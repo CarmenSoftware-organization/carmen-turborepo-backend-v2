@@ -26,7 +26,7 @@ const envSchema = z.object({
   SYSTEM_DIRECT_URL: z.string().min(1, 'SYSTEM_DIRECT_URL is required'),
 
   // JWT
-  SUPABASE_JWT_SECRET: z.string().min(1, 'SUPABASE_JWT_SECRET is required'),
+  JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
   JWT_EXPIRES_IN: z.string().default('1d'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
   JWT_INVITE_EXPIRES_IN: z.string().default('1d'),
@@ -78,7 +78,7 @@ export const envConfig = {
   SYSTEM_DIRECT_URL: env.SYSTEM_DIRECT_URL,
 
   // JWT
-  SUPABASE_JWT_SECRET: env.SUPABASE_JWT_SECRET,
+  JWT_SECRET: env.JWT_SECRET,
   JWT_EXPIRES_IN: env.JWT_EXPIRES_IN,
   JWT_REFRESH_EXPIRES_IN: env.JWT_REFRESH_EXPIRES_IN,
   JWT_INVITE_EXPIRES_IN: env.JWT_INVITE_EXPIRES_IN,

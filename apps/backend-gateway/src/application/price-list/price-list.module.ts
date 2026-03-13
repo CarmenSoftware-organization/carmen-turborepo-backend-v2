@@ -20,7 +20,7 @@ import { envConfig } from 'src/libs/config.env';
       },
     ]),
     JwtModule.register({
-      secret: envConfig.SUPABASE_JWT_SECRET,
+      secret: envConfig.JWT_SECRET,
     }),
   ],
   controllers: [PriceListController, CheckPriceListController],

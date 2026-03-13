@@ -33,7 +33,7 @@ const port = (defaultValue: number) => z.coerce.number().default(defaultValue);
 
 const envSchema = z.object({
   // JWT
-  SUPABASE_JWT_SECRET: z.string().min(1, 'SUPABASE_JWT_SECRET is required'),
+  JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
 
   // Gateway
   GATEWAY_SERVICE_HOST: host(),
@@ -176,7 +176,7 @@ export const envConfig = {
 
   // App config
   IS_ACTIVE_NOTIFICATION: Boolean(env.IS_ACTIVE_NOTIFICATION),
-  SUPABASE_JWT_SECRET: env.SUPABASE_JWT_SECRET,
+  JWT_SECRET: env.JWT_SECRET,
 
   // Loki logging
   LOKI_HOST: env.LOKI_HOST,
