@@ -150,10 +150,21 @@ export class StockInService {
     //   }
     // }
 
+    // Validate location at header level
+    if (data.location_id) {
+      const location = await prisma.tb_location.findFirst({
+        where: { id: data.location_id },
+      });
+      if (!location) {
+        return Result.error('Location not found', ErrorCode.NOT_FOUND);
+      }
+      data.location_code = location.code;
+      data.location_name = location.name;
+    }
+
     // Validate stock_in_detail items
     if (data.stock_in_detail?.add) {
       const productNotFound: string[] = [];
-      const locationNotFound: string[] = [];
 
       await Promise.all(
         data.stock_in_detail.add.map(async (item) => {
@@ -168,27 +179,11 @@ export class StockInService {
               item.product_local_name = product.local_name;
             }
           }
-
-          if (item.location_id) {
-            const location = await prisma.tb_location.findFirst({
-              where: { id: item.location_id },
-            });
-            if (!location) {
-              locationNotFound.push(item.location_id);
-            } else {
-              item.location_code = location.code;
-              item.location_name = location.name;
-            }
-          }
         }),
       );
 
       if (productNotFound.length > 0) {
         return Result.error(`Product not found: ${productNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-      }
-
-      if (locationNotFound.length > 0) {
-        return Result.error(`Location not found: ${locationNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
       }
     }
 
@@ -213,11 +208,8 @@ export class StockInService {
           created_by_id: user_id,
           sequence_no: sequenceNo++,
           product_id: item.product_id || '',
-          location_id: item.location_id || null,
           product_name: item.product_name || null,
           product_local_name: item.product_local_name || null,
-          location_code: item.location_code || null,
-          location_name: item.location_name || null,
           description: item.description || null,
           qty: item.qty || 0,
           cost_per_unit: item.cost_per_unit || 0,
@@ -267,11 +259,22 @@ export class StockInService {
     //   }
     // }
 
+    // Validate location at header level
+    if (data.location_id) {
+      const location = await prisma.tb_location.findFirst({
+        where: { id: data.location_id },
+      });
+      if (!location) {
+        return Result.error('Location not found', ErrorCode.NOT_FOUND);
+      }
+      data.location_code = location.code;
+      data.location_name = location.name;
+    }
+
     // Validate detail items
     if (data.stock_in_detail) {
       if (data.stock_in_detail.add) {
         const productNotFound: string[] = [];
-        const locationNotFound: string[] = [];
 
         await Promise.all(
           data.stock_in_detail.add.map(async (item) => {
@@ -286,27 +289,11 @@ export class StockInService {
                 item.product_local_name = product.local_name;
               }
             }
-
-            if (item.location_id) {
-              const location = await prisma.tb_location.findFirst({
-                where: { id: item.location_id },
-              });
-              if (!location) {
-                locationNotFound.push(item.location_id);
-              } else {
-                item.location_code = location.code;
-                item.location_name = location.name;
-              }
-            }
           }),
         );
 
         if (productNotFound.length > 0) {
           return Result.error(`Product not found: ${productNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-        }
-
-        if (locationNotFound.length > 0) {
-          return Result.error(`Location not found: ${locationNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
         }
       }
 
@@ -381,11 +368,8 @@ export class StockInService {
             created_by_id: user_id,
             sequence_no: sequenceNo++,
             product_id: item.product_id || '',
-            location_id: item.location_id || null,
             product_name: item.product_name || null,
             product_local_name: item.product_local_name || null,
-            location_code: item.location_code || null,
-            location_name: item.location_name || null,
             description: item.description || null,
             qty: item.qty || 0,
             cost_per_unit: item.cost_per_unit || 0,
@@ -572,7 +556,7 @@ export class StockInService {
         tb_product: {
           select: { id: true, name: true, local_name: true },
         },
-        tb_location: {
+        tbLocation: {
           select: { id: true, name: true, code: true },
         },
       },
@@ -610,7 +594,7 @@ export class StockInService {
         tb_product: {
           select: { id: true, name: true, local_name: true },
         },
-        tb_location: {
+        tbLocation: {
           select: { id: true, name: true, code: true },
         },
       },
@@ -660,18 +644,6 @@ export class StockInService {
       data.product_local_name = product.local_name;
     }
 
-    // Validate location
-    if (data.location_id) {
-      const location = await prisma.tb_location.findFirst({
-        where: { id: data.location_id },
-      });
-      if (!location) {
-        return Result.error('Location not found', ErrorCode.NOT_FOUND);
-      }
-      data.location_code = location.code;
-      data.location_name = location.name;
-    }
-
     const maxSequence = await prisma.tb_stock_in_detail.aggregate({
       where: { stock_in_id: stockInId, deleted_at: null },
       _max: { sequence_no: true },
@@ -684,11 +656,8 @@ export class StockInService {
         sequence_no: nextSequence,
         created_by_id: user_id,
         product_id: data.product_id || '',
-        location_id: data.location_id || null,
         product_name: data.product_name || null,
         product_local_name: data.product_local_name || null,
-        location_code: data.location_code || null,
-        location_name: data.location_name || null,
         description: data.description || null,
         qty: data.qty || 0,
         cost_per_unit: data.cost_per_unit || 0,
@@ -786,7 +755,7 @@ export class StockInService {
   async findAllDetails(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAllDetails', user_id, tenant_id, paginate }, StockInService.name);
 
-    const defaultSearchFields = ['product_name', 'product_local_name', 'location_name', 'description'];
+    const defaultSearchFields = ['product_name', 'product_local_name', 'description'];
 
     const q = new QueryParams(
       paginate.page,
@@ -819,9 +788,6 @@ export class StockInService {
         product_id: true,
         product_name: true,
         product_local_name: true,
-        location_id: true,
-        location_code: true,
-        location_name: true,
         description: true,
         qty: true,
         cost_per_unit: true,
@@ -899,18 +865,6 @@ export class StockInService {
       data.product_local_name = product.local_name;
     }
 
-    // Validate location
-    if (data.location_id) {
-      const location = await prisma.tb_location.findFirst({
-        where: { id: data.location_id },
-      });
-      if (!location) {
-        return Result.error('Location not found', ErrorCode.NOT_FOUND);
-      }
-      data.location_code = location.code;
-      data.location_name = location.name;
-    }
-
     const maxSequence = await prisma.tb_stock_in_detail.aggregate({
       where: { stock_in_id: data.stock_in_id, deleted_at: null },
       _max: { sequence_no: true },
@@ -923,11 +877,8 @@ export class StockInService {
         sequence_no: nextSequence,
         created_by_id: user_id,
         product_id: data.product_id || '',
-        location_id: data.location_id || null,
         product_name: data.product_name || null,
         product_local_name: data.product_local_name || null,
-        location_code: data.location_code || null,
-        location_name: data.location_name || null,
         description: data.description || null,
         qty: data.qty || 0,
         cost_per_unit: data.cost_per_unit || 0,
