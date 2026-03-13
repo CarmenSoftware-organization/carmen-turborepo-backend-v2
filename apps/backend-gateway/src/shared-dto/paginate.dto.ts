@@ -23,12 +23,12 @@ export const PaginateSchema = z.object({
   searchfields: z
     .string()
     .optional()
-    .transform((v) => (v ? v.split(';') : [])),
+    .transform((v) => (v ? v.split(/[;,]/) : [])),
 
   sort: z
     .string()
     .optional()
-    .transform((v) => (v ? v.split(';') : [])),
+    .transform((v) => (v ? v.split(/[;,]/) : [])),
 
   filter: z
     .string()
@@ -120,8 +120,8 @@ export function PaginateQuery(query: IPaginateQuery): IPaginate {
     page: Number(query.page) || 1,
     perpage: Number(query.perpage) || 10,
     search: typeof query.search === 'string' ? query.search : '',
-    searchfields: query.searchfields ? query.searchfields.split(';') : [],
-    sort: query.sort ? query.sort.split(';') : [],
+    searchfields: query.searchfields ? query.searchfields.split(/[;,]/) : [],
+    sort: query.sort ? query.sort.split(/[;,]/) : [],
     filter: filterValue,
     advance: query.advance ? JSON.parse(query.advance) : null,
     bu_code: query.bu_code ? query.bu_code.split(',') : [],
