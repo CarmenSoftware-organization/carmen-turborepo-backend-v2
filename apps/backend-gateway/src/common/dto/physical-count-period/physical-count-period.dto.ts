@@ -5,8 +5,7 @@ import { enum_physical_count_period_status } from '@repo/prisma-shared-schema-te
 // ==================== Physical Count Period Create ====================
 
 export const PhysicalCountPeriodCreate = z.object({
-  counting_period_from_date: z.coerce.date(),
-  counting_period_to_date: z.coerce.date(),
+  period_id: z.string().uuid(),
   status: z
     .enum(Object.values(enum_physical_count_period_status) as [string, ...string[]])
     .optional()
@@ -19,8 +18,7 @@ export class PhysicalCountPeriodCreateDto extends createZodDto(PhysicalCountPeri
 // ==================== Physical Count Period Update ====================
 
 export const PhysicalCountPeriodUpdate = z.object({
-  counting_period_from_date: z.coerce.date().optional(),
-  counting_period_to_date: z.coerce.date().optional(),
+  period_id: z.string().uuid().optional(),
   status: z
     .enum(Object.values(enum_physical_count_period_status) as [string, ...string[]])
     .optional(),

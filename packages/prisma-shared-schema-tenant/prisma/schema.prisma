@@ -1159,6 +1159,7 @@ model tb_period {
   tb_period_snapshot                  tb_period_snapshot[]
   tb_inventory_transaction_cost_layer tb_inventory_transaction_cost_layer[]
   tb_period_comment                   tb_period_comment[]
+  tb_physical_count_period            tb_physical_count_period[]
 
   @@unique([period, deleted_at], map: "period_period_u")
   @@unique([fiscal_year, fiscal_month, deleted_at], map: "period_fiscal_year_month_u")
@@ -3332,18 +3333,18 @@ model tb_vendor_comment {
 }
 
 model tb_vendor_address {
-  id           String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  vendor_id    String?                   @db.Uuid
-  address_type enum_vendor_address_type?
+  id            String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vendor_id     String?                   @db.Uuid
+  address_type  enum_vendor_address_type?
   // --- Address fields (ordered: street → sub_district → district → city → province → postal_code → country) ---
-  address_line1 String? @db.VarChar // บ้านเลขที่ / ถนน / ซอย
-  address_line2 String? @db.VarChar // ข้อมูลเพิ่มเติม เช่น อาคาร / ชั้น
-  sub_district  String? @db.VarChar // ตำบล / แขวง
-  district      String? @db.VarChar // อำเภอ / เขต
-  city          String? @db.VarChar // เมือง (สำหรับที่อยู่ต่างประเทศ)
-  province      String? @db.VarChar // จังหวัด / รัฐ
-  postal_code   String? @db.VarChar // รหัสไปรษณีย์
-  country       String? @db.VarChar // ประเทศ
+  address_line1 String?                   @db.VarChar // บ้านเลขที่ / ถนน / ซอย
+  address_line2 String?                   @db.VarChar // ข้อมูลเพิ่มเติม เช่น อาคาร / ชั้น
+  sub_district  String?                   @db.VarChar // ตำบล / แขวง
+  district      String?                   @db.VarChar // อำเภอ / เขต
+  city          String?                   @db.VarChar // เมือง (สำหรับที่อยู่ต่างประเทศ)
+  province      String?                   @db.VarChar // จังหวัด / รัฐ
+  postal_code   String?                   @db.VarChar // รหัสไปรษณีย์
+  country       String?                   @db.VarChar // ประเทศ
 
   is_active Boolean? @default(true)
 
@@ -4970,10 +4971,11 @@ enum enum_physical_count_status {
 }
 
 model tb_physical_count_period {
-  id                        String                            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  counting_period_from_date DateTime                          @db.Timestamptz(6)
-  counting_period_to_date   DateTime                          @db.Timestamptz(6)
-  status                    enum_physical_count_period_status @default(draft)
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  period_id String    @db.Uuid
+  tb_period tb_period @relation(fields: [period_id], references: [id], onDelete: Cascade)
+
+  status enum_physical_count_period_status @default(draft)
 
   created_at                       DateTime?                          @default(now()) @db.Timestamptz(6)
   created_by_id                    String?                            @db.Uuid
@@ -4984,8 +4986,8 @@ model tb_physical_count_period {
   tb_physical_count                tb_physical_count[]
   tb_physical_count_period_comment tb_physical_count_period_comment[]
 
-  @@unique([counting_period_from_date, counting_period_to_date, deleted_at], map: "physical_count_period_delete_at_u")
-  @@index([counting_period_from_date, counting_period_to_date])
+  @@unique([period_id, deleted_at], map: "physical_count_period_delete_at_u")
+  @@index([period_id])
 }
 
 model tb_physical_count_period_comment {
@@ -5009,8 +5011,8 @@ model tb_physical_count_period_comment {
 model tb_physical_count {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
-  period_id                String                   @db.Uuid
-  tb_physical_count_period tb_physical_count_period @relation(fields: [period_id], references: [id], onDelete: Cascade)
+  physical_count_period_id String                   @db.Uuid
+  tb_physical_count_period tb_physical_count_period @relation(fields: [physical_count_period_id], references: [id], onDelete: Cascade)
 
   location_id         String                   @db.Uuid
   tb_location         tb_location              @relation(fields: [location_id], references: [id], onDelete: Cascade)
@@ -5039,8 +5041,8 @@ model tb_physical_count {
   tb_physical_count_detail  tb_physical_count_detail[]
   tb_physical_count_comment tb_physical_count_comment[]
 
-  @@unique([period_id, location_id, deleted_at], map: "physical_count_delete_at_u")
-  @@index([period_id, location_id])
+  @@unique([physical_count_period_id, location_id, deleted_at], map: "physical_count_delete_at_u")
+  @@index([physical_count_period_id, location_id])
 }
 
 model tb_physical_count_comment {
@@ -5666,4 +5668,3 @@ model tb_report_schedule {
 
   @@index([is_active], map: "idx_report_schedule_active")
 }
-

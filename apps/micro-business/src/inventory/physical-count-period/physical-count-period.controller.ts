@@ -50,18 +50,6 @@ export class PhysicalCountPeriodController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
-  // @MessagePattern({ cmd: 'physical-count-period.nearest', service: 'physical-count-period' })
-  // async findNearest(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-  //   this.logger.debug({ function: 'findNearest', payload }, PhysicalCountPeriodController.name);
-  //   const user_id = payload.user_id;
-  //   const tenant_id = payload.tenant_id || payload.bu_code;
-  //   const auditContext = this.createAuditContext(payload);
-  //   const result = await runWithAuditContext(auditContext, () =>
-  //     this.physicalCountPeriodService.findNearest(user_id, tenant_id),
-  //   );
-  //   return this.handleResult(result);
-  // }
-
   @MessagePattern({ cmd: "physical-count-period.current", service: "physical-count-period" })
   async findCurrent(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: "findCurrent", payload }, PhysicalCountPeriodController.name);

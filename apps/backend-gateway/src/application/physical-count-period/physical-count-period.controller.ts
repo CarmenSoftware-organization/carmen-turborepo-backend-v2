@@ -52,43 +52,6 @@ export class PhysicalCountPeriodController extends BaseHttpController {
     super();
   }
 
-  // /**
-  //  * Finds the physical count period closest to today, helping warehouse staff
-  //  * identify the current or upcoming inventory verification window.
-  //  */
-  // @Get(':bu_code/physical-count-period/nearest')
-  // @UseGuards(new AppIdGuard('physicalCountPeriod.nearest'))
-  // @HttpCode(HttpStatus.OK)
-  // @ApiVersionMinRequest()
-  // @ApiOperation({
-  //   summary: 'Get nearest physical count period',
-  //   description: 'Finds the physical count period closest to today, helping warehouse staff quickly identify the current or upcoming inventory verification window they should be working on.',
-  //   operationId: 'findNearestPhysicalCountPeriod',
-  //   tags: ['Inventory', 'Physical Count Period'],
-  //   parameters: [
-  //     { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
-  //   ],
-  //   responses: {
-  //     200: { description: 'Nearest physical count period retrieved successfully' },
-  //     404: { description: 'No physical count period found' },
-  //   },
-  // })
-  // async findNearest(
-  //   @Param('bu_code') bu_code: string,
-  //   @Req() req: Request,
-  //   @Res() res: Response,
-  //   @Query('version') version: string = 'latest',
-  // ): Promise<void> {
-  //   this.logger.debug(
-  //     { function: 'findNearest', version },
-  //     PhysicalCountPeriodController.name,
-  //   );
-
-  //   const { user_id } = ExtractRequestHeader(req);
-  //   const result = await this.physicalCountPeriodService.findNearest(user_id, bu_code, version);
-  //   this.respond(res, result);
-  // }
-
   @Get(':bu_code/physical-count-period/current')
   @UseGuards(new AppIdGuard('physicalCountPeriod.current'))
   @HttpCode(HttpStatus.OK)

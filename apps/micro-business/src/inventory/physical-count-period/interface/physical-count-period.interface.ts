@@ -1,12 +1,10 @@
 export interface IPhysicalCountPeriodCreate {
-  counting_period_from_date: string | Date;
-  counting_period_to_date: string | Date;
+  period_id: string;
   status?: string;
 }
 
 export interface IPhysicalCountPeriodUpdate {
   id: string;
-  counting_period_from_date?: string | Date;
-  counting_period_to_date?: string | Date;
+  period_id?: string;
   status?: string;
 }

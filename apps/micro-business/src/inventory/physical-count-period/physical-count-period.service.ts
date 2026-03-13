@@ -4,7 +4,6 @@ import {
   enum_physical_count_period_status,
   enum_location_type,
   enum_physical_count_type,
-  enum_physical_count_status,
 } from "@repo/prisma-shared-schema-tenant";
 import { TenantService } from "@/tenant/tenant.service";
 import QueryParams from "@/libs/paginate.query";
@@ -39,6 +38,24 @@ export class PhysicalCountPeriodService {
 
     const period = await prisma.tb_physical_count_period.findFirst({
       where: { id, deleted_at: null },
+      include: {
+        tb_period: {
+          select: { id: true, period: true, start_at: true, end_at: true },
+        },
+        tb_physical_count: {
+          select: {
+            id: true,
+            location_id: true,
+            status: true,
+            tb_location: {
+              select: {
+                name: true,
+                code: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!period) {
@@ -82,8 +99,23 @@ export class PhysicalCountPeriodService {
       ...(q.perpage >= 0 ? { take: q.perpage } : {}),
       select: {
         id: true,
-        counting_period_from_date: true,
-        counting_period_to_date: true,
+        period_id: true,
+        tb_period: {
+          select: { id: true, period: true, start_at: true, end_at: true },
+        },
+        tb_physical_count: {
+          select: {
+            id: true,
+            location_id: true,
+            status: true,
+            tb_location: {
+              select: {
+                name: true,
+                code: true,
+              },
+            },
+          },
+        },
         status: true,
         created_at: true,
         updated_at: true,
@@ -108,97 +140,6 @@ export class PhysicalCountPeriodService {
     });
   }
 
-  // @TryCatch
-  // async findNearest(
-  //   user_id: string,
-  //   tenant_id: string,
-  // ): Promise<Result<unknown>> {
-  //   this.logger.debug(
-  //     { function: 'findNearest', user_id, tenant_id },
-  //     PhysicalCountPeriodService.name,
-  //   );
-
-  //   const tenant = await this.tenantService.getdb_connection(
-  //     user_id,
-  //     tenant_id,
-  //   );
-  //   if (!tenant) {
-  //     return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
-  //   }
-
-  //   const prisma = await this.prismaTenant(
-  //     tenant.tenant_id,
-  //     tenant.db_connection,
-  //   );
-
-  //   const period = await prisma.tb_physical_count_period.findFirst({
-  //     where: {
-  //       status: {
-  //         in: [enum_physical_count_period_status.draft, enum_physical_count_period_status.counting],
-  //       },
-  //       deleted_at: null,
-  //     },
-  //     orderBy: { counting_period_from_date: 'desc' },
-  //   });
-
-  //   if (!period) {
-  //     return Result.error('No active Physical Count Period found', ErrorCode.INVALID_ARGUMENT);
-  //   }
-
-  //   const locations = await prisma.tb_location.findMany({
-  //     where: {
-  //       location_type: enum_location_type.inventory,
-  //       physical_count_type: enum_physical_count_type.yes,
-  //       is_active: true,
-  //       deleted_at: null,
-  //     },
-  //     select: {
-  //       id: true,
-  //       code: true,
-  //       name: true,
-  //       location_type: true,
-  //     },
-  //   });
-
-  //   const existingCounts = await prisma.tb_physical_count.findMany({
-  //     where: {
-  //       period_id: period.id,
-  //       deleted_at: null,
-  //     },
-  //     select: {
-  //       id: true,
-  //       location_id: true,
-  //       status: true,
-  //     },
-  //   });
-
-  //   const countByLocation = new Map(
-  //     existingCounts.map((c) => [c.location_id, { id: c.id, status: c.status }]),
-  //   );
-
-  //   const locationsWithStatus = locations.map((loc) => {
-  //     const existingCount = countByLocation.get(loc.id);
-  //     return {
-  //       id: loc.id,
-  //       code: loc.code,
-  //       name: loc.name,
-  //       location_type: loc.location_type,
-  //       physical_count_status: existingCount ? existingCount.status : 'not_started',
-  //       physical_count_id: existingCount ? existingCount.id : null,
-  //     };
-  //   });
-
-  //   const response = {
-  //     id: period.id,
-  //     counting_period_from_date: period.counting_period_from_date,
-  //     counting_period_to_date: period.counting_period_to_date,
-  //     status: period.status,
-  //     locations: locationsWithStatus,
-  //   };
-
-  //   return Result.ok(response);
-  // }
-
   @TryCatch
   async findCurrent(user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: "findCurrent", user_id, tenant_id }, PhysicalCountPeriodService.name);
@@ -210,12 +151,43 @@ export class PhysicalCountPeriodService {
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
-    const period = await prisma.tb_physical_count_period.findFirst({
+    // get current open period
+    const open_period = await prisma.tb_period.findFirst({
       where: {
-        status: enum_physical_count_period_status.counting,
+        status: enum_period_status.open,
         deleted_at: null,
       },
-      orderBy: { counting_period_from_date: "desc" },
+      select: { id: true },
+    });
+
+    if (!open_period) {
+      return Result.error("No active period found", ErrorCode.INVALID_ARGUMENT);
+    }
+
+    const period = await prisma.tb_physical_count_period.findFirst({
+      where: {
+        period_id: open_period.id,
+        deleted_at: null,
+      },
+      include: {
+        tb_period: {
+          select: { id: true, period: true, start_at: true, end_at: true },
+        },
+        tb_physical_count: {
+          select: {
+            id: true,
+            location_id: true,
+            status: true,
+            tb_location: {
+              select: {
+                name: true,
+                code: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { tb_period: { start_at: "desc" } },
     });
 
     if (!period) {
@@ -239,7 +211,7 @@ export class PhysicalCountPeriodService {
 
     const existingCounts = await prisma.tb_physical_count.findMany({
       where: {
-        period_id: period.id,
+        physical_count_period_id: period.id,
         deleted_at: null,
       },
       select: {
@@ -265,8 +237,8 @@ export class PhysicalCountPeriodService {
 
     const response = {
       id: period.id,
-      counting_period_from_date: period.counting_period_from_date,
-      counting_period_to_date: period.counting_period_to_date,
+      period_id: period.period_id,
+      tb_period: period.tb_period,
       status: period.status,
       locations: locationsWithStatus,
     };
@@ -287,8 +259,7 @@ export class PhysicalCountPeriodService {
 
     const period = await prisma.tb_physical_count_period.create({
       data: {
-        counting_period_from_date: new Date(data.counting_period_from_date).toISOString(),
-        counting_period_to_date: new Date(data.counting_period_to_date).toISOString(),
+        period_id: data.period_id,
         status: (data.status as enum_physical_count_period_status) || enum_physical_count_period_status.draft,
         created_by_id: user_id,
       },
@@ -323,11 +294,8 @@ export class PhysicalCountPeriodService {
       updated_at: new Date(),
     };
 
-    if (updateData.counting_period_from_date) {
-      updatePayload.counting_period_from_date = new Date(updateData.counting_period_from_date).toISOString();
-    }
-    if (updateData.counting_period_to_date) {
-      updatePayload.counting_period_to_date = new Date(updateData.counting_period_to_date).toISOString();
+    if (updateData.period_id) {
+      updatePayload.period_id = updateData.period_id;
     }
     if (updateData.status) {
       updatePayload.status = updateData.status as enum_physical_count_period_status;
@@ -361,7 +329,7 @@ export class PhysicalCountPeriodService {
     }
 
     const associatedCounts = await prisma.tb_physical_count.count({
-      where: { period_id: id, deleted_at: null },
+      where: { physical_count_period_id: id, deleted_at: null },
     });
 
     if (associatedCounts > 0) {
