@@ -9,6 +9,7 @@ import { ExtractRequestHeader } from 'src/common/helpers/extract_header'
 import { BackendLogger } from 'src/common/helpers/backend.logger'
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator'
+import { ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator'
 import { CreateApplicationRoleRequest, UpdateApplicationRoleRequest } from './swagger/request'
 
 @Controller('api/config/:bu_code/application-roles')
@@ -32,6 +33,7 @@ export class ConfigApplicationRoleController extends BaseHttpController {
    */
   @Get()
   @HttpCode(HttpStatus.OK)
+  @ApiUserFilterQueries()
   @ApiOperation({ summary: 'Get all application roles', description: 'Returns all defined application roles (e.g., Admin, Manager, Purchaser, Requestor) used for access control. Roles determine which system features and data each user can access.', operationId: 'configApplicationRole_findAll', tags: ['Configuration', 'Application Role'] })
   async findAll(
     @Req() req: Request,

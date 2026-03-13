@@ -23,6 +23,7 @@ import {
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiVersionMinRequest,
+  ApiUserFilterQueries,
 } from 'src/common/decorator/userfilter.decorator';
 import {
   ApiBearerAuth,
@@ -56,6 +57,7 @@ export class DepartmentController extends BaseHttpController {
   @UseGuards(new AppIdGuard('department.findAll'))
   @Serialize(DepartmentListItemResponseSchema)
   @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all departments',
     description: 'Lists all hotel departments (e.g., Kitchen, F&B, Housekeeping) within the business unit, used to assign requisitions, track departmental consumption, and allocate procurement costs.',

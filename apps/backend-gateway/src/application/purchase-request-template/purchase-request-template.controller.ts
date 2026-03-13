@@ -59,6 +59,7 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('purchaseRequestTemplate.findAll'))
   @HttpCode(HttpStatus.OK)
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all purchase request templates',
     description: 'Lists all reusable purchase request templates available in the business unit, such as recurring weekly kitchen supply orders or standard housekeeping stock replenishments, enabling quick creation of routine procurement requests.',

@@ -108,6 +108,7 @@ export class TaxProfileController extends BaseHttpController {
   @Serialize(TaxProfileListItemResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all tax profiles',
