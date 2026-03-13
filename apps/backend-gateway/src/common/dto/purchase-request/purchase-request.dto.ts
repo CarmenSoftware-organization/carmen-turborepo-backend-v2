@@ -1,15 +1,9 @@
 import { z } from 'zod';
 import { EmbeddedDepartmentSchema, EmbeddedWorkflowSchema } from '../embedded.dto';
-import { ProductCreate } from '../product/product.dto';
+
 import { CreatePurchaseRequestDetailSchema } from './purchase-request-detail.dto';
 import { createZodDto } from 'nestjs-zod';
-import { enum_stage_role, PrismaClient } from '@repo/prisma-shared-schema-tenant';
-
-const ProductSchema = z.object({
-  product_id: z.string().uuid(),
-  product_name: ProductCreate.shape.name,
-  product_local_name: ProductCreate.shape.local_name,
-})
+import { enum_stage_role } from '@repo/prisma-shared-schema-tenant';
 
 export const CreatePurchaseRequestSchema = z.object({
   stage_role: z.literal(enum_stage_role.create),
@@ -26,10 +20,6 @@ export const CreatePurchaseRequestSchema = z.object({
         add: z.array(CreatePurchaseRequestDetailSchema).optional(),
       }).optional()
     })
-})
-
-const UpdatePurchaseRequestDetailSchema = CreatePurchaseRequestDetailSchema.extend({
-  id: z.string().uuid(),
 })
 
 const UpdatePurchaseRequestSchema = CreatePurchaseRequestSchema

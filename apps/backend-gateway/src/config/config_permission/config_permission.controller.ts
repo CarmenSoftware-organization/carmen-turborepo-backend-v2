@@ -1,9 +1,9 @@
-import { Controller, Get, Param, Query, Req, Res, UseGuards, UseInterceptors, HttpCode, HttpStatus } from '@nestjs/common'
+import { Controller, Get, Param, Query, Req, Res, UseGuards, HttpCode, HttpStatus } from '@nestjs/common'
 import { Response } from 'express';
 import { ApiBearerAuth } from '@nestjs/swagger'
 import { KeycloakGuard } from '../../auth/guards/keycloak.guard'
 import { ConfigPermissionService } from './config_permission.service'
-import { ZodSerializerInterceptor, BaseHttpController } from '@/common'
+import { BaseHttpController } from '@/common'
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto'
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header'
 import { BackendLogger } from 'src/common/helpers/backend.logger'

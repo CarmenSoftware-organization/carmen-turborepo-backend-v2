@@ -9,15 +9,12 @@ import {
   UseGuards,
   Req,
   Query,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Config_UserLocationService } from './config_user-location.service';
-import { ZodSerializerInterceptor } from '@/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserLocationUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
-  ApiUserFilterQueries,
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';

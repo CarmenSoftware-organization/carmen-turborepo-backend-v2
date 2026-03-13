@@ -1,4 +1,4 @@
-import { Injectable, Inject, HttpStatus } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable, firstValueFrom } from 'rxjs';
 import { Result, MicroserviceResponse } from '@/common';

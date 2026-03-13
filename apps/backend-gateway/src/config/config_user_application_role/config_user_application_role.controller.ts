@@ -1,8 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res, UseGuards, UseInterceptors, HttpCode, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 import { KeycloakGuard } from 'src/auth';
 import { ConfigUserApplicationRoleService } from './config_user_application_role.service';
-import { ZodSerializerInterceptor, BaseHttpController } from '@/common';
+import { BaseHttpController } from '@/common';
 import { AssignUserApplicationRoleDto, RemoveUserApplicationRoleDto, UpdateUserApplicationRoleDto } from './dto/user_application_role.dto';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -58,7 +58,7 @@ export class ConfigUserApplicationRoleController extends BaseHttpController {
       ConfigUserApplicationRoleController.name,
     );
 
-    const { user_id } = ExtractRequestHeader(req);
+    const { user_id: _user_id } = ExtractRequestHeader(req);
     const result = await this.configUserApplicationRoleService.findByUser(targetUserId, bu_code, version);
     this.respond(res, result);
   }

@@ -1,14 +1,12 @@
 import {
   Controller,
   Get,
-  ConsoleLogger,
   Param,
   Post,
   Body,
   Put,
   Delete,
   UseGuards,
-  UseInterceptors,
   Req,
   Res,
   HttpCode,
@@ -17,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_UnitsService } from './config_units.service';
-import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UnitCreateRequestDto, UnitUpdateRequestDto } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
@@ -26,7 +24,6 @@ import {
   UnitsUpdateDto,
   IUpdateUnits,
   Serialize,
-  ZodSerializerInterceptor,
   UnitDetailResponseSchema,
   UnitListItemResponseSchema,
   UnitMutationResponseSchema,

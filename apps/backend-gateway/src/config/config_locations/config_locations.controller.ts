@@ -5,14 +5,12 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  ConsoleLogger,
   Param,
   Patch,
   Post,
   Req,
   Res,
   UseGuards,
-  UseInterceptors,
   Query,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -21,7 +19,6 @@ import {
   ApiTags,
   ApiBearerAuth,
   ApiBody,
-  ApiHeader,
   ApiOperation,
 } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
@@ -31,7 +28,6 @@ import {
   LocationCreateDto,
   LocationUpdateDto,
   Serialize,
-  ZodSerializerInterceptor,
   LocationDetailResponseSchema,
   LocationListItemResponseSchema,
   LocationMutationResponseSchema,
@@ -40,7 +36,7 @@ import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
-import { IPaginate, IPaginateQuery, PaginateDto } from 'src/shared-dto/paginate.dto';
+import { IPaginate, PaginateDto } from 'src/shared-dto/paginate.dto';
 // import { PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { BackendLogger } from 'src/common/helpers/backend.logger';

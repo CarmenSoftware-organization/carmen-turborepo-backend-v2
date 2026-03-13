@@ -11,19 +11,16 @@ import {
   Req,
   Res,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { VendorProductService } from './vendor-product.service';
 import {
   ApiBearerAuth,
-  ApiHeader,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
-  ApiUserFilterQueries,
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
@@ -32,7 +29,6 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
   BaseHttpController,
-  ZodSerializerInterceptor,
 } from '@/common';
 
 @Controller('api/:bu_code/vendor-product')

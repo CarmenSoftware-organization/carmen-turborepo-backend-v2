@@ -7,17 +7,15 @@ import {
   Put,
   Delete,
   UseGuards,
-  UseInterceptors,
   HttpCode,
   HttpStatus,
-  ConsoleLogger,
   Req,
   Res,
   Query,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_VendorsService } from './config_vendors.service';
-import { ApiTags, ApiBearerAuth, ApiBody, ApiHeader, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiBody, ApiOperation } from '@nestjs/swagger';
 import { VendorCreateRequestDto, VendorUpdateRequestDto } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
@@ -25,7 +23,6 @@ import {
   VendorCreateDto,
   VendorUpdateDto,
   Serialize,
-  ZodSerializerInterceptor,
   VendorDetailResponseSchema,
   VendorListItemResponseSchema,
   VendorMutationResponseSchema,

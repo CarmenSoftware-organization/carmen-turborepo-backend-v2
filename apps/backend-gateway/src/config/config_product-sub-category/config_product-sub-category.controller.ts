@@ -7,8 +7,6 @@ import {
   Put,
   Delete,
   UseGuards,
-  UseInterceptors,
-  ConsoleLogger,
   HttpCode,
   HttpStatus,
   Req,
@@ -17,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_ProductSubCategoryService } from './config_product-sub-category.service';
-import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProductSubCategoryCreateRequest, ProductSubCategoryUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
@@ -26,7 +24,6 @@ import {
   ProductSubCategoryCreateDto,
   ProductSubCategoryUpdateDto,
   Serialize,
-  ZodSerializerInterceptor,
   ProductSubCategoryDetailResponseSchema,
   ProductSubCategoryListItemResponseSchema,
   ProductSubCategoryMutationResponseSchema,

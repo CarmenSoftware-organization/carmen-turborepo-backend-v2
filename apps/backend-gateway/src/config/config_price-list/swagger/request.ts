@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class PriceListCreateRequestDto {
   @ApiPropertyOptional({ description: 'Price list number', example: 'PL-2026-001' })

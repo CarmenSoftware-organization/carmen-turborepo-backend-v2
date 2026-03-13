@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
-import { enum_allocate_extra_cost_type, enum_doc_status, enum_good_received_note_type, enum_tax_type, PrismaClient } from '@repo/prisma-shared-schema-tenant';
+import { enum_allocate_extra_cost_type, enum_doc_status, enum_good_received_note_type, enum_tax_type } from '@repo/prisma-shared-schema-tenant';
 import { EmbeddedCurrencySchema, EmbeddedDiscountSchema, EmbeddedLocationSchema, EmbeddedProductSchema, EmbeddedTaxSchema, EmbeddedVendorSchema, EmbeddedWorkflowSchema, FocSchema, InfoSchema, ReceivedQuantityAndUnitSchema } from '../embedded.dto';
 
 export const GoodReceivedNoteSchema = z.object({

@@ -1,30 +1,25 @@
 import {
   Controller,
-  Param,
   Post,
   Req,
   HttpCode,
   HttpStatus,
   UseGuards,
-  Get,
   Query,
   Body,
   Res,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { UserBusinessUnitService } from './user-business-unit.service';
 import {
   ApiBearerAuth,
   ApiBody,
-  ApiHeader,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { SetDefaultTenantRequestDto } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
-  ApiUserFilterQueries,
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
@@ -33,7 +28,6 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
   BaseHttpController,
-  ZodSerializerInterceptor,
 } from '@/common';
 
 @Controller('api/business-unit')
@@ -107,7 +101,7 @@ export class UserBusinessUnitController extends BaseHttpController {
       UserBusinessUnitController.name,
     );
 
-    const { user_id, tenant_id } = ExtractRequestHeader(req);
+    const { user_id, tenant_id: _tenant_id } = ExtractRequestHeader(req);
     const result = await this.userBusinessUnitService.setDefaultTenant(
       user_id,
       body.tenant_id,

@@ -1,9 +1,7 @@
 import {
-  ConsoleLogger,
   HttpStatus,
   Inject,
   Injectable,
-  NotImplementedException,
 } from '@nestjs/common';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { ClientProxy } from '@nestjs/microservices';

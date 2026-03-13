@@ -11,7 +11,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
 export class BusinessUnitController extends BaseHttpController {
-  constructor(private readonly businessUnitService: BusinessUnitService) {
+  constructor(private readonly _businessUnitService: BusinessUnitService) {
     super();
   }
 }

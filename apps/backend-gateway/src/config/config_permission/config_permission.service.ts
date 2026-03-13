@@ -3,7 +3,6 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
-import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 

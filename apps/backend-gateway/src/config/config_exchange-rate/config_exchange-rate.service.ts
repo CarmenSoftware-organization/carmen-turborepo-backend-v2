@@ -7,7 +7,7 @@ import {
   Result,
   MicroserviceResponse,
 } from '@/common';
-import { IPaginate, PaginateQuery } from 'src/shared-dto/paginate.dto';
+import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 

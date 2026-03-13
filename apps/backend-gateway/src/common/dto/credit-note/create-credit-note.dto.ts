@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { createZodDto } from 'nestjs-zod'
-import { PrismaClient } from '@repo/prisma-shared-schema-tenant'
+
 import { CreditNoteSchema } from './credit-note.dto'
 import { CreditNoteDetailSchema } from './credit-note-detail.dto'
 

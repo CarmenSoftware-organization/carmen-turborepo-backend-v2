@@ -5,14 +5,12 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  ConsoleLogger,
   Param,
   Patch,
   Post,
   Req,
   Res,
   UseGuards,
-  UseInterceptors,
   Query,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -20,7 +18,6 @@ import { Config_ExchangeRateService } from './config_exchange-rate.service';
 import {
   ApiBearerAuth,
   ApiBody,
-  ApiHeader,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -31,7 +28,6 @@ import {
   ExchangeRateUpdateDto,
   IUpdateExchangeRate,
   Serialize,
-  ZodSerializerInterceptor,
   ExchangeRateDetailResponseSchema,
   ExchangeRateListItemResponseSchema,
   ExchangeRateMutationResponseSchema,

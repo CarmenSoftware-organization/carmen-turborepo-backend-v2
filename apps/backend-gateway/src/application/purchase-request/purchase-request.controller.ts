@@ -13,7 +13,6 @@ import {
   HttpStatus,
   Patch,
   BadRequestException,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { PurchaseRequestService } from './purchase-request.service';
@@ -24,7 +23,6 @@ import {
 } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import {
-  IPaginate,
   IPaginateQuery,
   PaginateQuery,
 } from 'src/shared-dto/paginate.dto';
@@ -33,16 +31,13 @@ import { EXAMPLE_APPROVE_BY_APPROVE_ROLE, EXAMPLE_APPROVE_BY_PURCHASE_ROLE } fro
 import {
   BaseHttpController,
   Serialize,
-  ZodSerializerInterceptor,
   PurchaseRequestDetailResponseSchema,
   PurchaseRequestListItemResponseSchema,
   PurchaseRequestMutationResponseSchema,
   CreatePurchaseRequestDto,
   // IGetAllResponse,
   // IPurchaseRequest,
-  UpdatePurchaseRequestDto,
   ReviewPurchaseRequestDto,
-  ApproveByStageRoleSchema,
   RejectPurchaseRequestDto,
   SubmitPurchaseRequestDto
 } from '@/common';

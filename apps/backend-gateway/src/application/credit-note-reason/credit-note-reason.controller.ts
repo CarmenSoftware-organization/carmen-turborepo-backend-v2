@@ -2,20 +2,17 @@ import {
   Controller,
   HttpStatus,
   Get,
-  Post,
   HttpCode,
   Query,
   Req,
   Res,
   UseGuards,
   Param,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CreditNoteReasonService } from './credit-note-reason.service';
 import {
   BaseHttpController,
-  ZodSerializerInterceptor,
 } from '@/common';
 import {
   ApiUserFilterQueries,

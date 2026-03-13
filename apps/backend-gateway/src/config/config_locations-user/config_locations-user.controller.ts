@@ -7,14 +7,11 @@ import {
   UseGuards,
   Req,
   Query,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Config_LocationsUserService } from './config_locations-user.service';
-import { ZodSerializerInterceptor } from '@/common';
-import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
-  ApiUserFilterQueries,
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';

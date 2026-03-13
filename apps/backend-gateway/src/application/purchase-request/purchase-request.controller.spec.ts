@@ -33,7 +33,7 @@ const mockPurchaseRequestService = {
 
 describe('PurchaseRequestController', () => {
   let controller: PurchaseRequestController;
-  let purchaseRequestService: PurchaseRequestService;
+  let _purchaseRequestService: PurchaseRequestService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -59,7 +59,7 @@ describe('PurchaseRequestController', () => {
     }).compile();
 
     controller = module.get<PurchaseRequestController>(PurchaseRequestController);
-    purchaseRequestService = module.get<PurchaseRequestService>(PurchaseRequestService);
+    _purchaseRequestService = module.get<PurchaseRequestService>(PurchaseRequestService);
   });
 
   afterEach(() => {

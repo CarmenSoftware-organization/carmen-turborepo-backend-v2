@@ -10,7 +10,7 @@ export class Config_UserLocationService {
 
   constructor(
     @Inject('BUSINESS_SERVICE')
-    private readonly masterService: ClientProxy,
+    private readonly _masterService: ClientProxy,
   ) {}
 
   /**

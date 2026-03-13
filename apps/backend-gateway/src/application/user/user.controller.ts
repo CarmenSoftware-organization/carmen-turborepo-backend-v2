@@ -6,7 +6,6 @@ import {
   Req,
   Res,
   UseGuards,
-  UseInterceptors,
   Query,
   Param,
   Put,
@@ -29,7 +28,6 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import {
   BaseHttpController,
   Serialize,
-  ZodSerializerInterceptor,
   UserProfileResponseSchema,
   UserListItemResponseSchema,
 } from '@/common';

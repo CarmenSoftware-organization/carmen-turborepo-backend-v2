@@ -83,12 +83,12 @@ const PurchaseRequestDetailEmbeddedSchema = z.object({
   updated_at: z.coerce.date().optional(),
 });
 
-const WorkflowEmbeddedSchema = z.object({
+const _WorkflowEmbeddedSchema = z.object({
   id: z.string().optional(),
   name: z.string().optional(),
 }).or(z.object({}));
 
-const DepartmentEmbeddedSchema = z.object({
+const _DepartmentEmbeddedSchema = z.object({
   id: z.string().optional(),
   name: z.string().optional(),
 }).or(z.object({}));

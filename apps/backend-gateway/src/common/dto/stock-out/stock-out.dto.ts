@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
-import { enum_doc_status, PrismaClient } from '@repo/prisma-shared-schema-tenant';
+import { enum_doc_status } from '@repo/prisma-shared-schema-tenant';
 import { EmbeddedProductSchema, EmbeddedWorkflowSchema, InfoSchema } from '../embedded.dto';
 
 // Stock Out Detail Schema with denormalized fields

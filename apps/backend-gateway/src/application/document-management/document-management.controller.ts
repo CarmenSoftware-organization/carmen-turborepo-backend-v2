@@ -28,7 +28,6 @@ import {
   BaseHttpController,
   Result,
   ErrorCode,
-  ZodSerializerInterceptor,
 } from '@/common';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';

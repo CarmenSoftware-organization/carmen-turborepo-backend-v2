@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  ConsoleLogger,
   Post,
   Req,
   Res,
@@ -10,7 +9,6 @@ import {
   Param,
   HttpCode,
   HttpStatus,
-  Put,
   Delete,
   Query,
   Patch,
@@ -36,7 +34,7 @@ import { IPaginateQuery } from 'src/shared-dto/paginate.dto';
 import { PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
-import { query } from 'winston';
+
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import { BaseHttpController } from '@/common';
 
@@ -102,7 +100,7 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
       },
       Platform_UserBusinessUnitController.name,
     );
-    const { user_id, tenant_id } = ExtractRequestHeader(req);
+    const { user_id, tenant_id: _tenant_id } = ExtractRequestHeader(req);
     const result = await this.platform_userBusinessUnitService.findOne(
       id,
       user_id,
@@ -154,7 +152,7 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
       },
       Platform_UserBusinessUnitController.name,
     );
-    const { user_id, tenant_id } = ExtractRequestHeader(req);
+    const { user_id, tenant_id: _tenant_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
     const result = await this.platform_userBusinessUnitService.findAll(
       user_id,
@@ -209,7 +207,7 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
       },
       Platform_UserBusinessUnitController.name,
     );
-    const { user_id, tenant_id } = ExtractRequestHeader(req);
+    const { user_id, tenant_id: _tenant_id } = ExtractRequestHeader(req);
     const result = await this.platform_userBusinessUnitService.create(
       body,
       user_id,
@@ -272,7 +270,7 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
       },
       Platform_UserBusinessUnitController.name,
     );
-    const { user_id, tenant_id } = ExtractRequestHeader(req);
+    const { user_id, tenant_id: _tenant_id } = ExtractRequestHeader(req);
     const data: IUserBusinessUnitUpdate = {
       ...body,
       id,

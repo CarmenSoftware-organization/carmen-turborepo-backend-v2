@@ -4,14 +4,8 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
-import { BackendLogger } from 'src/common/helpers/backend.logger';
-
 @Injectable()
 export class CreditNoteReasonService {
-  private readonly logger: BackendLogger = new BackendLogger(
-    CreditNoteReasonService.name,
-  );
-
   constructor(
     @Inject('BUSINESS_SERVICE')
     private readonly procurementService: ClientProxy,

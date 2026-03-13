@@ -1,10 +1,9 @@
 import {
-  ConsoleLogger,
   Inject,
   Injectable,
   NotImplementedException,
 } from '@nestjs/common';
-import { IPaginate, IPaginateQuery } from 'src/shared-dto/paginate.dto';
+import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ClientProxy } from '@nestjs/microservices';
 import { Result } from '@/common';
@@ -18,7 +17,7 @@ export class Config_UnitCommentService {
 
   constructor(
     @Inject('BUSINESS_SERVICE')
-    private readonly masterService: ClientProxy,
+    private readonly _masterService: ClientProxy,
   ) {}
 
   /**

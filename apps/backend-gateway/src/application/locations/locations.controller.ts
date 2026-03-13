@@ -8,29 +8,25 @@ import {
   Req,
   Res,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { LocationsService } from './locations.service';
 import {
   BaseHttpController,
   Serialize,
-  ZodSerializerInterceptor,
   LocationDetailResponseSchema,
   LocationListItemResponseSchema,
 } from '@/common';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
-  ApiUserFilterQueries,
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { IPaginateQuery, PaginateDto } from 'src/shared-dto/paginate.dto';
+import { IPaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import {
-  ProductInventoryInfoDto,
   ProductInventoryInfoDtoSchema,
 } from '@/common';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
-import { enum_purchase_order_doc_status, PrismaClient } from '@repo/prisma-shared-schema-tenant';
+import { enum_purchase_order_doc_status } from '@repo/prisma-shared-schema-tenant';
 
 export const purchaseOrderDetail = z.object({
   name: z.string().optional(),

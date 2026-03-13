@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, Param, Query, Req, Res, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Param, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
@@ -9,11 +9,9 @@ import {
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { UnitConversionService } from './unit-conversion.service';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
-import { TaxProfileController } from '../tax-profile/tax-profile.controller';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
   BaseHttpController,
-  ZodSerializerInterceptor,
 } from '@/common';
 
 @Controller('api/:bu_code/unit')

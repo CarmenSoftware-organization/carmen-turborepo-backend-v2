@@ -12,7 +12,6 @@ import {
   Req,
   Query,
   Res,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { PriceListTemplateService } from './price-list-template.service';
@@ -24,7 +23,6 @@ import {
 } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
-  ApiUserFilterQueries,
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
@@ -35,7 +33,6 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
   BaseHttpController,
-  ZodSerializerInterceptor,
   PriceListTemplateDetailResponseSchema,
   PriceListTemplateListItemResponseSchema,
   PriceListTemplateMutationResponseSchema,

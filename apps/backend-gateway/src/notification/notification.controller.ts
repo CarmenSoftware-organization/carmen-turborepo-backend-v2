@@ -1,5 +1,4 @@
 import { Controller, Get, Req, Res, All } from '@nestjs/common';
-import { ApiExcludeController } from '@nestjs/swagger';
 import { BackendLogger } from '../common/helpers/backend.logger';
 import { envConfig } from 'src/libs/config.env';
 import { Request, Response } from 'express';

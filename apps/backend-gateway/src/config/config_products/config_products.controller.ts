@@ -5,19 +5,17 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  ConsoleLogger,
   Param,
   Patch,
   Post,
   Req,
   Res,
   UseGuards,
-  UseInterceptors,
   Query,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_ProductsService } from './config_products.service';
-import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProductCreateRequestDto, ProductUpdateRequestDto } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
@@ -25,7 +23,6 @@ import {
   ProductCreateDto,
   ProductUpdateDto,
   Serialize,
-  ZodSerializerInterceptor,
   ProductDetailResponseSchema,
   ProductListItemResponseSchema,
   ProductItemGroupResponseSchema,

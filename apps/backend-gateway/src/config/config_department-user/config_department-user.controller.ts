@@ -12,16 +12,13 @@ import {
   Res,
   HttpCode,
   HttpStatus,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_DepartmentUserService } from './config_department-user.service';
-import { ZodSerializerInterceptor, BaseHttpController } from '@/common';
+import { BaseHttpController } from '@/common';
 import {
   ApiBearerAuth,
   ApiBody,
-  ApiHeader,
-  ApiHideProperty,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';

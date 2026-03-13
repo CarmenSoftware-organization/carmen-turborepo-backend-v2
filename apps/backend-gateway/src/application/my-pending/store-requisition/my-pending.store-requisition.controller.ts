@@ -12,24 +12,19 @@ import {
   HttpCode,
   HttpStatus,
   Patch,
-  BadRequestException,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MyPendingStoreRequisitionService as MyPendingStoreRequisitionService } from './my-pending.store-requisition.service';
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
 import {
   BaseHttpController,
-  ZodSerializerInterceptor,
 } from '@/common';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
-  ApiUserFilterQueries,
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import {
-  IPaginate,
   IPaginateQuery,
   PaginateQuery,
 } from 'src/shared-dto/paginate.dto';
@@ -40,8 +35,6 @@ import {
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
-import { IgnoreGuards } from 'src/auth/decorators/ignore-guard.decorator';
-
 @Controller('api/my-pending/store-requisition')
 @ApiTags('Workflow & Approval')
 @ApiHeaderRequiredXAppId()

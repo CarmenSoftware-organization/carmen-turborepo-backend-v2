@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
-import { enum_location_type, PrismaClient } from '@repo/prisma-shared-schema-tenant';
+import { enum_location_type } from '@repo/prisma-shared-schema-tenant';
 
 export const location_info = z.object({
   floor: z.number().optional(),
