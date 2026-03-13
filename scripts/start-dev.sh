@@ -26,18 +26,24 @@ LOG_DIR="$ROOT_DIR/.carmen/logs"
 
 mkdir -p "$PID_DIR" "$LOG_DIR"
 
-# Service definitions: name|dir|start_command
+# Service definitions: name|dir|start_command|type
+# type: node (default), bun, go, dotnet
 # ใช้ build+node เพื่อประหยัด RAM (ไม่ใช้ ts-node-dev/watch)
-SERVICE_GATEWAY="gateway|apps/backend-gateway|node dist/main"
-SERVICE_BUSINESS="business|apps/micro-business|node dist/main"
-SERVICE_CLUSTER="cluster|apps/micro-cluster|node dist/main"
-SERVICE_KEYCLOAK="keycloak|apps/micro-keycloak-api|node dist/main"
-SERVICE_FILE="file|apps/micro-file|node dist/main"
-SERVICE_NOTIFICATION="notification|apps/micro-notification|node dist/main"
-SERVICE_CRONJOB="cronjob|apps/micro-cronjob|bun dist/server.js"
+SERVICE_GATEWAY="gateway|apps/backend-gateway|node dist/main|node"
+SERVICE_BUSINESS="business|apps/micro-business|node dist/main|node"
+SERVICE_CLUSTER="cluster|apps/micro-cluster|node dist/main|node"
+SERVICE_KEYCLOAK="keycloak|apps/micro-keycloak-api|node dist/main|node"
+SERVICE_FILE="file|apps/micro-file|node dist/main|node"
+SERVICE_NOTIFICATION="notification|apps/micro-notification|node dist/main|node"
+SERVICE_CRONJOB="cronjob|apps/micro-cronjob|bun dist/server.js|bun"
+
+# External services (outside monorepo)
+CARMEN_DEV_DIR="$HOME/workspace/carmen-develop"
+SERVICE_REPORT="report|$CARMEN_DEV_DIR/micro-report|go run ./cmd/server|go"
+SERVICE_REPORT_RENDER="report-render|$CARMEN_DEV_DIR/micro-report-render-dotnet|dotnet run|dotnet"
 
 CORE_LIST="gateway business cluster keycloak"
-ALL_LIST="gateway business cluster keycloak file notification cronjob"
+ALL_LIST="gateway business cluster keycloak file notification cronjob report report-render"
 
 # ───────────────────────────────────────────────────────────
 # Helpers
@@ -45,20 +51,31 @@ ALL_LIST="gateway business cluster keycloak file notification cronjob"
 
 get_service_def() {
     case "$1" in
-        gateway)      echo "$SERVICE_GATEWAY" ;;
-        business)     echo "$SERVICE_BUSINESS" ;;
-        cluster)      echo "$SERVICE_CLUSTER" ;;
-        keycloak)     echo "$SERVICE_KEYCLOAK" ;;
-        file)         echo "$SERVICE_FILE" ;;
-        notification) echo "$SERVICE_NOTIFICATION" ;;
-        cronjob)      echo "$SERVICE_CRONJOB" ;;
+        gateway)        echo "$SERVICE_GATEWAY" ;;
+        business)       echo "$SERVICE_BUSINESS" ;;
+        cluster)        echo "$SERVICE_CLUSTER" ;;
+        keycloak)       echo "$SERVICE_KEYCLOAK" ;;
+        file)           echo "$SERVICE_FILE" ;;
+        notification)   echo "$SERVICE_NOTIFICATION" ;;
+        cronjob)        echo "$SERVICE_CRONJOB" ;;
+        report)         echo "$SERVICE_REPORT" ;;
+        report-render)  echo "$SERVICE_REPORT_RENDER" ;;
         *) echo "" ;;
     esac
 }
 
 get_field() {
-    # get_field "name|dir|cmd" field_number
+    # get_field "name|dir|cmd|type" field_number
     echo "$1" | cut -d'|' -f"$2"
+}
+
+resolve_dir() {
+    # External services use absolute paths, internal use $ROOT_DIR prefix
+    dir="$1"
+    case "$dir" in
+        /*) echo "$dir" ;;
+        *)  echo "$ROOT_DIR/$dir" ;;
+    esac
 }
 
 resolve_services() {
@@ -116,16 +133,18 @@ cmd_build() {
             echo "Unknown service: $name"
             continue
         fi
-        dir=$(get_field "$def" 2)
+        dir=$(resolve_dir "$(get_field "$def" 2)")
+        svc_type=$(get_field "$def" 4)
 
         echo ""
         echo "--- Building: $name ---"
-        cd "$ROOT_DIR/$dir"
-        if [ "$name" = "cronjob" ]; then
-            bun build src/server.ts --outdir=dist --target=bun
-        else
-            npx nest build
-        fi
+        cd "$dir"
+        case "$svc_type" in
+            bun)    bun build src/server.ts --outdir=dist --target=bun ;;
+            go)     go build -o bin/micro-report ./cmd/server ;;
+            dotnet) dotnet build ;;
+            *)      npx nest build ;;
+        esac
     done
 
     cd "$ROOT_DIR"
@@ -150,25 +169,38 @@ cmd_start() {
             continue
         fi
 
-        dir=$(get_field "$def" 2)
+        dir=$(resolve_dir "$(get_field "$def" 2)")
         cmd=$(get_field "$def" 3)
+        svc_type=$(get_field "$def" 4)
 
-        # เช็คว่า build แล้วยัง
-        if [ "$name" = "cronjob" ]; then
-            if [ ! -f "$ROOT_DIR/$dir/dist/server.js" ]; then
-                echo "  $name: not built yet, building..."
-                cd "$ROOT_DIR/$dir"
-                bun build src/server.ts --outdir=dist --target=bun
-            fi
-        else
-            if [ ! -d "$ROOT_DIR/$dir/dist" ]; then
-                echo "  $name: not built yet, building..."
-                cd "$ROOT_DIR/$dir"
-                npx nest build
-            fi
+        # เช็คว่า directory มีจริง
+        if [ ! -d "$dir" ]; then
+            echo "  $name: directory not found ($dir), skipping"
+            continue
         fi
 
-        cd "$ROOT_DIR/$dir"
+        # เช็คว่า build แล้วยัง (เฉพาะ node/bun)
+        case "$svc_type" in
+            bun)
+                if [ ! -f "$dir/dist/server.js" ]; then
+                    echo "  $name: not built yet, building..."
+                    cd "$dir"
+                    bun build src/server.ts --outdir=dist --target=bun
+                fi
+                ;;
+            go|dotnet)
+                # go run / dotnet run จะ compile เอง
+                ;;
+            *)
+                if [ ! -d "$dir/dist" ]; then
+                    echo "  $name: not built yet, building..."
+                    cd "$dir"
+                    npx nest build
+                fi
+                ;;
+        esac
+
+        cd "$dir"
         nohup $cmd >> "$LOG_DIR/$name.log" 2>&1 &
         echo $! > "$PID_DIR/$name.pid"
         echo "  $name: started (PID $!)"
@@ -253,13 +285,15 @@ cmd_status() {
         fi
 
         case "$name" in
-            gateway)      ports="4000, 4001" ;;
-            business)     ports="5020, 6020" ;;
-            cluster)      ports="5014, 6014" ;;
-            keycloak)     ports="5013, 6013" ;;
-            file)         ports="5007, 6007" ;;
-            notification) ports="5006, 6006" ;;
-            cronjob)      ports="5012, 6012" ;;
+            gateway)        ports="4000, 4001" ;;
+            business)       ports="5020, 6020" ;;
+            cluster)        ports="5014, 6014" ;;
+            keycloak)       ports="5013, 6013" ;;
+            file)           ports="5007, 6007" ;;
+            notification)   ports="5006, 6006" ;;
+            cronjob)        ports="5012, 6012" ;;
+            report)         ports="5015, 6015" ;;
+            report-render)  ports="8080" ;;
         esac
 
         printf "%-15s %-10s %-10s %s\n" "$name" "$status" "$pid" "$ports"
@@ -279,13 +313,15 @@ cmd_health() {
         fi
     }
 
-    check "Gateway (4000)"      "http://localhost:4000/health"
-    check "Business (6020)"     "http://localhost:6020/health"
-    check "Cluster (6014)"      "http://localhost:6014/health"
-    check "Keycloak API (6013)" "http://localhost:6013/health"
-    check "File (6007)"         "http://localhost:6007/health"
-    check "Notification (6006)" "http://localhost:6006/health"
-    check "Cronjob (6012)"      "http://localhost:6012/health"
+    check "Gateway (4000)"        "http://localhost:4000/health"
+    check "Business (6020)"       "http://localhost:6020/health"
+    check "Cluster (6014)"        "http://localhost:6014/health"
+    check "Keycloak API (6013)"   "http://localhost:6013/health"
+    check "File (6007)"           "http://localhost:6007/health"
+    check "Notification (6006)"   "http://localhost:6006/health"
+    check "Cronjob (6012)"        "http://localhost:6012/health"
+    check "Report (6015)"         "http://localhost:6015/health"
+    check "Report Render (8080)"  "http://localhost:8080/health"
 }
 
 cmd_clean_logs() {
@@ -312,8 +348,8 @@ cmd_help() {
     echo ""
     echo "Targets:"
     echo "  core           gateway, business, cluster, keycloak (default, 4 services)"
-    echo "  all            ทุก 7 services"
-    echo "  SERVICE name   gateway | business | cluster | keycloak | file | notification | cronjob"
+    echo "  all            ทุก 9 services"
+    echo "  SERVICE name   gateway | business | cluster | keycloak | file | notification | cronjob | report | report-render"
     echo ""
     echo "ตัวอย่าง:"
     echo "  ./carmen.sh install             # ครั้งแรก"
