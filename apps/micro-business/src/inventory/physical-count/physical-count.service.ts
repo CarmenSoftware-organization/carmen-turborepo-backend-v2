@@ -137,7 +137,7 @@ export class PhysicalCountService {
       : {};
 
     const periodFilter = period_id
-      ? { period_id: period_id }
+      ? { physical_count_period_id: period_id }
       : {};
 
     const whereClause = {
@@ -154,7 +154,7 @@ export class PhysicalCountService {
       ...(q.perpage >= 0 ? { take: q.perpage } : {}),
       select: {
         id: true,
-        period_id: true,
+        physical_count_period_id: true,
         location_id: true,
         location_code: true,
         location_name: true,
@@ -230,7 +230,7 @@ export class PhysicalCountService {
 
     const existingCount = await prisma.tb_physical_count.findFirst({
       where: {
-        period_id: data.period_id,
+        physical_count_period_id: data.period_id,
         location_id: data.location_id,
         deleted_at: null,
       },
@@ -273,7 +273,7 @@ export class PhysicalCountService {
     const result = await prisma.$transaction(async (tx) => {
       const physicalCount = await tx.tb_physical_count.create({
         data: {
-          period_id: data.period_id,
+          physical_count_period_id: data.period_id,
           location_id: data.location_id,
           location_code: location.code,
           location_name: location.name,
@@ -534,7 +534,12 @@ export class PhysicalCountService {
     }
 
     const period = await prisma.tb_physical_count_period.findFirst({
-      where: { id: physicalCount.period_id, deleted_at: null },
+      where: { id: physicalCount.physical_count_period_id, deleted_at: null },
+      include: {
+        tb_period: {
+          select: { start_at: true, end_at: true },
+        },
+      },
     });
 
     const details = await prisma.tb_physical_count_detail.findMany({
@@ -556,8 +561,8 @@ export class PhysicalCountService {
       (d) => d.diff_qty && !d.diff_qty.equals(0),
     );
 
-    const periodNote = period
-      ? `Physical Count Adjustment - Period: ${format(period.counting_period_from_date, 'yyyy-MM-dd')} to ${format(period.counting_period_to_date, 'yyyy-MM-dd')}`
+    const periodNote = period?.tb_period
+      ? `Physical Count Adjustment - Period: ${format(period.tb_period.start_at, 'yyyy-MM-dd')} to ${format(period.tb_period.end_at, 'yyyy-MM-dd')}`
       : 'Physical Count Adjustment';
 
     await prisma.$transaction(async (tx) => {
