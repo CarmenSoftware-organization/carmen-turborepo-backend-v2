@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-class CurrencyEmbeddedDto {
+export class CurrencyEmbeddedDto {
   @ApiProperty({ description: 'Currency ID', example: 'b2c3d4e5-f6a7-8901-bcde-f12345678901' })
   id: string;
 
@@ -8,7 +8,7 @@ class CurrencyEmbeddedDto {
   code: string;
 }
 
-class DefaultOrderUnitDto {
+export class DefaultOrderUnitDto {
   @ApiPropertyOptional({ description: 'Unit ID', example: 'd4e5f6a7-b8c9-0123-def0-1234567890ab' })
   unit_id?: string;
 
@@ -16,7 +16,7 @@ class DefaultOrderUnitDto {
   unit_name?: string;
 }
 
-class PriceListTemplateProductDto {
+export class PriceListTemplateProductDto {
   @ApiProperty({ description: 'Template product ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   id: string;
 
@@ -70,11 +70,20 @@ export class PriceListTemplateResponseDto {
   @ApiPropertyOptional({ description: 'Template products', type: [PriceListTemplateProductDto] })
   products?: PriceListTemplateProductDto[];
 
+  @ApiPropertyOptional({ description: 'Document version for optimistic locking', example: 1 })
+  doc_version?: number;
+
   @ApiPropertyOptional({ description: 'Created timestamp', example: '2026-03-01T00:00:00.000Z' })
   created_at?: Date;
 
+  @ApiPropertyOptional({ description: 'Created by user ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  created_by_id?: string;
+
   @ApiPropertyOptional({ description: 'Updated timestamp', example: '2026-03-10T08:00:00.000Z' })
   updated_at?: Date;
+
+  @ApiPropertyOptional({ description: 'Updated by user ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  updated_by_id?: string;
 }
 
 export class PriceListTemplateDetailResponseDto extends PriceListTemplateResponseDto {}
@@ -82,6 +91,20 @@ export class PriceListTemplateDetailResponseDto extends PriceListTemplateRespons
 export class PriceListTemplateMutationResponseDto {
   @ApiProperty({ description: 'Template ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   id: string;
+}
+
+export class PriceListTemplateListResponseDto {
+  @ApiProperty({ description: 'List of price list template records', type: [PriceListTemplateResponseDto] })
+  data: PriceListTemplateResponseDto[];
+
+  @ApiPropertyOptional({ description: 'Total count of records', example: 50 })
+  total?: number;
+
+  @ApiPropertyOptional({ description: 'Current page number', example: 1 })
+  page?: number;
+
+  @ApiPropertyOptional({ description: 'Records per page', example: 10 })
+  perpage?: number;
 }
 
 export class PriceListTemplateStatusResponseDto {

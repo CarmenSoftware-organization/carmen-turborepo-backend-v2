@@ -52,3 +52,17 @@ export class StockOutDetailResponseDto {
   @ApiPropertyOptional({ description: 'Updated by user ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   updated_by_id?: string;
 }
+
+export class StockOutDetailListResponseDto {
+  @ApiProperty({ description: 'List of stock out detail records', type: [StockOutDetailResponseDto] })
+  data: StockOutDetailResponseDto[];
+
+  @ApiPropertyOptional({ description: 'Total count of records', example: 50 })
+  total?: number;
+
+  @ApiPropertyOptional({ description: 'Current page number', example: 1 })
+  page?: number;
+
+  @ApiPropertyOptional({ description: 'Records per page', example: 10 })
+  perpage?: number;
+}

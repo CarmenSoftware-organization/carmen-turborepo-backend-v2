@@ -55,3 +55,22 @@ export class RecipeCategoryResponseDto {
   @ApiPropertyOptional({ description: 'ID of the user who last updated the record', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   updated_by_id?: string;
 }
+
+export class RecipeCategoryListResponseDto {
+  @ApiProperty({ description: 'List of RecipeCategory records', type: [RecipeCategoryResponseDto] })
+  data: RecipeCategoryResponseDto[];
+
+  @ApiPropertyOptional({ description: 'Total count of records', example: 50 })
+  total?: number;
+
+  @ApiPropertyOptional({ description: 'Current page number', example: 1 })
+  page?: number;
+
+  @ApiPropertyOptional({ description: 'Records per page', example: 10 })
+  perpage?: number;
+}
+
+export class RecipeCategoryMutationResponseDto {
+  @ApiProperty({ description: 'RecipeCategory ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+}

@@ -29,7 +29,7 @@ export class DepartmentListItemResponseDto {
   updated_at?: Date;
 }
 
-class DepartmentUserEmbeddedDto {
+export class DepartmentUserResponseDto {
   @ApiProperty({ description: 'User-department relation ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   id: string;
 
@@ -50,9 +50,32 @@ class DepartmentUserEmbeddedDto {
 }
 
 export class DepartmentDetailResponseDto extends DepartmentListItemResponseDto {
-  @ApiPropertyOptional({ description: 'Users assigned to this department', type: [DepartmentUserEmbeddedDto] })
-  department_users?: DepartmentUserEmbeddedDto[];
+  @ApiPropertyOptional({ description: 'Document version for optimistic locking', example: 1 })
+  doc_version?: number;
 
-  @ApiPropertyOptional({ description: 'Head-of-department users', type: [DepartmentUserEmbeddedDto] })
-  hod_users?: DepartmentUserEmbeddedDto[];
+  @ApiPropertyOptional({ description: 'Created by user ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  created_by_id?: string;
+
+  @ApiPropertyOptional({ description: 'Updated by user ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  updated_by_id?: string;
+
+  @ApiPropertyOptional({ description: 'Users assigned to this department', type: [DepartmentUserResponseDto] })
+  department_users?: DepartmentUserResponseDto[];
+
+  @ApiPropertyOptional({ description: 'Head-of-department users', type: [DepartmentUserResponseDto] })
+  hod_users?: DepartmentUserResponseDto[];
+}
+
+export class DepartmentListResponseDto {
+  @ApiProperty({ description: 'List of Department records', type: [DepartmentListItemResponseDto] })
+  data: DepartmentListItemResponseDto[];
+
+  @ApiPropertyOptional({ description: 'Total count of records', example: 50 })
+  total?: number;
+
+  @ApiPropertyOptional({ description: 'Current page number', example: 1 })
+  page?: number;
+
+  @ApiPropertyOptional({ description: 'Records per page', example: 10 })
+  perpage?: number;
 }

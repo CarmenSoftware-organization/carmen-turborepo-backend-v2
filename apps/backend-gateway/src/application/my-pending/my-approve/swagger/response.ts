@@ -23,4 +23,13 @@ export class MyApproveListResponseDto {
 
   @ApiPropertyOptional({ description: 'Pending purchase orders', example: [] })
   purchase_orders?: unknown[];
+
+  @ApiPropertyOptional({ description: 'Total count of records', example: 50 })
+  total?: number;
+
+  @ApiPropertyOptional({ description: 'Current page number', example: 1 })
+  page?: number;
+
+  @ApiPropertyOptional({ description: 'Records per page', example: 10 })
+  perpage?: number;
 }
