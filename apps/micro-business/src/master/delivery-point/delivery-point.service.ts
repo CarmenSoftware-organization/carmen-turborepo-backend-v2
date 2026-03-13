@@ -60,6 +60,12 @@ export class DeliveryPointService {
     DeliveryPointService.name,
   );
 
+  /**
+   * Initialize the Prisma service for the tenant
+   * เริ่มต้นบริการ Prisma สำหรับผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / รหัสผู้ใช้
+   */
   async initializePrismaService(
     bu_code: string,
     userId: string,
@@ -84,6 +90,12 @@ export class DeliveryPointService {
 
   constructor(private readonly tenantService: TenantService) { }
 
+  /**
+   * Find a single delivery point by ID
+   * ค้นหาจุดส่งมอบรายการเดียวตาม ID
+   * @param id - Delivery point ID / รหัสจุดส่งมอบ
+   * @returns Delivery point detail / รายละเอียดจุดส่งมอบ
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -113,6 +125,12 @@ export class DeliveryPointService {
     return Result.ok(serializedDeliveryPoint);
   }
 
+  /**
+   * Find all delivery points with pagination
+   * ค้นหาจุดส่งมอบทั้งหมดแบบแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of delivery points / รายการจุดส่งมอบแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
@@ -160,6 +178,12 @@ export class DeliveryPointService {
     });
   }
 
+  /**
+   * Find multiple delivery points by their IDs
+   * ค้นหาจุดส่งมอบหลายรายการตามรหัส ID
+   * @param ids - Array of delivery point IDs / อาร์เรย์ของรหัสจุดส่งมอบ
+   * @returns List of delivery points / รายการจุดส่งมอบ
+   */
   @TryCatch
   async findAllById(ids: string[]): Promise<Result<unknown>> {
     this.logger.debug(
@@ -182,6 +206,12 @@ export class DeliveryPointService {
     return Result.ok(serializedDeliveryPoints);
   }
 
+  /**
+   * Create a new delivery point
+   * สร้างจุดส่งมอบใหม่
+   * @param data - Delivery point creation data / ข้อมูลสำหรับสร้างจุดส่งมอบ
+   * @returns Created delivery point ID / รหัสจุดส่งมอบที่สร้างแล้ว
+   */
   @TryCatch
   async create(data: ICreateDeliveryPoint): Promise<Result<unknown>> {
     this.logger.debug(
@@ -217,6 +247,12 @@ export class DeliveryPointService {
     return Result.ok({ id: createDeliveryPoint.id });
   }
 
+  /**
+   * Update an existing delivery point
+   * อัปเดตจุดส่งมอบที่มีอยู่
+   * @param data - Delivery point update data / ข้อมูลสำหรับอัปเดตจุดส่งมอบ
+   * @returns Updated delivery point ID / รหัสจุดส่งมอบที่อัปเดตแล้ว
+   */
   @TryCatch
   async update(data: IUpdateDeliveryPoint): Promise<Result<unknown>> {
     this.logger.debug(
@@ -257,6 +293,12 @@ export class DeliveryPointService {
     return Result.ok({ id: updateDeliveryPoint.id });
   }
 
+  /**
+   * Soft delete a delivery point
+   * ลบจุดส่งมอบแบบ soft delete
+   * @param id - Delivery point ID / รหัสจุดส่งมอบ
+   * @returns Deleted delivery point ID / รหัสจุดส่งมอบที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(

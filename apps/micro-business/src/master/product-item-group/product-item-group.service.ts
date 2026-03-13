@@ -59,6 +59,12 @@ export class ProductItemGroupService {
     ProductItemGroupService.name,
   );
 
+  /**
+   * Initialize the Prisma service for the tenant
+   * เริ่มต้นบริการ Prisma สำหรับผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / รหัสผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
   }
@@ -79,6 +85,12 @@ export class ProductItemGroupService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a single product item group by ID
+   * ค้นหารายการกลุ่มสินค้ารายการเดียวตาม ID
+   * @param id - Product item group ID / รหัสกลุ่มสินค้า
+   * @returns Product item group detail / รายละเอียดกลุ่มสินค้า
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -130,6 +142,12 @@ export class ProductItemGroupService {
     return Result.ok(serializedProductItemGroup);
   }
 
+  /**
+   * Find all product item groups with pagination
+   * ค้นหารายการกลุ่มสินค้าทั้งหมดแบบแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of product item groups / รายการกลุ่มสินค้าแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(
     paginate: IPaginate,
@@ -200,6 +218,12 @@ export class ProductItemGroupService {
     });
   }
 
+  /**
+   * Create a new product item group
+   * สร้างกลุ่มสินค้าใหม่
+   * @param data - Product item group creation data / ข้อมูลสำหรับสร้างกลุ่มสินค้า
+   * @returns Created product item group ID / รหัสกลุ่มสินค้าที่สร้างแล้ว
+   */
   @TryCatch
   async create(
     data: ICreateProductItemGroup,
@@ -240,6 +264,12 @@ export class ProductItemGroupService {
     return Result.ok({ id: createProductItemGroup.id });
   }
 
+  /**
+   * Update an existing product item group with optional cascade deviation to products
+   * อัปเดตกลุ่มสินค้าที่มีอยู่ พร้อมตัวเลือกส่งค่าเบี่ยงเบนไปยังสินค้า
+   * @param data - Product item group update data / ข้อมูลสำหรับอัปเดตกลุ่มสินค้า
+   * @returns Updated product item group ID / รหัสกลุ่มสินค้าที่อัปเดตแล้ว
+   */
   @TryCatch
   async update(
     data: IUpdateProductItemGroup,
@@ -317,6 +347,12 @@ export class ProductItemGroupService {
     return Result.ok({ id: updateProductItemGroup.id });
   }
 
+  /**
+   * Soft delete a product item group (checks for associated products first)
+   * ลบกลุ่มสินค้าแบบ soft delete (ตรวจสอบสินค้าที่เกี่ยวข้องก่อน)
+   * @param id - Product item group ID / รหัสกลุ่มสินค้า
+   * @returns Deleted product item group ID / รหัสกลุ่มสินค้าที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(

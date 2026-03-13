@@ -24,6 +24,12 @@ export class DeliveryPointController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a single delivery point by ID
+   * ค้นหารายการจุดส่งมอบเดียวตาม ID
+   * @param payload - Microservice payload containing delivery point ID / ข้อมูล payload ที่มี ID ของจุดส่งมอบ
+   * @returns Delivery point detail / รายละเอียดจุดส่งมอบ
+   */
   @MessagePattern({ cmd: 'delivery-point.findOne', service: 'delivery-point' })
   async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, DeliveryPointController.name);
@@ -37,6 +43,12 @@ export class DeliveryPointController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all delivery points with pagination
+   * ค้นหารายการจุดส่งมอบทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing pagination parameters / ข้อมูล payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of delivery points / รายการจุดส่งมอบพร้อมการแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'delivery-point.findAll', service: 'delivery-point' })
   async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, DeliveryPointController.name);
@@ -50,6 +62,12 @@ export class DeliveryPointController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Find multiple delivery points by IDs
+   * ค้นหารายการจุดส่งมอบหลายรายการตาม ID
+   * @param payload - Microservice payload containing delivery point IDs / ข้อมูล payload ที่มี ID ของจุดส่งมอบหลายรายการ
+   * @returns List of delivery points / รายการจุดส่งมอบ
+   */
   @MessagePattern({ cmd: 'delivery-point.find-all-by-id', service: 'delivery-point' })
   async findAllById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAllById', payload }, DeliveryPointController.name);
@@ -63,6 +81,12 @@ export class DeliveryPointController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Create a new delivery point
+   * สร้างจุดส่งมอบใหม่
+   * @param payload - Microservice payload containing delivery point data / ข้อมูล payload ที่มีข้อมูลจุดส่งมอบ
+   * @returns Created delivery point ID / ID ของจุดส่งมอบที่สร้างขึ้น
+   */
   @MessagePattern({ cmd: 'delivery-point.create', service: 'delivery-point' })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, DeliveryPointController.name);
@@ -76,6 +100,12 @@ export class DeliveryPointController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an existing delivery point
+   * อัปเดตจุดส่งมอบที่มีอยู่
+   * @param payload - Microservice payload containing updated delivery point data / ข้อมูล payload ที่มีข้อมูลจุดส่งมอบที่อัปเดต
+   * @returns Updated delivery point ID / ID ของจุดส่งมอบที่อัปเดต
+   */
   @MessagePattern({ cmd: 'delivery-point.update', service: 'delivery-point' })
   async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, DeliveryPointController.name);
@@ -89,6 +119,12 @@ export class DeliveryPointController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a delivery point (soft delete)
+   * ลบจุดส่งมอบ (ลบแบบซอฟต์)
+   * @param payload - Microservice payload containing delivery point ID / ข้อมูล payload ที่มี ID ของจุดส่งมอบ
+   * @returns Deleted delivery point ID / ID ของจุดส่งมอบที่ลบ
+   */
   @MessagePattern({ cmd: 'delivery-point.delete', service: 'delivery-point' })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(

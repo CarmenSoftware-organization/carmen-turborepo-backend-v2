@@ -17,6 +17,15 @@ export class Config_ProductsService {
     private readonly masterService: ClientProxy,
   ) { }
 
+  /**
+   * Find a single product by ID via microservice
+   * ค้นหาสินค้าเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Product ID / รหัสสินค้า
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Product detail or error / รายละเอียดสินค้าหรือข้อผิดพลาด
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -50,6 +59,15 @@ export class Config_ProductsService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all products with pagination via microservice
+   * ค้นหารายการสินค้าทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated products or error / รายการสินค้าพร้อมการแบ่งหน้าหรือข้อผิดพลาด
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -90,6 +108,15 @@ export class Config_ProductsService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new product via microservice
+   * สร้างสินค้าใหม่ผ่านไมโครเซอร์วิส
+   * @param createDto - Product creation data / ข้อมูลสำหรับสร้างสินค้า
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created product or error / สินค้าที่สร้างแล้วหรือข้อผิดพลาด
+   */
   async create(
     createDto: ICreateProduct,
     user_id: string,
@@ -128,6 +155,15 @@ export class Config_ProductsService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update a product via microservice
+   * อัปเดตสินค้าผ่านไมโครเซอร์วิส
+   * @param updateDto - Product update data / ข้อมูลสำหรับอัปเดตสินค้า
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated product or error / สินค้าที่อัปเดตแล้วหรือข้อผิดพลาด
+   */
   async update(
     updateDto: IUpdateProduct,
     user_id: string,
@@ -166,6 +202,15 @@ export class Config_ProductsService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a product via microservice
+   * ลบสินค้าผ่านไมโครเซอร์วิส
+   * @param id - Product ID / รหัสสินค้า
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result or error / ผลลัพธ์การลบหรือข้อผิดพลาด
+   */
   async delete(
     id: string,
     user_id: string,
@@ -199,6 +244,15 @@ export class Config_ProductsService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find item group for a product via microservice
+   * ค้นหากลุ่มสินค้าตามรหัสสินค้าผ่านไมโครเซอร์วิส
+   * @param id - Product ID / รหัสสินค้า
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Product item group or error / กลุ่มสินค้าหรือข้อผิดพลาด
+   */
   async findItemGroup(
     id: string,
     user_id: string,

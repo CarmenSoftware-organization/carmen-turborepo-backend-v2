@@ -64,8 +64,12 @@ export class TransferController extends BaseHttpController {
   }
 
   /**
-   * Retrieves full details of an inventory transfer including source/destination
-   * locations and all line items being moved between storage locations.
+   * Retrieve a transfer record by ID with full line item details.
+   * ค้นหารายการโอนย้ายสินค้าเดียวตาม ID พร้อมรายละเอียดทั้งหมด
+   * @param id - Transfer record ID / รหัสรายการโอนย้ายสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Transfer record with details / รายการโอนย้ายสินค้าพร้อมรายละเอียด
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('transfer.findOne'))
@@ -100,8 +104,12 @@ export class TransferController extends BaseHttpController {
   }
 
   /**
-   * Lists all inventory transfer records for the business unit with pagination.
-   * Used to track movement of goods between warehouses, kitchens, or store rooms.
+   * List all transfer records with pagination.
+   * ค้นหารายการโอนย้ายสินค้าทั้งหมดพร้อมการแบ่งหน้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination and filter parameters / พารามิเตอร์การแบ่งหน้าและตัวกรอง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of transfer records / รายการโอนย้ายสินค้าพร้อมการแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('transfer.findAll'))
@@ -135,8 +143,12 @@ export class TransferController extends BaseHttpController {
   }
 
   /**
-   * Creates a new inventory transfer to move items between storage locations
-   * (e.g., from central warehouse to kitchen or between store rooms).
+   * Create a new inventory transfer between storage locations.
+   * สร้างรายการโอนย้ายสินค้าใหม่ระหว่างคลังสินค้า
+   * @param createDto - Transfer creation data / ข้อมูลสำหรับสร้างรายการโอนย้าย
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created transfer record / รายการโอนย้ายสินค้าที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('transfer.create'))
@@ -169,8 +181,13 @@ export class TransferController extends BaseHttpController {
   }
 
   /**
-   * Updates an existing transfer record's header or line item details
-   * while it is still in draft status.
+   * Update an existing transfer record while in draft status.
+   * อัปเดตรายการโอนย้ายสินค้าที่มีอยู่ขณะอยู่ในสถานะร่าง
+   * @param id - Transfer record ID / รหัสรายการโอนย้ายสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Transfer update data / ข้อมูลสำหรับอัปเดตรายการโอนย้าย
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated transfer record / รายการโอนย้ายสินค้าที่อัปเดตแล้ว
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('transfer.update'))
@@ -208,7 +225,12 @@ export class TransferController extends BaseHttpController {
   }
 
   /**
-   * Removes a draft transfer record that was created in error or is no longer needed.
+   * Delete a draft transfer record.
+   * ลบรายการโอนย้ายสินค้าที่เป็นร่าง
+   * @param id - Transfer record ID / รหัสรายการโอนย้ายสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('transfer.delete'))
@@ -245,8 +267,12 @@ export class TransferController extends BaseHttpController {
   // ==================== Transfer Detail CRUD ====================
 
   /**
-   * Lists all line items for a specific transfer, showing which products
-   * and quantities are being moved between locations.
+   * List all line items for a specific transfer record.
+   * ค้นหารายการย่อยทั้งหมดของรายการโอนย้ายสินค้าที่ระบุ
+   * @param id - Transfer record ID / รหัสรายการโอนย้ายสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of transfer detail items / รายการย่อยของรายการโอนย้ายสินค้า
    */
   @Get(':id/details')
   @UseGuards(new AppIdGuard('transfer.findOne'))
@@ -282,7 +308,13 @@ export class TransferController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a single transfer line item with full product and quantity details.
+   * Retrieve a single transfer line item by detail ID.
+   * ค้นหารายการย่อยของรายการโอนย้ายสินค้าเดียวตาม ID
+   * @param id - Transfer record ID / รหัสรายการโอนย้ายสินค้า
+   * @param detailId - Transfer detail ID / รหัสรายการย่อยโอนย้ายสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Transfer detail item / รายการย่อยของรายการโอนย้ายสินค้า
    */
   @Get(':id/details/:detail_id')
   @UseGuards(new AppIdGuard('transfer.findOne'))
@@ -320,8 +352,13 @@ export class TransferController extends BaseHttpController {
   }
 
   /**
-   * Adds a new line item to a draft transfer, specifying a product
-   * and quantity to be moved between locations.
+   * Create a new line item for a draft transfer record.
+   * สร้างรายการย่อยใหม่สำหรับรายการโอนย้ายสินค้าที่เป็นร่าง
+   * @param id - Transfer record ID / รหัสรายการโอนย้ายสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param data - Detail creation data / ข้อมูลสำหรับสร้างรายการย่อย
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created transfer detail / รายการย่อยโอนย้ายสินค้าที่สร้างแล้ว
    */
   @Post(':id/details')
   @UseGuards(new AppIdGuard('transfer.update'))
@@ -361,8 +398,14 @@ export class TransferController extends BaseHttpController {
   }
 
   /**
-   * Updates an existing transfer line item's product or quantity.
-   * Only applicable while the transfer record is in draft status.
+   * Update an existing transfer line item in a draft record.
+   * อัปเดตรายการย่อยของรายการโอนย้ายสินค้าที่เป็นร่าง
+   * @param id - Transfer record ID / รหัสรายการโอนย้ายสินค้า
+   * @param detailId - Transfer detail ID / รหัสรายการย่อยโอนย้ายสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param data - Detail update data / ข้อมูลสำหรับอัปเดตรายการย่อย
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated transfer detail / รายการย่อยโอนย้ายสินค้าที่อัปเดตแล้ว
    */
   @Put(':id/details/:detail_id')
   @UseGuards(new AppIdGuard('transfer.update'))
@@ -404,7 +447,13 @@ export class TransferController extends BaseHttpController {
   }
 
   /**
-   * Removes a line item from a draft transfer record.
+   * Delete a line item from a draft transfer record.
+   * ลบรายการย่อยจากรายการโอนย้ายสินค้าที่เป็นร่าง
+   * @param id - Transfer record ID / รหัสรายการโอนย้ายสินค้า
+   * @param detailId - Transfer detail ID / รหัสรายการย่อยโอนย้ายสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id/details/:detail_id')
   @UseGuards(new AppIdGuard('transfer.update'))

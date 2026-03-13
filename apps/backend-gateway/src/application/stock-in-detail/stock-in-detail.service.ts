@@ -17,6 +17,15 @@ export class StockInDetailService {
     private readonly inventoryService: ClientProxy,
   ) {}
 
+  /**
+   * Find all stock-in details with pagination via microservice.
+   * ค้นหารายการย่อยรับสินค้าเข้าคลังทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param tenant_id - Tenant ID (business unit code) / รหัสผู้เช่า (รหัสหน่วยธุรกิจ)
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated stock-in details or error / รายการย่อยรับสินค้าเข้าคลังพร้อมการแบ่งหน้าหรือข้อผิดพลาด
+   */
   async findAll(
     user_id: string,
     tenant_id: string,
@@ -45,6 +54,15 @@ export class StockInDetailService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Find a stock-in detail by ID via microservice.
+   * ค้นหารายการย่อยรับสินค้าเข้าคลังเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Stock in detail ID / รหัสรายการย่อยรับสินค้าเข้าคลัง
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param tenant_id - Tenant ID (business unit code) / รหัสผู้เช่า (รหัสหน่วยธุรกิจ)
+   * @param version - API version / เวอร์ชัน API
+   * @returns Stock-in detail or error / รายการย่อยรับสินค้าเข้าคลังหรือข้อผิดพลาด
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -73,6 +91,15 @@ export class StockInDetailService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Create a standalone stock-in detail via microservice.
+   * สร้างรายการย่อยรับสินค้าเข้าคลังแบบแยกเดี่ยวผ่านไมโครเซอร์วิส
+   * @param data - Detail creation data / ข้อมูลสำหรับสร้างรายการย่อย
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param tenant_id - Tenant ID (business unit code) / รหัสผู้เช่า (รหัสหน่วยธุรกิจ)
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created stock-in detail or error / รายการย่อยรับสินค้าเข้าคลังที่สร้างแล้วหรือข้อผิดพลาด
+   */
   async create(
     data: Record<string, unknown>,
     user_id: string,
@@ -101,6 +128,16 @@ export class StockInDetailService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update a standalone stock-in detail via microservice.
+   * อัปเดตรายการย่อยรับสินค้าเข้าคลังแบบแยกเดี่ยวผ่านไมโครเซอร์วิส
+   * @param id - Stock in detail ID / รหัสรายการย่อยรับสินค้าเข้าคลัง
+   * @param data - Detail update data / ข้อมูลสำหรับอัปเดตรายการย่อย
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param tenant_id - Tenant ID (business unit code) / รหัสผู้เช่า (รหัสหน่วยธุรกิจ)
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated stock-in detail or error / รายการย่อยรับสินค้าเข้าคลังที่อัปเดตแล้วหรือข้อผิดพลาด
+   */
   async update(
     id: string,
     data: Record<string, unknown>,
@@ -130,6 +167,15 @@ export class StockInDetailService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a standalone stock-in detail via microservice.
+   * ลบรายการย่อยรับสินค้าเข้าคลังแบบแยกเดี่ยวผ่านไมโครเซอร์วิส
+   * @param id - Stock in detail ID / รหัสรายการย่อยรับสินค้าเข้าคลัง
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param tenant_id - Tenant ID (business unit code) / รหัสผู้เช่า (รหัสหน่วยธุรกิจ)
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result or error / ผลลัพธ์การลบหรือข้อผิดพลาด
+   */
   async delete(
     id: string,
     user_id: string,

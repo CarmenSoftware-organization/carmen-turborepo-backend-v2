@@ -1,7 +1,8 @@
 /**
  * Convert date or string date to ISO string format
- * @param date - Date object or string date
- * @returns ISO string format or null if invalid
+ * แปลงวันที่หรือสตริงวันที่เป็นรูปแบบ ISO string
+ * @param date - Date object or string date / อ็อบเจกต์ Date หรือสตริงวันที่
+ * @returns ISO string format or null if invalid / รูปแบบ ISO string หรือ null ถ้าไม่ถูกต้อง
  */
 export function toISOString(date: Date | string | null | undefined): string | null {
   if (!date) return null;
@@ -24,9 +25,10 @@ export function toISOString(date: Date | string | null | undefined): string | nu
 
 /**
  * Convert date or string date to ISO string format (throws error if invalid)
- * @param date - Date object or string date
- * @returns ISO string format
- * @throws Error if date is invalid
+ * แปลงวันที่หรือสตริงวันที่เป็นรูปแบบ ISO string (โยนข้อผิดพลาดถ้าไม่ถูกต้อง)
+ * @param date - Date object or string date / อ็อบเจกต์ Date หรือสตริงวันที่
+ * @returns ISO string format / รูปแบบ ISO string
+ * @throws Error if date is invalid / ข้อผิดพลาดถ้าวันที่ไม่ถูกต้อง
  */
 export function toISOStringOrThrow(date: Date | string | null | undefined): string {
   if (!date) {
@@ -57,8 +59,9 @@ export function toISOStringOrThrow(date: Date | string | null | undefined): stri
 
 /**
  * Validate if a string or Date is a valid date
- * @param date - Date object or string date
- * @returns true if valid, false otherwise
+ * ตรวจสอบว่าสตริงหรือ Date เป็นวันที่ที่ถูกต้องหรือไม่
+ * @param date - Date object or string date / อ็อบเจกต์ Date หรือสตริงวันที่
+ * @returns true if valid, false otherwise / true ถ้าถูกต้อง, false ถ้าไม่ถูกต้อง
  */
 export function isValidDate(date: Date | string | null | undefined): boolean {
   if (!date) return false;
@@ -77,8 +80,9 @@ export function isValidDate(date: Date | string | null | undefined): boolean {
 
 /**
  * Convert date or string date to Date object
- * @param date - Date object or string date
- * @returns Date object or null if invalid
+ * แปลงวันที่หรือสตริงวันที่เป็นอ็อบเจกต์ Date
+ * @param date - Date object or string date / อ็อบเจกต์ Date หรือสตริงวันที่
+ * @returns Date object or null if invalid / อ็อบเจกต์ Date หรือ null ถ้าไม่ถูกต้อง
  */
 export function toDate(date: Date | string | null | undefined): Date | null {
   if (!date) return null;
@@ -97,9 +101,10 @@ export function toDate(date: Date | string | null | undefined): Date | null {
 
 /**
  * Convert date or string date to Date object (throws error if invalid)
- * @param date - Date object or string date
- * @returns Date object
- * @throws Error if date is invalid
+ * แปลงวันที่หรือสตริงวันที่เป็นอ็อบเจกต์ Date (โยนข้อผิดพลาดถ้าไม่ถูกต้อง)
+ * @param date - Date object or string date / อ็อบเจกต์ Date หรือสตริงวันที่
+ * @returns Date object / อ็อบเจกต์ Date
+ * @throws Error if date is invalid / ข้อผิดพลาดถ้าวันที่ไม่ถูกต้อง
  */
 export function toDateOrThrow(date: Date | string | null | undefined): Date {
   if (!date) {

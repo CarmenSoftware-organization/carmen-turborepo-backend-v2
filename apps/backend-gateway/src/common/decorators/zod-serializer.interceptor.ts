@@ -10,10 +10,18 @@ import { Observable, map } from 'rxjs';
 import { ZodSchema } from 'zod';
 import { SERIALIZER_SCHEMA_KEY } from './serialize.decorator';
 
+/**
+ * Interceptor that serializes responses using Zod schemas
+ * อินเตอร์เซปเตอร์ที่แปลงข้อมูลการตอบกลับโดยใช้ Zod schema
+ */
 @Injectable()
 export class ZodSerializerInterceptor implements NestInterceptor {
   constructor(private readonly reflector: Reflector) {}
 
+  /**
+   * Intercept the response and apply Zod serialization if schema is defined
+   * ดักจับการตอบกลับและใช้การแปลง Zod ถ้ามี schema กำหนดไว้
+   */
   intercept(
     context: ExecutionContext,
     next: CallHandler,

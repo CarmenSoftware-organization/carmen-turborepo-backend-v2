@@ -38,6 +38,13 @@ export class UserService implements OnModuleInit {
     }
   }
 
+  /**
+   * Retrieve user profile from the business microservice
+   * ดึงข้อมูลโปรไฟล์ผู้ใช้จากไมโครเซอร์วิสธุรกิจ
+   * @param id - User ID / รหัสผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns User profile data / ข้อมูลโปรไฟล์ผู้ใช้
+   */
   async getUserProfile(id: string, version: string): Promise<Result<unknown>> {
     this.logger.debug(
       {
@@ -70,6 +77,15 @@ export class UserService implements OnModuleInit {
     return Result.ok(response.data);
   }
 
+  /**
+   * List all users in the specified business unit
+   * ค้นหารายการผู้ใช้ทั้งหมดในหน่วยธุรกิจที่ระบุ
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of users / รายการผู้ใช้แบบแบ่งหน้า
+   */
   async getAllUserInTenant(
     user_id: string,
     bu_code: string,
@@ -104,6 +120,14 @@ export class UserService implements OnModuleInit {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Update a user's profile by ID
+   * อัปเดตข้อมูลโปรไฟล์ผู้ใช้ตาม ID
+   * @param userId - Target user ID / รหัสผู้ใช้เป้าหมาย
+   * @param updateData - Profile fields to update / ฟิลด์โปรไฟล์ที่จะอัปเดต
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated user profile / ข้อมูลโปรไฟล์ผู้ใช้ที่อัปเดตแล้ว
+   */
   async updateUserById(
     userId: string,
     updateData: {
@@ -147,6 +171,13 @@ export class UserService implements OnModuleInit {
     return Result.ok(response.data);
   }
 
+  /**
+   * Retrieve user permissions from the business microservice
+   * ดึงข้อมูลสิทธิ์การใช้งานของผู้ใช้จากไมโครเซอร์วิสธุรกิจ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns User permission set / ชุดสิทธิ์การใช้งานของผู้ใช้
+   */
   async getPermission(user_id: string, version: string): Promise<unknown> {
     this.logger.debug(
       {

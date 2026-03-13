@@ -25,6 +25,12 @@ export class PeriodController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a single period by ID
+   * ค้นหารายการงวดเดียวตาม ID
+   * @param payload - Microservice payload containing period ID / ข้อมูล payload ที่มี ID ของงวด
+   * @returns Period detail / รายละเอียดงวด
+   */
   @MessagePattern({ cmd: 'period.findOne', service: 'period' })
   async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, PeriodController.name);
@@ -38,6 +44,12 @@ export class PeriodController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all periods with pagination
+   * ค้นหารายการงวดทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing pagination parameters / ข้อมูล payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of periods / รายการงวดพร้อมการแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'period.findAll', service: 'period' })
   async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, PeriodController.name);
@@ -51,6 +63,12 @@ export class PeriodController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Create a new period
+   * สร้างงวดใหม่
+   * @param payload - Microservice payload containing period data / ข้อมูล payload ที่มีข้อมูลงวด
+   * @returns Created period ID / ID ของงวดที่สร้างขึ้น
+   */
   @MessagePattern({ cmd: 'period.create', service: 'period' })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, PeriodController.name);
@@ -64,6 +82,12 @@ export class PeriodController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an existing period
+   * อัปเดตงวดที่มีอยู่
+   * @param payload - Microservice payload containing updated period data / ข้อมูล payload ที่มีข้อมูลงวดที่อัปเดต
+   * @returns Updated period ID / ID ของงวดที่อัปเดต
+   */
   @MessagePattern({ cmd: 'period.update', service: 'period' })
   async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, PeriodController.name);
@@ -77,6 +101,12 @@ export class PeriodController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Partially update a period
+   * อัปเดตบางส่วนของงวด
+   * @param payload - Microservice payload containing partial period data / ข้อมูล payload ที่มีข้อมูลงวดบางส่วน
+   * @returns Updated period / งวดที่อัปเดต
+   */
   @MessagePattern({ cmd: 'period.patch', service: 'period' })
   async patch(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'patch', payload }, PeriodController.name);
@@ -90,6 +120,12 @@ export class PeriodController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a period (soft delete)
+   * ลบงวด (ลบแบบซอฟต์)
+   * @param payload - Microservice payload containing period ID / ข้อมูล payload ที่มี ID ของงวด
+   * @returns Deleted period ID / ID ของงวดที่ลบ
+   */
   @MessagePattern({ cmd: 'period.delete', service: 'period' })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, PeriodController.name);

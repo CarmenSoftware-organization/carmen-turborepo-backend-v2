@@ -58,8 +58,13 @@ export class Config_WorkflowsController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific approval workflow template including its stages,
-   * approver roles, and routing rules for procurement document approvals.
+   * Retrieves a specific approval workflow template with its stages and routing rules
+   * ค้นหาขั้นตอนการทำงานเดียวตาม ID รวมถึงขั้นตอนการอนุมัติและบทบาทผู้อนุมัติ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Workflow ID / รหัสขั้นตอนการทำงาน
+   * @param version - API version / เวอร์ชัน API
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('workflow.findOne'))
@@ -99,8 +104,13 @@ export class Config_WorkflowsController extends BaseHttpController {
   }
 
   /**
-   * Lists all configured approval workflow templates for managing document
-   * approval chains (purchase requests, purchase orders, etc.).
+   * Lists all configured approval workflow templates
+   * ค้นหาขั้นตอนการทำงานทั้งหมดสำหรับการจัดการห่วงโซ่การอนุมัติเอกสาร
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
    */
   @Get()
   @UseGuards(new AppIdGuard('workflow.findAll'))
@@ -142,8 +152,13 @@ export class Config_WorkflowsController extends BaseHttpController {
   }
 
   /**
-   * Creates a new approval workflow template defining stages and approver roles
-   * (e.g., HOD, Purchaser, FC, GM) for procurement document routing.
+   * Creates a new approval workflow template with stages and approver roles
+   * สร้างขั้นตอนการทำงานใหม่สำหรับการอนุมัติเอกสารจัดซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param createDto - Creation data / ข้อมูลสำหรับสร้าง
+   * @param version - API version / เวอร์ชัน API
    */
   @Post()
   @UseGuards(new AppIdGuard('workflow.create'))
@@ -184,8 +199,14 @@ export class Config_WorkflowsController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing approval workflow template such as adding/removing stages
-   * or changing approver role assignments.
+   * Modifies an existing approval workflow template
+   * อัปเดตขั้นตอนการทำงานที่มีอยู่ เช่น เพิ่ม/ลบขั้นตอนหรือเปลี่ยนบทบาทผู้อนุมัติ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Workflow ID / รหัสขั้นตอนการทำงาน
+   * @param updateDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param version - API version / เวอร์ชัน API
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('workflow.update'))
@@ -232,8 +253,13 @@ export class Config_WorkflowsController extends BaseHttpController {
   }
 
   /**
-   * Removes an approval workflow template from active use.
-   * In-progress documents are not affected; only new documents cannot use this workflow.
+   * Removes an approval workflow template from active use
+   * ลบขั้นตอนการทำงานออกจากการใช้งาน เอกสารที่กำลังดำเนินการไม่ได้รับผลกระทบ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Workflow ID / รหัสขั้นตอนการทำงาน
+   * @param version - API version / เวอร์ชัน API
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('workflow.delete'))

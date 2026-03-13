@@ -21,9 +21,10 @@ export class ApplicationPermissionService {
   ) {}
 
   /**
-   * Get all application permissions
-   * @param version
-   * @returns
+   * Retrieve all application permissions
+   * ค้นหารายการสิทธิ์การเข้าถึงทั้งหมด
+   * @param version - API version / เวอร์ชัน API
+   * @returns Permission list with pagination / รายการสิทธิ์การเข้าถึงพร้อมการแบ่งหน้า
    */
   async findAll(version: string): Promise<unknown> {
     this.logger.debug(
@@ -52,10 +53,11 @@ export class ApplicationPermissionService {
   }
 
   /**
-   * Get application permission by ID
-   * @param id
-   * @param version
-   * @returns
+   * Retrieve a single application permission by ID
+   * ค้นหาสิทธิ์การเข้าถึงเดียวตาม ID
+   * @param id - Permission ID / รหัสสิทธิ์การเข้าถึง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Permission details / รายละเอียดสิทธิ์การเข้าถึง
    */
   async findOne(id: string, version: string): Promise<unknown> {
     this.logger.debug(
@@ -85,10 +87,11 @@ export class ApplicationPermissionService {
   }
 
   /**
-   * Create new application permission
-   * @param createApplicationPermissionDto
-   * @param version
-   * @returns
+   * Create a new application permission via microservice
+   * สร้างสิทธิ์การเข้าถึงใหม่ผ่านไมโครเซอร์วิส
+   * @param createApplicationPermissionDto - Permission creation data / ข้อมูลสำหรับสร้างสิทธิ์การเข้าถึง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created permission / สิทธิ์การเข้าถึงที่ถูกสร้าง
    */
   async create(
     createApplicationPermissionDto: CreateApplicationPermissionDto,
@@ -121,11 +124,12 @@ export class ApplicationPermissionService {
   }
 
   /**
-   * Update application permission
-   * @param id
-   * @param updateApplicationPermissionDto
-   * @param version
-   * @returns
+   * Update an existing application permission via microservice
+   * อัปเดตสิทธิ์การเข้าถึงที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param id - Permission ID / รหัสสิทธิ์การเข้าถึง
+   * @param updateApplicationPermissionDto - Permission update data / ข้อมูลสำหรับอัปเดตสิทธิ์การเข้าถึง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated permission / สิทธิ์การเข้าถึงที่ถูกอัปเดต
    */
   async update(
     id: string,
@@ -160,10 +164,11 @@ export class ApplicationPermissionService {
   }
 
   /**
-   * Delete application permission
-   * @param id
-   * @param version
-   * @returns
+   * Delete an application permission via microservice
+   * ลบสิทธิ์การเข้าถึงผ่านไมโครเซอร์วิส
+   * @param id - Permission ID / รหัสสิทธิ์การเข้าถึง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   async delete(id: string, version: string): Promise<unknown> {
     this.logger.debug(

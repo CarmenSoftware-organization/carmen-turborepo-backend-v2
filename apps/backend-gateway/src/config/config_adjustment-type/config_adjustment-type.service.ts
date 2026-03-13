@@ -18,6 +18,15 @@ export class Config_AdjustmentTypeService {
     private readonly masterService: ClientProxy,
   ) {}
 
+  /**
+   * Find an adjustment type by ID via microservice
+   * ค้นหาประเภทการปรับสต๊อกเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Adjustment type ID / รหัสประเภทการปรับสต๊อก
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Adjustment type data or error / ข้อมูลประเภทการปรับสต๊อกหรือข้อผิดพลาด
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -49,6 +58,15 @@ export class Config_AdjustmentTypeService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all adjustment types with pagination via microservice
+   * ค้นหาประเภทการปรับสต๊อกทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated adjustment type data or error / ข้อมูลประเภทการปรับสต๊อกพร้อมการแบ่งหน้าหรือข้อผิดพลาด
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -87,6 +105,15 @@ export class Config_AdjustmentTypeService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new adjustment type via microservice
+   * สร้างประเภทการปรับสต๊อกใหม่ผ่านไมโครเซอร์วิส
+   * @param createDto - Creation data / ข้อมูลสำหรับสร้าง
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created adjustment type or error / ประเภทการปรับสต๊อกที่สร้างแล้วหรือข้อผิดพลาด
+   */
   async create(
     createDto: ICreateAdjustmentType,
     user_id: string,
@@ -123,6 +150,15 @@ export class Config_AdjustmentTypeService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update an existing adjustment type via microservice
+   * อัปเดตประเภทการปรับสต๊อกที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param updateDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated adjustment type or error / ประเภทการปรับสต๊อกที่อัปเดตแล้วหรือข้อผิดพลาด
+   */
   async update(
     updateDto: IUpdateAdjustmentType,
     user_id: string,
@@ -159,6 +195,15 @@ export class Config_AdjustmentTypeService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete an adjustment type by ID via microservice
+   * ลบประเภทการปรับสต๊อกตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Adjustment type ID / รหัสประเภทการปรับสต๊อก
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result or error / ผลการลบหรือข้อผิดพลาด
+   */
   async delete(
     id: string,
     user_id: string,

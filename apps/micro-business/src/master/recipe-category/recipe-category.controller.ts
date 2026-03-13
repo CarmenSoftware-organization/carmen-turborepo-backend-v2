@@ -25,6 +25,12 @@ export class RecipeCategoryController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a single recipe category by ID
+   * ค้นหารายการหมวดหมู่สูตรอาหารเดียวตาม ID
+   * @param payload - Microservice payload containing recipe category ID / ข้อมูล payload ที่มี ID ของหมวดหมู่สูตรอาหาร
+   * @returns Recipe category detail / รายละเอียดหมวดหมู่สูตรอาหาร
+   */
   @MessagePattern({ cmd: 'recipe-category.findOne', service: 'recipe-category' })
   async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, RecipeCategoryController.name);
@@ -38,6 +44,12 @@ export class RecipeCategoryController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all recipe categories with pagination
+   * ค้นหารายการหมวดหมู่สูตรอาหารทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing pagination parameters / ข้อมูล payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of recipe categories / รายการหมวดหมู่สูตรอาหารพร้อมการแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'recipe-category.findAll', service: 'recipe-category' })
   async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, RecipeCategoryController.name);
@@ -51,6 +63,12 @@ export class RecipeCategoryController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Create a new recipe category
+   * สร้างหมวดหมู่สูตรอาหารใหม่
+   * @param payload - Microservice payload containing recipe category data / ข้อมูล payload ที่มีข้อมูลหมวดหมู่สูตรอาหาร
+   * @returns Created recipe category ID / ID ของหมวดหมู่สูตรอาหารที่สร้างขึ้น
+   */
   @MessagePattern({ cmd: 'recipe-category.create', service: 'recipe-category' })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, RecipeCategoryController.name);
@@ -64,6 +82,12 @@ export class RecipeCategoryController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an existing recipe category
+   * อัปเดตหมวดหมู่สูตรอาหารที่มีอยู่
+   * @param payload - Microservice payload containing updated recipe category data / ข้อมูล payload ที่มีข้อมูลหมวดหมู่สูตรอาหารที่อัปเดต
+   * @returns Updated recipe category ID / ID ของหมวดหมู่สูตรอาหารที่อัปเดต
+   */
   @MessagePattern({ cmd: 'recipe-category.update', service: 'recipe-category' })
   async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, RecipeCategoryController.name);
@@ -77,6 +101,12 @@ export class RecipeCategoryController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Partially update a recipe category
+   * อัปเดตบางส่วนของหมวดหมู่สูตรอาหาร
+   * @param payload - Microservice payload containing partial recipe category data / ข้อมูล payload ที่มีข้อมูลหมวดหมู่สูตรอาหารบางส่วน
+   * @returns Updated recipe category / หมวดหมู่สูตรอาหารที่อัปเดต
+   */
   @MessagePattern({ cmd: 'recipe-category.patch', service: 'recipe-category' })
   async patch(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'patch', payload }, RecipeCategoryController.name);
@@ -90,6 +120,12 @@ export class RecipeCategoryController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a recipe category (soft delete)
+   * ลบหมวดหมู่สูตรอาหาร (ลบแบบซอฟต์)
+   * @param payload - Microservice payload containing recipe category ID / ข้อมูล payload ที่มี ID ของหมวดหมู่สูตรอาหาร
+   * @returns Deleted recipe category ID / ID ของหมวดหมู่สูตรอาหารที่ลบ
+   */
   @MessagePattern({ cmd: 'recipe-category.delete', service: 'recipe-category' })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, RecipeCategoryController.name);

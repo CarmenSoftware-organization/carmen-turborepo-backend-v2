@@ -25,6 +25,12 @@ export class ProductsController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a single product by ID
+   * ค้นหารายการสินค้าเดียวตาม ID
+   * @param payload - Microservice payload containing product ID / ข้อมูล payload ที่มี ID ของสินค้า
+   * @returns Product detail / รายละเอียดสินค้า
+   */
   @MessagePattern({ cmd: 'products.findOne', service: 'products' })
   async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, ProductsController.name);
@@ -38,6 +44,12 @@ export class ProductsController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all products with pagination
+   * ค้นหารายการสินค้าทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing pagination parameters / ข้อมูล payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of products / รายการสินค้าพร้อมการแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'products.findAll', service: 'products' })
   async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, ProductsController.name);
@@ -51,6 +63,12 @@ export class ProductsController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Find multiple products by their IDs
+   * ค้นหารายการสินค้าหลายรายการตาม ID
+   * @param payload - Microservice payload containing array of product IDs / ข้อมูล payload ที่มีอาร์เรย์ของ ID สินค้า
+   * @returns List of products matching the IDs / รายการสินค้าที่ตรงกับ ID
+   */
   @MessagePattern({ cmd: 'products.find-many-by-id', service: 'products' })
   async findManyById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findManyById', payload }, ProductsController.name);
@@ -64,6 +82,12 @@ export class ProductsController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Create a new product
+   * สร้างสินค้าใหม่
+   * @param payload - Microservice payload containing product data / ข้อมูล payload ที่มีข้อมูลสินค้า
+   * @returns Created product ID / ID ของสินค้าที่สร้างขึ้น
+   */
   @MessagePattern({ cmd: 'products.create', service: 'products' })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, ProductsController.name);
@@ -77,6 +101,12 @@ export class ProductsController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an existing product
+   * อัปเดตสินค้าที่มีอยู่
+   * @param payload - Microservice payload containing updated product data / ข้อมูล payload ที่มีข้อมูลสินค้าที่อัปเดต
+   * @returns Updated product ID / ID ของสินค้าที่อัปเดต
+   */
   @MessagePattern({ cmd: 'products.update', service: 'products' })
   async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, ProductsController.name);
@@ -90,6 +120,12 @@ export class ProductsController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a product (soft delete)
+   * ลบสินค้า (ลบแบบซอฟต์)
+   * @param payload - Microservice payload containing product ID / ข้อมูล payload ที่มี ID ของสินค้า
+   * @returns Deleted product ID / ID ของสินค้าที่ลบ
+   */
   @MessagePattern({ cmd: 'products.delete', service: 'products' })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, ProductsController.name);
@@ -103,6 +139,12 @@ export class ProductsController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find the item group hierarchy for a product
+   * ค้นหาลำดับชั้นกลุ่มสินค้าของสินค้า
+   * @param payload - Microservice payload containing item group ID / ข้อมูล payload ที่มี ID ของกลุ่มสินค้า
+   * @returns Item group with sub-category and category / กลุ่มสินค้าพร้อมหมวดหมู่ย่อยและหมวดหมู่
+   */
   @MessagePattern({ cmd: 'products.findItemGroup', service: 'products' })
   async findItemGroup(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findItemGroup', payload }, ProductsController.name);
@@ -116,6 +158,12 @@ export class ProductsController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Get products by location ID with pagination
+   * ดึงรายการสินค้าตาม ID สถานที่พร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing location ID and pagination / ข้อมูล payload ที่มี ID สถานที่และการแบ่งหน้า
+   * @returns Paginated list of products at the location / รายการสินค้าที่สถานที่พร้อมการแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'products.getByLocationId', service: 'products' })
   async getByLocationId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug(

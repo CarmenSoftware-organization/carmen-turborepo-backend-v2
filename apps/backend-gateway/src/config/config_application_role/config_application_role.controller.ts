@@ -28,8 +28,13 @@ export class ConfigApplicationRoleController extends BaseHttpController {
   }
 
   /**
-   * Lists all defined application roles (e.g., Admin, Manager, Purchaser, Requestor)
-   * that determine system feature access for each user.
+   * Lists all defined application roles for access control
+   * ค้นหาบทบาทแอปพลิเคชันทั้งหมด (เช่น Admin, Manager, Purchaser, Requestor)
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
    */
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -60,8 +65,13 @@ export class ConfigApplicationRoleController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific application role with its associated permissions
-   * to review what system capabilities are granted.
+   * Retrieves a specific application role with its permissions
+   * ค้นหาบทบาทแอปพลิเคชันเดียวตาม ID พร้อมสิทธิ์ที่เกี่ยวข้อง
+   * @param id - Application role ID / รหัสบทบาทแอปพลิเคชัน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Get(':id')
   @HttpCode(HttpStatus.OK)
@@ -80,8 +90,13 @@ export class ConfigApplicationRoleController extends BaseHttpController {
   }
 
   /**
-   * Defines a new application role (e.g., Department Head, Finance Controller)
-   * that can be assigned permissions and then granted to users.
+   * Defines a new application role for access control
+   * สร้างบทบาทแอปพลิเคชันใหม่ (เช่น หัวหน้าแผนก ผู้ควบคุมการเงิน)
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createConfigApplicationRoleDto - Creation data / ข้อมูลสำหรับสร้าง
+   * @param version - API version / เวอร์ชัน API
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -101,8 +116,14 @@ export class ConfigApplicationRoleController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing application role's name or permission set.
-   * Changes immediately affect all users assigned this role.
+   * Modifies an existing application role's name or permission set
+   * อัปเดตบทบาทแอปพลิเคชันที่มีอยู่ การเปลี่ยนแปลงมีผลทันทีกับผู้ใช้ทั้งหมดที่มีบทบาทนี้
+   * @param id - Application role ID / รหัสบทบาทแอปพลิเคชัน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateConfigApplicationRoleDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param version - API version / เวอร์ชัน API
    */
   @Put(':id')
   @HttpCode(HttpStatus.OK)
@@ -123,7 +144,13 @@ export class ConfigApplicationRoleController extends BaseHttpController {
   }
 
   /**
-   * Removes an application role from the system. Users with this role lose its permissions.
+   * Removes an application role from the system
+   * ลบบทบาทแอปพลิเคชันออกจากระบบ ผู้ใช้ที่มีบทบาทนี้จะสูญเสียสิทธิ์
+   * @param id - Application role ID / รหัสบทบาทแอปพลิเคชัน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Delete(':id')
   @HttpCode(HttpStatus.OK)

@@ -33,6 +33,16 @@ export class InventoryAdjustmentService {
     private readonly inventoryService: ClientProxy,
   ) {}
 
+  /**
+   * Find all inventory adjustments (stock-in and/or stock-out) with pagination.
+   * ค้นหารายการปรับปรุงสินค้าคงคลังทั้งหมด (รับเข้าและ/หรือจ่ายออก) พร้อมการแบ่งหน้า
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param tenant_id - Tenant ID (business unit code) / รหัสผู้เช่า (รหัสหน่วยธุรกิจ)
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @param type - Optional adjustment type filter / ตัวกรองประเภทการปรับปรุง (ไม่บังคับ)
+   * @returns Combined and sorted adjustment records / รายการปรับปรุงที่รวมและจัดเรียงแล้ว
+   */
   async findAll(
     user_id: string,
     tenant_id: string,
@@ -110,6 +120,16 @@ export class InventoryAdjustmentService {
     });
   }
 
+  /**
+   * Find a single inventory adjustment by ID and type via microservice.
+   * ค้นหารายการปรับปรุงสินค้าคงคลังเดียวตาม ID และประเภทผ่านไมโครเซอร์วิส
+   * @param id - Adjustment record ID / รหัสรายการปรับปรุง
+   * @param type - Adjustment type (stock-in/stock-out) / ประเภทการปรับปรุง (รับเข้า/จ่ายออก)
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param tenant_id - Tenant ID (business unit code) / รหัสผู้เช่า (รหัสหน่วยธุรกิจ)
+   * @param version - API version / เวอร์ชัน API
+   * @returns Adjustment record with type annotation or error / รายการปรับปรุงพร้อมประเภทหรือข้อผิดพลาด
+   */
   async findOne(
     id: string,
     type: AdjustmentType,

@@ -45,8 +45,13 @@ export class Platform_ClusterController extends BaseHttpController {
   }
 
   /**
-   * Lists all top-level organizations (hotel chains or companies) registered in the platform.
-   * Supports pagination for managing large numbers of corporate entities.
+   * List all clusters with pagination
+   * ค้นหารายการคลัสเตอร์ทั้งหมดพร้อมการแบ่งหน้า
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated cluster list / รายการคลัสเตอร์แบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('cluster.findAll'))
@@ -91,8 +96,13 @@ export class Platform_ClusterController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the details of a specific hotel chain or company.
-   * Includes its name, configuration, and the business units (properties) it contains.
+   * Get a cluster by ID
+   * ค้นหาคลัสเตอร์เดียวตาม ID
+   * @param id - Cluster ID / รหัสคลัสเตอร์
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Cluster details / รายละเอียดคลัสเตอร์
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('cluster.findOne'))
@@ -132,8 +142,13 @@ export class Platform_ClusterController extends BaseHttpController {
   }
 
   /**
-   * Onboards a new hotel chain or company into the Carmen ERP platform.
-   * The cluster serves as the top-level grouping under which hotel properties are created.
+   * Create a new cluster
+   * สร้างคลัสเตอร์ใหม่ในแพลตฟอร์ม
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param createClusterDto - Cluster creation data / ข้อมูลสำหรับสร้างคลัสเตอร์
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created cluster / คลัสเตอร์ที่ถูกสร้าง
    */
   @Post()
   @UseGuards(new AppIdGuard('cluster.create'))
@@ -178,8 +193,14 @@ export class Platform_ClusterController extends BaseHttpController {
   }
 
   /**
-   * Modifies the details of an existing hotel chain or company.
-   * Updates may include name, contact information, or subscription settings.
+   * Update an existing cluster
+   * อัปเดตข้อมูลคลัสเตอร์ที่มีอยู่
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - Cluster ID / รหัสคลัสเตอร์
+   * @param updateClusterDto - Cluster update data / ข้อมูลสำหรับอัปเดตคลัสเตอร์
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated cluster / คลัสเตอร์ที่ถูกอัปเดต
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('cluster.update'))
@@ -229,8 +250,13 @@ export class Platform_ClusterController extends BaseHttpController {
   }
 
   /**
-   * Removes a hotel chain or company from the platform.
-   * Affects all business units and user assignments under this cluster.
+   * Delete a cluster
+   * ลบคลัสเตอร์ออกจากแพลตฟอร์ม
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - Cluster ID / รหัสคลัสเตอร์
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('cluster.delete'))

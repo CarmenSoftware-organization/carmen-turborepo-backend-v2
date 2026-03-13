@@ -61,8 +61,13 @@ export class Config_PriceListController extends BaseHttpController {
   }
 
   /**
-   * Bulk imports vendor price lists from an Excel file for efficient
-   * multi-supplier pricing updates in procurement cost control.
+   * Bulk imports vendor price lists from an Excel file for efficient multi-supplier pricing updates
+   * นำเข้ารายการราคาจากผู้ขายจำนวนมากจากไฟล์ Excel สำหรับการอัปเดตราคาจากหลายซัพพลายเออร์
+   * @param createConfigPriceListDto - Price list data from Excel / ข้อมูลรายการราคาจาก Excel
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
    */
   @Post('upload-excel')
   @UseGuards(new AppIdGuard('priceList.uploadExcel'))
@@ -105,8 +110,13 @@ export class Config_PriceListController extends BaseHttpController {
   }
 
   /**
-   * Exports a vendor price list to Excel format for offline review,
-   * comparison, or sharing for procurement cost analysis.
+   * Exports a vendor price list to Excel format for offline review and cost analysis
+   * ส่งออกรายการราคาผู้ขายเป็นรูปแบบ Excel สำหรับการตรวจสอบและวิเคราะห์ต้นทุนแบบออฟไลน์
+   * @param id - Price list ID / รหัสรายการราคา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
    */
   @Get(':id/download-excel')
   @UseGuards(new AppIdGuard('priceList.downloadExcel'))
@@ -149,7 +159,12 @@ export class Config_PriceListController extends BaseHttpController {
 
   /**
    * Creates a new vendor price list with product-level pricing details
-   * used during purchase order creation for automatic price population.
+   * สร้างรายการราคาผู้ขายใหม่พร้อมรายละเอียดราคาระดับสินค้า
+   * @param createConfigPriceListDto - Price list creation data / ข้อมูลสำหรับสร้างรายการราคา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
    */
   @Post()
   @UseGuards(new AppIdGuard('priceList.create'))
@@ -190,7 +205,12 @@ export class Config_PriceListController extends BaseHttpController {
 
   /**
    * Lists all vendor price lists for comparing supplier pricing
-   * and managing cost agreements across vendors.
+   * ค้นหารายการราคาทั้งหมดของผู้ขายสำหรับเปรียบเทียบราคาซัพพลายเออร์
+   * @param query - Pagination and filter parameters / พารามิเตอร์การแบ่งหน้าและตัวกรอง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
    */
   @Get()
   @UseGuards(new AppIdGuard('priceList.findAll'))
@@ -235,7 +255,12 @@ export class Config_PriceListController extends BaseHttpController {
 
   /**
    * Retrieves a specific vendor price list with all line-item pricing details
-   * for reviewing agreed product prices from a particular vendor.
+   * ค้นหารายการราคาเดียวตาม ID พร้อมรายละเอียดราคาสินค้าทั้งหมด
+   * @param id - Price list ID / รหัสรายการราคา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('priceList.findOne'))
@@ -272,8 +297,14 @@ export class Config_PriceListController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing vendor price list such as updating product prices,
-   * validity dates, or adding new product lines.
+   * Modifies an existing vendor price list such as updating product prices or validity dates
+   * อัปเดตรายการราคาผู้ขายที่มีอยู่ เช่น การอัปเดตราคาสินค้าหรือวันที่มีผลบังคับใช้
+   * @param id - Price list ID / รหัสรายการราคา
+   * @param updateConfigPriceListDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('priceList.update'))
@@ -319,7 +350,13 @@ export class Config_PriceListController extends BaseHttpController {
   }
 
   /**
-   * Removes a vendor price list from the system. Historical procurement records are unaffected.
+   * Removes a vendor price list from the system
+   * ลบรายการราคาผู้ขายออกจากระบบ บันทึกการจัดซื้อในอดีตไม่ได้รับผลกระทบ
+   * @param id - Price list ID / รหัสรายการราคา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('priceList.remove'))
@@ -356,8 +393,13 @@ export class Config_PriceListController extends BaseHttpController {
   }
 
   /**
-   * Bulk imports vendor price list data from a CSV file, creating or updating
-   * price lists with line items. Invalid rows are skipped and reported.
+   * Bulk imports vendor price list data from a CSV file
+   * นำเข้าข้อมูลรายการราคาจำนวนมากจากไฟล์ CSV แถวที่ไม่ถูกต้องจะถูกข้ามและรายงาน
+   * @param file - CSV file upload / ไฟล์ CSV ที่อัปโหลด
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
    */
   @Post('import-csv')
   @UseGuards(new AppIdGuard('priceList.importCsv'))

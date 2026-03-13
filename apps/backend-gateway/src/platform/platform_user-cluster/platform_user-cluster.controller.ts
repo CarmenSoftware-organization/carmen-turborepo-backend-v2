@@ -48,8 +48,13 @@ export class Platform_UserClusterController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the details of a specific user-to-organization membership.
-   * Shows which user belongs to which hotel chain or company.
+   * Get a user-cluster mapping by ID
+   * ค้นหาการเชื่อมโยงผู้ใช้กับคลัสเตอร์เดียวตาม ID
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - Mapping ID / รหัสการเชื่อมโยง
+   * @param version - API version / เวอร์ชัน API
+   * @returns User-cluster mapping details / รายละเอียดการเชื่อมโยงผู้ใช้กับคลัสเตอร์
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('userCluster.findOne'))
@@ -94,8 +99,13 @@ export class Platform_UserClusterController extends BaseHttpController {
   }
 
   /**
-   * Lists all user-to-organization memberships across the platform.
-   * Used to manage and audit which users belong to which hotel chains or companies.
+   * List all user-cluster mappings with pagination
+   * ค้นหารายการการเชื่อมโยงผู้ใช้กับคลัสเตอร์ทั้งหมดพร้อมการแบ่งหน้า
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated mapping list / รายการการเชื่อมโยงแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('userCluster.findAll'))
@@ -140,8 +150,13 @@ export class Platform_UserClusterController extends BaseHttpController {
   }
 
   /**
-   * Adds a user to a hotel chain or company organization.
-   * This is typically the first step before assigning the user to individual properties within that cluster.
+   * Create a user-cluster mapping
+   * สร้างการเชื่อมโยงผู้ใช้กับคลัสเตอร์
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param body - Mapping creation data / ข้อมูลสำหรับสร้างการเชื่อมโยง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created mapping / การเชื่อมโยงที่ถูกสร้าง
    */
   @Post()
   @UseGuards(new AppIdGuard('userCluster.create'))
@@ -186,8 +201,14 @@ export class Platform_UserClusterController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing user-to-organization membership.
-   * Can update the user's role or access level within a hotel chain or company.
+   * Update a user-cluster mapping
+   * อัปเดตการเชื่อมโยงผู้ใช้กับคลัสเตอร์
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - Mapping ID / รหัสการเชื่อมโยง
+   * @param body - Mapping update data / ข้อมูลสำหรับอัปเดตการเชื่อมโยง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated mapping / การเชื่อมโยงที่ถูกอัปเดต
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('userCluster.update'))
@@ -240,8 +261,13 @@ export class Platform_UserClusterController extends BaseHttpController {
   }
 
   /**
-   * Removes a user's membership from a hotel chain or company organization.
-   * May cascade to remove their business unit assignments within that cluster.
+   * Delete a user-cluster mapping
+   * ลบการเชื่อมโยงผู้ใช้กับคลัสเตอร์
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - Mapping ID / รหัสการเชื่อมโยง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('userCluster.delete'))

@@ -17,6 +17,16 @@ export class DocumentManagementService {
     private readonly fileService: ClientProxy,
   ) {}
 
+  /**
+   * Upload a document to file storage via the file microservice
+   * อัปโหลดเอกสารไปยังที่จัดเก็บไฟล์ผ่านไมโครเซอร์วิสไฟล์
+   * @param fileBuffer - File binary content / เนื้อหาไบนารีของไฟล์
+   * @param fileName - Original file name / ชื่อไฟล์ต้นฉบับ
+   * @param mimeType - File MIME type / ประเภท MIME ของไฟล์
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Uploaded document metadata / ข้อมูลเมตาของเอกสารที่อัปโหลด
+   */
   async uploadDocument(
     fileBuffer: Buffer,
     fileName: string,
@@ -58,6 +68,14 @@ export class DocumentManagementService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Download a document by file token
+   * ดาวน์โหลดเอกสารตาม file token
+   * @param fileToken - Unique file token / โทเค็นไฟล์เฉพาะ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Document content / เนื้อหาเอกสาร
+   */
   async getDocument(
     fileToken: string,
     user_id: string,
@@ -86,6 +104,14 @@ export class DocumentManagementService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Get document metadata without downloading content
+   * ดึงข้อมูลเมตาของเอกสารโดยไม่ดาวน์โหลดเนื้อหา
+   * @param fileToken - Unique file token / โทเค็นไฟล์เฉพาะ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Document metadata / ข้อมูลเมตาเอกสาร
+   */
   async getDocumentInfo(
     fileToken: string,
     user_id: string,
@@ -114,6 +140,14 @@ export class DocumentManagementService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a document from storage
+   * ลบเอกสารจากที่จัดเก็บ
+   * @param fileToken - Unique file token / โทเค็นไฟล์เฉพาะ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Delete result / ผลลัพธ์การลบ
+   */
   async deleteDocument(
     fileToken: string,
     user_id: string,
@@ -142,6 +176,14 @@ export class DocumentManagementService {
     return Result.ok(response.data);
   }
 
+  /**
+   * List all documents in the business unit with pagination
+   * ค้นหารายการเอกสารทั้งหมดในหน่วยธุรกิจแบบแบ่งหน้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of documents / รายการเอกสารแบบแบ่งหน้า
+   */
   async listDocuments(
     bu_code: string,
     user_id: string,
@@ -180,6 +222,15 @@ export class DocumentManagementService {
     return Result.ok({ data: response.data, paginate: response.meta });
   }
 
+  /**
+   * Generate a presigned URL for secure document access
+   * สร้าง presigned URL สำหรับเข้าถึงเอกสารอย่างปลอดภัย
+   * @param fileToken - Unique file token / โทเค็นไฟล์เฉพาะ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param expirySeconds - URL expiry in seconds / เวลาหมดอายุ URL เป็นวินาที
+   * @returns Presigned URL / Presigned URL
+   */
   async getPresignedUrl(
     fileToken: string,
     user_id: string,

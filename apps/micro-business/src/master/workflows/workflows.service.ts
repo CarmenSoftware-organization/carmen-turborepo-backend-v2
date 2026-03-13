@@ -61,6 +61,12 @@ export class WorkflowsService {
   private _bu_code?: string;
   private _userId?: string;
 
+  /**
+   * Initialize the Prisma service for the tenant
+   * เริ่มต้นบริการ Prisma สำหรับผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / รหัสผู้ใช้
+   */
   async initializePrismaService(
     bu_code: string,
     userId: string,
@@ -89,6 +95,12 @@ export class WorkflowsService {
 
   constructor(private readonly tenantService: TenantService) {}
 
+  /**
+   * Find a single workflow by ID
+   * ค้นหาขั้นตอนการทำงานรายการเดียวตาม ID
+   * @param id - Workflow ID / รหัสขั้นตอนการทำงาน
+   * @returns Workflow detail / รายละเอียดขั้นตอนการทำงาน
+   */
   @TryCatch
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value accessed by controller
   async findOne(id: string): Promise<Result<any>> {
@@ -113,6 +125,12 @@ export class WorkflowsService {
     return Result.ok(serializedWorkflow);
   }
 
+  /**
+   * Find all workflows with pagination
+   * ค้นหาขั้นตอนการทำงานทั้งหมดแบบแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of workflows / รายการขั้นตอนการทำงานแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
@@ -166,6 +184,13 @@ export class WorkflowsService {
     });
   }
 
+  /**
+   * Find active workflows by type and check if user can create requests
+   * ค้นหาขั้นตอนการทำงานที่ใช้งานอยู่ตามประเภทและตรวจสอบว่าผู้ใช้สามารถสร้างคำขอได้หรือไม่
+   * @param type - Workflow type (e.g., purchase_request) / ประเภทขั้นตอนการทำงาน
+   * @param user_id - User ID to check create permission / รหัสผู้ใช้สำหรับตรวจสอบสิทธิ์การสร้าง
+   * @returns List of workflows with can_create flag / รายการขั้นตอนการทำงานพร้อมสถานะสิทธิ์การสร้าง
+   */
   @TryCatch
   async findByType(
     type: string,
@@ -237,6 +262,13 @@ export class WorkflowsService {
     });
   }
 
+  /**
+   * Find all users assigned to a specific workflow stage
+   * ค้นหาผู้ใช้ทั้งหมดที่ได้รับมอบหมายในขั้นตอนการทำงานที่ระบุ
+   * @param stage_name - Name of the workflow stage / ชื่อขั้นตอนการทำงาน
+   * @param data - Workflow data containing stages / ข้อมูลขั้นตอนการทำงานที่มีขั้นตอนต่างๆ
+   * @returns List of users in the specified stage / รายการผู้ใช้ในขั้นตอนที่ระบุ
+   */
   async findAllUsersInStages(
     stage_name: string,
     data: object,
@@ -493,6 +525,14 @@ export class WorkflowsService {
     return usersInStage;
   }
 
+  /**
+   * Find all active workflows by their IDs
+   * ค้นหาขั้นตอนการทำงานที่ใช้งานอยู่ทั้งหมดตามรหัส ID
+   * @param ids - Array of workflow IDs / อาร์เรย์ของรหัสขั้นตอนการทำงาน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @returns List of workflows / รายการขั้นตอนการทำงาน
+   */
   @TryCatch
   async findAllWorkflowByIds(
     ids: string[],
@@ -522,6 +562,12 @@ export class WorkflowsService {
     return Result.ok(serializedWorkflows);
   }
 
+  /**
+   * Create a new workflow
+   * สร้างขั้นตอนการทำงานใหม่
+   * @param data - Workflow creation data / ข้อมูลสำหรับสร้างขั้นตอนการทำงาน
+   * @returns Created workflow ID / รหัสขั้นตอนการทำงานที่สร้างแล้ว
+   */
   @TryCatch
   async create(data: ICreateWorkflow): Promise<Result<unknown>> {
     this.logger.debug(
@@ -555,6 +601,12 @@ export class WorkflowsService {
     return Result.ok({ id: createWorkflow.id });
   }
 
+  /**
+   * Update an existing workflow
+   * อัปเดตขั้นตอนการทำงานที่มีอยู่
+   * @param data - Workflow update data / ข้อมูลสำหรับอัปเดตขั้นตอนการทำงาน
+   * @returns Updated workflow ID / รหัสขั้นตอนการทำงานที่อัปเดตแล้ว
+   */
   @TryCatch
   async update(data: IUpdateWorkflow): Promise<Result<unknown>> {
     this.logger.debug(
@@ -590,6 +642,12 @@ export class WorkflowsService {
     return Result.ok({ id: updateWorkflow.id });
   }
 
+  /**
+   * Soft delete a workflow
+   * ลบขั้นตอนการทำงานแบบ soft delete
+   * @param id - Workflow ID / รหัสขั้นตอนการทำงาน
+   * @returns null on success / null เมื่อสำเร็จ
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(

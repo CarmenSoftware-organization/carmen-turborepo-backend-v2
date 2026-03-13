@@ -48,6 +48,12 @@ export class RecipeService {
     RecipeService.name,
   );
 
+  /**
+   * Initialize the Prisma service for the tenant and recipe logic
+   * เริ่มต้นบริการ Prisma สำหรับผู้เช่าและตรรกะสูตรอาหาร
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / รหัสผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
     this.recipeLogic.setPrismaService(this._prismaService);
@@ -70,6 +76,12 @@ export class RecipeService {
     private readonly recipeLogic: RecipeLogic,
   ) { }
 
+  /**
+   * Find a single recipe by ID with category, cuisine, ingredients, steps, and yield variants
+   * ค้นหาสูตรอาหารรายการเดียวตาม ID พร้อมหมวดหมู่ ประเภทอาหาร ส่วนผสม ขั้นตอน และตัวแปรผลผลิต
+   * @param id - Recipe ID / รหัสสูตรอาหาร
+   * @returns Recipe detail / รายละเอียดสูตรอาหาร
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -137,6 +149,12 @@ export class RecipeService {
     });
   }
 
+  /**
+   * Find all recipes with pagination
+   * ค้นหาสูตรอาหารทั้งหมดแบบแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of recipes / รายการสูตรอาหารแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
@@ -203,6 +221,12 @@ export class RecipeService {
     });
   }
 
+  /**
+   * Create a new recipe with category and cuisine validation
+   * สร้างสูตรอาหารใหม่พร้อมตรวจสอบหมวดหมู่และประเภทอาหาร
+   * @param data - Recipe creation data / ข้อมูลสำหรับสร้างสูตรอาหาร
+   * @returns Created recipe ID / รหัสสูตรอาหารที่สร้างแล้ว
+   */
   @TryCatch
   async create(data: ICreateRecipe): Promise<Result<unknown>> {
     this.logger.debug(
@@ -273,6 +297,12 @@ export class RecipeService {
     return Result.ok({ id: created.id });
   }
 
+  /**
+   * Update an existing recipe with status transition handling
+   * อัปเดตสูตรอาหารที่มีอยู่พร้อมจัดการการเปลี่ยนสถานะ
+   * @param data - Recipe update data / ข้อมูลสำหรับอัปเดตสูตรอาหาร
+   * @returns Updated recipe ID / รหัสสูตรอาหารที่อัปเดตแล้ว
+   */
   @TryCatch
   async update(data: IUpdateRecipe): Promise<Result<unknown>> {
     this.logger.debug(
@@ -334,6 +364,12 @@ export class RecipeService {
     return Result.ok({ id: updated.id });
   }
 
+  /**
+   * Partially update a recipe (patch specific fields only)
+   * อัปเดตบางส่วนของสูตรอาหาร (เฉพาะฟิลด์ที่ระบุ)
+   * @param data - Partial recipe update data / ข้อมูลสำหรับอัปเดตบางส่วนของสูตรอาหาร
+   * @returns Updated recipe ID / รหัสสูตรอาหารที่อัปเดตแล้ว
+   */
   @TryCatch
   async patch(data: IUpdateRecipe): Promise<Result<unknown>> {
     this.logger.debug(
@@ -392,6 +428,12 @@ export class RecipeService {
     return Result.ok({ id: updated.id });
   }
 
+  /**
+   * Soft delete a recipe (checks for sub-recipe usage first)
+   * ลบสูตรอาหารแบบ soft delete (ตรวจสอบการใช้เป็นสูตรอาหารย่อยก่อน)
+   * @param id - Recipe ID / รหัสสูตรอาหาร
+   * @returns Deleted recipe ID / รหัสสูตรอาหารที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(

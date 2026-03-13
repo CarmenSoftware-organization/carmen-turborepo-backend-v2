@@ -65,8 +65,14 @@ export class Config_TaxProfileController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific tax rate configuration (e.g., VAT 7%, withholding tax 3%)
-   * used to calculate taxes on procurement documents and vendor invoices.
+   * Get a tax profile by ID
+   * ค้นหาโปรไฟล์ภาษีเดียวตาม ID
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Tax profile ID / รหัสโปรไฟล์ภาษี
+   * @param version - API version / เวอร์ชัน API
+   * @returns Tax profile detail / รายละเอียดโปรไฟล์ภาษี
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('taxProfile.findOne'))
@@ -100,8 +106,14 @@ export class Config_TaxProfileController extends BaseHttpController {
   }
 
   /**
-   * Lists all tax rate configurations for the business unit, applied to procurement
-   * documents to automatically calculate VAT, withholding tax, and other applicable taxes.
+   * Get all tax profiles with pagination
+   * ค้นหารายการโปรไฟล์ภาษีทั้งหมดพร้อมการแบ่งหน้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of tax profiles / รายการโปรไฟล์ภาษีพร้อมการแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('taxProfile.findAll'))
@@ -137,8 +149,14 @@ export class Config_TaxProfileController extends BaseHttpController {
   }
 
   /**
-   * Defines a new tax rate configuration with its percentage and calculation rules.
-   * Once created, the tax profile can be applied to purchase orders and vendor invoices.
+   * Create a new tax profile
+   * สร้างโปรไฟล์ภาษีใหม่
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param createDto - Tax profile creation data / ข้อมูลสำหรับสร้างโปรไฟล์ภาษี
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created tax profile / โปรไฟล์ภาษีที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('taxProfile.create'))
@@ -174,8 +192,15 @@ export class Config_TaxProfileController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing tax rate configuration, such as adjusting the percentage
-   * or calculation method. Changes affect tax calculations on future procurement documents.
+   * Update a tax profile
+   * อัปเดตโปรไฟล์ภาษี
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Tax profile ID / รหัสโปรไฟล์ภาษี
+   * @param updateDto - Tax profile update data / ข้อมูลสำหรับอัปเดตโปรไฟล์ภาษี
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated tax profile / โปรไฟล์ภาษีที่อัปเดตแล้ว
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('taxProfile.update'))
@@ -217,8 +242,14 @@ export class Config_TaxProfileController extends BaseHttpController {
   }
 
   /**
-   * Removes a tax rate configuration from active use. Historical tax calculations are
-   * preserved, but it will no longer be selectable for new procurement documents.
+   * Delete a tax profile
+   * ลบโปรไฟล์ภาษี
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Tax profile ID / รหัสโปรไฟล์ภาษี
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('taxProfile.delete'))

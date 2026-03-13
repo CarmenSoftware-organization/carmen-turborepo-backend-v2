@@ -47,8 +47,15 @@ export class ProductsController extends BaseHttpController {
   }
 
   /**
-   * Retrieves all products assigned to a specific storage location or warehouse,
-   * used for inventory operations such as stock-in, physical counts, and requisitions.
+   * Get all products by location ID
+   * ค้นหารายการสินค้าทั้งหมดตามรหัสสถานที่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param query - Pagination query parameters / พารามิเตอร์การแบ่งหน้า
+   * @param id - Location ID / รหัสสถานที่
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of products at the location / รายการสินค้าที่สถานที่แบบแบ่งหน้า
    */
   @Get(':bu_code/products/locations/:id')
   @UseGuards(new AppIdGuard('products.getByLocation'))

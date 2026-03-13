@@ -15,16 +15,17 @@ export class PermissionService {
   ) { }
 
   /**
-   * Fetches user permissions from the database
+   * Fetch user permissions from the database grouped by resource
+   * ดึงสิทธิ์การเข้าถึงของผู้ใช้จากฐานข้อมูลโดยจัดกลุ่มตาม resource
+   *
    * Returns permissions in the format: { resource: [actions] }
+   * คืนค่าสิทธิ์การเข้าถึงในรูปแบบ: { resource: [actions] }
+   *
    * Example: { "procurement.purchase_request": ["view", "create"], "master.vendor": ["view"] }
    *
-   * SQL equivalent:
-   * SELECT tp.resource, tp.action
-   * FROM tb_user_tb_application_role AS tutar
-   * JOIN tb_application_role_tb_permission tartp ON tutar.application_role_id = tartp.application_role_id
-   * JOIN tb_permission tp ON tartp.permission_id = tp.id
-   * WHERE user_id = ?
+   * @param userId - User ID to fetch permissions for / รหัสผู้ใช้ที่ต้องการดึงสิทธิ์การเข้าถึง
+   * @param buId - Business unit ID to scope permissions / รหัสหน่วยธุรกิจสำหรับกำหนดขอบเขตสิทธิ์การเข้าถึง
+   * @returns Permission map { resource: actions[] } / แผนที่สิทธิ์การเข้าถึง { resource: actions[] }
    */
   async getUserPermissions(userId: string, buId: string): Promise<UserPermissions> {
     try {
@@ -93,10 +94,16 @@ export class PermissionService {
   }
 
   /**
-   * Check if user has the required permissions
+   * Check if user has the required permissions for a specific resource
+   * ตรวจสอบว่าผู้ใช้มีสิทธิ์การเข้าถึงที่จำเป็นสำหรับ resource ที่ระบุหรือไม่
+   *
    * Supports hierarchical permissions (e.g., 'view_all' or 'view_department' satisfies 'view')
-   * Resources can use dot notation: 'procurement.purchase_request'
-   * Actions use underscore: 'view', 'view_all', 'view_department'
+   * รองรับสิทธิ์การเข้าถึงแบบลำดับชั้น (เช่น 'view_all' หรือ 'view_department' ตอบสนอง 'view')
+   *
+   * @param userPermissions - User's current permissions map / แผนที่สิทธิ์การเข้าถึงปัจจุบันของผู้ใช้
+   * @param requiredResource - Resource name in dot notation / ชื่อ resource ในรูปแบบ dot notation
+   * @param requiredActions - Array of required actions / อาร์เรย์ของ action ที่ต้องการ
+   * @returns Whether user has all required actions for the resource / ผู้ใช้มี action ที่ต้องการทั้งหมดสำหรับ resource หรือไม่
    */
   hasPermission(
     userPermissions: UserPermissions,
@@ -136,7 +143,11 @@ export class PermissionService {
   }
 
   /**
-   * Check if user has all required permissions
+   * Check if user has all required permissions across multiple resources
+   * ตรวจสอบว่าผู้ใช้มีสิทธิ์การเข้าถึงที่จำเป็นทั้งหมดสำหรับหลาย resource หรือไม่
+   * @param userPermissions - User's current permissions map / แผนที่สิทธิ์การเข้าถึงปัจจุบันของผู้ใช้
+   * @param requiredPermissions - Required permissions { resource: actions[] } / สิทธิ์การเข้าถึงที่ต้องการ { resource: actions[] }
+   * @returns Whether user satisfies all permission requirements / ผู้ใช้มีสิทธิ์การเข้าถึงครบทุกข้อกำหนดหรือไม่
    */
   hasAllPermissions(
     userPermissions: UserPermissions,

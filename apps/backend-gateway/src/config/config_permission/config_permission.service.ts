@@ -18,6 +18,15 @@ export class ConfigPermissionService {
     private readonly authService: ClientProxy,
   ) { }
 
+  /**
+   * Find all permissions with pagination via microservice
+   * ค้นหารายการสิทธิ์การเข้าถึงทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated permissions or error / รายการสิทธิ์การเข้าถึงพร้อมการแบ่งหน้าหรือข้อผิดพลาด
+   */
   async findAll(paginate, user_id: string, bu_code: string, version: string): Promise<unknown> {
     this.logger.debug(
       {

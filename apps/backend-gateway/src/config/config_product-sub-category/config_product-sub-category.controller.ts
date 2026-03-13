@@ -59,8 +59,14 @@ export class Config_ProductSubCategoryController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific product sub-category that provides a second level of classification
-   * under a parent category (e.g., Dairy under Fresh Produce, Spirits under Beverages).
+   * Retrieve a product sub-category by ID
+   * ค้นหารายการเดียวตาม ID ของหมวดหมู่ย่อยสินค้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Product sub-category ID / รหัสหมวดหมู่ย่อยสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Product sub-category detail / รายละเอียดหมวดหมู่ย่อยสินค้า
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('productSubCategory.findOne'))
@@ -95,8 +101,14 @@ export class Config_ProductSubCategoryController extends BaseHttpController {
   }
 
   /**
-   * Lists all product sub-categories configured for the business unit, providing granular
-   * classification within parent categories for detailed product organization and reporting.
+   * List all product sub-categories with pagination
+   * ค้นหารายการทั้งหมดของหมวดหมู่ย่อยสินค้าพร้อมการแบ่งหน้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination query parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of product sub-categories / รายการหมวดหมู่ย่อยสินค้าแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('productSubCategory.findAll'))
@@ -133,8 +145,14 @@ export class Config_ProductSubCategoryController extends BaseHttpController {
   }
 
   /**
-   * Defines a new product sub-category under an existing parent category. Products can
-   * then be assigned to this sub-category for more detailed classification and reporting.
+   * Create a new product sub-category
+   * สร้างหมวดหมู่ย่อยสินค้าใหม่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Product sub-category creation data / ข้อมูลสำหรับสร้างหมวดหมู่ย่อยสินค้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created product sub-category / หมวดหมู่ย่อยสินค้าที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('productSubCategory.create'))
@@ -170,8 +188,15 @@ export class Config_ProductSubCategoryController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing product sub-category, such as renaming it or reassigning it
-   * to a different parent category. Changes affect product classification and reporting.
+   * Update an existing product sub-category
+   * อัปเดตหมวดหมู่ย่อยสินค้าที่มีอยู่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Product sub-category ID / รหัสหมวดหมู่ย่อยสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Product sub-category update data / ข้อมูลสำหรับอัปเดตหมวดหมู่ย่อยสินค้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated product sub-category / หมวดหมู่ย่อยสินค้าที่อัปเดตแล้ว
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('productSubCategory.update'))
@@ -213,8 +238,14 @@ export class Config_ProductSubCategoryController extends BaseHttpController {
   }
 
   /**
-   * Removes a product sub-category from the classification hierarchy. Products assigned
-   * to this sub-category should be reassigned before deletion.
+   * Delete a product sub-category by ID
+   * ลบหมวดหมู่ย่อยสินค้าตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Product sub-category ID / รหัสหมวดหมู่ย่อยสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('productSubCategory.delete'))

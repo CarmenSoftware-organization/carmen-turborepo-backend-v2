@@ -16,6 +16,12 @@ export class InventoryTransactionController extends BaseMicroserviceController {
     super();
   }
 
+  /**
+   * Create audit context from payload
+   * สร้างบริบทการตรวจสอบจาก payload
+   * @param payload - Microservice payload / ข้อมูล payload จากไมโครเซอร์วิส
+   * @returns Audit context object / ออบเจกต์บริบทการตรวจสอบ
+   */
   private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
@@ -26,6 +32,12 @@ export class InventoryTransactionController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find all inventory transactions by IDs
+   * ค้นหาธุรกรรมสินค้าคงคลังทั้งหมดตาม ID
+   * @param body - Contains ids, user_id, tenant_id / ประกอบด้วย ids, user_id, tenant_id
+   * @returns List of inventory transactions / รายการธุรกรรมสินค้าคงคลัง
+   */
   @MessagePattern({
     cmd: 'inventory-transaction.find-all-by-ids',
     service: 'inventory-transaction',
@@ -43,6 +55,12 @@ export class InventoryTransactionController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Create inventory transactions from a good received note
+   * สร้างธุรกรรมสินค้าคงคลังจากใบรับสินค้า
+   * @param payload - Contains data with grn_id, grn_no, grn_date, detail_items / ประกอบด้วย data ที่มี grn_id, grn_no, grn_date, detail_items
+   * @returns Created inventory transactions / ธุรกรรมสินค้าคงคลังที่สร้างแล้ว
+   */
   @MessagePattern({
     cmd: 'inventory-transaction.create-from-grn',
     service: 'inventory-transaction',

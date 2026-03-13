@@ -89,6 +89,13 @@ export class DepartmentsService {
     private readonly tenantService: TenantService,
   ) {}
 
+  /**
+   * Find a single department by ID with optional user and HOD details
+   * ค้นหารายการแผนกเดียวตาม ID พร้อมรายละเอียดผู้ใช้และหัวหน้าแผนก (ถ้าต้องการ)
+   * @param id - Department ID / ID ของแผนก
+   * @param withUsers - Whether to include user details / รวมรายละเอียดผู้ใช้หรือไม่
+   * @returns Department detail with users or error if not found / รายละเอียดแผนกพร้อมผู้ใช้ หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async findOne(id: string, withUsers: boolean = false): Promise<Result<unknown>> {
     this.logger.debug(
@@ -180,6 +187,12 @@ export class DepartmentsService {
     return Result.ok(serializedDepartment);
   }
 
+  /**
+   * Find all departments with pagination, search, and sorting
+   * ค้นหารายการแผนกทั้งหมดพร้อมการแบ่งหน้า ค้นหา และเรียงลำดับ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of departments / รายการแผนกพร้อมการแบ่งหน้า
+   */
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
@@ -233,6 +246,12 @@ export class DepartmentsService {
     });
   }
 
+  /**
+   * Create a new department with users and HOD assignments in a transaction
+   * สร้างแผนกใหม่พร้อมกำหนดผู้ใช้และหัวหน้าแผนกในธุรกรรม
+   * @param data - Department creation data / ข้อมูลสำหรับสร้างแผนก
+   * @returns Created department ID / ID ของแผนกที่สร้างขึ้น
+   */
   @TryCatch
   async create(data: ICreateDepartments): Promise<Result<unknown>> {
     this.logger.debug(
@@ -297,6 +316,12 @@ export class DepartmentsService {
     return Result.ok({ id: transaction.id });
   }
 
+  /**
+   * Update an existing department with user and HOD add/remove operations in a transaction
+   * อัปเดตแผนกที่มีอยู่พร้อมการเพิ่ม/ลบผู้ใช้และหัวหน้าแผนกในธุรกรรม
+   * @param data - Department update data / ข้อมูลสำหรับอัปเดตแผนก
+   * @returns Updated department ID / ID ของแผนกที่อัปเดต
+   */
   @TryCatch
   async update(data: IUpdateDepartments): Promise<Result<unknown>> {
     this.logger.debug(
@@ -419,6 +444,12 @@ export class DepartmentsService {
     return Result.ok({ id: transaction.id });
   }
 
+  /**
+   * Delete a department (soft delete)
+   * ลบแผนก (ลบแบบซอฟต์)
+   * @param id - Department ID / ID ของแผนก
+   * @returns Deleted department ID / ID ของแผนกที่ลบ
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(

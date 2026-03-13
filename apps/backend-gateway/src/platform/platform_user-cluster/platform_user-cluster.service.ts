@@ -17,6 +17,15 @@ export class Platform_UserClusterService {
     @Inject('CLUSTER_SERVICE') private readonly clusterService: ClientProxy,
   ) { }
 
+  /**
+   * Retrieve a single user-cluster mapping by ID
+   * ค้นหาการเชื่อมโยงผู้ใช้กับคลัสเตอร์เดียวตาม ID
+   * @param cluster_id - Cluster ID / รหัสคลัสเตอร์
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Mapping details / รายละเอียดการเชื่อมโยง
+   */
   async getUserCluster(
     cluster_id: string,
     user_id: string,
@@ -55,6 +64,15 @@ export class Platform_UserClusterService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Retrieve all user-cluster mappings with pagination
+   * ค้นหารายการการเชื่อมโยงผู้ใช้กับคลัสเตอร์ทั้งหมดพร้อมการแบ่งหน้า
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated mapping list / รายการการเชื่อมโยงแบบแบ่งหน้า
+   */
   async getUserClusterAll(
     user_id: string,
     tenant_id: string,
@@ -94,6 +112,15 @@ export class Platform_UserClusterService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new user-cluster mapping via microservice
+   * สร้างการเชื่อมโยงผู้ใช้กับคลัสเตอร์ใหม่ผ่านไมโครเซอร์วิส
+   * @param data - Mapping creation data / ข้อมูลสำหรับสร้างการเชื่อมโยง
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created mapping / การเชื่อมโยงที่ถูกสร้าง
+   */
   async createUserCluster(
     data: IUserCluster,
     user_id: string,
@@ -127,6 +154,15 @@ export class Platform_UserClusterService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update an existing user-cluster mapping via microservice
+   * อัปเดตการเชื่อมโยงผู้ใช้กับคลัสเตอร์ที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param data - Mapping update data / ข้อมูลสำหรับอัปเดตการเชื่อมโยง
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated mapping / การเชื่อมโยงที่ถูกอัปเดต
+   */
   async updateUserCluster(
     data: IUserClusterUpdate,
     user_id: string,
@@ -163,6 +199,15 @@ export class Platform_UserClusterService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a user-cluster mapping via microservice
+   * ลบการเชื่อมโยงผู้ใช้กับคลัสเตอร์ผ่านไมโครเซอร์วิส
+   * @param id - Mapping ID / รหัสการเชื่อมโยง
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async deleteUserCluster(
     id: string,
     user_id: string,

@@ -60,8 +60,13 @@ export class Config_VendorBusinessTypeController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific vendor business type classification (e.g., food supplier,
-   * cleaning supplies, equipment maintenance) used to categorize vendors by specialty.
+   * Retrieves a specific vendor business type classification
+   * ค้นหาประเภทธุรกิจผู้ขายเดียวตาม ID (เช่น ผู้จัดหาอาหาร อุปกรณ์ทำความสะอาด)
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Vendor business type ID / รหัสประเภทธุรกิจผู้ขาย
+   * @param version - API version / เวอร์ชัน API
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('vendorBusinessType.findOne'))
@@ -94,8 +99,13 @@ export class Config_VendorBusinessTypeController extends BaseHttpController {
   }
 
   /**
-   * Lists all vendor business type classifications configured for the business unit,
-   * helping categorize the vendor directory by industry or service specialty.
+   * Lists all vendor business type classifications for the business unit
+   * ค้นหาประเภทธุรกิจผู้ขายทั้งหมดที่กำหนดค่าสำหรับหน่วยธุรกิจ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
    */
   @Get()
   @UseGuards(new AppIdGuard('vendorBusinessType.findAll'))
@@ -130,8 +140,13 @@ export class Config_VendorBusinessTypeController extends BaseHttpController {
   }
 
   /**
-   * Defines a new vendor classification category (e.g., fresh food supplier, beverage distributor).
-   * Vendors can then be tagged with this type for organized sourcing and reporting.
+   * Defines a new vendor classification category
+   * สร้างประเภทธุรกิจผู้ขายใหม่ (เช่น ผู้จัดหาอาหารสด ผู้จัดจำหน่ายเครื่องดื่ม)
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param createDto - Creation data / ข้อมูลสำหรับสร้าง
+   * @param version - API version / เวอร์ชัน API
    */
   @Post()
   @UseGuards(new AppIdGuard('vendorBusinessType.create'))
@@ -165,8 +180,14 @@ export class Config_VendorBusinessTypeController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing vendor business type classification, such as renaming or
-   * reclassifying it. Changes affect how vendors tagged with this type are categorized.
+   * Modifies an existing vendor business type classification
+   * อัปเดตประเภทธุรกิจผู้ขายที่มีอยู่ เช่น เปลี่ยนชื่อหรือจัดหมวดหมู่ใหม่
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Vendor business type ID / รหัสประเภทธุรกิจผู้ขาย
+   * @param updateDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param version - API version / เวอร์ชัน API
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('vendorBusinessType.update'))
@@ -206,8 +227,13 @@ export class Config_VendorBusinessTypeController extends BaseHttpController {
   }
 
   /**
-   * Removes a vendor business type classification from the system. Vendors currently
-   * tagged with this type should be reclassified before deletion.
+   * Removes a vendor business type classification from the system
+   * ลบประเภทธุรกิจผู้ขายออกจากระบบ ผู้ขายที่ติดแท็กนี้ควรจัดหมวดหมู่ใหม่ก่อนลบ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Vendor business type ID / รหัสประเภทธุรกิจผู้ขาย
+   * @param version - API version / เวอร์ชัน API
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('vendorBusinessType.delete'))

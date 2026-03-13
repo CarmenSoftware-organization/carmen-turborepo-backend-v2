@@ -20,6 +20,15 @@ export class Config_RunningCodeService {
     private readonly masterService: ClientProxy,
   ) {}
 
+  /**
+   * Find a running code by ID via microservice
+   * ค้นหารหัสรันนิ่งเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Running code ID / รหัสรหัสรันนิ่ง
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Running code data or error / ข้อมูลรหัสรันนิ่งหรือข้อผิดพลาด
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -43,6 +52,15 @@ export class Config_RunningCodeService {
     return ResponseLib.success(response.data);
   }
 
+  /**
+   * Find all running codes with pagination via microservice
+   * ค้นหารหัสรันนิ่งทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated running code data or error / ข้อมูลรหัสรันนิ่งพร้อมการแบ่งหน้าหรือข้อผิดพลาด
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -81,6 +99,15 @@ export class Config_RunningCodeService {
     return ResponseLib.successWithPaginate(response.data, response.paginate);
   }
 
+  /**
+   * Create a new running code via microservice
+   * สร้างรหัสรันนิ่งใหม่ผ่านไมโครเซอร์วิส
+   * @param createDto - Creation data / ข้อมูลสำหรับสร้าง
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created running code or error / รหัสรันนิ่งที่สร้างแล้วหรือข้อผิดพลาด
+   */
   async create(
     createDto: IRunningCodeCreate,
     user_id: string,
@@ -117,6 +144,15 @@ export class Config_RunningCodeService {
     return ResponseLib.created(response.data);
   }
 
+  /**
+   * Update an existing running code via microservice
+   * อัปเดตรหัสรันนิ่งที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param updateDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated running code or error / รหัสรันนิ่งที่อัปเดตแล้วหรือข้อผิดพลาด
+   */
   async update(
     updateDto: IRunningCodeUpdate,
     user_id: string,
@@ -153,6 +189,15 @@ export class Config_RunningCodeService {
     return ResponseLib.success(response.data);
   }
 
+  /**
+   * Delete a running code by ID via microservice
+   * ลบรหัสรันนิ่งตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Running code ID / รหัสรหัสรันนิ่ง
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result or error / ผลการลบหรือข้อผิดพลาด
+   */
   async delete(
     id: string,
     user_id: string,
@@ -184,6 +229,15 @@ export class Config_RunningCodeService {
     return ResponseLib.success(response.data);
   }
 
+  /**
+   * Find a running code by document type via microservice
+   * ค้นหารหัสรันนิ่งตามประเภทเอกสารผ่านไมโครเซอร์วิส
+   * @param type - Document type / ประเภทเอกสาร
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Running code for the type or error / รหัสรันนิ่งสำหรับประเภทนั้นหรือข้อผิดพลาด
+   */
   async findByType(
     type: string,
     user_id: string,

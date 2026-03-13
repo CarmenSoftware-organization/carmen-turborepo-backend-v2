@@ -18,10 +18,12 @@ export class InventoryTransactionService {
   ) {}
 
   /**
-   * ⚠️ TEST ONLY — DELETE when GRN approve integration is verified.
-   *
-   * Calls createFromGoodReceivedNote via TCP so you can test the FIFO
-   * cost-layer logic with a direct HTTP request.
+   * Send GRN payload to microservice to create FIFO inventory transactions
+   * ส่งข้อมูลใบรับสินค้าไปยังไมโครเซอร์วิสเพื่อสร้างรายการเคลื่อนไหวสินค้าคงคลังแบบ FIFO
+   * @param data - GRN payload / ข้อมูลใบรับสินค้า
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Inventory transaction result / ผลลัพธ์รายการเคลื่อนไหวสินค้าคงคลัง
    */
   async testCreateFromGrn(
     data: Record<string, unknown>,

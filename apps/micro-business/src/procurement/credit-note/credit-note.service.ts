@@ -58,6 +58,12 @@ export class CreditNoteService {
     CreditNoteService.name,
   );
 
+  /**
+   * Initialize the Prisma service for tenant-specific database access
+   * เริ่มต้นบริการ Prisma สำหรับการเข้าถึงฐานข้อมูลเฉพาะผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / ID ผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._bu_code = bu_code;
     this._userId = userId;
@@ -81,6 +87,12 @@ export class CreditNoteService {
     private readonly commonLogic: CommonLogic,
   ) { }
 
+  /**
+   * Find all credit notes with pagination, search, and filtering
+   * ค้นหาใบลดหนี้ทั้งหมดพร้อมการแบ่งหน้า การค้นหา และการกรอง
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of credit notes / รายการใบลดหนี้ที่แบ่งหน้าแล้ว
+   */
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
@@ -136,6 +148,12 @@ export class CreditNoteService {
     });
   }
 
+  /**
+   * Find a single credit note by ID with its details
+   * ค้นหาใบลดหนี้รายการเดียวตาม ID พร้อมรายละเอียด
+   * @param id - Credit note ID / ID ของใบลดหนี้
+   * @returns Credit note data with details / ข้อมูลใบลดหนี้พร้อมรายละเอียด
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -183,6 +201,12 @@ export class CreditNoteService {
     return Result.ok(serializedCreditNote);
   }
 
+  /**
+   * Create a new credit note with its detail lines
+   * สร้างใบลดหนี้ใหม่พร้อมรายการรายละเอียด
+   * @param data - Credit note data including detail lines / ข้อมูลใบลดหนี้รวมถึงรายการรายละเอียด
+   * @returns Created credit note ID / ID ของใบลดหนี้ที่สร้างแล้ว
+   */
   @TryCatch
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value accessed by logic layer
   async create(data: any): Promise<Result<any>> {
@@ -222,6 +246,12 @@ export class CreditNoteService {
     return Result.ok({ id: tx });
   }
 
+  /**
+   * Update an existing credit note and its detail lines (add, update, delete)
+   * อัปเดตใบลดหนี้ที่มีอยู่และรายการรายละเอียด (เพิ่ม อัปเดต ลบ)
+   * @param data - Updated credit note data with detail operations / ข้อมูลใบลดหนี้ที่อัปเดตพร้อมการดำเนินการรายละเอียด
+   * @returns Updated credit note ID / ID ของใบลดหนี้ที่อัปเดตแล้ว
+   */
   @TryCatch
   async update(data: any): Promise<Result<unknown>> {
     this.logger.debug(
@@ -294,6 +324,12 @@ export class CreditNoteService {
     return Result.ok({ id: tx });
   }
 
+  /**
+   * Delete a credit note and all its detail lines
+   * ลบใบลดหนี้และรายการรายละเอียดทั้งหมด
+   * @param id - Credit note ID to delete / ID ของใบลดหนี้ที่ต้องการลบ
+   * @returns Deleted credit note ID / ID ของใบลดหนี้ที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -316,6 +352,12 @@ export class CreditNoteService {
     return Result.ok({ id: tx });
   }
 
+  /**
+   * Find the latest credit note matching a pattern for running number generation
+   * ค้นหาใบลดหนี้ล่าสุดที่ตรงกับรูปแบบสำหรับสร้างเลขที่เอกสาร
+   * @param pattern - Pattern string to match against CN number / รูปแบบข้อความที่ใช้จับคู่กับเลขที่ใบลดหนี้
+   * @returns Latest credit note matching the pattern / ใบลดหนี้ล่าสุดที่ตรงกับรูปแบบ
+   */
   private async findLatestCnByPattern(pattern: string): Promise<any> {
     this.logger.debug(
       { function: 'findLatestCnByPattern', pattern, tenant_id: this.bu_code, user_id: this.userId },
@@ -336,6 +378,12 @@ export class CreditNoteService {
     return latestCN;
   }
 
+  /**
+   * Generate a running credit note number based on date pattern configuration
+   * สร้างเลขที่ใบลดหนี้แบบเรียงลำดับตามการตั้งค่ารูปแบบวันที่
+   * @param CNDate - Credit note date for pattern generation / วันที่ใบลดหนี้สำหรับสร้างรูปแบบ
+   * @returns Generated credit note number / เลขที่ใบลดหนี้ที่สร้างแล้ว
+   */
   private async generateCnNo(CNDate: string): Promise<any> {
     this.logger.debug(
       { function: 'generateCnNo', CNDate, tenant_id: this.bu_code, user_id: this.userId },

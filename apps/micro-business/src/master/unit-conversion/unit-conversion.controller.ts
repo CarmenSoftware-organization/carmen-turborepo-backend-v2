@@ -21,6 +21,12 @@ export class UnitConversionController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Get order units by product ID
+   * ดึงหน่วยสั่งซื้อตาม ID ของสินค้า
+   * @param data - Payload containing product ID / ข้อมูล payload ที่มี ID ของสินค้า
+   * @returns List of order units for the product / รายการหน่วยสั่งซื้อของสินค้า
+   */
   @MessagePattern({ cmd: 'unit.get-order-unit-by-product-id', service: 'unit-conversion' })
   async getUnitByProductId(@Payload() data: { productId: string, bu_code: string, user_id: string, version?: string }): Promise<MicroserviceResponse> {
     this.unitConversionService.userId = data.user_id;
@@ -32,6 +38,12 @@ export class UnitConversionController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Get ingredient units by product ID
+   * ดึงหน่วยส่วนผสมตาม ID ของสินค้า
+   * @param data - Payload containing product ID / ข้อมูล payload ที่มี ID ของสินค้า
+   * @returns List of ingredient units for the product / รายการหน่วยส่วนผสมของสินค้า
+   */
   @MessagePattern({ cmd: 'unit.get-ingredient-unit-by-product-id', service: 'unit-conversion' })
   async getIngredientUnitByProductId(@Payload() data: { productId: string, bu_code: string, user_id: string, version?: string }): Promise<MicroserviceResponse> {
     this.unitConversionService.userId = data.user_id;
@@ -43,6 +55,12 @@ export class UnitConversionController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Get available units by product ID
+   * ดึงหน่วยที่ใช้ได้ตาม ID ของสินค้า
+   * @param data - Payload containing product ID / ข้อมูล payload ที่มี ID ของสินค้า
+   * @returns List of available units for the product / รายการหน่วยที่ใช้ได้ของสินค้า
+   */
   @MessagePattern({ cmd: 'unit.get-available-unit-by-product-id', service: 'unit-conversion' })
   async getAvailableUnitByProductId(@Payload() data: { productId: string, bu_code: string, user_id: string, version?: string }): Promise<MicroserviceResponse> {
     this.unitConversionService.userId = data.user_id;

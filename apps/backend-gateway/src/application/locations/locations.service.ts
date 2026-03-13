@@ -17,6 +17,17 @@ export class LocationsService {
     private readonly masterService: ClientProxy,
   ) { }
 
+  /**
+   * Find a specific location by ID via microservice
+   * ค้นหารายการสถานที่เดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Location ID / รหัสสถานที่
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param withUser - Include assigned users / รวมผู้ใช้ที่ผูกไว้
+   * @param withProducts - Include stocked products / รวมสินค้าที่มีในสต็อก
+   * @param version - API version / เวอร์ชัน API
+   * @returns Location details / รายละเอียดสถานที่
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -55,6 +66,15 @@ export class LocationsService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all locations for a business unit via microservice
+   * ค้นหารายการสถานที่ทั้งหมดของหน่วยธุรกิจผ่านไมโครเซอร์วิส
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of locations / รายการสถานที่แบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -95,6 +115,14 @@ export class LocationsService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Find all locations accessible by a specific user
+   * ค้นหารายการสถานที่ทั้งหมดที่ผู้ใช้เข้าถึงได้
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of locations for the user / รายการสถานที่ของผู้ใช้
+   */
   async findByUserId(
     user_id: string,
     bu_code: string,
@@ -126,7 +154,16 @@ export class LocationsService {
     // return response.data;
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
-  // ---------------------------------
+  /**
+   * Get product inventory levels at a specific location
+   * ดึงข้อมูลระดับสินค้าคงคลังของสินค้าที่สถานที่เฉพาะ
+   * @param location_id - Location ID / รหัสสถานที่
+   * @param product_id - Product ID / รหัสสินค้า
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Product inventory info / ข้อมูลสินค้าคงคลัง
+   */
   async getProductInventory(location_id: string, product_id: string, user_id: string, bu_code: string, version: string): Promise<Result<unknown>> {
     this.logger.debug(
       {

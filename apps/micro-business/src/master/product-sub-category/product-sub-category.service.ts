@@ -79,6 +79,12 @@ export class ProductSubCategoryService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a single product sub-category by ID
+   * ค้นหารายการหมวดหมู่ย่อยสินค้าเดียวตาม ID
+   * @param id - Product sub-category ID / ID ของหมวดหมู่ย่อยสินค้า
+   * @returns Product sub-category detail or error if not found / รายละเอียดหมวดหมู่ย่อยสินค้า หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -119,6 +125,12 @@ export class ProductSubCategoryService {
     return Result.ok(serializedProductSubCategory);
   }
 
+  /**
+   * Find all product sub-categories with pagination
+   * ค้นหารายการหมวดหมู่ย่อยสินค้าทั้งหมดพร้อมการแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of product sub-categories / รายการหมวดหมู่ย่อยสินค้าพร้อมการแบ่งหน้า
+   */
   @TryCatch
   async findAll(
     paginate: IPaginate,
@@ -181,6 +193,12 @@ export class ProductSubCategoryService {
     });
   }
 
+  /**
+   * Create a new product sub-category
+   * สร้างหมวดหมู่ย่อยสินค้าใหม่
+   * @param data - Product sub-category creation data / ข้อมูลการสร้างหมวดหมู่ย่อยสินค้า
+   * @returns Created product sub-category ID or error if duplicate / ID ของหมวดหมู่ย่อยสินค้าที่สร้างขึ้น หรือข้อผิดพลาดหากซ้ำ
+   */
   @TryCatch
   async create(
     data: ICreateProductSubCategory,
@@ -225,6 +243,12 @@ export class ProductSubCategoryService {
     return Result.ok({ id: createProductSubCategory.id });
   }
 
+  /**
+   * Update an existing product sub-category
+   * อัปเดตหมวดหมู่ย่อยสินค้าที่มีอยู่
+   * @param data - Product sub-category update data / ข้อมูลการอัปเดตหมวดหมู่ย่อยสินค้า
+   * @returns Updated product sub-category ID or error if not found / ID ของหมวดหมู่ย่อยสินค้าที่อัปเดต หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async update(
     data: IUpdateProductSubCategory,
@@ -312,6 +336,12 @@ export class ProductSubCategoryService {
     return Result.ok({ id: updateProductSubCategory.id });
   }
 
+  /**
+   * Delete a product sub-category (soft delete)
+   * ลบหมวดหมู่ย่อยสินค้า (ลบแบบซอฟต์)
+   * @param id - Product sub-category ID / ID ของหมวดหมู่ย่อยสินค้า
+   * @returns Empty object on success or error if not found / อ็อบเจกต์ว่างเมื่อสำเร็จ หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(

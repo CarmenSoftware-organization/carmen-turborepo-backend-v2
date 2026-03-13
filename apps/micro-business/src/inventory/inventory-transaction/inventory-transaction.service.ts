@@ -194,6 +194,14 @@ export class InventoryTransactionService {
     return businessUnit?.calculation_method || 'fifo';
   }
 
+  /**
+   * Find inventory transactions by multiple IDs
+   * ค้นหารายการเคลื่อนไหวสินค้าคงคลังตามหลาย ID
+   * @param ids - Array of transaction IDs / อาร์เรย์ ID รายการเคลื่อนไหว
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns List of inventory transactions / รายการเคลื่อนไหวสินค้าคงคลัง
+   */
   @TryCatch
   async findAllByIds(
     ids: string[],
@@ -232,6 +240,14 @@ export class InventoryTransactionService {
     return Result.ok(serializedInventoryTransactions);
   }
 
+  /**
+   * Create inventory transactions from a GRN via microservice payload
+   * สร้างรายการเคลื่อนไหวสินค้าคงคลังจากใบรับสินค้าผ่าน payload ไมโครเซอร์วิส
+   * @param data - GRN payload with detail items / ข้อมูลใบรับสินค้าพร้อมรายการรายละเอียด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created inventory transaction ID / ID รายการเคลื่อนไหวที่สร้างแล้ว
+   */
   @TryCatch
   async createFromGrn(
     data: ICreateFromGrnPayload,

@@ -48,8 +48,14 @@ export class Config_UnitCommentController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific predefined comment/note template associated with unit operations,
-   * used to streamline data entry for inventory and procurement transactions.
+   * Get a unit comment by ID
+   * ค้นหาความคิดเห็นหน่วยเดียวตาม ID
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param id - Unit comment ID / รหัสความคิดเห็นหน่วย
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Unit comment detail / รายละเอียดความคิดเห็นหน่วย
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('unitComment.findOne'))
@@ -82,8 +88,14 @@ export class Config_UnitCommentController extends BaseHttpController {
   }
 
   /**
-   * Lists all predefined comment templates for unit-related operations, providing
-   * reusable notes to standardize remarks on procurement and inventory documents.
+   * Get all unit comments with pagination
+   * ค้นหารายการความคิดเห็นหน่วยทั้งหมดพร้อมการแบ่งหน้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of unit comments / รายการความคิดเห็นหน่วยพร้อมการแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('unitComment.findAll'))
@@ -118,8 +130,14 @@ export class Config_UnitCommentController extends BaseHttpController {
   }
 
   /**
-   * Defines a new predefined comment template for unit-related operations. Users can
-   * quickly select these standardized notes when processing inventory or procurement transactions.
+   * Create a new unit comment
+   * สร้างความคิดเห็นหน่วยใหม่
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Unit comment creation data / ข้อมูลสำหรับสร้างความคิดเห็นหน่วย
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created unit comment / ความคิดเห็นหน่วยที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('unitComment.create'))
@@ -153,8 +171,15 @@ export class Config_UnitCommentController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing predefined comment template. Changes are reflected in the
-   * comment options available for future transactions.
+   * Update a unit comment
+   * อัปเดตความคิดเห็นหน่วย
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param id - Unit comment ID / รหัสความคิดเห็นหน่วย
+   * @param updateDto - Unit comment update data / ข้อมูลสำหรับอัปเดตความคิดเห็นหน่วย
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated unit comment / ความคิดเห็นหน่วยที่อัปเดตแล้ว
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('unitComment.update'))
@@ -191,8 +216,14 @@ export class Config_UnitCommentController extends BaseHttpController {
   }
 
   /**
-   * Removes a predefined comment template from the available options. Historical
-   * transactions that used this comment are not affected.
+   * Delete a unit comment
+   * ลบความคิดเห็นหน่วย
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param id - Unit comment ID / รหัสความคิดเห็นหน่วย
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('unitComment.delete'))

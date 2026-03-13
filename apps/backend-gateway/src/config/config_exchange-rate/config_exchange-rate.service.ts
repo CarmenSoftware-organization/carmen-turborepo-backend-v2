@@ -22,6 +22,15 @@ export class Config_ExchangeRateService {
     private readonly masterService: ClientProxy,
   ) {}
 
+  /**
+   * Find an exchange rate by ID via microservice
+   * ค้นหาอัตราแลกเปลี่ยนเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Exchange rate ID / รหัสอัตราแลกเปลี่ยน
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Exchange rate data or error / ข้อมูลอัตราแลกเปลี่ยนหรือข้อผิดพลาด
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -54,6 +63,15 @@ export class Config_ExchangeRateService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all exchange rates with pagination via microservice
+   * ค้นหาอัตราแลกเปลี่ยนทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated exchange rate data or error / ข้อมูลอัตราแลกเปลี่ยนพร้อมการแบ่งหน้าหรือข้อผิดพลาด
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -91,6 +109,15 @@ export class Config_ExchangeRateService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new exchange rate via microservice
+   * สร้างอัตราแลกเปลี่ยนใหม่ผ่านไมโครเซอร์วิส
+   * @param createDto - Exchange rate creation data (single or bulk) / ข้อมูลสำหรับสร้างอัตราแลกเปลี่ยน (เดี่ยวหรือจำนวนมาก)
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created exchange rate or error / อัตราแลกเปลี่ยนที่สร้างแล้วหรือข้อผิดพลาด
+   */
   async create(
     createDto: ICreateExchangeRate | ICreateExchangeRate[],
     user_id: string,
@@ -128,6 +155,15 @@ export class Config_ExchangeRateService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update an existing exchange rate via microservice
+   * อัปเดตอัตราแลกเปลี่ยนที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param updateDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated exchange rate or error / อัตราแลกเปลี่ยนที่อัปเดตแล้วหรือข้อผิดพลาด
+   */
   async update(
     updateDto: IUpdateExchangeRate,
     user_id: string,
@@ -165,6 +201,15 @@ export class Config_ExchangeRateService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete an exchange rate by ID via microservice
+   * ลบอัตราแลกเปลี่ยนตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Exchange rate ID / รหัสอัตราแลกเปลี่ยน
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result or error / ผลการลบหรือข้อผิดพลาด
+   */
   async delete(
     id: string,
     user_id: string,

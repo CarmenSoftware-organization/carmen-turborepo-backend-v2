@@ -59,8 +59,12 @@ export class PhysicalCountController extends BaseHttpController {
   }
 
   /**
-   * Returns the count of physical inventory counts pending the current user's action.
-   * Used for dashboard notifications and task prioritization.
+   * Get pending physical count total for the current user
+   * ดึงจำนวนการตรวจนับสินค้าที่รอดำเนินการของผู้ใช้ปัจจุบัน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Pending physical count number / จำนวนการตรวจนับสินค้าที่รอดำเนินการ
    */
   @Get('physical-count/pending')
   @UseGuards(new AppIdGuard('physicalCount.findAllPending.count'))
@@ -97,8 +101,12 @@ export class PhysicalCountController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a physical inventory count session by ID, including location,
-   * period, status, and counted items for review or continuation.
+   * Get a physical count session by ID with full details
+   * ค้นหารายการเดียวตาม ID ของการตรวจนับสินค้าพร้อมรายละเอียดทั้งหมด
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Physical count details / รายละเอียดการตรวจนับสินค้า
    */
   @Get(':bu_code/physical-count/:id')
   @UseGuards(new AppIdGuard('physicalCount.findOne'))
@@ -145,8 +153,12 @@ export class PhysicalCountController extends BaseHttpController {
   }
 
   /**
-   * Lists all physical inventory count sessions for a business unit with pagination.
-   * Allows inventory managers to monitor ongoing and completed stock verifications.
+   * List all physical count sessions with pagination
+   * ค้นหารายการตรวจนับสินค้าทั้งหมดพร้อมการแบ่งหน้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated physical count list / รายการตรวจนับสินค้าแบบแบ่งหน้า
    */
   @Get(':bu_code/physical-count/')
   @UseGuards(new AppIdGuard('physicalCount.findAll'))
@@ -193,8 +205,12 @@ export class PhysicalCountController extends BaseHttpController {
   }
 
   /**
-   * Initiates a new periodic physical inventory count for a storage location,
-   * generating the list of products to be verified against system stock levels.
+   * Create a new physical count session for a storage location
+   * สร้างรายการตรวจนับสินค้าใหม่สำหรับสถานที่จัดเก็บที่กำหนด
+   * @param createDto - Physical count creation data / ข้อมูลสำหรับสร้างการตรวจนับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created physical count / การตรวจนับสินค้าที่สร้างขึ้น
    */
   @Post(':bu_code/physical-count')
   @UseGuards(new AppIdGuard('physicalCount.create'))
@@ -241,8 +257,13 @@ export class PhysicalCountController extends BaseHttpController {
   }
 
   /**
-   * Modifies a physical count record (e.g., assigned location or metadata)
-   * before the count is finalized and submitted.
+   * Update a physical count record before finalization
+   * อัปเดตรายการตรวจนับสินค้าก่อนการส่งขั้นสุดท้าย
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Fields to update / ข้อมูลที่ต้องการอัปเดต
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated physical count / การตรวจนับสินค้าที่อัปเดตแล้ว
    */
   @Patch(':bu_code/physical-count/:id')
   @UseGuards(new AppIdGuard('physicalCount.update'))
@@ -293,8 +314,12 @@ export class PhysicalCountController extends BaseHttpController {
   }
 
   /**
-   * Removes a physical count created in error. Only draft counts that
-   * have not been submitted can be deleted.
+   * Delete a draft physical count by ID
+   * ลบรายการตรวจนับสินค้าสถานะร่างตาม ID
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':bu_code/physical-count/:id')
   @UseGuards(new AppIdGuard('physicalCount.delete'))
@@ -338,8 +363,12 @@ export class PhysicalCountController extends BaseHttpController {
   // ==================== Physical Count Detail CRUD ====================
 
   /**
-   * Returns all product line items in a physical count, showing system quantities
-   * alongside recorded actual quantities for inventory reconciliation.
+   * Get all line items for a physical count session
+   * ค้นหารายการสินค้าทั้งหมดในการตรวจนับสินค้า
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Physical count detail items / รายการรายละเอียดการตรวจนับสินค้า
    */
   @Get(':bu_code/physical-count/:id/details')
   @UseGuards(new AppIdGuard('physicalCount.findOne'))
@@ -378,8 +407,13 @@ export class PhysicalCountController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a single product line item from a physical count, including its
-   * system quantity, actual counted quantity, and variance for investigation.
+   * Get a specific line item from a physical count by detail ID
+   * ค้นหารายการสินค้าเฉพาะรายการเดียวตาม ID ของรายละเอียดการตรวจนับ
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param detailId - Physical count detail ID / รหัสรายละเอียดการตรวจนับ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Physical count detail item / รายละเอียดรายการตรวจนับสินค้า
    */
   @Get(':bu_code/physical-count/:id/details/:detail_id')
   @UseGuards(new AppIdGuard('physicalCount.findOne'))
@@ -420,8 +454,13 @@ export class PhysicalCountController extends BaseHttpController {
   }
 
   /**
-   * Removes a product line item from a draft physical count when it was
-   * added in error or is no longer relevant to the current count session.
+   * Delete a line item from a draft physical count
+   * ลบรายการสินค้าจากการตรวจนับสินค้าสถานะร่าง
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param detailId - Physical count detail ID / รหัสรายละเอียดการตรวจนับ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':bu_code/physical-count/:id/details/:detail_id')
   @UseGuards(new AppIdGuard('physicalCount.update'))
@@ -465,8 +504,13 @@ export class PhysicalCountController extends BaseHttpController {
   // ==================== Mobile-specific endpoints ====================
 
   /**
-   * Persists actual counted quantities entered on a mobile device as a draft,
-   * allowing warehouse staff to pause and resume counting without finalizing.
+   * Save counted quantities as draft from mobile device
+   * บันทึกจำนวนที่นับได้เป็นร่างจากอุปกรณ์มือถือ
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param data - Items with actual quantities / รายการสินค้าพร้อมจำนวนจริง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Save result / ผลลัพธ์การบันทึก
    */
   @Patch(':bu_code/physical-count/:id/save')
   @UseGuards(new AppIdGuard('physicalCount.save'))
@@ -509,8 +553,13 @@ export class PhysicalCountController extends BaseHttpController {
   }
 
   /**
-   * Compares actual counted quantities against system stock levels and calculates
-   * variances, enabling staff to review discrepancies before final submission.
+   * Calculate variances between actual and system quantities
+   * คำนวณผลต่างระหว่างจำนวนจริงกับจำนวนในระบบ
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param data - Items with actual quantities / รายการสินค้าพร้อมจำนวนจริง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Variance review result / ผลลัพธ์การตรวจสอบผลต่าง
    */
   @Patch(':bu_code/physical-count/:id/review')
   @UseGuards(new AppIdGuard('physicalCount.review'))
@@ -553,8 +602,12 @@ export class PhysicalCountController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the previously calculated variance report for a physical count,
-   * showing differences between system and actual quantities for manager approval.
+   * Get the variance report for a physical count
+   * ดึงรายงานผลต่างของการตรวจนับสินค้า
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Variance report / รายงานผลต่าง
    */
   @Get(':bu_code/physical-count/:id/review')
   @UseGuards(new AppIdGuard('physicalCount.getReview'))
@@ -594,8 +647,12 @@ export class PhysicalCountController extends BaseHttpController {
   }
 
   /**
-   * Finalizes a physical count and automatically generates inventory adjustment
-   * records to reconcile system stock levels with actual counted quantities.
+   * Submit a physical count and generate inventory adjustments
+   * ส่งการตรวจนับสินค้าและสร้างรายการปรับปรุงสินค้าคงคลังอัตโนมัติ
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Submission result / ผลลัพธ์การส่ง
    */
   @Patch(':bu_code/physical-count/:id/submit')
   @UseGuards(new AppIdGuard('physicalCount.submit'))
@@ -636,8 +693,14 @@ export class PhysicalCountController extends BaseHttpController {
   }
 
   /**
-   * Records an explanatory note on a counted item, such as reasons for variances
-   * (e.g., spoilage, breakage) to support audit trails.
+   * Add a comment to a physical count detail item
+   * เพิ่มความคิดเห็นในรายละเอียดการตรวจนับสินค้า
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param detailId - Physical count detail ID / รหัสรายละเอียดการตรวจนับ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param data - Comment text / ข้อความความคิดเห็น
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created comment / ความคิดเห็นที่สร้างขึ้น
    */
   @Post(':bu_code/physical-count/:id/details/:detail_id/comment')
   @UseGuards(new AppIdGuard('physicalCount.createComment'))

@@ -82,6 +82,12 @@ export class ProductsService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a single product by ID with full details including locations, units, and category hierarchy
+   * ค้นหารายการสินค้าเดียวตาม ID พร้อมรายละเอียดทั้งหมดรวมถึงสถานที่ หน่วย และลำดับชั้นหมวดหมู่
+   * @param id - Product ID / ID ของสินค้า
+   * @returns Product detail with related data or error if not found / รายละเอียดสินค้าพร้อมข้อมูลที่เกี่ยวข้อง หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -238,6 +244,14 @@ export class ProductsService {
     return Result.ok(serializedProduct);
   }
 
+  /**
+   * Get products by location ID with pagination
+   * ดึงรายการสินค้าตาม ID สถานที่พร้อมการแบ่งหน้า
+   * @param location_id - Location ID / ID ของสถานที่
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of products at the location / รายการสินค้าที่สถานที่พร้อมการแบ่งหน้า
+   */
   @TryCatch
   async getByLocationId(
     location_id: string,
@@ -324,6 +338,12 @@ export class ProductsService {
     });
   }
 
+  /**
+   * Find all products with pagination, search, and sorting
+   * ค้นหารายการสินค้าทั้งหมดพร้อมการแบ่งหน้า ค้นหา และเรียงลำดับ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of products with category hierarchy / รายการสินค้าพร้อมลำดับชั้นหมวดหมู่และการแบ่งหน้า
+   */
   @TryCatch
   async findAll(
     paginate: IPaginate,
@@ -432,6 +452,12 @@ export class ProductsService {
     });
   }
 
+  /**
+   * Find multiple products by their IDs
+   * ค้นหารายการสินค้าหลายรายการตาม ID
+   * @param ids - Array of product IDs / อาร์เรย์ของ ID สินค้า
+   * @returns List of products matching the IDs / รายการสินค้าที่ตรงกับ ID
+   */
   @TryCatch
   async findManyById(
     ids: string[],
@@ -453,6 +479,12 @@ export class ProductsService {
     return Result.ok(serializedProducts);
   }
 
+  /**
+   * Create a new product with locations, order units, and ingredient units in a transaction
+   * สร้างสินค้าใหม่พร้อมสถานที่ หน่วยสั่งซื้อ และหน่วยส่วนผสมในธุรกรรม
+   * @param data - Product creation data / ข้อมูลสำหรับสร้างสินค้า
+   * @returns Created product ID / ID ของสินค้าที่สร้างขึ้น
+   */
   @TryCatch
   async create(
     data: ICreateProduct,
@@ -607,6 +639,12 @@ export class ProductsService {
     return Result.ok(tx);
   }
 
+  /**
+   * Update an existing product with locations, order units, and ingredient units in a transaction
+   * อัปเดตสินค้าที่มีอยู่พร้อมสถานที่ หน่วยสั่งซื้อ และหน่วยส่วนผสมในธุรกรรม
+   * @param data - Product update data / ข้อมูลสำหรับอัปเดตสินค้า
+   * @returns Updated product ID / ID ของสินค้าที่อัปเดต
+   */
   @TryCatch
   async update(
     data: IUpdateProduct,
@@ -984,6 +1022,12 @@ export class ProductsService {
     return Result.ok(tx);
   }
 
+  /**
+   * Delete a product (soft delete) and deactivate related unit conversions
+   * ลบสินค้า (ลบแบบซอฟต์) และปิดการใช้งานการแปลงหน่วยที่เกี่ยวข้อง
+   * @param id - Product ID / ID ของสินค้า
+   * @returns Deleted product ID / ID ของสินค้าที่ลบ
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code }, ProductsService.name);
@@ -1029,6 +1073,12 @@ export class ProductsService {
     return Result.ok({ id });
   }
 
+  /**
+   * Find the item group hierarchy (item group, sub-category, category) by item group ID
+   * ค้นหาลำดับชั้นกลุ่มสินค้า (กลุ่มสินค้า หมวดหมู่ย่อย หมวดหมู่) ตาม ID กลุ่มสินค้า
+   * @param id - Product item group ID / ID ของกลุ่มสินค้า
+   * @returns Item group with sub-category and category details / กลุ่มสินค้าพร้อมรายละเอียดหมวดหมู่ย่อยและหมวดหมู่
+   */
   @TryCatch
   async findItemGroup(
     id: string,

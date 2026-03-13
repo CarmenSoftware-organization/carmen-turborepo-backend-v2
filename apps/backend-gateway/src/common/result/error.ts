@@ -8,6 +8,10 @@ export enum ErrorCode {
   INTERNAL = 7,
 }
 
+/**
+ * Application error with error code and optional data
+ * ข้อผิดพลาดของแอปพลิเคชันพร้อมรหัสข้อผิดพลาดและข้อมูลเพิ่มเติม
+ */
 export class AppError<T = undefined> extends Error {
   constructor(
     message: string,

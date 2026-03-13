@@ -10,6 +10,11 @@ export class AppController {
   );
   constructor(private readonly appService: AppService) {}
 
+  /**
+   * Get hello message from the file service
+   * ดึงข้อความต้อนรับจากบริการไฟล์
+   * @returns Hello message / ข้อความต้อนรับ
+   */
   @Get()
   @ApiExcludeEndpoint(true)
   getHello(): string {
@@ -17,6 +22,11 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  /**
+   * Check health status of the file service
+   * ตรวจสอบสถานะการทำงานของบริการไฟล์
+   * @returns Health status string / สถานะการทำงาน
+   */
   @Get('health')
   @ApiExcludeEndpoint(true)
   getHealth(): string {

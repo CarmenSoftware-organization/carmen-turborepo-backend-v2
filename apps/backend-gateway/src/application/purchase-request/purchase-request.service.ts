@@ -24,6 +24,16 @@ export class PurchaseRequestService {
     private readonly procurementService: ClientProxy,
   ) {}
 
+  /**
+   * Find a purchase request by ID via microservice
+   * ค้นหารายการเดียวตาม ID ของใบขอซื้อผ่านไมโครเซอร์วิส
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userData - User context data / ข้อมูลบริบทผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Purchase request data / ข้อมูลใบขอซื้อ
+   */
   async findById(
     id: string,
     user_id: string,
@@ -68,6 +78,16 @@ export class PurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all purchase requests with pagination via microservice
+   * ค้นหารายการทั้งหมดของใบขอซื้อพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit codes / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param userDatas - User context data / ข้อมูลบริบทผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated purchase request list / รายการใบขอซื้อแบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     bu_code: string[],
@@ -115,6 +135,14 @@ export class PurchaseRequestService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Find all workflow stages for purchase requests via microservice
+   * ค้นหารายการทั้งหมดของขั้นตอนเวิร์กโฟลว์สำหรับใบขอซื้อผ่านไมโครเซอร์วิส
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of workflow stages / รายการขั้นตอนเวิร์กโฟลว์
+   */
   async findAllWorkflowStagesByPr(
     user_id: string,
     bu_code: string,
@@ -154,6 +182,15 @@ export class PurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Create a new purchase request via microservice
+   * สร้างใบขอซื้อใหม่ผ่านไมโครเซอร์วิส
+   * @param createDto - Purchase request creation data / ข้อมูลสำหรับสร้างใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created purchase request / ใบขอซื้อที่สร้างแล้ว
+   */
   async create(
     createDto: CreatePurchaseRequestDto,
     user_id: string,
@@ -194,6 +231,15 @@ export class PurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Duplicate purchase requests via microservice
+   * ทำสำเนาใบขอซื้อผ่านไมโครเซอร์วิส
+   * @param body - IDs of purchase requests to duplicate / รหัสใบขอซื้อที่ต้องการทำสำเนา
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Duplicated purchase requests / ใบขอซื้อที่ทำสำเนาแล้ว
+   */
   async duplicatePr(
     body: { ids: string[] },
     user_id: string,
@@ -233,6 +279,16 @@ export class PurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Split a purchase request into a new one via microservice
+   * แยกใบขอซื้อเป็นใบใหม่ผ่านไมโครเซอร์วิส
+   * @param id - Original purchase request ID / รหัสใบขอซื้อต้นฉบับ
+   * @param body - Detail IDs to split / รหัสรายละเอียดที่ต้องการแยก
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Split result / ผลลัพธ์การแยก
+   */
   async splitPr(
     id: string,
     body: { detail_ids: string[] },
@@ -275,6 +331,16 @@ export class PurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Save changes to a purchase request via microservice
+   * บันทึกการเปลี่ยนแปลงใบขอซื้อผ่านไมโครเซอร์วิส
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param updateDto - Updated data / ข้อมูลที่อัปเดต
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated purchase request / ใบขอซื้อที่อัปเดตแล้ว
+   */
   async save(
     id: string,
     updateDto: Record<string, unknown> | object,
@@ -315,6 +381,16 @@ export class PurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Submit a purchase request for approval via microservice
+   * ส่งใบขอซื้อเข้าสู่การอนุมัติผ่านไมโครเซอร์วิส
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param payload - Submit payload / ข้อมูลการส่ง
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Submitted purchase request / ใบขอซื้อที่ส่งแล้ว
+   */
   async submit(
     id: string,
     payload: SubmitPurchaseRequest,
@@ -348,6 +424,16 @@ export class PurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Approve a purchase request via microservice
+   * อนุมัติใบขอซื้อผ่านไมโครเซอร์วิส
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param payload - Approval payload / ข้อมูลการอนุมัติ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Approved purchase request / ใบขอซื้อที่อนุมัติแล้ว
+   */
   async approve(
     id: string,
     payload: Record<string, unknown> | object,
@@ -388,6 +474,16 @@ export class PurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Reject a purchase request via microservice
+   * ปฏิเสธใบขอซื้อผ่านไมโครเซอร์วิส
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param body - Rejection payload / ข้อมูลการปฏิเสธ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Rejected purchase request / ใบขอซื้อที่ถูกปฏิเสธ
+   */
   async reject(
     id: string,
     body: RejectPurchaseRequestDto,
@@ -421,6 +517,16 @@ export class PurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Send a purchase request back for review via microservice
+   * ส่งใบขอซื้อกลับเพื่อตรวจสอบผ่านไมโครเซอร์วิส
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param body - Review payload / ข้อมูลการตรวจสอบ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Reviewed purchase request / ใบขอซื้อที่ส่งกลับตรวจสอบ
+   */
   async review(
     id: string,
     body: Record<string, unknown> | object,
@@ -454,6 +560,15 @@ export class PurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a purchase request via microservice
+   * ลบใบขอซื้อผ่านไมโครเซอร์วิส
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async delete(
     id: string,
     user_id: string,
@@ -486,6 +601,15 @@ export class PurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all purchase requests by status via microservice
+   * ค้นหาใบขอซื้อตามสถานะผ่านไมโครเซอร์วิส
+   * @param status - Workflow status / สถานะเวิร์กโฟลว์
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Filtered purchase request list / รายการใบขอซื้อที่กรองแล้ว
+   */
   async findAllByStatus(
     status: string,
     user_id: string,
@@ -526,6 +650,15 @@ export class PurchaseRequestService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Export a purchase request to Excel via microservice
+   * ส่งออกใบขอซื้อเป็นไฟล์ Excel ผ่านไมโครเซอร์วิส
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Excel file buffer and filename / บัฟเฟอร์ไฟล์ Excel และชื่อไฟล์
+   */
   async exportToExcel(
     id: string,
     user_id: string,
@@ -563,6 +696,15 @@ export class PurchaseRequestService {
     return Result.ok(data);
   }
 
+  /**
+   * Print a purchase request to PDF via microservice
+   * พิมพ์ใบขอซื้อเป็นไฟล์ PDF ผ่านไมโครเซอร์วิส
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns PDF file buffer and filename / บัฟเฟอร์ไฟล์ PDF และชื่อไฟล์
+   */
   async printToPdf(
     id: string,
     user_id: string,
@@ -600,6 +742,15 @@ export class PurchaseRequestService {
     return Result.ok(data);
   }
 
+  /**
+   * Find cost allocation dimensions for a PR detail via microservice
+   * ค้นหามิติการจัดสรรต้นทุนของรายละเอียดใบขอซื้อผ่านไมโครเซอร์วิส
+   * @param detail_id - Purchase request detail ID / รหัสรายละเอียดใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Dimension data / ข้อมูลมิติ
+   */
   async findDimensionsByDetailId(
     detail_id: string,
     user_id: string,
@@ -640,6 +791,15 @@ export class PurchaseRequestService {
     return ResponseLib.success(response.data);
   }
 
+  /**
+   * Find change history for a PR detail via microservice
+   * ค้นหาประวัติการเปลี่ยนแปลงของรายละเอียดใบขอซื้อผ่านไมโครเซอร์วิส
+   * @param detail_id - Purchase request detail ID / รหัสรายละเอียดใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Change history / ประวัติการเปลี่ยนแปลง
+   */
   async findHistoryByDetailId(
     detail_id: string,
     user_id: string,
@@ -680,6 +840,16 @@ export class PurchaseRequestService {
     return ResponseLib.success(response.data);
   }
 
+  /**
+   * Calculate price breakdown for a PR detail via microservice
+   * คำนวณรายละเอียดราคาของรายการใบขอซื้อผ่านไมโครเซอร์วิส
+   * @param detail_id - Purchase request detail ID / รหัสรายละเอียดใบขอซื้อ
+   * @param data - Calculation parameters / พารามิเตอร์การคำนวณ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Price calculation result / ผลลัพธ์การคำนวณราคา
+   */
   async getCalculatePriceInfoByDetailId(
     detail_id: string,
     data: CalculatePurchaseRequestDetail,

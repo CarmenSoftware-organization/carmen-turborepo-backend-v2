@@ -67,8 +67,12 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Returns the count of purchase requests awaiting the current user's action,
-   * used for dashboard badge notifications and workload indicators.
+   * Get count of pending purchase requests for the current user
+   * ดึงจำนวนใบขอซื้อที่รอดำเนินการของผู้ใช้ปัจจุบัน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Pending purchase request count / จำนวนใบขอซื้อที่รอดำเนินการ
    */
   @Get('pending')
   @UseGuards(new AppIdGuard('my-pending.purchaseRequest.findAllPending.count'))
@@ -148,8 +152,13 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the approval workflow stages configured for purchase requests,
-   * showing the sequence of approval steps (e.g., HOD, FC, GM) a PR must pass through.
+   * Get workflow stages for purchase requests
+   * ดึงขั้นตอนการทำงานสำหรับใบขอซื้อ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Workflow stages / ขั้นตอนการทำงาน
    */
   @Get(':bu_code/workflow-stages')
   @UseGuards(
@@ -232,8 +241,14 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the full details of a specific purchase request pending approval,
-   * including requested items, quantities, estimated costs, and approval status.
+   * Find a pending purchase request by ID
+   * ค้นหาใบขอซื้อที่รอดำเนินการรายการเดียวตาม ID
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Purchase request details / รายละเอียดใบขอซื้อ
    */
   @Get(':bu_code/:id')
   @UseGuards(new AppIdGuard('my-pending.purchaseRequest.findOne'))
@@ -298,8 +313,13 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Lists all purchase requests in the user's pending queue with pagination,
-   * enabling requestors and approvers to track procurement requests through the workflow.
+   * List all pending purchase requests for the current user
+   * ค้นหารายการใบขอซื้อที่รอดำเนินการทั้งหมดของผู้ใช้ปัจจุบัน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param query - Pagination query / คำค้นหาการแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of pending purchase requests / รายการใบขอซื้อที่รอดำเนินการแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('my-pending.purchaseRequest.findAll'))
@@ -385,8 +405,14 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Filters purchase requests by their current approval status (e.g., draft,
-   * pending, approved, rejected) to view requests at a specific workflow stage.
+   * List purchase requests filtered by status
+   * ค้นหารายการใบขอซื้อตามสถานะ
+   * @param status - Request status / สถานะใบขอซื้อ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Purchase requests by status / รายการใบขอซื้อตามสถานะ
    */
   @Get(':bu_code/status/:status')
   @UseGuards(new AppIdGuard('my-pending.purchaseRequest.findAllByStatus'))
@@ -428,8 +454,14 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Creates a new purchase request for items needed by a hotel department,
-   * initiating the procurement approval workflow routed to designated approvers.
+   * Create a new purchase request
+   * สร้างใบขอซื้อใหม่
+   * @param createDto - Purchase request data / ข้อมูลใบขอซื้อ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created purchase request / ใบขอซื้อที่สร้างแล้ว
    */
   @Post(':bu_code')
   @UseGuards(new AppIdGuard('my-pending.purchaseRequest.create'))
@@ -503,8 +535,14 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Submits a draft purchase request into the approval workflow,
-   * moving it from draft status to the first approval stage for review.
+   * Submit a purchase request for approval
+   * ส่งใบขอซื้อเพื่อขออนุมัติ
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Submitted purchase request / ใบขอซื้อที่ส่งแล้ว
    */
   @Patch(':bu_code/:id/submit')
   @UseGuards(new AppIdGuard('my-pending.purchaseRequest.submit'))
@@ -547,8 +585,15 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Approves a purchase request at the current user's workflow stage,
-   * advancing it to the next approval level or marking it as fully approved.
+   * Approve a purchase request at the current workflow stage
+   * อนุมัติใบขอซื้อในขั้นตอนการทำงานปัจจุบัน
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param payload - Approval payload / ข้อมูลการอนุมัติ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Approved purchase request / ใบขอซื้อที่อนุมัติแล้ว
    */
   @Patch(':bu_code/:id/approve')
   @UseGuards(new AppIdGuard('my-pending.purchaseRequest.approve'))
@@ -594,8 +639,14 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Rejects a purchase request at the current approval stage,
-   * sending it back to the requestor for revision or cancellation.
+   * Reject a purchase request at the current workflow stage
+   * ปฏิเสธใบขอซื้อในขั้นตอนการทำงานปัจจุบัน
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Rejected purchase request / ใบขอซื้อที่ปฏิเสธแล้ว
    */
   @Patch(':bu_code/:id/reject')
   @UseGuards(new AppIdGuard('my-pending.purchaseRequest.reject'))
@@ -638,8 +689,15 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Allows an approver to review a purchase request and provide feedback
-   * or modifications before making a final approve/reject decision.
+   * Review a purchase request before final decision
+   * ตรวจสอบใบขอซื้อก่อนตัดสินใจขั้นสุดท้าย
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param payload - Review payload / ข้อมูลการตรวจสอบ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Reviewed purchase request / ใบขอซื้อที่ตรวจสอบแล้ว
    */
   @Patch(':bu_code/:id/review')
   @UseGuards(new AppIdGuard('my-pending.purchaseRequest.review'))
@@ -685,8 +743,15 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Saves changes to a draft purchase request, allowing the requestor to
-   * modify items, quantities, or justification before submitting for approval.
+   * Update a draft purchase request
+   * อัปเดตใบขอซื้อฉบับร่าง
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param updateDto - Updated request data / ข้อมูลใบขอที่อัปเดต
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated purchase request / ใบขอซื้อที่อัปเดตแล้ว
    */
   @Patch(':bu_code/:id/save')
   @UseGuards(new AppIdGuard('my-pending.purchaseRequest.update'))
@@ -750,8 +815,14 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Removes a purchase request that is no longer needed, typically a draft
-   * or rejected request that the requestor has decided to discard.
+   * Delete a purchase request
+   * ลบใบขอซื้อ
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Delete result / ผลลัพธ์การลบ
    */
   @Delete(':bu_code/:id')
   @UseGuards(new AppIdGuard('my-pending.purchaseRequest.delete'))

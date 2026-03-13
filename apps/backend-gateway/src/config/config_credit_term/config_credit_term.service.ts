@@ -23,6 +23,15 @@ export class Config_CreditTermService {
     private readonly masterService: ClientProxy,
   ) {}
 
+  /**
+   * Find a single credit term by ID via microservice
+   * ค้นหาเงื่อนไขการชำระเงินเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Credit term ID / รหัสเงื่อนไขการชำระเงิน
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Credit term detail or error / รายละเอียดเงื่อนไขการชำระเงินหรือข้อผิดพลาด
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -55,6 +64,15 @@ export class Config_CreditTermService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all credit terms with pagination via microservice
+   * ค้นหารายการเงื่อนไขการชำระเงินทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated credit terms or error / รายการเงื่อนไขการชำระเงินพร้อมการแบ่งหน้าหรือข้อผิดพลาด
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -92,6 +110,15 @@ export class Config_CreditTermService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new credit term via microservice
+   * สร้างเงื่อนไขการชำระเงินใหม่ผ่านไมโครเซอร์วิส
+   * @param createDto - Credit term creation data / ข้อมูลสำหรับสร้างเงื่อนไขการชำระเงิน
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created credit term or error / เงื่อนไขการชำระเงินที่สร้างแล้วหรือข้อผิดพลาด
+   */
   async create(
     createDto: ICreateCreditTerm,
     user_id: string,
@@ -129,6 +156,15 @@ export class Config_CreditTermService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update a credit term via microservice
+   * อัปเดตเงื่อนไขการชำระเงินผ่านไมโครเซอร์วิส
+   * @param updateDto - Credit term update data / ข้อมูลสำหรับอัปเดตเงื่อนไขการชำระเงิน
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated credit term or error / เงื่อนไขการชำระเงินที่อัปเดตแล้วหรือข้อผิดพลาด
+   */
   async update(
     updateDto: IUpdateCreditTerm,
     user_id: string,
@@ -166,6 +202,15 @@ export class Config_CreditTermService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a credit term via microservice
+   * ลบเงื่อนไขการชำระเงินผ่านไมโครเซอร์วิส
+   * @param id - Credit term ID / รหัสเงื่อนไขการชำระเงิน
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result or error / ผลลัพธ์การลบหรือข้อผิดพลาด
+   */
   async delete(
     id: string,
     user_id: string,

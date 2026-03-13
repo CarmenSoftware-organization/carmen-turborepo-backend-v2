@@ -28,8 +28,13 @@ export class ConfigUserApplicationRoleController extends BaseHttpController {
   }
 
   /**
-   * Retrieves all application roles assigned to a specific user, determining their
-   * system access permissions (e.g., Admin, Manager, Purchaser, Requestor).
+   * Retrieves all application roles assigned to a specific user
+   * ค้นหาบทบาทแอปพลิเคชันทั้งหมดที่กำหนดให้ผู้ใช้เฉพาะราย
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param targetUserId - Target user ID / รหัสผู้ใช้เป้าหมาย
+   * @param version - API version / เวอร์ชัน API
    */
   @Get(':user_id')
   @HttpCode(HttpStatus.OK)
@@ -59,8 +64,13 @@ export class ConfigUserApplicationRoleController extends BaseHttpController {
   }
 
   /**
-   * Assigns one or more application roles to a user, granting them the associated
-   * permissions and access rights within the procurement and inventory system.
+   * Assigns one or more application roles to a user
+   * กำหนดบทบาทแอปพลิเคชันหนึ่งหรือหลายบทบาทให้กับผู้ใช้
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param assignDto - Role assignment data / ข้อมูลการกำหนดบทบาท
+   * @param version - API version / เวอร์ชัน API
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -91,8 +101,13 @@ export class ConfigUserApplicationRoleController extends BaseHttpController {
   }
 
   /**
-   * Modifies the application role assignments for a user, such as changing their role
-   * level or adjusting permissions within the system.
+   * Modifies the application role assignments for a user
+   * อัปเดตการกำหนดบทบาทแอปพลิเคชันสำหรับผู้ใช้
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param version - API version / เวอร์ชัน API
    */
   @Patch()
   @HttpCode(HttpStatus.OK)
@@ -123,8 +138,13 @@ export class ConfigUserApplicationRoleController extends BaseHttpController {
   }
 
   /**
-   * Revokes one or more application roles from a user, removing the associated
-   * permissions. The user loses access to features granted by those roles.
+   * Revokes one or more application roles from a user
+   * เพิกถอนบทบาทแอปพลิเคชันจากผู้ใช้ ผู้ใช้จะสูญเสียสิทธิ์การเข้าถึงที่เกี่ยวข้อง
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param removeDto - Removal data / ข้อมูลสำหรับเพิกถอน
+   * @param version - API version / เวอร์ชัน API
    */
   @Delete()
   @HttpCode(HttpStatus.OK)

@@ -1,5 +1,11 @@
 import { BackendLogger } from './backend.logger';
 
+/**
+ * Extract tenant ID, user ID, and access token from request headers
+ * ดึงข้อมูล tenant ID, user ID และ access token จาก request headers
+ * @param req - HTTP request object / อ็อบเจกต์ HTTP request
+ * @returns Extracted header values / ค่าที่ดึงออกมาจาก header
+ */
 export function ExtractRequestHeader(
   req: { user?: { user_id?: string } } & Record<string, any>,
 ): {

@@ -57,6 +57,12 @@ export class ExtraCostTypeService {
     ExtraCostTypeService.name,
   );
 
+  /**
+   * Initialize the Prisma service for the tenant
+   * เริ่มต้นบริการ Prisma สำหรับผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / รหัสผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
   }
@@ -77,6 +83,12 @@ export class ExtraCostTypeService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a single extra cost type by ID
+   * ค้นหาประเภทค่าใช้จ่ายเพิ่มเติมรายการเดียวตาม ID
+   * @param id - Extra cost type ID / รหัสประเภทค่าใช้จ่ายเพิ่มเติม
+   * @returns Extra cost type detail / รายละเอียดประเภทค่าใช้จ่ายเพิ่มเติม
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -98,6 +110,12 @@ export class ExtraCostTypeService {
     return Result.ok(serializedExtraCostType);
   }
 
+  /**
+   * Find all extra cost types with pagination
+   * ค้นหาประเภทค่าใช้จ่ายเพิ่มเติมทั้งหมดแบบแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of extra cost types / รายการประเภทค่าใช้จ่ายเพิ่มเติมแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
@@ -139,6 +157,12 @@ export class ExtraCostTypeService {
     });
   }
 
+  /**
+   * Create a new extra cost type
+   * สร้างประเภทค่าใช้จ่ายเพิ่มเติมใหม่
+   * @param data - Extra cost type creation data / ข้อมูลสำหรับสร้างประเภทค่าใช้จ่ายเพิ่มเติม
+   * @returns Created extra cost type ID / รหัสประเภทค่าใช้จ่ายเพิ่มเติมที่สร้างแล้ว
+   */
   @TryCatch
   async create(data: ICreateExtraCostType): Promise<Result<unknown>> {
     this.logger.debug(
@@ -167,6 +191,12 @@ export class ExtraCostTypeService {
     return Result.ok({ id: extraCostType.id });
   }
 
+  /**
+   * Update an existing extra cost type with duplicate name check
+   * อัปเดตประเภทค่าใช้จ่ายเพิ่มเติมที่มีอยู่พร้อมตรวจสอบชื่อซ้ำ
+   * @param data - Extra cost type update data / ข้อมูลสำหรับอัปเดตประเภทค่าใช้จ่ายเพิ่มเติม
+   * @returns Updated extra cost type ID / รหัสประเภทค่าใช้จ่ายเพิ่มเติมที่อัปเดตแล้ว
+   */
   @TryCatch
   async update(data: IUpdateExtraCostType): Promise<Result<unknown>> {
     this.logger.debug(
@@ -214,6 +244,12 @@ export class ExtraCostTypeService {
     return Result.ok({ id: updatedExtraCostType.id });
   }
 
+  /**
+   * Soft delete an extra cost type
+   * ลบประเภทค่าใช้จ่ายเพิ่มเติมแบบ soft delete
+   * @param id - Extra cost type ID / รหัสประเภทค่าใช้จ่ายเพิ่มเติม
+   * @returns Deleted extra cost type ID / รหัสประเภทค่าใช้จ่ายเพิ่มเติมที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(

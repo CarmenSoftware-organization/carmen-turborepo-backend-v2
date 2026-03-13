@@ -86,6 +86,12 @@ export class ExchangeRateService {
 
   constructor(private readonly tenantService: TenantService) {}
 
+  /**
+   * Find a single exchange rate by ID
+   * ค้นหารายการอัตราแลกเปลี่ยนเดียวตาม ID
+   * @param id - Exchange rate ID / ID ของอัตราแลกเปลี่ยน
+   * @returns Exchange rate detail or error if not found / รายละเอียดอัตราแลกเปลี่ยน หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -113,6 +119,12 @@ export class ExchangeRateService {
     return Result.ok(serializedExchangeRate);
   }
 
+  /**
+   * Find all exchange rates with pagination
+   * ค้นหารายการอัตราแลกเปลี่ยนทั้งหมดพร้อมการแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of exchange rates / รายการอัตราแลกเปลี่ยนพร้อมการแบ่งหน้า
+   */
   @TryCatch
   async findAll(
     paginate: IPaginate,
@@ -166,6 +178,12 @@ export class ExchangeRateService {
     });
   }
 
+  /**
+   * Create a new exchange rate
+   * สร้างอัตราแลกเปลี่ยนใหม่
+   * @param data - Exchange rate creation data / ข้อมูลการสร้างอัตราแลกเปลี่ยน
+   * @returns Created exchange rate ID or error if duplicate / ID ของอัตราแลกเปลี่ยนที่สร้างขึ้น หรือข้อผิดพลาดหากซ้ำ
+   */
   @TryCatch
   async create(
     data: ICreateExchangeRate,
@@ -210,6 +228,12 @@ export class ExchangeRateService {
     return Result.ok({ id: createExchangeRate.id });
   }
 
+  /**
+   * Update an existing exchange rate
+   * อัปเดตอัตราแลกเปลี่ยนที่มีอยู่
+   * @param data - Exchange rate update data / ข้อมูลการอัปเดตอัตราแลกเปลี่ยน
+   * @returns Updated exchange rate ID or error if not found / ID ของอัตราแลกเปลี่ยนที่อัปเดต หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async update(
     data: IUpdateExchangeRate,
@@ -258,6 +282,12 @@ export class ExchangeRateService {
     return Result.ok({ id: updateExchangeRate.id });
   }
 
+  /**
+   * Delete an exchange rate (soft delete)
+   * ลบอัตราแลกเปลี่ยน (ลบแบบซอฟต์)
+   * @param id - Exchange rate ID / ID ของอัตราแลกเปลี่ยน
+   * @returns Empty object on success or error if not found / อ็อบเจกต์ว่างเมื่อสำเร็จ หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(

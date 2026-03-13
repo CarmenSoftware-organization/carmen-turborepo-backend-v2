@@ -13,6 +13,15 @@ export class Config_ProductLocationService {
     private readonly masterService: ClientProxy,
   ) {}
 
+  /**
+   * Get all locations assigned to a product via microservice
+   * ค้นหารายการสถานที่ทั้งหมดที่ผูกกับสินค้าผ่านไมโครเซอร์วิส
+   * @param productId - Product ID / รหัสสินค้า
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of locations for the product / รายการสถานที่ของสินค้า
+   */
   async getLocationsByProductId(
     productId: string,
     user_id: string,

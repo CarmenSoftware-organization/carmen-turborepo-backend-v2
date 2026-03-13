@@ -26,6 +26,12 @@ export class VendorBusinessTypeController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a single vendor business type by ID
+   * ค้นหารายการประเภทธุรกิจผู้ขายเดียวตาม ID
+   * @param payload - Microservice payload containing vendor business type ID / ข้อมูล payload ที่มี ID ของประเภทธุรกิจผู้ขาย
+   * @returns Vendor business type detail / รายละเอียดประเภทธุรกิจผู้ขาย
+   */
   @MessagePattern({
     cmd: 'vendor-business-type.findOne',
     service: 'vendor-business-type',
@@ -45,6 +51,12 @@ export class VendorBusinessTypeController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all vendor business types with pagination
+   * ค้นหารายการประเภทธุรกิจผู้ขายทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing pagination parameters / ข้อมูล payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of vendor business types / รายการประเภทธุรกิจผู้ขายพร้อมการแบ่งหน้า
+   */
   @MessagePattern({
     cmd: 'vendor-business-type.findAll',
     service: 'vendor-business-type',
@@ -64,6 +76,12 @@ export class VendorBusinessTypeController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Create a new vendor business type
+   * สร้างประเภทธุรกิจผู้ขายใหม่
+   * @param payload - Microservice payload containing vendor business type data / ข้อมูล payload ที่มีข้อมูลประเภทธุรกิจผู้ขาย
+   * @returns Created vendor business type ID / ID ของประเภทธุรกิจผู้ขายที่สร้างขึ้น
+   */
   @MessagePattern({
     cmd: 'vendor-business-type.create',
     service: 'vendor-business-type',
@@ -83,6 +101,12 @@ export class VendorBusinessTypeController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an existing vendor business type
+   * อัปเดตประเภทธุรกิจผู้ขายที่มีอยู่
+   * @param payload - Microservice payload containing updated vendor business type data / ข้อมูล payload ที่มีข้อมูลประเภทธุรกิจผู้ขายที่อัปเดต
+   * @returns Updated vendor business type ID / ID ของประเภทธุรกิจผู้ขายที่อัปเดต
+   */
   @MessagePattern({
     cmd: 'vendor-business-type.update',
     service: 'vendor-business-type',
@@ -102,6 +126,12 @@ export class VendorBusinessTypeController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a vendor business type (soft delete)
+   * ลบประเภทธุรกิจผู้ขาย (ลบแบบซอฟต์)
+   * @param payload - Microservice payload containing vendor business type ID / ข้อมูล payload ที่มี ID ของประเภทธุรกิจผู้ขาย
+   * @returns Deleted vendor business type ID / ID ของประเภทธุรกิจผู้ขายที่ลบ
+   */
   @MessagePattern({
     cmd: 'vendor-business-type.delete',
     service: 'vendor-business-type',

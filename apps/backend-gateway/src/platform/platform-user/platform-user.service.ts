@@ -22,9 +22,10 @@ export class PlatformUserService {
   ) {}
 
   /**
-   * Fetch users from Keycloak realm and sync to tb_user and tb_user_profile
-   * @param version
-   * @returns
+   * Fetch and sync users from Keycloak realm into the platform database
+   * ดึงและซิงค์ข้อมูลผู้ใช้จาก Keycloak realm เข้าสู่ฐานข้อมูลแพลตฟอร์ม
+   * @param version - API version / เวอร์ชัน API
+   * @returns Sync result / ผลลัพธ์การซิงค์
    */
   async fetchUsers(version: string): Promise<unknown> {
     this.logger.debug(
@@ -52,6 +53,15 @@ export class PlatformUserService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Retrieve all platform users with pagination
+   * ค้นหารายการผู้ใช้ระบบทั้งหมดพร้อมการแบ่งหน้า
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated user list / รายการผู้ใช้แบบแบ่งหน้า
+   */
   async getUserList(
     user_id: string,
     tenant_id: string,
@@ -95,6 +105,15 @@ export class PlatformUserService {
     });
   }
 
+  /**
+   * Retrieve a single platform user by ID
+   * ค้นหารายการผู้ใช้ระบบเดียวตาม ID
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param id - Target user ID / รหัสผู้ใช้เป้าหมาย
+   * @param version - API version / เวอร์ชัน API
+   * @returns User details / รายละเอียดผู้ใช้
+   */
   async getUser(
     user_id: string,
     tenant_id: string,
@@ -134,6 +153,15 @@ export class PlatformUserService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Create a new platform user via microservice
+   * สร้างผู้ใช้ระบบใหม่ผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param data - User creation data / ข้อมูลสำหรับสร้างผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created user / ผู้ใช้ที่ถูกสร้าง
+   */
   async createUser(
     user_id: string,
     tenant_id: string,
@@ -173,6 +201,16 @@ export class PlatformUserService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update an existing platform user via microservice
+   * อัปเดตข้อมูลผู้ใช้ระบบที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param id - Target user ID / รหัสผู้ใช้เป้าหมาย
+   * @param data - User update data / ข้อมูลสำหรับอัปเดตผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated user / ผู้ใช้ที่ถูกอัปเดต
+   */
   async updateUser(
     user_id: string,
     tenant_id: string,
@@ -215,6 +253,15 @@ export class PlatformUserService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a platform user via microservice
+   * ลบผู้ใช้ระบบผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param id - Target user ID / รหัสผู้ใช้เป้าหมาย
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async deleteUser(
     user_id: string,
     tenant_id: string,

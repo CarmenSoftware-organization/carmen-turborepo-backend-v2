@@ -18,6 +18,12 @@ export class PurchaseRequestTemplateController extends BaseMicroserviceControlle
     super();
   }
 
+  /**
+   * Create an audit context from the microservice payload
+   * สร้าง audit context จาก payload ของไมโครเซอร์วิส
+   * @param payload - Microservice payload containing tenant and user info / payload ของไมโครเซอร์วิสที่มีข้อมูลผู้เช่าและผู้ใช้
+   * @returns Audit context object / ออบเจกต์ audit context
+   */
   private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
@@ -28,6 +34,12 @@ export class PurchaseRequestTemplateController extends BaseMicroserviceControlle
     };
   }
 
+  /**
+   * Find a purchase request template by ID
+   * ค้นหาเทมเพลตใบขอซื้อรายการเดียวตาม ID
+   * @param payload - Payload containing the template ID / payload ที่มี ID ของเทมเพลต
+   * @returns Purchase request template data / ข้อมูลเทมเพลตใบขอซื้อ
+   */
   @MessagePattern({
     cmd: 'purchase-request-template.find-one',
     service: 'purchase-request-template',
@@ -46,6 +58,12 @@ export class PurchaseRequestTemplateController extends BaseMicroserviceControlle
     return this.handleResult(result);
   }
 
+  /**
+   * Find all purchase request templates with pagination
+   * ค้นหาเทมเพลตใบขอซื้อทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Payload containing pagination parameters / payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of purchase request templates / รายการเทมเพลตใบขอซื้อที่แบ่งหน้าแล้ว
+   */
   @MessagePattern({
     cmd: 'purchase-request-template.find-all',
     service: 'purchase-request-template',
@@ -64,6 +82,12 @@ export class PurchaseRequestTemplateController extends BaseMicroserviceControlle
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Create a new purchase request template
+   * สร้างเทมเพลตใบขอซื้อใหม่
+   * @param payload - Payload containing template data / payload ที่มีข้อมูลเทมเพลต
+   * @returns Created purchase request template / เทมเพลตใบขอซื้อที่สร้างแล้ว
+   */
   @MessagePattern({
     cmd: 'purchase-request-template.create',
     service: 'purchase-request-template',
@@ -84,6 +108,12 @@ export class PurchaseRequestTemplateController extends BaseMicroserviceControlle
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an existing purchase request template
+   * อัปเดตเทมเพลตใบขอซื้อที่มีอยู่
+   * @param payload - Payload containing updated template data / payload ที่มีข้อมูลเทมเพลตที่อัปเดต
+   * @returns Updated purchase request template / เทมเพลตใบขอซื้อที่อัปเดตแล้ว
+   */
   @MessagePattern({
     cmd: 'purchase-request-template.update',
     service: 'purchase-request-template',
@@ -104,6 +134,12 @@ export class PurchaseRequestTemplateController extends BaseMicroserviceControlle
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a purchase request template by ID
+   * ลบเทมเพลตใบขอซื้อตาม ID
+   * @param payload - Payload containing the template ID to delete / payload ที่มี ID ของเทมเพลตที่ต้องการลบ
+   * @returns Deleted template ID / ID ของเทมเพลตที่ลบแล้ว
+   */
   @MessagePattern({
     cmd: 'purchase-request-template.delete',
     service: 'purchase-request-template',

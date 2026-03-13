@@ -65,8 +65,16 @@ export class Config_LocationsController extends BaseHttpController {
   }
 
   /**
-   * Retrieves details of a specific storage location, warehouse, or store,
-   * including assigned users and stocked products for inventory tracking.
+   * Get a location by ID
+   * ค้นหาสถานที่เดียวตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Location ID / รหัสสถานที่
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param withUser - Include assigned users / รวมผู้ใช้ที่ได้รับมอบหมาย
+   * @param withProducts - Include stocked products / รวมสินค้าในสต็อก
+   * @param version - API version / เวอร์ชัน API
+   * @returns Location detail / รายละเอียดสถานที่
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('location.findOne'))
@@ -130,8 +138,14 @@ export class Config_LocationsController extends BaseHttpController {
   }
 
   /**
-   * Lists all storage locations, warehouses, and stores configured for the business unit,
-   * used for inventory tracking, stock transfers, and goods receiving.
+   * Get all locations with pagination
+   * ค้นหารายการสถานที่ทั้งหมดพร้อมการแบ่งหน้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of locations / รายการสถานที่พร้อมการแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('location.findAll'))
@@ -206,8 +220,14 @@ export class Config_LocationsController extends BaseHttpController {
   }
 
   /**
-   * Defines a new storage location, warehouse, or store within the property
-   * for inventory movements (stock-in, stock-out, transfers).
+   * Create a new location
+   * สร้างสถานที่ใหม่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Location creation data / ข้อมูลสำหรับสร้างสถานที่
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created location / สถานที่ที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('location.create'))
@@ -266,7 +286,15 @@ export class Config_LocationsController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing storage location's configuration such as name, type, or capacity.
+   * Update a location
+   * อัปเดตสถานที่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Location ID / รหัสสถานที่
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Location update data / ข้อมูลสำหรับอัปเดตสถานที่
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated location / สถานที่ที่อัปเดตแล้ว
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('location.update'))
@@ -331,7 +359,14 @@ export class Config_LocationsController extends BaseHttpController {
   }
 
   /**
-   * Removes a storage location from active use. Historical stock movement records are preserved.
+   * Delete a location
+   * ลบสถานที่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Location ID / รหัสสถานที่
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('location.delete'))

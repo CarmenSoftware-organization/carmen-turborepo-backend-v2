@@ -18,6 +18,15 @@ export class PurchaseRequestCommentService {
     private readonly procurementService: ClientProxy,
   ) {}
 
+  /**
+   * Find a comment by ID via microservice
+   * ค้นหารายการเดียวตาม ID ของความคิดเห็นผ่านไมโครเซอร์วิส
+   * @param id - Comment ID / รหัสความคิดเห็น
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Comment data / ข้อมูลความคิดเห็น
+   */
   async findById(
     id: string,
     user_id: string,
@@ -53,6 +62,16 @@ export class PurchaseRequestCommentService {
     return ResponseLib.success(response.data);
   }
 
+  /**
+   * Find all comments for a purchase request via microservice
+   * ค้นหารายการทั้งหมดของความคิดเห็นสำหรับใบขอซื้อผ่านไมโครเซอร์วิส
+   * @param purchase_request_id - Purchase request ID / รหัสใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated comment list / รายการความคิดเห็นแบบแบ่งหน้า
+   */
   async findAllByPurchaseRequestId(
     purchase_request_id: string,
     user_id: string,
@@ -90,6 +109,15 @@ export class PurchaseRequestCommentService {
     return ResponseLib.successWithPaginate(response.data, response.paginate);
   }
 
+  /**
+   * Create a new comment via microservice
+   * สร้างความคิดเห็นใหม่ผ่านไมโครเซอร์วิส
+   * @param data - Comment data / ข้อมูลความคิดเห็น
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created comment / ความคิดเห็นที่สร้างแล้ว
+   */
   async create(
     data: Record<string, unknown>,
     user_id: string,
@@ -125,6 +153,16 @@ export class PurchaseRequestCommentService {
     return ResponseLib.created(response.data);
   }
 
+  /**
+   * Update a comment via microservice
+   * อัปเดตความคิดเห็นผ่านไมโครเซอร์วิส
+   * @param id - Comment ID / รหัสความคิดเห็น
+   * @param data - Updated comment data / ข้อมูลความคิดเห็นที่อัปเดต
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated comment / ความคิดเห็นที่อัปเดตแล้ว
+   */
   async update(
     id: string,
     data: Record<string, unknown>,
@@ -162,6 +200,15 @@ export class PurchaseRequestCommentService {
     return ResponseLib.success(response.data);
   }
 
+  /**
+   * Delete a comment via microservice
+   * ลบความคิดเห็นผ่านไมโครเซอร์วิส
+   * @param id - Comment ID / รหัสความคิดเห็น
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async delete(
     id: string,
     user_id: string,
@@ -197,6 +244,16 @@ export class PurchaseRequestCommentService {
     return ResponseLib.success(response.data);
   }
 
+  /**
+   * Add an attachment to a comment via microservice
+   * เพิ่มไฟล์แนบในความคิดเห็นผ่านไมโครเซอร์วิส
+   * @param id - Comment ID / รหัสความคิดเห็น
+   * @param attachment - Attachment data / ข้อมูลไฟล์แนบ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated comment with attachment / ความคิดเห็นที่เพิ่มไฟล์แนบแล้ว
+   */
   async addAttachment(
     id: string,
     attachment: Record<string, unknown>,
@@ -234,6 +291,16 @@ export class PurchaseRequestCommentService {
     return ResponseLib.success(response.data);
   }
 
+  /**
+   * Remove an attachment from a comment via microservice
+   * ลบไฟล์แนบจากความคิดเห็นผ่านไมโครเซอร์วิส
+   * @param id - Comment ID / รหัสความคิดเห็น
+   * @param fileToken - File token to remove / โทเคนไฟล์ที่ต้องการลบ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated comment without attachment / ความคิดเห็นที่ลบไฟล์แนบแล้ว
+   */
   async removeAttachment(
     id: string,
     fileToken: string,

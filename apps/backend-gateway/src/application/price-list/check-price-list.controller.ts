@@ -41,8 +41,13 @@ export class CheckPriceListController extends BaseHttpController {
   }
 
   /**
-   * Validates a secure URL token sent to vendors for price list confirmation,
-   * allowing external vendors to review and verify pricing without system login.
+   * Validate a URL token for vendor price list confirmation
+   * ตรวจสอบโทเค็น URL สำหรับการยืนยันรายการราคาของผู้ขาย
+   * @param urlToken - Secure URL token / โทเค็น URL ที่ปลอดภัย
+   * @param version - API version / เวอร์ชัน API
+   * @param request - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @returns Token validation result / ผลลัพธ์การตรวจสอบโทเค็น
    */
   @Post(':url_token')
   @HttpCode(HttpStatus.OK)

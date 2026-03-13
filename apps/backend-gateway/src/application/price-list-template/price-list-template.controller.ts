@@ -62,8 +62,14 @@ export class PriceListTemplateController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a reusable price list template with its product lineup and configuration,
-   * used when generating new vendor price lists from a standard template.
+   * Get a specific price list template by ID
+   * ค้นหาเทมเพลตรายการราคาเดียวตาม ID
+   * @param id - Price list template ID / รหัสเทมเพลตรายการราคา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Price list template details / รายละเอียดเทมเพลตรายการราคา
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('priceListTemplate.findOne'))
@@ -119,8 +125,14 @@ export class PriceListTemplateController extends BaseHttpController {
   }
 
   /**
-   * Lists all available price list templates for the business unit, enabling
-   * procurement staff to select a standard template for vendor pricing requests.
+   * List all price list templates for the business unit
+   * ค้นหาเทมเพลตรายการราคาทั้งหมดของหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination query parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of price list templates / รายการเทมเพลตรายการราคาแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('priceListTemplate.findAll'))
@@ -177,8 +189,14 @@ export class PriceListTemplateController extends BaseHttpController {
   }
 
   /**
-   * Creates a reusable price list template with a predefined set of products,
-   * streamlining standardized pricing requests to multiple vendors.
+   * Create a new price list template
+   * สร้างเทมเพลตรายการราคาใหม่
+   * @param data - Price list template creation data / ข้อมูลสำหรับสร้างเทมเพลตรายการราคา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created price list template / เทมเพลตรายการราคาที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('priceListTemplate.create'))
@@ -228,8 +246,15 @@ export class PriceListTemplateController extends BaseHttpController {
   }
 
   /**
-   * Modifies a price list template to add or remove products, or update
-   * its configuration for changing procurement requirements.
+   * Update an existing price list template
+   * อัปเดตเทมเพลตรายการราคาที่มีอยู่
+   * @param id - Price list template ID / รหัสเทมเพลตรายการราคา
+   * @param data - Price list template update data / ข้อมูลสำหรับอัปเดตเทมเพลตรายการราคา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated price list template / เทมเพลตรายการราคาที่อัปเดตแล้ว
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('priceListTemplate.update'))
@@ -293,8 +318,14 @@ export class PriceListTemplateController extends BaseHttpController {
   }
 
   /**
-   * Removes a price list template that is no longer needed.
-   * Existing price lists generated from this template are not affected.
+   * Delete a price list template by ID
+   * ลบเทมเพลตรายการราคาตาม ID
+   * @param id - Price list template ID / รหัสเทมเพลตรายการราคา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('priceListTemplate.delete'))
@@ -350,8 +381,15 @@ export class PriceListTemplateController extends BaseHttpController {
   }
 
   /**
-   * Changes the lifecycle status of a price list template (draft, active, inactive),
-   * controlling whether it is available for generating new vendor price requests.
+   * Update the status of a price list template
+   * อัปเดตสถานะของเทมเพลตรายการราคา
+   * @param id - Price list template ID / รหัสเทมเพลตรายการราคา
+   * @param status - New status value / ค่าสถานะใหม่
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated template status / สถานะเทมเพลตที่อัปเดตแล้ว
    */
   @Patch(':id/status')
   @UseGuards(new AppIdGuard('priceListTemplate.updateStatus'))

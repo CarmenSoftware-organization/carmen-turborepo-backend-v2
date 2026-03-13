@@ -18,6 +18,13 @@ export class MyApproveService {
     private readonly procurementService: ClientProxy,
   ) {}
 
+  /**
+   * Get combined count of all pending approvals (SR + PR + PO)
+   * ดึงจำนวนรวมของเอกสารที่รออนุมัติทั้งหมด (ใบเบิก + ใบขอซื้อ + ใบสั่งซื้อ)
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Combined pending approval counts / จำนวนเอกสารที่รออนุมัติรวม
+   */
   async findAllMyApproveCount(
     user_id: string,
     version: string,
@@ -45,6 +52,15 @@ export class MyApproveService {
     });
   }
 
+  /**
+   * List all pending approvals grouped by document type (SR, PR, PO)
+   * ค้นหารายการเอกสารที่รออนุมัติทั้งหมดจัดกลุ่มตามประเภท (ใบเบิก, ใบขอซื้อ, ใบสั่งซื้อ)
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit codes / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Pending approvals grouped by type / เอกสารที่รออนุมัติจัดกลุ่มตามประเภท
+   */
   async findAll(
     user_id: string,
     bu_code: string[],

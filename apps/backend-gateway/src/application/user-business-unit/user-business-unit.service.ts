@@ -15,6 +15,14 @@ export class UserBusinessUnitService {
     @Inject('CLUSTER_SERVICE') private readonly clusterService: ClientProxy,
   ) {}
 
+  /**
+   * Set the user's default business unit (tenant)
+   * ตั้งค่าหน่วยธุรกิจเริ่มต้นของผู้ใช้ (tenant)
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID to set as default / รหัส tenant ที่จะตั้งเป็นค่าเริ่มต้น
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated default tenant result / ผลลัพธ์การตั้งค่า tenant เริ่มต้น
+   */
   async setDefaultTenant(
     user_id: string,
     tenant_id: string,
@@ -47,6 +55,13 @@ export class UserBusinessUnitService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Retrieve business units assigned to a user
+   * ดึงข้อมูลหน่วยธุรกิจที่กำหนดให้ผู้ใช้
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns User's business units / หน่วยธุรกิจของผู้ใช้
+   */
   async getBusinessUnit(user_id: string, version: string): Promise<Result<unknown>> {
     this.logger.debug(
       {

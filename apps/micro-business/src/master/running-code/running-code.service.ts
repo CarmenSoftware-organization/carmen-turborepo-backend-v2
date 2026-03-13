@@ -50,6 +50,12 @@ export class RunningCodeService {
   private _bu_code?: string;
   private _userId?: string;
 
+  /**
+   * Initialize the Prisma service for the tenant
+   * เริ่มต้นบริการ Prisma สำหรับผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / รหัสผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
   }
@@ -74,6 +80,12 @@ export class RunningCodeService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a single running code configuration by ID
+   * ค้นหาการตั้งค่ารหัสลำดับรายการเดียวตาม ID
+   * @param id - Running code ID / รหัสการตั้งค่ารหัสลำดับ
+   * @returns Running code detail / รายละเอียดรหัสลำดับ
+   */
   async findOne(id: string): Promise<any> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
@@ -102,6 +114,12 @@ export class RunningCodeService {
     };
   }
 
+  /**
+   * Find all running code configurations with pagination
+   * ค้นหาการตั้งค่ารหัสลำดับทั้งหมดแบบแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of running codes / รายการรหัสลำดับแบบแบ่งหน้า
+   */
   async findAll(
     paginate: IPaginate,
   ): Promise<any> {
@@ -146,6 +164,12 @@ export class RunningCodeService {
     };
   }
 
+  /**
+   * Find a running code configuration by type
+   * ค้นหาการตั้งค่ารหัสลำดับตามประเภท
+   * @param type - Running code type / ประเภทรหัสลำดับ
+   * @returns Running code configuration / การตั้งค่ารหัสลำดับ
+   */
   async findByType(
     type: string,
   ): Promise<any> {
@@ -167,6 +191,12 @@ export class RunningCodeService {
     };
   }
 
+  /**
+   * Create a new running code configuration
+   * สร้างการตั้งค่ารหัสลำดับใหม่
+   * @param data - Running code creation data / ข้อมูลสำหรับสร้างรหัสลำดับ
+   * @returns Created running code ID / รหัสการตั้งค่ารหัสลำดับที่สร้างแล้ว
+   */
   async create(data: ICreateRunningCode) {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
@@ -205,6 +235,12 @@ export class RunningCodeService {
     };
   }
 
+  /**
+   * Find a running code by type, or create with system defaults if not found
+   * ค้นหารหัสลำดับตามประเภท หรือสร้างด้วยค่าเริ่มต้นของระบบหากไม่พบ
+   * @param type - Running code type / ประเภทรหัสลำดับ
+   * @returns Running code configuration / การตั้งค่ารหัสลำดับ
+   */
   async findOneOrCreate(
     type: string,
   ): Promise<ICommonResponse<IUpdateRunningCode>> {
@@ -239,6 +275,12 @@ export class RunningCodeService {
     };
   }
 
+  /**
+   * Update an existing running code configuration
+   * อัปเดตการตั้งค่ารหัสลำดับที่มีอยู่
+   * @param data - Running code update data / ข้อมูลสำหรับอัปเดตรหัสลำดับ
+   * @returns Updated running code ID / รหัสการตั้งค่ารหัสลำดับที่อัปเดตแล้ว
+   */
   async update(
     data: IUpdateRunningCode,
   ): Promise<any> {
@@ -278,6 +320,12 @@ export class RunningCodeService {
     };
   }
 
+  /**
+   * Soft delete a running code configuration
+   * ลบการตั้งค่ารหัสลำดับแบบ soft delete
+   * @param id - Running code ID / รหัสการตั้งค่ารหัสลำดับ
+   * @returns Success message / ข้อความสำเร็จ
+   */
   async delete(id: string): Promise<any> {
     this.logger.debug({ function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code }, RunningCodeService.name);
 
@@ -309,6 +357,12 @@ export class RunningCodeService {
     };
   }
 
+  /**
+   * Get the running code pattern by type (creates default if not found)
+   * ดึงรูปแบบรหัสลำดับตามประเภท (สร้างค่าเริ่มต้นหากไม่พบ)
+   * @param type - Running code type / ประเภทรหัสลำดับ
+   * @returns Running code pattern / รูปแบบรหัสลำดับ
+   */
   async getRunningPatternByType(
     type: string,
   ): Promise<any> {
@@ -328,6 +382,14 @@ export class RunningCodeService {
     };
   }
 
+  /**
+   * Generate a new running code based on type, date, and last number
+   * สร้างรหัสลำดับใหม่ตามประเภท วันที่ และหมายเลขล่าสุด
+   * @param type - Running code type / ประเภทรหัสลำดับ
+   * @param date - Date for code generation / วันที่สำหรับสร้างรหัส
+   * @param last_no - Last used number / หมายเลขล่าสุดที่ใช้
+   * @returns Generated code / รหัสที่สร้างขึ้น
+   */
   async generateCode(
     type: string,
     date: Date,

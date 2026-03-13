@@ -55,8 +55,12 @@ export class RequestForPricingController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific Request for Pricing (RFP) document,
-   * including requested items, vendor responses, and quoted prices for comparison.
+   * Retrieve a Request for Pricing by ID
+   * ค้นหารายการเดียวตาม ID ของเอกสารขอราคา
+   * @param id - Request for Pricing ID / รหัสเอกสารขอราคา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Request for Pricing details / รายละเอียดเอกสารขอราคา
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('requestForPricing.findOne'))
@@ -111,8 +115,12 @@ export class RequestForPricingController extends BaseHttpController {
   }
 
   /**
-   * Lists all RFP documents within the business unit, allowing procurement
-   * staff to track and compare competitive pricing submissions from vendors.
+   * List all Requests for Pricing with pagination
+   * ค้นหารายการทั้งหมดของเอกสารขอราคาพร้อมการแบ่งหน้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of Requests for Pricing / รายการเอกสารขอราคาแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('requestForPricing.findAll'))
@@ -169,8 +177,12 @@ export class RequestForPricingController extends BaseHttpController {
   }
 
   /**
-   * Creates a new RFP to solicit competitive quotes from vendors for specified items,
-   * initiating the price comparison process before purchase order generation.
+   * Create a new Request for Pricing to solicit vendor quotes
+   * สร้างเอกสารขอราคาใหม่เพื่อขอใบเสนอราคาจากผู้ขาย
+   * @param data - RFP creation data / ข้อมูลสำหรับสร้างเอกสารขอราคา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created Request for Pricing / เอกสารขอราคาที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('requestForPricing.create'))
@@ -219,8 +231,13 @@ export class RequestForPricingController extends BaseHttpController {
   }
 
   /**
-   * Updates an existing RFP to modify requested items, adjust quantities,
-   * or record vendor pricing responses during the competitive bidding process.
+   * Update an existing Request for Pricing
+   * อัปเดตเอกสารขอราคาที่มีอยู่
+   * @param id - Request for Pricing ID / รหัสเอกสารขอราคา
+   * @param data - Updated RFP data / ข้อมูลเอกสารขอราคาที่อัปเดต
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated Request for Pricing / เอกสารขอราคาที่อัปเดตแล้ว
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('requestForPricing.update'))
@@ -283,8 +300,12 @@ export class RequestForPricingController extends BaseHttpController {
   }
 
   /**
-   * Removes an RFP document that is no longer needed, such as cancelled
-   * procurement inquiries or duplicate vendor pricing requests.
+   * Delete a Request for Pricing that is no longer needed
+   * ลบเอกสารขอราคาที่ไม่ต้องการแล้ว
+   * @param id - Request for Pricing ID / รหัสเอกสารขอราคา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('requestForPricing.delete'))

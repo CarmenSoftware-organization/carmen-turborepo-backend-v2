@@ -23,6 +23,14 @@ export class ApplicationRolePermissionService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a role permission by role ID
+   * ค้นหาสิทธิ์ของบทบาทรายการเดียวตาม ID บทบาท
+   * @param id - Role ID / ID บทบาท
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Role with permissions / บทบาทพร้อมสิทธิ์
+   */
   @TryCatch
   async findOne(id: string, user_id: string, bu_code: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -69,6 +77,14 @@ export class ApplicationRolePermissionService {
     return Result.ok(rolePermission)
   }
 
+  /**
+   * Find all role permissions with pagination
+   * ค้นหาสิทธิ์ของบทบาททั้งหมดพร้อมการแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Paginated list of roles with permissions / รายการบทบาทพร้อมสิทธิ์แบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(paginate: any, user_id: string, bu_code: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -151,6 +167,14 @@ export class ApplicationRolePermissionService {
     });
   }
 
+  /**
+   * Create a new role with permissions
+   * สร้างบทบาทใหม่พร้อมสิทธิ์
+   * @param data - Role permission creation data / ข้อมูลสร้างบทบาทพร้อมสิทธิ์
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Created role ID / ID บทบาทที่สร้างแล้ว
+   */
   @TryCatch
   async create(
     data: IApplicationRolePermissionCreate,
@@ -212,6 +236,14 @@ export class ApplicationRolePermissionService {
     return Result.ok({ id: createdApplicationRoleId })
   }
 
+  /**
+   * Update a role with permissions (add/remove)
+   * แก้ไขบทบาทพร้อมสิทธิ์ (เพิ่ม/ลบ)
+   * @param data - Role permission update data / ข้อมูลแก้ไขบทบาทพร้อมสิทธิ์
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Updated role ID / ID บทบาทที่แก้ไขแล้ว
+   */
   @TryCatch
   async update(
     data: IApplicationRolePermissionUpdate,
@@ -292,6 +324,14 @@ export class ApplicationRolePermissionService {
     return Result.ok({ id: updatedId })
   }
 
+  /**
+   * Delete a role and its permissions
+   * ลบบทบาทและสิทธิ์ทั้งหมด
+   * @param id - Role ID / ID บทบาท
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Deleted role ID / ID บทบาทที่ลบแล้ว
+   */
   @TryCatch
   async remove(id: string, user_id: string, bu_code: string): Promise<Result<unknown>> {
     this.logger.debug(

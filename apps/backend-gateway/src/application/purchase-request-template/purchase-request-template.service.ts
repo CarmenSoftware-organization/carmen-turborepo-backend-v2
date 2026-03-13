@@ -19,6 +19,15 @@ export class PurchaseRequestTemplateService {
     private readonly procurementService: ClientProxy,
   ) {}
 
+  /**
+   * Find all purchase request templates with pagination via microservice
+   * ค้นหารายการทั้งหมดของเทมเพลตใบขอซื้อพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated template list / รายการเทมเพลตแบบแบ่งหน้า
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -61,6 +70,15 @@ export class PurchaseRequestTemplateService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Find a purchase request template by ID via microservice
+   * ค้นหารายการเดียวตาม ID ของเทมเพลตใบขอซื้อผ่านไมโครเซอร์วิส
+   * @param id - Template ID / รหัสเทมเพลต
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Template data / ข้อมูลเทมเพลต
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -96,6 +114,15 @@ export class PurchaseRequestTemplateService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Create a new purchase request template via microservice
+   * สร้างเทมเพลตใบขอซื้อใหม่ผ่านไมโครเซอร์วิส
+   * @param createPurchaseRequestTemplateDto - Template creation data / ข้อมูลสำหรับสร้างเทมเพลต
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created template / เทมเพลตที่สร้างแล้ว
+   */
   async create(
     createPurchaseRequestTemplateDto: CreatePurchaseRequestTemplateDto,
     user_id: string,
@@ -136,6 +163,16 @@ export class PurchaseRequestTemplateService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update a purchase request template via microservice
+   * อัปเดตเทมเพลตใบขอซื้อผ่านไมโครเซอร์วิส
+   * @param id - Template ID / รหัสเทมเพลต
+   * @param updatePurchaseRequestTemplateDto - Updated template data / ข้อมูลเทมเพลตที่อัปเดต
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated template / เทมเพลตที่อัปเดตแล้ว
+   */
   async update(
     id: string,
     updatePurchaseRequestTemplateDto: UpdatePurchaseRequestTemplateDto,
@@ -178,6 +215,15 @@ export class PurchaseRequestTemplateService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a purchase request template via microservice
+   * ลบเทมเพลตใบขอซื้อผ่านไมโครเซอร์วิส
+   * @param id - Template ID / รหัสเทมเพลต
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async delete(
     id: string,
     user_id: string,

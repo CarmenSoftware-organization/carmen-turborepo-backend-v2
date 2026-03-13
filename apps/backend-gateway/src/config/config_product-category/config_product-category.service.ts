@@ -22,6 +22,15 @@ export class Config_ProductCategoryService {
     private readonly masterService: ClientProxy,
   ) {}
 
+  /**
+   * Find a product category by ID via microservice
+   * ค้นหารายการเดียวตาม ID ของหมวดหมู่สินค้าผ่านไมโครเซอร์วิส
+   * @param id - Product category ID / รหัสหมวดหมู่สินค้า
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Product category detail or error / รายละเอียดหมวดหมู่สินค้าหรือข้อผิดพลาด
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -54,6 +63,15 @@ export class Config_ProductCategoryService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all product categories with pagination via microservice
+   * ค้นหารายการทั้งหมดของหมวดหมู่สินค้าพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated product categories or error / รายการหมวดหมู่สินค้าแบบแบ่งหน้าหรือข้อผิดพลาด
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -93,6 +111,15 @@ export class Config_ProductCategoryService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new product category via microservice
+   * สร้างหมวดหมู่สินค้าใหม่ผ่านไมโครเซอร์วิส
+   * @param createDto - Product category creation data / ข้อมูลสำหรับสร้างหมวดหมู่สินค้า
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created product category or error / หมวดหมู่สินค้าที่สร้างแล้วหรือข้อผิดพลาด
+   */
   async create(
     createDto: ICreateProductCategory,
     user_id: string,
@@ -130,6 +157,15 @@ export class Config_ProductCategoryService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update an existing product category via microservice
+   * อัปเดตหมวดหมู่สินค้าที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param updateDto - Product category update data / ข้อมูลสำหรับอัปเดตหมวดหมู่สินค้า
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated product category or error / หมวดหมู่สินค้าที่อัปเดตแล้วหรือข้อผิดพลาด
+   */
   async update(
     updateDto: IUpdateProductCategory,
     user_id: string,
@@ -167,6 +203,15 @@ export class Config_ProductCategoryService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a product category via microservice
+   * ลบหมวดหมู่สินค้าผ่านไมโครเซอร์วิส
+   * @param id - Product category ID / รหัสหมวดหมู่สินค้า
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result or error / ผลลัพธ์การลบหรือข้อผิดพลาด
+   */
   async delete(
     id: string,
     user_id: string,

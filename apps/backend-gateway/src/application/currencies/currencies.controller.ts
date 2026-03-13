@@ -47,8 +47,14 @@ export class CurrenciesController extends BaseHttpController {
   }
 
   /**
-   * Lists all active currencies configured for the business unit,
-   * used in procurement pricing, purchase orders, and invoice processing.
+   * List all active currencies for the business unit
+   * ค้นหารายการสกุลเงินที่ใช้งานอยู่ทั้งหมดของหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination query parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of active currencies / รายการสกุลเงินที่ใช้งานอยู่แบบแบ่งหน้า
    */
   @Get(':bu_code/currencies')
   @UseGuards(new AppIdGuard('currencies.findAllActive'))
@@ -90,8 +96,13 @@ export class CurrenciesController extends BaseHttpController {
   }
 
   /**
-   * Lists all ISO 4217 standard currencies available in the system,
-   * used when configuring which currencies a business unit should support.
+   * List all ISO 4217 standard currencies
+   * ค้นหารายการสกุลเงินมาตรฐาน ISO 4217 ทั้งหมดในระบบ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param query - Pagination query parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of ISO currencies / รายการสกุลเงิน ISO แบบแบ่งหน้า
    */
   @Get('iso')
   @UseGuards(new AppIdGuard('currencies.findAllISO'))
@@ -127,8 +138,13 @@ export class CurrenciesController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the default base currency for the business unit, used as
-   * the primary currency for inventory valuation and cost calculations.
+   * Get the default base currency for the business unit
+   * ดึงข้อมูลสกุลเงินหลักเริ่มต้นของหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Default currency details / รายละเอียดสกุลเงินเริ่มต้น
    */
   @Get(':bu_code/currencies/default')
   @UseGuards(new AppIdGuard('currencies.default'))
@@ -161,8 +177,14 @@ export class CurrenciesController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific currency including its code, symbol, and exchange
-   * rate configuration for reviewing currency settings.
+   * Get a specific currency by ID
+   * ค้นหารายการสกุลเงินเดียวตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param id - Currency ID / รหัสสกุลเงิน
+   * @param version - API version / เวอร์ชัน API
+   * @returns Currency details / รายละเอียดสกุลเงิน
    */
   @Get(':bu_code/currencies/:id')
   @UseGuards(new AppIdGuard('currencies.findOne'))

@@ -27,6 +27,12 @@ export class WorkflowsController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a single workflow by ID
+   * ค้นหารายการเวิร์กโฟลว์เดียวตาม ID
+   * @param payload - Microservice payload containing workflow ID / ข้อมูล payload ที่มี ID ของเวิร์กโฟลว์
+   * @returns Workflow detail / รายละเอียดเวิร์กโฟลว์
+   */
   @MessagePattern({ cmd: 'workflows.findOne', service: 'workflows' })
   async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, WorkflowsController.name);
@@ -40,6 +46,12 @@ export class WorkflowsController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all workflows with pagination
+   * ค้นหารายการเวิร์กโฟลว์ทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing pagination parameters / ข้อมูล payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of workflows / รายการเวิร์กโฟลว์พร้อมการแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'workflows.findAll', service: 'workflows' })
   async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, WorkflowsController.name);
@@ -53,6 +65,12 @@ export class WorkflowsController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Find workflows by type
+   * ค้นหาเวิร์กโฟลว์ตามประเภท
+   * @param payload - Microservice payload containing workflow type / ข้อมูล payload ที่มีประเภทเวิร์กโฟลว์
+   * @returns Paginated list of workflows matching the type / รายการเวิร์กโฟลว์ที่ตรงกับประเภทพร้อมการแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'workflows.find-by-type', service: 'workflows' })
   async findByType(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findByType', payload }, WorkflowsController.name);
@@ -67,6 +85,12 @@ export class WorkflowsController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Create a new workflow
+   * สร้างเวิร์กโฟลว์ใหม่
+   * @param payload - Microservice payload containing workflow data / ข้อมูล payload ที่มีข้อมูลเวิร์กโฟลว์
+   * @returns Created workflow ID / ID ของเวิร์กโฟลว์ที่สร้างขึ้น
+   */
   @MessagePattern({ cmd: 'workflows.create', service: 'workflows' })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, WorkflowsController.name);
@@ -80,6 +104,12 @@ export class WorkflowsController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an existing workflow
+   * อัปเดตเวิร์กโฟลว์ที่มีอยู่
+   * @param payload - Microservice payload containing updated workflow data / ข้อมูล payload ที่มีข้อมูลเวิร์กโฟลว์ที่อัปเดต
+   * @returns Updated workflow ID / ID ของเวิร์กโฟลว์ที่อัปเดต
+   */
   @MessagePattern({ cmd: 'workflows.update', service: 'workflows' })
   async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, WorkflowsController.name);
@@ -93,6 +123,12 @@ export class WorkflowsController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a workflow (soft delete)
+   * ลบเวิร์กโฟลว์ (ลบแบบซอฟต์)
+   * @param payload - Microservice payload containing workflow ID / ข้อมูล payload ที่มี ID ของเวิร์กโฟลว์
+   * @returns Deleted workflow ID / ID ของเวิร์กโฟลว์ที่ลบ
+   */
   @MessagePattern({ cmd: 'workflows.delete', service: 'workflows' })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, WorkflowsController.name);
@@ -106,6 +142,12 @@ export class WorkflowsController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Get workflow navigation information for forward navigation
+   * ดึงข้อมูลการนำทางเวิร์กโฟลว์สำหรับการนำทางไปข้างหน้า
+   * @param payload - Microservice payload containing workflow data, current status, and request data / ข้อมูล payload ที่มีข้อมูลเวิร์กโฟลว์ สถานะปัจจุบัน และข้อมูลคำขอ
+   * @returns Forward navigation result / ผลการนำทางไปข้างหน้า
+   */
   @MessagePattern({ cmd: 'workflows.get-workflow-navigation', service: 'workflows' })
   async getWorkflowNavigation(@Payload() payload: MicroservicePayload): Promise<NavigateForwardResult> {
     this.logger.debug({ function: 'getWorkflowNavigation', payload }, WorkflowsController.name);
@@ -123,6 +165,12 @@ export class WorkflowsController extends BaseMicroserviceController {
     return workflowNav.navigateForward(requestData);
   }
 
+  /**
+   * Navigate back to a previous workflow stage
+   * นำทางกลับไปยังขั้นตอนเวิร์กโฟลว์ก่อนหน้า
+   * @param payload - Microservice payload containing workflow ID, target stage, and current stage / ข้อมูล payload ที่มี ID ของเวิร์กโฟลว์ ขั้นตอนเป้าหมาย และขั้นตอนปัจจุบัน
+   * @returns Navigation result with previous/current stage and history / ผลการนำทางพร้อมขั้นตอนก่อน/ปัจจุบันและประวัติ
+   */
   @MessagePattern({ cmd: 'workflows.navigate-back-to-stage', service: 'workflows' })
   async navigateBackToStage(@Payload() payload: MicroservicePayload): Promise<GlobalApiReturn<{
     previous_stage: string;
@@ -169,6 +217,12 @@ export class WorkflowsController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Get all previous stages for a given workflow stage
+   * ดึงขั้นตอนก่อนหน้าทั้งหมดของขั้นตอนเวิร์กโฟลว์ที่กำหนด
+   * @param payload - Microservice payload containing workflow ID and stage name / ข้อมูล payload ที่มี ID ของเวิร์กโฟลว์และชื่อขั้นตอน
+   * @returns List of previous stage names / รายการชื่อขั้นตอนก่อนหน้า
+   */
   @MessagePattern({ cmd: 'workflows.get-previous-stages', service: 'workflows' })
   async getPreviousStages(@Payload() payload: MicroservicePayload): Promise<GlobalApiReturn<string[]>> {
     this.logger.debug({ function: 'getPreviousStages', payload }, WorkflowsController.name);
@@ -197,6 +251,12 @@ export class WorkflowsController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Get detailed information for a specific workflow stage
+   * ดึงข้อมูลรายละเอียดของขั้นตอนเวิร์กโฟลว์ที่กำหนด
+   * @param payload - Microservice payload containing workflow ID and stage name / ข้อมูล payload ที่มี ID ของเวิร์กโฟลว์และชื่อขั้นตอน
+   * @returns Stage detail or null if not found / รายละเอียดขั้นตอน หรือ null หากไม่พบ
+   */
   @MessagePattern({ cmd: 'workflows.get-workflow-stage-detail', service: 'workflows' })
   async getWorkflowStageDetail(@Payload() payload: MicroservicePayload): Promise<GlobalApiReturn<Stage | null>> {
     this.logger.debug({ function: 'getWorkflowStageDetail', payload }, WorkflowsController.name);
@@ -223,6 +283,12 @@ export class WorkflowsController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Get all unique stage names across multiple workflows
+   * ดึงชื่อขั้นตอนที่ไม่ซ้ำกันทั้งหมดจากหลายเวิร์กโฟลว์
+   * @param payload - Microservice payload containing workflow IDs / ข้อมูล payload ที่มี ID ของเวิร์กโฟลว์หลายรายการ
+   * @returns Unique list of stage names / รายการชื่อขั้นตอนที่ไม่ซ้ำกัน
+   */
   @MessagePattern({ cmd: 'workflows.get-all-workflows-stages', service: 'workflows' })
   async getAllWorkflowStages(@Payload() payload: MicroservicePayload) {
     this.logger.debug({ function: 'getAllWorkflowStages', payload }, WorkflowsController.name);

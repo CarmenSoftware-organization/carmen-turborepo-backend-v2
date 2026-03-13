@@ -3,6 +3,10 @@ import { ApiQuery } from '@nestjs/swagger';
 import { nullable } from 'zod';
 import { BackendLogger } from '../helpers/backend.logger';
 
+/**
+ * Swagger decorator to add version query parameter
+ * เดคอเรเตอร์ Swagger สำหรับเพิ่มพารามิเตอร์ query เวอร์ชัน
+ */
 export function ApiVersionMinRequest(version: string = 'latest') {
   const logger = new BackendLogger(ApiVersionMinRequest.name);
 
@@ -25,6 +29,10 @@ export function ApiVersionMinRequest(version: string = 'latest') {
   );
 }
 
+/**
+ * Swagger decorator to add pagination and filter query parameters
+ * เดคอเรเตอร์ Swagger สำหรับเพิ่มพารามิเตอร์ query การแบ่งหน้าและตัวกรอง
+ */
 export function ApiUserFilterQueries() {
   const logger = new BackendLogger(ApiUserFilterQueries.name);
 

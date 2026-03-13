@@ -53,6 +53,12 @@ export class VendorBusinessTypeService {
   private _bu_code?: string;
   private _userId?: string;
 
+  /**
+   * Initialize the Prisma service for the tenant
+   * เริ่มต้นบริการ Prisma สำหรับผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / รหัสผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
   }
@@ -77,6 +83,12 @@ export class VendorBusinessTypeService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a single vendor business type by ID
+   * ค้นหาประเภทธุรกิจผู้ขายรายการเดียวตาม ID
+   * @param id - Vendor business type ID / รหัสประเภทธุรกิจผู้ขาย
+   * @returns Vendor business type detail / รายละเอียดประเภทธุรกิจผู้ขาย
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -98,6 +110,12 @@ export class VendorBusinessTypeService {
     return Result.ok(serializedVendorBusinessType);
   }
 
+  /**
+   * Find all vendor business types with pagination
+   * ค้นหาประเภทธุรกิจผู้ขายทั้งหมดแบบแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of vendor business types / รายการประเภทธุรกิจผู้ขายแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(
     paginate: IPaginate,
@@ -140,6 +158,12 @@ export class VendorBusinessTypeService {
     });
   }
 
+  /**
+   * Create a new vendor business type
+   * สร้างประเภทธุรกิจผู้ขายใหม่
+   * @param data - Vendor business type creation data / ข้อมูลสำหรับสร้างประเภทธุรกิจผู้ขาย
+   * @returns Created vendor business type ID / รหัสประเภทธุรกิจผู้ขายที่สร้างแล้ว
+   */
   @TryCatch
   async create(
     data: ICreateVendorBusinessType,
@@ -171,6 +195,12 @@ export class VendorBusinessTypeService {
     return Result.ok({ id: createVendorBusinessType.id });
   }
 
+  /**
+   * Update an existing vendor business type
+   * อัปเดตประเภทธุรกิจผู้ขายที่มีอยู่
+   * @param data - Vendor business type update data / ข้อมูลสำหรับอัปเดตประเภทธุรกิจผู้ขาย
+   * @returns Updated vendor business type ID / รหัสประเภทธุรกิจผู้ขายที่อัปเดตแล้ว
+   */
   @TryCatch
   async update(
     data: IUpdateVendorBusinessType,
@@ -204,6 +234,12 @@ export class VendorBusinessTypeService {
     return Result.ok({ id: updateVendorBusinessType.id });
   }
 
+  /**
+   * Soft delete a vendor business type
+   * ลบประเภทธุรกิจผู้ขายแบบ soft delete
+   * @param id - Vendor business type ID / รหัสประเภทธุรกิจผู้ขาย
+   * @returns null on success / null เมื่อสำเร็จ
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code }, VendorBusinessTypeService.name);

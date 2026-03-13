@@ -55,6 +55,12 @@ export class PriceListTemplateService {
     PriceListTemplateService.name,
   );
 
+  /**
+   * Initialize the Prisma service for the tenant
+   * เริ่มต้นบริการ Prisma สำหรับผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / รหัสผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
   }
@@ -75,6 +81,12 @@ export class PriceListTemplateService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a single price list template by ID with products and currency
+   * ค้นหาเทมเพลตรายการราคารายการเดียวตาม ID พร้อมสินค้าและสกุลเงิน
+   * @param id - Price list template ID / รหัสเทมเพลตรายการราคา
+   * @returns Price list template detail / รายละเอียดเทมเพลตรายการราคา
+   */
   async findOne(id: string): Promise<any> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
@@ -182,6 +194,12 @@ export class PriceListTemplateService {
     };
   }
 
+  /**
+   * Find all price list templates with pagination
+   * ค้นหาเทมเพลตรายการราคาทั้งหมดแบบแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of price list templates / รายการเทมเพลตรายการราคาแบบแบ่งหน้า
+   */
   async findAll(paginate: IPaginate): Promise<any> {
     try {
       this.logger.debug(
@@ -309,6 +327,12 @@ export class PriceListTemplateService {
     }
   }
 
+  /**
+   * Create a new price list template with optional product details
+   * สร้างเทมเพลตรายการราคาใหม่พร้อมรายละเอียดสินค้า (ถ้ามี)
+   * @param data - Price list template creation data / ข้อมูลสำหรับสร้างเทมเพลตรายการราคา
+   * @returns Created price list template ID / รหัสเทมเพลตรายการราคาที่สร้างแล้ว
+   */
   async create(data: any): Promise<any> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
@@ -409,6 +433,12 @@ export class PriceListTemplateService {
     };
   }
 
+  /**
+   * Update an existing price list template with add/remove/update product details
+   * อัปเดตเทมเพลตรายการราคาที่มีอยู่ พร้อมเพิ่ม/ลบ/อัปเดตรายละเอียดสินค้า
+   * @param data - Price list template update data / ข้อมูลสำหรับอัปเดตเทมเพลตรายการราคา
+   * @returns Updated price list template ID / รหัสเทมเพลตรายการราคาที่อัปเดตแล้ว
+   */
   async update(data: any): Promise<any> {
     this.logger.debug(
       { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code },
@@ -550,6 +580,12 @@ export class PriceListTemplateService {
     };
   }
 
+  /**
+   * Soft delete a price list template and its details
+   * ลบเทมเพลตรายการราคาและรายละเอียดแบบ soft delete
+   * @param id - Price list template ID / รหัสเทมเพลตรายการราคา
+   * @returns Deleted price list template ID / รหัสเทมเพลตรายการราคาที่ลบแล้ว
+   */
   async remove(id: string): Promise<any> {
     this.logger.debug(
       { function: 'remove', id, user_id: this.userId, tenant_id: this.bu_code },
@@ -595,6 +631,13 @@ export class PriceListTemplateService {
     };
   }
 
+  /**
+   * Update the status of a price list template
+   * อัปเดตสถานะของเทมเพลตรายการราคา
+   * @param id - Price list template ID / รหัสเทมเพลตรายการราคา
+   * @param status - New status value / ค่าสถานะใหม่
+   * @returns Updated template ID and status / รหัสเทมเพลตและสถานะที่อัปเดตแล้ว
+   */
   async updateStatus(
     id: string,
     status: string,

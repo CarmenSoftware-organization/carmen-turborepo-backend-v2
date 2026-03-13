@@ -38,8 +38,12 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Returns the count of purchase orders awaiting the current user's action
-   * in the approval pipeline, used for dashboard badge notifications.
+   * Get count of pending purchase orders for the current user
+   * ดึงจำนวนใบสั่งซื้อที่รอดำเนินการของผู้ใช้ปัจจุบัน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Pending purchase order count / จำนวนใบสั่งซื้อที่รอดำเนินการ
    */
   @Get('pending')
   @UseGuards(new AppIdGuard('my-pending.purchaseOrder.findAllPending.count'))
@@ -118,8 +122,14 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the full details of a specific purchase order pending approval,
-   * including vendor info, ordered items, pricing, and current workflow stage.
+   * Find a pending purchase order by ID
+   * ค้นหาใบสั่งซื้อที่รอดำเนินการรายการเดียวตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Purchase order details / รายละเอียดใบสั่งซื้อ
    */
   @Get(':bu_code/:id')
   @UseGuards(new AppIdGuard('my-pending.purchaseOrder.findOne'))
@@ -181,8 +191,13 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Lists all purchase orders in the user's pending approval queue,
-   * allowing approvers to review vendor orders awaiting authorization.
+   * List all pending purchase orders for the current user
+   * ค้นหารายการใบสั่งซื้อที่รอดำเนินการทั้งหมดของผู้ใช้ปัจจุบัน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param query - Pagination query / คำค้นหาการแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of pending purchase orders / รายการใบสั่งซื้อที่รอดำเนินการแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('my-pending.purchaseOrder.findAll'))

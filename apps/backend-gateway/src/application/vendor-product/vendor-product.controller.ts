@@ -50,8 +50,14 @@ export class VendorProductController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific vendor-product mapping including pricing, lead time,
-   * and supply terms for procurement decision-making and PO generation.
+   * Get a specific vendor-product mapping by ID
+   * ค้นหารายการสินค้าผู้ขายเดียวตาม ID
+   * @param id - Vendor product ID / รหัสสินค้าผู้ขาย
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Vendor product details / รายละเอียดสินค้าผู้ขาย
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('vendorProduct.findOne'))
@@ -106,8 +112,13 @@ export class VendorProductController extends BaseHttpController {
   }
 
   /**
-   * Lists all vendor-product mappings in the business unit, showing which
-   * products each vendor supplies along with pricing for comparison.
+   * List all vendor-product mappings for the business unit
+   * ค้นหารายการสินค้าผู้ขายทั้งหมดของหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of vendor products / รายการสินค้าผู้ขาย
    */
   @Get()
   @UseGuards(new AppIdGuard('vendorProduct.findAll'))
@@ -160,8 +171,13 @@ export class VendorProductController extends BaseHttpController {
   }
 
   /**
-   * Registers a new vendor-product mapping, recording that a vendor supplies
-   * a particular product with its pricing and supply terms.
+   * Create a new vendor-product mapping
+   * สร้างการผูกสินค้ากับผู้ขายใหม่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created vendor product / สินค้าผู้ขายที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('vendorProduct.create'))
@@ -214,8 +230,14 @@ export class VendorProductController extends BaseHttpController {
   }
 
   /**
-   * Updates a vendor-product mapping to reflect changes in pricing,
-   * supply terms, or availability for accurate procurement.
+   * Update an existing vendor-product mapping
+   * อัปเดตการผูกสินค้ากับผู้ขายที่มีอยู่
+   * @param id - Vendor product ID / รหัสสินค้าผู้ขาย
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated vendor product / สินค้าผู้ขายที่อัปเดตแล้ว
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('vendorProduct.update'))
@@ -270,8 +292,14 @@ export class VendorProductController extends BaseHttpController {
   }
 
   /**
-   * Removes a vendor-product mapping when a vendor no longer supplies
-   * a product, preventing it from appearing in procurement workflows.
+   * Delete a vendor-product mapping by ID
+   * ลบการผูกสินค้ากับผู้ขายตาม ID
+   * @param id - Vendor product ID / รหัสสินค้าผู้ขาย
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('vendorProduct.delete'))

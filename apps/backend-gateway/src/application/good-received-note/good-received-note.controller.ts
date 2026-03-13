@@ -74,8 +74,10 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
-   * Returns the count of goods deliveries awaiting receiving action by the current user.
-   * Used on dashboards to alert receiving staff about pending vendor deliveries.
+   * Get pending Good Received Notes count for the current user
+   * ค้นหาจำนวนใบรับสินค้าที่รอดำเนินการของผู้ใช้ปัจจุบัน
+   * @param version - API version / เวอร์ชัน API
+   * @returns Pending GRN count / จำนวนใบรับสินค้าที่รอดำเนินการ
    */
   @Get('good-received-note/pending')
   @UseGuards(new AppIdGuard('goodReceivedNote.findAllPending.count'))
@@ -114,8 +116,12 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
-   * Retrieves full details of a goods receiving record including received items,
-   * quantities, quality notes, and the associated purchase order.
+   * Retrieve a Good Received Note by ID with full details
+   * ค้นหารายการเดียวตาม ID ของใบรับสินค้าพร้อมรายละเอียดทั้งหมด
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Good Received Note details / รายละเอียดใบรับสินค้า
    */
   @Get(':bu_code/good-received-note/:id')
   @UseGuards(new AppIdGuard('goodReceivedNote.findOne'))
@@ -163,9 +169,12 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
-   * Lists all goods receiving records for the business unit with pagination and filtering.
-   * Used by receiving staff and inventory managers to track vendor deliveries and
-   * reconcile with purchase orders.
+   * List all Good Received Notes with pagination and filtering
+   * ค้นหารายการทั้งหมดของใบรับสินค้าพร้อมการแบ่งหน้าและตัวกรอง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination and filter parameters / พารามิเตอร์การแบ่งหน้าและตัวกรอง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of Good Received Notes / รายการใบรับสินค้าแบบแบ่งหน้า
    */
   @Get(":bu_code/good-received-note/")
   @UseGuards(new AppIdGuard('goodReceivedNote.findAll'))
@@ -211,8 +220,11 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
-   * Looks up a purchase order by scanning its QR code to begin the goods receiving
-   * process. Used by receiving staff at the loading dock when a delivery arrives.
+   * Scan a PO QR code to start the goods receiving process
+   * สแกน QR code ของใบสั่งซื้อเพื่อเริ่มกระบวนการรับสินค้า
+   * @param qr_code - QR code value / ค่า QR code
+   * @param version - API version / เวอร์ชัน API
+   * @returns Good Received Note data / ข้อมูลใบรับสินค้า
    */
   @Get(':bu_code/good-received-note/scan-po/:qr_code')
   @Serialize(GoodReceivedNoteDetailResponseSchema)
@@ -272,9 +284,12 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
-   * Records a new goods delivery from a vendor against a purchase order.
-   * Captures received quantities, quality inspection results, and discrepancies.
-   * This is the first step in updating inventory levels from vendor deliveries.
+   * Create a new Good Received Note for a vendor delivery
+   * สร้างใบรับสินค้าใหม่สำหรับการส่งมอบจากผู้ขาย
+   * @param createDto - GRN creation data / ข้อมูลสำหรับสร้างใบรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created Good Received Note / ใบรับสินค้าที่สร้างแล้ว
    */
   @Post(":bu_code/good-received-note")
   @UseGuards(new AppIdGuard('goodReceivedNote.create'))
@@ -319,8 +334,13 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
-   * Modifies a goods receiving record to correct quantities, update quality notes,
-   * or adjust line items before the GRN is approved.
+   * Update a Good Received Note before approval
+   * อัปเดตใบรับสินค้าก่อนการอนุมัติ
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Updated GRN data / ข้อมูลใบรับสินค้าที่อัปเดต
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated Good Received Note / ใบรับสินค้าที่อัปเดตแล้ว
    */
   @Patch(':bu_code/good-received-note/:id')
   @UseGuards(new AppIdGuard('goodReceivedNote.update'))
@@ -374,8 +394,12 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
-   * Removes a goods receiving record created in error. Only applicable to GRNs
-   * that have not been approved, as approved GRNs have already updated inventory.
+   * Delete a Good Received Note created in error
+   * ลบใบรับสินค้าที่สร้างผิดพลาด
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':bu_code/good-received-note/:id')
   @UseGuards(new AppIdGuard('goodReceivedNote.delete'))
@@ -417,8 +441,12 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
-   * Exports a goods receiving record to Excel with all received items, quantities,
-   * and vendor details. Used for invoice matching or vendor dispute resolution.
+   * Export a Good Received Note to an Excel spreadsheet
+   * ส่งออกใบรับสินค้าเป็นไฟล์ Excel
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Excel file buffer and filename / บัฟเฟอร์ไฟล์ Excel และชื่อไฟล์
    */
   @Get(':bu_code/good-received-note/:id/export')
   @UseGuards(new AppIdGuard('goodReceivedNote.export'))
@@ -493,8 +521,13 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
-   * Rejects a goods receiving record when the delivery does not meet quality standards
-   * or the received goods are incorrect. Voids the GRN so it does not affect inventory.
+   * Reject a Good Received Note due to quality or delivery issues
+   * ปฏิเสธใบรับสินค้าเนื่องจากปัญหาคุณภาพหรือการจัดส่ง
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param body - Rejection reason / เหตุผลในการปฏิเสธ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Rejected Good Received Note / ใบรับสินค้าที่ถูกปฏิเสธ
    */
   @Post(':bu_code/good-received-note/:id/reject')
   @UseGuards(new AppIdGuard('goodReceivedNote.reject'))
@@ -563,9 +596,12 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
-   * Approves a goods receiving record, committing received quantities into inventory.
-   * Creates inventory transactions and FIFO cost layers, updating stock levels
-   * and enabling the items for use by departments.
+   * Approve a Good Received Note and commit to inventory
+   * อนุมัติใบรับสินค้าและบันทึกเข้าคลังสินค้า
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Approved Good Received Note / ใบรับสินค้าที่อนุมัติแล้ว
    */
   @Post(':bu_code/good-received-note/:id/approve')
   @UseGuards(new AppIdGuard('goodReceivedNote.approve'))
@@ -632,8 +668,12 @@ export class GoodReceivedNoteController extends BaseHttpController {
   // ==================== Good Received Note Detail CRUD ====================
 
   /**
-   * Lists all received items on a GRN including ordered vs. received quantities
-   * and inspection notes. Used to compare actual deliveries against the purchase order.
+   * List all detail line items on a Good Received Note
+   * ค้นหารายการทั้งหมดของรายละเอียดใบรับสินค้า
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of GRN details / รายการรายละเอียดใบรับสินค้า
    */
   @Get(':bu_code/good-received-note/:id/details')
   @UseGuards(new AppIdGuard('goodReceivedNote.findOne'))
@@ -672,8 +712,13 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a single received item line from a GRN with full quantity, pricing,
-   * and quality details for resolving delivery discrepancies.
+   * Retrieve a single GRN detail line item by ID
+   * ค้นหารายการเดียวตาม ID ของรายละเอียดใบรับสินค้า
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param detailId - GRN detail ID / รหัสรายละเอียดใบรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns GRN detail data / ข้อมูลรายละเอียดใบรับสินค้า
    */
   @Get(':bu_code/good-received-note/:id/details/:detail_id')
   @UseGuards(new AppIdGuard('goodReceivedNote.findOne'))
@@ -714,8 +759,13 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
-   * Removes a line item from a draft GRN when an item was recorded in error
-   * or was not actually part of the delivery. Only applicable before approval.
+   * Remove a line item from a draft Good Received Note
+   * ลบรายการจากใบรับสินค้าฉบับร่าง
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param detailId - GRN detail ID / รหัสรายละเอียดใบรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':bu_code/good-received-note/:id/details/:detail_id')
   @UseGuards(new AppIdGuard('goodReceivedNote.update'))
@@ -760,8 +810,12 @@ export class GoodReceivedNoteController extends BaseHttpController {
   // ==================== Mobile-specific endpoints ====================
 
   /**
-   * Looks up a purchase order by its document number to start the goods receiving
-   * process. Used when receiving staff manually enter a PO number instead of scanning.
+   * Look up a purchase order by document number for goods receiving
+   * ค้นหาใบสั่งซื้อตามเลขที่เอกสารเพื่อรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param po_no - Purchase order number / เลขที่ใบสั่งซื้อ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Good Received Note data / ข้อมูลใบรับสินค้า
    */
   @Get(':bu_code/good-received-note/manual-po/:po_no')
   @Serialize(GoodReceivedNoteDetailResponseSchema)
@@ -801,8 +855,13 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
-   * Confirms the goods receiving record from the mobile app, finalizing the delivery
-   * inspection and marking it as ready for inventory posting.
+   * Confirm a Good Received Note from mobile, finalizing delivery inspection
+   * ยืนยันใบรับสินค้าจากแอปมือถือ เพื่อสรุปการตรวจรับสินค้า
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param data - Confirmation data / ข้อมูลการยืนยัน
+   * @param version - API version / เวอร์ชัน API
+   * @returns Confirmed Good Received Note / ใบรับสินค้าที่ยืนยันแล้ว
    */
   @Patch(':bu_code/good-received-note/:id/confirm')
   @UseGuards(new AppIdGuard('goodReceivedNote.confirm'))
@@ -846,8 +905,12 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
-   * Retrieves all comments and notes attached to a goods receiving record for reviewing
-   * communication about delivery issues, quality concerns, or special handling instructions.
+   * Retrieve all comments for a Good Received Note
+   * ค้นหารายการทั้งหมดของความคิดเห็นสำหรับใบรับสินค้า
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of comments / รายการความคิดเห็น
    */
   @Get(':bu_code/good-received-note/:id/comments')
   @UseGuards(new AppIdGuard('goodReceivedNote.getComments'))
@@ -887,8 +950,13 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
-   * Adds a comment or note to a goods receiving record for documenting delivery
-   * issues, quality observations, or communication between staff and managers.
+   * Add a comment to a Good Received Note
+   * สร้างความคิดเห็นในใบรับสินค้า
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param data - Comment content / เนื้อหาความคิดเห็น
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created comment / ความคิดเห็นที่สร้างแล้ว
    */
   @Post(':bu_code/good-received-note/:id/comments')
   @UseGuards(new AppIdGuard('goodReceivedNote.createComment'))

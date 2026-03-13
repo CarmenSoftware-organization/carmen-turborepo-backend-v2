@@ -47,6 +47,12 @@ export class RecipeCategoryService {
     RecipeCategoryService.name,
   );
 
+  /**
+   * Initialize the Prisma service for the tenant
+   * เริ่มต้นบริการ Prisma สำหรับผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / รหัสผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
   }
@@ -67,6 +73,12 @@ export class RecipeCategoryService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a single recipe category by ID with parent name enrichment
+   * ค้นหาหมวดหมู่สูตรอาหารรายการเดียวตาม ID พร้อมชื่อหมวดหมู่หลัก
+   * @param id - Recipe category ID / รหัสหมวดหมู่สูตรอาหาร
+   * @returns Recipe category detail / รายละเอียดหมวดหมู่สูตรอาหาร
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -100,6 +112,12 @@ export class RecipeCategoryService {
     return Result.ok({ ...category, parent_name });
   }
 
+  /**
+   * Find all recipe categories with pagination and parent name enrichment
+   * ค้นหาหมวดหมู่สูตรอาหารทั้งหมดแบบแบ่งหน้าพร้อมชื่อหมวดหมู่หลัก
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of recipe categories / รายการหมวดหมู่สูตรอาหารแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
@@ -162,6 +180,12 @@ export class RecipeCategoryService {
     });
   }
 
+  /**
+   * Create a new recipe category with parent validation and level computation
+   * สร้างหมวดหมู่สูตรอาหารใหม่พร้อมตรวจสอบหมวดหมู่หลักและคำนวณระดับ
+   * @param data - Recipe category creation data / ข้อมูลสำหรับสร้างหมวดหมู่สูตรอาหาร
+   * @returns Created recipe category ID / รหัสหมวดหมู่สูตรอาหารที่สร้างแล้ว
+   */
   @TryCatch
   async create(data: ICreateRecipeCategory): Promise<Result<unknown>> {
     this.logger.debug(
@@ -213,6 +237,12 @@ export class RecipeCategoryService {
     return Result.ok({ id: created.id });
   }
 
+  /**
+   * Update an existing recipe category with parent validation and level recomputation
+   * อัปเดตหมวดหมู่สูตรอาหารที่มีอยู่พร้อมตรวจสอบหมวดหมู่หลักและคำนวณระดับใหม่
+   * @param data - Recipe category update data / ข้อมูลสำหรับอัปเดตหมวดหมู่สูตรอาหาร
+   * @returns Updated recipe category ID / รหัสหมวดหมู่สูตรอาหารที่อัปเดตแล้ว
+   */
   @TryCatch
   async update(data: IUpdateRecipeCategory): Promise<Result<unknown>> {
     this.logger.debug(
@@ -271,6 +301,12 @@ export class RecipeCategoryService {
     return Result.ok({ id: updated.id });
   }
 
+  /**
+   * Partially update a recipe category (patch specific fields only)
+   * อัปเดตบางส่วนของหมวดหมู่สูตรอาหาร (เฉพาะฟิลด์ที่ระบุ)
+   * @param data - Partial recipe category update data / ข้อมูลสำหรับอัปเดตบางส่วนของหมวดหมู่สูตรอาหาร
+   * @returns Updated recipe category ID / รหัสหมวดหมู่สูตรอาหารที่อัปเดตแล้ว
+   */
   @TryCatch
   async patch(data: IUpdateRecipeCategory): Promise<Result<unknown>> {
     this.logger.debug(
@@ -328,6 +364,12 @@ export class RecipeCategoryService {
     return Result.ok({ id: updated.id });
   }
 
+  /**
+   * Soft delete a recipe category (checks for subcategories and associated recipes first)
+   * ลบหมวดหมู่สูตรอาหารแบบ soft delete (ตรวจสอบหมวดหมู่ย่อยและสูตรอาหารที่เกี่ยวข้องก่อน)
+   * @param id - Recipe category ID / รหัสหมวดหมู่สูตรอาหาร
+   * @returns Deleted recipe category ID / รหัสหมวดหมู่สูตรอาหารที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(

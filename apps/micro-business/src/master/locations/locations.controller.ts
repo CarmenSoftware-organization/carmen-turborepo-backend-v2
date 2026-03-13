@@ -25,6 +25,12 @@ export class LocationsController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a single location by ID
+   * ค้นหารายการสถานที่เดียวตาม ID
+   * @param payload - Microservice payload containing location ID / ข้อมูล payload ที่มี ID ของสถานที่
+   * @returns Location detail / รายละเอียดสถานที่
+   */
   @MessagePattern({ cmd: 'locations.findOne', service: 'locations' })
   async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, LocationsController.name);
@@ -44,6 +50,12 @@ export class LocationsController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find multiple locations by their IDs
+   * ค้นหารายการสถานที่หลายรายการตาม ID
+   * @param payload - Microservice payload containing array of location IDs / ข้อมูล payload ที่มีอาร์เรย์ของ ID สถานที่
+   * @returns List of locations matching the IDs / รายการสถานที่ที่ตรงกับ ID
+   */
   @MessagePattern({ cmd: 'locations.find-many-by-id', service: 'locations' })
   async findManyById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findManyById', payload }, LocationsController.name);
@@ -60,6 +72,12 @@ export class LocationsController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all locations with pagination
+   * ค้นหารายการสถานที่ทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing pagination parameters / ข้อมูล payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of locations / รายการสถานที่พร้อมการแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'locations.findAll', service: 'locations' })
   async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, LocationsController.name);
@@ -76,6 +94,12 @@ export class LocationsController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Find all locations assigned to the current user
+   * ค้นหารายการสถานที่ทั้งหมดที่กำหนดให้ผู้ใช้ปัจจุบัน
+   * @param payload - Microservice payload containing user context / ข้อมูล payload ที่มีบริบทผู้ใช้
+   * @returns List of locations for the user / รายการสถานที่ของผู้ใช้
+   */
   @MessagePattern({ cmd: 'locations.findAllByUser', service: 'locations' })
   async findAllByUser(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAllByUser', payload }, LocationsController.name);
@@ -91,6 +115,12 @@ export class LocationsController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Get product inventory at a specific location
+   * ดึงสินค้าคงคลังที่สถานที่เฉพาะ
+   * @param payload - Microservice payload containing location ID and product ID / ข้อมูล payload ที่มี ID สถานที่และ ID สินค้า
+   * @returns Product inventory details / รายละเอียดสินค้าคงคลัง
+   */
   @MessagePattern({ cmd: 'locations-product.getProductInventory', service: 'locations-product-inventory' })
   async getProductInventory(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'getProductInventory', payload }, LocationsController.name);
@@ -108,6 +138,12 @@ export class LocationsController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Create a new location
+   * สร้างสถานที่ใหม่
+   * @param payload - Microservice payload containing location data / ข้อมูล payload ที่มีข้อมูลสถานที่
+   * @returns Created location ID / ID ของสถานที่ที่สร้างขึ้น
+   */
   @MessagePattern({ cmd: 'locations.create', service: 'locations' })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, LocationsController.name);
@@ -124,6 +160,12 @@ export class LocationsController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an existing location
+   * อัปเดตสถานที่ที่มีอยู่
+   * @param payload - Microservice payload containing updated location data / ข้อมูล payload ที่มีข้อมูลสถานที่ที่อัปเดต
+   * @returns Updated location ID / ID ของสถานที่ที่อัปเดต
+   */
   @MessagePattern({ cmd: 'locations.update', service: 'locations' })
   async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, LocationsController.name);
@@ -140,6 +182,12 @@ export class LocationsController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a location (soft delete)
+   * ลบสถานที่ (ลบแบบซอฟต์)
+   * @param payload - Microservice payload containing location ID / ข้อมูล payload ที่มี ID ของสถานที่
+   * @returns Deleted location ID / ID ของสถานที่ที่ลบ
+   */
   @MessagePattern({ cmd: 'locations.delete', service: 'locations' })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, LocationsController.name);

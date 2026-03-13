@@ -45,6 +45,12 @@ export class UnitConversionService {
   private _bu_code?: string;
   private _userId?: string;
 
+  /**
+   * Initialize the Prisma service for the tenant
+   * เริ่มต้นบริการ Prisma สำหรับผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / รหัสผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
   }
@@ -69,6 +75,12 @@ export class UnitConversionService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Get order unit conversions for a product by its ID
+   * ค้นหาหน่วยแปลงสำหรับการสั่งซื้อตามรหัสสินค้า
+   * @param productId - Product ID / รหัสสินค้า
+   * @returns List of order unit conversions / รายการหน่วยแปลงสำหรับการสั่งซื้อ
+   */
   @TryCatch
   async getOrderUnitByProductId(productId: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -133,6 +145,12 @@ export class UnitConversionService {
     return Result.ok(serializedUnits);
   }
 
+  /**
+   * Get ingredient unit conversions for a product by its ID
+   * ค้นหาหน่วยแปลงสำหรับส่วนผสมตามรหัสสินค้า
+   * @param productId - Product ID / รหัสสินค้า
+   * @returns List of ingredient unit conversions / รายการหน่วยแปลงสำหรับส่วนผสม
+   */
   @TryCatch
   async getIngredientUnitByProductId(productId: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -197,6 +215,12 @@ export class UnitConversionService {
     return Result.ok(serializedUnits);
   }
 
+  /**
+   * Get all available unit conversions (order + ingredient) for a product by its ID
+   * ค้นหาหน่วยแปลงทั้งหมดที่ใช้ได้ (สั่งซื้อ + ส่วนผสม) ตามรหัสสินค้า
+   * @param productId - Product ID / รหัสสินค้า
+   * @returns List of all available unit conversions / รายการหน่วยแปลงทั้งหมดที่ใช้ได้
+   */
   @TryCatch
   async getAvailableUnitByProductId(productId: string): Promise<Result<unknown>> {
     this.logger.debug(

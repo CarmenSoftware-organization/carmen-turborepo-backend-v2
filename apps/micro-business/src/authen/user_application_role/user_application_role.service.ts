@@ -19,6 +19,13 @@ export class UserApplicationRoleService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find application roles assigned to a user
+   * ค้นหาบทบาทแอปพลิเคชันที่กำหนดให้ผู้ใช้
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns User with assigned application roles / ผู้ใช้พร้อมบทบาทแอปพลิเคชันที่กำหนด
+   */
   @TryCatch
   async findByUser(user_id: string, bu_code: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -71,6 +78,14 @@ export class UserApplicationRoleService {
     return Result.ok(formattedData);
   }
 
+  /**
+   * Assign application roles to a user
+   * กำหนดบทบาทแอปพลิเคชันให้ผู้ใช้
+   * @param data - Contains target user_id and role IDs to add / ประกอบด้วย user_id เป้าหมายและ ID บทบาทที่จะเพิ่ม
+   * @param user_id - Requesting user ID / ID ผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Assigned user ID / ID ผู้ใช้ที่กำหนดบทบาทแล้ว
+   */
   @TryCatch
   async assign(
     data: {
@@ -144,6 +159,14 @@ export class UserApplicationRoleService {
     return Result.ok({ id: data.user_id });
   }
 
+  /**
+   * Update user application role assignments (add/remove)
+   * แก้ไขการกำหนดบทบาทแอปพลิเคชันของผู้ใช้ (เพิ่ม/ลบ)
+   * @param data - Contains target user_id and role IDs to add/remove / ประกอบด้วย user_id เป้าหมายและ ID บทบาทที่จะเพิ่ม/ลบ
+   * @param requestUserId - Requesting user ID / ID ผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Updated user ID / ID ผู้ใช้ที่แก้ไขแล้ว
+   */
   @TryCatch
   async update(
     data: {
@@ -240,6 +263,14 @@ export class UserApplicationRoleService {
     return Result.ok({ id: data.user_id });
   }
 
+  /**
+   * Remove an application role assignment from a user
+   * ลบการกำหนดบทบาทแอปพลิเคชันจากผู้ใช้
+   * @param data - Contains target user_id and application_role_id / ประกอบด้วย user_id เป้าหมายและ application_role_id
+   * @param requestUserId - Requesting user ID / ID ผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Removed user ID / ID ผู้ใช้ที่ลบบทบาทแล้ว
+   */
   @TryCatch
   async remove(
     data: { user_id: string; application_role_id: string },

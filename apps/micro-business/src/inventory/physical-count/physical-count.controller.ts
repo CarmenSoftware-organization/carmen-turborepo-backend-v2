@@ -20,6 +20,12 @@ export class PhysicalCountController extends BaseMicroserviceController {
     super();
   }
 
+  /**
+   * Create audit context from payload
+   * สร้างบริบทการตรวจสอบจาก payload
+   * @param payload - Microservice payload / ข้อมูล payload จากไมโครเซอร์วิส
+   * @returns Audit context object / ออบเจกต์บริบทการตรวจสอบ
+   */
   private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
@@ -30,6 +36,12 @@ export class PhysicalCountController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a physical count by ID
+   * ค้นหาการตรวจนับสินค้ารายการเดียวตาม ID
+   * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id
+   * @returns Physical count detail / รายละเอียดการตรวจนับสินค้า
+   */
   @MessagePattern({ cmd: 'physical-count.findOne', service: 'physical-count' })
   async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, PhysicalCountController.name);
@@ -43,6 +55,12 @@ export class PhysicalCountController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all physical counts with pagination
+   * ค้นหาการตรวจนับสินค้าทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Contains user_id, tenant_id, paginate, location_ids, period_id / ประกอบด้วย user_id, tenant_id, paginate, location_ids, period_id
+   * @returns Paginated list of physical counts / รายการตรวจนับสินค้าแบบแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'physical-count.findAll', service: 'physical-count' })
   async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, PhysicalCountController.name);
@@ -58,6 +76,12 @@ export class PhysicalCountController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Create a new physical count
+   * สร้างการตรวจนับสินค้าใหม่
+   * @param payload - Contains data, user_id, tenant_id / ประกอบด้วย data, user_id, tenant_id
+   * @returns Created physical count / การตรวจนับสินค้าที่สร้างแล้ว
+   */
   @MessagePattern({ cmd: 'physical-count.create', service: 'physical-count' })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, PhysicalCountController.name);
@@ -71,6 +95,12 @@ export class PhysicalCountController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Save physical count data
+   * บันทึกข้อมูลการตรวจนับสินค้า
+   * @param payload - Contains id, data, user_id, tenant_id / ประกอบด้วย id, data, user_id, tenant_id
+   * @returns Saved physical count / การตรวจนับสินค้าที่บันทึกแล้ว
+   */
   @MessagePattern({ cmd: 'physical-count.save', service: 'physical-count' })
   async save(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'save', payload }, PhysicalCountController.name);
@@ -84,6 +114,12 @@ export class PhysicalCountController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Review physical count items
+   * ตรวจสอบรายการตรวจนับสินค้า
+   * @param payload - Contains id, data, user_id, tenant_id / ประกอบด้วย id, data, user_id, tenant_id
+   * @returns Review result / ผลลัพธ์การตรวจสอบ
+   */
   @MessagePattern({ cmd: 'physical-count.review-items', service: 'physical-count' })
   async reviewItems(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'reviewItems', payload }, PhysicalCountController.name);
@@ -98,6 +134,12 @@ export class PhysicalCountController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Get physical count review details
+   * ดึงรายละเอียดการตรวจสอบการตรวจนับสินค้า
+   * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id
+   * @returns Physical count review detail / รายละเอียดการตรวจสอบการตรวจนับ
+   */
   @MessagePattern({ cmd: 'physical-count.get-review', service: 'physical-count' })
   async getReview(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'getReview', payload }, PhysicalCountController.name);
@@ -111,6 +153,12 @@ export class PhysicalCountController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Submit a physical count for processing
+   * ส่งการตรวจนับสินค้าเพื่อดำเนินการ
+   * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id
+   * @returns Submitted physical count / การตรวจนับสินค้าที่ส่งแล้ว
+   */
   @MessagePattern({ cmd: 'physical-count.submit', service: 'physical-count' })
   async submit(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'submit', payload }, PhysicalCountController.name);
@@ -124,6 +172,12 @@ export class PhysicalCountController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a physical count
+   * ลบการตรวจนับสินค้า
+   * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   @MessagePattern({ cmd: 'physical-count.delete', service: 'physical-count' })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, PhysicalCountController.name);
@@ -139,6 +193,12 @@ export class PhysicalCountController extends BaseMicroserviceController {
 
   // ==================== Detail Comment Endpoints ====================
 
+  /**
+   * Find all comments for a physical count detail
+   * ค้นหาความคิดเห็นทั้งหมดของรายละเอียดการตรวจนับ
+   * @param payload - Contains physical_count_detail_id, user_id, tenant_id / ประกอบด้วย physical_count_detail_id, user_id, tenant_id
+   * @returns List of detail comments / รายการความคิดเห็นของรายละเอียด
+   */
   @MessagePattern({ cmd: 'physical-count-detail-comment.findAll', service: 'physical-count' })
   async findDetailComments(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findDetailComments', payload }, PhysicalCountController.name);
@@ -152,6 +212,12 @@ export class PhysicalCountController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Create a comment on a physical count detail
+   * สร้างความคิดเห็นในรายละเอียดการตรวจนับ
+   * @param payload - Contains data, user_id, tenant_id / ประกอบด้วย data, user_id, tenant_id
+   * @returns Created comment / ความคิดเห็นที่สร้างแล้ว
+   */
   @MessagePattern({ cmd: 'physical-count-detail-comment.create', service: 'physical-count' })
   async createDetailComment(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'createDetailComment', payload }, PhysicalCountController.name);
@@ -165,6 +231,12 @@ export class PhysicalCountController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update a comment on a physical count detail
+   * แก้ไขความคิดเห็นในรายละเอียดการตรวจนับ
+   * @param payload - Contains id, data, user_id, tenant_id / ประกอบด้วย id, data, user_id, tenant_id
+   * @returns Updated comment / ความคิดเห็นที่แก้ไขแล้ว
+   */
   @MessagePattern({ cmd: 'physical-count-detail-comment.update', service: 'physical-count' })
   async updateDetailComment(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'updateDetailComment', payload }, PhysicalCountController.name);
@@ -178,6 +250,12 @@ export class PhysicalCountController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a comment on a physical count detail
+   * ลบความคิดเห็นในรายละเอียดการตรวจนับ
+   * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   @MessagePattern({ cmd: 'physical-count-detail-comment.delete', service: 'physical-count' })
   async deleteDetailComment(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'deleteDetailComment', payload }, PhysicalCountController.name);

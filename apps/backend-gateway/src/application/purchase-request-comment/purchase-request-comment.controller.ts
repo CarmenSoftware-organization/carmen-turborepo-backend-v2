@@ -43,8 +43,13 @@ export class PurchaseRequestCommentController {
   ) {}
 
   /**
-   * Retrieves the full discussion thread on a purchase request,
-   * enabling requestors and approvers to review collaboration notes and feedback.
+   * Retrieve all comments for a purchase request
+   * ค้นหารายการทั้งหมดของความคิดเห็นสำหรับใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param purchase_request_id - Purchase request ID / รหัสใบขอซื้อ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of comments with pagination / รายการความคิดเห็นแบบแบ่งหน้า
    */
   @Get(':bu_code/purchase-request/:purchase_request_id/comment')
   @UseGuards(new AppIdGuard('purchaseRequestComment.findAll'))
@@ -96,8 +101,12 @@ export class PurchaseRequestCommentController {
   }
 
   /**
-   * Retrieves a specific comment from a purchase request discussion thread,
-   * including its content, author, timestamp, and any attachments.
+   * Retrieve a specific comment by ID
+   * ค้นหารายการเดียวตาม ID ของความคิดเห็น
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param id - Comment ID / รหัสความคิดเห็น
+   * @param version - API version / เวอร์ชัน API
+   * @returns Comment details / รายละเอียดความคิดเห็น
    */
   @Get(':bu_code/purchase-request-comment/:id')
   @UseGuards(new AppIdGuard('purchaseRequestComment.findOne'))
@@ -143,8 +152,12 @@ export class PurchaseRequestCommentController {
   }
 
   /**
-   * Posts a new comment on a purchase request discussion thread, allowing
-   * requestors and approvers to collaborate during the procurement review process.
+   * Create a new comment on a purchase request
+   * สร้างความคิดเห็นใหม่ในใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Comment creation data / ข้อมูลสำหรับสร้างความคิดเห็น
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created comment / ความคิดเห็นที่สร้างแล้ว
    */
   @Post(':bu_code/purchase-request-comment')
   @UseGuards(new AppIdGuard('purchaseRequestComment.create'))
@@ -194,8 +207,13 @@ export class PurchaseRequestCommentController {
   }
 
   /**
-   * Edits an existing comment in a purchase request discussion thread.
-   * Only the comment author can modify their own remarks.
+   * Update an existing comment on a purchase request
+   * อัปเดตความคิดเห็นที่มีอยู่ในใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param id - Comment ID / รหัสความคิดเห็น
+   * @param updateDto - Updated comment data / ข้อมูลความคิดเห็นที่อัปเดต
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated comment / ความคิดเห็นที่อัปเดตแล้ว
    */
   @Patch(':bu_code/purchase-request-comment/:id')
   @UseGuards(new AppIdGuard('purchaseRequestComment.update'))
@@ -251,8 +269,12 @@ export class PurchaseRequestCommentController {
   }
 
   /**
-   * Removes a comment from a purchase request discussion thread.
-   * Only the comment author can delete their own remarks.
+   * Delete a comment from a purchase request
+   * ลบความคิดเห็นจากใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param id - Comment ID / รหัสความคิดเห็น
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':bu_code/purchase-request-comment/:id')
   @UseGuards(new AppIdGuard('purchaseRequestComment.delete'))
@@ -301,8 +323,13 @@ export class PurchaseRequestCommentController {
   }
 
   /**
-   * Attaches a supporting document (e.g., quotation or specification sheet)
-   * to a purchase request comment for evidence sharing during procurement review.
+   * Add an attachment to a purchase request comment
+   * เพิ่มไฟล์แนบในความคิดเห็นของใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param id - Comment ID / รหัสความคิดเห็น
+   * @param attachment - Attachment data / ข้อมูลไฟล์แนบ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated comment with attachment / ความคิดเห็นที่เพิ่มไฟล์แนบแล้ว
    */
   @Post(':bu_code/purchase-request-comment/:id/attachment')
   @UseGuards(new AppIdGuard('purchaseRequestComment.addAttachment'))
@@ -359,8 +386,13 @@ export class PurchaseRequestCommentController {
   }
 
   /**
-   * Removes a previously attached document from a purchase request comment,
-   * allowing the author to clean up outdated or incorrect attachments.
+   * Remove an attachment from a purchase request comment
+   * ลบไฟล์แนบจากความคิดเห็นของใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param id - Comment ID / รหัสความคิดเห็น
+   * @param fileToken - File token to remove / โทเคนไฟล์ที่ต้องการลบ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated comment without attachment / ความคิดเห็นที่ลบไฟล์แนบแล้ว
    */
   @Delete(':bu_code/purchase-request-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('purchaseRequestComment.removeAttachment'))

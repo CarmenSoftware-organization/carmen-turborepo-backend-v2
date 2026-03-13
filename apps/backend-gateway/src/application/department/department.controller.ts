@@ -50,8 +50,14 @@ export class DepartmentController extends BaseHttpController {
   }
 
   /**
-   * Lists all hotel departments (e.g., F&B, Housekeeping, Engineering),
-   * used for cost allocation and procurement requisition routing.
+   * List all departments in the business unit
+   * ค้นหารายการแผนกทั้งหมดในหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination query parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of departments / รายการแผนกแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('department.findAll'))
@@ -94,8 +100,14 @@ export class DepartmentController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the details of a specific hotel department, including its code,
-   * name, and active status for procurement and inventory workflows.
+   * Get a specific department by ID
+   * ค้นหารายการแผนกเดียวตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param id - Department ID / รหัสแผนก
+   * @param version - API version / เวอร์ชัน API
+   * @returns Department details / รายละเอียดแผนก
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('department.findOne'))

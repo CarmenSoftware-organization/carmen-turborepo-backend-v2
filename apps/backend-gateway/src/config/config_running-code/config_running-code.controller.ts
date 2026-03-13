@@ -54,8 +54,13 @@ export class Config_RunningCodeController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific auto-numbering rule configuration used to generate sequential
-   * document codes (e.g., PR-001, PO-001, GRN-001) for procurement and inventory documents.
+   * Retrieves a specific auto-numbering rule configuration
+   * ค้นหาการกำหนดค่ารหัสรันนิ่งเดียวตาม ID สำหรับสร้างรหัสเอกสารอัตโนมัติ (เช่น PR-001, PO-001)
+   * @param id - Running code ID / รหัสรหัสรันนิ่ง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('runningCode.findOne'))
@@ -80,8 +85,13 @@ export class Config_RunningCodeController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the running code configuration for a specific document type (e.g., purchase request,
-   * purchase order), returning the current counter and format pattern for the next document number.
+   * Retrieves the running code configuration for a specific document type
+   * ค้นหาการกำหนดค่ารหัสรันนิ่งตามประเภทเอกสาร (เช่น ใบขอซื้อ ใบสั่งซื้อ)
+   * @param type - Document type / ประเภทเอกสาร
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
    */
   @Get('result/:type')
   @UseGuards(new AppIdGuard('runningCode.findByType'))
@@ -114,8 +124,13 @@ export class Config_RunningCodeController extends BaseHttpController {
   }
 
   /**
-   * Lists all auto-numbering rule configurations for the business unit, each defining
-   * the format pattern, prefix, and counter for a specific document type.
+   * Lists all auto-numbering rule configurations for the business unit
+   * ค้นหาการกำหนดค่ารหัสรันนิ่งทั้งหมดสำหรับหน่วยธุรกิจ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
    */
   @Get()
   @UseGuards(new AppIdGuard('runningCode.findAll'))
@@ -150,8 +165,13 @@ export class Config_RunningCodeController extends BaseHttpController {
   }
 
   /**
-   * Defines a new auto-numbering rule for a document type, specifying the prefix,
-   * format pattern, starting number, and reset frequency for automatic code generation.
+   * Defines a new auto-numbering rule for a document type
+   * สร้างกฎการกำหนดเลขอัตโนมัติใหม่สำหรับประเภทเอกสาร
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param createDto - Creation data / ข้อมูลสำหรับสร้าง
+   * @param version - API version / เวอร์ชัน API
    */
   @Post()
   @UseGuards(new AppIdGuard('runningCode.create'))
@@ -185,8 +205,14 @@ export class Config_RunningCodeController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing auto-numbering rule, such as changing the format pattern,
-   * prefix, or resetting the counter. Changes affect future document number generation.
+   * Modifies an existing auto-numbering rule
+   * อัปเดตกฎการกำหนดเลขอัตโนมัติที่มีอยู่ เช่น เปลี่ยนรูปแบบหรือรีเซ็ตตัวนับ
+   * @param id - Running code ID / รหัสรหัสรันนิ่ง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('runningCode.update'))
@@ -226,8 +252,13 @@ export class Config_RunningCodeController extends BaseHttpController {
   }
 
   /**
-   * Removes an auto-numbering rule from the system. The associated document type will
-   * no longer have automatic code generation until a new rule is configured.
+   * Removes an auto-numbering rule from the system
+   * ลบกฎการกำหนดเลขอัตโนมัติออกจากระบบ
+   * @param id - Running code ID / รหัสรหัสรันนิ่ง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('runningCode.delete'))

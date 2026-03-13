@@ -57,8 +57,13 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the details of a specific user-to-property access assignment.
-   * Shows which user has access to which hotel property and with what role.
+   * Get a user-business unit mapping by ID
+   * ค้นหาการเชื่อมโยงผู้ใช้กับหน่วยธุรกิจเดียวตาม ID
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - Mapping ID / รหัสการเชื่อมโยง
+   * @param version - API version / เวอร์ชัน API
+   * @returns User-business unit mapping details / รายละเอียดการเชื่อมโยงผู้ใช้กับหน่วยธุรกิจ
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('userBusinessUnit.findOne'))
@@ -107,8 +112,13 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
   }
 
   /**
-   * Lists all user-to-property access assignments across the platform.
-   * Used for multi-tenant access management and auditing of hotel property access.
+   * List all user-business unit mappings with pagination
+   * ค้นหารายการการเชื่อมโยงผู้ใช้กับหน่วยธุรกิจทั้งหมดพร้อมการแบ่งหน้า
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated mapping list / รายการการเชื่อมโยงแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('userBusinessUnit.findAll'))
@@ -155,8 +165,13 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
   }
 
   /**
-   * Grants a user access to a specific hotel property or operational unit.
-   * Enables them to perform procurement and inventory operations within that property's tenant.
+   * Create a user-business unit mapping
+   * สร้างการเชื่อมโยงผู้ใช้กับหน่วยธุรกิจ
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param body - Mapping creation data / ข้อมูลสำหรับสร้างการเชื่อมโยง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created mapping / การเชื่อมโยงที่ถูกสร้าง
    */
   @Post()
   @UseGuards(new AppIdGuard('userBusinessUnit.create'))
@@ -204,8 +219,14 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing user-to-property access assignment.
-   * Can update the user's role or permissions within a specific hotel property.
+   * Update a user-business unit mapping
+   * อัปเดตการเชื่อมโยงผู้ใช้กับหน่วยธุรกิจ
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - Mapping ID / รหัสการเชื่อมโยง
+   * @param body - Mapping update data / ข้อมูลสำหรับอัปเดตการเชื่อมโยง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated mapping / การเชื่อมโยงที่ถูกอัปเดต
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('userBusinessUnit.update'))
@@ -265,8 +286,13 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
   }
 
   /**
-   * Revokes a user's access to a specific hotel property or operational unit.
-   * The user will no longer be able to perform ERP operations within that property.
+   * Delete a user-business unit mapping
+   * ลบการเชื่อมโยงผู้ใช้กับหน่วยธุรกิจ
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - Mapping ID / รหัสการเชื่อมโยง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('userBusinessUnit.delete'))

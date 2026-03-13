@@ -25,6 +25,12 @@ export class ExchangeRateController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a single exchange rate by ID
+   * ค้นหารายการอัตราแลกเปลี่ยนเดียวตาม ID
+   * @param payload - Microservice payload containing exchange rate ID / ข้อมูล payload ที่มี ID ของอัตราแลกเปลี่ยน
+   * @returns Exchange rate detail / รายละเอียดอัตราแลกเปลี่ยน
+   */
   @MessagePattern({ cmd: 'exchange-rate.findOne', service: 'exchange-rate' })
   async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, ExchangeRateController.name);
@@ -38,6 +44,12 @@ export class ExchangeRateController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all exchange rates with pagination
+   * ค้นหารายการอัตราแลกเปลี่ยนทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing pagination parameters / ข้อมูล payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of exchange rates / รายการอัตราแลกเปลี่ยนพร้อมการแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'exchange-rate.findAll', service: 'exchange-rate' })
   async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, ExchangeRateController.name);
@@ -51,6 +63,12 @@ export class ExchangeRateController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Create a new exchange rate
+   * สร้างอัตราแลกเปลี่ยนใหม่
+   * @param payload - Microservice payload containing exchange rate data / ข้อมูล payload ที่มีข้อมูลอัตราแลกเปลี่ยน
+   * @returns Created exchange rate ID / ID ของอัตราแลกเปลี่ยนที่สร้างขึ้น
+   */
   @MessagePattern({ cmd: 'exchange-rate.create', service: 'exchange-rate' })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, ExchangeRateController.name);
@@ -64,6 +82,12 @@ export class ExchangeRateController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an existing exchange rate
+   * อัปเดตอัตราแลกเปลี่ยนที่มีอยู่
+   * @param payload - Microservice payload containing updated exchange rate data / ข้อมูล payload ที่มีข้อมูลอัตราแลกเปลี่ยนที่อัปเดต
+   * @returns Updated exchange rate ID / ID ของอัตราแลกเปลี่ยนที่อัปเดต
+   */
   @MessagePattern({ cmd: 'exchange-rate.update', service: 'exchange-rate' })
   async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, ExchangeRateController.name);
@@ -77,6 +101,12 @@ export class ExchangeRateController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete an exchange rate (soft delete)
+   * ลบอัตราแลกเปลี่ยน (ลบแบบซอฟต์)
+   * @param payload - Microservice payload containing exchange rate ID / ข้อมูล payload ที่มี ID ของอัตราแลกเปลี่ยน
+   * @returns Deleted exchange rate ID / ID ของอัตราแลกเปลี่ยนที่ลบ
+   */
   @MessagePattern({ cmd: 'exchange-rate.delete', service: 'exchange-rate' })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, ExchangeRateController.name);

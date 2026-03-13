@@ -18,6 +18,12 @@ export class KeycloakStrategy extends PassportStrategy(Strategy, 'keycloak') {
     super();
   }
 
+  /**
+   * Validate the Keycloak bearer token, fetch user info, and auto-provision if needed
+   * ตรวจสอบโทเค็น Bearer ของ Keycloak ดึงข้อมูลผู้ใช้ และสร้างบัญชีอัตโนมัติหากจำเป็น
+   * @param token - Bearer access token from the request header / โทเค็น Bearer จาก header ของคำขอ
+   * @returns Validated user with ID, name, email, and business units / ผู้ใช้ที่ผ่านการตรวจสอบพร้อมรหัสผู้ใช้, ชื่อ, อีเมล และหน่วยธุรกิจ
+   */
   async validate(token: string): Promise<ValidatedUser> {
     try {
       const userInfo = await this.getUserInfo(token);
@@ -47,6 +53,11 @@ export class KeycloakStrategy extends PassportStrategy(Strategy, 'keycloak') {
     }
   }
 
+  /**
+   * Auto-provision the user in the Carmen platform if they exist in Keycloak but not locally
+   * สร้างบัญชีผู้ใช้ในแพลตฟอร์ม Carmen โดยอัตโนมัติหากมีใน Keycloak แต่ยังไม่มีในระบบ
+   * @param userInfo - User information from Keycloak / ข้อมูลผู้ใช้จาก Keycloak
+   */
   private async ensureUserExists(userInfo: KeycloakUserInfo): Promise<void> {
     try {
       const response: MicroserviceResponse = await firstValueFrom(
@@ -87,6 +98,12 @@ export class KeycloakStrategy extends PassportStrategy(Strategy, 'keycloak') {
     }
   }
 
+  /**
+   * Fetch user information from Keycloak via the keycloak microservice over TCP
+   * ดึงข้อมูลผู้ใช้จาก Keycloak ผ่านไมโครเซอร์วิส keycloak ทาง TCP
+   * @param token - Keycloak access token / โทเค็นการเข้าถึง Keycloak
+   * @returns User info including sub, name, email, and business units / ข้อมูลผู้ใช้รวมถึง sub, ชื่อ, อีเมล และหน่วยธุรกิจ
+   */
   private async getUserInfo(token: string): Promise<KeycloakUserInfo> {
     try {
       const response: MicroserviceResponse<KeycloakUserInfo> = await firstValueFrom(

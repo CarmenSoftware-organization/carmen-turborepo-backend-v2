@@ -13,10 +13,28 @@ export class LogEventsService {
 		private readonly config: LogEventsConfig,
 	) {}
 
+	/**
+	 * Executes a function within a specific audit context for tracking purposes
+	 * รันฟังก์ชันภายใต้ audit context ที่กำหนดเพื่อการติดตาม
+	 * @param context - The audit context to bind / audit context ที่จะผูก
+	 * @param fn - The function to execute / ฟังก์ชันที่จะรัน
+	 * @returns The return value of the executed function / ค่าที่ได้จากการรันฟังก์ชัน
+	 */
 	runWithContext<T>(context: AuditContext, fn: () => T): T {
 		return runWithAuditContext(context, fn);
 	}
 
+	/**
+	 * Records an audit log event with before/after data snapshots and metadata
+	 * บันทึก audit log event พร้อมข้อมูลก่อน/หลังการเปลี่ยนแปลงและ metadata
+	 * @param action - The type of action performed (create, update, delete, etc.) / ประเภทการดำเนินการ (create, update, delete ฯลฯ)
+	 * @param entityName - The name of the entity being acted upon / ชื่อ entity ที่ถูกดำเนินการ
+	 * @param recordId - The ID of the specific record, or null / ID ของระเบียนที่เกี่ยวข้อง หรือ null
+	 * @param context - The audit context with user and tenant info / audit context ที่มีข้อมูลผู้ใช้และ tenant
+	 * @param beforeData - Data snapshot before the action / ข้อมูลก่อนการดำเนินการ
+	 * @param afterData - Data snapshot after the action / ข้อมูลหลังการดำเนินการ
+	 * @param metadata - Additional metadata to include / metadata เพิ่มเติมที่ต้องการรวม
+	 */
 	async logEvent(
 		action: AuditAction,
 		entityName: string,
@@ -47,10 +65,24 @@ export class LogEventsService {
 		await this.bufferManager.add(entry);
 	}
 
+	/**
+	 * Forces an immediate flush of all buffered audit log entries
+	 * บังคับ flush ข้อมูล audit log ทั้งหมดที่อยู่ใน buffer ทันที
+	 */
 	async flush(): Promise<void> {
 		await this.bufferManager.flush();
 	}
 
+	/**
+	 * Creates a new audit context object with the provided user and request information
+	 * สร้างออบเจกต์ audit context ใหม่จากข้อมูลผู้ใช้และ request ที่ให้มา
+	 * @param tenantId - The tenant identifier / รหัสผู้เช่า
+	 * @param userId - The user identifier / รหัสผู้ใช้
+	 * @param requestId - Optional request ID (auto-generated if not provided) / request ID (สร้างอัตโนมัติถ้าไม่ระบุ)
+	 * @param ipAddress - Optional client IP address / IP address ของ client (ถ้ามี)
+	 * @param userAgent - Optional client user agent string / user agent string ของ client (ถ้ามี)
+	 * @returns A new AuditContext object / ออบเจกต์ AuditContext ใหม่
+	 */
 	createContext(
 		tenantId: string,
 		userId: string,
@@ -67,6 +99,11 @@ export class LogEventsService {
 		};
 	}
 
+	/**
+	 * Returns the current number of entries waiting in the audit log buffer
+	 * คืนค่าจำนวนรายการที่รออยู่ใน audit log buffer ในปัจจุบัน
+	 * @returns The number of buffered entries / จำนวนรายการที่อยู่ใน buffer
+	 */
 	getBufferSize(): number {
 		return this.bufferManager.getBufferSize();
 	}

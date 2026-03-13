@@ -66,6 +66,12 @@ export class UnitsService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a single unit by ID
+   * ค้นหารายการหน่วยเดียวตาม ID
+   * @param id - Unit ID / ID ของหน่วย
+   * @returns Unit detail or error if not found / รายละเอียดหน่วย หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -90,6 +96,12 @@ export class UnitsService {
     return Result.ok(serializedUnit);
   }
 
+  /**
+   * Find all units with pagination
+   * ค้นหารายการหน่วยทั้งหมดพร้อมการแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of units / รายการหน่วยพร้อมการแบ่งหน้า
+   */
   @TryCatch
   async findAll(
     paginate: IPaginate,
@@ -134,6 +146,12 @@ export class UnitsService {
     });
   }
 
+  /**
+   * Find multiple units by IDs
+   * ค้นหารายการหน่วยหลายรายการตาม ID
+   * @param ids - Array of unit IDs / รายการ ID ของหน่วย
+   * @returns List of units / รายการหน่วย
+   */
   @TryCatch
   async findAllById(
     ids: string[],
@@ -153,6 +171,12 @@ export class UnitsService {
     return Result.ok(serializedUnits);
   }
 
+  /**
+   * Create a new unit
+   * สร้างหน่วยใหม่
+   * @param data - Unit creation data / ข้อมูลการสร้างหน่วย
+   * @returns Created unit ID or error if duplicate / ID ของหน่วยที่สร้างขึ้น หรือข้อผิดพลาดหากซ้ำ
+   */
   @TryCatch
   async create(
     data: ICreateUnits,
@@ -181,6 +205,12 @@ export class UnitsService {
     return Result.ok({ id: createdUnit.id });
   }
 
+  /**
+   * Update an existing unit
+   * อัปเดตหน่วยที่มีอยู่
+   * @param data - Unit update data / ข้อมูลการอัปเดตหน่วย
+   * @returns Updated unit ID or error if not found / ID ของหน่วยที่อัปเดต หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async update(
     data: IUpdateUnits,
@@ -213,6 +243,12 @@ export class UnitsService {
     return Result.ok({ id: updatedUnit.id });
   }
 
+  /**
+   * Delete a unit (soft delete)
+   * ลบหน่วย (ลบแบบซอฟต์)
+   * @param id - Unit ID / ID ของหน่วย
+   * @returns Empty object on success or error if not found / อ็อบเจกต์ว่างเมื่อสำเร็จ หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code }, UnitsService.name);

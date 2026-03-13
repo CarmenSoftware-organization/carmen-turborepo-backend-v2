@@ -49,8 +49,12 @@ export class UserController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the authenticated user's profile including name, contact details,
-   * assigned business units, and role within the hotel ERP system.
+   * Retrieve the authenticated user's profile
+   * ดึงข้อมูลโปรไฟล์ของผู้ใช้ที่เข้าสู่ระบบ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns User profile data / ข้อมูลโปรไฟล์ผู้ใช้
    */
   @Get('/api/user/profile')
   @UseGuards(new AppIdGuard('user.getProfile'))
@@ -102,8 +106,12 @@ export class UserController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the authenticated user's permission set, defining which
-   * procurement modules, inventory operations, and approval actions are authorized.
+   * Retrieve the authenticated user's permissions
+   * ดึงข้อมูลสิทธิ์การใช้งานของผู้ใช้ที่เข้าสู่ระบบ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns User permission set / ชุดสิทธิ์การใช้งานของผู้ใช้
    */
   @Get('/api/user/permission')
   @UseGuards(KeycloakGuard)
@@ -154,8 +162,14 @@ export class UserController extends BaseHttpController {
   }
 
   /**
-   * Lists all users assigned to the current business unit (tenant),
-   * used for managing staff access, roles, and approval workflow assignments.
+   * List all users in the current business unit
+   * ค้นหารายการผู้ใช้ทั้งหมดในหน่วยธุรกิจปัจจุบัน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination query / คำค้นหาการแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of users / รายการผู้ใช้แบบแบ่งหน้า
    */
   // get all user in tenant
   @Get('api/:bu_code/users')
@@ -211,8 +225,13 @@ export class UserController extends BaseHttpController {
   }
 
   /**
-   * Updates a user's profile information (name, contact details) in both the
-   * identity provider and the ERP database for consistent data across the system.
+   * Update a user's profile by ID
+   * อัปเดตข้อมูลโปรไฟล์ผู้ใช้ตาม ID
+   * @param targetUserId - Target user ID / รหัสผู้ใช้เป้าหมาย
+   * @param updateData - Profile data to update / ข้อมูลโปรไฟล์ที่จะอัปเดต
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated user profile / ข้อมูลโปรไฟล์ผู้ใช้ที่อัปเดตแล้ว
    */
   @Put('/api/user/:user_id')
   @UseGuards(new AppIdGuard('user.updateUserById'))

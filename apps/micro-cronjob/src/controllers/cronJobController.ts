@@ -3,7 +3,12 @@ import { cronJobService, CreateCronJobData, UpdateCronJobData } from '../service
 import { cronJobManager } from '../jobs/cronJobManager'
 import { sendNotification } from '@/libs/sendNoti'
 
-// Validation functions
+/**
+ * Validate a cron expression format (5 parts: minute hour day month weekday)
+ * ตรวจสอบรูปแบบ cron expression (5 ส่วน: นาที ชั่วโมง วัน เดือน วันในสัปดาห์)
+ * @param expression - Cron expression string / สตริง cron expression
+ * @returns Error message if invalid, null if valid / ข้อความข้อผิดพลาดถ้าไม่ถูกต้อง, null ถ้าถูกต้อง
+ */
 function validateCronExpression(expression: string): string | null {
   const cronRegex = /^(\*|([0-5]?\d)|\*\/([0-5]?\d)|([0-5]?\d)-([0-5]?\d)|([0-5]?\d),([0-5]?\d))\s+(\*|([01]?\d|2[0-3])|\*\/([01]?\d|2[0-3])|([01]?\d|2[0-3])-([01]?\d|2[0-3])|([01]?\d|2[0-3]),([01]?\d|2[0-3]))\s+(\*|([12]?\d|3[01])|\*\/([12]?\d|3[01])|([12]?\d|3[01])-([12]?\d|3[01])|([12]?\d|3[01]),([12]?\d|3[01]))\s+(\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])|([1-9]|1[0-2])-([1-9]|1[0-2])|([1-9]|1[0-2]),([1-9]|1[0-2]))\s+(\*|[0-6]|\*\/[0-6]|[0-6]-[0-6]|[0-6],[0-6])$/
 
@@ -19,6 +24,12 @@ function validateCronExpression(expression: string): string | null {
   return null
 }
 
+/**
+ * Validate job data JSON for notification_check type jobs
+ * ตรวจสอบ JSON ของข้อมูลงานสำหรับงานประเภท notification_check
+ * @param jobData - JSON string of job data / สตริง JSON ของข้อมูลงาน
+ * @returns Error message if invalid, null if valid / ข้อความข้อผิดพลาดถ้าไม่ถูกต้อง, null ถ้าถูกต้อง
+ */
 function validateNotificationJobData(jobData: string): string | null {
   try {
     const data = JSON.parse(jobData)
@@ -44,6 +55,12 @@ function validateNotificationJobData(jobData: string): string | null {
 }
 
 export const cronJobController = {
+  /**
+   * Get all cron jobs
+   * ค้นหารายการ cron job ทั้งหมด
+   * @param ctx - Elysia context / context ของ Elysia
+   * @returns List of cron jobs / รายการ cron job
+   */
   async getAll(ctx: Context) {
     try {
       const cronJobs = await cronJobService.getAll()
@@ -54,6 +71,12 @@ export const cronJobController = {
     }
   },
 
+  /**
+   * Get a cron job by ID
+   * ค้นหารายการเดียวตาม ID ของ cron job
+   * @param ctx - Elysia context with id param / context ของ Elysia พร้อมพารามิเตอร์ id
+   * @returns Cron job data / ข้อมูล cron job
+   */
   async getById(ctx: Context) {
     try {
       const { id } = ctx.params as { id: string }
@@ -71,6 +94,12 @@ export const cronJobController = {
     }
   },
 
+  /**
+   * Create a new cron job with validation
+   * สร้าง cron job ใหม่พร้อมการตรวจสอบข้อมูล
+   * @param ctx - Elysia context with body data / context ของ Elysia พร้อมข้อมูล body
+   * @returns Created cron job / cron job ที่สร้างแล้ว
+   */
   async create(ctx: Context) {
     try {
       const data = ctx.body as CreateCronJobData
@@ -127,6 +156,12 @@ export const cronJobController = {
     }
   },
 
+  /**
+   * Update an existing cron job
+   * อัปเดต cron job ที่มีอยู่
+   * @param ctx - Elysia context with id param and body data / context ของ Elysia พร้อมพารามิเตอร์ id และข้อมูล body
+   * @returns Updated cron job / cron job ที่อัปเดตแล้ว
+   */
   async update(ctx: Context) {
     try {
       const { id } = ctx.params as { id: string }
@@ -168,6 +203,12 @@ export const cronJobController = {
     }
   },
 
+  /**
+   * Delete a cron job by ID
+   * ลบ cron job ตาม ID
+   * @param ctx - Elysia context with id param / context ของ Elysia พร้อมพารามิเตอร์ id
+   * @returns Deletion confirmation / การยืนยันการลบ
+   */
   async delete(ctx: Context) {
     try {
       const { id } = ctx.params as { id: string }
@@ -191,6 +232,12 @@ export const cronJobController = {
     }
   },
 
+  /**
+   * Start (activate) a cron job by ID
+   * เริ่มการทำงาน (เปิดใช้งาน) cron job ตาม ID
+   * @param ctx - Elysia context with id param / context ของ Elysia พร้อมพารามิเตอร์ id
+   * @returns Started cron job / cron job ที่เริ่มทำงาน
+   */
   async start(ctx: Context) {
     try {
       const { id } = ctx.params as { id: string }
@@ -220,6 +267,12 @@ export const cronJobController = {
     }
   },
 
+  /**
+   * Stop (deactivate) a cron job by ID
+   * หยุดการทำงาน (ปิดใช้งาน) cron job ตาม ID
+   * @param ctx - Elysia context with id param / context ของ Elysia พร้อมพารามิเตอร์ id
+   * @returns Stopped cron job / cron job ที่หยุดทำงาน
+   */
   async stop(ctx: Context) {
     try {
       const { id } = ctx.params as { id: string }
@@ -248,6 +301,12 @@ export const cronJobController = {
     }
   },
 
+  /**
+   * Execute a cron job immediately (manual trigger)
+   * ทำงาน cron job ทันที (เรียกใช้ด้วยตนเอง)
+   * @param ctx - Elysia context with id param / context ของ Elysia พร้อมพารามิเตอร์ id
+   * @returns Execution result / ผลการทำงาน
+   */
   async execute(ctx: Context) {
     try {
       const { id } = ctx.params as { id: string }
@@ -268,6 +327,12 @@ export const cronJobController = {
     }
   },
 
+  /**
+   * Get all active cron jobs currently running in memory
+   * ค้นหารายการ cron job ทั้งหมดที่กำลังทำงานอยู่ในหน่วยความจำ
+   * @param ctx - Elysia context / context ของ Elysia
+   * @returns Active jobs in memory / งานที่กำลังทำงานในหน่วยความจำ
+   */
   async getActiveInMemory(ctx: Context) {
     try {
       const activeJobs = cronJobManager.getActiveJobs()

@@ -67,7 +67,12 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
 
   /**
    * Retrieves a specific extra cost type definition (e.g., shipping, insurance, customs duty)
-   * used to categorize additional charges on procurement documents beyond product prices.
+   * ค้นหาประเภทค่าใช้จ่ายเพิ่มเติมเดียวตาม ID (เช่น ค่าจัดส่ง ประกันภัย ภาษีศุลกากร)
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Extra cost type ID / รหัสประเภทค่าใช้จ่ายเพิ่มเติม
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('extraCostType.findOne'))
@@ -102,8 +107,13 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
   }
 
   /**
-   * Lists all configured extra cost categories for procurement, such as freight,
-   * handling, and insurance charges added to purchase orders and goods received notes.
+   * Lists all configured extra cost categories for procurement
+   * ค้นหาประเภทค่าใช้จ่ายเพิ่มเติมทั้งหมดสำหรับการจัดซื้อ เช่น ค่าขนส่ง ค่าจัดการ ค่าประกันภัย
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
    */
   @Get()
   @UseGuards(new AppIdGuard('extraCostType.findAll'))
@@ -140,8 +150,13 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
   }
 
   /**
-   * Defines a new category for additional procurement costs (e.g., shipping, customs, handling fees)
-   * that can be applied to purchase orders beyond the product line items.
+   * Defines a new category for additional procurement costs
+   * สร้างประเภทค่าใช้จ่ายเพิ่มเติมใหม่สำหรับการจัดซื้อ (เช่น ค่าจัดส่ง ค่าศุลกากร ค่าจัดการ)
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Creation data / ข้อมูลสำหรับสร้าง
+   * @param version - API version / เวอร์ชัน API
    */
   @Post()
   @UseGuards(new AppIdGuard('extraCostType.create'))
@@ -177,8 +192,14 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing extra cost type definition, such as renaming or reclassifying
-   * the cost category. Changes apply to future procurement documents.
+   * Modifies an existing extra cost type definition
+   * อัปเดตประเภทค่าใช้จ่ายเพิ่มเติมที่มีอยู่ เช่น เปลี่ยนชื่อหรือจัดหมวดหมู่ใหม่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Extra cost type ID / รหัสประเภทค่าใช้จ่ายเพิ่มเติม
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param version - API version / เวอร์ชัน API
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('extraCostType.update'))
@@ -220,8 +241,13 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
   }
 
   /**
-   * Removes an extra cost type from active use. Historical procurement records are preserved,
-   * but it will no longer appear as an option for adding charges to new documents.
+   * Removes an extra cost type from active use
+   * ลบประเภทค่าใช้จ่ายเพิ่มเติมออกจากการใช้งาน บันทึกในอดีตยังคงอยู่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Extra cost type ID / รหัสประเภทค่าใช้จ่ายเพิ่มเติม
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('extraCostType.delete'))

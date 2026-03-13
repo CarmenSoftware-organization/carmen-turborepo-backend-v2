@@ -27,6 +27,16 @@ export class StoreRequisitionService {
     private readonly inventoryService: ClientProxy,
   ) { }
 
+  /**
+   * Find a store requisition by ID via microservice.
+   * ค้นหาใบเบิกสินค้าเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userData - User business unit data / ข้อมูลหน่วยธุรกิจของผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Store requisition or error / ใบเบิกสินค้าหรือข้อผิดพลาด
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -71,6 +81,16 @@ export class StoreRequisitionService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all store requisitions with pagination via microservice.
+   * ค้นหาใบเบิกสินค้าทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param bu_code - Business unit code(s) / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param userDatas - User business unit data list / รายการข้อมูลหน่วยธุรกิจของผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated store requisitions or error / ใบเบิกสินค้าพร้อมการแบ่งหน้าหรือข้อผิดพลาด
+   */
   async findAll(
     user_id: string,
     bu_code: string[],
@@ -117,6 +137,15 @@ export class StoreRequisitionService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new store requisition via microservice.
+   * สร้างใบเบิกสินค้าใหม่ผ่านไมโครเซอร์วิส
+   * @param createDto - Store requisition creation data / ข้อมูลสำหรับสร้างใบเบิกสินค้า
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created store requisition or error / ใบเบิกสินค้าที่สร้างแล้วหรือข้อผิดพลาด
+   */
   async create(
     createDto: Record<string, unknown>,
     user_id: string,
@@ -157,6 +186,16 @@ export class StoreRequisitionService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Save (persist) a store requisition via microservice.
+   * บันทึกใบเบิกสินค้าผ่านไมโครเซอร์วิส
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param updateDto - Store requisition data / ข้อมูลใบเบิกสินค้า
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Saved store requisition or error / ใบเบิกสินค้าที่บันทึกแล้วหรือข้อผิดพลาด
+   */
   async save(
     id: string,
     updateDto: Record<string, unknown>,
@@ -197,6 +236,16 @@ export class StoreRequisitionService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Submit a store requisition into the approval workflow via microservice.
+   * ส่งใบเบิกสินค้าเข้าสู่ขั้นตอนการอนุมัติผ่านไมโครเซอร์วิส
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param payload - Submission data / ข้อมูลการส่ง
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Submitted store requisition or error / ใบเบิกสินค้าที่ส่งแล้วหรือข้อผิดพลาด
+   */
   async submit(
     id: string,
     payload: SubmitStoreRequisitionDto,
@@ -230,6 +279,16 @@ export class StoreRequisitionService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Approve a store requisition at the current workflow stage via microservice.
+   * อนุมัติใบเบิกสินค้าในขั้นตอนปัจจุบันผ่านไมโครเซอร์วิส
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param payload - Approval data / ข้อมูลการอนุมัติ
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Approved store requisition or error / ใบเบิกสินค้าที่อนุมัติแล้วหรือข้อผิดพลาด
+   */
   async approve(
     id: string,
     payload: Record<string, unknown>,
@@ -270,6 +329,16 @@ export class StoreRequisitionService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Reject a store requisition via microservice.
+   * ปฏิเสธใบเบิกสินค้าผ่านไมโครเซอร์วิส
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param body - Rejection data with reason / ข้อมูลการปฏิเสธพร้อมเหตุผล
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Rejected store requisition or error / ใบเบิกสินค้าที่ปฏิเสธแล้วหรือข้อผิดพลาด
+   */
   async reject(
     id: string,
     body: RejectStoreRequisitionDto,
@@ -303,6 +372,16 @@ export class StoreRequisitionService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Send a store requisition back for review via microservice.
+   * ส่งใบเบิกสินค้ากลับไปตรวจสอบผ่านไมโครเซอร์วิส
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param body - Review data / ข้อมูลการตรวจสอบ
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Reviewed store requisition or error / ใบเบิกสินค้าที่ส่งกลับตรวจสอบหรือข้อผิดพลาด
+   */
   async review(
     id: string,
     body: ReviewStoreRequisitionDto,
@@ -336,6 +415,16 @@ export class StoreRequisitionService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update a store requisition by delegating to save via microservice.
+   * อัปเดตใบเบิกสินค้าโดยส่งต่อไปยังการบันทึกผ่านไมโครเซอร์วิส
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param updateDto - Store requisition update data / ข้อมูลสำหรับอัปเดตใบเบิกสินค้า
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated store requisition or error / ใบเบิกสินค้าที่อัปเดตแล้วหรือข้อผิดพลาด
+   */
   async update(
     id: string,
     updateDto: Record<string, unknown>,
@@ -356,6 +445,15 @@ export class StoreRequisitionService {
     return this.save(id, updateDto, user_id, bu_code, version);
   }
 
+  /**
+   * Delete a store requisition via microservice.
+   * ลบใบเบิกสินค้าผ่านไมโครเซอร์วิส
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result or error / ผลลัพธ์การลบหรือข้อผิดพลาด
+   */
   async delete(
     id: string,
     user_id: string,
@@ -388,6 +486,16 @@ export class StoreRequisitionService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all store requisitions filtered by status via microservice.
+   * ค้นหาใบเบิกสินค้าทั้งหมดตามสถานะผ่านไมโครเซอร์วิส
+   * @param status - Requisition status filter / ตัวกรองสถานะใบเบิกสินค้า
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Filtered store requisitions or error / ใบเบิกสินค้าตามสถานะหรือข้อผิดพลาด
+   */
   async findAllByStatus(
     status: string,
     user_id: string,
@@ -430,6 +538,15 @@ export class StoreRequisitionService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Find all store requisitions pending the current user's action via microservice.
+   * ค้นหาใบเบิกสินค้าทั้งหมดที่รอการดำเนินการของผู้ใช้ปัจจุบันผ่านไมโครเซอร์วิส
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Pending store requisitions or error / ใบเบิกสินค้าที่รอดำเนินการหรือข้อผิดพลาด
+   */
   async findAllMyPending(
     user_id: string,
     bu_code: string,
@@ -474,6 +591,15 @@ export class StoreRequisitionService {
 
   // ==================== Mobile-specific endpoints ====================
 
+  /**
+   * Get workflow permissions for a store requisition via microservice.
+   * ดึงสิทธิ์เวิร์กโฟลว์สำหรับใบเบิกสินค้าผ่านไมโครเซอร์วิส
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Workflow permissions or error / สิทธิ์เวิร์กโฟลว์หรือข้อผิดพลาด
+   */
   async getWorkflowPermission(
     id: string,
     user_id: string,
@@ -506,6 +632,15 @@ export class StoreRequisitionService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Get the list of previous workflow steps for a store requisition via microservice.
+   * ดึงรายการขั้นตอนเวิร์กโฟลว์ก่อนหน้าสำหรับใบเบิกสินค้าผ่านไมโครเซอร์วิส
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param user_id - Current user ID / รหัสผู้ใช้ปัจจุบัน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Previous workflow steps or error / ขั้นตอนเวิร์กโฟลว์ก่อนหน้าหรือข้อผิดพลาด
+   */
   async getWorkflowPreviousStepList(
     id: string,
     user_id: string,

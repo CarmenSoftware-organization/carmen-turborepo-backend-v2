@@ -38,8 +38,13 @@ export class Config_LocationsUserController {
   ) {}
 
   /**
-   * Retrieves all storage locations accessible to a specific user, controlling which
-   * warehouses and stores the user can perform inventory operations in.
+   * Retrieve all locations accessible to a user
+   * ค้นหารายการสถานที่ทั้งหมดที่ผู้ใช้สามารถเข้าถึงได้
+   * @param userId - Target user ID / รหัสผู้ใช้เป้าหมาย
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of locations for the user / รายการสถานที่ของผู้ใช้
    */
   @Get(':userId')
   @UseGuards(new AppIdGuard('locationUser.getLocationByUserId'))
@@ -70,8 +75,14 @@ export class Config_LocationsUserController {
   }
 
   /**
-   * Updates the set of storage locations a user has access to, controlling which
-   * warehouses and stores the user can perform stock-in, stock-out, and transfer operations in.
+   * Update location assignments for a user
+   * อัปเดตการกำหนดสถานที่ให้กับผู้ใช้
+   * @param userId - Target user ID / รหัสผู้ใช้เป้าหมาย
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Location-user assignment update data / ข้อมูลสำหรับอัปเดตการกำหนดสถานที่-ผู้ใช้
+   * @param req - HTTP request / คำขอ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated assignment result / ผลลัพธ์การอัปเดตการกำหนด
    */
   @Put(':userId')
   @UseGuards(new AppIdGuard('locationUser.managerLocationUser'))

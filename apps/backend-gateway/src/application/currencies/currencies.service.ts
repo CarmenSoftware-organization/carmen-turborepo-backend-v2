@@ -19,6 +19,15 @@ export class CurrenciesService {
     private readonly clusterService: ClientProxy,
   ) { }
 
+  /**
+   * Find all active currencies for a business unit via microservice
+   * ค้นหารายการสกุลเงินที่ใช้งานอยู่ทั้งหมดของหน่วยธุรกิจผ่านไมโครเซอร์วิส
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of active currencies / รายการสกุลเงินที่ใช้งานอยู่แบบแบ่งหน้า
+   */
   async findAllActive(
     user_id: string,
     bu_code: string,
@@ -54,6 +63,15 @@ export class CurrenciesService {
     });
   }
 
+  /**
+   * Find a specific currency by ID
+   * ค้นหารายการสกุลเงินเดียวตาม ID
+   * @param id - Currency ID / รหัสสกุลเงิน
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Currency details / รายละเอียดสกุลเงิน
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -85,6 +103,14 @@ export class CurrenciesService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all ISO 4217 standard currencies
+   * ค้นหารายการสกุลเงินมาตรฐาน ISO 4217 ทั้งหมด
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of ISO currencies / รายการสกุลเงิน ISO แบบแบ่งหน้า
+   */
   async findAllISO(
     user_id: string,
     paginate: IPaginate,
@@ -119,6 +145,14 @@ export class CurrenciesService {
     });
   }
 
+  /**
+   * Get the default currency for a business unit
+   * ดึงข้อมูลสกุลเงินเริ่มต้นของหน่วยธุรกิจ
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Default currency details / รายละเอียดสกุลเงินเริ่มต้น
+   */
   async getDefault(
     user_id: string,
     bu_code: string,

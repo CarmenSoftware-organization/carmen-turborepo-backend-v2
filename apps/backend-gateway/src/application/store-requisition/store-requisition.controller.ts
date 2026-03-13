@@ -71,9 +71,12 @@ export class StoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Retrieves full details of a store requisition including requested items,
-   * quantities, and current approval status. Store requisitions represent
-   * internal requests from departments to draw items from the central store.
+   * Retrieve a store requisition by ID with full details.
+   * ค้นหาใบเบิกสินค้าเดียวตาม ID พร้อมรายละเอียดทั้งหมด
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Store requisition with details / ใบเบิกสินค้าพร้อมรายละเอียด
    */
   @Get('/:bu_code/store-requisition/:id')
   @UseGuards(new AppIdGuard('storeRequisition.findOne'))
@@ -143,8 +146,11 @@ export class StoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Lists all store requisitions with pagination and filtering. Used by store
-   * managers and department staff to track internal stock requests and their status.
+   * List all store requisitions with pagination and filtering.
+   * ค้นหาใบเบิกสินค้าทั้งหมดพร้อมการแบ่งหน้าและตัวกรอง
+   * @param query - Pagination and filter parameters / พารามิเตอร์การแบ่งหน้าและตัวกรอง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of store requisitions / ใบเบิกสินค้าพร้อมการแบ่งหน้า
    */
   @Get('store-requisition')
   @UseGuards(new AppIdGuard('storeRequisition.findAll'))
@@ -219,8 +225,12 @@ export class StoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Creates a new store requisition for a department to request items from the
-   * central store. Starts in draft status and can be submitted for approval.
+   * Create a new store requisition in draft status.
+   * สร้างใบเบิกสินค้าใหม่ในสถานะร่าง
+   * @param createDto - Store requisition creation data / ข้อมูลสำหรับสร้างใบเบิกสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created store requisition / ใบเบิกสินค้าที่สร้างแล้ว
    */
   @Post(':bu_code/store-requisition')
   @UseGuards(new AppIdGuard('storeRequisition.create'))
@@ -282,8 +292,13 @@ export class StoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Updates an existing store requisition's header and line items before
-   * it is submitted for approval.
+   * Update an existing store requisition before submission.
+   * อัปเดตใบเบิกสินค้าที่มีอยู่ก่อนส่งอนุมัติ
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Store requisition update data / ข้อมูลสำหรับอัปเดตใบเบิกสินค้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated store requisition / ใบเบิกสินค้าที่อัปเดตแล้ว
    */
   @Put(':bu_code/store-requisition/:id')
   @UseGuards(new AppIdGuard('storeRequisition.update'))
@@ -348,8 +363,13 @@ export class StoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Submits a draft store requisition into the approval workflow, making it
-   * available for review by the store manager or designated approver.
+   * Submit a store requisition into the approval workflow.
+   * ส่งใบเบิกสินค้าเข้าสู่ขั้นตอนการอนุมัติ
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param payload - Submission data / ข้อมูลการส่ง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Submitted store requisition / ใบเบิกสินค้าที่ส่งแล้ว
    */
   @Patch(':bu_code/store-requisition/:id/submit')
   @UseGuards(new AppIdGuard('storeRequisition.submit'))
@@ -392,8 +412,13 @@ export class StoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Approves a store requisition at the current workflow stage, authorizing
-   * the issuance of requested items from the central store to the department.
+   * Approve a store requisition at the current workflow stage.
+   * อนุมัติใบเบิกสินค้าในขั้นตอนปัจจุบันของเวิร์กโฟลว์
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param payload - Approval data / ข้อมูลการอนุมัติ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Approved store requisition / ใบเบิกสินค้าที่อนุมัติแล้ว
    */
   @Patch(':bu_code/store-requisition/:id/approve')
   @UseGuards(new AppIdGuard('storeRequisition.approve'))
@@ -436,8 +461,13 @@ export class StoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Rejects a store requisition, returning it to the requester with a reason.
-   * Used when the requested items are not available or the request is not justified.
+   * Reject a store requisition with a reason.
+   * ปฏิเสธใบเบิกสินค้าพร้อมเหตุผล
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param payload - Rejection data with reason / ข้อมูลการปฏิเสธพร้อมเหตุผล
+   * @param version - API version / เวอร์ชัน API
+   * @returns Rejected store requisition / ใบเบิกสินค้าที่ปฏิเสธแล้ว
    */
   @Patch(':bu_code/store-requisition/:id/reject')
   @UseGuards(new AppIdGuard('storeRequisition.reject'))
@@ -481,8 +511,13 @@ export class StoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Sends a store requisition back to a previous workflow stage for corrections
-   * or additional information before it can proceed through approval.
+   * Send a store requisition back for review at a previous stage.
+   * ส่งใบเบิกสินค้ากลับไปตรวจสอบในขั้นตอนก่อนหน้า
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param payload - Review data / ข้อมูลการตรวจสอบ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Reviewed store requisition / ใบเบิกสินค้าที่ส่งกลับตรวจสอบ
    */
   @Patch(':bu_code/store-requisition/:id/review')
   @UseGuards(new AppIdGuard('storeRequisition.review'))
@@ -525,8 +560,12 @@ export class StoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Removes a store requisition that is no longer needed, typically a draft
-   * created in error or no longer required by the department.
+   * Delete a store requisition.
+   * ลบใบเบิกสินค้า
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':bu_code/store-requisition/:id')
   @UseGuards(new AppIdGuard('storeRequisition.delete'))
@@ -584,8 +623,12 @@ export class StoreRequisitionController extends BaseHttpController {
   // ==================== Mobile-specific endpoints ====================
 
   /**
-   * Retrieves the workflow permissions for the current user on a store requisition,
-   * determining which actions (approve, reject, review) are available.
+   * Get workflow permissions for the current user on a store requisition.
+   * ดึงสิทธิ์เวิร์กโฟลว์ของผู้ใช้ปัจจุบันสำหรับใบเบิกสินค้า
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Available workflow actions / การดำเนินการเวิร์กโฟลว์ที่ใช้ได้
    */
   @Get(':bu_code/store-requisition/:id/workflow-permission')
   @UseGuards(new AppIdGuard('storeRequisition.getWorkflowPermission'))
@@ -634,8 +677,12 @@ export class StoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the list of previous workflow steps for a store requisition,
-   * used to determine which stage to send the document back to during review.
+   * Get the list of previous workflow steps for review targeting.
+   * ดึงรายการขั้นตอนเวิร์กโฟลว์ก่อนหน้าสำหรับการส่งกลับตรวจสอบ
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of previous workflow steps / รายการขั้นตอนเวิร์กโฟลว์ก่อนหน้า
    */
   @Get(':bu_code/store-requisition/:id/workflow-previous-step-list')
   @UseGuards(new AppIdGuard('storeRequisition.getWorkflowPreviousStepList'))

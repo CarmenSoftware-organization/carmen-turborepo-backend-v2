@@ -16,6 +16,15 @@ export class Config_WorkflowsService {
     private readonly masterService: ClientProxy,
   ) {}
 
+  /**
+   * Find a workflow by ID via microservice
+   * ค้นหาขั้นตอนการทำงานเดียวตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Workflow ID / รหัสขั้นตอนการทำงาน
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Workflow data or error / ข้อมูลขั้นตอนการทำงานหรือข้อผิดพลาด
+   */
   async findOne(
     id: string,
     user_id: string,
@@ -47,6 +56,15 @@ export class Config_WorkflowsService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Find all workflows with pagination via microservice
+   * ค้นหาขั้นตอนการทำงานทั้งหมดพร้อมการแบ่งหน้าผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated workflow data or error / ข้อมูลขั้นตอนการทำงานพร้อมการแบ่งหน้าหรือข้อผิดพลาด
+   */
   async findAll(
     user_id: string,
     bu_code: string,
@@ -85,6 +103,15 @@ export class Config_WorkflowsService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Create a new workflow via microservice
+   * สร้างขั้นตอนการทำงานใหม่ผ่านไมโครเซอร์วิส
+   * @param createDto - Creation data / ข้อมูลสำหรับสร้าง
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created workflow or error / ขั้นตอนการทำงานที่สร้างแล้วหรือข้อผิดพลาด
+   */
   async create(
     createDto: ICreateWorkflow,
     user_id: string,
@@ -121,6 +148,15 @@ export class Config_WorkflowsService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update an existing workflow via microservice
+   * อัปเดตขั้นตอนการทำงานที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param updateDto - Update data / ข้อมูลสำหรับอัปเดต
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated workflow or error / ขั้นตอนการทำงานที่อัปเดตแล้วหรือข้อผิดพลาด
+   */
   async update(
     updateDto: IUpdateWorkflow,
     user_id: string,
@@ -157,6 +193,15 @@ export class Config_WorkflowsService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a workflow by ID via microservice
+   * ลบขั้นตอนการทำงานตาม ID ผ่านไมโครเซอร์วิส
+   * @param id - Workflow ID / รหัสขั้นตอนการทำงาน
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result or error / ผลการลบหรือข้อผิดพลาด
+   */
   async delete(
     id: string,
     user_id: string,

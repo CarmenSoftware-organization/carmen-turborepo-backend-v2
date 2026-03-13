@@ -12,6 +12,12 @@ export class CreditNoteReasonController extends BaseMicroserviceController {
     super();
   }
 
+  /**
+   * Create an audit context from the microservice payload
+   * สร้าง audit context จาก payload ของไมโครเซอร์วิส
+   * @param payload - Microservice payload containing tenant and user info / payload ของไมโครเซอร์วิสที่มีข้อมูลผู้เช่าและผู้ใช้
+   * @returns Audit context object / ออบเจกต์ audit context
+   */
   private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
@@ -22,6 +28,12 @@ export class CreditNoteReasonController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find all credit note reasons with pagination
+   * ค้นหาเหตุผลใบลดหนี้ทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Payload containing pagination parameters / payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of credit note reasons / รายการเหตุผลใบลดหนี้ที่แบ่งหน้าแล้ว
+   */
   @MessagePattern({
     cmd: 'credit-note-reason.find-all',
     service: 'credit-note-reason',

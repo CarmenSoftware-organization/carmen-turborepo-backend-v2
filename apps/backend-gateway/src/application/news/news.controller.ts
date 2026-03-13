@@ -44,8 +44,13 @@ export class NewsController extends BaseHttpController {
   }
 
   /**
-   * Retrieves all internal announcements published within the business unit,
-   * used to communicate operational updates and policy changes to hotel staff.
+   * List all news articles
+   * ค้นหารายการข่าวสารทั้งหมด
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param query - Pagination query / คำค้นหาการแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of news / รายการข่าวสารแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('news.findAll'))
@@ -84,8 +89,13 @@ export class NewsController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific internal announcement by ID,
-   * including its full content and publication details.
+   * Find a news article by ID
+   * ค้นหาข่าวสารรายการเดียวตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - News article ID / รหัสข่าวสาร
+   * @param version - API version / เวอร์ชัน API
+   * @returns News article details / รายละเอียดข่าวสาร
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('news.findOne'))
@@ -122,8 +132,13 @@ export class NewsController extends BaseHttpController {
   }
 
   /**
-   * Publishes a new internal announcement to inform business unit staff
-   * about operational updates, procurement policy changes, or hotel-wide notices.
+   * Create a new news article
+   * สร้างข่าวสารใหม่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param createNewsDto - News data to create / ข้อมูลข่าวสารที่จะสร้าง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created news article / ข่าวสารที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('news.create'))
@@ -165,8 +180,14 @@ export class NewsController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing internal announcement, allowing administrators
-   * to correct content or update publication scope within the business unit.
+   * Update a news article by ID
+   * อัปเดตข่าวสารตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - News article ID / รหัสข่าวสาร
+   * @param updateNewsDto - News data to update / ข้อมูลข่าวสารที่จะอัปเดต
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated news article / ข่าวสารที่อัปเดตแล้ว
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('news.update'))
@@ -211,8 +232,13 @@ export class NewsController extends BaseHttpController {
   }
 
   /**
-   * Removes an internal announcement from the business unit,
-   * archiving it so it is no longer visible to staff.
+   * Delete a news article by ID
+   * ลบข่าวสารตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - News article ID / รหัสข่าวสาร
+   * @param version - API version / เวอร์ชัน API
+   * @returns Delete result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('news.delete'))

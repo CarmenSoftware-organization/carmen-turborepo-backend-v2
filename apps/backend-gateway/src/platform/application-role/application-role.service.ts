@@ -21,9 +21,10 @@ export class ApplicationRoleService {
   ) { }
 
   /**
-   * Get all application roles
-   * @param version
-   * @returns
+   * Retrieve all application roles
+   * ค้นหารายการบทบาทแอปพลิเคชันทั้งหมด
+   * @param version - API version / เวอร์ชัน API
+   * @returns Role list with pagination / รายการบทบาทพร้อมการแบ่งหน้า
    */
   async findAll(version: string): Promise<unknown> {
     this.logger.debug(
@@ -52,10 +53,11 @@ export class ApplicationRoleService {
   }
 
   /**
-   * Get application role by ID
-   * @param id
-   * @param version
-   * @returns
+   * Retrieve a single application role by ID
+   * ค้นหาบทบาทแอปพลิเคชันเดียวตาม ID
+   * @param id - Role ID / รหัสบทบาท
+   * @param version - API version / เวอร์ชัน API
+   * @returns Role details / รายละเอียดบทบาท
    */
   async findOne(id: string, version: string): Promise<unknown> {
     this.logger.debug(
@@ -85,10 +87,11 @@ export class ApplicationRoleService {
   }
 
   /**
-   * Create new application role
-   * @param createApplicationRoleDto
-   * @param version
-   * @returns
+   * Create a new application role via microservice
+   * สร้างบทบาทแอปพลิเคชันใหม่ผ่านไมโครเซอร์วิส
+   * @param createApplicationRoleDto - Role creation data / ข้อมูลสำหรับสร้างบทบาท
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created role / บทบาทที่ถูกสร้าง
    */
   async create(
     createApplicationRoleDto: CreateApplicationRoleDto,
@@ -121,11 +124,12 @@ export class ApplicationRoleService {
   }
 
   /**
-   * Update application role
-   * @param id
-   * @param updateApplicationRoleDto
-   * @param version
-   * @returns
+   * Update an existing application role via microservice
+   * อัปเดตบทบาทแอปพลิเคชันที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param id - Role ID / รหัสบทบาท
+   * @param updateApplicationRoleDto - Role update data / ข้อมูลสำหรับอัปเดตบทบาท
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated role / บทบาทที่ถูกอัปเดต
    */
   async update(
     id: string,
@@ -160,10 +164,11 @@ export class ApplicationRoleService {
   }
 
   /**
-   * Delete application role
-   * @param id
-   * @param version
-   * @returns
+   * Delete an application role via microservice
+   * ลบบทบาทแอปพลิเคชันผ่านไมโครเซอร์วิส
+   * @param id - Role ID / รหัสบทบาท
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   async delete(id: string, version: string): Promise<unknown> {
     this.logger.debug(

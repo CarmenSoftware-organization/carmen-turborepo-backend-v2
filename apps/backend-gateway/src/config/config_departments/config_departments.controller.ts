@@ -63,8 +63,14 @@ export class Config_DepartmentsController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific hotel department (e.g., Kitchen, F&B, Housekeeping)
-   * including cost center information for budget allocation and requisition routing.
+   * Get a department by ID
+   * ค้นหาแผนกเดียวตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Department ID / รหัสแผนก
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Department detail / รายละเอียดแผนก
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('department.findOne'))
@@ -122,8 +128,14 @@ export class Config_DepartmentsController extends BaseHttpController {
   }
 
   /**
-   * Lists all hotel departments configured in the business unit, used to organize
-   * purchase requests, assign users, and track costs by operational area.
+   * Get all departments with pagination
+   * ค้นหารายการแผนกทั้งหมดพร้อมการแบ่งหน้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of departments / รายการแผนกพร้อมการแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('department.findAll'))
@@ -183,8 +195,14 @@ export class Config_DepartmentsController extends BaseHttpController {
   }
 
   /**
-   * Creates a new hotel department (e.g., Kitchen, Housekeeping, Spa) that can be
-   * assigned users and used as a cost center for procurement requisitions.
+   * Create a new department
+   * สร้างแผนกใหม่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Department creation data / ข้อมูลสำหรับสร้างแผนก
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created department / แผนกที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('department.create'))
@@ -243,7 +261,15 @@ export class Config_DepartmentsController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing department's configuration such as name or cost center settings.
+   * Update a department
+   * อัปเดตแผนก
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Department ID / รหัสแผนก
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Department update data / ข้อมูลสำหรับอัปเดตแผนก
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated department / แผนกที่อัปเดตแล้ว
    */
   @Patch(':id')
   @UseGuards(new AppIdGuard('department.update'))
@@ -308,7 +334,14 @@ export class Config_DepartmentsController extends BaseHttpController {
   }
 
   /**
-   * Removes a department from active configuration. Historical records are retained.
+   * Delete a department
+   * ลบแผนก
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Department ID / รหัสแผนก
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('department.delete'))

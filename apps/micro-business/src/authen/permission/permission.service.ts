@@ -29,6 +29,14 @@ export class PermissionService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a permission by ID
+   * ค้นหาสิทธิ์รายการเดียวตาม ID
+   * @param id - Permission ID / ID สิทธิ์
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Permission detail / รายละเอียดสิทธิ์
+   */
   @TryCatch
   async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -47,6 +55,14 @@ export class PermissionService {
     return Result.ok(permission);
   }
 
+  /**
+   * Find all permissions with pagination
+   * ค้นหาสิทธิ์ทั้งหมดพร้อมการแบ่งหน้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of permissions / รายการสิทธิ์แบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(user_id: string, tenant_id: string, paginate: any): Promise<Result<unknown>> {
     this.logger.debug(
@@ -94,6 +110,14 @@ export class PermissionService {
     });
   }
 
+  /**
+   * Create a new permission
+   * สร้างสิทธิ์ใหม่
+   * @param data - Permission creation data / ข้อมูลสร้างสิทธิ์
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created permission ID / ID สิทธิ์ที่สร้างแล้ว
+   */
   @TryCatch
   async create(data: IPermissionCreate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -127,6 +151,14 @@ export class PermissionService {
     return Result.ok({ id: newPermission.id });
   }
 
+  /**
+   * Update a permission
+   * แก้ไขสิทธิ์
+   * @param data - Permission update data / ข้อมูลแก้ไขสิทธิ์
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Updated permission ID / ID สิทธิ์ที่แก้ไขแล้ว
+   */
   @TryCatch
   async update(data: IPermissionUpdate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -155,6 +187,14 @@ export class PermissionService {
     return Result.ok({ id: updatedPermission.id });
   }
 
+  /**
+   * Delete a permission
+   * ลบสิทธิ์
+   * @param id - Permission ID / ID สิทธิ์
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Deleted permission ID / ID สิทธิ์ที่ลบแล้ว
+   */
   @TryCatch
   async remove(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(

@@ -23,6 +23,14 @@ export class ApplicationRoleService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a role by ID
+   * ค้นหาบทบาทรายการเดียวตาม ID
+   * @param id - Role ID / ID บทบาท
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Role detail / รายละเอียดบทบาท
+   */
   @TryCatch
   async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -41,6 +49,14 @@ export class ApplicationRoleService {
     return Result.ok(role);
   }
 
+  /**
+   * Find all roles with pagination
+   * ค้นหาบทบาททั้งหมดพร้อมการแบ่งหน้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of roles / รายการบทบาทแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(user_id: string, tenant_id: string, paginate: any): Promise<Result<unknown>> {
     this.logger.debug(
@@ -88,6 +104,14 @@ export class ApplicationRoleService {
     });
   }
 
+  /**
+   * Create a new role
+   * สร้างบทบาทใหม่
+   * @param data - Role creation data / ข้อมูลสร้างบทบาท
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created role ID / ID บทบาทที่สร้างแล้ว
+   */
   @TryCatch
   async create(data: IApplicationRoleCreate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -118,6 +142,14 @@ export class ApplicationRoleService {
     return Result.ok({ id: newRole.id });
   }
 
+  /**
+   * Update a role
+   * แก้ไขบทบาท
+   * @param data - Role update data / ข้อมูลแก้ไขบทบาท
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Updated role ID / ID บทบาทที่แก้ไขแล้ว
+   */
   @TryCatch
   async update(data: IApplicationRoleUpdate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -146,6 +178,14 @@ export class ApplicationRoleService {
     return Result.ok({ id: updatedRole.id });
   }
 
+  /**
+   * Delete a role
+   * ลบบทบาท
+   * @param id - Role ID / ID บทบาท
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Deleted role ID / ID บทบาทที่ลบแล้ว
+   */
   @TryCatch
   async remove(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug(

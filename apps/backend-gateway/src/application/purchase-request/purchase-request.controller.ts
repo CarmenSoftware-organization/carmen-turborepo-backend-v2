@@ -80,9 +80,11 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Lists all purchase requests across business units for the current user.
-   * Supports filtering by status, search term, and pagination for tracking
-   * PR documents through the procurement approval workflow.
+   * List all purchase requests with pagination and filtering
+   * ค้นหารายการทั้งหมดของใบขอซื้อพร้อมการแบ่งหน้าและตัวกรอง
+   * @param query - Pagination and filter parameters / พารามิเตอร์การแบ่งหน้าและตัวกรอง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of purchase requests / รายการใบขอซื้อแบบแบ่งหน้า
    */
   @Get('purchase-request')
   @Permission({ 'procurement.purchase_request': ['view'] })
@@ -170,9 +172,11 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the configured approval workflow stages (e.g., HOD, Purchaser, FC, GM)
-   * for purchase requests in a business unit. Used to display workflow progress
-   * and determine which approval steps a PR must pass through.
+   * Retrieve all workflow stages for purchase requests in a business unit
+   * ค้นหารายการทั้งหมดของขั้นตอนเวิร์กโฟลว์สำหรับใบขอซื้อในหน่วยธุรกิจ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of workflow stages / รายการขั้นตอนเวิร์กโฟลว์
    */
   @Get(':bu_code/purchase-request/workflow-stages')
   @Permission({ 'procurement.purchase_request': ['view'] })
@@ -243,9 +247,12 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Retrieves full details of a specific purchase request including line items,
-   * quantities, pricing, and current approval status. Used to review PR contents
-   * before approving, rejecting, or converting to a purchase order.
+   * Retrieve a purchase request by ID with full details
+   * ค้นหารายการเดียวตาม ID ของใบขอซื้อพร้อมรายละเอียดทั้งหมด
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Purchase request details / รายละเอียดใบขอซื้อ
    */
   @Get(':bu_code/purchase-request/:id')
   @UseGuards(new AppIdGuard('purchaseRequest.findOne'))
@@ -315,9 +322,12 @@ export class PurchaseRequestController extends BaseHttpController {
 
 
   /**
-   * Filters purchase requests by a specific workflow status (e.g., draft, pending,
-   * approved, rejected). Used by approvers and managers to view PRs at a particular
-   * stage of the approval workflow.
+   * Filter purchase requests by workflow status
+   * ค้นหาใบขอซื้อตามสถานะเวิร์กโฟลว์
+   * @param status - Workflow status filter / ตัวกรองสถานะเวิร์กโฟลว์
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Filtered list of purchase requests / รายการใบขอซื้อที่กรองแล้ว
    */
   @Get(':bu_code/purchase-request/:id/status/:status')
   @UseGuards(new AppIdGuard('purchaseRequest.approval'))
@@ -357,9 +367,12 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Creates a new purchase request for a department to request items or services.
-   * The PR starts in draft status with line items, quantities, and estimated costs,
-   * and can then be submitted for approval through the configured workflow.
+   * Create a new purchase request for a department
+   * สร้างใบขอซื้อใหม่สำหรับแผนก
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Purchase request creation data / ข้อมูลสำหรับสร้างใบขอซื้อ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created purchase request / ใบขอซื้อที่สร้างแล้ว
    */
   @Post(':bu_code/purchase-request')
   @UseGuards(new AppIdGuard('purchaseRequest.create'))
@@ -430,9 +443,12 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Duplicates one or more existing purchase requests, preserving their line items
-   * and details. Useful for recurring procurement needs where departments regularly
-   * order the same items.
+   * Duplicate one or more existing purchase requests
+   * ทำสำเนาใบขอซื้อที่มีอยู่หนึ่งรายการขึ้นไป
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param body - IDs of purchase requests to duplicate / รหัสใบขอซื้อที่ต้องการทำสำเนา
+   * @param version - API version / เวอร์ชัน API
+   * @returns Duplicated purchase requests / ใบขอซื้อที่ทำสำเนาแล้ว
    */
   @Post(':bu_code/purchase-request/duplicate-pr')
   @UseGuards(new AppIdGuard('purchaseRequest.duplicatePr'))
@@ -468,8 +484,13 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Splits selected line items from an existing purchase request into a new separate PR.
-   * Used when a purchaser needs to separate items for different vendors or delivery timelines.
+   * Split selected line items into a new purchase request
+   * แยกรายการที่เลือกออกเป็นใบขอซื้อใหม่
+   * @param id - Original purchase request ID / รหัสใบขอซื้อต้นฉบับ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param body - Detail IDs to split / รหัสรายละเอียดที่ต้องการแยก
+   * @param version - API version / เวอร์ชัน API
+   * @returns Split result with new purchase request / ผลลัพธ์การแยกพร้อมใบขอซื้อใหม่
    */
   @Post(':bu_code/purchase-request/:id/split')
   @UseGuards(new AppIdGuard('purchaseRequest.split'))
@@ -535,9 +556,13 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Submits a draft purchase request into the approval workflow.
-   * The PR moves from draft to pending status and becomes available for
-   * review by the next approver (e.g., HOD).
+   * Submit a draft purchase request into the approval workflow
+   * ส่งใบขอซื้อฉบับร่างเข้าสู่เวิร์กโฟลว์การอนุมัติ
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param payload - Submit payload / ข้อมูลการส่ง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Submitted purchase request / ใบขอซื้อที่ส่งแล้ว
    */
   @Patch(':bu_code/purchase-request/:id/submit')
   @UseGuards(new AppIdGuard('purchaseRequest.submit'))
@@ -574,9 +599,13 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Advances a purchase request through the approval workflow at the current stage.
-   * Approval roles (HOD, FC, GM) confirm the request; the purchase role adds vendor
-   * selection, pricing, tax, and discount details to prepare for PO conversion.
+   * Approve a purchase request at the current workflow stage
+   * อนุมัติใบขอซื้อในขั้นตอนปัจจุบันของเวิร์กโฟลว์
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param payload - Approval payload / ข้อมูลการอนุมัติ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Approved purchase request / ใบขอซื้อที่อนุมัติแล้ว
    */
   @Patch(':bu_code/purchase-request/:id/approve')
   @UseGuards(new AppIdGuard('purchaseRequest.approve'))
@@ -625,9 +654,13 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Rejects a purchase request at the current approval stage, returning it to the
-   * requester with a reason. Used by approvers (HOD, Purchaser, FC, GM) when the
-   * request does not meet requirements or budget constraints.
+   * Reject a purchase request at the current approval stage
+   * ปฏิเสธใบขอซื้อในขั้นตอนการอนุมัติปัจจุบัน
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param payload - Rejection payload with reason / ข้อมูลการปฏิเสธพร้อมเหตุผล
+   * @param version - API version / เวอร์ชัน API
+   * @returns Rejected purchase request / ใบขอซื้อที่ถูกปฏิเสธ
    */
   @Patch(':bu_code/purchase-request/:id/reject')
   @UseGuards(new AppIdGuard('purchaseRequest.reject'))
@@ -665,8 +698,13 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Sends a purchase request back to a previous workflow stage for corrections
-   * or additional information before it can proceed through approval.
+   * Send a purchase request back for review and corrections
+   * ส่งใบขอซื้อกลับเพื่อตรวจสอบและแก้ไข
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param payload - Review payload / ข้อมูลการตรวจสอบ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Reviewed purchase request / ใบขอซื้อที่ส่งกลับตรวจสอบ
    */
   @Patch(':bu_code/purchase-request/:id/review')
   @UseGuards(new AppIdGuard('purchaseRequest.review'))
@@ -703,8 +741,13 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Saves changes to a purchase request including header information and line item
-   * modifications (quantities, items, details) before submitting for approval.
+   * Save changes to a purchase request before submission
+   * บันทึกการเปลี่ยนแปลงใบขอซื้อก่อนการส่ง
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Updated data / ข้อมูลที่อัปเดต
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated purchase request / ใบขอซื้อที่อัปเดตแล้ว
    */
   @Patch(':bu_code/purchase-request/:id/save')
   @UseGuards(new AppIdGuard('purchaseRequest.update'))
@@ -770,8 +813,12 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Generates an Excel spreadsheet of the purchase request with all line items,
-   * pricing, and approval details for offline review or archival.
+   * Export a purchase request to an Excel spreadsheet
+   * ส่งออกใบขอซื้อเป็นไฟล์ Excel
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Excel file buffer and filename / บัฟเฟอร์ไฟล์ Excel และชื่อไฟล์
    */
   @Get(':bu_code/purchase-request/:id/export')
   @UseGuards(new AppIdGuard('purchaseRequest.export'))
@@ -828,8 +875,12 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Generates a printable PDF of the purchase request for physical signatures,
-   * filing, or sending to vendors. Includes line items, totals, and approval history.
+   * Generate a printable PDF of the purchase request
+   * สร้างไฟล์ PDF สำหรับพิมพ์ใบขอซื้อ
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns PDF file buffer and filename / บัฟเฟอร์ไฟล์ PDF และชื่อไฟล์
    */
   @Get(':bu_code/purchase-request/:id/print')
   @UseGuards(new AppIdGuard('purchaseRequest.print'))
@@ -886,8 +937,12 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Removes a purchase request that is no longer needed, typically a draft PR
-   * created in error or no longer required by the department.
+   * Delete a purchase request that is no longer needed
+   * ลบใบขอซื้อที่ไม่ต้องการแล้ว
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':bu_code/purchase-request/:id')
   @UseGuards(new AppIdGuard('purchaseRequest.delete'))
@@ -938,8 +993,12 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
-   * Retrieves cost allocation dimensions (e.g., department, cost center, project)
-   * for a specific PR line item. Used for financial reporting and budget tracking.
+   * Retrieve cost allocation dimensions for a purchase request detail
+   * ค้นหามิติการจัดสรรต้นทุนของรายละเอียดใบขอซื้อ
+   * @param detail_id - Purchase request detail ID / รหัสรายละเอียดใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Dimension data / ข้อมูลมิติ
    */
   @Get(':bu_code/purchase-request/detail/:detail_id/dimension')
   @UseGuards(new AppIdGuard('purchaseRequest.detail.findDimensions'))
@@ -977,8 +1036,12 @@ export class PurchaseRequestController extends BaseHttpController {
 
 
   /**
-   * Retrieves the change history and audit trail for a specific PR line item,
-   * including price changes, quantity adjustments, and approval actions at each stage.
+   * Retrieve change history for a purchase request detail
+   * ค้นหาประวัติการเปลี่ยนแปลงของรายละเอียดใบขอซื้อ
+   * @param detail_id - Purchase request detail ID / รหัสรายละเอียดใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Change history / ประวัติการเปลี่ยนแปลง
    */
   @Get(':bu_code/purchase-request/detail/:detail_id/history')
   @UseGuards(new AppIdGuard('purchaseRequest.detail.findhistory'))
@@ -1016,9 +1079,13 @@ export class PurchaseRequestController extends BaseHttpController {
 
 
   /**
-   * Calculates the total cost breakdown for a PR line item including unit price,
-   * tax, discount, and net amount. Used by purchasers to evaluate pricing from
-   * different vendors and price lists before finalizing the request.
+   * Calculate price breakdown for a purchase request detail
+   * คำนวณรายละเอียดราคาของรายการใบขอซื้อ
+   * @param detail_id - Purchase request detail ID / รหัสรายละเอียดใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param data - Calculation parameters / พารามิเตอร์การคำนวณ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Price calculation result / ผลลัพธ์การคำนวณราคา
    */
   @Get(':bu_code/purchase-request/detail/:detail_id/calculate')
   @UseGuards(new AppIdGuard('purchaseRequest.detail.findhistory'))

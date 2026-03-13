@@ -18,6 +18,12 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     super();
   }
 
+  /**
+   * Create audit context from payload
+   * สร้างบริบทการตรวจสอบจาก payload
+   * @param payload - Microservice payload / ข้อมูล payload จากไมโครเซอร์วิส
+   * @returns Audit context object / ออบเจกต์บริบทการตรวจสอบ
+   */
   private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
@@ -28,6 +34,12 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a good received note by ID
+   * ค้นหาใบรับสินค้ารายการเดียวตาม ID
+   * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id
+   * @returns Good received note detail / รายละเอียดใบรับสินค้า
+   */
   @MessagePattern({
     cmd: 'good-received-note.findOne',
     service: 'good-received-note',
@@ -44,6 +56,12 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all good received notes with pagination
+   * ค้นหาใบรับสินค้าทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Contains user_id, tenant_id, paginate / ประกอบด้วย user_id, tenant_id, paginate
+   * @returns Paginated list of good received notes / รายการใบรับสินค้าแบบแบ่งหน้า
+   */
   @MessagePattern({
     cmd: 'good-received-note.findAll',
     service: 'good-received-note',
@@ -60,6 +78,12 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Create a new good received note
+   * สร้างใบรับสินค้าใหม่
+   * @param payload - Contains data, user_id, tenant_id / ประกอบด้วย data, user_id, tenant_id
+   * @returns Created good received note / ใบรับสินค้าที่สร้างแล้ว
+   */
   @MessagePattern({
     cmd: 'good-received-note.create',
     service: 'good-received-note',
@@ -99,6 +123,12 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     }
   }
 
+  /**
+   * Update a good received note
+   * แก้ไขใบรับสินค้า
+   * @param payload - Contains updateGoodReceivedNoteDto, user_id, tenant_id / ประกอบด้วย updateGoodReceivedNoteDto, user_id, tenant_id
+   * @returns Updated good received note / ใบรับสินค้าที่แก้ไขแล้ว
+   */
   @MessagePattern({
     cmd: 'good-received-note.update',
     service: 'good-received-note',
@@ -115,6 +145,12 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a good received note
+   * ลบใบรับสินค้า
+   * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   @MessagePattern({
     cmd: 'good-received-note.delete',
     service: 'good-received-note',
@@ -131,6 +167,12 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Export a good received note to Excel
+   * ส่งออกใบรับสินค้าเป็นไฟล์ Excel
+   * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id
+   * @returns Excel export data / ข้อมูลส่งออก Excel
+   */
   @MessagePattern({
     cmd: 'good-received-note.export',
     service: 'good-received-note',
@@ -147,6 +189,12 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Reject a good received note
+   * ปฏิเสธใบรับสินค้า
+   * @param payload - Contains id, reason, user_id, tenant_id / ประกอบด้วย id, reason, user_id, tenant_id
+   * @returns Rejected good received note / ใบรับสินค้าที่ปฏิเสธแล้ว
+   */
   @MessagePattern({
     cmd: 'good-received-note.reject',
     service: 'good-received-note',
@@ -164,6 +212,12 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Approve a good received note
+   * อนุมัติใบรับสินค้า
+   * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id
+   * @returns Approved good received note / ใบรับสินค้าที่อนุมัติแล้ว
+   */
   @MessagePattern({
     cmd: 'good-received-note.approve',
     service: 'good-received-note',
@@ -182,6 +236,12 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
 
   // ==================== Good Received Note Detail CRUD ====================
 
+  /**
+   * Find a good received note detail by ID
+   * ค้นหารายละเอียดใบรับสินค้าตาม ID
+   * @param payload - Contains detail_id, user_id, tenant_id / ประกอบด้วย detail_id, user_id, tenant_id
+   * @returns Good received note detail / รายละเอียดใบรับสินค้า
+   */
   @MessagePattern({
     cmd: 'good-received-note-detail.find-by-id',
     service: 'good-received-note',
@@ -198,6 +258,12 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all details of a good received note
+   * ค้นหารายละเอียดทั้งหมดของใบรับสินค้า
+   * @param payload - Contains grn_id, user_id, tenant_id / ประกอบด้วย grn_id, user_id, tenant_id
+   * @returns List of good received note details / รายการรายละเอียดใบรับสินค้า
+   */
   @MessagePattern({
     cmd: 'good-received-note-detail.find-all',
     service: 'good-received-note',
@@ -214,6 +280,12 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Create a detail item for a good received note
+   * สร้างรายละเอียดสินค้าในใบรับสินค้า
+   * @param payload - Contains grn_id, data, user_id, tenant_id / ประกอบด้วย grn_id, data, user_id, tenant_id
+   * @returns Created detail item / รายละเอียดสินค้าที่สร้างแล้ว
+   */
   @MessagePattern({
     cmd: 'good-received-note-detail.create',
     service: 'good-received-note',
@@ -231,6 +303,12 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update a detail item of a good received note
+   * แก้ไขรายละเอียดสินค้าในใบรับสินค้า
+   * @param payload - Contains detail_id, data, user_id, tenant_id / ประกอบด้วย detail_id, data, user_id, tenant_id
+   * @returns Updated detail item / รายละเอียดสินค้าที่แก้ไขแล้ว
+   */
   @MessagePattern({
     cmd: 'good-received-note-detail.update',
     service: 'good-received-note',
@@ -248,6 +326,12 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a detail item of a good received note
+   * ลบรายละเอียดสินค้าในใบรับสินค้า
+   * @param payload - Contains detail_id, user_id, tenant_id / ประกอบด้วย detail_id, user_id, tenant_id
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   @MessagePattern({
     cmd: 'good-received-note-detail.delete',
     service: 'good-received-note',

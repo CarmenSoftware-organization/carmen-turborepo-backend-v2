@@ -45,6 +45,12 @@ export class PurchaseRequestCommentService {
 
   private readonly logger: BackendLogger = new BackendLogger(PurchaseRequestCommentService.name);
 
+  /**
+   * Initialize the Prisma service for tenant-specific database access
+   * เริ่มต้นบริการ Prisma สำหรับการเข้าถึงฐานข้อมูลเฉพาะผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / ID ผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._bu_code = bu_code;
     this._userId = userId;
@@ -68,6 +74,12 @@ export class PurchaseRequestCommentService {
     private readonly tenantService: TenantService,
   ) {}
 
+  /**
+   * Find a purchase request comment by ID with user profile information
+   * ค้นหาความคิดเห็นใบขอซื้อรายการเดียวตาม ID พร้อมข้อมูลโปรไฟล์ผู้ใช้
+   * @param id - Comment ID / ID ของความคิดเห็น
+   * @returns Comment data with user profile / ข้อมูลความคิดเห็นพร้อมโปรไฟล์ผู้ใช้
+   */
   async findById(id: string): Promise<any> {
     this.logger.debug(
       {
@@ -124,6 +136,13 @@ export class PurchaseRequestCommentService {
     };
   }
 
+  /**
+   * Find all comments for a specific purchase request with pagination and user profiles
+   * ค้นหาความคิดเห็นทั้งหมดของใบขอซื้อที่ระบุพร้อมการแบ่งหน้าและโปรไฟล์ผู้ใช้
+   * @param purchaseRequestId - Purchase request ID / ID ของใบขอซื้อ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of comments with user profiles / รายการความคิดเห็นพร้อมโปรไฟล์ผู้ใช้ที่แบ่งหน้าแล้ว
+   */
   async findAllByPurchaseRequestId(purchaseRequestId: string, paginate: IPaginate): Promise<any> {
     this.logger.debug(
       {
@@ -213,6 +232,12 @@ export class PurchaseRequestCommentService {
     };
   }
 
+  /**
+   * Create a new comment on a purchase request
+   * สร้างความคิดเห็นใหม่ในใบขอซื้อ
+   * @param createDto - Comment creation data / ข้อมูลสำหรับสร้างความคิดเห็น
+   * @returns Created comment data / ข้อมูลความคิดเห็นที่สร้างแล้ว
+   */
   async create(createDto: CreatePurchaseRequestComment): Promise<any> {
     this.logger.debug(
       {
@@ -264,6 +289,13 @@ export class PurchaseRequestCommentService {
     };
   }
 
+  /**
+   * Update an existing purchase request comment (own comments only)
+   * อัปเดตความคิดเห็นใบขอซื้อที่มีอยู่ (เฉพาะความคิดเห็นของตนเอง)
+   * @param id - Comment ID to update / ID ของความคิดเห็นที่ต้องการอัปเดต
+   * @param updateDto - Updated comment data / ข้อมูลความคิดเห็นที่อัปเดต
+   * @returns Updated comment data / ข้อมูลความคิดเห็นที่อัปเดตแล้ว
+   */
   async update(id: string, updateDto: UpdatePurchaseRequestComment): Promise<any> {
     this.logger.debug(
       {
@@ -331,6 +363,12 @@ export class PurchaseRequestCommentService {
     };
   }
 
+  /**
+   * Soft delete a purchase request comment (own comments only)
+   * ลบความคิดเห็นใบขอซื้อแบบซอฟต์ (เฉพาะความคิดเห็นของตนเอง)
+   * @param id - Comment ID to delete / ID ของความคิดเห็นที่ต้องการลบ
+   * @returns Deleted comment ID / ID ของความคิดเห็นที่ลบแล้ว
+   */
   async delete(id: string): Promise<any> {
     this.logger.debug(
       {
@@ -386,6 +424,13 @@ export class PurchaseRequestCommentService {
     };
   }
 
+  /**
+   * Add an attachment to a purchase request comment (own comments only)
+   * เพิ่มไฟล์แนบในความคิดเห็นใบขอซื้อ (เฉพาะความคิดเห็นของตนเอง)
+   * @param id - Comment ID / ID ของความคิดเห็น
+   * @param attachment - Attachment data to add / ข้อมูลไฟล์แนบที่ต้องการเพิ่ม
+   * @returns Updated comment with new attachment / ความคิดเห็นที่อัปเดตพร้อมไฟล์แนบใหม่
+   */
   async addAttachment(id: string, attachment: Attachment): Promise<any> {
     this.logger.debug(
       {
@@ -446,6 +491,13 @@ export class PurchaseRequestCommentService {
     };
   }
 
+  /**
+   * Remove an attachment from a purchase request comment by file token (own comments only)
+   * ลบไฟล์แนบจากความคิดเห็นใบขอซื้อตาม file token (เฉพาะความคิดเห็นของตนเอง)
+   * @param id - Comment ID / ID ของความคิดเห็น
+   * @param fileToken - File token of the attachment to remove / token ของไฟล์แนบที่ต้องการลบ
+   * @returns Updated comment without the removed attachment / ความคิดเห็นที่อัปเดตโดยไม่มีไฟล์แนบที่ลบ
+   */
   async removeAttachment(id: string, fileToken: string): Promise<any> {
     this.logger.debug(
       {

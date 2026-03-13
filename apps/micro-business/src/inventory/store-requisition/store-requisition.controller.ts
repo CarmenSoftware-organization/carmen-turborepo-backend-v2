@@ -27,6 +27,12 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     super();
   }
 
+  /**
+   * Create audit context from payload
+   * สร้างบริบทการตรวจสอบจาก payload
+   * @param payload - Microservice payload / ข้อมูล payload จากไมโครเซอร์วิส
+   * @returns Audit context object / ออบเจกต์บริบทการตรวจสอบ
+   */
   private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
@@ -37,6 +43,12 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a store requisition by ID
+   * ค้นหาใบเบิกสินค้ารายการเดียวตาม ID
+   * @param payload - Contains id, user_id, bu_code / ประกอบด้วย id, user_id, bu_code
+   * @returns Store requisition detail / รายละเอียดใบเบิกสินค้า
+   */
   @MessagePattern({
     cmd: 'store-requisition.find-by-id',
     service: 'store-requisition',
@@ -59,6 +71,12 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all store requisitions with pagination
+   * ค้นหาใบเบิกสินค้าทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Contains user_id, bu_code, paginate, userDatas / ประกอบด้วย user_id, bu_code, paginate, userDatas
+   * @returns Paginated list of store requisitions / รายการใบเบิกสินค้าแบบแบ่งหน้า
+   */
   @MessagePattern({
     cmd: 'store-requisition.find-all',
     service: 'store-requisition',
@@ -86,6 +104,12 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     return this.handleMultiPaginatedResult(result);
   }
 
+  /**
+   * Create a new store requisition
+   * สร้างใบเบิกสินค้าใหม่
+   * @param payload - Contains data, user_id, bu_code / ประกอบด้วย data, user_id, bu_code
+   * @returns Created store requisition / ใบเบิกสินค้าที่สร้างแล้ว
+   */
   @MessagePattern({
     cmd: 'store-requisition.create',
     service: 'store-requisition',
@@ -105,6 +129,12 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Submit a store requisition for approval
+   * ส่งใบเบิกสินค้าเพื่อขออนุมัติ
+   * @param payload - Contains id, payload, user_id, bu_code / ประกอบด้วย id, payload, user_id, bu_code
+   * @returns Submitted store requisition / ใบเบิกสินค้าที่ส่งแล้ว
+   */
   @MessagePattern({
     cmd: 'store-requisition.submit',
     service: 'store-requisition',
@@ -126,6 +156,12 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Approve a store requisition
+   * อนุมัติใบเบิกสินค้า
+   * @param payload - Contains id, body, user_id, bu_code / ประกอบด้วย id, body, user_id, bu_code
+   * @returns Approved store requisition / ใบเบิกสินค้าที่อนุมัติแล้ว
+   */
   @MessagePattern({
     cmd: 'store-requisition.approve',
     service: 'store-requisition',
@@ -154,6 +190,12 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Reject a store requisition
+   * ปฏิเสธใบเบิกสินค้า
+   * @param payload - Contains id, body with rejection reason, user_id, bu_code / ประกอบด้วย id, body พร้อมเหตุผลการปฏิเสธ, user_id, bu_code
+   * @returns Rejected store requisition / ใบเบิกสินค้าที่ปฏิเสธแล้ว
+   */
   @MessagePattern({
     cmd: 'store-requisition.reject',
     service: 'store-requisition',
@@ -182,6 +224,12 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Review a store requisition
+   * ตรวจสอบใบเบิกสินค้า
+   * @param payload - Contains id, body with review data, user_id, bu_code / ประกอบด้วย id, body พร้อมข้อมูลการตรวจสอบ, user_id, bu_code
+   * @returns Reviewed store requisition / ใบเบิกสินค้าที่ตรวจสอบแล้ว
+   */
   @MessagePattern({
     cmd: 'store-requisition.review',
     service: 'store-requisition',
@@ -210,6 +258,12 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Save/update a store requisition
+   * บันทึก/แก้ไขใบเบิกสินค้า
+   * @param payload - Contains id, data, user_id, bu_code / ประกอบด้วย id, data, user_id, bu_code
+   * @returns Updated store requisition / ใบเบิกสินค้าที่แก้ไขแล้ว
+   */
   @MessagePattern({
     cmd: 'store-requisition.save',
     service: 'store-requisition',
@@ -231,6 +285,12 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Delete a store requisition
+   * ลบใบเบิกสินค้า
+   * @param payload - Contains id, user_id, bu_code / ประกอบด้วย id, user_id, bu_code
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   @MessagePattern({
     cmd: 'store-requisition.delete',
     service: 'store-requisition',
@@ -251,6 +311,12 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all store requisitions filtered by status
+   * ค้นหาใบเบิกสินค้าทั้งหมดตามสถานะ
+   * @param payload - Contains status, paginate, user_id, bu_code / ประกอบด้วย status, paginate, user_id, bu_code
+   * @returns Paginated list of store requisitions by status / รายการใบเบิกสินค้าตามสถานะแบบแบ่งหน้า
+   */
   @MessagePattern({
     cmd: 'store-requisition.find-all-by-status',
     service: 'store-requisition',
@@ -273,6 +339,12 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Find all pending store requisitions for the current user
+   * ค้นหาใบเบิกสินค้าที่รอดำเนินการของผู้ใช้ปัจจุบัน
+   * @param payload - Contains user_id, bu_code, paginate / ประกอบด้วย user_id, bu_code, paginate
+   * @returns Paginated list of pending store requisitions / รายการใบเบิกสินค้าที่รอดำเนินการแบบแบ่งหน้า
+   */
   @MessagePattern({
     cmd: 'my-pending.store-requisition.find-all',
     service: 'my-pending',
@@ -294,6 +366,12 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Count all pending store requisitions for the current user
+   * นับจำนวนใบเบิกสินค้าที่รอดำเนินการของผู้ใช้ปัจจุบัน
+   * @param payload - Contains user_id, bu_code / ประกอบด้วย user_id, bu_code
+   * @returns Count of pending store requisitions / จำนวนใบเบิกสินค้าที่รอดำเนินการ
+   */
   @MessagePattern({
     cmd: 'my-pending.store-requisition.find-all.count',
     service: 'my-pending',

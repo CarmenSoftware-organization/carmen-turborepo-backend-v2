@@ -49,8 +49,11 @@ export class ApplicationRoleController extends BaseHttpController {
   }
 
   /**
-   * Lists all named role bundles (e.g., Admin, Purchaser, HOD, GM) defined in the platform.
-   * These roles group permissions to simplify user access management across hotel properties.
+   * List all application roles
+   * ค้นหารายการบทบาทแอปพลิเคชันทั้งหมด
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Role list / รายการบทบาท
    */
   @Get()
   @UseGuards(new AppIdGuard('application-role.findAll'))
@@ -101,8 +104,12 @@ export class ApplicationRoleController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the details of a specific application role, including its name and metadata.
-   * Used to inspect role configuration before assigning it to users or modifying its permissions.
+   * Get an application role by ID
+   * ค้นหาบทบาทแอปพลิเคชันเดียวตาม ID
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - Role ID / รหัสบทบาท
+   * @param version - API version / เวอร์ชัน API
+   * @returns Role details / รายละเอียดบทบาท
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('application-role.findOne'))
@@ -169,8 +176,12 @@ export class ApplicationRoleController extends BaseHttpController {
   }
 
   /**
-   * Creates a new named role bundle in the ERP platform.
-   * After creation, permissions can be assigned to define what actions users with this role can perform.
+   * Create a new application role
+   * สร้างบทบาทแอปพลิเคชันใหม่
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param createApplicationRoleDto - Role creation data / ข้อมูลสำหรับสร้างบทบาท
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created role / บทบาทที่ถูกสร้าง
    */
   @Post()
   @UseGuards(new AppIdGuard('application-role.create'))
@@ -233,8 +244,13 @@ export class ApplicationRoleController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing application role definition, such as renaming it or updating metadata.
-   * This affects all users assigned to this role across the platform.
+   * Update an existing application role
+   * อัปเดตบทบาทแอปพลิเคชันที่มีอยู่
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - Role ID / รหัสบทบาท
+   * @param updateApplicationRoleDto - Role update data / ข้อมูลสำหรับอัปเดตบทบาท
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated role / บทบาทที่ถูกอัปเดต
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('application-role.update'))
@@ -314,8 +330,12 @@ export class ApplicationRoleController extends BaseHttpController {
   }
 
   /**
-   * Removes an application role from the platform.
-   * Users previously assigned this role will lose the associated permissions.
+   * Delete an application role
+   * ลบบทบาทแอปพลิเคชันออกจากระบบ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param id - Role ID / รหัสบทบาท
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('application-role.delete'))

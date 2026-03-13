@@ -52,6 +52,13 @@ export class PhysicalCountPeriodController extends BaseHttpController {
     super();
   }
 
+  /**
+   * Get the currently active physical count period
+   * ดึงรอบการตรวจนับสินค้าที่กำลังดำเนินอยู่ในปัจจุบัน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Current physical count period / รอบการตรวจนับสินค้าปัจจุบัน
+   */
   @Get(':bu_code/physical-count-period/current')
   @UseGuards(new AppIdGuard('physicalCountPeriod.current'))
   @HttpCode(HttpStatus.OK)
@@ -98,8 +105,12 @@ export class PhysicalCountPeriodController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific physical count time window, including its date range
-   * and status, to determine when inventory verification must be completed.
+   * Get a physical count period by ID
+   * ค้นหารอบการตรวจนับสินค้าเดียวตาม ID
+   * @param id - Physical count period ID / รหัสรอบการตรวจนับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Physical count period details / รายละเอียดรอบการตรวจนับสินค้า
    */
   @Get(':bu_code/physical-count-period/:id')
   @UseGuards(new AppIdGuard('physicalCountPeriod.findOne'))
@@ -153,8 +164,12 @@ export class PhysicalCountPeriodController extends BaseHttpController {
   }
 
   /**
-   * Lists all defined physical count periods for the business unit, allowing
-   * inventory managers to plan and schedule recurring stock verification cycles.
+   * List all physical count periods with pagination
+   * ค้นหารอบการตรวจนับสินค้าทั้งหมดพร้อมการแบ่งหน้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated physical count period list / รายการรอบการตรวจนับสินค้าแบบแบ่งหน้า
    */
   @Get(':bu_code/physical-count-period')
   @UseGuards(new AppIdGuard('physicalCountPeriod.findAll'))
@@ -203,8 +218,12 @@ export class PhysicalCountPeriodController extends BaseHttpController {
   }
 
   /**
-   * Defines a new time window during which physical inventory counts must
-   * be completed, establishing the schedule for periodic stock verification.
+   * Create a new physical count period
+   * สร้างรอบการตรวจนับสินค้าใหม่
+   * @param createDto - Period creation data / ข้อมูลสำหรับสร้างรอบการตรวจนับ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created physical count period / รอบการตรวจนับสินค้าที่สร้างขึ้น
    */
   @Post(':bu_code/physical-count-period')
   @UseGuards(new AppIdGuard('physicalCountPeriod.create'))
@@ -256,8 +275,13 @@ export class PhysicalCountPeriodController extends BaseHttpController {
   }
 
   /**
-   * Modifies the date range or status of a physical count period, such as
-   * extending the deadline when staff need more time for stock verification.
+   * Update a physical count period
+   * อัปเดตรอบการตรวจนับสินค้า
+   * @param id - Physical count period ID / รหัสรอบการตรวจนับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Fields to update / ข้อมูลที่ต้องการอัปเดต
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated physical count period / รอบการตรวจนับสินค้าที่อัปเดตแล้ว
    */
   @Patch(':bu_code/physical-count-period/:id')
   @UseGuards(new AppIdGuard('physicalCountPeriod.update'))
@@ -314,8 +338,12 @@ export class PhysicalCountPeriodController extends BaseHttpController {
   }
 
   /**
-   * Removes a physical count period created in error. Periods with
-   * associated physical counts cannot be deleted.
+   * Delete a physical count period by ID
+   * ลบรอบการตรวจนับสินค้าตาม ID
+   * @param id - Physical count period ID / รหัสรอบการตรวจนับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':bu_code/physical-count-period/:id')
   @UseGuards(new AppIdGuard('physicalCountPeriod.delete'))

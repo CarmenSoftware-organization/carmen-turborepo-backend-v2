@@ -42,8 +42,13 @@ export class InventoryAdjustmentController extends BaseHttpController {
   }
 
   /**
-   * Lists all manual inventory corrections (stock-in and stock-out) for the
-   * business unit, with optional filtering by adjustment type.
+   * List all inventory adjustments with optional type filtering.
+   * ค้นหารายการปรับปรุงสินค้าคงคลังทั้งหมดพร้อมตัวกรองประเภท
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination and filter parameters / พารามิเตอร์การแบ่งหน้าและตัวกรอง
+   * @param version - API version / เวอร์ชัน API
+   * @param type - Adjustment type filter (stock-in/stock-out) / ตัวกรองประเภท (รับเข้า/จ่ายออก)
+   * @returns Paginated list of inventory adjustments / รายการปรับปรุงสินค้าคงคลังพร้อมการแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('inventoryAdjustment.findAll'))
@@ -84,8 +89,13 @@ export class InventoryAdjustmentController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a single inventory adjustment record (stock-in or stock-out) by ID,
-   * including the adjusted items, quantities, and reason for the correction.
+   * Retrieve a single inventory adjustment by ID and type.
+   * ค้นหารายการปรับปรุงสินค้าคงคลังเดียวตาม ID และประเภท
+   * @param id - Adjustment record ID / รหัสรายการปรับปรุง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @param type - Adjustment type (stock-in/stock-out) / ประเภทการปรับปรุง (รับเข้า/จ่ายออก)
+   * @returns Inventory adjustment record / รายการปรับปรุงสินค้าคงคลัง
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('inventoryAdjustment.findOne'))

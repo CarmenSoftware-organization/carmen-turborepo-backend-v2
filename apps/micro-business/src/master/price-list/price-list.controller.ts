@@ -29,6 +29,12 @@ export class PriceListController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find a single price list by ID
+   * ค้นหารายการราคาเดียวตาม ID
+   * @param payload - Microservice payload containing price list ID / ข้อมูล payload ที่มี ID ของรายการราคา
+   * @returns Price list detail / รายละเอียดรายการราคา
+   */
   @MessagePattern({ cmd: 'price-list.findOne', service: 'price-list' })
   async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, PriceListController.name);
@@ -42,6 +48,12 @@ export class PriceListController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all price lists with pagination
+   * ค้นหารายการราคาทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing pagination parameters / ข้อมูล payload ที่มีพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of price lists / รายการราคาพร้อมการแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'price-list.findAll', service: 'price-list' })
   async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, PriceListController.name);
@@ -55,6 +67,12 @@ export class PriceListController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Find multiple price lists by their IDs with pagination
+   * ค้นหารายการราคาหลายรายการตาม ID พร้อมการแบ่งหน้า
+   * @param payload - Microservice payload containing array of price list IDs / ข้อมูล payload ที่มีอาร์เรย์ของ ID รายการราคา
+   * @returns Paginated list of price lists matching the IDs / รายการราคาที่ตรงกับ ID พร้อมการแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'price-list.find-all-by-id', service: 'price-list' })
   async findAllById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAllById', payload }, PriceListController.name);
@@ -69,6 +87,12 @@ export class PriceListController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Compare prices across price lists
+   * เปรียบเทียบราคาจากรายการราคาต่างๆ
+   * @param payload - Microservice payload containing price comparison data / ข้อมูล payload ที่มีข้อมูลเปรียบเทียบราคา
+   * @returns Price comparison results / ผลการเปรียบเทียบราคา
+   */
   @MessagePattern({ cmd: 'price-list.price-compare', service: 'price-list' })
   async priceCompare(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'priceCompare', payload }, PriceListController.name);
@@ -82,6 +106,12 @@ export class PriceListController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Create a new price list
+   * สร้างรายการราคาใหม่
+   * @param payload - Microservice payload containing price list data / ข้อมูล payload ที่มีข้อมูลรายการราคา
+   * @returns Created price list ID / ID ของรายการราคาที่สร้างขึ้น
+   */
   @MessagePattern({ cmd: 'price-list.create', service: 'price-list' })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, PriceListController.name);
@@ -94,6 +124,12 @@ export class PriceListController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an existing price list
+   * อัปเดตรายการราคาที่มีอยู่
+   * @param payload - Microservice payload containing updated price list data / ข้อมูล payload ที่มีข้อมูลรายการราคาที่อัปเดต
+   * @returns Updated price list ID / ID ของรายการราคาที่อัปเดต
+   */
   @MessagePattern({ cmd: 'price-list.update', service: 'price-list' })
   async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, PriceListController.name);
@@ -106,6 +142,12 @@ export class PriceListController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Remove a price list (soft delete)
+   * ลบรายการราคา (ลบแบบซอฟต์)
+   * @param payload - Microservice payload containing price list ID / ข้อมูล payload ที่มี ID ของรายการราคา
+   * @returns Removed price list ID / ID ของรายการราคาที่ลบ
+   */
   @MessagePattern({ cmd: 'price-list.remove', service: 'price-list' })
   async remove(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'remove', payload }, PriceListController.name);
@@ -119,6 +161,12 @@ export class PriceListController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Upload price list data from an Excel file
+   * อัปโหลดข้อมูลรายการราคาจากไฟล์ Excel
+   * @param payload - Microservice payload containing Excel file data / ข้อมูล payload ที่มีข้อมูลไฟล์ Excel
+   * @returns Upload result / ผลการอัปโหลด
+   */
   @MessagePattern({ cmd: 'price-list.uploadExcel', service: 'price-list' })
   async uploadExcel(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'uploadExcel', payload }, PriceListController.name);
@@ -132,6 +180,12 @@ export class PriceListController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Download price list data as an Excel file
+   * ดาวน์โหลดข้อมูลรายการราคาเป็นไฟล์ Excel
+   * @param payload - Microservice payload containing download parameters / ข้อมูล payload ที่มีพารามิเตอร์การดาวน์โหลด
+   * @returns Excel file data / ข้อมูลไฟล์ Excel
+   */
   @MessagePattern({ cmd: 'price-list.downloadExcel', service: 'price-list' })
   async downloadExcel(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'downloadExcel', payload }, PriceListController.name);
@@ -145,6 +199,12 @@ export class PriceListController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all price list details by detail IDs
+   * ค้นหารายละเอียดรายการราคาทั้งหมดตาม ID รายละเอียด
+   * @param payload - Microservice payload containing array of detail IDs / ข้อมูล payload ที่มีอาร์เรย์ของ ID รายละเอียด
+   * @returns List of price list details / รายการรายละเอียดรายการราคา
+   */
   @MessagePattern({ cmd: 'price-list.find-all-by-detail-id', service: 'price-list' })
   async findAllByDetailId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAllByDetailId', payload }, PriceListController.name);
@@ -158,6 +218,12 @@ export class PriceListController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Import price list data from a CSV file
+   * นำเข้าข้อมูลรายการราคาจากไฟล์ CSV
+   * @param payload - Microservice payload containing CSV content / ข้อมูล payload ที่มีเนื้อหา CSV
+   * @returns Import result / ผลการนำเข้า
+   */
   @MessagePattern({ cmd: 'price-list.importCsv', service: 'price-list' })
   async importCsv(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'importCsv', payload: { ...payload, csvContent: payload.csvContent?.substring(0, 100) + '...' } }, PriceListController.name);

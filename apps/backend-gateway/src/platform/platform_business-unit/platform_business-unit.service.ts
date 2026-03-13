@@ -21,6 +21,15 @@ export class Platform_BusinessUnitService {
     private readonly businessUnitService: ClientProxy,
   ) { }
 
+  /**
+   * Create a new business unit via microservice
+   * สร้างหน่วยธุรกิจใหม่ผ่านไมโครเซอร์วิส
+   * @param data - Business unit creation data / ข้อมูลสำหรับสร้างหน่วยธุรกิจ
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created business unit / หน่วยธุรกิจที่ถูกสร้าง
+   */
   async createBusinessUnit(
     data: IBusinessUnitCreate,
     user_id: string,
@@ -54,6 +63,15 @@ export class Platform_BusinessUnitService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Update an existing business unit via microservice
+   * อัปเดตข้อมูลหน่วยธุรกิจที่มีอยู่ผ่านไมโครเซอร์วิส
+   * @param data - Business unit update data / ข้อมูลสำหรับอัปเดตหน่วยธุรกิจ
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated business unit / หน่วยธุรกิจที่ถูกอัปเดต
+   */
   async updateBusinessUnit(
     data: IBusinessUnitUpdate,
     user_id: string,
@@ -87,6 +105,15 @@ export class Platform_BusinessUnitService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Delete a business unit via microservice
+   * ลบหน่วยธุรกิจผ่านไมโครเซอร์วิส
+   * @param id - Business unit ID / รหัสหน่วยธุรกิจ
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   async deleteBusinessUnit(
     id: string,
     user_id: string,
@@ -120,6 +147,15 @@ export class Platform_BusinessUnitService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Retrieve all business units with pagination
+   * ค้นหารายการหน่วยธุรกิจทั้งหมดพร้อมการแบ่งหน้า
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated business unit list / รายการหน่วยธุรกิจแบบแบ่งหน้า
+   */
   async getBusinessUnitList(
     user_id: string,
     tenant_id: string,
@@ -162,6 +198,15 @@ export class Platform_BusinessUnitService {
     });
   }
 
+  /**
+   * Retrieve a single business unit by ID
+   * ค้นหาหน่วยธุรกิจเดียวตาม ID
+   * @param id - Business unit ID / รหัสหน่วยธุรกิจ
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Business unit details / รายละเอียดหน่วยธุรกิจ
+   */
   async getBusinessUnitById(
     id: string,
     user_id: string,

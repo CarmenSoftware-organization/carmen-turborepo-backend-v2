@@ -32,12 +32,27 @@ export class TransferService {
     private readonly tenantService: TenantService,
   ) {}
 
+  /**
+   * Generate transfer document number
+   * สร้างเลขที่เอกสารโอนย้าย
+   * @param date - Transfer date / วันที่โอนย้าย
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @returns Generated document number / เลขที่เอกสารที่สร้างขึ้น
+   */
   private async generateTRNo(date: string, tenant_id: string, user_id: string): Promise<string> {
     const datePrefix = format(new Date(date), 'yyyyMMdd');
     const runningNumber = await this.getNextRunningNumber(tenant_id, user_id);
     return `TR-${datePrefix}-${runningNumber.toString().padStart(5, '0')}`;
   }
 
+  /**
+   * Get next running number for transfer document
+   * ดึงเลขลำดับถัดไปสำหรับเอกสารโอนย้าย
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @returns Next running number / เลขลำดับถัดไป
+   */
   private async getNextRunningNumber(tenant_id: string, user_id: string): Promise<number> {
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,6 +72,14 @@ export class TransferService {
     }
   }
 
+  /**
+   * Find a transfer by ID
+   * ค้นหาการโอนย้ายรายการเดียวตาม ID
+   * @param id - Transfer ID / ID การโอนย้าย
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Transfer detail with items / รายละเอียดการโอนย้ายพร้อมรายการ
+   */
   @TryCatch
   async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findOne', id, user_id, tenant_id }, TransferService.name);
@@ -90,6 +113,14 @@ export class TransferService {
     return Result.ok(serializedData);
   }
 
+  /**
+   * Find all transfers with pagination
+   * ค้นหาการโอนย้ายทั้งหมดพร้อมการแบ่งหน้า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of transfers / รายการการโอนย้ายแบบแบ่งหน้า
+   */
   @TryCatch
   async findAll(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAll', user_id, tenant_id, paginate }, TransferService.name);
@@ -166,6 +197,14 @@ export class TransferService {
     });
   }
 
+  /**
+   * Create a new transfer with optional detail lines
+   * สร้างการโอนย้ายใหม่พร้อมรายการรายละเอียด (ไม่บังคับ)
+   * @param data - Transfer creation data / ข้อมูลสร้างการโอนย้าย
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created transfer ID and number / ID และเลขที่การโอนย้ายที่สร้างแล้ว
+   */
   @TryCatch
   async create(data: ITransferCreate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'create', data, user_id, tenant_id }, TransferService.name);
@@ -278,6 +317,14 @@ export class TransferService {
     return Result.ok(tx);
   }
 
+  /**
+   * Update a transfer
+   * แก้ไขการโอนย้าย
+   * @param data - Transfer update data / ข้อมูลแก้ไขการโอนย้าย
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Updated transfer / การโอนย้ายที่แก้ไขแล้ว
+   */
   @TryCatch
   async update(data: ITransferUpdate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'update', data, user_id, tenant_id }, TransferService.name);
@@ -334,6 +381,14 @@ export class TransferService {
     return Result.ok(transfer);
   }
 
+  /**
+   * Soft delete a transfer and its details
+   * ลบการโอนย้ายและรายการรายละเอียดแบบซอฟต์ดีลีท
+   * @param id - Transfer ID / ID การโอนย้าย
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Deleted transfer / การโอนย้ายที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id, tenant_id }, TransferService.name);
@@ -372,6 +427,14 @@ export class TransferService {
 
   // ==================== Transfer Detail CRUD ====================
 
+  /**
+   * Find a transfer detail by ID
+   * ค้นหารายการรายละเอียดการโอนย้ายตาม ID
+   * @param detailId - Transfer detail ID / ID รายการรายละเอียดการโอนย้าย
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Transfer detail / รายการรายละเอียดการโอนย้าย
+   */
   @TryCatch
   async findDetailById(detailId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findDetailById', detailId, user_id, tenant_id }, TransferService.name);
@@ -395,6 +458,14 @@ export class TransferService {
     return Result.ok(detail);
   }
 
+  /**
+   * Find all details by transfer ID
+   * ค้นหารายการรายละเอียดทั้งหมดตาม ID การโอนย้าย
+   * @param transferId - Transfer ID / ID การโอนย้าย
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns List of transfer details / รายการรายละเอียดการโอนย้าย
+   */
   @TryCatch
   async findDetailsByTransferId(transferId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findDetailsByTransferId', transferId, user_id, tenant_id }, TransferService.name);
@@ -414,6 +485,15 @@ export class TransferService {
     return Result.ok(details);
   }
 
+  /**
+   * Create a transfer detail line
+   * สร้างรายการรายละเอียดการโอนย้าย
+   * @param transferId - Transfer ID / ID การโอนย้าย
+   * @param data - Detail creation data / ข้อมูลสร้างรายการรายละเอียด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created detail / รายการรายละเอียดที่สร้างแล้ว
+   */
   @TryCatch
   async createDetail(transferId: string, data: ITransferDetailCreate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'createDetail', transferId, data, user_id, tenant_id }, TransferService.name);
@@ -477,6 +557,15 @@ export class TransferService {
     return Result.ok(detail);
   }
 
+  /**
+   * Update a transfer detail line
+   * แก้ไขรายการรายละเอียดการโอนย้าย
+   * @param detailId - Transfer detail ID / ID รายการรายละเอียดการโอนย้าย
+   * @param data - Detail update data / ข้อมูลแก้ไขรายการรายละเอียด
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Updated detail / รายการรายละเอียดที่แก้ไขแล้ว
+   */
   @TryCatch
   async updateDetail(detailId: string, data: ITransferDetailUpdate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'updateDetail', detailId, data, user_id, tenant_id }, TransferService.name);
@@ -525,6 +614,14 @@ export class TransferService {
     return Result.ok(detail);
   }
 
+  /**
+   * Soft delete a transfer detail line
+   * ลบรายการรายละเอียดการโอนย้ายแบบซอฟต์ดีลีท
+   * @param detailId - Transfer detail ID / ID รายการรายละเอียดการโอนย้าย
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Deleted detail / รายการรายละเอียดที่ลบแล้ว
+   */
   @TryCatch
   async deleteDetail(detailId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'deleteDetail', detailId, user_id, tenant_id }, TransferService.name);
@@ -559,6 +656,14 @@ export class TransferService {
 
   // ==================== Standalone Transfer Detail API ====================
 
+  /**
+   * Find all transfer details with pagination (standalone API)
+   * ค้นหารายการรายละเอียดการโอนย้ายทั้งหมดพร้อมการแบ่งหน้า (API แบบอิสระ)
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of transfer details / รายการรายละเอียดการโอนย้ายแบบแบ่งหน้า
+   */
   @TryCatch
   async findAllDetails(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAllDetails', user_id, tenant_id, paginate }, TransferService.name);
@@ -610,6 +715,14 @@ export class TransferService {
     });
   }
 
+  /**
+   * Create a standalone transfer detail (requires transfer_id in data)
+   * สร้างรายการรายละเอียดการโอนย้ายแบบอิสระ (ต้องระบุ transfer_id ในข้อมูล)
+   * @param data - Detail creation data with transfer_id / ข้อมูลสร้างรายการรายละเอียดพร้อม transfer_id
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Created detail / รายการรายละเอียดที่สร้างแล้ว
+   */
   @TryCatch
   async createStandaloneDetail(data: ITransferDetailCreate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'createStandaloneDetail', data, user_id, tenant_id }, TransferService.name);

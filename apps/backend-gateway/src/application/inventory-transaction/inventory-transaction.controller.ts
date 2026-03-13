@@ -51,28 +51,13 @@ export class InventoryTransactionController extends BaseHttpController {
   }
 
   /**
-   * ⚠️ TEST ONLY — DELETE when GRN approve integration is verified.
-   *
-   * Direct endpoint to test FIFO inventory transaction creation.
-   *
-   * POST /api/:bu_code/inventory-transaction/test-create-from-grn
-   *
-   * Body:
-   * {
-   *   "grn_id": "uuid",
-   *   "grn_no": "GRN-2026-001",
-   *   "grn_date": "2026-02-25T00:00:00.000Z",
-   *   "detail_items": [
-   *     {
-   *       "detail_item_id": "uuid",
-   *       "product_id": "uuid",
-   *       "location_id": "uuid",
-   *       "location_code": "WH-01",
-   *       "received_base_qty": 30,
-   *       "base_net_amount": 100
-   *     }
-   *   ]
-   * }
+   * Test FIFO inventory transaction creation from a GRN payload
+   * ทดสอบสร้างรายการเคลื่อนไหวสินค้าคงคลังแบบ FIFO จากข้อมูลใบรับสินค้า (GRN)
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param body - GRN payload with detail items / ข้อมูลใบรับสินค้าพร้อมรายการสินค้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @returns Inventory transaction result / ผลลัพธ์รายการเคลื่อนไหวสินค้าคงคลัง
    */
   @Post('test-create-from-grn')
   @Serialize(InventoryTransactionMutationResponseSchema)

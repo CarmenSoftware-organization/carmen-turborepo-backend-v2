@@ -18,6 +18,12 @@ export class KeycloakGuard extends AuthGuard('keycloak') {
     super();
   }
 
+  /**
+   * Validate Keycloak token, resolve business unit access, and attach user + permissions to request
+   * ตรวจสอบโทเค็น Keycloak, ตรวจสอบสิทธิ์การเข้าถึงหน่วยธุรกิจ และแนบข้อมูลผู้ใช้ + สิทธิ์การเข้าถึงไปกับคำขอ
+   * @param context - NestJS execution context / บริบทการทำงานของ NestJS
+   * @returns Whether the request is authorized / คำขอได้รับอนุญาตหรือไม่
+   */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const ignoredGuards = this.reflector.getAllAndOverride<Array<Type<CanActivate>>>(
       IGNORE_GUARDS_KEY,
@@ -167,6 +173,13 @@ export class KeycloakGuard extends AuthGuard('keycloak') {
     return true;
   }
 
+  /**
+   * Handle the Passport authentication result and throw on failure
+   * จัดการผลลัพธ์การยืนยันตัวตนจาก Passport และโยนข้อผิดพลาดเมื่อล้มเหลว
+   * @param err - Authentication error, if any / ข้อผิดพลาดการยืนยันตัวตน (ถ้ามี)
+   * @param user - Validated user object / อ็อบเจกต์ผู้ใช้ที่ผ่านการตรวจสอบ
+   * @returns Validated user / ผู้ใช้ที่ผ่านการตรวจสอบ
+   */
   handleRequest(err: any, user: any, _info?: any, _context?: any, _status?: any) {
     if (err || !user) {
       throw err || new UnauthorizedException('Authentication failed');
@@ -175,8 +188,11 @@ export class KeycloakGuard extends AuthGuard('keycloak') {
   }
 
   /**
-   * Set ALL user's BUs to request headers when bu_code is optional and not provided.
-   * This allows endpoints to return data for all BUs the user has access to.
+   * Set ALL user's BUs to request headers when bu_code is optional and not provided
+   * ตั้งค่าหน่วยธุรกิจทั้งหมดของผู้ใช้ใน request headers เมื่อรหัสหน่วยธุรกิจเป็นทางเลือกและไม่ได้ระบุ
+   * @param request - HTTP request object / อ็อบเจกต์คำขอ HTTP
+   * @param user - Validated user with BU list / ผู้ใช้ที่ผ่านการตรวจสอบพร้อมรายการหน่วยธุรกิจ
+   * @returns Always true on success / คืนค่า true เมื่อสำเร็จ
    */
   private async setAllUserBusToRequest(request: Record<string, unknown>, user: ValidatedUser): Promise<boolean> {
     const allBus = user.bu;

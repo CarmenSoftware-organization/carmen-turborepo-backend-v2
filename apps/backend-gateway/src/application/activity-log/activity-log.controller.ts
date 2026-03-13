@@ -45,9 +45,19 @@ export class ActivityLogController extends BaseHttpController {
   }
 
   /**
-   * Retrieves all activity logs with filtering by entity type, user, action,
-   * and date range. Provides an audit trail of all operations performed
-   * on procurement and inventory documents within the business unit.
+   * List all activity logs with optional filters
+   * ค้นหารายการบันทึกกิจกรรมทั้งหมดพร้อมตัวกรอง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param query - Pagination query / คำค้นหาการแบ่งหน้า
+   * @param entity_type - Filter by entity type / กรองตามประเภทเอกสาร
+   * @param entity_id - Filter by entity ID / กรองตามรหัสเอกสาร
+   * @param actor_id - Filter by actor ID / กรองตามรหัสผู้กระทำ
+   * @param action - Filter by action / กรองตามการกระทำ
+   * @param start_date - Filter from date / กรองจากวันที่
+   * @param end_date - Filter to date / กรองถึงวันที่
+   * @returns Paginated activity logs / รายการบันทึกกิจกรรมแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('activityLog.findAll'))
@@ -104,8 +114,14 @@ export class ActivityLogController extends BaseHttpController {
   }
 
   /**
-   * Retrieves activity logs filtered by a specific entity type (e.g., purchase_request,
-   * purchase_order, stock_in). Used to view the history of a particular document type.
+   * List activity logs filtered by entity type
+   * ค้นหารายการบันทึกกิจกรรมตามประเภทเอกสาร
+   * @param entity_type - Entity type to filter / ประเภทเอกสารที่จะกรอง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param query - Pagination query / คำค้นหาการแบ่งหน้า
+   * @returns Paginated activity logs by entity / รายการบันทึกกิจกรรมตามประเภทเอกสารแบบแบ่งหน้า
    */
   @Get('entity/:entity_type')
   @UseGuards(new AppIdGuard('activityLog.findAll'))
@@ -144,8 +160,13 @@ export class ActivityLogController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific activity log entry by ID, showing the full details
-   * of a single action including who performed it, when, and what changed.
+   * Find an activity log entry by ID
+   * ค้นหารายการบันทึกกิจกรรมรายการเดียวตาม ID
+   * @param id - Activity log ID / รหัสบันทึกกิจกรรม
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @returns Activity log details / รายละเอียดบันทึกกิจกรรม
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('activityLog.findOne'))
@@ -180,8 +201,13 @@ export class ActivityLogController extends BaseHttpController {
   }
 
   /**
-   * Soft-deletes an activity log entry, marking it as removed but retaining
-   * the record for potential recovery or compliance purposes.
+   * Soft-delete an activity log entry
+   * ลบบันทึกกิจกรรมแบบ soft delete
+   * @param id - Activity log ID / รหัสบันทึกกิจกรรม
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @returns Delete result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('activityLog.delete'))
@@ -216,7 +242,13 @@ export class ActivityLogController extends BaseHttpController {
   }
 
   /**
-   * Soft-deletes multiple activity log entries in a single batch operation.
+   * Batch soft-delete multiple activity log entries
+   * ลบบันทึกกิจกรรมหลายรายการแบบ soft delete เป็นชุด
+   * @param body - IDs of logs to delete / รหัสบันทึกที่จะลบ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @returns Batch delete result / ผลลัพธ์การลบเป็นชุด
    */
   @Delete('batch/soft')
   @UseGuards(new AppIdGuard('activityLog.deleteMany'))
@@ -251,8 +283,13 @@ export class ActivityLogController extends BaseHttpController {
   }
 
   /**
-   * Permanently deletes an activity log entry from the database.
-   * Use with caution as this cannot be undone.
+   * Permanently delete an activity log entry (hard delete)
+   * ลบบันทึกกิจกรรมอย่างถาวร (hard delete)
+   * @param id - Activity log ID / รหัสบันทึกกิจกรรม
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @returns Hard delete result / ผลลัพธ์การลบถาวร
    */
   @Delete(':id/hard')
   @UseGuards(new AppIdGuard('activityLog.hardDelete'))
@@ -287,8 +324,13 @@ export class ActivityLogController extends BaseHttpController {
   }
 
   /**
-   * Permanently deletes multiple activity log entries in a single batch operation.
-   * Use with caution as this cannot be undone.
+   * Batch permanently delete multiple activity log entries (hard delete)
+   * ลบบันทึกกิจกรรมหลายรายการอย่างถาวร (hard delete) เป็นชุด
+   * @param body - IDs of logs to permanently delete / รหัสบันทึกที่จะลบถาวร
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @returns Batch hard delete result / ผลลัพธ์การลบถาวรเป็นชุด
    */
   @Delete('batch/hard')
   @UseGuards(new AppIdGuard('activityLog.hardDeleteMany'))

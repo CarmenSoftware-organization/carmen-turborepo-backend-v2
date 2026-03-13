@@ -67,6 +67,12 @@ export class RecipeCuisineService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find a single recipe cuisine by ID
+   * ค้นหารายการประเภทอาหารตามสูตรเดียวตาม ID
+   * @param id - Recipe cuisine ID / ID ของประเภทอาหารตามสูตร
+   * @returns Recipe cuisine detail or error if not found / รายละเอียดประเภทอาหารตามสูตร หรือข้อผิดพลาดหากไม่พบ
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -88,6 +94,12 @@ export class RecipeCuisineService {
     return Result.ok(cuisine);
   }
 
+  /**
+   * Find all recipe cuisines with pagination, search, and sorting
+   * ค้นหารายการประเภทอาหารตามสูตรทั้งหมดพร้อมการแบ่งหน้า ค้นหา และเรียงลำดับ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of recipe cuisines / รายการประเภทอาหารตามสูตรพร้อมการแบ่งหน้า
+   */
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
@@ -136,6 +148,12 @@ export class RecipeCuisineService {
     });
   }
 
+  /**
+   * Create a new recipe cuisine with duplicate name check
+   * สร้างประเภทอาหารตามสูตรใหม่พร้อมตรวจสอบชื่อซ้ำ
+   * @param data - Recipe cuisine creation data / ข้อมูลสำหรับสร้างประเภทอาหารตามสูตร
+   * @returns Created recipe cuisine ID / ID ของประเภทอาหารตามสูตรที่สร้างขึ้น
+   */
   @TryCatch
   async create(data: ICreateRecipeCuisine): Promise<Result<unknown>> {
     this.logger.debug(
@@ -172,6 +190,12 @@ export class RecipeCuisineService {
     return Result.ok({ id: created.id });
   }
 
+  /**
+   * Update an existing recipe cuisine
+   * อัปเดตประเภทอาหารตามสูตรที่มีอยู่
+   * @param data - Recipe cuisine update data / ข้อมูลสำหรับอัปเดตประเภทอาหารตามสูตร
+   * @returns Updated recipe cuisine ID / ID ของประเภทอาหารตามสูตรที่อัปเดต
+   */
   @TryCatch
   async update(data: IUpdateRecipeCuisine): Promise<Result<unknown>> {
     this.logger.debug(
@@ -205,6 +229,12 @@ export class RecipeCuisineService {
     return Result.ok({ id: updated.id });
   }
 
+  /**
+   * Partially update a recipe cuisine
+   * อัปเดตประเภทอาหารตามสูตรบางส่วน
+   * @param data - Partial recipe cuisine update data / ข้อมูลสำหรับอัปเดตประเภทอาหารตามสูตรบางส่วน
+   * @returns Updated recipe cuisine ID / ID ของประเภทอาหารตามสูตรที่อัปเดต
+   */
   @TryCatch
   async patch(data: IUpdateRecipeCuisine): Promise<Result<unknown>> {
     this.logger.debug(
@@ -238,6 +268,12 @@ export class RecipeCuisineService {
     return Result.ok({ id: updated.id });
   }
 
+  /**
+   * Delete a recipe cuisine (soft delete) with usage check against recipes
+   * ลบประเภทอาหารตามสูตร (ลบแบบซอฟต์) พร้อมตรวจสอบการใช้งานกับสูตรอาหาร
+   * @param id - Recipe cuisine ID / ID ของประเภทอาหารตามสูตร
+   * @returns Deleted recipe cuisine ID / ID ของประเภทอาหารตามสูตรที่ลบ
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(

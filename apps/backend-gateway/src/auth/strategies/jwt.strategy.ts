@@ -22,6 +22,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
+  /**
+   * Validate the decoded JWT payload and extract user identity
+   * ตรวจสอบ payload ของ JWT ที่ถอดรหัสแล้วและดึงข้อมูลตัวตนผู้ใช้
+   * @param payload - Decoded JWT payload containing user claims / payload ของ JWT ที่ถอดรหัสแล้วซึ่งมีข้อมูลผู้ใช้
+   * @returns User object with user_id and email / อ็อบเจกต์ผู้ใช้ที่มีรหัสผู้ใช้และอีเมล
+   */
   async validate(payload: Record<string, unknown>) {
     this.logger.debug(
       {

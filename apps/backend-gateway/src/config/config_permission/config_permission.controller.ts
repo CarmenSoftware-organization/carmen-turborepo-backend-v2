@@ -27,8 +27,14 @@ export class ConfigPermissionController extends BaseHttpController {
   }
 
   /**
-   * Lists all granular permission definitions available in the system, used for
-   * role-based access control to specific features and actions.
+   * Get all permissions with pagination
+   * ค้นหารายการสิทธิ์การเข้าถึงทั้งหมดพร้อมการแบ่งหน้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of permissions / รายการสิทธิ์การเข้าถึงพร้อมการแบ่งหน้า
    */
   @Get()
   @HttpCode(HttpStatus.OK)

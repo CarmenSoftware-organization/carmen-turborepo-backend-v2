@@ -53,6 +53,12 @@ export class IssueService {
 
   private readonly logger: BackendLogger = new BackendLogger(IssueService.name);
 
+  /**
+   * Initialize the Prisma service for tenant-specific database access
+   * เริ่มต้นบริการ Prisma สำหรับการเข้าถึงฐานข้อมูลเฉพาะผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / ID ผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._bu_code = bu_code;
     this._userId = userId;
@@ -75,6 +81,12 @@ export class IssueService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Find all issues with pagination, search, and filtering
+   * ค้นหาปัญหาทั้งหมดพร้อมการแบ่งหน้า การค้นหา และการกรอง
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of issues / รายการปัญหาที่แบ่งหน้าแล้ว
+   */
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate }, IssueService.name);
@@ -124,6 +136,12 @@ export class IssueService {
     });
   }
 
+  /**
+   * Find a single issue by ID
+   * ค้นหาปัญหารายการเดียวตาม ID
+   * @param id - Issue ID / ID ของปัญหา
+   * @returns Issue data / ข้อมูลปัญหา
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code }, IssueService.name);
@@ -144,6 +162,12 @@ export class IssueService {
     return Result.ok(serializedIssue);
   }
 
+  /**
+   * Create a new issue record
+   * สร้างรายการปัญหาใหม่
+   * @param data - Issue data including name, description, status, priority, etc. / ข้อมูลปัญหารวมถึงชื่อ คำอธิบาย สถานะ ลำดับความสำคัญ ฯลฯ
+   * @returns Created issue data / ข้อมูลปัญหาที่สร้างแล้ว
+   */
   @TryCatch
   async create(data: {
     name: string;
@@ -183,6 +207,13 @@ export class IssueService {
     return Result.ok(serializedIssue);
   }
 
+  /**
+   * Update an existing issue record
+   * อัปเดตรายการปัญหาที่มีอยู่
+   * @param id - Issue ID to update / ID ของปัญหาที่ต้องการอัปเดต
+   * @param data - Updated issue data / ข้อมูลปัญหาที่อัปเดต
+   * @returns Updated issue data / ข้อมูลปัญหาที่อัปเดตแล้ว
+   */
   @TryCatch
   async update(id: string, data: {
     name?: string;
@@ -234,6 +265,12 @@ export class IssueService {
     return Result.ok(serializedIssue);
   }
 
+  /**
+   * Soft delete an issue by setting deleted_at timestamp
+   * ลบปัญหาแบบซอฟต์โดยตั้งค่า deleted_at
+   * @param id - Issue ID to delete / ID ของปัญหาที่ต้องการลบ
+   * @returns Deleted issue ID / ID ของปัญหาที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code }, IssueService.name);

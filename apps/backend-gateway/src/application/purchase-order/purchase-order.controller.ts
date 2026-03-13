@@ -68,8 +68,12 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Retrieves full details of a specific purchase order including vendor information,
-   * line items, pricing, delivery dates, and current workflow status.
+   * Retrieve full details of a specific purchase order
+   * ค้นหารายการเดียวตาม ID ของใบสั่งซื้อพร้อมรายละเอียดทั้งหมด
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Purchase order details / รายละเอียดใบสั่งซื้อ
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('purchaseOrder.findOne'))
@@ -125,8 +129,12 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Lists all purchase orders for the business unit with pagination and search.
-   * Used by purchasers and managers to track outstanding orders and vendor commitments.
+   * List all purchase orders with pagination and search
+   * ค้นหารายการทั้งหมดของใบสั่งซื้อพร้อมการแบ่งหน้าและการค้นหา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination and filter parameters / พารามิเตอร์การแบ่งหน้าและตัวกรอง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of purchase orders / รายการใบสั่งซื้อแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('purchaseOrder.findAll'))
@@ -189,9 +197,12 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Creates a new purchase order to formalize procurement from a vendor.
-   * Groups approved PR line items by vendor, delivery date, and currency,
-   * establishing a binding order commitment.
+   * Create a new purchase order to formalize procurement from a vendor
+   * สร้างใบสั่งซื้อใหม่เพื่อยืนยันการจัดซื้อจากผู้ขาย
+   * @param createDto - Purchase order creation data / ข้อมูลสำหรับสร้างใบสั่งซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created purchase order / ใบสั่งซื้อที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('purchaseOrder.create'))
@@ -254,8 +265,13 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Updates purchase order header and line item details such as quantities, pricing,
-   * delivery dates, or vendor terms. Only for POs not yet fully received or closed.
+   * Update purchase order header and line item details
+   * อัปเดตข้อมูลส่วนหัวและรายการของใบสั่งซื้อ
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Updated purchase order data / ข้อมูลใบสั่งซื้อที่อัปเดต
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated purchase order / ใบสั่งซื้อที่อัปเดตแล้ว
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('purchaseOrder.update'))
@@ -320,8 +336,12 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Removes a purchase order that is no longer needed, typically a draft PO
-   * created in error before being sent to a vendor.
+   * Delete a purchase order that is no longer needed
+   * ลบใบสั่งซื้อที่ไม่ต้องการแล้ว
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('purchaseOrder.delete'))
@@ -377,9 +397,13 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Saves incremental changes to a purchase order still being prepared, including
-   * adding, modifying, or removing line items. Used by purchasers to finalize
-   * PO details before submitting for approval.
+   * Save incremental changes to a purchase order being prepared
+   * บันทึกการเปลี่ยนแปลงใบสั่งซื้อที่กำลังจัดเตรียม
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param data - Save payload with add/update/remove details / ข้อมูลการบันทึกพร้อมรายละเอียดเพิ่ม/แก้ไข/ลบ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Saved purchase order / ใบสั่งซื้อที่บันทึกแล้ว
    */
   @Patch(':id/save')
   @UseGuards(new AppIdGuard('purchaseOrder.save'))
@@ -456,9 +480,13 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Advances a purchase order through its approval workflow at the current stage.
-   * Each authorized approver (e.g., FC, GM) signs off to authorize the vendor
-   * commitment and expenditure.
+   * Approve a purchase order at the current workflow stage
+   * อนุมัติใบสั่งซื้อในขั้นตอนปัจจุบันของเวิร์กโฟลว์
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param data - Approval payload / ข้อมูลการอนุมัติ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Approved purchase order / ใบสั่งซื้อที่อนุมัติแล้ว
    */
   @Patch(':id/approve')
   @UseGuards(new AppIdGuard('purchaseOrder.approve'))
@@ -535,9 +563,13 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Rejects a purchase order at the current approval stage, preventing it from
-   * being sent to the vendor. Used when budget, pricing, or business reasons
-   * require the order to be stopped.
+   * Reject a purchase order at the current approval stage
+   * ปฏิเสธใบสั่งซื้อในขั้นตอนการอนุมัติปัจจุบัน
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param data - Rejection payload with reason / ข้อมูลการปฏิเสธพร้อมเหตุผล
+   * @param version - API version / เวอร์ชัน API
+   * @returns Rejected purchase order / ใบสั่งซื้อที่ถูกปฏิเสธ
    */
   @Patch(':id/reject')
   @UseGuards(new AppIdGuard('purchaseOrder.reject'))
@@ -614,8 +646,13 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Returns a purchase order to a previous workflow stage for corrections,
-   * such as adjusting vendor terms, quantities, or pricing before final authorization.
+   * Return a purchase order to a previous stage for review and corrections
+   * ส่งใบสั่งซื้อกลับไปยังขั้นตอนก่อนหน้าเพื่อตรวจสอบและแก้ไข
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param data - Review payload / ข้อมูลการตรวจสอบ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Reviewed purchase order / ใบสั่งซื้อที่ส่งกลับตรวจสอบ
    */
   @Patch(':id/review')
   @UseGuards(new AppIdGuard('purchaseOrder.review'))
@@ -692,8 +729,12 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Cancels a purchase order that has not been fully received, withdrawing the
-   * commitment to the vendor. Cancelled quantities are tracked for reporting.
+   * Cancel a purchase order that has not been fully received
+   * ยกเลิกใบสั่งซื้อที่ยังไม่ได้รับสินค้าครบถ้วน
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Cancelled purchase order / ใบสั่งซื้อที่ยกเลิกแล้ว
    */
   @Post(':id/cancel')
   @UseGuards(new AppIdGuard('purchaseOrder.cancel'))
@@ -753,9 +794,12 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Finalizes a purchase order after all expected goods have been received or when
-   * no further deliveries are expected. Unreceived quantities are recorded as cancelled
-   * for inventory and financial reconciliation.
+   * Close a purchase order after all goods have been received
+   * ปิดใบสั่งซื้อหลังจากได้รับสินค้าครบถ้วนแล้ว
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Closed purchase order / ใบสั่งซื้อที่ปิดแล้ว
    */
   @Post(':id/close')
   @UseGuards(new AppIdGuard('purchaseOrder.close'))
@@ -815,9 +859,12 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Previews how approved purchase request line items will be grouped into purchase
-   * orders by vendor, delivery date, and currency. Used by purchasers to review
-   * the PO structure before confirming PR-to-PO conversion.
+   * Preview grouping of PR line items into purchase orders by vendor
+   * แสดงตัวอย่างการจัดกลุ่มรายการใบขอซื้อเป็นใบสั่งซื้อตามผู้ขาย
+   * @param body - PR IDs to group / รหัสใบขอซื้อที่ต้องการจัดกลุ่ม
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Grouped purchase order preview / ตัวอย่างใบสั่งซื้อที่จัดกลุ่มแล้ว
    */
   @Post('group-pr')
   @UseGuards(new AppIdGuard('purchaseOrder.groupPr'))
@@ -892,9 +939,12 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Converts approved purchase requests into purchase orders by grouping PR line items
-   * by vendor, delivery date, and currency. This is the primary action that transitions
-   * procurement from the request phase to the ordering phase.
+   * Convert approved purchase requests into purchase orders
+   * แปลงใบขอซื้อที่อนุมัติแล้วเป็นใบสั่งซื้อ
+   * @param body - PR IDs to confirm / รหัสใบขอซื้อที่ต้องการยืนยัน
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created purchase orders / ใบสั่งซื้อที่สร้างจากใบขอซื้อ
    */
   @Post('confirm-pr')
   @UseGuards(new AppIdGuard('purchaseOrder.confirmPr'))
@@ -969,8 +1019,12 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Generates an Excel spreadsheet of the purchase order with vendor details,
-   * line items, pricing, and delivery information for record-keeping or sharing.
+   * Export a purchase order to an Excel spreadsheet
+   * ส่งออกใบสั่งซื้อเป็นไฟล์ Excel
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Excel file buffer and filename / บัฟเฟอร์ไฟล์ Excel และชื่อไฟล์
    */
   @Get(':id/export')
   @UseGuards(new AppIdGuard('purchaseOrder.export'))
@@ -1045,8 +1099,12 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Generates a printable PDF of the purchase order for sending to the vendor,
-   * obtaining physical signatures, or filing. Includes terms and approval signatures.
+   * Generate a printable PDF of the purchase order
+   * สร้างไฟล์ PDF สำหรับพิมพ์ใบสั่งซื้อ
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns PDF file buffer and filename / บัฟเฟอร์ไฟล์ PDF และชื่อไฟล์
    */
   @Get(':id/print')
   @UseGuards(new AppIdGuard('purchaseOrder.print'))
@@ -1123,8 +1181,12 @@ export class PurchaseOrderController extends BaseHttpController {
   // ==================== Purchase Order Detail CRUD ====================
 
   /**
-   * Lists all line items on a purchase order including product details, ordered
-   * quantities, unit prices, and received quantities for tracking partial deliveries.
+   * List all line items on a purchase order
+   * ค้นหารายการทั้งหมดของรายละเอียดใบสั่งซื้อ
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of purchase order details / รายการรายละเอียดใบสั่งซื้อ
    */
   @Get(':id/details')
   @UseGuards(new AppIdGuard('purchaseOrder.findOne'))
@@ -1163,8 +1225,13 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a single line item from a purchase order with full product, pricing,
-   * and delivery details. Used when creating a Good Received Note or resolving discrepancies.
+   * Retrieve a single line item from a purchase order by detail ID
+   * ค้นหารายการเดียวตาม ID ของรายละเอียดใบสั่งซื้อ
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param detailId - Detail line item ID / รหัสรายการรายละเอียด
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Purchase order detail / รายละเอียดรายการใบสั่งซื้อ
    */
   @Get(':id/details/:detail_id')
   @UseGuards(new AppIdGuard('purchaseOrder.findOne'))
@@ -1205,7 +1272,13 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
-   * Removes a line item from a draft purchase order before it is sent to the vendor.
+   * Remove a line item from a draft purchase order
+   * ลบรายการจากใบสั่งซื้อฉบับร่าง
+   * @param id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param detailId - Detail line item ID / รหัสรายการรายละเอียด
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id/details/:detail_id')
   @UseGuards(new AppIdGuard('purchaseOrder.update'))

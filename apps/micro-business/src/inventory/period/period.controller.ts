@@ -14,6 +14,12 @@ export class PeriodController extends BaseMicroserviceController {
     super();
   }
 
+  /**
+   * Create audit context from payload
+   * สร้างบริบทการตรวจสอบจาก payload
+   * @param payload - Microservice payload / ข้อมูล payload จากไมโครเซอร์วิส
+   * @returns Audit context object / ออบเจกต์บริบทการตรวจสอบ
+   */
   private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
@@ -24,6 +30,12 @@ export class PeriodController extends BaseMicroserviceController {
     };
   }
 
+  /**
+   * Find an inventory period by ID
+   * ค้นหางวดสินค้าคงคลังรายการเดียวตาม ID
+   * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id
+   * @returns Inventory period detail / รายละเอียดงวดสินค้าคงคลัง
+   */
   @MessagePattern({ cmd: 'inventory-period.findOne', service: 'inventory-period' })
   async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findOne', payload }, PeriodController.name);
@@ -37,6 +49,12 @@ export class PeriodController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Find all inventory periods with pagination
+   * ค้นหางวดสินค้าคงคลังทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Contains user_id, tenant_id, paginate / ประกอบด้วย user_id, tenant_id, paginate
+   * @returns Paginated list of inventory periods / รายการงวดสินค้าคงคลังแบบแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'inventory-period.findAll', service: 'inventory-period' })
   async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findAll', payload }, PeriodController.name);
@@ -50,6 +68,12 @@ export class PeriodController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Create a new inventory period
+   * สร้างงวดสินค้าคงคลังใหม่
+   * @param payload - Contains data, user_id, tenant_id / ประกอบด้วย data, user_id, tenant_id
+   * @returns Created inventory period / งวดสินค้าคงคลังที่สร้างแล้ว
+   */
   @MessagePattern({ cmd: 'inventory-period.create', service: 'inventory-period' })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, PeriodController.name);
@@ -63,6 +87,12 @@ export class PeriodController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update an inventory period
+   * แก้ไขงวดสินค้าคงคลัง
+   * @param payload - Contains id, data, user_id, tenant_id / ประกอบด้วย id, data, user_id, tenant_id
+   * @returns Updated inventory period / งวดสินค้าคงคลังที่แก้ไขแล้ว
+   */
   @MessagePattern({ cmd: 'inventory-period.update', service: 'inventory-period' })
   async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, PeriodController.name);
@@ -76,6 +106,12 @@ export class PeriodController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Generate next inventory periods
+   * สร้างงวดสินค้าคงคลังถัดไป
+   * @param payload - Contains count, start_day, user_id, tenant_id / ประกอบด้วย count, start_day, user_id, tenant_id
+   * @returns Generated inventory periods / งวดสินค้าคงคลังที่สร้างแล้ว
+   */
   @MessagePattern({ cmd: 'inventory-period.generateNext', service: 'inventory-period' })
   async generateNext(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'generateNext', payload }, PeriodController.name);
@@ -90,6 +126,12 @@ export class PeriodController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Delete an inventory period
+   * ลบงวดสินค้าคงคลัง
+   * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   @MessagePattern({ cmd: 'inventory-period.delete', service: 'inventory-period' })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, PeriodController.name);

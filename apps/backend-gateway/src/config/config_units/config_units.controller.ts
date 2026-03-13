@@ -57,8 +57,14 @@ export class Config_UnitsController extends BaseHttpController {
   }
 
   /**
-   * Retrieves a specific unit of measurement definition (e.g., kg, litre, piece, case)
-   * used for product ordering, inventory counting, and recipe quantities.
+   * Get a unit of measurement by ID
+   * ค้นหาหน่วยวัดเดียวตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Unit ID / รหัสหน่วยวัด
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Unit detail / รายละเอียดหน่วยวัด
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('unit.findOne'))
@@ -93,8 +99,14 @@ export class Config_UnitsController extends BaseHttpController {
   }
 
   /**
-   * Lists all configured units of measurement (kg, litre, piece, dozen, etc.)
-   * referenced by products, recipes, and procurement documents.
+   * Get all units of measurement with pagination
+   * ค้นหารายการหน่วยวัดทั้งหมดพร้อมการแบ่งหน้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of units / รายการหน่วยวัดพร้อมการแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('unit.findAll'))
@@ -136,8 +148,14 @@ export class Config_UnitsController extends BaseHttpController {
   }
 
   /**
-   * Defines a new unit of measurement for use in product definitions,
-   * recipe ingredients, and procurement documents.
+   * Create a new unit of measurement
+   * สร้างหน่วยวัดใหม่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param createDto - Unit creation data / ข้อมูลสำหรับสร้างหน่วยวัด
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created unit / หน่วยวัดที่สร้างแล้ว
    */
   @Post()
   @UseGuards(new AppIdGuard('unit.create'))
@@ -178,7 +196,15 @@ export class Config_UnitsController extends BaseHttpController {
   }
 
   /**
-   * Modifies an existing unit of measurement definition such as name or conversion factors.
+   * Update a unit of measurement
+   * อัปเดตหน่วยวัด
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Unit ID / รหัสหน่วยวัด
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param updateDto - Unit update data / ข้อมูลสำหรับอัปเดตหน่วยวัด
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated unit / หน่วยวัดที่อัปเดตแล้ว
    */
   @Put(':id')
   @UseGuards(new AppIdGuard('unit.update'))
@@ -220,8 +246,14 @@ export class Config_UnitsController extends BaseHttpController {
   }
 
   /**
-   * Removes a unit of measurement from the system.
-   * Existing references in historical data are preserved.
+   * Delete a unit of measurement
+   * ลบหน่วยวัด
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Unit ID / รหัสหน่วยวัด
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
    */
   @Delete(':id')
   @UseGuards(new AppIdGuard('unit.delete'))

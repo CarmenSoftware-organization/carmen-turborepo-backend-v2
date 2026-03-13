@@ -59,8 +59,12 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Returns the count of store requisitions awaiting the current user's action,
-   * used for dashboard badge notifications and workload tracking.
+   * Get count of pending store requisitions for the current user
+   * ดึงจำนวนใบเบิกสินค้าที่รอดำเนินการของผู้ใช้ปัจจุบัน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Pending store requisition count / จำนวนใบเบิกสินค้าที่รอดำเนินการ
    */
   @Get('pending')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.findAllPending.count'))
@@ -139,8 +143,13 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the approval workflow stages configured for store requisitions,
-   * showing the sequence of approval steps internal stock requests must pass through.
+   * Get workflow stages for store requisitions
+   * ดึงขั้นตอนการทำงานสำหรับใบเบิกสินค้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Workflow stages / ขั้นตอนการทำงาน
    */
   @Get(':bu_code/workflow-stages')
   @UseGuards(
@@ -223,8 +232,14 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Retrieves the full details of a specific store requisition pending approval,
-   * including requested items, quantities, requesting department, and approval status.
+   * Find a pending store requisition by ID
+   * ค้นหาใบเบิกสินค้าที่รอดำเนินการรายการเดียวตาม ID
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Store requisition details / รายละเอียดใบเบิกสินค้า
    */
   @Get(':bu_code/:id')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.findOne'))
@@ -286,8 +301,13 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Lists all store requisitions in the user's pending queue with pagination,
-   * enabling department staff and approvers to track internal stock requests.
+   * List all pending store requisitions for the current user
+   * ค้นหารายการใบเบิกสินค้าที่รอดำเนินการทั้งหมดของผู้ใช้ปัจจุบัน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param query - Pagination query / คำค้นหาการแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of pending store requisitions / รายการใบเบิกสินค้าที่รอดำเนินการแบบแบ่งหน้า
    */
   @Get()
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.findAll'))
@@ -363,8 +383,14 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Filters store requisitions by their current status (e.g., draft, pending,
-   * approved, rejected) to view requests at a specific workflow stage.
+   * List store requisitions filtered by status
+   * ค้นหารายการใบเบิกสินค้าตามสถานะ
+   * @param status - Requisition status / สถานะใบเบิก
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Store requisitions by status / รายการใบเบิกสินค้าตามสถานะ
    */
   @Get(':bu_code/status/:status')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.findAllByStatus'))
@@ -407,8 +433,14 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Creates a new store requisition for a hotel department to request items
-   * from internal storage, initiating the approval workflow before fulfillment.
+   * Create a new store requisition
+   * สร้างใบเบิกสินค้าใหม่
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param body - Store requisition data / ข้อมูลใบเบิกสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created store requisition / ใบเบิกสินค้าที่สร้างแล้ว
    */
   @Post(':bu_code')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.create'))
@@ -462,8 +494,15 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Saves changes to a draft store requisition, allowing the requestor to
-   * modify requested items, quantities, or delivery details before submitting.
+   * Update a draft store requisition
+   * อัปเดตใบเบิกสินค้าฉบับร่าง
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param body - Updated requisition data / ข้อมูลใบเบิกที่อัปเดต
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated store requisition / ใบเบิกสินค้าที่อัปเดตแล้ว
    */
   @Patch(':bu_code/:id/save')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.update'))
@@ -519,8 +558,14 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Submits a draft store requisition into the approval workflow,
-   * moving it from draft status to the first approval stage for review.
+   * Submit a store requisition for approval
+   * ส่งใบเบิกสินค้าเพื่อขออนุมัติ
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Submitted store requisition / ใบเบิกสินค้าที่ส่งแล้ว
    */
   @Patch(':bu_code/:id/submit')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.submit'))
@@ -573,8 +618,14 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Approves a store requisition at the current user's workflow stage,
-   * advancing it to the next level or marking it as approved for fulfillment.
+   * Approve a store requisition at the current workflow stage
+   * อนุมัติใบเบิกสินค้าในขั้นตอนการทำงานปัจจุบัน
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Approved store requisition / ใบเบิกสินค้าที่อนุมัติแล้ว
    */
   @Patch(':bu_code/:id/approve')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.approve'))
@@ -627,8 +678,14 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Rejects a store requisition at the current approval stage,
-   * sending it back to the requesting department for revision or cancellation.
+   * Reject a store requisition at the current workflow stage
+   * ปฏิเสธใบเบิกสินค้าในขั้นตอนการทำงานปัจจุบัน
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Rejected store requisition / ใบเบิกสินค้าที่ปฏิเสธแล้ว
    */
   @Patch(':bu_code/:id/reject')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.reject'))
@@ -681,8 +738,14 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Allows an approver to review a store requisition and provide feedback
-   * or modifications before making a final approve/reject decision.
+   * Review a store requisition before final decision
+   * ตรวจสอบใบเบิกสินค้าก่อนตัดสินใจขั้นสุดท้าย
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Reviewed store requisition / ใบเบิกสินค้าที่ตรวจสอบแล้ว
    */
   @Patch(':bu_code/:id/review')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.review'))
@@ -735,8 +798,14 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   }
 
   /**
-   * Removes a store requisition that is no longer needed, typically a draft
-   * or rejected request that the department has decided to discard.
+   * Delete a store requisition
+   * ลบใบเบิกสินค้า
+   * @param id - Store requisition ID / รหัสใบเบิกสินค้า
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Delete result / ผลลัพธ์การลบ
    */
   @Delete(':bu_code/:id')
   @UseGuards(new AppIdGuard('my-pending.storeRequisition.delete'))

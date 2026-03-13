@@ -17,6 +17,12 @@ export class CheckPriceListService {
     CheckPriceListService.name,
   );
 
+  /**
+   * Initialize the Prisma service for external connection
+   * เริ่มต้นบริการ Prisma สำหรับการเชื่อมต่อภายนอก
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param application - Application name / ชื่อแอปพลิเคชัน
+   */
   async initializePrismaService(bu_code: string, application: string): Promise<void> {
     this._prismaService = await this.tenantService.getdb_connection_for_external(bu_code, application);
   }
@@ -38,6 +44,13 @@ export class CheckPriceListService {
     private readonly tenantService: TenantService,
   ) { }
 
+  /**
+   * Check and retrieve or create a price list from a vendor token
+   * ตรวจสอบและดึงหรือสร้างรายการราคาจากโทเค็นผู้ขาย
+   * @param urlToken - URL token for vendor access / โทเค็น URL สำหรับการเข้าถึงของผู้ขาย
+   * @param decodedToken - Decoded JWT token payload / ข้อมูล JWT token ที่ถอดรหัสแล้ว
+   * @returns Price list with details / รายการราคาพร้อมรายละเอียด
+   */
   @TryCatch
   async checkPriceList(urlToken: string, decodedToken: Record<string, any>): Promise<Result<unknown>> {
     this.logger.debug(
@@ -255,6 +268,13 @@ export class CheckPriceListService {
     return Result.ok(existingPricelist);
   }
 
+  /**
+   * Generate a price list number using running code pattern
+   * สร้างหมายเลขรายการราคาโดยใช้รูปแบบรหัสลำดับ
+   * @param PLDate - Price list date / วันที่รายการราคา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Generated price list number / หมายเลขรายการราคาที่สร้างขึ้น
+   */
   private async generatePLNo(PLDate: string, bu_code: string): Promise<string> {
     this.logger.debug(
       { function: 'generatePLNo', PLDate, bu_code },
@@ -301,6 +321,12 @@ export class CheckPriceListService {
     return PLNo;
   }
 
+  /**
+   * Get the running code pattern configuration by type, creating a default if none exists
+   * ดึงการตั้งค่ารูปแบบรหัสลำดับตามประเภท โดยสร้างค่าเริ่มต้นหากยังไม่มี
+   * @param type - Running code type / ประเภทรหัสลำดับ
+   * @returns Running code pattern configuration / การตั้งค่ารูปแบบรหัสลำดับ
+   */
   private async getRunningPattern(type: string): Promise<any> {
     this.logger.debug(
       { function: 'getRunningPattern', type },
@@ -331,6 +357,12 @@ export class CheckPriceListService {
     return runningCode.config;
   }
 
+  /**
+   * Get the tax profile ID for a product
+   * ดึงรหัสโปรไฟล์ภาษีของสินค้า
+   * @param product_id - Product ID / รหัสสินค้า
+   * @returns Tax profile ID or null / รหัสโปรไฟล์ภาษีหรือ null
+   */
   async get_tax_profile(product_id: string) {
     const product = await this.prismaService.tb_product.findFirst({ where: { id: product_id } })
     return product.tax_profile_id ? product.tax_profile_id : null

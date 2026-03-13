@@ -35,8 +35,12 @@ export class MyApproveController extends BaseHttpController {
   }
 
   /**
-   * Provides a dashboard summary count of all documents awaiting the current user's
-   * approval across store requisitions, purchase requests, and purchase orders.
+   * Get combined count of all pending approvals (SR + PR + PO)
+   * ดึงจำนวนรวมของเอกสารที่รออนุมัติทั้งหมด (ใบเบิก + ใบขอซื้อ + ใบสั่งซื้อ)
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Combined pending approval counts / จำนวนเอกสารที่รออนุมัติรวม
    */
   @Get('pending')
   @UseGuards(new AppIdGuard('my-approve.findAllPending.count'))
@@ -102,8 +106,13 @@ export class MyApproveController extends BaseHttpController {
   }
 
   /**
-   * Retrieves all procurement documents pending the current user's approval,
-   * grouped by type (SR, PR, PO), serving as the approver's central task queue.
+   * List all pending approvals grouped by document type
+   * ค้นหารายการเอกสารที่รออนุมัติทั้งหมดจัดกลุ่มตามประเภท
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param query - Pagination query / คำค้นหาการแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Pending approvals grouped by type / เอกสารที่รออนุมัติจัดกลุ่มตามประเภท
    */
   @Get()
   @UseGuards(new AppIdGuard('my-approve.findAll'))

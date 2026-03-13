@@ -37,8 +37,13 @@ export class Config_ProductLocationController {
   ) {}
 
   /**
-   * Retrieves all storage locations where a specific product is stocked or available,
-   * essential for inventory tracking, replenishment, and stock transfer planning.
+   * Retrieve all locations assigned to a product
+   * ค้นหารายการสถานที่ทั้งหมดที่ผูกกับสินค้า
+   * @param productId - Product ID / รหัสสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of locations for the product / รายการสถานที่ของสินค้า
    */
   @Get(':productId')
   @UseGuards(new AppIdGuard('productLocation.getLocationsByProductId'))

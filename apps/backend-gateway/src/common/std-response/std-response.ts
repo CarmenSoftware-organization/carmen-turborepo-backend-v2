@@ -1,6 +1,10 @@
 import { Result } from '../result/result';
 import { ErrorCode } from '../result/error';
 
+/**
+ * Standard API response wrapper with pagination support
+ * ตัวห่อการตอบกลับ API มาตรฐานพร้อมรองรับการแบ่งหน้า
+ */
 export class StdResponse<T = unknown> {
   constructor(
     public readonly data: T | null,
@@ -16,6 +20,10 @@ export class StdResponse<T = unknown> {
     public readonly timestamp: string,
   ) {}
 
+  /**
+   * Create a successful response
+   * สร้างการตอบกลับที่สำเร็จ
+   */
   static success<T>(data?: T): StdResponse<T> {
     return new StdResponse(
       data ?? null,
@@ -27,6 +35,10 @@ export class StdResponse<T = unknown> {
     );
   }
 
+  /**
+   * Create a successful paginated response
+   * สร้างการตอบกลับที่สำเร็จแบบแบ่งหน้า
+   */
   static successPaginated<T>(
     data: T[],
     paginate: { total: number; page: number; perpage: number; pages: number },
@@ -41,6 +53,10 @@ export class StdResponse<T = unknown> {
     );
   }
 
+  /**
+   * Create an error response
+   * สร้างการตอบกลับที่ผิดพลาด
+   */
   static error(status: number, message: string): StdResponse<null> {
     return new StdResponse(
       null,
@@ -52,6 +68,10 @@ export class StdResponse<T = unknown> {
     );
   }
 
+  /**
+   * Create a response from a Result object
+   * สร้างการตอบกลับจากอ็อบเจกต์ Result
+   */
   static fromResult<T, E>(result: Result<T, E>): StdResponse<T> {
     if (result.isOk()) {
       const value = result.value as unknown;
@@ -81,6 +101,10 @@ export class StdResponse<T = unknown> {
     return statusMap[code] ?? 500;
   }
 
+  /**
+   * Serialize response to JSON format
+   * แปลงการตอบกลับเป็นรูปแบบ JSON
+   */
   toJSON() {
     const result: Record<string, unknown> = {
       data: this.data,

@@ -21,6 +21,12 @@ export class ApplicationRolePermissionController extends BaseMicroserviceControl
     super();
   }
 
+  /**
+   * Create audit context from payload
+   * สร้างบริบทการตรวจสอบจาก payload
+   * @param payload - Microservice payload / ข้อมูล payload จากไมโครเซอร์วิส
+   * @returns Audit context object / ออบเจกต์บริบทการตรวจสอบ
+   */
   private createAuditContext(payload: MicroservicePayload): AuditContext {
     return {
       tenant_id: payload.tenant_id || payload.bu_code,
@@ -31,6 +37,12 @@ export class ApplicationRolePermissionController extends BaseMicroserviceControl
     };
   }
 
+  /**
+   * Find a role-permission mapping by ID
+   * ค้นหาการเชื่อมโยงบทบาท-สิทธิ์ตาม ID
+   * @param payload - Contains id, user_id, bu_code / ประกอบด้วย id, user_id, bu_code
+   * @returns Role-permission detail / รายละเอียดการเชื่อมโยงบทบาท-สิทธิ์
+   */
   @MessagePattern({ cmd: 'role_permission.find-one', service: 'role_permission' })
   async findOne(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
@@ -46,6 +58,12 @@ export class ApplicationRolePermissionController extends BaseMicroserviceControl
     return this.handleResult(result);
   }
 
+  /**
+   * Find all role-permission mappings with pagination
+   * ค้นหาการเชื่อมโยงบทบาท-สิทธิ์ทั้งหมดพร้อมการแบ่งหน้า
+   * @param payload - Contains user_id, bu_code, paginate / ประกอบด้วย user_id, bu_code, paginate
+   * @returns Paginated list of role-permission mappings / รายการเชื่อมโยงบทบาท-สิทธิ์แบบแบ่งหน้า
+   */
   @MessagePattern({ cmd: 'role_permission.find-all', service: 'role_permission' })
   async findAll(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
@@ -61,6 +79,12 @@ export class ApplicationRolePermissionController extends BaseMicroserviceControl
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Create a new role-permission mapping
+   * สร้างการเชื่อมโยงบทบาท-สิทธิ์ใหม่
+   * @param payload - Contains data, user_id, bu_code / ประกอบด้วย data, user_id, bu_code
+   * @returns Created role-permission mapping / การเชื่อมโยงบทบาท-สิทธิ์ที่สร้างแล้ว
+   */
   @MessagePattern({ cmd: 'role_permission.create', service: 'role_permission' })
   async create(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
@@ -76,6 +100,12 @@ export class ApplicationRolePermissionController extends BaseMicroserviceControl
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
+  /**
+   * Update a role-permission mapping
+   * แก้ไขการเชื่อมโยงบทบาท-สิทธิ์
+   * @param payload - Contains data, user_id, bu_code / ประกอบด้วย data, user_id, bu_code
+   * @returns Updated role-permission mapping / การเชื่อมโยงบทบาท-สิทธิ์ที่แก้ไขแล้ว
+   */
   @MessagePattern({ cmd: 'role_permission.update', service: 'role_permission' })
   async update(@Payload() payload: MicroservicePayload) {
     this.logger.debug(
@@ -91,6 +121,12 @@ export class ApplicationRolePermissionController extends BaseMicroserviceControl
     return this.handleResult(result);
   }
 
+  /**
+   * Remove a role-permission mapping
+   * ลบการเชื่อมโยงบทบาท-สิทธิ์
+   * @param payload - Contains id, user_id, bu_code / ประกอบด้วย id, user_id, bu_code
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
   @MessagePattern({ cmd: 'role_permission.remove', service: 'role_permission' })
   async remove(@Payload() payload: MicroservicePayload) {
     this.logger.debug(

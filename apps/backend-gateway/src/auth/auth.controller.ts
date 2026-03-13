@@ -52,8 +52,11 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   /**
-   * Authenticates a user against Keycloak using email and password credentials.
-   * Returns JWT access and refresh tokens for subsequent API requests across all ERP modules.
+   * Authenticate user with email/username and password via Keycloak
+   * ยืนยันตัวตนผู้ใช้ด้วยอีเมล/ชื่อผู้ใช้และรหัสผ่านผ่าน Keycloak
+   * @param loginDto - Login credentials (email/username + password) / ข้อมูลการเข้าสู่ระบบ (อีเมล/ชื่อผู้ใช้ + รหัสผ่าน)
+   * @param version - API version / เวอร์ชัน API
+   * @returns JWT access and refresh tokens / โทเค็น JWT สำหรับการเข้าถึงและรีเฟรช
    */
   @Post('login')
   @UseGuards(new AppIdGuard('auth.login'))
@@ -117,8 +120,12 @@ export class AuthController {
   }
 
   /**
-   * Terminates the user's authenticated session by invalidating their Keycloak tokens.
-   * The user must log in again to access ERP resources.
+   * Terminate user session by invalidating Keycloak tokens
+   * สิ้นสุดเซสชันผู้ใช้โดยการยกเลิกโทเค็น Keycloak
+   * @param version - API version / เวอร์ชัน API
+   * @param body - Request body containing refresh_token / เนื้อหาคำขอที่มี refresh_token
+   * @param req - HTTP request with user context / คำขอ HTTP ที่มีบริบทผู้ใช้
+   * @returns Logout confirmation / ผลลัพธ์การออกจากระบบ
    */
   @Post('logout')
   @HttpCode(HttpStatus.OK)
@@ -185,8 +192,11 @@ export class AuthController {
   }
 
   /**
-   * Creates a new user account in both Keycloak and the Carmen platform.
-   * Used to onboard new hotel staff such as purchasers, department heads, or property managers.
+   * Register a new user account in Keycloak and the Carmen platform
+   * สร้างบัญชีผู้ใช้ใหม่ใน Keycloak และแพลตฟอร์ม Carmen
+   * @param registerDto - Registration details (username, email, password, user_info) / ข้อมูลการลงทะเบียน (ชื่อผู้ใช้, อีเมล, รหัสผ่าน, ข้อมูลผู้ใช้)
+   * @param version - API version / เวอร์ชัน API
+   * @returns Created user data / ข้อมูลผู้ใช้ที่สร้างแล้ว
    */
   @Post('register')
   // @UseGuards(KeycloakGuard)
@@ -259,8 +269,12 @@ export class AuthController {
   }
 
   /**
-   * Sends an invitation to a new user to join the Carmen ERP platform.
-   * The invited user receives a registration link to complete their account setup.
+   * Send an invitation email to a new user to join the platform
+   * ส่งอีเมลเชิญผู้ใช้ใหม่เข้าร่วมแพลตฟอร์ม
+   * @param inviteUserDto - Invitation details (email) / ข้อมูลการเชิญ (อีเมล)
+   * @param version - API version / เวอร์ชัน API
+   * @param req - HTTP request with authenticated user context / คำขอ HTTP ที่มีบริบทผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @returns Invitation result / ผลลัพธ์การเชิญ
    */
   @Post('invite-user')
   @UseGuards(KeycloakGuard)
@@ -315,8 +329,11 @@ export class AuthController {
   }
 
   /**
-   * Completes the registration process for an invited user.
-   * Verifies the invitation token and activates the user's account in the platform.
+   * Complete registration for an invited user by verifying the invitation token
+   * ดำเนินการลงทะเบียนให้เสร็จสมบูรณ์สำหรับผู้ใช้ที่ได้รับเชิญโดยตรวจสอบโทเค็นการเชิญ
+   * @param registerConfirmDto - Confirmation details (token, user info) / ข้อมูลยืนยัน (โทเค็น, ข้อมูลผู้ใช้)
+   * @param version - API version / เวอร์ชัน API
+   * @returns Activated user data / ข้อมูลผู้ใช้ที่เปิดใช้งานแล้ว
    */
   @Post('register-confirm')
   @IgnoreGuards(KeycloakGuard)
@@ -377,8 +394,11 @@ export class AuthController {
   // }
 
   /**
-   * Exchanges an expired or expiring access token for a new one using the refresh token.
-   * Maintains the user's authenticated session without requiring re-login.
+   * Exchange a refresh token for a new access token
+   * แลกเปลี่ยน refresh token เพื่อรับ access token ใหม่
+   * @param refreshTokenDto - Object containing the refresh_token / อ็อบเจกต์ที่มี refresh_token
+   * @param version - API version / เวอร์ชัน API
+   * @returns New access and refresh tokens / โทเค็นการเข้าถึงและรีเฟรชใหม่
    */
   @Post('refresh-token')
   @ApiVersionMinRequest()
@@ -432,8 +452,11 @@ export class AuthController {
   }
 
   /**
-   * Initiates the password recovery flow for a user who has forgotten their credentials.
-   * Sends a password reset email with a secure token link to the registered address.
+   * Initiate password recovery by sending a reset email with a secure token
+   * เริ่มกระบวนการกู้คืนรหัสผ่านโดยส่งอีเมลรีเซ็ตพร้อมโทเค็นที่ปลอดภัย
+   * @param forgotPasswordDto - User email address / อีเมลของผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Confirmation that the reset email was sent / การยืนยันว่าอีเมลรีเซ็ตถูกส่งแล้ว
    */
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
@@ -490,8 +513,11 @@ export class AuthController {
   }
 
   /**
-   * Completes the password recovery process by setting a new password using the emailed token.
-   * The token is single-use and time-limited for security.
+   * Reset password using a single-use token received via email
+   * รีเซ็ตรหัสผ่านโดยใช้โทเค็นแบบใช้ครั้งเดียวที่ได้รับทางอีเมล
+   * @param resetPasswordWithTokenDto - Token and new password / โทเค็นและรหัสผ่านใหม่
+   * @param version - API version / เวอร์ชัน API
+   * @returns Password reset confirmation / การยืนยันการรีเซ็ตรหัสผ่าน
    */
   @Post('reset-password-with-token')
   @HttpCode(HttpStatus.OK)
@@ -573,8 +599,11 @@ export class AuthController {
   // }
 
   /**
-   * Allows a platform administrator to forcibly reset another user's password.
-   * Used for support scenarios when hotel staff are locked out of their accounts.
+   * Admin-only: forcibly reset another user's password
+   * สำหรับผู้ดูแลระบบ: รีเซ็ตรหัสผ่านของผู้ใช้รายอื่นโดยไม่ต้องใช้รหัสผ่านปัจจุบัน
+   * @param resetPasswordDto - Target user email and new password / อีเมลผู้ใช้เป้าหมายและรหัสผ่านใหม่
+   * @param version - API version / เวอร์ชัน API
+   * @returns Password reset confirmation / การยืนยันการรีเซ็ตรหัสผ่าน
    */
   @Post('reset-password')
   @UseGuards(KeycloakGuard)
@@ -636,8 +665,12 @@ export class AuthController {
   }
 
   /**
-   * Allows an authenticated user to change their own password.
-   * Requires the current password for verification before setting the new one.
+   * Change the authenticated user's own password
+   * เปลี่ยนรหัสผ่านของผู้ใช้ที่เข้าสู่ระบบอยู่
+   * @param changePasswordDto - Current and new password / รหัสผ่านปัจจุบันและรหัสผ่านใหม่
+   * @param req - HTTP request with user context / คำขอ HTTP ที่มีบริบทผู้ใช้
+   * @param version - API version / เวอร์ชัน API
+   * @returns Password change confirmation / การยืนยันการเปลี่ยนรหัสผ่าน
    */
   @Post('change-password')
   @UseGuards(KeycloakGuard)
@@ -726,7 +759,10 @@ export class AuthController {
   // }
 
   /**
-   * Retrieves all platform users for notification testing purposes.
+   * Retrieve all platform users for notification testing (dev/test only)
+   * ดึงข้อมูลผู้ใช้ทั้งหมดในแพลตฟอร์มสำหรับทดสอบการแจ้งเตือน (สำหรับพัฒนา/ทดสอบเท่านั้น)
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of all users / รายชื่อผู้ใช้ทั้งหมด
    */
   @Get('test-notification')
   @ApiVersionMinRequest()

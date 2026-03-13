@@ -61,6 +61,12 @@ export class PurchaseRequestTemplateService {
     PurchaseRequestTemplateService.name,
   );
 
+  /**
+   * Initialize the Prisma service for tenant-specific database access
+   * เริ่มต้นบริการ Prisma สำหรับการเข้าถึงฐานข้อมูลเฉพาะผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / ID ผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
   }
@@ -82,6 +88,12 @@ export class PurchaseRequestTemplateService {
     private readonly mapperLogic: MapperLogic,
   ) { }
 
+  /**
+   * Find all purchase request templates with pagination
+   * ค้นหาเทมเพลตใบขอซื้อทั้งหมดพร้อมการแบ่งหน้า
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of purchase request templates with details / รายการเทมเพลตใบขอซื้อพร้อมรายละเอียดที่แบ่งหน้าแล้ว
+   */
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
@@ -151,6 +163,12 @@ export class PurchaseRequestTemplateService {
     });
   }
 
+  /**
+   * Find a single purchase request template by ID with its detail lines
+   * ค้นหาเทมเพลตใบขอซื้อรายการเดียวตาม ID พร้อมรายการรายละเอียด
+   * @param id - Template ID / ID ของเทมเพลต
+   * @returns Purchase request template data with details / ข้อมูลเทมเพลตใบขอซื้อพร้อมรายละเอียด
+   */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -188,6 +206,12 @@ export class PurchaseRequestTemplateService {
     return Result.ok(serializedResult);
   }
 
+  /**
+   * Create a new purchase request template with its detail lines
+   * สร้างเทมเพลตใบขอซื้อใหม่พร้อมรายการรายละเอียด
+   * @param data - Template data including detail lines / ข้อมูลเทมเพลตรวมถึงรายการรายละเอียด
+   * @returns Created template ID / ID ของเทมเพลตที่สร้างแล้ว
+   */
   @TryCatch
   async create(data: CreatePurchaseRequestTemplateDto): Promise<Result<unknown>> {
     this.logger.debug(
@@ -230,6 +254,12 @@ export class PurchaseRequestTemplateService {
     return Result.ok({ id: tx });
   }
 
+  /**
+   * Update an existing purchase request template and its detail lines (add, update, delete)
+   * อัปเดตเทมเพลตใบขอซื้อที่มีอยู่และรายการรายละเอียด (เพิ่ม อัปเดต ลบ)
+   * @param data - Updated template data with detail operations / ข้อมูลเทมเพลตที่อัปเดตพร้อมการดำเนินการรายละเอียด
+   * @returns Updated template ID / ID ของเทมเพลตที่อัปเดตแล้ว
+   */
   @TryCatch
   async update(data: UpdatePurchaseRequestTemplateDto): Promise<Result<unknown>> {
     this.logger.debug(
@@ -304,6 +334,12 @@ export class PurchaseRequestTemplateService {
     return Result.ok({ id: tx });
   }
 
+  /**
+   * Delete a purchase request template and all its detail lines
+   * ลบเทมเพลตใบขอซื้อและรายการรายละเอียดทั้งหมด
+   * @param id - Template ID to delete / ID ของเทมเพลตที่ต้องการลบ
+   * @returns Deleted template ID / ID ของเทมเพลตที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(

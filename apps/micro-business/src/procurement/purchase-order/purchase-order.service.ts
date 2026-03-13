@@ -79,6 +79,12 @@ export class PurchaseOrderService {
     PurchaseOrderService.name,
   );
 
+  /**
+   * Initialize the Prisma service for tenant-specific database access
+   * เริ่มต้นบริการ Prisma สำหรับการเข้าถึงฐานข้อมูลเฉพาะผู้เช่า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param userId - User ID / ID ผู้ใช้
+   */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
     this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
   }
@@ -105,6 +111,12 @@ export class PurchaseOrderService {
     private readonly notificationService: NotificationService,
   ) { }
 
+  /**
+   * Find a purchase order by ID with all related data (vendor, currency, credit term, details)
+   * ค้นหาใบสั่งซื้อตาม ID พร้อมข้อมูลที่เกี่ยวข้องทั้งหมด (ผู้ขาย สกุลเงิน เงื่อนไขเครดิต รายละเอียด)
+   * @param id - Purchase order ID / ID ของใบสั่งซื้อ
+   * @returns Purchase order data with relations / ข้อมูลใบสั่งซื้อพร้อมความสัมพันธ์
+   */
   @TryCatch
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value accessed by logic layer
   async findById(id: string): Promise<Result<any>> {
@@ -297,6 +309,12 @@ export class PurchaseOrderService {
     return Result.ok(serializedPurchaseOrder);
   }
 
+  /**
+   * Find all purchase orders with pagination, search, and filtering
+   * ค้นหาใบสั่งซื้อทั้งหมดพร้อมการแบ่งหน้า การค้นหา และการกรอง
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of purchase orders / รายการใบสั่งซื้อที่แบ่งหน้าแล้ว
+   */
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
@@ -407,6 +425,12 @@ export class PurchaseOrderService {
     });
   }
 
+  /**
+   * Create a new purchase order with details and generate a running PO number
+   * สร้างใบสั่งซื้อใหม่พร้อมรายละเอียดและสร้างเลขที่ใบสั่งซื้ออัตโนมัติ
+   * @param data - Purchase order creation data / ข้อมูลสำหรับสร้างใบสั่งซื้อ
+   * @returns Created purchase order ID and PO number / ID และเลขที่ใบสั่งซื้อที่สร้างแล้ว
+   */
   @TryCatch
   async create(data: ICreatePurchaseOrder): Promise<Result<unknown>> {
     this.logger.debug(
@@ -577,6 +601,12 @@ export class PurchaseOrderService {
     return Result.ok({ id: purchaseOrder.id, po_no: purchaseOrder.po_no });
   }
 
+  /**
+   * Update an existing purchase order header and its detail lines (add, update, delete)
+   * อัปเดตส่วนหัวใบสั่งซื้อที่มีอยู่และรายการรายละเอียด (เพิ่ม อัปเดต ลบ)
+   * @param data - Updated purchase order data with detail operations / ข้อมูลใบสั่งซื้อที่อัปเดตพร้อมการดำเนินการรายละเอียด
+   * @returns Updated purchase order ID / ID ของใบสั่งซื้อที่อัปเดตแล้ว
+   */
   @TryCatch
   async update(data: IUpdatePurchaseOrder): Promise<Result<unknown>> {
     this.logger.debug(
@@ -777,6 +807,12 @@ export class PurchaseOrderService {
     return Result.ok({ id: updatedPO.id });
   }
 
+  /**
+   * Delete a purchase order and all its detail lines
+   * ลบใบสั่งซื้อและรายการรายละเอียดทั้งหมด
+   * @param id - Purchase order ID to delete / ID ของใบสั่งซื้อที่ต้องการลบ
+   * @returns Deleted purchase order ID / ID ของใบสั่งซื้อที่ลบแล้ว
+   */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -805,6 +841,14 @@ export class PurchaseOrderService {
     return Result.ok({ id: deletedPO.id });
   }
 
+  /**
+   * Save a purchase order by updating header and managing detail lines (add, update, delete)
+   * บันทึกใบสั่งซื้อโดยอัปเดตส่วนหัวและจัดการรายการรายละเอียด (เพิ่ม อัปเดต ลบ)
+   * @param id - Purchase order ID / ID ของใบสั่งซื้อ
+   * @param header - Header data to update / ข้อมูลส่วนหัวที่ต้องการอัปเดต
+   * @param details - Detail operations (add, update, delete) / การดำเนินการรายละเอียด (เพิ่ม อัปเดต ลบ)
+   * @returns Saved purchase order ID / ID ของใบสั่งซื้อที่บันทึกแล้ว
+   */
   @TryCatch
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async save(id: string, header: Record<string, any>, details: Record<string, any>): Promise<Result<unknown>> {
@@ -1003,6 +1047,14 @@ export class PurchaseOrderService {
     return Result.ok({ id: purchaseOrder.id });
   }
 
+  /**
+   * Approve a purchase order and advance the workflow stage
+   * อนุมัติใบสั่งซื้อและเลื่อนขั้นตอนการทำงานไปข้างหน้า
+   * @param id - Purchase order ID / ID ของใบสั่งซื้อ
+   * @param workflow - Workflow state data / ข้อมูลสถานะขั้นตอนการทำงาน
+   * @param payload - Approval detail data for each line / ข้อมูลรายละเอียดการอนุมัติของแต่ละรายการ
+   * @returns Approved purchase order ID / ID ของใบสั่งซื้อที่อนุมัติแล้ว
+   */
   @TryCatch
   async approve(id: string, workflow: Record<string, unknown>, payload: ApprovePurchaseOrderDetailDto[]): Promise<Result<unknown>> {
     this.logger.debug(
@@ -1084,6 +1136,14 @@ export class PurchaseOrderService {
     return Result.ok({ id: purchaseOrder.id });
   }
 
+  /**
+   * Reject a purchase order and update the workflow stage
+   * ปฏิเสธใบสั่งซื้อและอัปเดตขั้นตอนการทำงาน
+   * @param id - Purchase order ID / ID ของใบสั่งซื้อ
+   * @param workflow - Workflow state data / ข้อมูลสถานะขั้นตอนการทำงาน
+   * @param payload - Rejection detail data for each line / ข้อมูลรายละเอียดการปฏิเสธของแต่ละรายการ
+   * @returns Rejected purchase order ID / ID ของใบสั่งซื้อที่ปฏิเสธแล้ว
+   */
   @TryCatch
   async reject(id: string, workflow: Record<string, unknown>, payload: RejectPurchaseOrderDetailDto[]): Promise<Result<unknown>> {
     this.logger.debug(
@@ -1166,6 +1226,14 @@ export class PurchaseOrderService {
     return Result.ok({ id: purchaseOrder.id });
   }
 
+  /**
+   * Review a purchase order and forward it to the next workflow stage
+   * ตรวจสอบใบสั่งซื้อและส่งต่อไปยังขั้นตอนการทำงานถัดไป
+   * @param id - Purchase order ID / ID ของใบสั่งซื้อ
+   * @param workflow - Workflow state data / ข้อมูลสถานะขั้นตอนการทำงาน
+   * @param payload - Review detail data for each line / ข้อมูลรายละเอียดการตรวจสอบของแต่ละรายการ
+   * @returns Reviewed purchase order ID / ID ของใบสั่งซื้อที่ตรวจสอบแล้ว
+   */
   @TryCatch
   async review(id: string, workflow: Record<string, unknown>, payload: ReviewPurchaseOrderDetailDto[]): Promise<Result<unknown>> {
     this.logger.debug(
@@ -1247,6 +1315,12 @@ export class PurchaseOrderService {
     return Result.ok({ id: purchaseOrder.id });
   }
 
+  /**
+   * Cancel a purchase order and update its status
+   * ยกเลิกใบสั่งซื้อและอัปเดตสถานะ
+   * @param id - Purchase order ID to cancel / ID ของใบสั่งซื้อที่ต้องการยกเลิก
+   * @returns Cancelled purchase order ID / ID ของใบสั่งซื้อที่ยกเลิกแล้ว
+   */
   @TryCatch
   async cancel(id: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -1316,6 +1390,12 @@ export class PurchaseOrderService {
     return Result.ok({ id: id });
   }
 
+  /**
+   * Generate a running purchase order number based on date pattern configuration
+   * สร้างเลขที่ใบสั่งซื้อแบบเรียงลำดับตามการตั้งค่ารูปแบบวันที่
+   * @param orderDate - Order date for pattern generation / วันที่สั่งซื้อสำหรับสร้างรูปแบบ
+   * @returns Generated PO number / เลขที่ใบสั่งซื้อที่สร้างแล้ว
+   */
   private async generatePONo(orderDate: string): Promise<string> {
     this.logger.debug(
       { function: 'generatePONo', orderDate, tenant_id: this.bu_code, user_id: this.userId },
@@ -1372,6 +1452,12 @@ export class PurchaseOrderService {
   /**
    * Group PR details by vendor_id -> delivery_date -> currency_id
    * This is used to prepare data for creating POs from PRs
+   */
+  /**
+   * Group purchase requests by vendor for purchase order creation preview
+   * จัดกลุ่มใบขอซื้อตามผู้ขายสำหรับแสดงตัวอย่างก่อนสร้างใบสั่งซื้อ
+   * @param pr_ids - Array of purchase request IDs to group / อาร์เรย์ของ ID ใบขอซื้อที่ต้องการจัดกลุ่ม
+   * @returns Grouped purchase request data by vendor / ข้อมูลใบขอซื้อที่จัดกลุ่มตามผู้ขาย
    */
   @TryCatch
   async groupPrForPo(pr_ids: string[]): Promise<Result<unknown>> {
@@ -1535,6 +1621,12 @@ export class PurchaseOrderService {
   /**
    * Confirm PR and create PO(s)
    * Groups PR details by vendor_id -> delivery_date -> currency_id and creates POs
+   */
+  /**
+   * Confirm and convert purchase requests into purchase orders, grouped by vendor
+   * ยืนยันและแปลงใบขอซื้อเป็นใบสั่งซื้อ จัดกลุ่มตามผู้ขาย
+   * @param pr_ids - Array of purchase request IDs to confirm / อาร์เรย์ของ ID ใบขอซื้อที่ต้องการยืนยัน
+   * @returns Created purchase order IDs / ID ของใบสั่งซื้อที่สร้างแล้ว
    */
   @TryCatch
   async confirmPrToPo(pr_ids: string[]): Promise<Result<unknown>> {
@@ -1894,6 +1986,10 @@ export class PurchaseOrderService {
   /**
    * Send notification when PO is created
    */
+  /**
+   * Send a notification when a new purchase order is created
+   * ส่งการแจ้งเตือนเมื่อสร้างใบสั่งซื้อใหม่
+   */
   private async sendPOCreatedNotification(
     purchaseOrder: Record<string, unknown>,
     data: ICreatePurchaseOrder,
@@ -1929,6 +2025,10 @@ export class PurchaseOrderService {
    * Send notification when POs are created from PR confirmation
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  /**
+   * Send a notification when purchase orders are created from purchase requests
+   * ส่งการแจ้งเตือนเมื่อสร้างใบสั่งซื้อจากใบขอซื้อ
+   */
   private async sendPOFromPRNotification(
     createdPOs: any[],
     prDetails: any[],
@@ -1996,6 +2096,12 @@ export class PurchaseOrderService {
 
   /**
    * Export Purchase Order to Excel format
+   */
+  /**
+   * Export a purchase order to Excel spreadsheet format
+   * ส่งออกใบสั่งซื้อเป็นไฟล์สเปรดชีต Excel
+   * @param id - Purchase order ID to export / ID ของใบสั่งซื้อที่ต้องการส่งออก
+   * @returns Excel file buffer and filename / บัฟเฟอร์ไฟล์ Excel และชื่อไฟล์
    */
   @TryCatch
   async exportToExcel(id: string): Promise<Result<{ buffer: Buffer; filename: string }>> {
@@ -2365,6 +2471,12 @@ export class PurchaseOrderService {
   /**
    * Print Purchase Order to PDF format
    */
+  /**
+   * Print a purchase order to PDF format
+   * พิมพ์ใบสั่งซื้อเป็นไฟล์ PDF
+   * @param id - Purchase order ID to print / ID ของใบสั่งซื้อที่ต้องการพิมพ์
+   * @returns PDF file buffer and filename / บัฟเฟอร์ไฟล์ PDF และชื่อไฟล์
+   */
   @TryCatch
   async printToPdf(id: string): Promise<Result<{ buffer: Buffer; filename: string }>> {
     this.logger.debug(
@@ -2665,6 +2777,12 @@ export class PurchaseOrderService {
   /**
    * Get a single Purchase Order Detail by ID
    */
+  /**
+   * Find a purchase order detail line by its ID
+   * ค้นหารายละเอียดใบสั่งซื้อรายการเดียวตาม ID
+   * @param detailId - Detail line ID / ID ของรายการรายละเอียด
+   * @returns Purchase order detail data / ข้อมูลรายละเอียดใบสั่งซื้อ
+   */
   @TryCatch
   async findDetailById(detailId: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -2750,6 +2868,12 @@ export class PurchaseOrderService {
 
   /**
    * Get all Purchase Order Details by Purchase Order ID
+   */
+  /**
+   * Find all detail lines for a specific purchase order
+   * ค้นหารายละเอียดทั้งหมดของใบสั่งซื้อที่ระบุ
+   * @param purchaseOrderId - Purchase order ID / ID ของใบสั่งซื้อ
+   * @returns List of purchase order details / รายการรายละเอียดใบสั่งซื้อ
    */
   @TryCatch
   async findDetailsByPurchaseOrderId(purchaseOrderId: string): Promise<Result<unknown>> {
@@ -2847,6 +2971,13 @@ export class PurchaseOrderService {
   /**
    * Create a new Purchase Order Detail
    */
+  /**
+   * Create a new purchase order detail line item and recalculate totals
+   * สร้างรายการรายละเอียดใบสั่งซื้อใหม่และคำนวณยอดรวมใหม่
+   * @param purchaseOrderId - Parent purchase order ID / ID ของใบสั่งซื้อหลัก
+   * @param detailData - Detail line data / ข้อมูลรายการรายละเอียด
+   * @returns Created detail ID / ID ของรายละเอียดที่สร้างแล้ว
+   */
   @TryCatch
   async createDetail(purchaseOrderId: string, detailData: IPurchaseOrderDetail): Promise<Result<unknown>> {
     this.logger.debug(
@@ -2940,6 +3071,13 @@ export class PurchaseOrderService {
   /**
    * Update a Purchase Order Detail
    */
+  /**
+   * Update an existing purchase order detail line item and recalculate totals
+   * อัปเดตรายการรายละเอียดใบสั่งซื้อที่มีอยู่และคำนวณยอดรวมใหม่
+   * @param detailId - Detail line ID to update / ID ของรายการรายละเอียดที่ต้องการอัปเดต
+   * @param detailData - Updated detail line data / ข้อมูลรายการรายละเอียดที่อัปเดต
+   * @returns Updated detail ID / ID ของรายละเอียดที่อัปเดตแล้ว
+   */
   @TryCatch
   async updateDetail(detailId: string, detailData: Partial<IPurchaseOrderDetail>): Promise<Result<unknown>> {
     this.logger.debug(
@@ -3026,6 +3164,12 @@ export class PurchaseOrderService {
   /**
    * Delete a Purchase Order Detail
    */
+  /**
+   * Delete a purchase order detail line item and recalculate totals
+   * ลบรายการรายละเอียดใบสั่งซื้อและคำนวณยอดรวมใหม่
+   * @param detailId - Detail line ID to delete / ID ของรายการรายละเอียดที่ต้องการลบ
+   * @returns Deleted detail ID / ID ของรายละเอียดที่ลบแล้ว
+   */
   @TryCatch
   async deleteDetail(detailId: string): Promise<Result<unknown>> {
     this.logger.debug(
@@ -3075,6 +3219,12 @@ export class PurchaseOrderService {
    * Helper method to update Purchase Order totals after detail changes
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  /**
+   * Recalculate and update purchase order totals (qty, price, tax, amount) from detail lines
+   * คำนวณและอัปเดตยอดรวมใบสั่งซื้อ (จำนวน ราคา ภาษี ยอดรวม) จากรายการรายละเอียด
+   * @param prisma - Prisma transaction client / Prisma transaction client
+   * @param purchaseOrderId - Purchase order ID / ID ของใบสั่งซื้อ
+   */
   private async updatePurchaseOrderTotals(prisma: any, purchaseOrderId: string): Promise<void> {
     // Calculate totals from all active details
     const totals = await prisma.tb_purchase_order_detail.aggregate({
@@ -3107,6 +3257,12 @@ export class PurchaseOrderService {
   /**
    * Close a Purchase Order - marks it as closed, sends notification and email
    * This is different from cancel - close is for POs that have been partially or fully received
+   */
+  /**
+   * Close a purchase order and update its status to closed
+   * ปิดใบสั่งซื้อและอัปเดตสถานะเป็นปิด
+   * @param id - Purchase order ID to close / ID ของใบสั่งซื้อที่ต้องการปิด
+   * @returns Closed purchase order ID / ID ของใบสั่งซื้อที่ปิดแล้ว
    */
   @TryCatch
   async closePO(id: string): Promise<Result<unknown>> {
@@ -3197,6 +3353,10 @@ export class PurchaseOrderService {
    * Send notification when PO is closed
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  /**
+   * Send a notification when a purchase order is closed
+   * ส่งการแจ้งเตือนเมื่อปิดใบสั่งซื้อ
+   */
   private async sendClosePONotification(purchaseOrder: any): Promise<void> {
     try {
       const poNo = purchaseOrder?.po_no || 'N/A';
@@ -3234,6 +3394,14 @@ export class PurchaseOrderService {
     }
   }
 
+  /**
+   * Find all purchase orders pending approval for the current user across business units
+   * ค้นหาใบสั่งซื้อทั้งหมดที่รอการอนุมัติของผู้ใช้ปัจจุบันจากทุกหน่วยธุรกิจ
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param bu_code - Business unit code(s) / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated list of pending purchase orders / รายการใบสั่งซื้อที่รออนุมัติที่แบ่งหน้าแล้ว
+   */
   @TryCatch
   async findAllMyPending(
     user_id: string,
@@ -3389,6 +3557,13 @@ export class PurchaseOrderService {
     return Result.ok(results);
   }
 
+  /**
+   * Get the count of purchase orders pending approval for the current user
+   * นับจำนวนใบสั่งซื้อที่รอการอนุมัติของผู้ใช้ปัจจุบัน
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Count of pending purchase orders / จำนวนใบสั่งซื้อที่รออนุมัติ
+   */
   async findAllMyPendingCount(user_id: string, bu_code: string): Promise<any> {
     this.logger.debug(
       { function: 'findAllMyPendingCount', user_id, bu_code },
