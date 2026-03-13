@@ -1,10 +1,10 @@
-import { Controller, HttpStatus } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
-import { PhysicalCountPeriodService } from './physical-count-period.service';
-import { IPhysicalCountPeriodCreate, IPhysicalCountPeriodUpdate } from './interface/physical-count-period.interface';
-import { BackendLogger } from '@/common/helpers/backend.logger';
-import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
+import { Controller, HttpStatus } from "@nestjs/common";
+import { MessagePattern, Payload } from "@nestjs/microservices";
+import { PhysicalCountPeriodService } from "./physical-count-period.service";
+import { IPhysicalCountPeriodCreate, IPhysicalCountPeriodUpdate } from "./interface/physical-count-period.interface";
+import { BackendLogger } from "@/common/helpers/backend.logger";
+import { runWithAuditContext, AuditContext } from "@repo/log-events-library";
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from "@/common";
 
 @Controller()
 export class PhysicalCountPeriodController extends BaseMicroserviceController {
@@ -24,9 +24,9 @@ export class PhysicalCountPeriodController extends BaseMicroserviceController {
     };
   }
 
-  @MessagePattern({ cmd: 'physical-count-period.findOne', service: 'physical-count-period' })
+  @MessagePattern({ cmd: "physical-count-period.findOne", service: "physical-count-period" })
   async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'findOne', payload }, PhysicalCountPeriodController.name);
+    this.logger.debug({ function: "findOne", payload }, PhysicalCountPeriodController.name);
     const id = payload.id;
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
@@ -37,9 +37,9 @@ export class PhysicalCountPeriodController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
-  @MessagePattern({ cmd: 'physical-count-period.findAll', service: 'physical-count-period' })
+  @MessagePattern({ cmd: "physical-count-period.findAll", service: "physical-count-period" })
   async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'findAll', payload }, PhysicalCountPeriodController.name);
+    this.logger.debug({ function: "findAll", payload }, PhysicalCountPeriodController.name);
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const paginate = payload.paginate;
@@ -50,21 +50,33 @@ export class PhysicalCountPeriodController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
-  @MessagePattern({ cmd: 'physical-count-period.nearest', service: 'physical-count-period' })
-  async findNearest(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'findNearest', payload }, PhysicalCountPeriodController.name);
+  // @MessagePattern({ cmd: 'physical-count-period.nearest', service: 'physical-count-period' })
+  // async findNearest(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+  //   this.logger.debug({ function: 'findNearest', payload }, PhysicalCountPeriodController.name);
+  //   const user_id = payload.user_id;
+  //   const tenant_id = payload.tenant_id || payload.bu_code;
+  //   const auditContext = this.createAuditContext(payload);
+  //   const result = await runWithAuditContext(auditContext, () =>
+  //     this.physicalCountPeriodService.findNearest(user_id, tenant_id),
+  //   );
+  //   return this.handleResult(result);
+  // }
+
+  @MessagePattern({ cmd: "physical-count-period.current", service: "physical-count-period" })
+  async findCurrent(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: "findCurrent", payload }, PhysicalCountPeriodController.name);
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.physicalCountPeriodService.findNearest(user_id, tenant_id),
+      this.physicalCountPeriodService.findCurrent(user_id, tenant_id),
     );
     return this.handleResult(result);
   }
 
-  @MessagePattern({ cmd: 'physical-count-period.create', service: 'physical-count-period' })
+  @MessagePattern({ cmd: "physical-count-period.create", service: "physical-count-period" })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'create', payload }, PhysicalCountPeriodController.name);
+    this.logger.debug({ function: "create", payload }, PhysicalCountPeriodController.name);
     const data: IPhysicalCountPeriodCreate = payload.data;
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
@@ -75,9 +87,9 @@ export class PhysicalCountPeriodController extends BaseMicroserviceController {
     return this.handleResult(result, HttpStatus.CREATED);
   }
 
-  @MessagePattern({ cmd: 'physical-count-period.update', service: 'physical-count-period' })
+  @MessagePattern({ cmd: "physical-count-period.update", service: "physical-count-period" })
   async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'update', payload }, PhysicalCountPeriodController.name);
+    this.logger.debug({ function: "update", payload }, PhysicalCountPeriodController.name);
     const data: IPhysicalCountPeriodUpdate = { id: payload.id, ...payload.data };
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
@@ -88,9 +100,9 @@ export class PhysicalCountPeriodController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
-  @MessagePattern({ cmd: 'physical-count-period.delete', service: 'physical-count-period' })
+  @MessagePattern({ cmd: "physical-count-period.delete", service: "physical-count-period" })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'delete', payload }, PhysicalCountPeriodController.name);
+    this.logger.debug({ function: "delete", payload }, PhysicalCountPeriodController.name);
     const id = payload.id;
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;

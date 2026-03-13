@@ -15,12 +15,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { PhysicalCountPeriodService } from './physical-count-period.service';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   PhysicalCountPeriodCreateRequestDto,
   PhysicalCountPeriodUpdateRequestDto,
@@ -36,7 +31,10 @@ import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
-import { PhysicalCountPeriodCreateDto, PhysicalCountPeriodUpdateDto } from 'src/common/dto/physical-count-period/physical-count-period.dto';
+import {
+  PhysicalCountPeriodCreateDto,
+  PhysicalCountPeriodUpdateDto,
+} from 'src/common/dto/physical-count-period/physical-count-period.dto';
 
 @Controller('api')
 @ApiTags('Inventory')
@@ -54,40 +52,85 @@ export class PhysicalCountPeriodController extends BaseHttpController {
     super();
   }
 
-  /**
-   * Finds the physical count period closest to today, helping warehouse staff
-   * identify the current or upcoming inventory verification window.
-   */
-  @Get(':bu_code/physical-count-period/nearest')
-  @UseGuards(new AppIdGuard('physicalCountPeriod.nearest'))
+  // /**
+  //  * Finds the physical count period closest to today, helping warehouse staff
+  //  * identify the current or upcoming inventory verification window.
+  //  */
+  // @Get(':bu_code/physical-count-period/nearest')
+  // @UseGuards(new AppIdGuard('physicalCountPeriod.nearest'))
+  // @HttpCode(HttpStatus.OK)
+  // @ApiVersionMinRequest()
+  // @ApiOperation({
+  //   summary: 'Get nearest physical count period',
+  //   description: 'Finds the physical count period closest to today, helping warehouse staff quickly identify the current or upcoming inventory verification window they should be working on.',
+  //   operationId: 'findNearestPhysicalCountPeriod',
+  //   tags: ['Inventory', 'Physical Count Period'],
+  //   parameters: [
+  //     { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+  //   ],
+  //   responses: {
+  //     200: { description: 'Nearest physical count period retrieved successfully' },
+  //     404: { description: 'No physical count period found' },
+  //   },
+  // })
+  // async findNearest(
+  //   @Param('bu_code') bu_code: string,
+  //   @Req() req: Request,
+  //   @Res() res: Response,
+  //   @Query('version') version: string = 'latest',
+  // ): Promise<void> {
+  //   this.logger.debug(
+  //     { function: 'findNearest', version },
+  //     PhysicalCountPeriodController.name,
+  //   );
+
+  //   const { user_id } = ExtractRequestHeader(req);
+  //   const result = await this.physicalCountPeriodService.findNearest(user_id, bu_code, version);
+  //   this.respond(res, result);
+  // }
+
+  @Get(':bu_code/physical-count-period/current')
+  @UseGuards(new AppIdGuard('physicalCountPeriod.current'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Get nearest physical count period',
-    description: 'Finds the physical count period closest to today, helping warehouse staff quickly identify the current or upcoming inventory verification window they should be working on.',
-    operationId: 'findNearestPhysicalCountPeriod',
+    summary: 'Get current physical count period',
+    description:
+      'Finds the current physical count period, helping warehouse staff quickly identify the current inventory verification window they should be working on.',
+    operationId: 'findCurrentPhysicalCountPeriod',
     tags: ['Inventory', 'Physical Count Period'],
     parameters: [
-      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+      {
+        name: 'bu_code',
+        in: 'path',
+        required: true,
+        description: 'Business Unit Code',
+      },
     ],
     responses: {
-      200: { description: 'Nearest physical count period retrieved successfully' },
-      404: { description: 'No physical count period found' },
+      200: {
+        description: 'Current physical count period retrieved successfully',
+      },
+      404: { description: 'No current physical count period found' },
     },
   })
-  async findNearest(
+  async findCurrent(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
-      { function: 'findNearest', version },
+      { function: 'findCurrent', version },
       PhysicalCountPeriodController.name,
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.physicalCountPeriodService.findNearest(user_id, bu_code, version);
+    const result = await this.physicalCountPeriodService.findCurrent(
+      user_id,
+      bu_code,
+      version,
+    );
     this.respond(res, result);
   }
 
@@ -101,12 +144,23 @@ export class PhysicalCountPeriodController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a physical count period by ID',
-    description: 'Retrieves the details of a specific physical count time window, including its date range and status, to determine when inventory verification must be completed.',
+    description:
+      'Retrieves the details of a specific physical count time window, including its date range and status, to determine when inventory verification must be completed.',
     operationId: 'findOnePhysicalCountPeriod',
     tags: ['Inventory', 'Physical Count Period'],
     parameters: [
-      { name: 'id', in: 'path', required: true, description: 'Physical Count Period ID' },
-      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+      {
+        name: 'id',
+        in: 'path',
+        required: true,
+        description: 'Physical Count Period ID',
+      },
+      {
+        name: 'bu_code',
+        in: 'path',
+        required: true,
+        description: 'Business Unit Code',
+      },
     ],
     responses: {
       200: { description: 'Physical count period retrieved successfully' },
@@ -126,7 +180,12 @@ export class PhysicalCountPeriodController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.physicalCountPeriodService.findOne(id, user_id, bu_code, version);
+    const result = await this.physicalCountPeriodService.findOne(
+      id,
+      user_id,
+      bu_code,
+      version,
+    );
     this.respond(res, result);
   }
 
@@ -134,18 +193,24 @@ export class PhysicalCountPeriodController extends BaseHttpController {
    * Lists all defined physical count periods for the business unit, allowing
    * inventory managers to plan and schedule recurring stock verification cycles.
    */
-  @Get(':bu_code/physical-count-period/')
+  @Get(':bu_code/physical-count-period')
   @UseGuards(new AppIdGuard('physicalCountPeriod.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all physical count periods',
-    description: 'Lists all defined physical count periods for the business unit, allowing inventory managers to plan and schedule recurring stock verification cycles.',
+    description:
+      'Lists all defined physical count periods for the business unit, allowing inventory managers to plan and schedule recurring stock verification cycles.',
     operationId: 'findAllPhysicalCountPeriods',
     tags: ['Inventory', 'Physical Count Period'],
     parameters: [
-      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+      {
+        name: 'bu_code',
+        in: 'path',
+        required: true,
+        description: 'Business Unit Code',
+      },
     ],
     responses: {
       200: { description: 'Physical count periods retrieved successfully' },
@@ -165,7 +230,12 @@ export class PhysicalCountPeriodController extends BaseHttpController {
 
     const { user_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
-    const result = await this.physicalCountPeriodService.findAll(user_id, bu_code, paginate, version);
+    const result = await this.physicalCountPeriodService.findAll(
+      user_id,
+      bu_code,
+      paginate,
+      version,
+    );
     this.respond(res, result);
   }
 
@@ -179,16 +249,24 @@ export class PhysicalCountPeriodController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a new physical count period',
-    description: 'Defines a new time window during which physical inventory counts must be completed, establishing the schedule for periodic stock verification across storage locations.',
+    description:
+      'Defines a new time window during which physical inventory counts must be completed, establishing the schedule for periodic stock verification across storage locations.',
     operationId: 'createPhysicalCountPeriod',
     tags: ['Inventory', 'Physical Count Period'],
     parameters: [
-      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+      {
+        name: 'bu_code',
+        in: 'path',
+        required: true,
+        description: 'Business Unit Code',
+      },
     ],
     responses: {
       201: { description: 'Physical count period created successfully' },
       400: { description: 'Invalid request body' },
-      409: { description: 'Physical count period with same dates already exists' },
+      409: {
+        description: 'Physical count period with same dates already exists',
+      },
     },
   })
   @ApiBody({ type: PhysicalCountPeriodCreateRequestDto })
@@ -205,7 +283,12 @@ export class PhysicalCountPeriodController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.physicalCountPeriodService.create({ ...createDto }, user_id, bu_code, version);
+    const result = await this.physicalCountPeriodService.create(
+      { ...createDto },
+      user_id,
+      bu_code,
+      version,
+    );
     this.respond(res, result, HttpStatus.CREATED);
   }
 
@@ -219,12 +302,23 @@ export class PhysicalCountPeriodController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a physical count period',
-    description: 'Modifies the date range or status of a physical count period, such as extending the deadline when warehouse staff need additional time to complete stock verification.',
+    description:
+      'Modifies the date range or status of a physical count period, such as extending the deadline when warehouse staff need additional time to complete stock verification.',
     operationId: 'updatePhysicalCountPeriod',
     tags: ['Inventory', 'Physical Count Period'],
     parameters: [
-      { name: 'id', in: 'path', required: true, description: 'Physical Count Period ID' },
-      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+      {
+        name: 'id',
+        in: 'path',
+        required: true,
+        description: 'Physical Count Period ID',
+      },
+      {
+        name: 'bu_code',
+        in: 'path',
+        required: true,
+        description: 'Business Unit Code',
+      },
     ],
     responses: {
       200: { description: 'Physical count period updated successfully' },
@@ -246,7 +340,13 @@ export class PhysicalCountPeriodController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.physicalCountPeriodService.update(id, { ...updateDto }, user_id, bu_code, version);
+    const result = await this.physicalCountPeriodService.update(
+      id,
+      { ...updateDto },
+      user_id,
+      bu_code,
+      version,
+    );
     this.respond(res, result);
   }
 
@@ -260,12 +360,23 @@ export class PhysicalCountPeriodController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a physical count period',
-    description: 'Removes a physical count period that was created in error or is no longer needed. Periods with associated physical counts cannot be deleted.',
+    description:
+      'Removes a physical count period that was created in error or is no longer needed. Periods with associated physical counts cannot be deleted.',
     operationId: 'deletePhysicalCountPeriod',
     tags: ['Inventory', 'Physical Count Period'],
     parameters: [
-      { name: 'id', in: 'path', required: true, description: 'Physical Count Period ID' },
-      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+      {
+        name: 'id',
+        in: 'path',
+        required: true,
+        description: 'Physical Count Period ID',
+      },
+      {
+        name: 'bu_code',
+        in: 'path',
+        required: true,
+        description: 'Business Unit Code',
+      },
     ],
     responses: {
       200: { description: 'Physical count period deleted successfully' },
@@ -285,7 +396,12 @@ export class PhysicalCountPeriodController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.physicalCountPeriodService.delete(id, user_id, bu_code, version);
+    const result = await this.physicalCountPeriodService.delete(
+      id,
+      user_id,
+      bu_code,
+      version,
+    );
     this.respond(res, result);
   }
 }
