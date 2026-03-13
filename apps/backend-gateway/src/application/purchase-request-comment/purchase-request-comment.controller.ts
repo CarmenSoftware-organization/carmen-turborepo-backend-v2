@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { PurchaseRequestCommentService } from './purchase-request-comment.service';
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
-import { ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator';
+import { ApiVersionMinRequest, ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -49,6 +49,7 @@ export class PurchaseRequestCommentController {
   @Get(':bu_code/purchase-request/:purchase_request_id/comment')
   @UseGuards(new AppIdGuard('purchaseRequestComment.findAll'))
   @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all comments for a purchase request',
     description:

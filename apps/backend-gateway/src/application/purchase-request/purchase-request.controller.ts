@@ -89,6 +89,7 @@ export class PurchaseRequestController extends BaseHttpController {
   @UseGuards(new AppIdGuard('purchaseRequest.findAll'))
   @Serialize(PurchaseRequestListItemResponseSchema)
   @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all purchase requests',

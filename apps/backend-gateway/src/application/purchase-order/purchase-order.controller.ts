@@ -24,7 +24,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator';
+import { ApiVersionMinRequest, ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -132,6 +132,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @UseGuards(new AppIdGuard('purchaseOrder.findAll'))
   @Serialize(PurchaseOrderListItemResponseSchema)
   @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all purchase orders',
     description: 'Lists all purchase orders for the business unit with pagination and search. Used by purchasers and managers to track outstanding orders, monitor delivery status, and manage vendor commitments.',

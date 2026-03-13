@@ -7,6 +7,7 @@ import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-c
 import { AuthService } from 'src/auth/auth.service';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { sendToService } from 'src/common/helpers/microservice.helper';
+import { IPaginate } from 'src/shared-dto/paginate.dto';
 
 @Injectable()
 export class UserService implements OnModuleInit {
@@ -72,6 +73,7 @@ export class UserService implements OnModuleInit {
   async getAllUserInTenant(
     user_id: string,
     bu_code: string,
+    paginate: IPaginate,
     version: string,
   ): Promise<Result<unknown>> {
     this.logger.debug(
@@ -79,6 +81,7 @@ export class UserService implements OnModuleInit {
         function: 'getAllUserInTenant',
         user_id,
         bu_code,
+        paginate,
         version,
       },
       UserService.name,
@@ -86,7 +89,7 @@ export class UserService implements OnModuleInit {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'get-all-user-in-tenant', service: 'auth' },
-      { user_id: user_id, bu_code: bu_code, version: version },
+      { user_id: user_id, bu_code: bu_code, paginate: paginate, version: version },
     );
 
     const response = await firstValueFrom(res);
@@ -98,11 +101,7 @@ export class UserService implements OnModuleInit {
       );
     }
 
-    const responseData = response.data as { paginate: unknown; [key: string]: unknown };
-    return Result.ok({
-      data: responseData,
-      paginate: responseData.paginate,
-    });
+    return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
   async updateUserById(

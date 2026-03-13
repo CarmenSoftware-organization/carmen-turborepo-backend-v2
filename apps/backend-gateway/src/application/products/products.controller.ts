@@ -54,6 +54,7 @@ export class ProductsController extends BaseHttpController {
   @UseGuards(new AppIdGuard('products.getByLocation'))
   @Serialize(ProductLocationListItemResponseSchema)
   @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all products by location id',

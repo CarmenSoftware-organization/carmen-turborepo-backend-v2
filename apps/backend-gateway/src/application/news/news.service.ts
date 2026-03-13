@@ -54,7 +54,7 @@ export class NewsService {
       );
     }
 
-    return Result.ok(response.data);
+    return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
   async findOne(id: string, user_id: string, version: string): Promise<unknown> {

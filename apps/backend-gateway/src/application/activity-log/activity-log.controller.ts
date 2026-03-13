@@ -27,6 +27,7 @@ import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
+import { ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator';
 import { BatchDeleteDto } from './swagger/request';
 
 @Controller('api/:bu_code/activity-log')
@@ -60,6 +61,7 @@ export class ActivityLogController extends BaseHttpController {
       200: { description: 'Activity logs retrieved successfully' },
     },
   })
+  @ApiUserFilterQueries()
   @ApiQuery({ name: 'entity_type', required: false, type: String, description: 'Filter by entity type' })
   @ApiQuery({ name: 'entity_id', required: false, type: String, description: 'Filter by entity ID' })
   @ApiQuery({ name: 'actor_id', required: false, type: String, description: 'Filter by actor (user) ID' })
@@ -108,6 +110,7 @@ export class ActivityLogController extends BaseHttpController {
   @Get('entity/:entity_type')
   @UseGuards(new AppIdGuard('activityLog.findAll'))
   @HttpCode(HttpStatus.OK)
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get activity logs by entity type',
     description: 'Retrieves all activity records for a specific document type (e.g., purchase_request, purchase_order, good_received_note). Used to review the complete history of actions taken on a particular category of business documents.',
