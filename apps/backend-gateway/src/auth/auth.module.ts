@@ -35,7 +35,7 @@ import { UrlTokenGuard } from './guards/url-token.guard';
       },
     ]),
     JwtModule.register({
-      secret: envConfig.SUPABASE_JWT_SECRET,
+      secret: envConfig.JWT_SECRET,
     }),
     PassportModule,
     ConfigModule,

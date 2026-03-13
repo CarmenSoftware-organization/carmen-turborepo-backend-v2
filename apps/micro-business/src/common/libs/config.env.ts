@@ -4,7 +4,7 @@ dotenv.config();
 
 const envSchema = z.object({
   // Required
-  SUPABASE_JWT_SECRET: z.string().min(1, 'SUPABASE_JWT_SECRET is required'),
+  JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
 
   // Business service (consolidated)
   BUSINESS_SERVICE_HOST: z.string().min(1),
@@ -58,7 +58,7 @@ export const envConfig = {
   CRONJOB_SERVICE_TCP_PORT: env.CRONJOB_SERVICE_TCP_PORT,
 
   // JWT configuration
-  SUPABASE_JWT_SECRET: env.SUPABASE_JWT_SECRET,
+  JWT_SECRET: env.JWT_SECRET,
   JWT_EXPIRES_IN: env.JWT_EXPIRES_IN,
   JWT_REFRESH_EXPIRES_IN: env.JWT_REFRESH_EXPIRES_IN,
   JWT_INVITE_EXPIRES_IN: env.JWT_INVITE_EXPIRES_IN,
