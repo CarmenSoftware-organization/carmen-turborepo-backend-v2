@@ -24,6 +24,7 @@ import {
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiVersionMinRequest,
+  ApiUserFilterQueries,
 } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { IPaginateQuery } from 'src/shared-dto/paginate.dto';
@@ -118,6 +119,7 @@ export class RequestForPricingController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all request for pricing',
     description: 'Lists all Request for Pricing (RFP) documents within the business unit, allowing procurement staff to track and compare competitive pricing submissions from multiple vendors.',

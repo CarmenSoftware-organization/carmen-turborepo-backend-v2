@@ -36,6 +36,7 @@ import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
+import { ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator';
 
 @Controller('api/:bu_code/documents')
 @ApiTags('Document & Log')
@@ -124,11 +125,7 @@ export class DocumentManagementController extends BaseHttpController {
     operationId: 'listDocuments',
     tags: ['Document & Log', 'Document Management'],
   })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'perpage', required: false, type: Number })
-  @ApiQuery({ name: 'search', required: false, type: String })
-  @ApiQuery({ name: 'searchfields', required: false, type: String })
-  @ApiQuery({ name: 'sort', required: false, type: String })
+  @ApiUserFilterQueries()
   async listDocuments(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,

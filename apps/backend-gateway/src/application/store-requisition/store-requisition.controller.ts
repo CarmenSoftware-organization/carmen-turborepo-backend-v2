@@ -32,6 +32,7 @@ import {
 } from './swagger/request';
 import {
   ApiVersionMinRequest,
+  ApiUserFilterQueries,
 } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
@@ -149,6 +150,7 @@ export class StoreRequisitionController extends BaseHttpController {
   @UseGuards(new AppIdGuard('storeRequisition.findAll'))
   @Serialize(StoreRequisitionListItemResponseSchema)
   @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all store requisitions',
     description: 'Lists all store requisitions across business units with pagination and filtering. Used by department staff to track their internal stock requests and by store managers to view pending issuance requests.',

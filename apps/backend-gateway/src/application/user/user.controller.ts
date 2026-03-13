@@ -21,6 +21,7 @@ import {
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
+import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { UpdateUserProfileDto } from 'src/auth/dto/auth.dto';
@@ -164,6 +165,7 @@ export class UserController extends BaseHttpController {
   @UseGuards(KeycloakGuard)
   @Serialize(UserListItemResponseSchema)
   @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all users in tenant',
     description: 'Lists all users assigned to the current business unit (tenant), used for administrative purposes such as managing staff access, assigning roles, and configuring approval workflows.',
@@ -185,20 +187,24 @@ export class UserController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
+    @Query() query?: IPaginateQuery,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
       {
         function: 'getAllUserInTenant',
+        query,
         version,
       },
       UserController.name,
     );
 
     const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
     const result = await this.userService.getAllUserInTenant(
       user_id,
       bu_code,
+      paginate,
       version,
     );
     this.respond(res, result);
