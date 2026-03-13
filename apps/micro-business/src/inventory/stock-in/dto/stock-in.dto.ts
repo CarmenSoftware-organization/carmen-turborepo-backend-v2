@@ -28,9 +28,9 @@ const StockInDetailBaseSchema = z.object({
   inventory_transaction_id: z.string().uuid().optional().nullable(),
   sequence_no: z.number().int().optional().default(1),
   description: z.string().optional().nullable(),
-  qty: z.number().optional().default(0),
-  cost_per_unit: z.number().optional().default(0),
-  total_cost: z.number().optional().default(0),
+  qty: z.number().min(0).optional().default(0),
+  cost_per_unit: z.number().min(0).optional().default(0),
+  total_cost: z.number().min(0).optional().default(0),
   note: z.string().optional().nullable(),
   // Denormalized product fields (populated by service)
   product_name: z.string().optional().nullable(),
@@ -39,9 +39,9 @@ const StockInDetailBaseSchema = z.object({
   location_code: z.string().optional().nullable(),
   location_name: z.string().optional().nullable(),
 })
-.merge(EmbeddedProductSchema)
-.merge(EmbeddedLocationSchema)
-.merge(InfoSchema);
+  .merge(EmbeddedProductSchema)
+  .merge(EmbeddedLocationSchema)
+  .merge(InfoSchema);
 
 // Stock In Schema
 export const StockInSchema = z.object({
@@ -54,8 +54,8 @@ export const StockInSchema = z.object({
   note: z.string().optional().nullable(),
   doc_version: z.number().int().optional().default(0),
 })
-.merge(EmbeddedWorkflowSchema)
-.merge(InfoSchema);
+  .merge(EmbeddedWorkflowSchema)
+  .merge(InfoSchema);
 
 // Stock In Detail Create Schema
 export const StockInDetailCreate = StockInDetailBaseSchema.omit({
@@ -63,6 +63,8 @@ export const StockInDetailCreate = StockInDetailBaseSchema.omit({
   stock_in_id: true,
   inventory_transaction_id: true,
   sequence_no: true,
+}).extend({
+  product_id: z.string().uuid(),
 });
 
 export type IStockInDetailCreate = z.infer<typeof StockInDetailCreate>;
@@ -80,7 +82,7 @@ export const StockInCreate = StockInSchema.omit({
 
 export type IStockInCreate = z.infer<typeof StockInCreate>;
 
-export class StockInCreateDto extends createZodDto(StockInCreate) {}
+export class StockInCreateDto extends createZodDto(StockInCreate) { }
 
 // Stock In Detail Update Schema
 export const StockInDetailUpdate = StockInDetailBaseSchema.omit({
@@ -98,7 +100,9 @@ export const StockInUpdate = z.object({
   adjustment_type_id: z.string().uuid().optional().nullable(),
   adjustment_type_code: z.string().optional().nullable(),
   doc_status: z.enum(Object.values(enum_doc_status) as [string, ...string[]]).optional(),
-  // workflow_id: z.string().uuid().optional().nullable(),
+  location_id: z.string().uuid().optional().nullable(),
+  location_code: z.string().optional().nullable(),
+  location_name: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
   info: z.any().optional(),
   dimension: z.any().optional(),
@@ -111,7 +115,7 @@ export const StockInUpdate = z.object({
 
 export type IStockInUpdate = z.infer<typeof StockInUpdate> & { id: string };
 
-export class StockInUpdateDto extends createZodDto(StockInUpdate) {}
+export class StockInUpdateDto extends createZodDto(StockInUpdate) { }
 
 // Factory Functions for Async Validation
 

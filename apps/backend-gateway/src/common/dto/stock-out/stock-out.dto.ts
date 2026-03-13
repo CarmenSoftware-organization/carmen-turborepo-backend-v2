@@ -10,7 +10,7 @@ const StockOutDetailBaseSchema = z.object({
   inventory_transaction_id: z.string().uuid().optional().nullable(),
   sequence_no: z.number().int().optional().default(1),
   description: z.string().optional().nullable(),
-  qty: z.number().optional().default(0),
+  qty: z.number().min(0).optional().default(0),
   note: z.string().optional().nullable(),
   // Denormalized product fields (populated by service)
   product_name: z.string().optional().nullable(),
@@ -19,9 +19,9 @@ const StockOutDetailBaseSchema = z.object({
   location_code: z.string().optional().nullable(),
   location_name: z.string().optional().nullable(),
 })
-.merge(EmbeddedProductSchema)
-.merge(EmbeddedLocationSchema)
-.merge(InfoSchema);
+  .merge(EmbeddedProductSchema)
+  .merge(EmbeddedLocationSchema)
+  .merge(InfoSchema);
 
 // Stock Out Schema
 export const StockOutSchema = z.object({
@@ -34,8 +34,8 @@ export const StockOutSchema = z.object({
   note: z.string().optional().nullable(),
   doc_version: z.number().int().optional().default(0),
 })
-.merge(EmbeddedWorkflowSchema)
-.merge(InfoSchema);
+  .merge(EmbeddedWorkflowSchema)
+  .merge(InfoSchema);
 
 // Stock Out Detail Create Schema
 export const StockOutDetailCreate = StockOutDetailBaseSchema.omit({
@@ -43,6 +43,8 @@ export const StockOutDetailCreate = StockOutDetailBaseSchema.omit({
   stock_out_id: true,
   inventory_transaction_id: true,
   sequence_no: true,
+}).extend({
+  product_id: z.string().uuid(),
 });
 
 export type IStockOutDetailCreate = z.infer<typeof StockOutDetailCreate>;
@@ -60,7 +62,7 @@ export const StockOutCreate = StockOutSchema.omit({
 
 export type IStockOutCreate = z.infer<typeof StockOutCreate>;
 
-export class StockOutCreateDto extends createZodDto(StockOutCreate) {}
+export class StockOutCreateDto extends createZodDto(StockOutCreate) { }
 
 // Stock Out Detail Update Schema
 export const StockOutDetailUpdate = StockOutDetailBaseSchema.omit({
@@ -78,7 +80,9 @@ export const StockOutUpdate = z.object({
   adjustment_type_id: z.string().uuid().optional().nullable(),
   adjustment_type_code: z.string().optional().nullable(),
   doc_status: z.enum(Object.values(enum_doc_status) as [string, ...string[]]).optional(),
-  // workflow_id: z.string().uuid().optional().nullable(),
+  location_id: z.string().uuid().optional().nullable(),
+  location_code: z.string().optional().nullable(),
+  location_name: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
   info: z.any().optional(),
   dimension: z.any().optional(),
@@ -91,8 +95,8 @@ export const StockOutUpdate = z.object({
 
 export type IStockOutUpdate = z.infer<typeof StockOutUpdate> & { id: string };
 
-export class StockOutUpdateDto extends createZodDto(StockOutUpdate) {}
+export class StockOutUpdateDto extends createZodDto(StockOutUpdate) { }
 
 // Stock Out Detail DTOs (for standalone detail CRUD endpoints)
-export class StockOutDetailCreateDto extends createZodDto(StockOutDetailCreate) {}
-export class StockOutDetailUpdateDto extends createZodDto(StockOutDetailUpdate) {}
+export class StockOutDetailCreateDto extends createZodDto(StockOutDetailCreate) { }
+export class StockOutDetailUpdateDto extends createZodDto(StockOutDetailUpdate) { }

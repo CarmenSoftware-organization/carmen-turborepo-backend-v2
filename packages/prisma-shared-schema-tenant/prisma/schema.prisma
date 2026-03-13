@@ -2610,8 +2610,6 @@ model tb_stock_in_detail {
   tb_product                 tb_product                   @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tb_stock_in                tb_stock_in                  @relation(fields: [stock_in_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tb_stock_in_detail_comment tb_stock_in_detail_comment[]
-  tbLocation                 tb_location?                 @relation(fields: [tb_locationId], references: [id])
-  tb_locationId              String?                      @db.Uuid
 
   @@unique([stock_in_id, product_id, dimension, deleted_at], map: "SIT1_stock_in_product_dimension_u")
   @@index([stock_in_id, product_id], map: "SIT2_stock_in_product_idx")
@@ -2769,8 +2767,6 @@ model tb_stock_out_detail {
   tb_product                  tb_product                    @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tb_stock_out                tb_stock_out                  @relation(fields: [stock_out_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tb_stock_out_detail_comment tb_stock_out_detail_comment[]
-  tbLocation                  tb_location?                  @relation(fields: [tb_locationId], references: [id])
-  tb_locationId               String?                       @db.Uuid
 
   @@unique([stock_out_id, product_id, dimension, deleted_at], map: "SOT1_stock_out_product_dimension_u")
   @@index([stock_out_id, product_id], map: "SOT2_stock_out_product_idx")
