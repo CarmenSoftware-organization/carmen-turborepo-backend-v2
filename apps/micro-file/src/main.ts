@@ -17,7 +17,7 @@ async function bootstrap() {
   logger.verbose({ envConfig: envConfig, process_env: process.env }, 'env');
 
   const fileServiceHost = envConfig.FILE_SERVICE_HOST;
-  const fileServiceTcpPort = Number(envConfig.FILE_SERVICE_PORT);
+  const fileServiceTcpPort = Number(envConfig.FILE_SERVICE_TCP_PORT);
   const fileServiceHttpPort = Number(envConfig.FILE_SERVICE_HTTP_PORT);
 
   logger.log(

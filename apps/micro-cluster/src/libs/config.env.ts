@@ -18,7 +18,7 @@ const port = (defaultValue: number) => z.coerce.number().default(defaultValue);
 const envSchema = z.object({
   // Cluster (this service)
   CLUSTER_SERVICE_HOST: host(),
-  CLUSTER_SERVICE_PORT: port(DEFAULT_PORTS.CLUSTER_TCP),
+  CLUSTER_SERVICE_TCP_PORT: port(DEFAULT_PORTS.CLUSTER_TCP),
   CLUSTER_SERVICE_HTTP_PORT: port(DEFAULT_PORTS.CLUSTER_HTTP),
 
   // Database
@@ -33,7 +33,7 @@ const envSchema = z.object({
 
   // Inter-service communication
   KEYCLOAK_API_SERVICE_HOST: z.string().default('127.0.0.1'),
-  KEYCLOAK_API_SERVICE_PORT: port(DEFAULT_PORTS.KEYCLOAK_API_TCP),
+  KEYCLOAK_API_SERVICE_TCP_PORT: port(DEFAULT_PORTS.KEYCLOAK_API_TCP),
 
   // Logging (Loki)
   LOKI_HOST: z.string().default('dev.blueledgers.com'),
@@ -70,7 +70,7 @@ const env = parsed.data;
 export const envConfig = {
   // Cluster (this service)
   CLUSTER_SERVICE_HOST: env.CLUSTER_SERVICE_HOST,
-  CLUSTER_SERVICE_PORT: env.CLUSTER_SERVICE_PORT,
+  CLUSTER_SERVICE_TCP_PORT: env.CLUSTER_SERVICE_TCP_PORT,
   CLUSTER_SERVICE_HTTP_PORT: env.CLUSTER_SERVICE_HTTP_PORT,
 
   // Database
@@ -85,7 +85,7 @@ export const envConfig = {
 
   // Inter-service communication
   KEYCLOAK_API_SERVICE_HOST: env.KEYCLOAK_API_SERVICE_HOST,
-  KEYCLOAK_API_SERVICE_PORT: env.KEYCLOAK_API_SERVICE_PORT,
+  KEYCLOAK_API_SERVICE_TCP_PORT: env.KEYCLOAK_API_SERVICE_TCP_PORT,
 
   // Logging
   LOKI_HOST: env.LOKI_HOST,

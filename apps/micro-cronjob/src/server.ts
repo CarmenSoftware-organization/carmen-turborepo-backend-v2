@@ -6,7 +6,7 @@ import { swagger } from '@elysiajs/swagger';
 import { envConfig } from './libs/config.env';
 
 const service_host = envConfig.CRONJOB_SERVICE_HOST;
-const service_port = envConfig.CRONJOB_SERVICE_PORT;
+const service_port = envConfig.CRONJOB_SERVICE_TCP_PORT;
 
 const app = new Elysia()
   .use(

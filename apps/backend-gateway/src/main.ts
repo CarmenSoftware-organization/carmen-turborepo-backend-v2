@@ -44,7 +44,7 @@ async function bootstrap() {
   // list all environment variables
   logger.verbose({ envConfig: envConfig, process_env: process.env }, 'env');
 
-  const gatewayPort = envConfig.GATEWAY_SERVICE_PORT;
+  const gatewayPort = envConfig.GATEWAY_SERVICE_HTTP_PORT;
   const gatewayPortHttps = envConfig.GATEWAY_SERVICE_HTTPS_PORT;
 
   const config = new DocumentBuilder()

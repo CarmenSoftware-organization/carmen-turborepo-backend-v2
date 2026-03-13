@@ -17,7 +17,7 @@ const port = (defaultValue: number) => z.coerce.number().default(defaultValue);
 const envSchema = z.object({
   // Notification (this service)
   NOTIFICATION_SERVICE_HOST: host(),
-  NOTIFICATION_SERVICE_PORT: port(DEFAULT_PORTS.NOTIFICATION_TCP),
+  NOTIFICATION_SERVICE_TCP_PORT: port(DEFAULT_PORTS.NOTIFICATION_TCP),
   NOTIFICATION_SERVICE_HTTP_PORT: port(DEFAULT_PORTS.NOTIFICATION_HTTP),
 
   // Database
@@ -53,7 +53,7 @@ const env = parsed.data;
 export const envConfig = {
   // Notification (this service)
   NOTIFICATION_SERVICE_HOST: env.NOTIFICATION_SERVICE_HOST,
-  NOTIFICATION_SERVICE_PORT: env.NOTIFICATION_SERVICE_PORT,
+  NOTIFICATION_SERVICE_TCP_PORT: env.NOTIFICATION_SERVICE_TCP_PORT,
   NOTIFICATION_SERVICE_HTTP_PORT: env.NOTIFICATION_SERVICE_HTTP_PORT,
 
   // Database

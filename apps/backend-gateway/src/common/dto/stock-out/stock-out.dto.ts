@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 import { enum_doc_status, PrismaClient } from '@repo/prisma-shared-schema-tenant';
-import { EmbeddedLocationSchema, EmbeddedProductSchema, EmbeddedWorkflowSchema, InfoSchema } from '../embedded.dto';
+import { EmbeddedProductSchema, EmbeddedWorkflowSchema, InfoSchema } from '../embedded.dto';
 
 // Stock Out Detail Schema with denormalized fields
 const StockOutDetailBaseSchema = z.object({
@@ -15,12 +15,8 @@ const StockOutDetailBaseSchema = z.object({
   // Denormalized product fields (populated by service)
   product_name: z.string().optional().nullable(),
   product_local_name: z.string().optional().nullable(),
-  // Denormalized location fields (populated by service)
-  location_code: z.string().optional().nullable(),
-  location_name: z.string().optional().nullable(),
 })
 .merge(EmbeddedProductSchema)
-.merge(EmbeddedLocationSchema)
 .merge(InfoSchema);
 
 // Stock Out Schema
