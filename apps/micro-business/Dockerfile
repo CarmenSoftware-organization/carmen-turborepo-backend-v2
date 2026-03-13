@@ -1,59 +1,57 @@
-FROM node:22-bookworm-slim AS builder
+# ============================================================
+# Stage 1: Prune monorepo — เฉพาะ dependencies ที่ service นี้ต้องการ
+# ============================================================
+FROM node:22-bookworm-slim AS pruner
+WORKDIR /app
+RUN npm install -g turbo@2
+COPY . .
+RUN turbo prune micro-business --docker
 
+# ============================================================
+# Stage 2: Install dependencies + build
+# ============================================================
+FROM node:22-bookworm-slim AS builder
 WORKDIR /app
 
-# Install OpenSSL for Prisma
 RUN apt-get update -y && apt-get install -y openssl libssl3 && rm -rf /var/lib/apt/lists/*
-
-# Install bun for dependency management
 RUN npm install -g bun
 
-# Copy root package files
-COPY package.json .
-COPY bun.lock .
-COPY tsconfig.json .
-COPY turbo.json .
-
-# Copy all packages and apps (bun workspace requires all workspace members)
-COPY packages ./packages
-COPY apps ./apps
-
-# Install dependencies (--ignore-scripts prevents premature postinstall db:generate,
-# || true tolerates bun workspace hoisting warnings that exit non-zero)
+# Copy only package.json + lockfile (cached unless deps change)
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/bun.lock ./bun.lock
 RUN bun install --ignore-scripts || true
 
-# Generate Prisma clients and build shared packages
-RUN bun run db:generate && bun run build:package
+# Copy full source (only pruned subset)
+COPY --from=pruner /app/out/full/ .
+COPY tsconfig.json .
 
+# Generate Prisma + build shared packages + build service
+RUN bun run db:generate && bun run build:package
 WORKDIR /app/apps/micro-business
 RUN npm run build
 
+# ============================================================
+# Stage 3: Production runner (minimal)
+# ============================================================
 FROM node:22-bookworm-slim AS runner
-
 WORKDIR /app
 
-# Install OpenSSL for Prisma
 RUN apt-get update -y && apt-get install -y openssl libssl3 && rm -rf /var/lib/apt/lists/*
-
-# Install bun for runtime
 RUN npm install -g bun
 
-# Copy root package files
-COPY package.json .
-COPY bun.lock .
-COPY tsconfig.json .
+# Copy pruned package.json files for production install
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/bun.lock ./bun.lock
+ENV NODE_ENV=production
+RUN bun install --ignore-scripts || true
 
-# Copy built packages from builder (including their dist folders)
+# Copy built packages (Prisma clients + shared dist)
 COPY --from=builder /app/packages ./packages
 
-# Copy app tsconfig for path resolution
-COPY --from=builder /app/apps/micro-business/tsconfig.json ./apps/micro-business/
-COPY --from=builder /app/apps/micro-business/package.json ./apps/micro-business/
+# Copy built service
 COPY --from=builder /app/apps/micro-business/dist ./apps/micro-business/dist
-
-# Install production dependencies
-ENV NODE_ENV=production
-RUN bun install --no-save --ignore-scripts || true
+COPY --from=builder /app/apps/micro-business/package.json ./apps/micro-business/
+COPY --from=builder /app/apps/micro-business/tsconfig.json ./apps/micro-business/
 
 WORKDIR /app/apps/micro-business
 

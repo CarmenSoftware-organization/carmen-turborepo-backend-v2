@@ -21,7 +21,6 @@ const DEFAULT_PORTS = {
   REPORT_HTTP: 6015,
   REPORT_GRPC: 4015,
   REPORT_RENDER_TCP: 8001,
-  REPORT_RENDER_HTTP: 8002,
 } as const;
 
 // ─── Zod helpers ─────────────────────────────────────────────────────────────
@@ -79,7 +78,6 @@ const envSchema = z.object({
   // Report Render
   REPORT_RENDER_HOST: host(),
   REPORT_RENDER_TCP_PORT: port(DEFAULT_PORTS.REPORT_RENDER_TCP),
-  REPORT_RENDER_HTTP_PORT: port(DEFAULT_PORTS.REPORT_RENDER_HTTP),
 
   // Feature flags
   IS_ACTIVE_NOTIFICATION: z.string().optional(),
@@ -172,7 +170,6 @@ export const envConfig = {
   // Report Render
   REPORT_RENDER_HOST: env.REPORT_RENDER_HOST,
   REPORT_RENDER_TCP_PORT: env.REPORT_RENDER_TCP_PORT,
-  REPORT_RENDER_HTTP_PORT: env.REPORT_RENDER_HTTP_PORT,
 
   // App config
   IS_ACTIVE_NOTIFICATION: Boolean(env.IS_ACTIVE_NOTIFICATION),
