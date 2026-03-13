@@ -17,7 +17,13 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Platform_UserBusinessUnitService } from './platform_user-business-unit.service';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   IUserBusinessUnitUpdate,
@@ -58,10 +64,15 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
   @UseGuards(new AppIdGuard('userBusinessUnit.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiParam({ name: 'id', description: 'User-Business Unit mapping ID', type: 'string' })
+  @ApiParam({
+    name: 'id',
+    description: 'User-Business Unit mapping ID',
+    type: 'string',
+  })
   @ApiOperation({
     summary: 'Get user-business unit mapping by ID',
-    description: 'Retrieves the details of a specific user-to-property access assignment, showing which user has access to which hotel property and with what role.',
+    description:
+      'Retrieves the details of a specific user-to-property access assignment, showing which user has access to which hotel property and with what role.',
     operationId: 'platformUserBusinessUnit_findOne',
     tags: ['Platform Admin', 'User Business Unit'],
     deprecated: false,
@@ -87,7 +98,11 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
       Platform_UserBusinessUnitController.name,
     );
     const { user_id, tenant_id } = ExtractRequestHeader(req);
-    const result = await this.platform_userBusinessUnitService.findOne(id, user_id, version);
+    const result = await this.platform_userBusinessUnitService.findOne(
+      id,
+      user_id,
+      version,
+    );
     this.respond(res, result);
   }
 
@@ -101,13 +116,16 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get all user-business unit mappings',
-    description: 'Lists all user-to-property access assignments across the platform, showing which users have been granted access to which hotel properties. Used for multi-tenant access management and auditing.',
+    description:
+      'Lists all user-to-property access assignments across the platform, showing which users have been granted access to which hotel properties. Used for multi-tenant access management and auditing.',
     operationId: 'platformUserBusinessUnit_findAll',
     tags: ['Platform Admin', 'User Business Unit'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {
-      200: { description: 'User-business unit mappings retrieved successfully' },
+      200: {
+        description: 'User-business unit mappings retrieved successfully',
+      },
       401: { description: 'Unauthorized' },
     },
   })
@@ -143,10 +161,14 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
   @UseGuards(new AppIdGuard('userBusinessUnit.create'))
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
-  @ApiBody({ type: UserBusinessUnitDto, description: 'Create user-business unit mapping data' })
+  @ApiBody({
+    type: UserBusinessUnitDto,
+    description: 'Create user-business unit mapping data',
+  })
   @ApiOperation({
     summary: 'Create a user-business unit mapping',
-    description: 'Grants a user access to a specific hotel property or operational unit, enabling them to perform procurement, inventory, and other ERP operations within that business unit\'s tenant context.',
+    description:
+      "Grants a user access to a specific hotel property or operational unit, enabling them to perform procurement, inventory, and other ERP operations within that business unit's tenant context.",
     operationId: 'platformUserBusinessUnit_create',
     tags: ['Platform Admin', 'User Business Unit'],
     deprecated: false,
@@ -172,7 +194,11 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
       Platform_UserBusinessUnitController.name,
     );
     const { user_id, tenant_id } = ExtractRequestHeader(req);
-    const result = await this.platform_userBusinessUnitService.create(body, user_id, version);
+    const result = await this.platform_userBusinessUnitService.create(
+      body,
+      user_id,
+      version,
+    );
     this.respond(res, result, HttpStatus.CREATED);
   }
 
@@ -184,11 +210,19 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
   @UseGuards(new AppIdGuard('userBusinessUnit.update'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiParam({ name: 'id', description: 'User-Business Unit mapping ID', type: 'string' })
-  @ApiBody({ type: UserBusinessUnitUpdateDto, description: 'Update user-business unit mapping data' })
+  @ApiParam({
+    name: 'id',
+    description: 'User-Business Unit mapping ID',
+    type: 'string',
+  })
+  @ApiBody({
+    type: UserBusinessUnitUpdateDto,
+    description: 'Update user-business unit mapping data',
+  })
   @ApiOperation({
     summary: 'Update a user-business unit mapping',
-    description: 'Modifies an existing user-to-property access assignment, such as changing the user\'s role or permissions within a specific hotel property.',
+    description:
+      "Modifies an existing user-to-property access assignment, such as changing the user's role or permissions within a specific hotel property.",
     operationId: 'platformUserBusinessUnit_update',
     tags: ['Platform Admin', 'User Business Unit'],
     deprecated: false,
@@ -221,7 +255,11 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
       ...body,
       id,
     };
-    const result = await this.platform_userBusinessUnitService.update(data, user_id, version);
+    const result = await this.platform_userBusinessUnitService.update(
+      data,
+      user_id,
+      version,
+    );
     this.respond(res, result);
   }
 
@@ -233,10 +271,15 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
   @UseGuards(new AppIdGuard('userBusinessUnit.delete'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiParam({ name: 'id', description: 'User-Business Unit mapping ID', type: 'string' })
+  @ApiParam({
+    name: 'id',
+    description: 'User-Business Unit mapping ID',
+    type: 'string',
+  })
   @ApiOperation({
     summary: 'Delete a user-business unit mapping',
-    description: 'Revokes a user\'s access to a specific hotel property or operational unit. The user will no longer be able to perform any ERP operations within that business unit\'s tenant context.',
+    description:
+      "Revokes a user's access to a specific hotel property or operational unit. The user will no longer be able to perform any ERP operations within that business unit's tenant context.",
     operationId: 'platformUserBusinessUnit_delete',
     tags: ['Platform Admin', 'User Business Unit'],
     deprecated: false,
@@ -263,8 +306,11 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.platform_userBusinessUnitService.delete(id, user_id, version);
+    const result = await this.platform_userBusinessUnitService.delete(
+      id,
+      user_id,
+      version,
+    );
     this.respond(res, result);
   }
-
 }

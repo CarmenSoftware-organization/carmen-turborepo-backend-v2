@@ -91,7 +91,7 @@ export class Platform_UserClusterService {
       );
     }
 
-    return Result.ok(response.data);
+    return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
   async createUserCluster(
