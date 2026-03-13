@@ -1286,6 +1286,8 @@ model tb_location {
   tb_purchase_request_template_detail tb_purchase_request_template_detail[]
   tb_user_location                    tb_user_location[]
   tb_credit_note_detail               tb_credit_note_detail[]
+  tb_stock_in_detail                  tb_stock_in_detail[]
+  tb_stock_out_detail                 tb_stock_out_detail[]
   tb_store_requisition_from           tb_store_requisition[]                @relation("store_requisition_from_location")
   tb_store_requisition_to             tb_store_requisition[]                @relation("store_requisition_to_location")
   tb_transfer_from                    tb_transfer[]                         @relation("transfer_from_location")
@@ -2586,6 +2588,10 @@ model tb_stock_in_detail {
   sequence_no              Int?    @default(1)
   description              String? @db.VarChar
 
+  // location_id   String? @db.Uuid
+  // location_code String? @db.VarChar
+  // location_name String? @db.VarChar
+
   product_id         String  @db.Uuid
   product_name       String? @db.VarChar
   product_local_name String? @db.VarChar
@@ -2610,6 +2616,8 @@ model tb_stock_in_detail {
   tb_product                 tb_product                   @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tb_stock_in                tb_stock_in                  @relation(fields: [stock_in_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tb_stock_in_detail_comment tb_stock_in_detail_comment[]
+  tbLocation                 tb_location?                 @relation(fields: [tb_locationId], references: [id])
+  tb_locationId              String?                      @db.Uuid
 
   @@unique([stock_in_id, product_id, dimension, deleted_at], map: "SIT1_stock_in_product_dimension_u")
   @@index([stock_in_id, product_id], map: "SIT2_stock_in_product_idx")
@@ -2745,6 +2753,10 @@ model tb_stock_out_detail {
   sequence_no              Int?    @default(1)
   description              String? @db.VarChar
 
+  // location_id   String? @db.Uuid
+  // location_code String? @db.VarChar
+  // location_name String? @db.VarChar
+
   product_id         String  @db.Uuid
   product_name       String? @db.VarChar
   product_local_name String? @db.VarChar
@@ -2767,6 +2779,8 @@ model tb_stock_out_detail {
   tb_product                  tb_product                    @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tb_stock_out                tb_stock_out                  @relation(fields: [stock_out_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tb_stock_out_detail_comment tb_stock_out_detail_comment[]
+  tbLocation                  tb_location?                  @relation(fields: [tb_locationId], references: [id])
+  tb_locationId               String?                       @db.Uuid
 
   @@unique([stock_out_id, product_id, dimension, deleted_at], map: "SOT1_stock_out_product_dimension_u")
   @@index([stock_out_id, product_id], map: "SOT2_stock_out_product_idx")
