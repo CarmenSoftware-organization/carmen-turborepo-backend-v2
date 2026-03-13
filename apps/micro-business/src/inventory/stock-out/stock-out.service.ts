@@ -150,18 +150,6 @@ export class StockOutService {
     //   }
     // }
 
-    // Validate location at header level
-    if (data.location_id) {
-      const location = await prisma.tb_location.findFirst({
-        where: { id: data.location_id },
-      });
-      if (!location) {
-        return Result.error('Location not found', ErrorCode.NOT_FOUND);
-      }
-      data.location_code = location.code;
-      data.location_name = location.name;
-    }
-
     // Validate stock_out_detail items
     if (data.stock_out_detail?.add) {
       const productNotFound: string[] = [];
@@ -225,6 +213,7 @@ export class StockOutService {
           created_by_id: user_id,
           sequence_no: sequenceNo++,
           product_id: item.product_id || '',
+          location_id: item.location_id || null,
           product_name: item.product_name || null,
           product_local_name: item.product_local_name || null,
           location_code: item.location_code || null,
@@ -275,18 +264,6 @@ export class StockOutService {
     //     return Result.error('Workflow not found', ErrorCode.NOT_FOUND);
     //   }
     // }
-
-    // Validate location at header level
-    if (data.location_id) {
-      const location = await prisma.tb_location.findFirst({
-        where: { id: data.location_id },
-      });
-      if (!location) {
-        return Result.error('Location not found', ErrorCode.NOT_FOUND);
-      }
-      data.location_code = location.code;
-      data.location_name = location.name;
-    }
 
     // Validate detail items
     if (data.stock_out_detail) {
@@ -401,6 +378,7 @@ export class StockOutService {
             created_by_id: user_id,
             sequence_no: sequenceNo++,
             product_id: item.product_id || '',
+            location_id: item.location_id || null,
             product_name: item.product_name || null,
             product_local_name: item.product_local_name || null,
             location_code: item.location_code || null,
@@ -586,7 +564,7 @@ export class StockOutService {
         tb_product: {
           select: { id: true, name: true, local_name: true },
         },
-        tbLocation: {
+        tb_location: {
           select: { id: true, name: true, code: true },
         },
       },
@@ -624,7 +602,7 @@ export class StockOutService {
         tb_product: {
           select: { id: true, name: true, local_name: true },
         },
-        tbLocation: {
+        tb_location: {
           select: { id: true, name: true, code: true },
         },
       },
@@ -696,6 +674,7 @@ export class StockOutService {
         sequence_no: nextSequence,
         created_by_id: user_id,
         product_id: data.product_id || '',
+        location_id: data.location_id || null,
         product_name: data.product_name || null,
         product_local_name: data.product_local_name || null,
         location_code: data.location_code || null,
@@ -795,7 +774,7 @@ export class StockOutService {
   async findAllDetails(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findAllDetails', user_id, tenant_id, paginate }, StockOutService.name);
 
-    const defaultSearchFields = ['product_name', 'product_local_name', 'description'];
+    const defaultSearchFields = ['product_name', 'product_local_name', 'location_name', 'description'];
 
     const q = new QueryParams(
       paginate.page,
@@ -927,6 +906,7 @@ export class StockOutService {
         sequence_no: nextSequence,
         created_by_id: user_id,
         product_id: data.product_id || '',
+        location_id: data.location_id || null,
         product_name: data.product_name || null,
         product_local_name: data.product_local_name || null,
         location_code: data.location_code || null,
