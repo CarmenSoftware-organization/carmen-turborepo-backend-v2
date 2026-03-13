@@ -28,9 +28,9 @@ const StockInDetailBaseSchema = z.object({
   inventory_transaction_id: z.string().uuid().optional().nullable(),
   sequence_no: z.number().int().optional().default(1),
   description: z.string().optional().nullable(),
-  qty: z.number().min(0).optional().default(0),
-  cost_per_unit: z.number().min(0).optional().default(0),
-  total_cost: z.number().min(0).optional().default(0),
+  qty: z.number().optional().default(0),
+  cost_per_unit: z.number().optional().default(0),
+  total_cost: z.number().optional().default(0),
   note: z.string().optional().nullable(),
   // Denormalized product fields (populated by service)
   product_name: z.string().optional().nullable(),
@@ -62,8 +62,6 @@ export const StockInDetailCreate = StockInDetailBaseSchema.omit({
   stock_in_id: true,
   inventory_transaction_id: true,
   sequence_no: true,
-}).extend({
-  product_id: z.string().uuid(),
 });
 
 export type IStockInDetailCreate = z.infer<typeof StockInDetailCreate>;
@@ -102,6 +100,7 @@ export const StockInUpdate = z.object({
   location_id: z.string().uuid().optional().nullable(),
   location_code: z.string().optional().nullable(),
   location_name: z.string().optional().nullable(),
+  // workflow_id: z.string().uuid().optional().nullable(),
   note: z.string().optional().nullable(),
   info: z.any().optional(),
   dimension: z.any().optional(),

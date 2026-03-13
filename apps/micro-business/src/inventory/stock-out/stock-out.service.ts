@@ -1,43 +1,44 @@
-import { PrismaClient_SYSTEM } from "@repo/prisma-shared-schema-platform";
-import { PrismaClient_TENANT, enum_doc_status } from "@repo/prisma-shared-schema-tenant";
-import { TenantService } from "@/tenant/tenant.service";
-import QueryParams from "@/libs/paginate.query";
+import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
+import { PrismaClient_TENANT, enum_doc_status } from '@repo/prisma-shared-schema-tenant';
+import { TenantService } from '@/tenant/tenant.service';
+import QueryParams from '@/libs/paginate.query';
+import { IStockOutCreate, IStockOutUpdate, IStockOutDetailCreate, IStockOutDetailUpdate } from './interface/stock-out.interface';
+import { ClientProxy } from '@nestjs/microservices';
+import { BackendLogger } from '@/common/helpers/backend.logger';
+import { Injectable, Inject } from '@nestjs/common';
+import { format } from 'date-fns';
+import { Observable } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
+import { IPaginate } from '@/common/shared-interface/paginate.interface';
 import {
-  IStockOutCreate,
-  IStockOutUpdate,
-  IStockOutDetailCreate,
-  IStockOutDetailUpdate,
-} from "./interface/stock-out.interface";
-import { ClientProxy } from "@nestjs/microservices";
-import { BackendLogger } from "@/common/helpers/backend.logger";
-import { Injectable, Inject } from "@nestjs/common";
-import { format } from "date-fns";
-import { Observable } from "rxjs";
-import { firstValueFrom } from "rxjs";
-import { IPaginate } from "@/common/shared-interface/paginate.interface";
-import { StockOutDetailResponseSchema, StockOutListItemResponseSchema, Result, ErrorCode, TryCatch } from "@/common";
+  StockOutDetailResponseSchema,
+  StockOutListItemResponseSchema,
+  Result,
+  ErrorCode,
+  TryCatch,
+} from '@/common';
 
 @Injectable()
 export class StockOutService {
   private readonly logger: BackendLogger = new BackendLogger(StockOutService.name);
 
   constructor(
-    @Inject("PRISMA_SYSTEM")
+    @Inject('PRISMA_SYSTEM')
     private readonly prismaSystem: typeof PrismaClient_SYSTEM,
-    @Inject("PRISMA_TENANT")
+    @Inject('PRISMA_TENANT')
     private readonly prismaTenant: typeof PrismaClient_TENANT,
-    @Inject("MASTER_SERVICE")
+    @Inject('MASTER_SERVICE')
     private readonly masterService: ClientProxy,
     private readonly tenantService: TenantService,
   ) {}
 
   @TryCatch
   async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
-    this.logger.debug({ function: "findOne", id, user_id, tenant_id }, StockOutService.name);
+    this.logger.debug({ function: 'findOne', id, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
     }
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
@@ -47,12 +48,12 @@ export class StockOutService {
     });
 
     if (!stockOut) {
-      return Result.error("Stock Out not found", ErrorCode.NOT_FOUND);
+      return Result.error('Stock Out not found', ErrorCode.NOT_FOUND);
     }
 
     const stockOutDetail = await prisma.tb_stock_out_detail.findMany({
       where: { stock_out_id: id, deleted_at: null },
-      orderBy: { sequence_no: "asc" },
+      orderBy: { sequence_no: 'asc' },
     });
 
     const responseData = {
@@ -66,9 +67,9 @@ export class StockOutService {
 
   @TryCatch
   async findAll(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
-    this.logger.debug({ function: "findAll", user_id, tenant_id, paginate }, StockOutService.name);
+    this.logger.debug({ function: 'findAll', user_id, tenant_id, paginate }, StockOutService.name);
 
-    const defaultSearchFields = ["so_no", "description"];
+    const defaultSearchFields = ['so_no', 'description'];
 
     const q = new QueryParams(
       paginate.page,
@@ -83,7 +84,7 @@ export class StockOutService {
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
     }
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
@@ -99,6 +100,8 @@ export class StockOutService {
         so_no: true,
         description: true,
         doc_status: true,
+        // workflow_name: true,
+        // workflow_current_stage: true,
         created_at: true,
         updated_at: true,
       },
@@ -111,7 +114,9 @@ export class StockOutService {
       },
     });
 
-    const serializedStockOutList = stockOutList.map((item) => StockOutListItemResponseSchema.parse(item));
+    const serializedStockOutList = stockOutList.map((item) =>
+      StockOutListItemResponseSchema.parse(item)
+    );
 
     return Result.ok({
       data: serializedStockOutList,
@@ -126,14 +131,24 @@ export class StockOutService {
 
   @TryCatch
   async create(data: IStockOutCreate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
-    this.logger.debug({ function: "create", data, user_id, tenant_id }, StockOutService.name);
+    this.logger.debug({ function: 'create', data, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
     }
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    // Validate workflow if provided
+    // if (data.workflow_id) {
+    //   const workflow = await prisma.tb_workflow.findFirst({
+    //     where: { id: data.workflow_id },
+    //   });
+    //   if (!workflow) {
+    //     return Result.error('Workflow not found', ErrorCode.NOT_FOUND);
+    //   }
+    // }
 
     // Validate location at header level
     if (data.location_id) {
@@ -141,7 +156,7 @@ export class StockOutService {
         where: { id: data.location_id },
       });
       if (!location) {
-        return Result.error("Location not found", ErrorCode.NOT_FOUND);
+        return Result.error('Location not found', ErrorCode.NOT_FOUND);
       }
       data.location_code = location.code;
       data.location_name = location.name;
@@ -168,7 +183,7 @@ export class StockOutService {
       );
 
       if (productNotFound.length > 0) {
-        return Result.error(`Product not found: ${productNotFound.join(", ")}`, ErrorCode.NOT_FOUND);
+        return Result.error(`Product not found: ${productNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
       }
     }
 
@@ -192,7 +207,7 @@ export class StockOutService {
           stock_out_id: createStockOut.id,
           created_by_id: user_id,
           sequence_no: sequenceNo++,
-          product_id: item.product_id,
+          product_id: item.product_id || '',
           product_name: item.product_name || null,
           product_local_name: item.product_local_name || null,
           description: item.description || null,
@@ -215,11 +230,11 @@ export class StockOutService {
 
   @TryCatch
   async update(data: IStockOutUpdate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
-    this.logger.debug({ function: "update", data, user_id, tenant_id }, StockOutService.name);
+    this.logger.debug({ function: 'update', data, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
     }
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
@@ -229,8 +244,18 @@ export class StockOutService {
     });
 
     if (!stockOut) {
-      return Result.error("Stock Out not found", ErrorCode.NOT_FOUND);
+      return Result.error('Stock Out not found', ErrorCode.NOT_FOUND);
     }
+
+    // Validate workflow if provided
+    // if (data.workflow_id) {
+    //   const workflow = await prisma.tb_workflow.findFirst({
+    //     where: { id: data.workflow_id },
+    //   });
+    //   if (!workflow) {
+    //     return Result.error('Workflow not found', ErrorCode.NOT_FOUND);
+    //   }
+    // }
 
     // Validate location at header level
     if (data.location_id) {
@@ -238,7 +263,7 @@ export class StockOutService {
         where: { id: data.location_id },
       });
       if (!location) {
-        return Result.error("Location not found", ErrorCode.NOT_FOUND);
+        return Result.error('Location not found', ErrorCode.NOT_FOUND);
       }
       data.location_code = location.code;
       data.location_name = location.name;
@@ -266,7 +291,7 @@ export class StockOutService {
         );
 
         if (productNotFound.length > 0) {
-          return Result.error(`Product not found: ${productNotFound.join(", ")}`, ErrorCode.NOT_FOUND);
+          return Result.error(`Product not found: ${productNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
         }
       }
 
@@ -285,7 +310,7 @@ export class StockOutService {
         );
 
         if (detailNotFound.length > 0) {
-          return Result.error(`Stock Out Detail not found: ${detailNotFound.join(", ")}`, ErrorCode.NOT_FOUND);
+          return Result.error(`Stock Out Detail not found: ${detailNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
         }
       }
 
@@ -304,7 +329,7 @@ export class StockOutService {
         );
 
         if (detailNotFound.length > 0) {
-          return Result.error(`Stock Out Detail not found: ${detailNotFound.join(", ")}`, ErrorCode.NOT_FOUND);
+          return Result.error(`Stock Out Detail not found: ${detailNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
         }
       }
     }
@@ -339,7 +364,7 @@ export class StockOutService {
             stock_out_id: data.id,
             created_by_id: user_id,
             sequence_no: sequenceNo++,
-            product_id: item.product_id,
+            product_id: item.product_id || '',
             product_name: item.product_name || null,
             product_local_name: item.product_local_name || null,
             description: item.description || null,
@@ -390,11 +415,11 @@ export class StockOutService {
 
   @TryCatch
   async delete(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
-    this.logger.debug({ function: "delete", id, user_id, tenant_id }, StockOutService.name);
+    this.logger.debug({ function: 'delete', id, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
     }
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
@@ -404,7 +429,7 @@ export class StockOutService {
     });
 
     if (!stockOut) {
-      return Result.error("Stock Out not found", ErrorCode.NOT_FOUND);
+      return Result.error('Stock Out not found', ErrorCode.NOT_FOUND);
     }
 
     await prisma.$transaction(async (prisma) => {
@@ -437,11 +462,11 @@ export class StockOutService {
   }
 
   async findLatestSOByPattern(pattern: string, tenant_id: string, user_id: string): Promise<any> {
-    this.logger.debug({ function: "findLatestSOByPattern", pattern, tenant_id, user_id }, StockOutService.name);
+    this.logger.debug({ function: 'findLatestSOByPattern', pattern, tenant_id, user_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      throw new Error("Tenant not found");
+      throw new Error('Tenant not found');
     }
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
@@ -450,19 +475,19 @@ export class StockOutService {
       where: {
         so_no: { contains: pattern },
       },
-      orderBy: { created_at: "desc" },
+      orderBy: { created_at: 'desc' },
     });
 
     return stockOut;
   }
 
   private async generateSONo(soDate: string, tenant_id: string, user_id: string): Promise<string> {
-    this.logger.debug({ function: "generateSONo", soDate, tenant_id, user_id }, StockOutService.name);
+    this.logger.debug({ function: 'generateSONo', soDate, tenant_id, user_id }, StockOutService.name);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
     const res: Observable<any> = this.masterService.send(
-      { cmd: "running-code.get-pattern-by-type", service: "running-codes" },
-      { type: "SO", user_id, tenant_id },
+      { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
+      { type: 'SO', user_id, tenant_id },
     );
     const response = await firstValueFrom(res);
     const patterns = response.data;
@@ -470,9 +495,9 @@ export class StockOutService {
     let datePattern;
     let runningPattern;
     patterns.forEach((pattern) => {
-      if (pattern.type === "date") {
+      if (pattern.type === 'date') {
         datePattern = pattern;
-      } else if (pattern.type === "running") {
+      } else if (pattern.type === 'running') {
         runningPattern = pattern;
       }
     });
@@ -480,13 +505,15 @@ export class StockOutService {
     const getDate = new Date(soDate);
     const datePatternValue = format(getDate, datePattern.pattern);
     const latestSO = await this.findLatestSOByPattern(datePatternValue, tenant_id, user_id);
-    const latestSONumber = latestSO ? Number(latestSO.so_no.slice(-Number(runningPattern.pattern))) : 0;
+    const latestSONumber = latestSO
+      ? Number(latestSO.so_no.slice(-Number(runningPattern.pattern)))
+      : 0;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
     const generateCodeRes: Observable<any> = this.masterService.send(
-      { cmd: "running-code.generate-code", service: "running-codes" },
+      { cmd: 'running-code.generate-code', service: 'running-codes' },
       {
-        type: "SO",
+        type: 'SO',
         issueDate: getDate,
         last_no: latestSONumber,
         user_id,
@@ -503,11 +530,11 @@ export class StockOutService {
 
   @TryCatch
   async findDetailById(detailId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
-    this.logger.debug({ function: "findDetailById", detailId, user_id, tenant_id }, StockOutService.name);
+    this.logger.debug({ function: 'findDetailById', detailId, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
     }
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
@@ -521,11 +548,14 @@ export class StockOutService {
         tb_product: {
           select: { id: true, name: true, local_name: true },
         },
+        tbLocation: {
+          select: { id: true, name: true, code: true },
+        },
       },
     });
 
     if (!detail) {
-      return Result.error("Stock Out Detail not found", ErrorCode.NOT_FOUND);
+      return Result.error('Stock Out Detail not found', ErrorCode.NOT_FOUND);
     }
 
     return Result.ok(detail);
@@ -533,11 +563,11 @@ export class StockOutService {
 
   @TryCatch
   async findDetailsByStockOutId(stockOutId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
-    this.logger.debug({ function: "findDetailsByStockOutId", stockOutId, user_id, tenant_id }, StockOutService.name);
+    this.logger.debug({ function: 'findDetailsByStockOutId', stockOutId, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
     }
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
@@ -547,7 +577,7 @@ export class StockOutService {
     });
 
     if (!stockOut) {
-      return Result.error("Stock Out not found", ErrorCode.NOT_FOUND);
+      return Result.error('Stock Out not found', ErrorCode.NOT_FOUND);
     }
 
     const details = await prisma.tb_stock_out_detail.findMany({
@@ -556,8 +586,11 @@ export class StockOutService {
         tb_product: {
           select: { id: true, name: true, local_name: true },
         },
+        tbLocation: {
+          select: { id: true, name: true, code: true },
+        },
       },
-      orderBy: { sequence_no: "asc" },
+      orderBy: { sequence_no: 'asc' },
     });
 
     return Result.ok(details);
@@ -570,11 +603,11 @@ export class StockOutService {
     user_id: string,
     tenant_id: string,
   ): Promise<Result<unknown>> {
-    this.logger.debug({ function: "createDetail", stockOutId, data, user_id, tenant_id }, StockOutService.name);
+    this.logger.debug({ function: 'createDetail', stockOutId, data, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
     }
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
@@ -584,11 +617,11 @@ export class StockOutService {
     });
 
     if (!stockOut) {
-      return Result.error("Stock Out not found", ErrorCode.NOT_FOUND);
+      return Result.error('Stock Out not found', ErrorCode.NOT_FOUND);
     }
 
     if (stockOut.doc_status !== enum_doc_status.draft) {
-      return Result.error("Cannot add detail to non-draft Stock Out", ErrorCode.INVALID_ARGUMENT);
+      return Result.error('Cannot add detail to non-draft Stock Out', ErrorCode.INVALID_ARGUMENT);
     }
 
     if (data.product_id) {
@@ -596,7 +629,7 @@ export class StockOutService {
         where: { id: data.product_id },
       });
       if (!product) {
-        return Result.error("Product not found", ErrorCode.NOT_FOUND);
+        return Result.error('Product not found', ErrorCode.NOT_FOUND);
       }
       data.product_name = product.name;
       data.product_local_name = product.local_name;
@@ -613,7 +646,7 @@ export class StockOutService {
         stock_out_id: stockOutId,
         sequence_no: nextSequence,
         created_by_id: user_id,
-        product_id: data.product_id,
+        product_id: data.product_id || '',
         product_name: data.product_name || null,
         product_local_name: data.product_local_name || null,
         description: data.description || null,
@@ -634,11 +667,11 @@ export class StockOutService {
     user_id: string,
     tenant_id: string,
   ): Promise<Result<unknown>> {
-    this.logger.debug({ function: "updateDetail", detailId, data, user_id, tenant_id }, StockOutService.name);
+    this.logger.debug({ function: 'updateDetail', detailId, data, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
     }
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
@@ -649,11 +682,11 @@ export class StockOutService {
     });
 
     if (!existingDetail) {
-      return Result.error("Stock Out Detail not found", ErrorCode.NOT_FOUND);
+      return Result.error('Stock Out Detail not found', ErrorCode.NOT_FOUND);
     }
 
     if (existingDetail.tb_stock_out?.doc_status !== enum_doc_status.draft) {
-      return Result.error("Cannot update detail of non-draft Stock Out", ErrorCode.INVALID_ARGUMENT);
+      return Result.error('Cannot update detail of non-draft Stock Out', ErrorCode.INVALID_ARGUMENT);
     }
 
     const { id, ...updateData } = data;
@@ -672,11 +705,11 @@ export class StockOutService {
 
   @TryCatch
   async deleteDetail(detailId: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
-    this.logger.debug({ function: "deleteDetail", detailId, user_id, tenant_id }, StockOutService.name);
+    this.logger.debug({ function: 'deleteDetail', detailId, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
     }
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
@@ -687,11 +720,11 @@ export class StockOutService {
     });
 
     if (!existingDetail) {
-      return Result.error("Stock Out Detail not found", ErrorCode.NOT_FOUND);
+      return Result.error('Stock Out Detail not found', ErrorCode.NOT_FOUND);
     }
 
     if (existingDetail.tb_stock_out?.doc_status !== enum_doc_status.draft) {
-      return Result.error("Cannot delete detail of non-draft Stock Out", ErrorCode.INVALID_ARGUMENT);
+      return Result.error('Cannot delete detail of non-draft Stock Out', ErrorCode.INVALID_ARGUMENT);
     }
 
     await prisma.tb_stock_out_detail.update({
@@ -709,9 +742,9 @@ export class StockOutService {
 
   @TryCatch
   async findAllDetails(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
-    this.logger.debug({ function: "findAllDetails", user_id, tenant_id, paginate }, StockOutService.name);
+    this.logger.debug({ function: 'findAllDetails', user_id, tenant_id, paginate }, StockOutService.name);
 
-    const defaultSearchFields = ["product_name", "product_local_name", "description"];
+    const defaultSearchFields = ['product_name', 'product_local_name', 'description'];
 
     const q = new QueryParams(
       paginate.page,
@@ -726,7 +759,7 @@ export class StockOutService {
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
     }
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
@@ -785,11 +818,11 @@ export class StockOutService {
     user_id: string,
     tenant_id: string,
   ): Promise<Result<unknown>> {
-    this.logger.debug({ function: "createStandaloneDetail", data, user_id, tenant_id }, StockOutService.name);
+    this.logger.debug({ function: 'createStandaloneDetail', data, user_id, tenant_id }, StockOutService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
-      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
     }
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
@@ -799,11 +832,11 @@ export class StockOutService {
     });
 
     if (!stockOut) {
-      return Result.error("Stock Out not found", ErrorCode.NOT_FOUND);
+      return Result.error('Stock Out not found', ErrorCode.NOT_FOUND);
     }
 
     if (stockOut.doc_status !== enum_doc_status.draft) {
-      return Result.error("Cannot add detail to non-draft Stock Out", ErrorCode.INVALID_ARGUMENT);
+      return Result.error('Cannot add detail to non-draft Stock Out', ErrorCode.INVALID_ARGUMENT);
     }
 
     if (data.product_id) {
@@ -811,7 +844,7 @@ export class StockOutService {
         where: { id: data.product_id },
       });
       if (!product) {
-        return Result.error("Product not found", ErrorCode.NOT_FOUND);
+        return Result.error('Product not found', ErrorCode.NOT_FOUND);
       }
       data.product_name = product.name;
       data.product_local_name = product.local_name;
@@ -828,7 +861,7 @@ export class StockOutService {
         stock_out_id: data.stock_out_id,
         sequence_no: nextSequence,
         created_by_id: user_id,
-        product_id: data.product_id,
+        product_id: data.product_id || '',
         product_name: data.product_name || null,
         product_local_name: data.product_local_name || null,
         description: data.description || null,
