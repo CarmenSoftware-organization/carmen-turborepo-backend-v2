@@ -12,23 +12,19 @@ import {
   HttpCode,
   HttpStatus,
   Patch,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MyPendingPurchaseRequestService } from './my-pending.purchase-request.service';
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
 import {
   BaseHttpController,
-  ZodSerializerInterceptor,
 } from '@/common';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
-  ApiUserFilterQueries,
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import {
-  IPaginate,
   IPaginateQuery,
   PaginateQuery,
 } from 'src/shared-dto/paginate.dto';

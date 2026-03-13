@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
-import { enum_data_type, enum_product_status_type, PrismaClient } from '@repo/prisma-shared-schema-tenant';
+import { enum_data_type, enum_product_status_type } from '@repo/prisma-shared-schema-tenant';
 
 export const ProductCreate = z.object({
   name: z.string(),

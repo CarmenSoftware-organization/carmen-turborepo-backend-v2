@@ -4,25 +4,21 @@ import {
   Param,
   Post,
   Body,
-  Put,
   Delete,
   UseGuards,
   Req,
   Res,
   HttpCode,
   HttpStatus,
-  ConsoleLogger,
   Query,
   Patch,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_VendorBusinessTypeService } from './config_vendor_business_type.service';
-import { ZodSerializerInterceptor, BaseHttpController } from '@/common';
+import { BaseHttpController } from '@/common';
 import {
   ApiBearerAuth,
   ApiBody,
-  ApiHeader,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';

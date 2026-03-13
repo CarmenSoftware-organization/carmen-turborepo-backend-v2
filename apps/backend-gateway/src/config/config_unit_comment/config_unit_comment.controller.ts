@@ -7,18 +7,16 @@ import {
   Put,
   Delete,
   UseGuards,
-  ConsoleLogger,
   Req,
   Res,
   Query,
   HttpCode,
   HttpStatus,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_UnitCommentService as Config_UnitCommentService } from './config_unit_comment.service';
-import { ZodSerializerInterceptor, BaseHttpController } from '@/common';
-import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { BaseHttpController } from '@/common';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UnitCommentCreateRequest, UnitCommentUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {

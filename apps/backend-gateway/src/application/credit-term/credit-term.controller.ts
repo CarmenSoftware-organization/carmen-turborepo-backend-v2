@@ -1,5 +1,4 @@
 import {
-  ConsoleLogger,
   Controller,
   Get,
   HttpCode,
@@ -9,19 +8,17 @@ import {
   Req,
   Res,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CreditTermService } from './credit-term.service';
 import {
   BaseHttpController,
   Serialize,
-  ZodSerializerInterceptor,
   CreditTermDetailResponseSchema,
   CreditTermListItemResponseSchema,
 } from '@/common';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
-import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
+import { IPaginateQuery } from 'src/shared-dto/paginate.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import {

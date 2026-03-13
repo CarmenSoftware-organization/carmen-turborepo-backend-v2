@@ -1,4 +1,4 @@
-import { ConsoleLogger, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import {
   PriceListCreateDto,
   PriceListUpdateDto,

@@ -1,6 +1,5 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { CreateTaxProfileDto } from './dto/tax-profile.dto';
 import { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 import { Result, MicroserviceResponse } from '@/common';

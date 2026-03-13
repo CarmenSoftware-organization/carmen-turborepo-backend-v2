@@ -2,24 +2,6 @@ import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 import { enum_location_type } from '@repo/prisma-shared-schema-tenant';
 
-interface Users {
-  add?: {
-    id: string;
-  }[];
-  remove: {
-    id: string;
-  }[];
-}
-
-interface Products {
-  add?: {
-    id: string;
-  }[];
-  remove: {
-    id: string;
-  }[];
-}
-
 export const location_info = z.object({
   floor: z.number().optional(),
   building: z.string().optional(),

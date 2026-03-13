@@ -12,7 +12,6 @@ import {
   Req,
   Query,
   Res,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { PriceListService } from './price-list.service';
@@ -31,7 +30,6 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import {
   BaseHttpController,
   Serialize,
-  ZodSerializerInterceptor,
   PriceListDetailResponseSchema,
   PriceListListItemResponseSchema,
   PriceListMutationResponseSchema,
@@ -43,7 +41,6 @@ import {
 import {
   PriceListCreateRequestDto,
   PriceListUpdateRequestDto,
-  PriceCompareQueryDto,
 } from './swagger/request';
 
 @Controller('api/:bu_code/price-list')

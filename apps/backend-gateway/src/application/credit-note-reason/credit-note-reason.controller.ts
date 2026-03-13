@@ -2,7 +2,6 @@ import {
   Controller,
   HttpStatus,
   Get,
-  Post,
   HttpCode,
   Query,
   Req,
@@ -10,7 +9,6 @@ import {
   Body,
   UseGuards,
   Param,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CreditNoteReasonService } from './credit-note-reason.service';

@@ -1,16 +1,13 @@
 import {
   Controller,
-  ConsoleLogger,
   Post,
   Body,
   Query,
-  Param,
   HttpCode,
   HttpStatus,
   Get,
   Req,
   UseGuards,
-  UseFilters,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
@@ -28,7 +25,6 @@ import {
   ApiBody,
   ApiHideProperty,
   ApiOperation,
-  ApiQuery,
 } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator';
@@ -36,7 +32,7 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { KeycloakGuard } from './guards/keycloak.guard';
-import { ExceptionFilter } from 'src/exception/exception.fillter';
+
 import { IgnoreGuards } from './decorators/ignore-guard.decorator';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 

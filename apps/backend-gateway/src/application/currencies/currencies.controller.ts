@@ -1,5 +1,4 @@
 import {
-  ConsoleLogger,
   Controller,
   Get,
   HttpCode,
@@ -9,14 +8,12 @@ import {
   Req,
   Res,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CurrenciesService } from './currencies.service';
 import {
   BaseHttpController,
   Serialize,
-  ZodSerializerInterceptor,
   CurrencyDetailResponseSchema,
   CurrencyListItemResponseSchema,
 } from '@/common';

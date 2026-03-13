@@ -1,4 +1,3 @@
-import { de } from 'zod/v4/locales';
 import {
   HttpStatus,
   Inject,
@@ -6,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom, Observable, of } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { CreatePurchaseRequestDto, RejectPurchaseRequestDto, Result, SubmitPurchaseRequest, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { ResponseLib } from 'src/libs/response.lib';

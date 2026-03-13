@@ -1,6 +1,5 @@
 import {
   Controller,
-  Get,
   Param,
   HttpCode,
   HttpStatus,
@@ -9,13 +8,11 @@ import {
   UseGuards,
   Req,
   Res,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   BaseHttpController,
-  ZodSerializerInterceptor,
 } from '@/common';
 import { ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';

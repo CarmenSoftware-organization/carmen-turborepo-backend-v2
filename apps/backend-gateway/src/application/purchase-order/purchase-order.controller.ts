@@ -13,7 +13,6 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { PurchaseOrderService } from './purchase-order.service';
@@ -46,7 +45,6 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import {
   BaseHttpController,
   Serialize,
-  ZodSerializerInterceptor,
   PurchaseOrderDetailResponseSchema,
   PurchaseOrderListItemResponseSchema,
   PurchaseOrderMutationResponseSchema,

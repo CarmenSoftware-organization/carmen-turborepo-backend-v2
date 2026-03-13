@@ -13,15 +13,6 @@ interface LogMeta {
   [key: string]: unknown;
 }
 
-type LogLevel =
-  | 'error'
-  | 'warn'
-  | 'info'
-  | 'http'
-  | 'verbose'
-  | 'debug'
-  | 'silly';
-
 const config = defaultLokiConfig;
 /**
  * Custom backend logger with structured logging and Loki integration

@@ -4,15 +4,11 @@ import {
   Param,
   Post,
   Body,
-  Put,
   Delete,
-  UsePipes,
   UseGuards,
-  UseInterceptors,
   Req,
   Res,
   Query,
-  ConsoleLogger,
   HttpCode,
   HttpStatus,
   Patch,
@@ -20,13 +16,10 @@ import {
 import { Response } from 'express';
 import { CreditNoteService } from './credit-note.service';
 import {
-  ApiHeader,
   ApiBearerAuth,
   ApiBody,
   ApiTags,
   ApiOperation,
-  ApiResponse,
-  ApiResponseProperty,
 } from '@nestjs/swagger';
 import {
   CreateCreditNoteRequestDto,
@@ -35,7 +28,6 @@ import {
 import {
   BaseHttpController,
   Serialize,
-  ZodSerializerInterceptor,
   CreditNoteDetailResponseSchema,
   CreditNoteListItemResponseSchema,
   CreditNoteMutationResponseSchema,

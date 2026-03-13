@@ -12,7 +12,6 @@ import {
   Req,
   Res,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { PurchaseRequestTemplateService } from './purchase-request-template.service';
@@ -22,10 +21,6 @@ import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { ApiBearerAuth, ApiBody, ApiOperation } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import {
-  ApiUserFilterQueries,
-  ApiVersionMinRequest,
-} from 'src/common/decorator/userfilter.decorator';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
@@ -33,7 +28,6 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 
 import {
   BaseHttpController,
-  ZodSerializerInterceptor,
 } from '@/common';
 
 @Controller('api/:bu_code/purchase-request-template')

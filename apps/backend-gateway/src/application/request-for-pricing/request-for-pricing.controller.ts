@@ -12,7 +12,6 @@ import {
   Req,
   Query,
   Res,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { RequestForPricingService } from './request-for-pricing.service';
@@ -34,7 +33,6 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
   BaseHttpController,
-  ZodSerializerInterceptor,
 } from '@/common';
 
 @Controller('api/:bu_code/request-for-pricing')

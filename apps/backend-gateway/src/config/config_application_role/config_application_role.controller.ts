@@ -1,8 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Res, UseGuards, UseInterceptors, HttpCode, HttpStatus } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Res, UseGuards, HttpCode, HttpStatus } from '@nestjs/common'
 import { Response } from 'express';
 import { KeycloakGuard } from 'src/auth'
 import { ConfigApplicationRoleService } from './config_application_role.service'
-import { ZodSerializerInterceptor, BaseHttpController } from '@/common'
+import { BaseHttpController } from '@/common'
 import { CreateConfigApplicationRoleDto, UpdateConfigApplicationRoleDto } from './dto/application_role.dto'
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto'
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header'

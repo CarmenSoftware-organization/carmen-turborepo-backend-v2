@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createZodDto } from "nestjs-zod";
-import { ApiProperty } from "@nestjs/swagger";
 
 export const ProductInventoryInfoSchema = z.object({
   on_hand_qty: z.number().optional(),

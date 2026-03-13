@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
-import { enum_physical_count_status } from '@repo/prisma-shared-schema-tenant';
 
 // ==================== Physical Count Create ====================
 

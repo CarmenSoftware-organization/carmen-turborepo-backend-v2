@@ -10,7 +10,6 @@ import {
   Req,
   Res,
   UseGuards,
-  ConsoleLogger,
   UseInterceptors,
   HttpCode,
   HttpStatus,
@@ -22,7 +21,6 @@ import { Config_PriceListService } from './config_price-list.service';
 import {
   PriceListCreateDto,
   PriceListUpdateDto,
-  ZodSerializerInterceptor,
   BaseHttpController,
   Result,
   ErrorCode,
@@ -37,7 +35,6 @@ import { ApiBearerAuth, ApiTags, ApiConsumes, ApiBody, ApiOperation } from '@nes
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
-  ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';

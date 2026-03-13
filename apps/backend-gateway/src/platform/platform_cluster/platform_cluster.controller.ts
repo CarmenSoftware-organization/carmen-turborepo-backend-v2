@@ -5,7 +5,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  ConsoleLogger,
   Param,
   Post,
   Put,

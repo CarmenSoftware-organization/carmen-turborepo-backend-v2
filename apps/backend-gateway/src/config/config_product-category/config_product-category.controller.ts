@@ -7,8 +7,6 @@ import {
   Put,
   Delete,
   UseGuards,
-  UseInterceptors,
-  ConsoleLogger,
   HttpCode,
   HttpStatus,
   Req,
@@ -17,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_ProductCategoryService } from './config_product-category.service';
-import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProductCategoryCreateRequest, ProductCategoryUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
@@ -26,7 +24,6 @@ import {
   ProductCategoryCreateDto,
   ProductCategoryUpdateDto,
   Serialize,
-  ZodSerializerInterceptor,
   ProductCategoryDetailResponseSchema,
   ProductCategoryListItemResponseSchema,
   ProductCategoryMutationResponseSchema,
@@ -37,7 +34,6 @@ import {
 } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import {
-  IPaginate,
   IPaginateQuery,
   PaginateQuery,
 } from 'src/shared-dto/paginate.dto';

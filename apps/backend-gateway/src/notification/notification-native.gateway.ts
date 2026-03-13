@@ -12,7 +12,7 @@ export class NotificationNativeGateway implements OnModuleInit, OnModuleDestroy 
   private notificationServiceClient: SocketIOClient;
   private readonly clientConnections = new Map<WebSocket, string>(); // WebSocket -> userId
   private readonly userIdToClient = new Map<string, WebSocket>(); // userId -> WebSocket
-  private httpServer: http.Server;
+  private _httpServer: http.Server;
 
   constructor() { }
 
@@ -45,7 +45,7 @@ export class NotificationNativeGateway implements OnModuleInit, OnModuleDestroy 
   }
 
   attachToServer(httpServer: http.Server) {
-    this.httpServer = httpServer;
+    this._httpServer = httpServer;
 
     // Create WebSocket server attached to the existing HTTP server
     this.wss = new WebSocket.Server({

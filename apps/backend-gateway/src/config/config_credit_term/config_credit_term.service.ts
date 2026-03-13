@@ -5,7 +5,6 @@ import {
   ICreateCreditTerm,
   IUpdateCreditTerm,
   Result,
-  ErrorCode,
   MicroserviceResponse,
 } from '@/common';
 import { IPaginate } from 'src/shared-dto/paginate.dto';

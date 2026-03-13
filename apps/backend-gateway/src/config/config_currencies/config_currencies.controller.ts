@@ -13,7 +13,6 @@ import {
   Req,
   Res,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_CurrenciesService } from './config_currencies.service';
@@ -30,7 +29,6 @@ import {
   CurrenciesUpdateDto,
   IUpdateCurrencies,
   Serialize,
-  ZodSerializerInterceptor,
   CurrencyResponseSchema,
 } from '@/common';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';

@@ -12,12 +12,10 @@ import {
   Query,
   HttpCode,
   HttpStatus,
-  ConsoleLogger,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_RunningCodeService } from './config_running-code.service';
-import { ZodSerializerInterceptor, BaseHttpController } from '@/common';
+import { BaseHttpController } from '@/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RunningCodeCreateRequest, RunningCodeUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';

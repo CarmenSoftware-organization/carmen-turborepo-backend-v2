@@ -8,7 +8,6 @@ import {
   Req,
   Res,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ProductsService } from './products.service';
@@ -28,7 +27,6 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import {
   BaseHttpController,
   Serialize,
-  ZodSerializerInterceptor,
   ProductLocationListItemResponseSchema,
 } from '@/common';
 

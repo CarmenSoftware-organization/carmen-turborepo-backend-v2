@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { createZodDto } from 'nestjs-zod'
 import { EmbeddedCurrencySchema, EmbeddedVendorSchema, EmbeddedWorkflowSchema, InfoSchema } from '../embedded.dto'
 import { GoodReceivedNoteSchema } from '../good-receive-note/good-received-note.dto'
-import { enum_credit_note_doc_status, enum_credit_note_type, PrismaClient } from '@repo/prisma-shared-schema-tenant'
+import { enum_credit_note_doc_status, enum_credit_note_type } from '@repo/prisma-shared-schema-tenant'
 
 export const CreditNoteSchema = z.object({
   id: z.string().uuid().optional( ),

@@ -1,24 +1,19 @@
 import {
-  Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   Param,
-  Post,
   Query,
   Req,
   Res,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { TaxProfileService } from './tax-profile.service';
-import { CreateTaxProfileDto } from './dto/tax-profile.dto';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import {
-  IPaginate,
   IPaginateQuery,
   PaginateQuery,
 } from 'src/shared-dto/paginate.dto';
@@ -34,7 +29,6 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import {
   BaseHttpController,
   Serialize,
-  ZodSerializerInterceptor,
   TaxProfileDetailResponseSchema,
   TaxProfileListItemResponseSchema,
 } from '@/common';

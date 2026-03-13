@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import { ApiExcludeEndpoint, ApiHideProperty, ApiTags } from '@nestjs/swagger';
+import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { BackendLogger } from './common/helpers/backend.logger';
 import { ApiHeaderRequiredXAppId } from './common/decorator/x-app-id.decorator';
 

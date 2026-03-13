@@ -4,15 +4,12 @@ import {
   Param,
   Post,
   Body,
-  Put,
   Delete,
   UseGuards,
-  UseInterceptors,
   Req,
   Res,
   HttpCode,
   HttpStatus,
-  ConsoleLogger,
   Query,
   Patch,
 } from '@nestjs/common';
@@ -21,7 +18,6 @@ import { Config_TaxProfileService } from './config_tax_profile.service';
 import {
   ApiBearerAuth,
   ApiBody,
-  ApiHeader,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -33,7 +29,6 @@ import {
   TaxProfileUpdateDto,
   IUpdateTaxProfile,
   Serialize,
-  ZodSerializerInterceptor,
   TaxProfileDetailResponseSchema,
   TaxProfileListItemResponseSchema,
   TaxProfileMutationResponseSchema,

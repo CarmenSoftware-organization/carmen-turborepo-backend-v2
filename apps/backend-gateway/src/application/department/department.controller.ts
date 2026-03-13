@@ -8,7 +8,6 @@ import {
   Req,
   Res,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
@@ -16,7 +15,6 @@ import { DepartmentService } from './department.service';
 import {
   BaseHttpController,
   Serialize,
-  ZodSerializerInterceptor,
   DepartmentDetailResponseSchema,
   DepartmentListItemResponseSchema,
 } from '@/common';
