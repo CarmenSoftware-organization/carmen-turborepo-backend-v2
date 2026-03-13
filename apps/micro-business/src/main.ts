@@ -17,7 +17,7 @@ async function bootstrap() {
   logger.verbose({ envConfig: envConfig, process_env: process.env }, "env");
 
   const businessServiceHost = envConfig.BUSINESS_SERVICE_HOST;
-  const businessServiceTcpPort = Number(envConfig.BUSINESS_SERVICE_TCP_PORT);
+  const businessServiceTcpPort = Number(envConfig.BUSINESS_SERVICE_PORT);
   const businessServiceHttpPort = Number(envConfig.BUSINESS_SERVICE_HTTP_PORT);
 
   logger.log(`BusinessService is configured to run on ${businessServiceHost}:${businessServiceTcpPort}`);

@@ -14,7 +14,7 @@ async function bootstrap() {
   const logger = new BackendLogger(bootstrap.name);
 
   const notificationServiceHost = envConfig.NOTIFICATION_SERVICE_HOST;
-  const notificationServiceTcpPort = Number(envConfig.NOTIFICATION_SERVICE_TCP_PORT);
+  const notificationServiceTcpPort = Number(envConfig.NOTIFICATION_SERVICE_PORT);
   const notificationServiceHttpPort = Number(envConfig.NOTIFICATION_SERVICE_HTTP_PORT);
 
   logger.log(`NotificationService is configured to run on ${notificationServiceHost}:${notificationServiceTcpPort}`);

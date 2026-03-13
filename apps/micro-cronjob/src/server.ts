@@ -6,8 +6,7 @@ import { swagger } from '@elysiajs/swagger';
 import { envConfig } from './libs/config.env';
 
 const service_host = envConfig.CRONJOB_SERVICE_HOST;
-const service_Tcp_port = envConfig.CRONJOB_SERVICE_TCP_PORT;
-const service_Http_port = envConfig.CRONJOB_SERVICE_HTTP_PORT;
+const service_port = envConfig.CRONJOB_SERVICE_PORT;
 
 const app = new Elysia()
   .use(
@@ -29,11 +28,11 @@ const app = new Elysia()
         },
         servers: [
           {
-            url: `https://${service_host}:${service_Http_port}`,
+            url: `https://${service_host}:${service_port}`,
             description: 'Development server',
           },
           {
-            url: `http://${service_host}:${service_Http_port}`,
+            url: `http://${service_host}:${service_port}`,
             description: 'Development server',
           },
           {
@@ -89,7 +88,7 @@ const app = new Elysia()
   .get('/ping', () => 'pong')
   .get('/health', () => 'OK')
   .use(routes)
-  .listen(service_Http_port);
+  .listen(service_port);
 
 // Initialize dynamic cron job manager
 cronJobManager.loadCronJobs();
