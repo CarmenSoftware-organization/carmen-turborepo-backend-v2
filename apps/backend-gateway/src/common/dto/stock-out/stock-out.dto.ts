@@ -10,7 +10,7 @@ const StockOutDetailBaseSchema = z.object({
   inventory_transaction_id: z.string().uuid().optional().nullable(),
   sequence_no: z.number().int().optional().default(1),
   description: z.string().optional().nullable(),
-  qty: z.number().optional().default(0),
+  qty: z.number().min(0).optional().default(0),
   note: z.string().optional().nullable(),
   // Denormalized product fields (populated by service)
   product_name: z.string().optional().nullable(),
@@ -42,6 +42,8 @@ export const StockOutDetailCreate = StockOutDetailBaseSchema.omit({
   stock_out_id: true,
   inventory_transaction_id: true,
   sequence_no: true,
+}).extend({
+  product_id: z.string().uuid(),
 });
 
 export type IStockOutDetailCreate = z.infer<typeof StockOutDetailCreate>;
@@ -80,7 +82,6 @@ export const StockOutUpdate = z.object({
   location_id: z.string().uuid().optional().nullable(),
   location_code: z.string().optional().nullable(),
   location_name: z.string().optional().nullable(),
-  // workflow_id: z.string().uuid().optional().nullable(),
   note: z.string().optional().nullable(),
   info: z.any().optional(),
   dimension: z.any().optional(),

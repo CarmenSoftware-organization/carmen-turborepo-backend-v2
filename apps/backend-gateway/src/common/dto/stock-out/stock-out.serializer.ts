@@ -25,9 +25,6 @@ export const StockOutDetailResponseSchema = z.object({
   location_id: z.string().nullable().optional(),
   location_code: z.string().nullable().optional(),
   location_name: z.string().nullable().optional(),
-  // workflow_id: z.string().nullable().optional(),
-  // workflow_name: z.string().nullable().optional(),
-  // workflow_current_stage: z.string().nullable().optional(),
   note: z.string().nullable().optional(),
   doc_version: z.number().nullable().optional(),
   info: z.any().nullable().optional(),
@@ -49,8 +46,6 @@ export const StockOutListItemResponseSchema = z.object({
   adjustment_type_id: z.string().nullable().optional(),
   adjustment_type_code: z.string().nullable().optional(),
   doc_status: z.string().nullable().optional(),
-  // workflow_name: z.string().nullable().optional(),
-  // workflow_current_stage: z.string().nullable().optional(),
   created_at: z.coerce.date().optional(),
   updated_at: z.coerce.date().optional(),
 });
