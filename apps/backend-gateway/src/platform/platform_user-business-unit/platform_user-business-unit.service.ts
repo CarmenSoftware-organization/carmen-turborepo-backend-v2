@@ -7,7 +7,6 @@ import {
 } from './dto/platform_user-business-unit.dto';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
-import { anthropicAIIntegration } from '@sentry/node';
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
@@ -80,7 +79,7 @@ export class Platform_UserBusinessUnitService {
       );
     }
 
-    return Result.ok(response.data);
+    return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
   async create(
