@@ -16,12 +16,12 @@ import { TenantModule } from '@/tenant/tenant.module';
         transport: Transport.TCP,
         options: {
           host: envConfig.KEYCLOAK_API_SERVICE_HOST,
-          port: Number(envConfig.KEYCLOAK_API_SERVICE_TCP_PORT),
+          port: Number(envConfig.KEYCLOAK_API_SERVICE_PORT),
         },
       },
     ]),
     JwtModule.register({
-      secret: envConfig.JWT_SECRET,
+      secret: envConfig.SUPABASE_JWT_SECRET,
     }),
     TenantModule,
   ],

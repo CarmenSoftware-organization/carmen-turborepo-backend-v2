@@ -14,7 +14,7 @@ async function bootstrap() {
   const logger = new BackendLogger(bootstrap.name);
 
   const clusterServiceHost = envConfig.CLUSTER_SERVICE_HOST;
-  const clusterServiceTcpPort = Number(envConfig.CLUSTER_SERVICE_TCP_PORT);
+  const clusterServiceTcpPort = Number(envConfig.CLUSTER_SERVICE_PORT);
   const clusterServiceHttpPort = Number(envConfig.CLUSTER_SERVICE_HTTP_PORT);
 
   logger.log(

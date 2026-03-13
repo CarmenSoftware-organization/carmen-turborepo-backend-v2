@@ -22,7 +22,7 @@ import { UrlTokenGuard } from './guards/url-token.guard';
         transport: Transport.TCP,
         options: {
           host: envConfig.BUSINESS_SERVICE_HOST,
-          port: Number(envConfig.BUSINESS_SERVICE_TCP_PORT),
+          port: Number(envConfig.BUSINESS_SERVICE_PORT),
         },
       },
       {
@@ -30,12 +30,12 @@ import { UrlTokenGuard } from './guards/url-token.guard';
         transport: Transport.TCP,
         options: {
           host: envConfig.KEYCLOAK_API_SERVICE_HOST,
-          port: Number(envConfig.KEYCLOAK_API_SERVICE_TCP_PORT),
+          port: Number(envConfig.KEYCLOAK_API_SERVICE_PORT),
         },
       },
     ]),
     JwtModule.register({
-      secret: envConfig.JWT_SECRET,
+      secret: envConfig.SUPABASE_JWT_SECRET,
     }),
     PassportModule,
     ConfigModule,

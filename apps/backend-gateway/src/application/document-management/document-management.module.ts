@@ -12,7 +12,7 @@ import { envConfig } from 'src/libs/config.env';
         transport: Transport.TCP,
         options: {
           host: envConfig.FILE_SERVICE_HOST,
-          port: Number(envConfig.FILE_SERVICE_TCP_PORT),
+          port: Number(envConfig.FILE_SERVICE_PORT),
         },
       },
     ]),

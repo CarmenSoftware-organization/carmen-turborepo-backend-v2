@@ -5,7 +5,7 @@ import { envConfig } from 'src/libs/config.env';
 @Injectable()
 export class ConfigCronjobService {
   private readonly logger = new BackendLogger(ConfigCronjobService.name);
-  private readonly CRONJOB_SERVICE_URL = `http://${envConfig.CRONJOB_SERVICE_HOST}:${envConfig.CRONJOB_SERVICE_TCP_PORT}`;
+  private readonly CRONJOB_SERVICE_URL = `http://${envConfig.CRONJOB_SERVICE_HOST}:${envConfig.CRONJOB_SERVICE_PORT}`;
 
   private async request(endpoint: string, options: RequestInit = {}) {
     try {
