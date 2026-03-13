@@ -1684,13 +1684,19 @@ export class AuthService {
   async getAllUserInTenant(
     user_id: string,
     bu_code: string,
-    version: string,
+    paginate?: { page?: number; perpage?: number; search?: string; searchfields?: string[]; filter?: Record<string, string>; sort?: string[] },
+    version?: string,
   ): Promise<any> {
+    const page = paginate?.page || 1;
+    const perpage = paginate?.perpage || 10;
+    const search = paginate?.search || '';
+
     this.logger.debug(
       {
         function: 'getAllUserInTenant',
         user_id: user_id,
         bu_code: bu_code,
+        paginate: paginate,
         version: version,
       },
       AuthService.name,
@@ -1849,12 +1855,30 @@ export class AuthService {
         });
       });
 
+    // Apply search filter
+    let filtered = user;
+    if (search) {
+      const searchLower = search.toLowerCase();
+      filtered = user.filter((item: any) =>
+        item.email?.toLowerCase().includes(searchLower) ||
+        item.firstname?.toLowerCase().includes(searchLower) ||
+        item.lastname?.toLowerCase().includes(searchLower) ||
+        item.alias_name?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Apply pagination
+    const total = filtered.length;
+    const skip = (page - 1) * perpage;
+    const paginatedData = perpage === -1 ? filtered : filtered.slice(skip, skip + perpage);
+
     return {
-      data: user,
+      data: paginatedData,
       paginate: {
-        total: user.length,
-        page: 1,
-        limit: user.length,
+        total,
+        page,
+        perpage,
+        pages: total === 0 ? 1 : Math.ceil(total / (perpage === -1 ? total : perpage)),
       },
       response: {
         status: HttpStatus.OK,
