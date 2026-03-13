@@ -1,0 +1,24 @@
+meta {
+  name: 04 - Get Pending SR by ID
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{host}}/api/my-pending/store-requisition/:bu_code/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  bu_code: {{bu_code}}
+  id: {{sr_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

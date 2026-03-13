@@ -71,17 +71,17 @@ async function bootstrap() {
       bearerFormat: 'JWT',
       in: 'header',
     })
-    .addTag('Authentication')
-    .addTag('App')
-    .addTag('Configuration')
-    .addTag('Document & Log')
-    .addTag('Inventory')
-    .addTag('Master Data')
-    .addTag('Notification')
-    .addTag('Platform Admin')
-    .addTag('Procurement')
-    .addTag('User & Access')
-    .addTag('Workflow & Approval')
+    .addTag('Authentication', 'Login, logout, registration, password management, and token refresh via Keycloak')
+    .addTag('App', 'Application-level settings and metadata')
+    .addTag('Configuration', 'Business unit configuration: currencies, departments, locations, products, vendors, units, recipes, workflows, and more')
+    .addTag('Document & Log', 'Document management and activity/audit logging')
+    .addTag('Inventory', 'Stock-in, stock-out, transfers, adjustments, physical counts, spot checks, and inventory transactions')
+    .addTag('Master Data', 'Products, locations, vendors, and other shared reference data used across procurement and inventory')
+    .addTag('Notification', 'Real-time and persistent notifications for users')
+    .addTag('Platform Admin', 'System-wide administration: clusters, business units, users, roles, and permissions')
+    .addTag('Procurement', 'Purchase requests, purchase orders, good received notes, credit notes, request for pricing, and store requisitions')
+    .addTag('User & Access', 'User profiles, business unit assignments, location assignments, and role management')
+    .addTag('Workflow & Approval', 'Approval workflows, pending approvals, and document state transitions')
     .build();
 
   const document_http = SwaggerModule.createDocument(

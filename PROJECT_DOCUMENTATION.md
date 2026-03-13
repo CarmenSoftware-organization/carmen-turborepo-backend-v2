@@ -46,9 +46,14 @@ carmen-turborepo-backend-v2/
 |-- apps/                                    # Microservices (Applications)
 |   |-- backend-gateway/                     # API Gateway (NestJS + Express)
 |   |   |-- src/
-|   |   |   |-- modules/                     # Feature modules (auth, cluster, inventory, etc.)
-|   |   |   |-- common/                      # Shared utilities, guards, interceptors
-|   |   |   |-- main.ts                      # Entry point (HTTP + HTTPS + WebSocket)
+|   |   |   |-- application/                 # Application-level route modules (procurement, inventory, master data)
+|   |   |   |-- config/                      # Configuration route modules (32 config endpoints)
+|   |   |   |-- platform/                    # Platform admin route modules (clusters, BUs, roles, permissions)
+|   |   |   |-- auth/                        # Authentication module (login, register, password)
+|   |   |   |-- notification/                # Notification proxy module
+|   |   |   |-- common/                      # Shared utilities, guards, interceptors, decorators
+|   |   |   |-- main.ts                      # Entry point (HTTP + HTTPS + WebSocket + Swagger)
+|   |   |-- docs/                            # Gateway-specific documentation
 |   |   |-- Dockerfile
 |   |   |-- package.json
 |   |
@@ -252,8 +257,8 @@ Client Request
 | backend-gateway       | NestJS+Express | -        | 4000/4001 | API Gateway, routing, auth, WebSocket             |
 | micro-business        | NestJS         | 5020     | 6020      | Auth, Cluster, Inventory, Master, Procurement, Recipe |
 | micro-file            | NestJS         | 5007     | 6007      | File upload/download via MinIO/S3                 |
-| micro-cronjob         | Elysia+Bun     | 5012     | -         | Scheduled task execution                          |
-| micro-keycloak-api    | NestJS         | 5013     | -         | Keycloak SSO integration                          |
+| micro-cronjob         | Elysia+Bun     | 5012     | 6012      | Scheduled task execution                          |
+| micro-keycloak-api    | NestJS         | 5013     | 6013      | Keycloak SSO integration                          |
 | micro-notification    | NestJS         | 5006     | 6006      | Real-time notifications via WebSocket             |
 
 ### 4.4 micro-business Internal Modules

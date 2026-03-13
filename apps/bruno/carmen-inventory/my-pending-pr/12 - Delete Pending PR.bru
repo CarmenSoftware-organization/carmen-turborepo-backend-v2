@@ -1,0 +1,24 @@
+meta {
+  name: 12 - Delete Pending PR
+  type: http
+  seq: 12
+}
+
+delete {
+  url: {{host}}/api/my-pending/purchase-request/:bu_code/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  bu_code: {{bu_code}}
+  id: {{pr_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

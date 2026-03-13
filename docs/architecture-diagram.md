@@ -21,7 +21,7 @@
          |    +------------------------------------------------------+  |
          |    |           backend-gateway (:4000/:4001)               |  |
          |    |        [Auth, Routing, Swagger, WebSocket]            |  |
-         |    |      JWT (Supabase) / Keycloak Auth Guards            |  |
+         |    |      JWT / Keycloak Auth Guards                       |  |
          |    +--+-------+-------+-------+-------+-------+-----------+  |
          |       |       |       |       |       |       |              |
          |      TCP     TCP     TCP     TCP     TCP     TCP             |
@@ -184,7 +184,7 @@
 | Framework    | NestJS (micro-cronjob uses Elysia/Bun)          |
 | Monorepo     | Turborepo                                        |
 | Database     | PostgreSQL (AWS RDS) + Prisma ORM                |
-| Auth         | JWT (Supabase) + Keycloak                        |
+| Auth         | JWT + Keycloak (OIDC)                            |
 | Container    | Docker (multi-stage build)                       |
 | Registry     | AWS ECR                                          |
 | Orchestrator | Docker Compose (current) -> Kubernetes (planned) |

@@ -1,0 +1,23 @@
+meta {
+  name: 16 - Get Detail Dimension
+  type: http
+  seq: 16
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request/detail/:detail_id/dimension
+  body: none
+  auth: bearer
+}
+
+params:path {
+  detail_id: {{pr_detail_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

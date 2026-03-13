@@ -1,0 +1,28 @@
+meta {
+  name: 07 - Save Pending SR
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{host}}/api/my-pending/store-requisition/:bu_code/:id/save
+  body: json
+  auth: bearer
+}
+
+params:path {
+  bu_code: {{bu_code}}
+  id: {{sr_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}

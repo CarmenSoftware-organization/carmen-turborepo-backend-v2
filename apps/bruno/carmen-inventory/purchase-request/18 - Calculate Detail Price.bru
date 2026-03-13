@@ -1,0 +1,23 @@
+meta {
+  name: 18 - Calculate Detail Price
+  type: http
+  seq: 18
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request/detail/:detail_id/calculate
+  body: none
+  auth: bearer
+}
+
+params:path {
+  detail_id: {{pr_detail_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
