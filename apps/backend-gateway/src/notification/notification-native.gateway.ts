@@ -36,7 +36,7 @@ export class NotificationNativeGateway implements OnModuleInit, OnModuleDestroy 
   private setupWebSocketServer() {
     // Get the HTTP server from the main.ts NestJS app
     // For now, create a standalone WebSocket server
-    const port = envConfig.GATEWAY_SERVICE_HTTP_PORT || 4000;
+    const port = envConfig.GATEWAY_SERVICE_PORT || 4000;
 
     this.logger.log(`Setting up native WebSocket server on port ${port}/ws`);
 

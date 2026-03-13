@@ -32,7 +32,7 @@ import { RequestForPricingModule } from './application/request-for-pricing/reque
         transport: Transport.TCP,
         options: {
           host: envConfig.BUSINESS_SERVICE_HOST,
-          port: Number(envConfig.BUSINESS_SERVICE_TCP_PORT),
+          port: Number(envConfig.BUSINESS_SERVICE_PORT),
         },
       },
       {
@@ -40,7 +40,7 @@ import { RequestForPricingModule } from './application/request-for-pricing/reque
         transport: Transport.TCP,
         options: {
           host: envConfig.CLUSTER_SERVICE_HOST,
-          port: Number(envConfig.CLUSTER_SERVICE_TCP_PORT),
+          port: Number(envConfig.CLUSTER_SERVICE_PORT),
         },
       },
     ]),
