@@ -405,6 +405,11 @@ export class CreditNoteService {
         runningPattern = pattern;
       }
     });
+
+    if (!datePattern || !runningPattern) {
+      throw new Error(`Missing running code pattern config for CN: datePattern=${!!datePattern}, runningPattern=${!!runningPattern}`);
+    }
+
     this.logger.debug(
       { function: 'generateCnNo', datePattern, runningPattern },
       CreditNoteService.name,

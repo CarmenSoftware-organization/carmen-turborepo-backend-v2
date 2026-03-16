@@ -1420,6 +1420,10 @@ export class PurchaseOrderService {
       }
     });
 
+    if (!datePattern || !runningPattern) {
+      throw new Error(`Missing running code pattern config for PO: datePattern=${!!datePattern}, runningPattern=${!!runningPattern}`);
+    }
+
     const getDate = new Date(orderDate);
     const datePatternValue = format(getDate, datePattern.pattern);
 

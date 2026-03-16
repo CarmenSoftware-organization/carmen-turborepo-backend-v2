@@ -29,6 +29,9 @@ export const StockInSchema = z.object({
   adjustment_type_id: z.string().uuid().optional().nullable(),
   adjustment_type_code: z.string().optional().nullable(),
   doc_status: z.enum(Object.values(enum_doc_status) as [string, ...string[]]).optional().default('draft'),
+  location_id: z.string().uuid().optional().nullable(),
+  location_code: z.string().optional().nullable(),
+  location_name: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
   doc_version: z.number().int().optional().default(0),
 })
@@ -45,15 +48,25 @@ export const StockInDetailCreate = StockInDetailBaseSchema.omit({
 
 export type IStockInDetailCreate = z.infer<typeof StockInDetailCreate>;
 
+// Detail object schema (reusable)
+const StockInDetailObj = z.object({
+  add: z.array(StockInDetailCreate).optional(),
+});
+
 // Stock In Create Schema
 export const StockInCreate = StockInSchema.omit({
   id: true,
   si_no: true,
   doc_version: true,
 }).extend({
-  stock_in_detail: z.object({
-    add: z.array(StockInDetailCreate).optional(),
-  }).optional(),
+  stock_in_detail: StockInDetailObj.optional(),
+  details: StockInDetailObj.optional(),
+}).transform((data) => {
+  const { details, ...rest } = data;
+  if (details && !rest.stock_in_detail) {
+    rest.stock_in_detail = details;
+  }
+  return rest;
 });
 
 export type IStockInCreate = z.infer<typeof StockInCreate>;
@@ -70,21 +83,33 @@ export const StockInDetailUpdate = StockInDetailBaseSchema.omit({
 
 export type IStockInDetailUpdate = z.infer<typeof StockInDetailUpdate>;
 
+// Stock In Update Detail object schema
+const StockInUpdateDetailObj = z.object({
+  add: z.array(StockInDetailCreate).optional(),
+  update: z.array(StockInDetailUpdate).optional(),
+  remove: z.array(z.object({ id: z.string().uuid() })).optional(),
+});
+
 // Stock In Update Schema
 export const StockInUpdate = z.object({
   description: z.string().optional().nullable(),
   adjustment_type_id: z.string().uuid().optional().nullable(),
   adjustment_type_code: z.string().optional().nullable(),
   doc_status: z.enum(Object.values(enum_doc_status) as [string, ...string[]]).optional(),
-  // workflow_id: z.string().uuid().optional().nullable(),
+  location_id: z.string().uuid().optional().nullable(),
+  location_code: z.string().optional().nullable(),
+  location_name: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
   info: z.any().optional(),
   dimension: z.any().optional(),
-  stock_in_detail: z.object({
-    add: z.array(StockInDetailCreate).optional(),
-    update: z.array(StockInDetailUpdate).optional(),
-    remove: z.array(z.object({ id: z.string().uuid() })).optional(),
-  }).optional(),
+  stock_in_detail: StockInUpdateDetailObj.optional(),
+  details: StockInUpdateDetailObj.optional(),
+}).transform((data) => {
+  const { details, ...rest } = data;
+  if (details && !rest.stock_in_detail) {
+    rest.stock_in_detail = details;
+  }
+  return rest;
 });
 
 export type IStockInUpdate = z.infer<typeof StockInUpdate> & { id: string };

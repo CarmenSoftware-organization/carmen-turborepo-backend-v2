@@ -1082,9 +1082,14 @@ export class StoreRequisitionService {
 
     const res = this.masterService.send(
       { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
-      { type: 'SR', user_id: this.userId, tenant_id: this.bu_code },
+      { type: 'SR', user_id: this.userId, bu_code: this.bu_code },
     );
     const response = await firstValueFrom(res);
+
+    if (!response?.data || !Array.isArray(response.data)) {
+      throw new Error(`Failed to get running code pattern for SR: ${JSON.stringify(response)}`);
+    }
+
     const patterns = response.data;
 
     let datePattern;
@@ -1096,6 +1101,10 @@ export class StoreRequisitionService {
         runningPattern = pattern;
       }
     });
+
+    if (!datePattern || !runningPattern) {
+      throw new Error(`Missing running code pattern config for SR: datePattern=${!!datePattern}, runningPattern=${!!runningPattern}`);
+    }
 
     const getDate = new Date(SRDate);
     const datePatternValue = format(getDate, datePattern.pattern);
@@ -1111,13 +1120,16 @@ export class StoreRequisitionService {
         issueDate: getDate,
         last_no: latestSRNumber,
         user_id: this.userId,
-        tenant_id: this.bu_code,
+        bu_code: this.bu_code,
       },
     );
     const generateCodeResponse = await firstValueFrom(generateCodeRes);
-    const srNo = generateCodeResponse.data.code;
 
-    return srNo;
+    if (!generateCodeResponse?.data?.code) {
+      throw new Error(`Failed to generate SR number: ${JSON.stringify(generateCodeResponse)}`);
+    }
+
+    return generateCodeResponse.data.code;
   }
 
   /**

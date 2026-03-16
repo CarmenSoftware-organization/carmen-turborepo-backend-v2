@@ -981,43 +981,53 @@ export class PhysicalCountService {
     bu_code: string,
     user_id: string,
   ): Promise<string> {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
-      const res: Observable<any> = this.masterService.send(
-        { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
-        { type: 'SI', user_id, bu_code },
-      );
-      const response = await firstValueFrom(res);
-      const patterns = response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+    const res: Observable<any> = this.masterService.send(
+      { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
+      { type: 'SI', user_id, bu_code },
+    );
+    const response = await firstValueFrom(res);
 
-      let datePattern: Record<string, unknown> | undefined;
-      let runningPattern: Record<string, unknown> | undefined;
-      patterns.forEach((pattern: Record<string, unknown>) => {
-        if (pattern.type === 'date') {
-          datePattern = pattern;
-        } else if (pattern.type === 'running') {
-          runningPattern = pattern;
-        }
-      });
-
-      const getDate = new Date(siDate);
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
-      const generateCodeRes: Observable<any> = this.masterService.send(
-        { cmd: 'running-code.generate-code', service: 'running-codes' },
-        {
-          type: 'SI',
-          issueDate: getDate,
-          last_no: 0,
-          user_id,
-          bu_code: bu_code,
-        },
-      );
-      const generateCodeResponse = await firstValueFrom(generateCodeRes);
-      return generateCodeResponse.data.code;
-    } catch (error) {
-      return `SI-PC-${format(new Date(), 'yyyyMMddHHmmss')}`;
+    if (!response?.data || !Array.isArray(response.data)) {
+      throw new Error(`Failed to get running code pattern for SI (physical-count): ${JSON.stringify(response)}`);
     }
+
+    const patterns = response.data;
+
+    let datePattern: Record<string, unknown> | undefined;
+    let runningPattern: Record<string, unknown> | undefined;
+    patterns.forEach((pattern: Record<string, unknown>) => {
+      if (pattern.type === 'date') {
+        datePattern = pattern;
+      } else if (pattern.type === 'running') {
+        runningPattern = pattern;
+      }
+    });
+
+    if (!datePattern || !runningPattern) {
+      throw new Error(`Missing running code pattern config for SI (physical-count): datePattern=${!!datePattern}, runningPattern=${!!runningPattern}`);
+    }
+
+    const getDate = new Date(siDate);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+    const generateCodeRes: Observable<any> = this.masterService.send(
+      { cmd: 'running-code.generate-code', service: 'running-codes' },
+      {
+        type: 'SI',
+        issueDate: getDate,
+        last_no: 0,
+        user_id,
+        bu_code: bu_code,
+      },
+    );
+    const generateCodeResponse = await firstValueFrom(generateCodeRes);
+
+    if (!generateCodeResponse?.data?.code) {
+      throw new Error(`Failed to generate SI number (physical-count): ${JSON.stringify(generateCodeResponse)}`);
+    }
+
+    return generateCodeResponse.data.code;
   }
 
   private async generateSONo(
@@ -1025,42 +1035,52 @@ export class PhysicalCountService {
     bu_code: string,
     user_id: string,
   ): Promise<string> {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
-      const res: Observable<any> = this.masterService.send(
-        { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
-        { type: 'SO', user_id, bu_code },
-      );
-      const response = await firstValueFrom(res);
-      const patterns = response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+    const res: Observable<any> = this.masterService.send(
+      { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
+      { type: 'SO', user_id, bu_code },
+    );
+    const response = await firstValueFrom(res);
 
-      let datePattern: Record<string, unknown> | undefined;
-      let runningPattern: Record<string, unknown> | undefined;
-      patterns.forEach((pattern: Record<string, unknown>) => {
-        if (pattern.type === 'date') {
-          datePattern = pattern;
-        } else if (pattern.type === 'running') {
-          runningPattern = pattern;
-        }
-      });
-
-      const getDate = new Date(soDate);
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
-      const generateCodeRes: Observable<any> = this.masterService.send(
-        { cmd: 'running-code.generate-code', service: 'running-codes' },
-        {
-          type: 'SO',
-          issueDate: getDate,
-          last_no: 0,
-          user_id,
-          bu_code: bu_code,
-        },
-      );
-      const generateCodeResponse = await firstValueFrom(generateCodeRes);
-      return generateCodeResponse.data.code;
-    } catch (error) {
-      return `SO-PC-${format(new Date(), 'yyyyMMddHHmmss')}`;
+    if (!response?.data || !Array.isArray(response.data)) {
+      throw new Error(`Failed to get running code pattern for SO (physical-count): ${JSON.stringify(response)}`);
     }
+
+    const patterns = response.data;
+
+    let datePattern: Record<string, unknown> | undefined;
+    let runningPattern: Record<string, unknown> | undefined;
+    patterns.forEach((pattern: Record<string, unknown>) => {
+      if (pattern.type === 'date') {
+        datePattern = pattern;
+      } else if (pattern.type === 'running') {
+        runningPattern = pattern;
+      }
+    });
+
+    if (!datePattern || !runningPattern) {
+      throw new Error(`Missing running code pattern config for SO (physical-count): datePattern=${!!datePattern}, runningPattern=${!!runningPattern}`);
+    }
+
+    const getDate = new Date(soDate);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+    const generateCodeRes: Observable<any> = this.masterService.send(
+      { cmd: 'running-code.generate-code', service: 'running-codes' },
+      {
+        type: 'SO',
+        issueDate: getDate,
+        last_no: 0,
+        user_id,
+        bu_code: bu_code,
+      },
+    );
+    const generateCodeResponse = await firstValueFrom(generateCodeRes);
+
+    if (!generateCodeResponse?.data?.code) {
+      throw new Error(`Failed to generate SO number (physical-count): ${JSON.stringify(generateCodeResponse)}`);
+    }
+
+    return generateCodeResponse.data.code;
   }
 }

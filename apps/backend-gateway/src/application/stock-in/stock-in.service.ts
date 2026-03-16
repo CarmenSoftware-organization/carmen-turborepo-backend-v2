@@ -13,6 +13,7 @@ import {
   StockInDetailUpdateDto,
 } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
+import { ErrorCode } from 'src/common/result/error';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
 @Injectable()
@@ -123,11 +124,34 @@ export class StockInService {
       { data, user_id, tenant_id, version },
     );
 
-    const response = await firstValueFrom(res);
+    let response: MicroserviceResponse;
+    try {
+      response = await firstValueFrom(res);
+    } catch (err) {
+      this.logger.error({ function: 'create', error: JSON.stringify(err) }, 'stock-in.create threw');
+      let errMsg: string;
+      if (typeof err === 'string') {
+        errMsg = err;
+      } else if (err instanceof Error) {
+        errMsg = err.message;
+      } else if (typeof err === 'object' && err !== null) {
+        errMsg = JSON.stringify(err);
+      } else {
+        errMsg = String(err);
+      }
+      // If errMsg is still [object Object], force stringify
+      if (errMsg === '[object Object]') {
+        try { errMsg = JSON.stringify(err, Object.getOwnPropertyNames(err as object)); } catch { errMsg = 'Unknown error in stock-in.create'; }
+      }
+      return Result.error(errMsg, ErrorCode.INTERNAL);
+    }
 
     if (response.response.status !== HttpStatus.CREATED) {
+      const msg = typeof response.response.message === 'string'
+        ? response.response.message
+        : JSON.stringify(response.response.message);
       return Result.error(
-        response.response.message,
+        msg,
         httpStatusToErrorCode(response.response.status),
       );
     }
