@@ -14,7 +14,9 @@ export function TryCatch(
     try {
       return await originalMethod.apply(this, args);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+      const err = error instanceof Error
+        ? error
+        : new Error(typeof error === 'object' && error !== null ? JSON.stringify(error) : String(error));
       errorLogger.error(
         `Error in ${propertyKey}@${target.constructor.name}: ${err.name} ${err.message}`,
         err.stack,

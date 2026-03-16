@@ -13,11 +13,33 @@ export class ExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message: string | string[] = (exception as Record<string, unknown>)?.error
-      ? String((exception as Record<string, Record<string, unknown>>).error.message)
-      : 'Internal server error';
+    let message: string | string[] = 'Internal server error';
+
+    // Extract message from various exception shapes
+    const exc = exception as Record<string, unknown>;
+    if (exc?.error) {
+      const error = exc.error as Record<string, unknown>;
+      if (typeof error === 'string') {
+        message = error;
+      } else if (error?.message) {
+        message = typeof error.message === 'string' ? error.message : JSON.stringify(error.message);
+      } else {
+        message = JSON.stringify(error);
+      }
+    } else if (exc?.message && typeof exc.message === 'string') {
+      message = exc.message;
+    }
+
+    // Try to parse JSON-encoded messages
     try {
-      message = JSON.parse(message as string);
+      const parsed = JSON.parse(message as string);
+      if (typeof parsed === 'string') {
+        message = parsed;
+      } else if (Array.isArray(parsed)) {
+        message = parsed;
+      } else if (typeof parsed === 'object' && parsed !== null) {
+        message = parsed.message ?? JSON.stringify(parsed);
+      }
     } catch {
       // Keep original message if parsing fails
     }

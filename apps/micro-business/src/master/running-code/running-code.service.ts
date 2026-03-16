@@ -57,7 +57,15 @@ export class RunningCodeService {
    * @param userId - User ID / รหัสผู้ใช้
    */
   async initializePrismaService(bu_code: string, userId: string): Promise<void> {
-    this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
+    try {
+      this._prismaService = await this.tenantService.prismaTenantInstance(bu_code, userId);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : JSON.stringify(error);
+      throw new HttpException(
+        `Failed to initialize Prisma for running-code (bu_code: ${bu_code}, userId: ${userId}): ${message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   private _prismaService: PrismaClient | undefined;
@@ -257,6 +265,12 @@ export class RunningCodeService {
     });
 
     if (!foundRunningCode) {
+      if (!RUNNING_CODE_PRESET[type]) {
+        throw new HttpException(
+          `No running code preset found for type '${type}'. Available types: ${Object.keys(RUNNING_CODE_PRESET).join(', ')}`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
       foundRunningCode = await this.prismaService.tb_config_running_code.create({
         data: {
           type,

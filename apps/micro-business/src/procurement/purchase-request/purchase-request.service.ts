@@ -1810,6 +1810,10 @@ export class PurchaseRequestService {
       }
     });
 
+    if (!datePattern || !runningPattern) {
+      throw new Error(`Missing running code pattern config for PR: datePattern=${!!datePattern}, runningPattern=${!!runningPattern}`);
+    }
+
     const getDate = new Date(PRDate);
     const datePatternValue = format(getDate, datePattern.pattern);
     const latestPR = await this.findLatestPrByPattern(datePatternValue);

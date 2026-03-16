@@ -519,9 +519,14 @@ export class StockOutService {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
     const res: Observable<any> = this.masterService.send(
       { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
-      { type: 'SO', user_id, tenant_id },
+      { type: 'SO', user_id, bu_code: tenant_id },
     );
     const response = await firstValueFrom(res);
+
+    if (!response?.data || !Array.isArray(response.data)) {
+      throw new Error(`Failed to get running code pattern for SO: ${JSON.stringify(response)}`);
+    }
+
     const patterns = response.data;
 
     let datePattern;
@@ -533,6 +538,10 @@ export class StockOutService {
         runningPattern = pattern;
       }
     });
+
+    if (!datePattern || !runningPattern) {
+      throw new Error(`Missing running code pattern config for SO: datePattern=${!!datePattern}, runningPattern=${!!runningPattern}`);
+    }
 
     const getDate = new Date(soDate);
     const datePatternValue = format(getDate, datePattern.pattern);
@@ -549,13 +558,16 @@ export class StockOutService {
         issueDate: getDate,
         last_no: latestSONumber,
         user_id,
-        tenant_id,
+        bu_code: tenant_id,
       },
     );
     const generateCodeResponse = await firstValueFrom(generateCodeRes);
-    const soNo = generateCodeResponse.data.code;
 
-    return soNo;
+    if (!generateCodeResponse?.data?.code) {
+      throw new Error(`Failed to generate SO number: ${JSON.stringify(generateCodeResponse)}`);
+    }
+
+    return generateCodeResponse.data.code;
   }
 
   // ==================== Stock Out Detail CRUD ====================

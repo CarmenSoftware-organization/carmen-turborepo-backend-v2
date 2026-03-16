@@ -57,7 +57,8 @@ export class Result<T, E = null> {
       );
     }
 
-    return new Result<null, E>(null, new AppError<E>(error, code, data));
+    const message = typeof error === 'string' ? error : JSON.stringify(error);
+    return new Result<null, E>(null, new AppError<E>(message, code, data));
   }
 
   /**

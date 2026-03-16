@@ -40,6 +40,10 @@ export class CommonLogic {
     );
     const response = await firstValueFrom(res);
 
+    if (!response?.data?.code) {
+      throw new Error(`Failed to generate running code for type '${type}': ${JSON.stringify(response)}`);
+    }
+
     return response.data.code;
   }
 
@@ -59,6 +63,11 @@ export class CommonLogic {
       { type, user_id, bu_code, version },
     );
     const response = await firstValueFrom(res);
+
+    if (response?.status === 'error') {
+      throw new Error(`Failed to get running pattern for type '${type}': ${JSON.stringify(response)}`);
+    }
+
     let pattern: PatternMapper;
     if (response?.data) {
       pattern = response.data.config;

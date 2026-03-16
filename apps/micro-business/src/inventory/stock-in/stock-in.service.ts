@@ -527,9 +527,14 @@ export class StockInService {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
     const res: Observable<any> = this.masterService.send(
       { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
-      { type: 'SI', user_id, tenant_id },
+      { type: 'SI', user_id, bu_code: tenant_id },
     );
     const response = await firstValueFrom(res);
+
+    if (!response?.data || !Array.isArray(response.data)) {
+      throw new Error(`Failed to get running code pattern for SI: ${JSON.stringify(response)}`);
+    }
+
     const patterns = response.data;
 
     let datePattern;
@@ -541,6 +546,10 @@ export class StockInService {
         runningPattern = pattern;
       }
     });
+
+    if (!datePattern || !runningPattern) {
+      throw new Error(`Missing running code pattern config for SI: datePattern=${!!datePattern}, runningPattern=${!!runningPattern}`);
+    }
 
     const getDate = new Date(siDate);
     const datePatternValue = format(getDate, datePattern.pattern);
@@ -557,13 +566,16 @@ export class StockInService {
         issueDate: getDate,
         last_no: latestSINumber,
         user_id,
-        tenant_id,
+        bu_code: tenant_id,
       },
     );
     const generateCodeResponse = await firstValueFrom(generateCodeRes);
-    const siNo = generateCodeResponse.data.code;
 
-    return siNo;
+    if (!generateCodeResponse?.data?.code) {
+      throw new Error(`Failed to generate SI number: ${JSON.stringify(generateCodeResponse)}`);
+    }
+
+    return generateCodeResponse.data.code;
   }
 
   // ==================== Stock In Detail CRUD ====================

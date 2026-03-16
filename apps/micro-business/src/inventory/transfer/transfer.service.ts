@@ -54,22 +54,22 @@ export class TransferService {
    * @returns Next running number / เลขลำดับถัดไป
    */
   private async getNextRunningNumber(tenant_id: string, user_id: string): Promise<number> {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const res: Observable<any> = this.masterService.send(
-        { cmd: 'running-code.generate', service: 'running-code' },
-        {
-          tenant_id,
-          user_id,
-          running_code_type: 'transfer_header',
-        },
-      );
-      const response = await firstValueFrom(res);
-      return response?.data?.running_number || 1;
-    } catch (error) {
-      this.logger.error({ function: 'getNextRunningNumber', error }, TransferService.name);
-      return 1;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const res: Observable<any> = this.masterService.send(
+      { cmd: 'running-code.generate', service: 'running-code' },
+      {
+        tenant_id,
+        user_id,
+        running_code_type: 'transfer_header',
+      },
+    );
+    const response = await firstValueFrom(res);
+
+    if (!response?.data?.running_number) {
+      throw new Error(`Failed to get next running number for transfer: ${JSON.stringify(response)}`);
     }
+
+    return response.data.running_number;
   }
 
   /**

@@ -1497,6 +1497,11 @@ export class GoodReceivedNoteService {
       { type: 'GRN', user_id, bu_code: tenant_id },
     );
     const response = await firstValueFrom(res);
+
+    if (!response?.data || !Array.isArray(response.data)) {
+      throw new Error(`Failed to get running code pattern for GRN: ${JSON.stringify(response)}`);
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const patterns: any[] = response.data as any[];
 
@@ -1509,6 +1514,10 @@ export class GoodReceivedNoteService {
         runningPattern = pattern;
       }
     });
+
+    if (!datePattern || !runningPattern) {
+      throw new Error(`Missing running code pattern config for GRN: datePattern=${!!datePattern}, runningPattern=${!!runningPattern}`);
+    }
 
     const getDate = new Date(GRNDate);
     const datePatternValue = format(getDate, datePattern.pattern);
@@ -1533,9 +1542,12 @@ export class GoodReceivedNoteService {
       },
     );
     const generateCodeResponse = await firstValueFrom(generateCodeRes);
-    const grnNo = generateCodeResponse.data.code;
 
-    return grnNo;
+    if (!generateCodeResponse?.data?.code) {
+      throw new Error(`Failed to generate GRN number: ${JSON.stringify(generateCodeResponse)}`);
+    }
+
+    return generateCodeResponse.data.code;
   }
 
   /**

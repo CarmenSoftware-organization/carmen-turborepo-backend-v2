@@ -390,69 +390,71 @@ export class SpotCheckService {
       SpotCheckService.name,
     );
 
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
-      const res: Observable<any> = this.masterService.send(
-        {
-          cmd: 'running-code.get-pattern-by-type',
-          service: 'running-codes',
-        },
-        { type: 'SC', user_id, bu_code },
-      );
-      const response = await firstValueFrom(res);
-      const patterns = response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+    const res: Observable<any> = this.masterService.send(
+      {
+        cmd: 'running-code.get-pattern-by-type',
+        service: 'running-codes',
+      },
+      { type: 'SC', user_id, bu_code },
+    );
+    const response = await firstValueFrom(res);
 
-      if (!patterns || patterns.length === 0) {
-        return `SC-${format(new Date(scDate), 'yyyyMMdd')}-${Date.now().toString(36)}`;
-      }
-
-      let datePattern;
-      let runningPattern;
-      patterns.forEach((pattern: Record<string, unknown>) => {
-        if (pattern.type === 'date') datePattern = pattern;
-        else if (pattern.type === 'running') runningPattern = pattern;
-      });
-
-      if (!datePattern || !runningPattern) {
-        return `SC-${format(new Date(scDate), 'yyyyMMdd')}-${Date.now().toString(36)}`;
-      }
-
-      const getDate = new Date(scDate);
-      const datePatternValue = format(getDate, datePattern.pattern);
-
-      const prisma = await this.getPrisma(user_id, bu_code);
-      const latestSC = prisma
-        ? await prisma.tb_spot_check.findFirst({
-          where: { spot_check_no: { contains: datePatternValue } },
-          orderBy: { spot_check_no: 'desc' },
-        })
-        : null;
-
-      const latestNumber = latestSC?.spot_check_no
-        ? Number(
-          latestSC.spot_check_no.slice(-Number(runningPattern.pattern)),
-        )
-        : 0;
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
-      const generateCodeRes: Observable<any> = this.masterService.send(
-        { cmd: 'running-code.generate-code', service: 'running-codes' },
-        {
-          type: 'SC',
-          issueDate: getDate,
-          last_no: latestNumber,
-          user_id,
-          bu_code,
-        },
-      );
-      const generateCodeResponse = await firstValueFrom(generateCodeRes);
-      return generateCodeResponse.data.code;
-    } catch (error) {
-      this.logger.warn(
-        { function: 'generateSCNo', error: (error as Error).message },
-        SpotCheckService.name,
-      );
-      return `SC-${format(new Date(scDate), 'yyyyMMdd')}-${Date.now().toString(36)}`;
+    if (!response?.data || !Array.isArray(response.data)) {
+      throw new Error(`Failed to get running code pattern for SC: ${JSON.stringify(response)}`);
     }
+
+    const patterns = response.data;
+
+    if (patterns.length === 0) {
+      throw new Error('No running code pattern configured for SC');
+    }
+
+    let datePattern;
+    let runningPattern;
+    patterns.forEach((pattern: Record<string, unknown>) => {
+      if (pattern.type === 'date') datePattern = pattern;
+      else if (pattern.type === 'running') runningPattern = pattern;
+    });
+
+    if (!datePattern || !runningPattern) {
+      throw new Error(`Missing running code pattern config for SC: datePattern=${!!datePattern}, runningPattern=${!!runningPattern}`);
+    }
+
+    const getDate = new Date(scDate);
+    const datePatternValue = format(getDate, datePattern.pattern);
+
+    const prisma = await this.getPrisma(user_id, bu_code);
+    const latestSC = prisma
+      ? await prisma.tb_spot_check.findFirst({
+        where: { spot_check_no: { contains: datePatternValue } },
+        orderBy: { spot_check_no: 'desc' },
+      })
+      : null;
+
+    const latestNumber = latestSC?.spot_check_no
+      ? Number(
+        latestSC.spot_check_no.slice(-Number(runningPattern.pattern)),
+      )
+      : 0;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+    const generateCodeRes: Observable<any> = this.masterService.send(
+      { cmd: 'running-code.generate-code', service: 'running-codes' },
+      {
+        type: 'SC',
+        issueDate: getDate,
+        last_no: latestNumber,
+        user_id,
+        bu_code,
+      },
+    );
+    const generateCodeResponse = await firstValueFrom(generateCodeRes);
+
+    if (!generateCodeResponse?.data?.code) {
+      throw new Error(`Failed to generate SC number: ${JSON.stringify(generateCodeResponse)}`);
+    }
+
+    return generateCodeResponse.data.code;
   }
 }

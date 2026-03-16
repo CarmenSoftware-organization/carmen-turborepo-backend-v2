@@ -27,6 +27,9 @@ export const StockOutSchema = z.object({
   adjustment_type_id: z.string().uuid().optional().nullable(),
   adjustment_type_code: z.string().optional().nullable(),
   doc_status: z.enum(Object.values(enum_doc_status) as [string, ...string[]]).optional().default('draft'),
+  location_id: z.string().uuid().optional().nullable(),
+  location_code: z.string().optional().nullable(),
+  location_name: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
   doc_version: z.number().int().optional().default(0),
 })
@@ -43,15 +46,25 @@ export const StockOutDetailCreate = StockOutDetailBaseSchema.omit({
 
 export type IStockOutDetailCreate = z.infer<typeof StockOutDetailCreate>;
 
+// Detail object schema (reusable)
+const StockOutDetailObj = z.object({
+  add: z.array(StockOutDetailCreate).optional(),
+});
+
 // Stock Out Create Schema
 export const StockOutCreate = StockOutSchema.omit({
   id: true,
   so_no: true,
   doc_version: true,
 }).extend({
-  stock_out_detail: z.object({
-    add: z.array(StockOutDetailCreate).optional(),
-  }).optional(),
+  stock_out_detail: StockOutDetailObj.optional(),
+  details: StockOutDetailObj.optional(),
+}).transform((data) => {
+  const { details, ...rest } = data;
+  if (details && !rest.stock_out_detail) {
+    rest.stock_out_detail = details;
+  }
+  return rest;
 });
 
 export type IStockOutCreate = z.infer<typeof StockOutCreate>;
@@ -68,21 +81,33 @@ export const StockOutDetailUpdate = StockOutDetailBaseSchema.omit({
 
 export type IStockOutDetailUpdate = z.infer<typeof StockOutDetailUpdate>;
 
+// Stock Out Update Detail object schema
+const StockOutUpdateDetailObj = z.object({
+  add: z.array(StockOutDetailCreate).optional(),
+  update: z.array(StockOutDetailUpdate).optional(),
+  remove: z.array(z.object({ id: z.string().uuid() })).optional(),
+});
+
 // Stock Out Update Schema
 export const StockOutUpdate = z.object({
   description: z.string().optional().nullable(),
   adjustment_type_id: z.string().uuid().optional().nullable(),
   adjustment_type_code: z.string().optional().nullable(),
   doc_status: z.enum(Object.values(enum_doc_status) as [string, ...string[]]).optional(),
-  // workflow_id: z.string().uuid().optional().nullable(),
+  location_id: z.string().uuid().optional().nullable(),
+  location_code: z.string().optional().nullable(),
+  location_name: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
   info: z.any().optional(),
   dimension: z.any().optional(),
-  stock_out_detail: z.object({
-    add: z.array(StockOutDetailCreate).optional(),
-    update: z.array(StockOutDetailUpdate).optional(),
-    remove: z.array(z.object({ id: z.string().uuid() })).optional(),
-  }).optional(),
+  stock_out_detail: StockOutUpdateDetailObj.optional(),
+  details: StockOutUpdateDetailObj.optional(),
+}).transform((data) => {
+  const { details, ...rest } = data;
+  if (details && !rest.stock_out_detail) {
+    rest.stock_out_detail = details;
+  }
+  return rest;
 });
 
 export type IStockOutUpdate = z.infer<typeof StockOutUpdate> & { id: string };
