@@ -3409,7 +3409,7 @@ export class PurchaseOrderService {
   @TryCatch
   async findAllMyPending(
     user_id: string,
-    bu_code: string,
+    bu_code: string | string[],
     paginate: IPaginate,
   ): Promise<Result<any>> {
     this.logger.debug(
@@ -3432,46 +3432,104 @@ export class PurchaseOrderService {
     );
     const results = [];
 
-    let bu_codes: any = '';
+    let bu_codes: string[] = [];
 
-    if (bu_code == '' || bu_code == undefined || bu_code == null) {
+    const isEmpty = !bu_code || (Array.isArray(bu_code) && bu_code.length === 0);
+    if (isEmpty) {
       const bus = await this.prismaSystem.tb_user_tb_business_unit.findMany({
         where: { user_id, is_active: true },
         include: { tb_business_unit: true },
       });
       bu_codes = bus.map((b) => b.tb_business_unit.code);
     } else {
-      bu_codes = bu_code;
+      bu_codes = Array.isArray(bu_code) ? bu_code : [bu_code];
     }
 
     for (const code of bu_codes) {
-      const tenant = await this.tenantService.getdb_connection(user_id, code);
+      try {
+        const tenant = await this.tenantService.getdb_connection(user_id, code);
 
-      if (!tenant) {
-        return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
-      }
+        if (!tenant) {
+          this.logger.warn({
+            function: 'findAllMyPending',
+            message: `Tenant not found for bu_code: ${code}, skipping`,
+          });
+          continue;
+        }
 
-      const prisma = await this.prismaTenant(
-        tenant.tenant_id,
-        tenant.db_connection,
-      );
-
-      const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
-        where: { code: code },
-      });
-
-      if (!bu_detail) {
-        return Result.error(
-          `Business unit ${code} not found`,
-          ErrorCode.NOT_FOUND,
+        const prisma = await this.prismaTenant(
+          tenant.tenant_id,
+          tenant.db_connection,
         );
-      }
 
-      const standardQuery = q.findMany();
+        const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
+          where: { code: code },
+        });
 
-      const purchaseOrders = await prisma.tb_purchase_order
-        .findMany({
-          ...standardQuery,
+        if (!bu_detail) {
+          this.logger.warn({
+            function: 'findAllMyPending',
+            message: `Business unit ${code} not found, skipping`,
+          });
+          continue;
+        }
+
+        const standardQuery = q.findMany();
+
+        const purchaseOrders = await prisma.tb_purchase_order
+          .findMany({
+            ...standardQuery,
+            where: {
+              ...standardQuery.where,
+              OR: [
+                {
+                  user_action: {
+                    path: ['execute'],
+                    array_contains: [{ user_id: user_id }],
+                  },
+                },
+                {
+                  po_status: enum_purchase_order_doc_status.draft,
+                  buyer_id: user_id,
+                },
+              ],
+            },
+            include: {
+              tb_purchase_order_detail: true,
+            },
+          })
+          .then((res) => {
+            return res.map((po) => {
+              const purchase_order_detail = po['tb_purchase_order_detail'];
+              delete po['tb_purchase_order_detail'];
+
+              return {
+                id: po.id,
+                po_no: po.po_no,
+                order_date: po.order_date,
+                delivery_date: po.delivery_date,
+                description: po.description,
+                po_status: po.po_status,
+                vendor_name: po.vendor_name,
+                buyer_name: po.buyer_name,
+                workflow_name: po.workflow_name,
+                created_at: po.created_at,
+                purchase_order_detail: purchase_order_detail.map((d) => ({
+                  base_qty: Number(d.base_qty),
+                  receive_qty: Number(d.received_qty),
+                  price: Number(d.price),
+                  total_price: Number(d.total_price),
+                })),
+                total_amount: Number(po.total_amount),
+                workflow_current_stage: po.workflow_current_stage,
+                workflow_next_stage: po.workflow_next_stage,
+                workflow_previous_stage: po.workflow_previous_stage,
+                last_action: po.last_action,
+              };
+            });
+          });
+
+        const total = await prisma.tb_purchase_order.count({
           where: {
             ...standardQuery.where,
             OR: [
@@ -3487,75 +3545,32 @@ export class PurchaseOrderService {
               },
             ],
           },
-          include: {
-            tb_purchase_order_detail: true,
-          },
-        })
-        .then((res) => {
-          return res.map((po) => {
-            const purchase_order_detail = po['tb_purchase_order_detail'];
-            delete po['tb_purchase_order_detail'];
-
-            return {
-              id: po.id,
-              po_no: po.po_no,
-              order_date: po.order_date,
-              delivery_date: po.delivery_date,
-              description: po.description,
-              po_status: po.po_status,
-              vendor_name: po.vendor_name,
-              buyer_name: po.buyer_name,
-              workflow_name: po.workflow_name,
-              created_at: po.created_at,
-              purchase_order_detail: purchase_order_detail.map((d) => ({
-                base_qty: Number(d.base_qty),
-                receive_qty: Number(d.received_qty),
-                price: Number(d.price),
-                total_price: Number(d.total_price),
-              })),
-              total_amount: Number(po.total_amount),
-              workflow_current_stage: po.workflow_current_stage,
-              workflow_next_stage: po.workflow_next_stage,
-              workflow_previous_stage: po.workflow_previous_stage,
-              last_action: po.last_action,
-            };
-          });
         });
 
-      const total = await prisma.tb_purchase_order.count({
-        where: {
-          ...standardQuery.where,
-          OR: [
-            {
-              user_action: {
-                path: ['execute'],
-                array_contains: [{ user_id: user_id }],
-              },
-            },
-            {
-              po_status: enum_purchase_order_doc_status.draft,
-              buyer_id: user_id,
-            },
-          ],
-        },
-      });
+        const serializedPurchaseOrders = purchaseOrders.map((item) =>
+          PurchaseOrderListItemResponseSchema.parse(item),
+        );
 
-      const serializedPurchaseOrders = purchaseOrders.map((item) =>
-        PurchaseOrderListItemResponseSchema.parse(item),
-      );
-
-      results.push({
-        bu_code: code,
-        bu_name: bu_detail.name,
-        bu_alias_name: bu_detail.alias_name,
-        paginate: {
-          total: total,
-          page: Number(paginate.page),
-          perpage: Number(paginate.perpage),
-          pages: total == 0 ? 1 : Math.ceil(total / Number(paginate.perpage)),
-        },
-        data: serializedPurchaseOrders,
-      });
+        results.push({
+          bu_code: code,
+          bu_name: bu_detail.name,
+          bu_alias_name: bu_detail.alias_name,
+          paginate: {
+            total: total,
+            page: Number(paginate.page),
+            perpage: Number(paginate.perpage),
+            pages: total == 0 ? 1 : Math.ceil(total / Number(paginate.perpage)),
+          },
+          data: serializedPurchaseOrders,
+        });
+      } catch (error) {
+        this.logger.warn({
+          function: 'findAllMyPending',
+          message: `Error processing bu_code: ${code}, skipping`,
+          error: error instanceof Error ? error.message : error,
+        });
+        continue;
+      }
     }
 
     return Result.ok(results);
@@ -3568,7 +3583,7 @@ export class PurchaseOrderService {
    * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
    * @returns Count of pending purchase orders / จำนวนใบสั่งซื้อที่รออนุมัติ
    */
-  async findAllMyPendingCount(user_id: string, bu_code: string): Promise<any> {
+  async findAllMyPendingCount(user_id: string, bu_code: string | string[]): Promise<any> {
     this.logger.debug(
       { function: 'findAllMyPendingCount', user_id, bu_code },
       PurchaseOrderService.name,
@@ -3599,71 +3614,79 @@ export class PurchaseOrderService {
     );
     const results = [];
 
-    let bu_codes: any = '';
+    let bu_codes: string[] = [];
 
-    if (bu_code == '' || bu_code == undefined || bu_code == null) {
+    const isEmpty = !bu_code || (Array.isArray(bu_code) && bu_code.length === 0);
+    if (isEmpty) {
       const bus = await this.prismaSystem.tb_user_tb_business_unit.findMany({
         where: { user_id, is_active: true },
         include: { tb_business_unit: true },
       });
       bu_codes = bus.map((b) => b.tb_business_unit.code);
     } else {
-      bu_codes = bu_code;
+      bu_codes = Array.isArray(bu_code) ? bu_code : [bu_code];
     }
 
     for (const code of bu_codes) {
-      const tenant = await this.tenantService.getdb_connection(user_id, code);
+      try {
+        const tenant = await this.tenantService.getdb_connection(user_id, code);
 
-      if (!tenant) {
-        return {
-          response: {
-            status: HttpStatus.NO_CONTENT,
-            message: 'Tenant not found',
-          },
-        };
-      }
+        if (!tenant) {
+          this.logger.warn({
+            function: 'findAllMyPendingCount',
+            message: `Tenant not found for bu_code: ${code}, skipping`,
+          });
+          continue;
+        }
 
-      const prisma = await this.prismaTenant(
-        tenant.tenant_id,
-        tenant.db_connection,
-      );
+        const prisma = await this.prismaTenant(
+          tenant.tenant_id,
+          tenant.db_connection,
+        );
 
-      const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
-        where: { code: code },
-      });
+        const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
+          where: { code: code },
+        });
 
-      if (!bu_detail) {
-        return {
-          response: {
-            status: HttpStatus.NO_CONTENT,
-            message: `Business unit ${code} not found`,
-          },
-        };
-      }
+        if (!bu_detail) {
+          this.logger.warn({
+            function: 'findAllMyPendingCount',
+            message: `Business unit ${code} not found, skipping`,
+          });
+          continue;
+        }
 
-      const standardQuery = q.findMany();
+        const standardQuery = q.findMany();
 
-      const total = await prisma.tb_purchase_order.count({
-        where: {
-          ...standardQuery.where,
-          OR: [
-            {
-              user_action: {
-                path: ['execute'],
-                array_contains: [{ user_id: user_id }],
+        const total = await prisma.tb_purchase_order.count({
+          where: {
+            ...standardQuery.where,
+            OR: [
+              {
+                user_action: {
+                  path: ['execute'],
+                  array_contains: [{ user_id: user_id }],
+                },
               },
-            },
-            {
-              po_status: enum_purchase_order_doc_status.draft,
-              buyer_id: user_id,
-            },
-          ],
-        },
-      });
+              {
+                po_status: enum_purchase_order_doc_status.draft,
+                buyer_id: user_id,
+              },
+            ],
+          },
+        });
 
-      results.push({
-        total: total,
-      });
+        results.push({
+          total: total,
+        });
+      } catch (error) {
+        this.logger.warn({
+          function: 'findAllMyPendingCount',
+          message: `Error processing bu_code: ${code}, skipping`,
+          error: error instanceof Error ? error.message : error,
+        });
+        continue;
+      }
     }
 
     const total = results.reduce((acc, curr) => acc + curr.total, 0);

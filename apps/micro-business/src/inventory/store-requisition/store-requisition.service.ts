@@ -1275,32 +1275,87 @@ export class StoreRequisitionService {
     let grandTotal = 0;
 
     for (const code of bu_codes) {
-      const tenant = await this.tenantService.getdb_connection(user_id, code);
+      try {
+        const tenant = await this.tenantService.getdb_connection(user_id, code);
 
-      if (!tenant) {
-        continue;
-      }
+        if (!tenant) {
+          continue;
+        }
 
-      const prisma = await this.prismaTenant(
-        tenant.tenant_id,
-        tenant.db_connection,
-      );
+        const prisma = await this.prismaTenant(
+          tenant.tenant_id,
+          tenant.db_connection,
+        );
 
-      const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
-        where: {
-          code: code,
-        },
-      });
+        const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
+          where: {
+            code: code,
+          },
+        });
 
-      if (!bu_detail) {
-        continue;
-      }
+        if (!bu_detail) {
+          continue;
+        }
 
-      const standardQuery = q.findMany();
+        const standardQuery = q.findMany();
 
-      const storeRequisitions = await prisma.tb_store_requisition
-        .findMany({
-          ...standardQuery,
+        const storeRequisitions = await prisma.tb_store_requisition
+          .findMany({
+            ...standardQuery,
+            where: {
+              ...standardQuery.where,
+              OR: [
+                {
+                  user_action: {
+                    path: ['execute'],
+                    array_contains: user_id,
+                  },
+                },
+                {
+                  doc_status: enum_doc_status.draft,
+                  requestor_id: user_id,
+                },
+              ],
+            },
+            include: {
+              tb_store_requisition_detail: true,
+            },
+          })
+          .then((res) => {
+            const mapSr = res.map((sr) => {
+              const store_requisition_detail = sr['tb_store_requisition_detail'];
+              delete sr['tb_store_requisition_detail'];
+
+              const returnSR = {
+                id: sr.id,
+                sr_no: sr.sr_no,
+                sr_date: sr.sr_date,
+                expected_date: sr.expected_date,
+                description: sr.description,
+                doc_status: sr.doc_status,
+                requestor_name: sr.requestor_name,
+                department_name: sr.department_name,
+                from_location_name: sr.from_location_name,
+                to_location_name: sr.to_location_name,
+                workflow_name: sr.workflow_name,
+                created_at: sr.created_at,
+                store_requisition_detail: store_requisition_detail.map((d) => ({
+                  requested_qty: Number(d.requested_qty),
+                  approved_qty: Number(d.approved_qty),
+                })),
+                workflow_current_stage: sr.workflow_current_stage,
+                workflow_next_stage: sr.workflow_next_stage,
+                workflow_previous_stage: sr.workflow_previous_stage,
+                last_action: sr.last_action,
+              };
+
+              return returnSR;
+            });
+
+            return mapSr;
+          });
+
+        const total = await prisma.tb_store_requisition.count({
           where: {
             ...standardQuery.where,
             OR: [
@@ -1316,74 +1371,28 @@ export class StoreRequisitionService {
               },
             ],
           },
-          include: {
-            tb_store_requisition_detail: true,
-          },
-        })
-        .then((res) => {
-          const mapSr = res.map((sr) => {
-            const store_requisition_detail = sr['tb_store_requisition_detail'];
-            delete sr['tb_store_requisition_detail'];
-
-            const returnSR = {
-              id: sr.id,
-              sr_no: sr.sr_no,
-              sr_date: sr.sr_date,
-              expected_date: sr.expected_date,
-              description: sr.description,
-              doc_status: sr.doc_status,
-              requestor_name: sr.requestor_name,
-              department_name: sr.department_name,
-              from_location_name: sr.from_location_name,
-              to_location_name: sr.to_location_name,
-              workflow_name: sr.workflow_name,
-              created_at: sr.created_at,
-              store_requisition_detail: store_requisition_detail.map((d) => ({
-                requested_qty: Number(d.requested_qty),
-                approved_qty: Number(d.approved_qty),
-              })),
-              workflow_current_stage: sr.workflow_current_stage,
-              workflow_next_stage: sr.workflow_next_stage,
-              workflow_previous_stage: sr.workflow_previous_stage,
-              last_action: sr.last_action,
-            };
-
-            return returnSR;
-          });
-
-          return mapSr;
         });
 
-      const total = await prisma.tb_store_requisition.count({
-        where: {
-          ...standardQuery.where,
-          OR: [
-            {
-              user_action: {
-                path: ['execute'],
-                array_contains: user_id,
-              },
-            },
-            {
-              doc_status: enum_doc_status.draft,
-              requestor_id: user_id,
-            },
-          ],
-        },
-      });
+        const serializedStoreRequisitions = storeRequisitions.map((item) =>
+          StoreRequisitionListItemResponseSchema.parse(item),
+        );
 
-      const serializedStoreRequisitions = storeRequisitions.map((item) =>
-        StoreRequisitionListItemResponseSchema.parse(item),
-      );
+        allResults.push({
+          bu_code: code,
+          bu_name: bu_detail.name,
+          data: serializedStoreRequisitions,
+          total: total,
+        });
 
-      allResults.push({
-        bu_code: code,
-        bu_name: bu_detail.name,
-        data: serializedStoreRequisitions,
-        total: total,
-      });
-
-      grandTotal += total;
+        grandTotal += total;
+      } catch (error) {
+        this.logger.warn({
+          function: 'findAllMyPending',
+          message: `Error processing bu_code: ${code}, skipping`,
+          error: error instanceof Error ? error.message : error,
+        });
+        continue;
+      }
     }
 
     return Result.ok({
@@ -1483,7 +1492,7 @@ export class StoreRequisitionService {
    * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
    * @returns Pending count / จำนวนที่รอดำเนินการ
    */
-  async findAllMyPendingCount(user_id: string, bu_code: string): Promise<any> {
+  async findAllMyPendingCount(user_id: string, bu_code: string | string[]): Promise<any> {
     this.logger.debug(
       { function: 'findAll', user_id, bu_code },
       StoreRequisitionService.name,
@@ -1514,9 +1523,10 @@ export class StoreRequisitionService {
     );
     const results = [];
 
-    let bu_codes: string = '';
+    let bu_codes: string[] = [];
 
-    if (bu_code == '' || bu_code == undefined || bu_code == null) {
+    const isEmpty = !bu_code || (Array.isArray(bu_code) && bu_code.length === 0);
+    if (isEmpty) {
       const bus = await this.getBus(user_id, true, 'latest');
       bu_codes = bus.data.map((bus) => bus.tb_business_unit.code);
       this.logger.debug({
@@ -1527,64 +1537,71 @@ export class StoreRequisitionService {
         bus,
       });
     } else {
-      bu_codes = bu_code;
+      bu_codes = Array.isArray(bu_code) ? bu_code : [bu_code];
     }
 
     for (const code of bu_codes) {
-      const tenant = await this.tenantService.getdb_connection(user_id, code);
+      try {
+        const tenant = await this.tenantService.getdb_connection(user_id, code);
 
-      if (!tenant) {
-        return {
-          response: {
-            status: HttpStatus.NO_CONTENT,
-            message: 'Tenant not found',
+        if (!tenant) {
+          this.logger.warn({
+            function: 'findAllMyPendingCount',
+            message: `Tenant not found for bu_code: ${code}, skipping`,
+          });
+          continue;
+        }
+
+        const prisma = await this.prismaTenant(
+          tenant.tenant_id,
+          tenant.db_connection,
+        );
+
+        const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
+          where: {
+            code: code,
           },
-        };
-      }
+        });
 
-      const prisma = await this.prismaTenant(
-        tenant.tenant_id,
-        tenant.db_connection,
-      );
+        if (!bu_detail) {
+          this.logger.warn({
+            function: 'findAllMyPendingCount',
+            message: `Business unit ${code} not found, skipping`,
+          });
+          continue;
+        }
 
-      const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
-        where: {
-          code: code,
-        },
-      });
+        const standardQuery = q.findMany();
 
-      if (!bu_detail) {
-        return {
-          response: {
-            status: HttpStatus.NO_CONTENT,
-            message: `Business unit ${code} not found`,
-          },
-        };
-      }
-
-      const standardQuery = q.findMany();
-
-      const total = await prisma.tb_store_requisition.count({
-        where: {
-          ...standardQuery.where,
-          OR: [
-            {
-              user_action: {
-                path: ['execute'],
-                array_contains: [{ user_id: user_id }],
+        const total = await prisma.tb_store_requisition.count({
+          where: {
+            ...standardQuery.where,
+            OR: [
+              {
+                user_action: {
+                  path: ['execute'],
+                  array_contains: [{ user_id: user_id }],
+                },
               },
-            },
-            {
-              doc_status: enum_doc_status.draft,
-              requestor_id: user_id,
-            },
-          ],
-        },
-      });
+              {
+                doc_status: enum_doc_status.draft,
+                requestor_id: user_id,
+              },
+            ],
+          },
+        });
 
-      results.push({
-        total: total,
-      });
+        results.push({
+          total: total,
+        });
+      } catch (error) {
+        this.logger.warn({
+          function: 'findAllMyPendingCount',
+          message: `Error processing bu_code: ${code}, skipping`,
+          error: error instanceof Error ? error.message : error,
+        });
+        continue;
+      }
     }
 
     const total = results.reduce((acc, curr) => acc + curr.total, 0);
