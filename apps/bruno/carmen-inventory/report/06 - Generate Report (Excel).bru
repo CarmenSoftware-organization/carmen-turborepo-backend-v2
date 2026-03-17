@@ -1,0 +1,28 @@
+meta {
+  name: 06 - Generate Report (Excel)
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/report/generate
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "report_type": "inventory_summary",
+    "format": "excel",
+    "filters": {},
+    "options": {}
+  }
+}

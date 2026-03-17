@@ -1,0 +1,28 @@
+meta {
+  name: 07 - Generate Report (CSV)
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/report/generate
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "report_type": "inventory_summary",
+    "format": "csv",
+    "filters": {},
+    "options": {}
+  }
+}

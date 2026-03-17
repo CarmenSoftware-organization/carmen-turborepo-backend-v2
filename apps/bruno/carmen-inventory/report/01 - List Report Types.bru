@@ -1,0 +1,23 @@
+meta {
+  name: 01 - List Report Types
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/report/types
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~category:
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
