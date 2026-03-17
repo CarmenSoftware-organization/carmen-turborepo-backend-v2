@@ -48,6 +48,22 @@ export class BusinessUnitService {
       return Result.error('Cluster not found', ErrorCode.NOT_FOUND);
     }
 
+    if (cluster.max_license_bu != null) {
+      const currentBuCount = await this.prismaSystem.tb_business_unit.count({
+        where: {
+          cluster_id: data.cluster_id,
+          deleted_at: null,
+        },
+      });
+
+      if (currentBuCount >= cluster.max_license_bu) {
+        return Result.error(
+          `Business unit limit reached. This cluster allows a maximum of ${cluster.max_license_bu} business units.`,
+          ErrorCode.INVALID_ARGUMENT,
+        );
+      }
+    }
+
     const findBusinessUnit = await this.prismaSystem.tb_business_unit.findFirst(
       {
         where: {
