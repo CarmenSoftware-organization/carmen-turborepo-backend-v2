@@ -2,6 +2,7 @@ import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
 import { Result, MicroserviceResponse } from '@/common';
+import { ICreateCreditNoteReason } from 'src/common/dto/credit-note-reason';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 @Injectable()
@@ -49,5 +50,45 @@ export class CreditNoteReasonService {
     }
 
     return Result.ok({ data: response.data, paginate: response.paginate });
+  }
+
+  async create(
+    createDto: ICreateCreditNoteReason,
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      {
+        function: 'create',
+        createDto,
+        version,
+      },
+      CreditNoteReasonService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
+      {
+        cmd: 'credit-note-reason.create',
+        service: 'credit-note-reason',
+      },
+      {
+        data: createDto,
+        user_id: user_id,
+        bu_code: bu_code,
+        version: version,
+      },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.CREATED) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
   }
 }

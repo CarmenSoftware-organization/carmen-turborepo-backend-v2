@@ -6,14 +6,22 @@ import {
   Query,
   Req,
   Res,
+  Body,
   UseGuards,
   Param,
+  Post,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CreditNoteReasonService } from './credit-note-reason.service';
 import {
   BaseHttpController,
+  ZodSerializerInterceptor,
+  Serialize,
 } from '@/common';
+import {
+  CreditNoteReasonCreateDto,
+  CreditNoteReasonMutationResponseSchema,
+} from 'src/common/dto/credit-note-reason';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -52,6 +60,7 @@ export class CreditNoteReasonController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('creditNoteReason.findAll'))
+  @ApiOperation({ summary: 'Get all credit note reasons' })
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @ApiOperation({
@@ -86,5 +95,37 @@ export class CreditNoteReasonController extends BaseHttpController {
       version,
     );
     this.respond(res, result);
+  }
+
+  @Post()
+  @UseGuards(new AppIdGuard('creditNoteReason.create'))
+  @ApiOperation({ summary: 'Create a credit note reason' })
+  @Serialize(CreditNoteReasonMutationResponseSchema)
+  @HttpCode(HttpStatus.CREATED)
+  @ApiVersionMinRequest()
+  async create(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('bu_code') bu_code: string,
+    @Body() createDto: CreditNoteReasonCreateDto,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      {
+        function: 'create',
+        createDto,
+        version,
+      },
+      CreditNoteReasonController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.creditNoteReasonService.create(
+      createDto,
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result, HttpStatus.CREATED);
   }
 }

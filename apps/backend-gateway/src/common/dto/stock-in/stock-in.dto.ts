@@ -18,8 +18,8 @@ const StockInDetailBaseSchema = z.object({
   product_name: z.string().optional().nullable(),
   product_local_name: z.string().optional().nullable(),
 })
-.merge(EmbeddedProductSchema)
-.merge(InfoSchema);
+  .merge(EmbeddedProductSchema)
+  .merge(InfoSchema);
 
 // Stock In Schema
 export const StockInSchema = z.object({
@@ -35,8 +35,8 @@ export const StockInSchema = z.object({
   note: z.string().optional().nullable(),
   doc_version: z.number().int().optional().default(0),
 })
-.merge(EmbeddedWorkflowSchema)
-.merge(InfoSchema);
+  .merge(EmbeddedWorkflowSchema)
+  .merge(InfoSchema);
 
 // Stock In Detail Create Schema
 export const StockInDetailCreate = StockInDetailBaseSchema.omit({
@@ -71,7 +71,7 @@ export const StockInCreate = StockInSchema.omit({
 
 export type IStockInCreate = z.infer<typeof StockInCreate>;
 
-export class StockInCreateDto extends createZodDto(StockInCreate) {}
+export class StockInCreateDto extends createZodDto(StockInCreate) { }
 
 // Stock In Detail Update Schema
 export const StockInDetailUpdate = StockInDetailBaseSchema.omit({
@@ -114,8 +114,8 @@ export const StockInUpdate = z.object({
 
 export type IStockInUpdate = z.infer<typeof StockInUpdate> & { id: string };
 
-export class StockInUpdateDto extends createZodDto(StockInUpdate) {}
+export class StockInUpdateDto extends createZodDto(StockInUpdate) { }
 
 // Stock In Detail DTOs (for standalone detail CRUD endpoints)
-export class StockInDetailCreateDto extends createZodDto(StockInDetailCreate) {}
-export class StockInDetailUpdateDto extends createZodDto(StockInDetailUpdate) {}
+export class StockInDetailCreateDto extends createZodDto(StockInDetailCreate) { }
+export class StockInDetailUpdateDto extends createZodDto(StockInDetailUpdate) { }

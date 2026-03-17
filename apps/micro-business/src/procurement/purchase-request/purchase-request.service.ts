@@ -3,6 +3,7 @@ import {
   HttpException,
   Inject,
   Injectable,
+  Scope,
   UnauthorizedException,
 } from '@nestjs/common';
 import { isUUID } from 'class-validator';
@@ -59,7 +60,7 @@ import { boolean } from 'zod';
 const ERROR_MISSING_BU_CODE = 'Missing bu_code';
 const ERROR_MISSING_USER_ID = 'Missing user_id';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class PurchaseRequestService {
   get bu_code(): string {
     if (this._bu_code) {
@@ -1079,11 +1080,11 @@ export class PurchaseRequestService {
               sequence_no: 'desc',
             },
           });
-        const sequenceNo = lastSequenceNo?.sequence_no || 1;
+        let sequenceNo = lastSequenceNo?.sequence_no || 0;
         const createPurchaseRequestDetailObject =
           updatePRDetail.purchase_request_detail.add.map((item) => ({
             ...item,
-            sequence_no: sequenceNo + 1,
+            sequence_no: ++sequenceNo,
             purchase_request_id: id,
             created_by_id: this.userId,
           }));
@@ -1209,10 +1210,10 @@ export class PurchaseRequestService {
       );
     }
     const duplicatedPRs = [];
-    let duplicatedPRDetails = [];
 
     const tx = await prisma.$transaction(async (prismatx) => {
       for (const pr of basePrData) {
+        const duplicatedPRDetails = [];
         const newPr = {
           pr_no: 'draft-' + format(new Date(), 'yyyyMMddHHmmss'),
           pr_date: new Date().toISOString(),
@@ -1264,8 +1265,6 @@ export class PurchaseRequestService {
           data: duplicatedPRDetails,
         });
       }
-
-      duplicatedPRDetails = [];
 
       return { ids: duplicatedPRs };
     });
@@ -1571,7 +1570,7 @@ export class PurchaseRequestService {
           }),
         );
 
-        await this.prismaService.tb_purchase_request_detail.update({
+        await txp.tb_purchase_request_detail.update({
           where: {
             id: detail.id,
           },

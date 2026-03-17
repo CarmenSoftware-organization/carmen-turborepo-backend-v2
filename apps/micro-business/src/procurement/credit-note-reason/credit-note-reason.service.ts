@@ -136,6 +136,33 @@ export class CreditNoteReasonService {
    * @returns Credit note reason data / ข้อมูลเหตุผลใบลดหนี้
    */
   @TryCatch
+  async create(data: { name: string; description?: string; is_active?: boolean | null; note?: string; info?: unknown; dimension?: unknown }): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
+      CreditNoteReasonService.name,
+    );
+
+    const foundCreditNoteReason = await this.prismaService.tb_credit_note_reason.findFirst({
+      where: {
+        name: data.name,
+      },
+    });
+
+    if (foundCreditNoteReason) {
+      return Result.error('Credit note reason already exists', ErrorCode.ALREADY_EXISTS);
+    }
+
+    const creditNoteReason = await this.prismaService.tb_credit_note_reason.create({
+      data: {
+        ...data,
+        created_by_id: this.userId,
+      },
+    });
+
+    return Result.ok({ id: creditNoteReason.id });
+  }
+
+  @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code }, CreditNoteReasonService.name);
 

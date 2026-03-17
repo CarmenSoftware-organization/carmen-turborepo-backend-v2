@@ -214,6 +214,90 @@ export function calculateConsumptionCostPerUnit(consumptions: IConsumption[], to
   return Math.round((totalCost / totalQty) * 100) / 100;
 }
 
+// ─── Credit Note Qty (Average) Formula ──────────────────────────────────────
+
+/**
+ * Calculate new weighted average cost after a credit note qty adjustment.
+ *
+ * Formula:
+ *   new_avg = (totalInCost - cnTotalCost) / (totalInQty - cnQty)
+ *
+ * Where:
+ *   totalInCost = sum of (in_qty × cost_per_unit) from all receiving layers
+ *   totalInQty  = sum of in_qty from all receiving layers
+ *   cnTotalCost = cnQty × cnCostPerUnit
+ *
+ * @param totalInQty    - Sum of in_qty from all receiving layers (increase events)
+ * @param totalInCost   - Sum of (in_qty × cost_per_unit) from all receiving layers
+ * @param cnQty         - Credit note quantity being returned
+ * @param cnCostPerUnit - Credit note cost per unit
+ * @returns New weighted average cost per unit, rounded to 2 decimals
+ */
+export function calculateAverageCostAfterCreditNoteQty(
+  totalInQty: number,
+  totalInCost: number,
+  cnQty: number,
+  cnCostPerUnit: number,
+): number {
+  const newQty = totalInQty - cnQty;
+  const newCost = totalInCost - (cnQty * cnCostPerUnit);
+
+  if (newQty <= 0) return 0;
+  return Math.round((newCost / newQty) * 100) / 100;
+}
+
+// ─── Credit Note Amount Formulas ────────────────────────────────────────────
+
+/** Result of a credit note amount adjustment calculation */
+export interface ICreditNoteAmountResult {
+  /** New total cost after adjustment */
+  newTotalCost: number;
+  /** New cost per unit after adjustment */
+  newCostPerUnit: number;
+  /** Excess amount that could not be absorbed (Case 2 only) */
+  diffAmount: number;
+}
+
+/**
+ * Calculate the adjusted cost after applying a credit note amount (discount).
+ *
+ * Case 1 — CN amount <= remaining cost:
+ *   newTotalCost = remaining_cost − cn_amount
+ *   newCostPerUnit = newTotalCost / remaining_qty
+ *   diffAmount = 0
+ *
+ * Case 2 — CN amount > remaining cost:
+ *   newTotalCost = remaining_cost (unchanged, can't go below zero)
+ *   newCostPerUnit = original cost per unit (unchanged)
+ *   diffAmount = cn_amount − remaining_cost (excess recorded)
+ *
+ * @param remainingQty  - Available qty in the lot after prior consumption
+ * @param remainingCost - Available cost in the lot (remainingQty × costPerUnit)
+ * @param cnAmount      - Credit note amount (monetary discount to apply)
+ * @returns { newTotalCost, newCostPerUnit, diffAmount }
+ */
+export function calculateCreditNoteAmountAdjustment(
+  remainingQty: number,
+  remainingCost: number,
+  cnAmount: number,
+): ICreditNoteAmountResult {
+  if (remainingQty <= 0) {
+    return { newTotalCost: 0, newCostPerUnit: 0, diffAmount: cnAmount };
+  }
+
+  if (cnAmount <= remainingCost) {
+    // Case 1: fully absorbable — reduce cost
+    const newTotalCost = Math.round((remainingCost - cnAmount) * 100) / 100;
+    const newCostPerUnit = Math.round((newTotalCost / remainingQty) * 100) / 100;
+    return { newTotalCost, newCostPerUnit, diffAmount: 0 };
+  }
+
+  // Case 2: exceeds remaining cost — keep same cost, record excess
+  const newCostPerUnit = Math.round((remainingCost / remainingQty) * 100) / 100;
+  const diffAmount = Math.round((cnAmount - remainingCost) * 100) / 100;
+  return { newTotalCost: remainingCost, newCostPerUnit, diffAmount };
+}
+
 /**
  * Sum receiving totals from raw cost layers.
  *

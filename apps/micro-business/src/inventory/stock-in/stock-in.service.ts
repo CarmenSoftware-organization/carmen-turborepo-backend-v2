@@ -30,7 +30,7 @@ export class StockInService {
     @Inject('MASTER_SERVICE')
     private readonly masterService: ClientProxy,
     private readonly tenantService: TenantService,
-  ) {}
+  ) { }
 
   /**
    * Find a stock in by ID

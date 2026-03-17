@@ -171,6 +171,61 @@ export class InventoryTransactionController extends BaseMicroserviceController {
   }
 
   @MessagePattern({
+    cmd: 'inventory-transaction.test-eop-in',
+    service: 'inventory-transaction',
+  })
+  async testEopIn(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'testEopIn', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const data = payload.data || {};
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.createEopInTransaction(
+        {
+          bu_code: tenant_id,
+          product_id: data.product_id,
+          location_id: data.location_id,
+          location_code: data.location_code || null,
+          qty: Number(data.qty),
+          cost_per_unit: Number(data.cost_per_unit),
+          user_id,
+        },
+        user_id,
+        tenant_id,
+      )
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'inventory-transaction.test-eop-out',
+    service: 'inventory-transaction',
+  })
+  async testEopOut(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'testEopOut', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const data = payload.data || {};
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.createEopOutTransaction(
+        {
+          bu_code: tenant_id,
+          product_id: data.product_id,
+          location_id: data.location_id,
+          location_code: data.location_code || null,
+          qty: Number(data.qty),
+          user_id,
+        },
+        user_id,
+        tenant_id,
+      )
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
     cmd: 'inventory-transaction.test-transfer',
     service: 'inventory-transaction',
   })
@@ -190,6 +245,56 @@ export class InventoryTransactionController extends BaseMicroserviceController {
           to_location_id: data.to_location_id,
           to_location_code: data.to_location_code || null,
           qty: Number(data.qty),
+          user_id,
+        },
+        user_id,
+        tenant_id,
+      )
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'inventory-transaction.test-credit-note-qty',
+    service: 'inventory-transaction',
+  })
+  async testCreditNoteQty(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'testCreditNoteQty', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const data = payload.data || {};
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.createCreditNoteQtyTransaction(
+        {
+          bu_code: tenant_id,
+          grn_id: data.grn_id,
+          detail_items: data.detail_items || [],
+          user_id,
+        },
+        user_id,
+        tenant_id,
+      )
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'inventory-transaction.test-credit-note-amount',
+    service: 'inventory-transaction',
+  })
+  async testCreditNoteAmount(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'testCreditNoteAmount', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const data = payload.data || {};
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.createCreditNoteAmountTransaction(
+        {
+          bu_code: tenant_id,
+          grn_id: data.grn_id,
+          detail_items: data.detail_items || [],
           user_id,
         },
         user_id,
@@ -321,7 +426,7 @@ export class InventoryTransactionController extends BaseMicroserviceController {
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
       this.inventoryTransactionService.clearProductTransactions(
-        { product_id: data.product_id },
+        { product_id: data.product_id, inventory_transaction_id: data.inventory_transaction_id },
         user_id,
         tenant_id,
       )
