@@ -22,6 +22,7 @@ const ClusterBusinessUnitSchema = z.object({
   id: z.string(),
   name: z.string().nullable().optional(),
   code: z.string().nullable().optional(),
+  max_license_users: z.number().nullable().optional(),
 });
 
 export const ClusterDetailResponseSchema = z.object({

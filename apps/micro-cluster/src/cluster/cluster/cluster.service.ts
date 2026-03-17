@@ -263,6 +263,7 @@ export class ClusterService {
             id: true,
             name: true,
             code: true,
+            max_license_users: true,
           },
         },
         tb_cluster_user: {
@@ -320,7 +321,15 @@ export class ClusterService {
 
     const serializedCluster = ClusterDetailResponseSchema.parse(clusterWithUsers);
 
-    return Result.ok(serializedCluster);
+    const total_count_license_users = (cluster.tb_business_unit || []).reduce(
+      (sum, bu) => sum + (bu.max_license_users ?? 0),
+      0,
+    );
+
+    return Result.ok({
+      ...serializedCluster,
+      total_count_license_users,
+    });
   }
 
   @TryCatch
