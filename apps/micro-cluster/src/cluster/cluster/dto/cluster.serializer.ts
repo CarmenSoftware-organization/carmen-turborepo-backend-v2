@@ -58,6 +58,7 @@ export const ClusterListItemResponseSchema = z.object({
   updated_at: z.coerce.date().nullable().optional(),
   updated_by_id: z.string().nullable().optional(),
   tb_user_tb_cluster_updated_by_idTotb_user: AuditUserSchema,
+  deleted_at: z.coerce.date().nullable().optional(),
   _count: z.object({
     tb_business_unit: z.number().nullable().optional(),
     tb_cluster_user: z.number().nullable().optional(),

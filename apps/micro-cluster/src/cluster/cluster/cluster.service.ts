@@ -195,6 +195,8 @@ export class ClusterService {
         tb_user_tb_cluster_updated_by_idTotb_user: {
           select: { username: true, email: true },
         },
+        deleted_at: true,
+        deleted_by_id: true,
         _count: {
           select: {
             tb_business_unit: true,
@@ -222,11 +224,26 @@ export class ClusterService {
       buAggregations.map((agg) => [agg.cluster_id, agg._sum.max_license_users ?? 0]),
     );
 
+    // Resolve deleted_by usernames
+    const deletedByIds = clusters
+      .map((c) => c.deleted_by_id)
+      .filter((id): id is string => !!id);
+    const deletedByUsers = deletedByIds.length > 0
+      ? await this.prismaSystem.tb_user.findMany({
+          where: { id: { in: [...new Set(deletedByIds)] } },
+          select: { id: true, username: true, email: true },
+        })
+      : [];
+    const deletedByMap = new Map(
+      deletedByUsers.map((u) => [u.id, u.username ?? u.email ?? null]),
+    );
+
     const serializedClusters = clusters.map((item) => {
       const parsed = ClusterListItemResponseSchema.parse(item);
       return {
         ...parsed,
         total_max_license_users: buAggMap.get(item.id) ?? 0,
+        deleted_by_name: item.deleted_by_id ? deletedByMap.get(item.deleted_by_id) ?? null : null,
       };
     });
 
