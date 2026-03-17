@@ -43,6 +43,7 @@ import { InventoryTransactionModule } from './inventory-transaction/inventory-tr
 import { PeriodModule } from './period/period.module';
 import { PhysicalCountPeriodModule } from './physical-count-period/physical-count-period.module';
 import { VendorProductModule } from './vendor-product/vendor-product.module';
+import { ReportModule } from './report/report.module';
 @Module({
   imports: [
     ApplicationRoleModule,
@@ -89,6 +90,7 @@ import { VendorProductModule } from './vendor-product/vendor-product.module';
     PeriodModule,
     PhysicalCountPeriodModule,
     VendorProductModule,
+    ReportModule,
   ],
   controllers: [],
   providers: [],

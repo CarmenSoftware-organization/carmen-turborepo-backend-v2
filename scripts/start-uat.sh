@@ -1,122 +1,63 @@
-#!/bin/bash
-#
-# Docker Service Management — Carmen Backend V2
-# ================================================
-# จัดการ Docker containers ทั้ง local และ remote server (EC2)
+#!/bin/sh
+# start-uat.sh — จัดการ Carmen Backend V2 บน UAT Server (remote via SSH)
 #
 # Usage:
-#   ./docker-service.sh <command> [target] [--remote]
-#
-# Commands:
-#   status                          แสดงสถานะ Docker daemon และ containers
-#   build   [core|all|SERVICE]      Build Docker images
-#   up      [core|all|SERVICE]      Start containers (docker compose up -d)
-#   down    [core|all|SERVICE]      Stop containers (docker compose down)
-#   restart [core|all|SERVICE]      Restart containers
-#   logs    [SERVICE|all]           ดู logs
-#   health                          เช็ค health endpoints
-#   ps                              แสดง containers ที่รัน
-#   clean                           ลบ images/containers ที่ไม่ใช้
-#
-# Targets:
-#   core           gateway, business, cluster, keycloak (default)
-#   all            ทุก services
-#   SERVICE name   gateway | business | cluster | keycloak | file | notification | cronjob
-#
-# Options:
-#   --remote             รันคำสั่งบน remote server (EC2) ผ่าน SSH
-#   --dev                ใช้ docker-compose.dev.yml (default: docker-compose.yml)
-#   --ssh-key <path>     ระบุ path ของ SSH key
+#   ./start-uat.sh install                     Install dependencies + build packages
+#   ./start-uat.sh build  [core|all|SERVICE]   Build services
+#   ./start-uat.sh start  [core|all|SERVICE]   Start services (background)
+#   ./start-uat.sh stop   [core|all|SERVICE]   Stop services
+#   ./start-uat.sh restart [core|all|SERVICE]  Restart services
+#   ./start-uat.sh logs   [SERVICE]            ดู logs
+#   ./start-uat.sh status                      ดู status ทุก service
+#   ./start-uat.sh health                      เช็ค health
+#   ./start-uat.sh deploy [core|all|SERVICE]   Stop → git pull → install → build → start
+#   ./start-uat.sh ssh                         เปิด SSH session
 #
 # ตัวอย่าง:
-#   ./docker-service.sh status                    สถานะ local
-#   ./docker-service.sh status --remote           สถานะบน server
-#   ./docker-service.sh build core --dev          Build core services (dev)
-#   ./docker-service.sh up all --remote           Start ทุก service บน server
-#   ./docker-service.sh down business --remote    Stop business บน server
-#   ./docker-service.sh logs gateway --remote     ดู logs gateway บน server
+#   ./start-uat.sh install                     ติดตั้ง dependencies ครั้งแรก
+#   ./start-uat.sh start core                  Start 4 core services
+#   ./start-uat.sh stop all                    Stop ทั้งหมด
+#   ./start-uat.sh restart gateway             Restart เฉพาะ gateway
+#   ./start-uat.sh logs business               ดู logs business
+#   ./start-uat.sh deploy core                 Deploy ล่าสุดแล้ว restart core
 
-set -euo pipefail
+set -e
 
 # ───────────────────────────────────────────────────────────
-# Config
+# UAT Server SSH Configuration
 # ───────────────────────────────────────────────────────────
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SSH_KEY="$SCRIPT_DIR/../../ssh/aws/script/ec2-webservice-bkk.pem"
+SSH_USER="ec2-user"
+SSH_HOST="43.209.126.252"
+REMOTE_DIR="/home/ec2-user/carmen-turborepo-backend-v2"
+REMOTE_SCRIPT="scripts/start-dev.sh"
 
-ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-
-# SSH config สำหรับ remote server
-SSH_KEY="${SSH_KEY:-$HOME/workspace/ssh/aws/script/ec2-webservice-bkk.pem}"
-SSH_USER="${SSH_USER:-ec2-user}"  # Amazon Linux 2023 ใช้ ec2-user, Amazon Linux 2 ใช้ ubuntu (ปรับตามที่ใช้จริง)
-SSH_HOST="${SSH_HOST:-ec2-43-209-126-252.ap-southeast-7.compute.amazonaws.com}"
-REMOTE_PROJECT_DIR="${REMOTE_PROJECT_DIR:-/home/ec2-user/carmen-turborepo-backend-v2}"
-
-# Docker compose file
-COMPOSE_FILE="docker-compose.yml"
-
-# Detect docker compose command (v2 plugin vs v1 standalone)
-if docker compose version &>/dev/null; then
-    DOCKER_COMPOSE="docker compose"
-elif docker-compose version &>/dev/null; then
-    DOCKER_COMPOSE="docker-compose"
-else
-    echo "ERROR: docker compose not found"
-    exit 1
-fi
-
-# Service name mapping: short name -> docker compose service name
-declare -A SERVICE_MAP=(
-    [gateway]="api-backend-gateway"
-    [business]="api-micro-business"
-    [cluster]="api-micro-cluster"
-    [keycloak]="api-micro-keycloak-api"
-    [file]="api-micro-file"
-    [notification]="api-micro-notification"
-    [cronjob]="api-micro-cronjob"
-)
+SSH_OPTS="-i $SSH_KEY -o StrictHostKeyChecking=no -o ConnectTimeout=10"
+SSH_CMD="ssh $SSH_OPTS $SSH_USER@$SSH_HOST"
 
 CORE_LIST="gateway business cluster keycloak"
 ALL_LIST="gateway business cluster keycloak file notification cronjob"
 
 # ───────────────────────────────────────────────────────────
-# Parse arguments
-# ───────────────────────────────────────────────────────────
-
-REMOTE=false
-DEV=false
-ACTION="${1:-status}"
-TARGET=""
-SSH_KEY_ARG=""
-
-# Parse positional and flag arguments
-shift_count=0
-for arg in "$@"; do
-    case "$arg" in
-        --remote)        REMOTE=true ;;
-        --dev)           DEV=true ;;
-        --ssh-key)       SSH_KEY_ARG="__next__" ;;
-        --ssh-key=*)     SSH_KEY_ARG="${arg#--ssh-key=}" ;;
-        *)
-            if [[ "$SSH_KEY_ARG" == "__next__" ]]; then
-                SSH_KEY_ARG="$arg"
-            elif [[ -z "$TARGET" && "$arg" != "$ACTION" ]]; then
-                TARGET="$arg"
-            fi
-            ;;
-    esac
-done
-
-# Override SSH_KEY if provided via flag
-if [[ -n "$SSH_KEY_ARG" && "$SSH_KEY_ARG" != "__next__" ]]; then
-    SSH_KEY="$SSH_KEY_ARG"
-fi
-
-if $DEV; then
-    COMPOSE_FILE="docker-compose.dev.yml"
-fi
-
-# ───────────────────────────────────────────────────────────
 # Helpers
 # ───────────────────────────────────────────────────────────
+
+remote_exec() {
+    $SSH_CMD "source ~/.bash_profile 2>/dev/null; cd $REMOTE_DIR && $1"
+}
+
+check_connection() {
+    printf "Connecting to UAT server (%s)... " "$SSH_HOST"
+    if $SSH_CMD "echo ok" >/dev/null 2>&1; then
+        echo "connected"
+    else
+        echo "FAILED"
+        echo "Cannot connect to $SSH_USER@$SSH_HOST"
+        echo "Check SSH key: $SSH_KEY"
+        exit 1
+    fi
+}
 
 resolve_services() {
     case "${1:-core}" in
@@ -126,239 +67,175 @@ resolve_services() {
     esac
 }
 
-get_compose_names() {
-    local services
-    services=$(resolve_services "$1")
-    local compose_names=""
-    for name in $services; do
-        compose_names="$compose_names ${SERVICE_MAP[$name]:-$name}"
-    done
-    echo "$compose_names"
-}
-
-run_cmd() {
-    if $REMOTE; then
-        if [[ -z "$SSH_HOST" ]]; then
-            echo "ERROR: SSH_HOST ยังไม่ได้ตั้งค่า"
-            echo "ตั้งค่าได้ 2 วิธี:"
-            echo "  1. export SSH_HOST=<ip-or-hostname>"
-            echo "  2. SSH_HOST=<ip> ./docker-service.sh <command>"
-            exit 1
-        fi
-        if [[ ! -f "$SSH_KEY" ]]; then
-            echo "ERROR: SSH key ไม่พบที่ $SSH_KEY"
-            exit 1
-        fi
-        ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "${SSH_USER}@${SSH_HOST}" "$1"
-    else
-        eval "$1"
-    fi
-}
-
-compose_cmd() {
-    local project_dir="$ROOT_DIR"
-    if $REMOTE; then
-        project_dir="$REMOTE_PROJECT_DIR"
-    fi
-    echo "cd $project_dir && $DOCKER_COMPOSE -f $COMPOSE_FILE"
-}
-
-show_usage() {
-    echo "Usage: $0 <command> [target] [--remote] [--dev]"
-    echo ""
-    echo "Commands:"
-    echo "  status                          แสดงสถานะ Docker daemon และ containers"
-    echo "  build   [core|all|SERVICE]      Build Docker images"
-    echo "  up      [core|all|SERVICE]      Start containers"
-    echo "  down    [core|all|SERVICE]      Stop containers"
-    echo "  restart [core|all|SERVICE]      Restart containers"
-    echo "  logs    [SERVICE|all]           ดู logs (tail -f)"
-    echo "  health                          เช็ค health endpoints"
-    echo "  ps                              แสดง containers ที่รัน"
-    echo "  clean                           ลบ images/containers ที่ไม่ใช้"
-    echo ""
-    echo "Targets:"
-    echo "  core           gateway, business, cluster, keycloak (default)"
-    echo "  all            ทุก 7 services"
-    echo "  SERVICE name   gateway | business | cluster | keycloak | file | notification | cronjob"
-    echo ""
-    echo "Options:"
-    echo "  --remote             รันบน remote server ผ่าน SSH"
-    echo "  --dev                ใช้ docker-compose.dev.yml"
-    echo "  --ssh-key <path>     ระบุ path ของ SSH key"
-    echo ""
-    echo "Environment variables:"
-    echo "  SSH_HOST       IP/hostname ของ remote server (required for --remote)"
-    echo "  SSH_USER       SSH username (default: ubuntu)"
-    echo "  SSH_KEY        Path ไปยัง SSH key (default: ~/workspace/ssh/aws/script/ec2-webservice-bkk.pem)"
-    echo "  REMOTE_PROJECT_DIR  Path โปรเจกต์บน server (default: /home/ubuntu/carmen-turborepo-backend-v2)"
+resolve_app_dir() {
+    case "$1" in
+        gateway) echo "apps/backend-gateway" ;;
+        *)       echo "apps/micro-$1" ;;
+    esac
 }
 
 # ───────────────────────────────────────────────────────────
 # Commands
 # ───────────────────────────────────────────────────────────
 
-cmd_status() {
-    local location="LOCAL"
-    $REMOTE && location="REMOTE ($SSH_HOST)"
-
-    echo "=== Docker Status [$location] ==="
-    echo ""
-    run_cmd "docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'"
-    echo ""
-    echo "=== Docker Disk Usage ==="
-    run_cmd "docker system df"
+cmd_install() {
+    echo "=== [UAT] Installing dependencies ==="
+    remote_exec "bash $REMOTE_SCRIPT install"
 }
 
 cmd_build() {
-    local services
-    services=$(get_compose_names "${TARGET:-core}")
-    local base
-    base=$(compose_cmd)
+    target="${1:-core}"
+    echo "=== [UAT] Building services: $target ==="
 
-    echo "=== Building: $services ==="
-    run_cmd "$base build $services"
+    # Build ทีละตัวเพื่อประหยัด RAM (server มี 1.8GB)
+    services=$(resolve_services "$target")
+    for name in $services; do
+        echo ""
+        echo "--- [UAT] Building: $name ---"
+        app_dir=$(resolve_app_dir "$name")
+        case "$name" in
+            cronjob)
+                remote_exec "cd $app_dir && bun build src/server.ts --outdir=dist --target=bun"
+                ;;
+            *)
+                remote_exec "export NODE_OPTIONS='--max-old-space-size=1024' && cd $app_dir && npx nest build"
+                ;;
+        esac
+        echo "  $name: built"
+    done
+
     echo ""
-    echo "=== Build complete ==="
+    echo "=== [UAT] Build complete ==="
 }
 
-cmd_up() {
-    local services
-    services=$(get_compose_names "${TARGET:-core}")
-    local base
-    base=$(compose_cmd)
-
-    echo "=== Starting: $services ==="
-    run_cmd "$base up -d $services"
-    echo ""
-    echo "=== Containers ==="
-    run_cmd "docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'"
+cmd_start() {
+    target="${1:-core}"
+    echo "=== [UAT] Starting services: $target ==="
+    remote_exec "bash $REMOTE_SCRIPT start $target"
 }
 
-cmd_down() {
-    local services
-    services=$(get_compose_names "${TARGET:-core}")
-    local base
-    base=$(compose_cmd)
-
-    if [[ "${TARGET:-}" == "all" || -z "${TARGET:-}" ]]; then
-        echo "=== Stopping all containers ==="
-        run_cmd "$base down"
-    else
-        echo "=== Stopping: $services ==="
-        run_cmd "$base stop $services"
-        run_cmd "$base rm -f $services"
-    fi
-    echo ""
-    echo "=== Done ==="
+cmd_stop() {
+    target="${1:-core}"
+    echo "=== [UAT] Stopping services: $target ==="
+    remote_exec "bash $REMOTE_SCRIPT stop $target"
 }
 
 cmd_restart() {
-    local services
-    services=$(get_compose_names "${TARGET:-core}")
-    local base
-    base=$(compose_cmd)
-
-    echo "=== Restarting: $services ==="
-    run_cmd "$base restart $services"
-    echo ""
-    echo "=== Containers ==="
-    run_cmd "docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'"
+    target="${1:-core}"
+    echo "=== [UAT] Restarting services: $target ==="
+    remote_exec "bash $REMOTE_SCRIPT restart $target"
 }
 
 cmd_logs() {
-    local services
-    if [[ -z "${TARGET:-}" || "${TARGET:-}" == "all" ]]; then
-        services=""
+    name="${1:-all}"
+    echo "=== [UAT] Logs: $name (Ctrl+C to exit) ==="
+    if [ "$name" = "all" ]; then
+        $SSH_CMD "tail -f $REMOTE_DIR/.carmen/logs/*.log"
     else
-        services=$(get_compose_names "$TARGET")
+        $SSH_CMD "tail -f $REMOTE_DIR/.carmen/logs/$name.log"
     fi
-    local base
-    base=$(compose_cmd)
-
-    run_cmd "$base logs -f --tail=100 $services"
 }
 
-cmd_ps() {
-    local base
-    base=$(compose_cmd)
-    run_cmd "$base ps"
+cmd_status() {
+    remote_exec "bash $REMOTE_SCRIPT status"
 }
 
 cmd_health() {
-    local location="LOCAL"
-    local host="localhost"
-    $REMOTE && location="REMOTE ($SSH_HOST)"
-
-    echo "=== Health Check [$location] ==="
-    echo ""
-
-    # Port mapping ต่างกันระหว่าง local กับ production (docker-compose.yml)
-    # Production: gateway 4010->4000, 4011->4001
-    # Local/Dev:  gateway 4000, 4001
-    local gw_port="4000"
-    if $REMOTE; then
-        gw_port="4010"
-    fi
-
-    if $REMOTE; then
-        run_cmd "
-            check_health() {
-                printf '  %-25s ' \"\$1:\"
-                if curl -sf --max-time 3 \"\$2\" > /dev/null 2>&1; then
-                    echo 'OK'
-                else
-                    echo 'UNREACHABLE'
-                fi
-            }
-            check_health 'Gateway ($gw_port)'   'http://localhost:$gw_port/health'
-            check_health 'Business (6020)'      'http://localhost:6020/health'
-            check_health 'Cluster (6014)'       'http://localhost:6014/health'
-            check_health 'Keycloak API (6013)'  'http://localhost:6013/health'
-            check_health 'File (6007)'          'http://localhost:6007/health'
-            check_health 'Notification (6006)'  'http://localhost:6006/health'
-            check_health 'Cronjob (5012)'       'http://localhost:5012/health'
-        "
-    else
-        check_health() {
-            printf "  %-25s " "$1:"
-            if curl -sf --max-time 3 "$2" > /dev/null 2>&1; then
-                echo "OK"
-            else
-                echo "UNREACHABLE"
-            fi
-        }
-        check_health "Gateway ($gw_port)"   "http://localhost:$gw_port/health"
-        check_health "Business (6020)"      "http://localhost:6020/health"
-        check_health "Cluster (6014)"       "http://localhost:6014/health"
-        check_health "Keycloak API (6013)"  "http://localhost:6013/health"
-        check_health "File (6007)"          "http://localhost:6007/health"
-        check_health "Notification (6006)"  "http://localhost:6006/health"
-        check_health "Cronjob (5012)"       "http://localhost:5012/health"
-    fi
+    remote_exec "bash $REMOTE_SCRIPT health"
 }
 
-cmd_clean() {
-    echo "=== Cleaning unused Docker resources ==="
-    run_cmd "docker system prune -f"
+cmd_clean_logs() {
+    echo "=== [UAT] Cleaning logs ==="
+    remote_exec "bash $REMOTE_SCRIPT clean-logs"
+}
+
+cmd_deploy() {
+    target="${1:-core}"
+    echo "=== [UAT] Deploying: $target ==="
+
     echo ""
-    echo "=== Done ==="
+    echo "--- [UAT] Stopping services ---"
+    remote_exec "bash $REMOTE_SCRIPT stop $target"
+
+    echo ""
+    echo "--- [UAT] Pulling latest code ---"
+    remote_exec "git pull"
+
+    echo ""
+    echo "--- [UAT] Installing dependencies ---"
+    remote_exec "bash $REMOTE_SCRIPT install"
+
+    echo ""
+    echo "--- [UAT] Building services ---"
+    cmd_build "$target"
+
+    echo ""
+    echo "--- [UAT] Starting services ---"
+    remote_exec "bash $REMOTE_SCRIPT start $target"
+
+    echo ""
+    echo "--- [UAT] Health check (waiting 8s) ---"
+    sleep 8
+    remote_exec "bash $REMOTE_SCRIPT health"
+
+    echo ""
+    echo "=== [UAT] Deploy complete ==="
+}
+
+cmd_ssh() {
+    echo "=== [UAT] Opening SSH session ==="
+    $SSH_CMD
+}
+
+cmd_help() {
+    echo "Carmen Backend V2 — UAT Remote Management"
+    echo ""
+    echo "Server: $SSH_USER@$SSH_HOST"
+    echo "Path:   $REMOTE_DIR"
+    echo ""
+    echo "Usage: ./start-uat.sh <command> [target]"
+    echo ""
+    echo "Commands:"
+    echo "  install                         bun install + build packages + prisma generate"
+    echo "  build   [core|all|SERVICE]      Build services (ทีละตัว ประหยัด RAM)"
+    echo "  start   [core|all|SERVICE]      Start services (background)"
+    echo "  stop    [core|all|SERVICE]      Stop services"
+    echo "  restart [core|all|SERVICE]      Restart services"
+    echo "  deploy  [core|all|SERVICE]      Stop → pull → install → build → start"
+    echo "  logs    [SERVICE|all]           ดู logs (tail -f)"
+    echo "  status                          ดู status ทุก service"
+    echo "  health                          เช็ค health endpoints"
+    echo "  clean-logs                      ลบ log files"
+    echo "  ssh                             เปิด SSH session ไป UAT server"
+    echo ""
+    echo "Targets:"
+    echo "  core           gateway, business, cluster, keycloak (default)"
+    echo "  all            ทุก 7 services"
+    echo "  SERVICE name   gateway | business | cluster | keycloak | file | notification | cronjob"
+    echo ""
+    echo "ตัวอย่าง:"
+    echo "  ./start-uat.sh deploy core      # Deploy + restart core services"
+    echo "  ./start-uat.sh restart business  # Restart เฉพาะ business"
+    echo "  ./start-uat.sh logs gateway      # ดู logs gateway"
+    echo "  ./start-uat.sh status            # ดู status ทุก service"
+    echo "  ./start-uat.sh ssh               # SSH เข้า UAT server"
 }
 
 # ───────────────────────────────────────────────────────────
 # Main
 # ───────────────────────────────────────────────────────────
 
-case "${ACTION}" in
-    status)     cmd_status ;;
-    build)      cmd_build ;;
-    up)         cmd_up ;;
-    down)       cmd_down ;;
-    restart)    cmd_restart ;;
-    logs)       cmd_logs ;;
-    ps)         cmd_ps ;;
-    health)     cmd_health ;;
-    clean)      cmd_clean ;;
-    help)       show_usage ;;
-    *)          echo "Unknown command: ${ACTION}"; echo ""; show_usage; exit 1 ;;
+case "${1:-help}" in
+    install)    check_connection; cmd_install ;;
+    build)      check_connection; cmd_build "$2" ;;
+    start)      check_connection; cmd_start "${2:-core}" ;;
+    stop)       check_connection; cmd_stop "${2:-core}" ;;
+    restart)    check_connection; cmd_restart "${2:-core}" ;;
+    deploy)     check_connection; cmd_deploy "${2:-core}" ;;
+    logs)       check_connection; cmd_logs "${2:-all}" ;;
+    status)     check_connection; cmd_status ;;
+    health)     check_connection; cmd_health ;;
+    clean-logs) check_connection; cmd_clean_logs ;;
+    ssh)        cmd_ssh ;;
+    help|*)     cmd_help ;;
 esac
