@@ -6,6 +6,7 @@ export interface IBusinessUnitCreate {
   name: string;
   alias_name?: string;
   default_currency_id?: string;
+  max_license_users?: number | null;
   is_hq: boolean;
   is_active: boolean;
 }
@@ -17,6 +18,7 @@ export interface IBusinessUnitUpdate {
   name?: string;
   alias_name?: string;
   default_currency_id?: string;
+  max_license_users?: number | null;
   is_hq?: boolean;
   is_active?: boolean;
 }

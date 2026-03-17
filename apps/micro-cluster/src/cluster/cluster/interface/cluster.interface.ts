@@ -5,6 +5,7 @@ export interface IClusterCreate {
   name: string;
   alias_name?: string | null;
   logo_url?: string | null;
+  max_license_bu?: number | null;
   is_active: boolean;
   info?: any | null;
 }
@@ -15,6 +16,7 @@ export interface IClusterUpdate {
   name?: string;
   alias_name?: string | null;
   logo_url?: string | null;
+  max_license_bu?: number | null;
   is_active?: boolean;
   info?: any | null;
 }
@@ -24,6 +26,7 @@ export interface IUserCluster {
   cluster_id: string;
   is_active: boolean;
   role: enum_cluster_user_role;
+  parent_bu?: string | null;
 }
 
 export interface IUserClusterUpdate {
@@ -32,6 +35,7 @@ export interface IUserClusterUpdate {
   cluster_id?: string;
   is_active?: boolean;
   role?: enum_cluster_user_role;
+  parent_bu?: string | null;
 }
 
 

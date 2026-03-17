@@ -6,6 +6,7 @@ export const ClusterCreateSchema = z.object({
   name: z.string({ required_error: 'Name is required' }).min(3, { message: 'Name must be at least 3 characters long' }),
   alias_name: z.string().max(3, { message: 'Alias name must be at most 3 characters long' }).nullable().optional(),
   logo_url: z.string().nullable().optional(),
+  max_license_bu: z.number().int().nullable().optional(),
   is_active: z.boolean({ required_error: 'Is active is required' }),
   info: z.any().nullable().optional(),
 });
@@ -19,6 +20,7 @@ export const ClusterUpdateSchema = z.object({
   name: z.string({ required_error: 'Name is required' }).min(3, { message: 'Name must be at least 3 characters long' }).optional(),
   alias_name: z.string().max(3, { message: 'Alias name must be at most 3 characters long' }).nullable().optional(),
   logo_url: z.string().nullable().optional(),
+  max_license_bu: z.number().int().nullable().optional(),
   is_active: z.boolean({ required_error: 'Is active is required' }).optional(),
   info: z.any().nullable().optional(),
 });

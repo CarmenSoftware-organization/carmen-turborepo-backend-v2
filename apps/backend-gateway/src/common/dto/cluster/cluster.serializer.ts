@@ -4,6 +4,7 @@ const ClusterUserSchema = z.object({
   id: z.string(),
   user_id: z.string().nullable().optional(),
   role: z.string().nullable().optional(),
+  parent_bu: z.string().nullable().optional(),
   user: z.object({
     id: z.string(),
     email: z.string().nullable().optional(),
@@ -29,6 +30,7 @@ export const ClusterDetailResponseSchema = z.object({
   code: z.string().nullable().optional(),
   alias_name: z.string().nullable().optional(),
   logo_url: z.string().nullable().optional(),
+  max_license_bu: z.number().nullable().optional(),
   is_active: z.boolean().nullable().optional(),
   info: z.any().nullable().optional(),
   tb_business_unit: z.array(ClusterBusinessUnitSchema).nullable().optional(),
@@ -41,6 +43,7 @@ export const ClusterListItemResponseSchema = z.object({
   code: z.string().nullable().optional(),
   alias_name: z.string().nullable().optional(),
   logo_url: z.string().nullable().optional(),
+  max_license_bu: z.number().nullable().optional(),
   is_active: z.boolean().nullable().optional(),
   info: z.any().nullable().optional(),
   _count: z.object({
@@ -80,6 +83,7 @@ export const UserClusterListResponseSchema = z.array(UserClusterSchema);
 export const UserClusterByClusterIdSchema = z.object({
   email: z.string().nullable().optional(),
   role: z.string().nullable().optional(),
+  parent_bu: z.string().nullable().optional(),
   userInfo: z.object({
     firstname: z.string().nullable().optional(),
     lastname: z.string().nullable().optional(),

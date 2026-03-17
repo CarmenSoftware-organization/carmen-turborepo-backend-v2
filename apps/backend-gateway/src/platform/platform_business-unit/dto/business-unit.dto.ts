@@ -25,6 +25,7 @@ export const BusinessUnitCreateSchema = z
       .min(3, 'alias_name must be at least 3 characters')
       .optional(),
     default_currency_id: z.string().uuid().optional(),
+    max_license_users: z.number().int().nullable().optional(),
     is_hq: z.boolean({
       required_error: 'is_hq field is required',
     }),
@@ -63,6 +64,7 @@ export const BusinessUnitUpdateSchema = z.object({
       .min(3, 'alias_name must be at least 3 characters')
       .optional(),
     default_currency_id: z.string().uuid().optional(),
+    max_license_users: z.number().int().nullable().optional(),
     is_hq: z
       .boolean({
         required_error: 'is_hq field is required',

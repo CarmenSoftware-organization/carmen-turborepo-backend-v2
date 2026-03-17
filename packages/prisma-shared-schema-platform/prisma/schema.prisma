@@ -92,6 +92,8 @@ model tb_business_unit {
   default_currency_id String?                 @db.Uuid
   calculation_method  enum_calculation_method @default(average)
 
+  max_license_users Int?
+
   // Company info
   branch_no        String?
   company_name     String?
@@ -162,13 +164,16 @@ model tb_business_unit_tb_module {
 }
 
 model tb_cluster {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code       String   @db.VarChar(30)
-  name       String   @db.VarChar
-  alias_name String?  @db.VarChar(3)
-  logo_url   String?  @db.VarChar
-  is_active  Boolean? @default(true)
-  info       Json?    @db.Json
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code       String  @db.VarChar(30)
+  name       String  @db.VarChar
+  alias_name String? @db.VarChar(3)
+  logo_url   String? @db.VarChar
+
+  max_license_bu Int?
+
+  is_active Boolean? @default(true)
+  info      Json?    @db.Json
 
   created_at    DateTime? @default(now()) @db.Timestamptz(6)
   created_by_id String?   @db.Uuid
@@ -191,6 +196,7 @@ model tb_cluster_user {
   user_id    String?                @db.Uuid
   cluster_id String                 @db.Uuid
   is_active  Boolean?               @default(true)
+  parent_bu  String?                @db.Uuid // เพื่อบอกว่าใคร BU ใหนเป็นเจ้าของ User คนนี้ เอาไว้ทำ invoice เก็บตังค์
   role       enum_cluster_user_role @default(user)
 
   created_at    DateTime? @default(now()) @db.Timestamptz(6)

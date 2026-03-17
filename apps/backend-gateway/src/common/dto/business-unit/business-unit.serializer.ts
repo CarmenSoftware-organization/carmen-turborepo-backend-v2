@@ -6,6 +6,7 @@ export const BusinessUnitResponseSchema = z.object({
   code: z.string(),
   name: z.string(),
   description: z.string().nullable().optional(),
+  max_license_users: z.number().nullable().optional(),
   is_active: z.boolean().optional(),
   info: z.any().nullable().optional(),
   dimension: z.any().nullable().optional(),

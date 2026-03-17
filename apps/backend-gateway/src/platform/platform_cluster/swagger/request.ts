@@ -13,6 +13,9 @@ export class ClusterCreateRequestDto {
   @ApiPropertyOptional({ description: 'Logo URL', example: 'https://example.com/logo.png' })
   logo_url?: string;
 
+  @ApiPropertyOptional({ description: 'Maximum number of licensed business units', example: 5 })
+  max_license_bu?: number;
+
   @ApiProperty({ description: 'Is cluster active', example: true })
   is_active: boolean;
 
@@ -32,6 +35,9 @@ export class ClusterUpdateRequestDto {
 
   @ApiPropertyOptional({ description: 'Logo URL', example: 'https://example.com/logo.png' })
   logo_url?: string;
+
+  @ApiPropertyOptional({ description: 'Maximum number of licensed business units', example: 5 })
+  max_license_bu?: number;
 
   @ApiPropertyOptional({ description: 'Is cluster active', example: true })
   is_active?: boolean;

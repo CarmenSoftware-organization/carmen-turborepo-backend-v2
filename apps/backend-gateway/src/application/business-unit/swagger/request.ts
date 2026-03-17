@@ -19,6 +19,9 @@ export class BusinessUnitCreateRequestDto {
   @ApiPropertyOptional({ description: 'Default currency ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   default_currency_id?: string;
 
+  @ApiPropertyOptional({ description: 'Maximum number of licensed users', example: 50 })
+  max_license_users?: number;
+
   @ApiProperty({ description: 'Is headquarters', example: true })
   is_hq: boolean;
 
@@ -83,6 +86,9 @@ export class BusinessUnitUpdateRequestDto {
 
   @ApiPropertyOptional({ description: 'Default currency ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   default_currency_id?: string;
+
+  @ApiPropertyOptional({ description: 'Maximum number of licensed users', example: 50 })
+  max_license_users?: number;
 
   @ApiPropertyOptional({ description: 'Is headquarters', example: true })
   is_hq?: boolean;

@@ -250,6 +250,7 @@ export class ClusterService {
             id: true,
             user_id: true,
             role: true,
+            parent_bu: true,
           },
         },
       },
@@ -411,6 +412,7 @@ export class ClusterService {
           id: true,
           user_id: true,
           role: true,
+          parent_bu: true,
         },
       })
       .then(async (res) => {
@@ -436,6 +438,7 @@ export class ClusterService {
               user_id: item.user_id,
               email: user[0].email,
               role: item.role,
+              parent_bu: item.parent_bu,
               userInfo:
                 user[0].tb_user_profile_tb_user_profile_user_idTotb_user[0],
             };
@@ -478,6 +481,7 @@ export class ClusterService {
         cluster_id: data.cluster_id,
         is_active: data.is_active,
         role: data.role as enum_cluster_user_role,
+        parent_bu: data.parent_bu ?? null,
         created_by_id: user_id,
       },
     });
@@ -579,6 +583,7 @@ export class ClusterService {
         user_id: data.user_id ?? findUserCluster.user_id,
         is_active: data.is_active ?? findUserCluster.is_active,
         role: (data.role as enum_cluster_user_role) ?? findUserCluster.role,
+        parent_bu: data.parent_bu !== undefined ? data.parent_bu : findUserCluster.parent_bu,
         updated_at: new Date(),
         updated_by_id: user_id,
       },
