@@ -196,6 +196,60 @@ export class InventoryTransactionController extends BaseHttpController {
   }
 
   /**
+   * POST /api/:bu_code/inventory-transaction/test-eop-in
+   * Body: { "product_id": "uuid", "location_id": "uuid", "location_code": "WH-01", "qty": 5, "cost_per_unit": 10.50 }
+   *
+   * EOP In — End of Period adjustment (increase).
+   * When period closes, workers count physical stock. If system qty < actual qty,
+   * use this to increase system qty to match reality.
+   */
+  @Post('test-eop-in')
+  @Serialize(InventoryTransactionMutationResponseSchema)
+  @ApiOperation({
+    summary: 'TEST — EOP In (end-of-period stock increase)',
+    operationId: 'testEopInTransaction',
+    tags: ['[Method] Post'],
+  })
+  @HttpCode(HttpStatus.OK)
+  async testEopIn(
+    @Param('bu_code') bu_code: string,
+    @Body() body: Record<string, unknown>,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.inventoryTransactionService.testEopIn(body, user_id, bu_code);
+    this.respond(res, result);
+  }
+
+  /**
+   * POST /api/:bu_code/inventory-transaction/test-eop-out
+   * Body: { "product_id": "uuid", "location_id": "uuid", "location_code": "WH-01", "qty": 3 }
+   *
+   * EOP Out — End of Period adjustment (decrease).
+   * When period closes, workers count physical stock. If system qty > actual qty,
+   * use this to decrease system qty to match reality.
+   */
+  @Post('test-eop-out')
+  @Serialize(InventoryTransactionMutationResponseSchema)
+  @ApiOperation({
+    summary: 'TEST — EOP Out (end-of-period stock decrease)',
+    operationId: 'testEopOutTransaction',
+    tags: ['[Method] Post'],
+  })
+  @HttpCode(HttpStatus.OK)
+  async testEopOut(
+    @Param('bu_code') bu_code: string,
+    @Body() body: Record<string, unknown>,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.inventoryTransactionService.testEopOut(body, user_id, bu_code);
+    this.respond(res, result);
+  }
+
+  /**
    * POST /api/:bu_code/inventory-transaction/test-credit-note-qty
    * Body:
    * {
@@ -227,6 +281,40 @@ export class InventoryTransactionController extends BaseHttpController {
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.inventoryTransactionService.testCreditNoteQty(body, user_id, bu_code);
+    this.respond(res, result);
+  }
+
+  /**
+   * POST /api/:bu_code/inventory-transaction/test-credit-note-amount
+   * Body:
+   * {
+   *   "grn_id": "uuid (the GRN that originated the lots)",
+   *   "detail_items": [
+   *     {
+   *       "product_id": "uuid",
+   *       "location_id": "uuid",
+   *       "location_code": "WH-01",
+   *       "amount": 10
+   *     }
+   *   ]
+   * }
+   */
+  @Post('test-credit-note-amount')
+  @Serialize(InventoryTransactionMutationResponseSchema)
+  @ApiOperation({
+    summary: 'TEST — Credit Note Amount (adjust cost by reversing and re-receiving)',
+    operationId: 'testCreditNoteAmountTransaction',
+    tags: ['[Method] Post'],
+  })
+  @HttpCode(HttpStatus.OK)
+  async testCreditNoteAmount(
+    @Param('bu_code') bu_code: string,
+    @Body() body: Record<string, unknown>,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.inventoryTransactionService.testCreditNoteAmount(body, user_id, bu_code);
     this.respond(res, result);
   }
 

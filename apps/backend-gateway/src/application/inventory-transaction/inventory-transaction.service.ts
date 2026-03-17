@@ -88,9 +88,24 @@ export class InventoryTransactionService {
     return this.sendCommand('inventory-transaction.test-transfer', { data, user_id, tenant_id });
   }
 
+  async testEopIn(data: Record<string, unknown>, user_id: string, tenant_id: string): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'testEopIn', user_id, tenant_id }, InventoryTransactionService.name);
+    return this.sendCommand('inventory-transaction.test-eop-in', { data, user_id, tenant_id });
+  }
+
+  async testEopOut(data: Record<string, unknown>, user_id: string, tenant_id: string): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'testEopOut', user_id, tenant_id }, InventoryTransactionService.name);
+    return this.sendCommand('inventory-transaction.test-eop-out', { data, user_id, tenant_id });
+  }
+
   async testCreditNoteQty(data: Record<string, unknown>, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'testCreditNoteQty', user_id, tenant_id }, InventoryTransactionService.name);
     return this.sendCommand('inventory-transaction.test-credit-note-qty', { data, user_id, tenant_id });
+  }
+
+  async testCreditNoteAmount(data: Record<string, unknown>, user_id: string, tenant_id: string): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'testCreditNoteAmount', user_id, tenant_id }, InventoryTransactionService.name);
+    return this.sendCommand('inventory-transaction.test-credit-note-amount', { data, user_id, tenant_id });
   }
 
   async getCostLayers(product_id: string | undefined, location_id: string | undefined, user_id: string, tenant_id: string): Promise<Result<unknown>> {
