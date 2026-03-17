@@ -182,6 +182,7 @@ export class ClusterService {
         code: true,
         alias_name: true,
         logo_url: true,
+        max_license_bu: true,
         is_active: true,
         info: true,
         created_at: true,
@@ -236,6 +237,7 @@ export class ClusterService {
         code: true,
         alias_name: true,
         logo_url: true,
+        max_license_bu: true,
         is_active: true,
         info: true,
         tb_business_unit: {
