@@ -616,7 +616,7 @@ export class PurchaseRequestService {
   @TryCatch
   async findAllMyPending(
     user_id: string,
-    bu_code: string,
+    bu_code: string | string[],
     paginate: IPaginate,
   ): Promise<Result<unknown>> {
     this.logger.debug(
@@ -639,9 +639,10 @@ export class PurchaseRequestService {
     );
     const results = [];
 
-    let bu_codes: string = '';
+    let bu_codes: string[] = [];
 
-    if (bu_code == '' || bu_code == undefined || bu_code == null) {
+    const isEmpty = !bu_code || (Array.isArray(bu_code) && bu_code.length === 0);
+    if (isEmpty) {
       const bus = await this.getBus(user_id, true, 'latest');
       bu_codes = bus.data.map((bus) => bus.tb_business_unit.code);
       this.logger.debug({
@@ -652,63 +653,127 @@ export class PurchaseRequestService {
         bus,
       });
     } else {
-      bu_codes = bu_code;
+      bu_codes = Array.isArray(bu_code) ? bu_code : [bu_code];
     }
 
     for (const code of bu_codes) {
-      const tenant = await this.tenantService.getdb_connection(user_id, code);
+      try {
+        const tenant = await this.tenantService.getdb_connection(user_id, code);
 
-      if (!tenant) {
-        return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
-      }
+        if (!tenant) {
+          this.logger.warn({
+            function: 'findAllMyPending',
+            message: `Tenant not found for bu_code: ${code}, skipping`,
+          });
+          continue;
+        }
 
-      const prisma = await this.prismaTenant(
-        tenant.tenant_id,
-        tenant.db_connection,
-      );
-
-      const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
-        where: {
-          code: code,
-        },
-      });
-
-      if (!bu_detail) {
-        return Result.error(
-          `Business unit ${code} not found`,
-          ErrorCode.NOT_FOUND,
+        const prisma = await this.prismaTenant(
+          tenant.tenant_id,
+          tenant.db_connection,
         );
-      }
 
-      let defaultCurrency = {
-        id: null,
-        name: '',
-        code: '',
-        symbol: '',
-        decimal_places: null,
-      };
-
-      if (bu_detail.default_currency_id) {
-        const currency = await prisma.tb_currency.findFirst({
+        const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
           where: {
-            id: bu_detail.default_currency_id,
+            code: code,
           },
         });
 
-        defaultCurrency = {
-          id: currency?.id,
-          name: currency?.name,
-          code: currency?.code,
-          symbol: currency?.symbol,
-          decimal_places: currency?.decimal_places,
+        if (!bu_detail) {
+          this.logger.warn({
+            function: 'findAllMyPending',
+            message: `Business unit ${code} not found, skipping`,
+          });
+          continue;
+        }
+
+        let defaultCurrency = {
+          id: null,
+          name: '',
+          code: '',
+          symbol: '',
+          decimal_places: null,
         };
-      }
 
-      const standardQuery = q.findMany();
+        if (bu_detail.default_currency_id) {
+          const currency = await prisma.tb_currency.findFirst({
+            where: {
+              id: bu_detail.default_currency_id,
+            },
+          });
 
-      const purchaseRequests = await prisma.tb_purchase_request
-        .findMany({
-          ...standardQuery,
+          defaultCurrency = {
+            id: currency?.id,
+            name: currency?.name,
+            code: currency?.code,
+            symbol: currency?.symbol,
+            decimal_places: currency?.decimal_places,
+          };
+        }
+
+        const standardQuery = q.findMany();
+
+        const purchaseRequests = await prisma.tb_purchase_request
+          .findMany({
+            ...standardQuery,
+            where: {
+              ...standardQuery.where,
+              OR: [
+                {
+                  user_action: {
+                    path: ['execute'],
+                    array_contains: [{ user_id: user_id }],
+                  },
+                },
+                {
+                  pr_status: enum_purchase_request_doc_status.draft,
+                  requestor_id: user_id,
+                },
+              ],
+            },
+            include: {
+              tb_purchase_request_detail: true,
+            },
+          })
+          .then((res) => {
+            const mapPr = res.map((pr) => {
+              const purchase_request_detail = pr['tb_purchase_request_detail'];
+              delete pr['tb_purchase_request_detail'];
+              let total_amount = 0;
+              const PRdetailPrices = [];
+
+              for (const detail of purchase_request_detail) {
+                total_amount += Number(detail.total_price || 0);
+                PRdetailPrices.push({
+                  price: Number(detail.total_price || 0),
+                  total_price: Number(detail.total_price || 0),
+                });
+              }
+              const returnPR = {
+                id: pr.id,
+                pr_no: pr.pr_no,
+                pr_date: pr.pr_date,
+                description: pr.description,
+                pr_status: pr.pr_status,
+                requestor_name: pr.requestor_name,
+                department_name: pr.department_name,
+                workflow_name: pr.workflow_name,
+                created_at: pr.created_at,
+                purchase_request_detail: PRdetailPrices,
+                total_amount,
+                workflow_current_stage: pr.workflow_current_stage,
+                workflow_next_stage: pr.workflow_next_stage,
+                workflow_previous_stage: pr.workflow_previous_stage,
+                last_action: pr.last_action,
+              };
+
+              return returnPR;
+            });
+
+            return mapPr;
+          });
+
+        const total = await prisma.tb_purchase_request.count({
           where: {
             ...standardQuery.where,
             OR: [
@@ -724,82 +789,32 @@ export class PurchaseRequestService {
               },
             ],
           },
-          include: {
-            tb_purchase_request_detail: true,
-          },
-        })
-        .then((res) => {
-          const mapPr = res.map((pr) => {
-            const purchase_request_detail = pr['tb_purchase_request_detail'];
-            delete pr['tb_purchase_request_detail'];
-            let total_amount = 0;
-            const PRdetailPrices = [];
-
-            for (const detail of purchase_request_detail) {
-              total_amount += Number(detail.total_price || 0);
-              PRdetailPrices.push({
-                price: Number(detail.total_price || 0),
-                total_price: Number(detail.total_price || 0),
-              });
-            }
-            const returnPR = {
-              id: pr.id,
-              pr_no: pr.pr_no,
-              pr_date: pr.pr_date,
-              description: pr.description,
-              pr_status: pr.pr_status,
-              requestor_name: pr.requestor_name,
-              department_name: pr.department_name,
-              workflow_name: pr.workflow_name,
-              created_at: pr.created_at,
-              purchase_request_detail: PRdetailPrices,
-              total_amount,
-              workflow_current_stage: pr.workflow_current_stage,
-              workflow_next_stage: pr.workflow_next_stage,
-              workflow_previous_stage: pr.workflow_previous_stage,
-              last_action: pr.last_action,
-            };
-
-            return returnPR;
-          });
-
-          return mapPr;
         });
 
-      const total = await prisma.tb_purchase_request.count({
-        where: {
-          ...standardQuery.where,
-          OR: [
-            {
-              user_action: {
-                path: ['execute'],
-                array_contains: [{ user_id: user_id }],
-              },
-            },
-            {
-              pr_status: enum_purchase_request_doc_status.draft,
-              requestor_id: user_id,
-            },
-          ],
-        },
-      });
+        const serializedPurchaseRequests = purchaseRequests.map((item) =>
+          PurchaseRequestListItemResponseSchema.parse(item),
+        );
 
-      const serializedPurchaseRequests = purchaseRequests.map((item) =>
-        PurchaseRequestListItemResponseSchema.parse(item),
-      );
-
-      results.push({
-        currency: defaultCurrency,
-        bu_code: code,
-        bu_name: bu_detail.name,
-        paginate: {
-          total: total,
-          page: Number(paginate.page),
-          perpage: Number(paginate.perpage),
-          pages: total == 0 ? 1 : Math.ceil(total / Number(paginate.perpage)),
-        },
-        data: serializedPurchaseRequests,
-      });
+        results.push({
+          currency: defaultCurrency,
+          bu_code: code,
+          bu_name: bu_detail.name,
+          paginate: {
+            total: total,
+            page: Number(paginate.page),
+            perpage: Number(paginate.perpage),
+            pages: total == 0 ? 1 : Math.ceil(total / Number(paginate.perpage)),
+          },
+          data: serializedPurchaseRequests,
+        });
+      } catch (error) {
+        this.logger.warn({
+          function: 'findAllMyPending',
+          message: `Error processing bu_code: ${code}, skipping`,
+          error: error instanceof Error ? error.message : error,
+        });
+        continue;
+      }
     }
 
     return Result.ok(results);
@@ -2460,7 +2475,7 @@ export class PurchaseRequestService {
    * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
    * @returns Count of pending purchase requests / จำนวนใบขอซื้อที่รออนุมัติ
    */
-  async findAllMyPendingCount(user_id: string, bu_code: string): Promise<any> {
+  async findAllMyPendingCount(user_id: string, bu_code: string | string[]): Promise<any> {
     this.logger.debug(
       { function: 'findAll', user_id, bu_code },
       PurchaseRequestService.name,
@@ -2491,9 +2506,10 @@ export class PurchaseRequestService {
     );
     const results = [];
 
-    let bu_codes: string = '';
+    let bu_codes: string[] = [];
 
-    if (bu_code == '' || bu_code == undefined || bu_code == null) {
+    const isEmpty = !bu_code || (Array.isArray(bu_code) && bu_code.length === 0);
+    if (isEmpty) {
       const bus = await this.getBus(user_id, true, 'latest');
       bu_codes = bus.data.map((bus) => bus.tb_business_unit.code);
       this.logger.debug({
@@ -2504,64 +2520,71 @@ export class PurchaseRequestService {
         bus,
       });
     } else {
-      bu_codes = bu_code;
+      bu_codes = Array.isArray(bu_code) ? bu_code : [bu_code];
     }
 
     for (const code of bu_codes) {
-      const tenant = await this.tenantService.getdb_connection(user_id, code);
+      try {
+        const tenant = await this.tenantService.getdb_connection(user_id, code);
 
-      if (!tenant) {
-        return {
-          response: {
-            status: HttpStatus.NO_CONTENT,
-            message: 'Tenant not found',
+        if (!tenant) {
+          this.logger.warn({
+            function: 'findAllMyPendingCount',
+            message: `Tenant not found for bu_code: ${code}, skipping`,
+          });
+          continue;
+        }
+
+        const prisma = await this.prismaTenant(
+          tenant.tenant_id,
+          tenant.db_connection,
+        );
+
+        const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
+          where: {
+            code: code,
           },
-        };
-      }
+        });
 
-      const prisma = await this.prismaTenant(
-        tenant.tenant_id,
-        tenant.db_connection,
-      );
+        if (!bu_detail) {
+          this.logger.warn({
+            function: 'findAllMyPendingCount',
+            message: `Business unit ${code} not found, skipping`,
+          });
+          continue;
+        }
 
-      const bu_detail = await this.prismaSystem.tb_business_unit.findFirst({
-        where: {
-          code: code,
-        },
-      });
+        const standardQuery = q.findMany();
 
-      if (!bu_detail) {
-        return {
-          response: {
-            status: HttpStatus.NO_CONTENT,
-            message: `Business unit ${code} not found`,
-          },
-        };
-      }
-
-      const standardQuery = q.findMany();
-
-      const total = await prisma.tb_purchase_request.count({
-        where: {
-          ...standardQuery.where,
-          OR: [
-            {
-              user_action: {
-                path: ['execute'],
-                array_contains: [{ user_id: user_id }],
+        const total = await prisma.tb_purchase_request.count({
+          where: {
+            ...standardQuery.where,
+            OR: [
+              {
+                user_action: {
+                  path: ['execute'],
+                  array_contains: [{ user_id: user_id }],
+                },
               },
-            },
-            {
-              pr_status: enum_purchase_request_doc_status.draft,
-              requestor_id: user_id,
-            },
-          ],
-        },
-      });
+              {
+                pr_status: enum_purchase_request_doc_status.draft,
+                requestor_id: user_id,
+              },
+            ],
+          },
+        });
 
-      results.push({
-        total: total,
-      });
+        results.push({
+          total: total,
+        });
+      } catch (error) {
+        this.logger.warn({
+          function: 'findAllMyPendingCount',
+          message: `Error processing bu_code: ${code}, skipping`,
+          error: error instanceof Error ? error.message : error,
+        });
+        continue;
+      }
     }
 
     const total = results.reduce((acc, curr) => acc + curr.total, 0);

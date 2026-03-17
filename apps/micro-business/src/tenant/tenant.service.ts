@@ -316,6 +316,10 @@ export class TenantService {
           throw new Error('Business unit not found');
         }
 
+        if (!res.tb_business_unit.db_connection) {
+          throw new Error(`Business unit ${res.tb_business_unit.code} has no database connection configured`);
+        }
+
         const result = {
           tenant_id: res.tb_business_unit.id,
           db_connection: this.getConnectionString(
