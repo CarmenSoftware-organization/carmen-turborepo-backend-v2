@@ -10,11 +10,14 @@ export class BusinessUnitCreateRequestDto {
   @ApiProperty({ description: 'Business unit name (min 3 chars)', example: 'Head Office' })
   name: string;
 
-  @ApiPropertyOptional({ description: 'Alias name (max 3 chars)', example: 'HO' })
+  @ApiPropertyOptional({ description: 'Alias name (min 3 chars)', example: 'HO' })
   alias_name?: string;
 
   @ApiPropertyOptional({ description: 'Description', example: 'Main head office business unit' })
   description?: string;
+
+  @ApiPropertyOptional({ description: 'Additional info (JSON)', example: {} })
+  info?: unknown;
 
   @ApiPropertyOptional({ description: 'Default currency ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   default_currency_id?: string;
@@ -28,9 +31,16 @@ export class BusinessUnitCreateRequestDto {
   @ApiProperty({ description: 'Is active', example: true })
   is_active: boolean;
 
+  @ApiPropertyOptional({ description: 'Database connection config (JSON)', example: {} })
+  db_connection?: unknown;
+
+  @ApiPropertyOptional({ description: 'Business unit config (JSON)', example: {} })
+  config?: unknown;
+
   @ApiPropertyOptional({ description: 'Calculation method', enum: ['average', 'fifo'], example: 'average' })
   calculation_method?: string;
 
+  // Company info
   @ApiPropertyOptional({ description: 'Branch number', example: '00000' })
   branch_no?: string;
 
@@ -52,6 +62,7 @@ export class BusinessUnitCreateRequestDto {
   @ApiPropertyOptional({ description: 'Tax number', example: '1234567890123' })
   tax_no?: string;
 
+  // Hotel info
   @ApiPropertyOptional({ description: 'Hotel name', example: 'Carmen Grand Hotel' })
   hotel_name?: string;
 
@@ -66,6 +77,37 @@ export class BusinessUnitCreateRequestDto {
 
   @ApiPropertyOptional({ description: 'Hotel zip code', example: '10120' })
   hotel_zip_code?: string;
+
+  // Format settings
+  @ApiPropertyOptional({ description: 'Date format', example: 'yyyy-MM-dd' })
+  date_format?: string;
+
+  @ApiPropertyOptional({ description: 'Date-time format', example: 'yyyy-MM-dd HH:mm:ss' })
+  date_time_format?: string;
+
+  @ApiPropertyOptional({ description: 'Time format', example: 'HH:mm:ss' })
+  time_format?: string;
+
+  @ApiPropertyOptional({ description: 'Short time format', example: 'HH:mm' })
+  short_time_format?: string;
+
+  @ApiPropertyOptional({ description: 'Long time format', example: 'HH:mm:ss' })
+  long_time_format?: string;
+
+  @ApiPropertyOptional({ description: 'Timezone', example: 'Asia/Bangkok' })
+  timezone?: string;
+
+  @ApiPropertyOptional({ description: 'Amount format config (JSON)', example: {} })
+  amount_format?: unknown;
+
+  @ApiPropertyOptional({ description: 'Quantity format config (JSON)', example: {} })
+  quantity_format?: unknown;
+
+  @ApiPropertyOptional({ description: 'Per-page format config (JSON)', example: {} })
+  perpage_format?: unknown;
+
+  @ApiPropertyOptional({ description: 'Recipe format config (JSON)', example: {} })
+  recipe_format?: unknown;
 }
 
 export class BusinessUnitUpdateRequestDto {
@@ -78,11 +120,14 @@ export class BusinessUnitUpdateRequestDto {
   @ApiPropertyOptional({ description: 'Business unit name (min 3 chars)', example: 'Head Office' })
   name?: string;
 
-  @ApiPropertyOptional({ description: 'Alias name (max 3 chars)', example: 'HO' })
+  @ApiPropertyOptional({ description: 'Alias name (min 3 chars)', example: 'HO' })
   alias_name?: string;
 
   @ApiPropertyOptional({ description: 'Description', example: 'Main head office business unit' })
   description?: string;
+
+  @ApiPropertyOptional({ description: 'Additional info (JSON)', example: {} })
+  info?: unknown;
 
   @ApiPropertyOptional({ description: 'Default currency ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   default_currency_id?: string;
@@ -96,9 +141,16 @@ export class BusinessUnitUpdateRequestDto {
   @ApiPropertyOptional({ description: 'Is active', example: true })
   is_active?: boolean;
 
+  @ApiPropertyOptional({ description: 'Database connection config (JSON)', example: {} })
+  db_connection?: unknown;
+
+  @ApiPropertyOptional({ description: 'Business unit config (JSON)', example: {} })
+  config?: unknown;
+
   @ApiPropertyOptional({ description: 'Calculation method', enum: ['average', 'fifo'], example: 'average' })
   calculation_method?: string;
 
+  // Company info
   @ApiPropertyOptional({ description: 'Branch number', example: '00000' })
   branch_no?: string;
 
@@ -120,6 +172,7 @@ export class BusinessUnitUpdateRequestDto {
   @ApiPropertyOptional({ description: 'Tax number', example: '1234567890123' })
   tax_no?: string;
 
+  // Hotel info
   @ApiPropertyOptional({ description: 'Hotel name', example: 'Carmen Grand Hotel' })
   hotel_name?: string;
 
@@ -135,15 +188,7 @@ export class BusinessUnitUpdateRequestDto {
   @ApiPropertyOptional({ description: 'Hotel zip code', example: '10120' })
   hotel_zip_code?: string;
 
-  @ApiPropertyOptional({ description: 'Database connection config (JSON)', example: {} })
-  db_connection?: unknown;
-
-  @ApiPropertyOptional({ description: 'Business unit config (JSON)', example: {} })
-  config?: unknown;
-
-  @ApiPropertyOptional({ description: 'Additional info (JSON)', example: {} })
-  info?: unknown;
-
+  // Format settings
   @ApiPropertyOptional({ description: 'Date format', example: 'yyyy-MM-dd' })
   date_format?: string;
 

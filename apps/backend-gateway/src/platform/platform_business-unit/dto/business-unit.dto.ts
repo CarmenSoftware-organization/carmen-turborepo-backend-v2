@@ -1,5 +1,6 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
+import { enum_calculation_method } from '@repo/prisma-shared-schema-platform';
 
 export const BusinessUnitCreateSchema = z
   .object({
@@ -24,6 +25,8 @@ export const BusinessUnitCreateSchema = z
       })
       .min(3, 'alias_name must be at least 3 characters')
       .optional(),
+    description: z.string().optional(),
+    info: z.any().optional(),
     default_currency_id: z.string().uuid().optional(),
     max_license_users: z.number().int().nullable().optional(),
     is_hq: z.boolean({
@@ -32,6 +35,39 @@ export const BusinessUnitCreateSchema = z
     is_active: z.boolean({
       required_error: 'is_active field is required',
     }),
+    db_connection: z.any().optional(),
+    config: z.any().optional(),
+    calculation_method: z.enum(
+      Object.values(enum_calculation_method) as [string, ...string[]],
+    ).optional(),
+
+    // Company info
+    branch_no: z.string().optional(),
+    company_name: z.string().optional(),
+    company_address: z.string().optional(),
+    company_email: z.string().email('company_email must be a valid email').optional(),
+    company_tel: z.string().optional(),
+    company_zip_code: z.string().optional(),
+    tax_no: z.string().optional(),
+
+    // Hotel info
+    hotel_name: z.string().optional(),
+    hotel_address: z.string().optional(),
+    hotel_email: z.string().email('hotel_email must be a valid email').optional(),
+    hotel_tel: z.string().optional(),
+    hotel_zip_code: z.string().optional(),
+
+    // Format settings
+    date_format: z.string().optional(),
+    date_time_format: z.string().optional(),
+    time_format: z.string().optional(),
+    short_time_format: z.string().optional(),
+    long_time_format: z.string().optional(),
+    timezone: z.string().optional(),
+    amount_format: z.any().optional(),
+    quantity_format: z.any().optional(),
+    perpage_format: z.any().optional(),
+    recipe_format: z.any().optional(),
   })
 
 export type IBusinessUnitCreate = z.infer<typeof BusinessUnitCreateSchema>;
@@ -63,6 +99,8 @@ export const BusinessUnitUpdateSchema = z.object({
       })
       .min(3, 'alias_name must be at least 3 characters')
       .optional(),
+    description: z.string().optional(),
+    info: z.any().optional(),
     default_currency_id: z.string().uuid().optional(),
     max_license_users: z.number().int().nullable().optional(),
     is_hq: z
@@ -75,6 +113,39 @@ export const BusinessUnitUpdateSchema = z.object({
         required_error: 'is_active field is required',
       })
       .optional(),
+    db_connection: z.any().optional(),
+    config: z.any().optional(),
+    calculation_method: z.enum(
+      Object.values(enum_calculation_method) as [string, ...string[]],
+    ).optional(),
+
+    // Company info
+    branch_no: z.string().optional(),
+    company_name: z.string().optional(),
+    company_address: z.string().optional(),
+    company_email: z.string().email('company_email must be a valid email').optional(),
+    company_tel: z.string().optional(),
+    company_zip_code: z.string().optional(),
+    tax_no: z.string().optional(),
+
+    // Hotel info
+    hotel_name: z.string().optional(),
+    hotel_address: z.string().optional(),
+    hotel_email: z.string().email('hotel_email must be a valid email').optional(),
+    hotel_tel: z.string().optional(),
+    hotel_zip_code: z.string().optional(),
+
+    // Format settings
+    date_format: z.string().optional(),
+    date_time_format: z.string().optional(),
+    time_format: z.string().optional(),
+    short_time_format: z.string().optional(),
+    long_time_format: z.string().optional(),
+    timezone: z.string().optional(),
+    amount_format: z.any().optional(),
+    quantity_format: z.any().optional(),
+    perpage_format: z.any().optional(),
+    recipe_format: z.any().optional(),
   });
 
 export type IBusinessUnitUpdate = z.infer<typeof BusinessUnitUpdateSchema>;
