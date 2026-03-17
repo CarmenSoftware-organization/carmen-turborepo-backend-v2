@@ -1,0 +1,340 @@
+syntax = "proto3";
+
+package report.v1;
+
+option go_package = "github.com/CarmenSoftware/micro-report/proto/report/v1;reportv1";
+
+import "google/protobuf/timestamp.proto";
+
+// ============================================================
+// Service
+// ============================================================
+
+service ReportService {
+  // Sync: generate and return file bytes
+  rpc Generate(GenerateRequest) returns (GenerateResponse);
+
+  // Async: queue job, return job ID
+  rpc GenerateAsync(GenerateRequest) returns (AsyncResponse);
+
+  // Async: stream progress updates
+  rpc GenerateWithProgress(GenerateRequest) returns (stream ProgressUpdate);
+
+  // Job management
+  rpc GetJobStatus(JobStatusRequest) returns (JobStatusResponse);
+  rpc CancelJob(CancelJobRequest) returns (CancelJobResponse);
+  rpc GetDownloadURL(DownloadRequest) returns (DownloadResponse);
+
+  // Report catalog
+  rpc ListReportTypes(ListTypesRequest) returns (ListTypesResponse);
+  rpc GetReportHistory(HistoryRequest) returns (HistoryResponse);
+
+  // Report templates
+  rpc ListReportTemplates(ListReportTemplatesRequest) returns (ListReportTemplatesResponse);
+  rpc GetReportTemplate(GetReportTemplateRequest) returns (ReportTemplateResponse);
+  rpc CreateReportTemplate(CreateReportTemplateRequest) returns (ReportTemplateResponse);
+  rpc UpdateReportTemplate(UpdateReportTemplateRequest) returns (ReportTemplateResponse);
+  rpc DeleteReportTemplate(DeleteReportTemplateRequest) returns (DeleteReportTemplateResponse);
+
+  // Schedules
+  rpc CreateSchedule(CreateScheduleRequest) returns (ScheduleResponse);
+  rpc ListSchedules(ListSchedulesRequest) returns (ListSchedulesResponse);
+  rpc DeleteSchedule(DeleteScheduleRequest) returns (DeleteScheduleResponse);
+}
+
+// ============================================================
+// Enums
+// ============================================================
+
+enum ReportFormat {
+  REPORT_FORMAT_UNSPECIFIED = 0;
+  REPORT_FORMAT_PDF         = 1;
+  REPORT_FORMAT_EXCEL       = 2;
+  REPORT_FORMAT_CSV         = 3;
+  REPORT_FORMAT_JSON        = 4;
+}
+
+enum ReportCategory {
+  REPORT_CATEGORY_UNSPECIFIED  = 0;
+  REPORT_CATEGORY_INVENTORY    = 1;
+  REPORT_CATEGORY_PROCUREMENT  = 2;
+  REPORT_CATEGORY_RECIPE       = 3;
+  REPORT_CATEGORY_VENDOR       = 4;
+  REPORT_CATEGORY_FINANCIAL    = 5;
+  REPORT_CATEGORY_OPERATIONAL  = 6;
+}
+
+enum JobStatus {
+  JOB_STATUS_UNSPECIFIED = 0;
+  JOB_STATUS_QUEUED      = 1;
+  JOB_STATUS_PROCESSING  = 2;
+  JOB_STATUS_COMPLETED   = 3;
+  JOB_STATUS_FAILED      = 4;
+  JOB_STATUS_CANCELLED   = 5;
+}
+
+// ============================================================
+// Common Messages
+// ============================================================
+
+message TenantContext {
+  string user_id             = 1;
+  repeated string bu_codes   = 2;  // supports single or multiple BUs
+  string cluster_id          = 3;
+  string request_id          = 4;
+  string ip_address          = 5;
+  string user_agent          = 6;
+}
+
+message ReportFilters {
+  optional string date_from       = 1;
+  optional string date_to         = 2;
+  repeated string location_ids    = 3;
+  repeated string department_ids  = 4;
+  repeated string vendor_ids      = 5;
+  repeated string product_ids     = 6;
+  repeated string category_ids    = 7;
+  repeated string status          = 8;
+  optional string period_id       = 9;
+  optional string currency_id     = 10;
+}
+
+message ReportOptions {
+  optional string title       = 1;
+  string locale               = 2;
+  string timezone             = 3;
+  string page_size            = 4;
+  string orientation          = 5;
+  bool   include_summary      = 6;
+  optional string group_by    = 7;
+  optional string sort_by     = 8;
+  string sort_order           = 9;
+}
+
+// ============================================================
+// Generate
+// ============================================================
+
+message GenerateRequest {
+  TenantContext  context      = 1;
+  string         report_type  = 2;
+  ReportFormat   format       = 3;
+  ReportFilters  filters      = 4;
+  ReportOptions  options      = 5;
+  optional string template_id = 6;
+}
+
+message GenerateResponse {
+  bytes  file_content  = 1;
+  string file_name     = 2;
+  string content_type  = 3;
+  int64  file_size     = 4;
+  int32  row_count     = 5;
+}
+
+message AsyncResponse {
+  string job_id  = 1;
+  string message = 2;
+}
+
+message ProgressUpdate {
+  string job_id   = 1;
+  int32  progress  = 2;
+  string stage     = 3;
+  string message   = 4;
+}
+
+// ============================================================
+// Job Management
+// ============================================================
+
+message JobStatusRequest {
+  TenantContext context = 1;
+  string        job_id  = 2;
+}
+
+message JobStatusResponse {
+  string    job_id        = 1;
+  string    report_type   = 2;
+  ReportFormat format     = 3;
+  JobStatus status        = 4;
+  optional string file_url      = 5;
+  optional int64  file_size     = 6;
+  optional int32  row_count     = 7;
+  optional string error_message = 8;
+  optional google.protobuf.Timestamp started_at   = 9;
+  optional google.protobuf.Timestamp completed_at = 10;
+  optional int32 duration_ms = 11;
+}
+
+message CancelJobRequest {
+  TenantContext context = 1;
+  string        job_id  = 2;
+}
+
+message CancelJobResponse {
+  bool   success = 1;
+  string message = 2;
+}
+
+message DownloadRequest {
+  TenantContext context = 1;
+  string        job_id  = 2;
+}
+
+message DownloadResponse {
+  string download_url = 1;
+  string file_name    = 2;
+  string content_type = 3;
+  int64  file_size    = 4;
+  google.protobuf.Timestamp expires_at = 5;
+}
+
+// ============================================================
+// Catalog & History
+// ============================================================
+
+message ListTypesRequest {
+  TenantContext   context  = 1;
+  optional string category = 2;
+}
+
+message ReportTypeInfo {
+  string          report_type = 1;
+  string          name        = 2;
+  string          description = 3;
+  ReportCategory  category    = 4;
+  repeated ReportFormat supported_formats = 5;
+}
+
+message ListTypesResponse {
+  repeated ReportTypeInfo types = 1;
+}
+
+message HistoryRequest {
+  TenantContext   context     = 1;
+  optional int32  page        = 2;
+  optional int32  per_page    = 3;
+  optional string report_type = 4;
+}
+
+message HistoryResponse {
+  repeated JobStatusResponse jobs = 1;
+  int32 total    = 2;
+  int32 page     = 3;
+  int32 per_page = 4;
+}
+
+// ============================================================
+// Report Templates
+// ============================================================
+
+message ListReportTemplatesRequest {
+  TenantContext   context       = 1;
+  optional string report_group  = 2;
+}
+
+message ListReportTemplatesResponse {
+  repeated ReportTemplateResponse templates = 1;
+}
+
+message GetReportTemplateRequest {
+  TenantContext context = 1;
+  string        id      = 2;
+}
+
+message CreateReportTemplateRequest {
+  TenantContext context       = 1;
+  string        name          = 2;
+  optional string description = 3;
+  string        report_group  = 4;
+  string        dialog        = 5;
+  string        content       = 6;
+  bool          is_standard   = 7;
+  repeated string allow_business_unit = 8;
+  repeated string deny_business_unit  = 9;
+}
+
+message UpdateReportTemplateRequest {
+  TenantContext context       = 1;
+  string        id            = 2;
+  string        name          = 3;
+  optional string description = 4;
+  string        report_group  = 5;
+  string        dialog        = 6;
+  string        content       = 7;
+  bool          is_standard   = 8;
+  repeated string allow_business_unit = 9;
+  repeated string deny_business_unit  = 10;
+  bool          is_active     = 11;
+}
+
+message DeleteReportTemplateRequest {
+  TenantContext context = 1;
+  string        id      = 2;
+}
+
+message DeleteReportTemplateResponse {
+  bool   success = 1;
+  string message = 2;
+}
+
+message ReportTemplateResponse {
+  string id            = 1;
+  string name          = 2;
+  optional string description = 3;
+  string report_group  = 4;
+  string dialog        = 5;
+  string content       = 6;
+  bool   is_standard   = 7;
+  repeated string allow_business_unit = 8;
+  repeated string deny_business_unit  = 9;
+  bool   is_active     = 10;
+  optional string created_by_name = 11;
+  optional string updated_by_name = 12;
+  optional string deleted_by_name = 13;
+}
+
+// ============================================================
+// Schedule
+// ============================================================
+
+message CreateScheduleRequest {
+  TenantContext  context         = 1;
+  string         name            = 2;
+  string         report_type     = 3;
+  ReportFormat   format          = 4;
+  string         cron_expression = 5;
+  ReportFilters  filters         = 6;
+  ReportOptions  options         = 7;
+  repeated string recipients     = 8;
+}
+
+message ScheduleResponse {
+  string       id              = 1;
+  string       name            = 2;
+  string       report_type     = 3;
+  ReportFormat format          = 4;
+  string       cron_expression = 5;
+  bool         is_active       = 6;
+  optional google.protobuf.Timestamp last_run_at = 7;
+  optional google.protobuf.Timestamp next_run_at = 8;
+}
+
+message ListSchedulesRequest {
+  TenantContext context = 1;
+}
+
+message ListSchedulesResponse {
+  repeated ScheduleResponse schedules = 1;
+}
+
+message DeleteScheduleRequest {
+  TenantContext context = 1;
+  string        id      = 2;
+}
+
+message DeleteScheduleResponse {
+  bool   success = 1;
+  string message = 2;
+}
