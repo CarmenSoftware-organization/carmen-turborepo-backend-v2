@@ -238,7 +238,53 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
-  @ApiBody({ type: CreatePurchaseOrderDto })
+  @ApiBody({
+    type: CreatePurchaseOrderDto,
+    examples: {
+      'T02': {
+        summary: 'bu_code T02',
+        value: {
+          vendor_id: 'e0363f5a-3637-4d27-a421-8693550aa816',
+          delivery_date: '2024-01-15T00:00:00Z',
+          currency_id: '93dabe25-1668-4c5b-bceb-3e0b83b78002',
+          details: [
+            {
+              sequence: 1,
+              product_id: 'bb96415b-dff0-40ec-aa2f-2b4099418314',
+              order_unit_id: 'c03abcb6-8a3a-4576-85f0-0e2df8d34bf5',
+              order_qty: 10,
+              pr_detail: [
+                {
+                  pr_detail_id: '6457d871-f8fc-4b56-b4ab-0173297caab5',
+                  order_qty: 10,
+                  order_unit_id: 'c03abcb6-8a3a-4576-85f0-0e2df8d34bf5',
+                  order_base_qty: 10,
+                },
+              ],
+              order_unit_conversion_factor: 1,
+              base_unit_id: 'c03abcb6-8a3a-4576-85f0-0e2df8d34bf5',
+              base_qty: 10,
+              price: 0,
+              sub_total_price: 0,
+              net_amount: 0,
+              total_price: 0,
+              tax_profile_id: '337d3a49-f9de-497d-af33-acf2b4cfc731',
+              tax_profile_name: 'Vat 7%',
+              tax_rate: 0,
+              tax_amount: 0,
+              is_tax_adjustment: false,
+              discount_rate: 0,
+              discount_amount: 0,
+              is_discount_adjustment: false,
+              is_foc: false,
+              description: 'string',
+              note: 'string',
+            },
+          ],
+        },
+      },
+    },
+  })
   @HttpCode(HttpStatus.CREATED)
   async create(
     @Body() createDto: CreatePurchaseOrderDto,

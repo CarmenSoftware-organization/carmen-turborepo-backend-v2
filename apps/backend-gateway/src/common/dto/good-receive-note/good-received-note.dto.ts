@@ -51,6 +51,7 @@ export const GoodReceivedNoteDetail_PO_Create = GoodReceivedNoteDetailSchema.omi
   inventory_transaction_id: true,
   good_received_note_id: true,
   sequence_no: true,
+  is_tax_adjustment: true,
 }).extend({
   purchase_order_detail_id: z.string().uuid().optional(),
 })
@@ -61,6 +62,7 @@ export const GoodReceivedNoteDetail_Manual_Create = GoodReceivedNoteDetailSchema
   good_received_note_id: true,
   purchase_order_detail_id: true,
   sequence_no: true,
+  is_tax_adjustment: true,
 })
 .merge(ReceivedQuantityAndUnitSchema)
 .merge(FocSchema);
@@ -69,7 +71,7 @@ export const ExtraCostDetailCreate = z.object({
   extra_cost_type_id: z.string().uuid(),
   amount: z.number().optional(),
 })
-.merge(EmbeddedTaxSchema.extend({
+.merge(EmbeddedTaxSchema.omit({ is_tax_adjustment: true }).extend({
   tax_type: z
     .enum(Object.values(enum_tax_type) as [string, ...string[]])
     .optional(),
@@ -115,6 +117,7 @@ export const GoodReceivedNoteDetail_PO_Update = GoodReceivedNoteDetailSchema
 .omit({
   purchase_order_detail_id: true,
   inventory_transaction_id: true,
+  is_tax_adjustment: true,
 })
 .extend({
   tax_type: z
@@ -125,6 +128,7 @@ export const GoodReceivedNoteDetail_PO_Update = GoodReceivedNoteDetailSchema
 export const GoodReceivedNoteDetail_Manual_Update = GoodReceivedNoteDetailSchema
 .omit({
   inventory_transaction_id: true,
+  is_tax_adjustment: true,
 })
 .merge(ReceivedQuantityAndUnitSchema)
 .merge(FocSchema);

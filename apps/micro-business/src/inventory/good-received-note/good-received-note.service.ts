@@ -280,9 +280,9 @@ export class GoodReceivedNoteService {
     if (!currency) {
       return Result.error('Currency not found', ErrorCode.NOT_FOUND);
     } else {
-      if (!data.currency_rate) {
-        data.currency_rate = Number(currency.exchange_rate);
-      }
+      // if (!data.currency_rate) {
+      //   data.currency_rate = Number(currency.exchange_rate);
+      // }
       data.currency_code = currency.code;
     }
 
@@ -363,28 +363,32 @@ export class GoodReceivedNoteService {
             item.product_local_name = findProduct.local_name;
           }
 
-          const findOrderUnit = await prisma.tb_unit.findFirst({
-            where: {
-              id: item.order_unit_id,
-            },
-          });
+          if (item.order_unit_id) {
+            const findOrderUnit = await prisma.tb_unit.findFirst({
+              where: {
+                id: item.order_unit_id,
+              },
+            });
 
-          if (!findOrderUnit) {
-            orderUnitNotFound.push(item.order_unit_id);
-          } else {
-            item.order_unit_name = findOrderUnit.name;
+            if (!findOrderUnit) {
+              orderUnitNotFound.push(item.order_unit_id);
+            } else {
+              item.order_unit_name = findOrderUnit.name;
+            }
           }
 
-          const findReceivedUnit = await prisma.tb_unit.findFirst({
-            where: {
-              id: item.received_unit_id,
-            },
-          });
+          if (item.received_unit_id) {
+            const findReceivedUnit = await prisma.tb_unit.findFirst({
+              where: {
+                id: item.received_unit_id,
+              },
+            });
 
-          if (!findReceivedUnit) {
-            receivedUnitNotFound.push(item.received_unit_id);
-          } else {
-            item.received_unit_name = findReceivedUnit.name;
+            if (!findReceivedUnit) {
+              receivedUnitNotFound.push(item.received_unit_id);
+            } else {
+              item.received_unit_name = findReceivedUnit.name;
+            }
           }
 
           if (item.foc_unit_id) {
@@ -402,25 +406,16 @@ export class GoodReceivedNoteService {
           }
 
           if (item.tax_profile_id) {
-            const gbl_findTaxProfile =
-              await prisma.tb_application_config.findFirst({
+            const findTaxProfile =
+              await prisma.tb_tax_profile.findFirst({
                 where: {
-                  key: "tax_profile",
+                  id: item.tax_profile_id,
+                  deleted_at: null,
                 },
               });
 
-            if (!gbl_findTaxProfile) {
+            if (!findTaxProfile) {
               taxProfileNotFound.push(item.tax_profile_name);
-            }
-
-            if (gbl_findTaxProfile && gbl_findTaxProfile.value) {
-              const taxProfile = gbl_findTaxProfile.value as unknown as Record<string, unknown>[];
-              const findTaxProfile = taxProfile.find(
-                (tax) => tax.id === item.tax_profile_id,
-              );
-              if (!findTaxProfile) {
-                taxProfileNotFound.push(item.tax_profile_name);
-              }
             }
           }
 
@@ -481,6 +476,7 @@ export class GoodReceivedNoteService {
 
       await Promise.all(
         data.extra_cost.extra_cost_detail.add.map(async (item) => {
+          console.log('extra cost item', item.extra_cost_type_id);
           const findExtraCostType = await prisma.tb_extra_cost_type.findFirst({
             where: {
               id: item.extra_cost_type_id,
@@ -493,28 +489,6 @@ export class GoodReceivedNoteService {
             item.extra_cost_type_name = findExtraCostType.name;
           }
 
-          // if (item.tax_profile_name) {
-          //   const gbl_findTaxProfile =
-          //     await prisma.tb_application_config.findFirst({
-          //       where: {
-          //         key: "tax_profile",
-          //       },
-          //     });
-
-          //   if (!gbl_findTaxProfile) {
-          //     taxProfileNotFound.push(item.tax_profile_name);
-          //   }
-
-          //   if (gbl_findTaxProfile) {
-          //     const taxProfile = JSON.parse(gbl_findTaxProfile.value as string);
-          //     const findTaxProfile = taxProfile.find(
-          //       (tax: any) => tax.name === item.tax_profile_name,
-          //     );
-          //     if (!findTaxProfile) {
-          //       taxProfileNotFound.push(item.tax_profile_name);
-          //     }
-          //   }
-          // }
         }),
       );
 
@@ -530,12 +504,15 @@ export class GoodReceivedNoteService {
     }
 
     const tx = await prisma.$transaction(async (prisma) => {
-      const goodReceivedNoteObject: IGoodReceivedNoteCreate = {
-        ...data,
-      };
-
+      // Pick only fields that exist on tb_good_received_note
+      const goodReceivedNoteObject: any = { ...data };
       delete goodReceivedNoteObject.good_received_note_detail;
       delete goodReceivedNoteObject.extra_cost;
+      delete goodReceivedNoteObject.expired_date;
+      delete goodReceivedNoteObject.discount_rate;
+      delete goodReceivedNoteObject.discount_amount;
+      delete goodReceivedNoteObject.is_discount_adjustment;
+      delete goodReceivedNoteObject.base_discount_amount;
 
       const createGoodReceivedNote = await prisma.tb_good_received_note.create({
         data: {
@@ -547,18 +524,21 @@ export class GoodReceivedNoteService {
             user_id,
           ),
           doc_version: 0,
-          doc_status: enum_doc_status.draft,
+          doc_status: enum_good_received_note_status.draft,
         },
       });
 
-      if (data.good_received_note_detail?.add.length > 0) {
-        const goodReceivedNoteDetailObj = await Promise.all(
-          data.good_received_note_detail.add.map(async (item) => {
-            return {
-              good_received_note_id: createGoodReceivedNote.id,
-              created_by_id: user_id,
-              ...item,
-            };
+      if (data.good_received_note_detail?.add?.length > 0) {
+        const goodReceivedNoteDetailObj = data.good_received_note_detail.add.map(
+          (item, index) => ({
+            good_received_note_id: createGoodReceivedNote.id,
+            sequence_no: index + 1,
+            purchase_order_detail_id: item.purchase_order_detail_id,
+            location_id: item.location_id,
+            location_name: item.location_name,
+            product_id: item.product_id,
+            product_name: item.product_name,
+            product_local_name: item.product_local_name,
           }),
         );
 
@@ -568,29 +548,31 @@ export class GoodReceivedNoteService {
       }
 
       if (data.extra_cost) {
-        const extraCostObj = { ...data.extra_cost };
-        delete extraCostObj.extra_cost_detail;
-
         const createExtraCost = await prisma.tb_extra_cost.create({
           data: {
             good_received_note_id: createGoodReceivedNote.id,
             created_by_id: user_id,
-            ...extraCostObj,
+            name: data.extra_cost.name,
+            allocate_extra_cost_type: data.extra_cost.allocate_extracost_type,
+            note: data.extra_cost.note,
+            info: data.extra_cost.info ?? {},
           },
         });
 
-        if (data.extra_cost.extra_cost_detail?.add.length > 0) {
-          const extraCostDetailObj = await Promise.all(
-            data.extra_cost.extra_cost_detail.add.map(async (item) => {
-              return JSON.parse(
-                JSON.stringify({
-                  ...item,
-                  extra_cost_id: createExtraCost.id,
-                  created_by_id: user_id,
-                  name: createExtraCost['extra_cost_type_name'],
-                  extra_cost_type_name: undefined,
-                }),
-              );
+        if (data.extra_cost.extra_cost_detail?.add?.length > 0) {
+          const extraCostDetailObj = data.extra_cost.extra_cost_detail.add.map(
+            (item) => ({
+              extra_cost_id: createExtraCost.id,
+              extra_cost_type_id: item.extra_cost_type_id,
+              name: (item as any).extra_cost_type_name,
+              amount: item.amount,
+              tax_profile_id: item.tax_profile_id,
+              tax_profile_name: item.tax_profile_name,
+              tax_rate: item.tax_rate,
+              tax_amount: item.tax_amount,
+              note: item.note,
+              info: item.info ?? {},
+              dimension: item.dimension ?? [],
             }),
           );
 
@@ -799,25 +781,16 @@ export class GoodReceivedNoteService {
             }
 
             if (item.tax_profile_id) {
-              const gbl_findTaxProfile =
-                await prisma.tb_application_config.findFirst({
+              const findTaxProfile =
+                await prisma.tb_tax_profile.findFirst({
                   where: {
-                    key: "tax_profile",
+                    id: item.tax_profile_id,
+                    deleted_at: null,
                   },
                 });
 
-              if (!gbl_findTaxProfile) {
+              if (!findTaxProfile) {
                 taxProfileNotFound.push(item.tax_profile_name);
-              }
-
-              if (gbl_findTaxProfile && gbl_findTaxProfile.value) {
-                const taxProfile = gbl_findTaxProfile.value as unknown as Record<string, unknown>[];
-                const findTaxProfile = taxProfile.find(
-                  (tax) => tax.id === item.tax_profile_id,
-                );
-                if (!findTaxProfile) {
-                  taxProfileNotFound.push(item.tax_profile_name);
-                }
               }
             }
 
@@ -980,25 +953,16 @@ export class GoodReceivedNoteService {
             }
 
             if (item.tax_profile_id) {
-              const gbl_findTaxProfile =
-                await prisma.tb_application_config.findFirst({
+              const findTaxProfile =
+                await prisma.tb_tax_profile.findFirst({
                   where: {
-                    key: "tax_profile",
+                    id: item.tax_profile_id,
+                    deleted_at: null,
                   },
                 });
 
-              if (!gbl_findTaxProfile) {
+              if (!findTaxProfile) {
                 taxProfileNotFound.push(item.tax_profile_name);
-              }
-
-              if (gbl_findTaxProfile && gbl_findTaxProfile.value) {
-                const taxProfile = gbl_findTaxProfile.value as unknown as Record<string, unknown>[];
-                const findTaxProfile = taxProfile.find(
-                  (tax) => tax.id === item.tax_profile_id,
-                );
-                if (!findTaxProfile) {
-                  taxProfileNotFound.push(item.tax_profile_name);
-                }
               }
             }
 
@@ -1106,25 +1070,16 @@ export class GoodReceivedNoteService {
               }
 
               if (item.tax_profile_id) {
-                const gbl_findTaxProfile =
-                  await prisma.tb_application_config.findFirst({
+                const findTaxProfile =
+                  await prisma.tb_tax_profile.findFirst({
                     where: {
-                      key: "tax_profile",
+                      id: item.tax_profile_id,
+                      deleted_at: null,
                     },
                   });
 
-                if (!gbl_findTaxProfile) {
+                if (!findTaxProfile) {
                   taxProfileNotFound.push(item.tax_profile_name);
-                }
-
-                if (gbl_findTaxProfile && gbl_findTaxProfile.value) {
-                  const taxProfile = gbl_findTaxProfile.value as unknown as Record<string, unknown>[];
-                  const findTaxProfile = taxProfile.find(
-                    (tax) => tax.id === item.tax_profile_id,
-                  );
-                  if (!findTaxProfile) {
-                    taxProfileNotFound.push(item.tax_profile_name);
-                  }
                 }
               }
             }),
@@ -1169,23 +1124,16 @@ export class GoodReceivedNoteService {
               }
 
               if (item.tax_profile_id) {
-                const gbl_findTaxProfile =
-                  await prisma.tb_application_config.findFirst({
-                    where: { key: "tax_profile" },
+                const findTaxProfile =
+                  await prisma.tb_tax_profile.findFirst({
+                    where: {
+                      id: item.tax_profile_id,
+                      deleted_at: null,
+                    },
                   });
 
-                if (!gbl_findTaxProfile) {
+                if (!findTaxProfile) {
                   taxProfileNotFound.push(item.tax_profile_name);
-                }
-
-                if (gbl_findTaxProfile && gbl_findTaxProfile.value) {
-                  const taxProfile = gbl_findTaxProfile.value as unknown as Record<string, unknown>[];
-                  const findTaxProfile = taxProfile.find(
-                    (tax) => tax.id === item.tax_profile_id,
-                  );
-                  if (!findTaxProfile) {
-                    taxProfileNotFound.push(item.tax_profile_name);
-                  }
                 }
               }
             }),
@@ -1249,7 +1197,7 @@ export class GoodReceivedNoteService {
             data.good_received_note_detail.add.map(async (item) => {
               return {
                 good_received_note_id: data.id,
-                created_by_id: user_id,
+                // created_by_id: user_id,
                 ...item,
               };
             }),

@@ -300,7 +300,73 @@ export class GoodReceivedNoteController extends BaseHttpController {
       400: { description: 'Invalid request body' },
     },
   })
-  @ApiBody({ type: CreateGoodReceivedNoteSwaggerDto })
+  @ApiBody({
+    type: CreateGoodReceivedNoteSwaggerDto,
+    examples: {
+      'T02': {
+        summary: 'bu_code T02',
+        value: {
+          note: 'string',
+          grn_date: '2026-03-17T00:00:00.000Z',
+          info: { nullable: true },
+          dimension: { nullable: true },
+          invoice_no: 'string',
+          invoice_date: '2026-03-17T00:00:00.000Z',
+          description: 'string',
+          doc_status: 'in_progress',
+          doc_type: 'purchase_order',
+          is_consignment: true,
+          is_cash: false,
+          signature_image_url: 'string',
+          received_by_id: '1df476e2-3d99-766b-d94a-931f697ef98b',
+          received_by_name: 'string',
+          received_at: '2026-03-17T00:00:00.000Z',
+          credit_term_days: 9271,
+          credit_term_id: '42a89581-5ce4-4fc1-8d1e-1825481ebd6c',
+          payment_due_date: '2026-03-31T00:00:00.000Z',
+          is_active: true,
+          vendor_id: 'e0363f5a-3637-4d27-a421-8693550aa816',
+          currency_id: '93dabe25-1668-4c5b-bceb-3e0b83b78002',
+          exchange_rate: 7916.432837822737,
+          exchange_rate_date: '2026-03-17T00:00:00.000Z',
+          good_received_note_detail: {
+            add: [
+              {
+                purchase_order_detail_id: '0a7b59a2-c041-446d-a82e-aae2640ceee9',
+                product_id: 'bb96415b-dff0-40ec-aa2f-2b4099418314',
+                location_id: '30053105-d69d-4389-9426-d82b7b87b7fc',
+              },
+            ],
+          },
+          extra_cost: {
+            note: 'string',
+            info: { nullable: true },
+            dimension: { nullable: true },
+            name: 'string',
+            allocate_extracost_type: 'by_value',
+            extra_cost_detail: {
+              add: [
+                {
+                  extra_cost_type_id: '7a8c9d5a-a5ee-4652-a3a6-6315f06fda19',
+                  note: 'string',
+                  info: { nullable: true },
+                  dimension: { nullable: true },
+                  amount: 1632.8137799616904,
+                  tax_profile_id: '337d3a49-f9de-497d-af33-acf2b4cfc731',
+                  tax_profile_name: 'Vat 7%',
+                  tax_rate: 2544.9772454712624,
+                  tax_amount: 6145.603208561031,
+                  base_tax_amount: 9424.301986050697,
+                  total_amount: 8740.975632592232,
+                  tax_type: 'add',
+                },
+              ],
+            },
+          },
+        },
+      },
+    },
+  })
   async create(
     @Body() createDto: GoodReceivedNoteCreateDto,
     @Param('bu_code') bu_code: string,
@@ -354,7 +420,58 @@ export class GoodReceivedNoteController extends BaseHttpController {
       404: { description: 'The Good Received Note was not found' },
     },
   })
-  @ApiBody({ type: UpdateGoodReceivedNoteSwaggerDto })
+  @ApiBody({
+    type: UpdateGoodReceivedNoteSwaggerDto,
+    examples: {
+      'update-grn-header': {
+        summary: 'Update GRN header fields only',
+        value: {
+          invoice_no: 'INV-2026-0100',
+          invoice_f: '2026-03-17T00:00:00.000Z',
+          description: 'Updated description',
+          note: 'Verified all items',
+          is_cash: false,
+        },
+      },
+      'update-grn-with-details': {
+        summary: 'Update GRN with add/update/remove details',
+        description: 'Add new detail items, update existing ones, and remove by ID.',
+        value: {
+          good_received_note_detail: {
+            add: [
+              {
+                product_id: '<product_uuid>',
+                location_id: '<location_uuid>',
+                tax_profile_id: '<tax_profile_uuid>',
+                tax_profile_name: 'VAT 7%',
+                tax_rate: 7,
+                tax_amount: 70,
+                base_tax_amount: 70,
+                total_amount: 1070,
+              },
+            ],
+            update: [
+              {
+                id: '<existing_detail_uuid>',
+                good_received_note_id: '<grn_uuid>',
+                product_id: '<product_uuid>',
+                location_id: '<location_uuid>',
+                tax_profile_id: '<tax_profile_uuid>',
+                tax_profile_name: 'VAT 7%',
+                tax_rate: 7,
+                tax_amount: 70,
+                base_tax_amount: 70,
+                total_amount: 1070,
+              },
+            ],
+            remove: [
+              { id: '<detail_uuid_to_remove>' },
+            ],
+          },
+        },
+      },
+    },
+  })
   async update(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
