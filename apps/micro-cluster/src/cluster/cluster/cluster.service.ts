@@ -208,9 +208,27 @@ export class ClusterService {
       where: q.where(),
     });
 
-    const serializedClusters = clusters.map((item) =>
-      ClusterListItemResponseSchema.parse(item)
+    // Fetch total_max_license_users per cluster (sum of max_license_users from all BUs)
+    const clusterIds = clusters.map((c) => c.id);
+    const buAggregations = clusterIds.length > 0
+      ? await this.prismaSystem.tb_business_unit.groupBy({
+          by: ['cluster_id'],
+          where: { cluster_id: { in: clusterIds }, is_active: true },
+          _sum: { max_license_users: true },
+        })
+      : [];
+
+    const buAggMap = new Map(
+      buAggregations.map((agg) => [agg.cluster_id, agg._sum.max_license_users ?? 0]),
     );
+
+    const serializedClusters = clusters.map((item) => {
+      const parsed = ClusterListItemResponseSchema.parse(item);
+      return {
+        ...parsed,
+        total_max_license_users: buAggMap.get(item.id) ?? 0,
+      };
+    });
 
     return Result.ok({
       paginate: {
