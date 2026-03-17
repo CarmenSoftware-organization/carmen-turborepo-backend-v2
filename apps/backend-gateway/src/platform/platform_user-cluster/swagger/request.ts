@@ -11,7 +11,7 @@ export class UserClusterCreateRequestDto {
   is_active: boolean;
 
   @ApiPropertyOptional({ description: 'Parent business unit ID', example: 'c3d4e5f6-a7b8-9012-cdef-123456789012' })
-  parent_bu?: string;
+  parent_bu_id?: string;
 
   @ApiProperty({ description: 'User role in cluster', example: 'user', enum: ['admin', 'user'] })
   role: string;
@@ -28,7 +28,7 @@ export class UserClusterUpdateRequestDto {
   is_active?: boolean;
 
   @ApiPropertyOptional({ description: 'Parent business unit ID', example: 'c3d4e5f6-a7b8-9012-cdef-123456789012' })
-  parent_bu?: string;
+  parent_bu_id?: string;
 
   @ApiPropertyOptional({ description: 'User role in cluster', example: 'user', enum: ['admin', 'user'] })
   role?: string;

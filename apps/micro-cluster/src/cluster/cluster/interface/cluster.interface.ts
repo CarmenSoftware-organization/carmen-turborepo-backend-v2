@@ -26,7 +26,7 @@ export interface IUserCluster {
   cluster_id: string;
   is_active: boolean;
   role: enum_cluster_user_role;
-  parent_bu?: string | null;
+  parent_bu_id?: string | null;
 }
 
 export interface IUserClusterUpdate {
@@ -35,7 +35,7 @@ export interface IUserClusterUpdate {
   cluster_id?: string;
   is_active?: boolean;
   role?: enum_cluster_user_role;
-  parent_bu?: string | null;
+  parent_bu_id?: string | null;
 }
 
 
@@ -44,6 +44,7 @@ export interface IUserClusterDTO {
   email: string;
   platform_role: enum_platform_role;
   role: enum_cluster_user_role;
+  parent_bu_id?: string | null;
   cluster: {
     id: string;
     name: string

@@ -6,7 +6,7 @@ export const UserClusterSchema = z.object({
   user_id: z.string({ required_error: 'user_id is required' }),
   cluster_id: z.string({ required_error: 'cluster_id is required' }),
   is_active: z.boolean({ required_error: 'is_active is required' }),
-  parent_bu: z.string().uuid().nullable().optional(),
+  parent_bu_id: z.string().uuid().nullable().optional(),
   role: z.enum(Object.values(enum_cluster_user_role) as [string, ...string[]], {
     required_error: 'role is required',
   }),
@@ -20,7 +20,7 @@ export const UserClusterUpdateSchema = z.object({
   user_id: z.string({ required_error: 'user_id is required' }).optional(),
   cluster_id: z.string({ required_error: 'cluster_id is required' }).optional(),
   is_active: z.boolean({ required_error: 'is_active is required' }).optional(),
-  parent_bu: z.string().uuid().nullable().optional(),
+  parent_bu_id: z.string().uuid().nullable().optional(),
   role: z
     .enum(Object.values(enum_cluster_user_role) as [string, ...string[]], {
       required_error: 'role is required',

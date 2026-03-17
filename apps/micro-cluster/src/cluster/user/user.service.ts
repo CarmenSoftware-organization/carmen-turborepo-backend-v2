@@ -239,7 +239,7 @@ export class UserService {
       id: cu.id,
       cluster_id: cu.cluster_id,
       role: cu.role,
-      parent_bu: cu.parent_bu || null,
+      parent_bu_id: cu.parent_bu_id || null,
       cluster: cu.tb_cluster || null,
     }));
 

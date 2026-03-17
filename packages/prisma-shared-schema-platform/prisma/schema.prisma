@@ -196,7 +196,7 @@ model tb_cluster_user {
   user_id    String?                @db.Uuid
   cluster_id String                 @db.Uuid
   is_active  Boolean?               @default(true)
-  parent_bu  String?                @db.Uuid // เพื่อบอกว่าใคร BU ใหนเป็นเจ้าของ User คนนี้ เอาไว้ทำ invoice เก็บตังค์
+  parent_bu_id  String?                @db.Uuid // เพื่อบอกว่าใคร BU ใหนเป็นเจ้าของ User คนนี้ เอาไว้ทำ invoice เก็บตังค์
   role       enum_cluster_user_role @default(user)
 
   created_at    DateTime? @default(now()) @db.Timestamptz(6)

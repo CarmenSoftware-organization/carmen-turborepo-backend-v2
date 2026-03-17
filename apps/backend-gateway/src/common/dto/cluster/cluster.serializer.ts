@@ -4,7 +4,7 @@ const ClusterUserSchema = z.object({
   id: z.string(),
   user_id: z.string().nullable().optional(),
   role: z.string().nullable().optional(),
-  parent_bu: z.string().nullable().optional(),
+  parent_bu_id: z.string().nullable().optional(),
   user: z.object({
     id: z.string(),
     email: z.string().nullable().optional(),
@@ -83,7 +83,7 @@ export const UserClusterListResponseSchema = z.array(UserClusterSchema);
 export const UserClusterByClusterIdSchema = z.object({
   email: z.string().nullable().optional(),
   role: z.string().nullable().optional(),
-  parent_bu: z.string().nullable().optional(),
+  parent_bu_id: z.string().nullable().optional(),
   userInfo: z.object({
     firstname: z.string().nullable().optional(),
     lastname: z.string().nullable().optional(),
