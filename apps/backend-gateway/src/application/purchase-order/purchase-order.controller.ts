@@ -29,7 +29,11 @@ import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
-import { UpdatePurchaseOrderSwaggerDto } from './swagger/request';
+import {
+  UpdatePurchaseOrderSwaggerDto,
+  GroupPrForPoSwaggerDto,
+  ConfirmPrToPoSwaggerDto,
+} from './swagger/request';
 import {
   ApprovePurchaseOrderDto,
   SavePurchaseOrderDto,
@@ -896,19 +900,7 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        pr_ids: {
-          type: 'array',
-          items: { type: 'string', format: 'uuid' },
-          description: 'Array of PR IDs to group',
-        },
-      },
-      required: ['pr_ids'],
-    },
-  })
+  @ApiBody({ type: GroupPrForPoSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async groupPrForPo(
     @Body() body: { pr_ids: string[] },
@@ -976,19 +968,7 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        pr_ids: {
-          type: 'array',
-          items: { type: 'string', format: 'uuid' },
-          description: 'Array of PR IDs to confirm and create POs from',
-        },
-      },
-      required: ['pr_ids'],
-    },
-  })
+  @ApiBody({ type: ConfirmPrToPoSwaggerDto })
   @HttpCode(HttpStatus.CREATED)
   async confirmPrToPo(
     @Body() body: { pr_ids: string[] },

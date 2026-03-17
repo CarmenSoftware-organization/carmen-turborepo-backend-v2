@@ -31,6 +31,7 @@ import {
   PeriodCreateDto,
   PeriodUpdateDto,
 } from 'src/common/dto/period/period.dto';
+import { PeriodGenerateNextRequestDto } from './swagger/request';
 
 @Controller('api')
 @ApiTags('Inventory')
@@ -266,17 +267,7 @@ export class PeriodController extends BaseHttpController {
       201: { description: 'Periods generated successfully' },
     },
   })
-  @ApiBody({
-    description: 'Number of periods to generate',
-    schema: {
-      type: 'object',
-      properties: {
-        count: { type: 'number', example: 12, description: 'Number of periods to generate' },
-        start_day: { type: 'number', example: 1, default: 1, description: 'Start day of each period (1-28), default is 1' },
-      },
-      required: ['count'],
-    },
-  })
+  @ApiBody({ type: PeriodGenerateNextRequestDto })
   async generateNext(
     @Body() body: { count: number; start_day?: number },
     @Param('bu_code') bu_code: string,

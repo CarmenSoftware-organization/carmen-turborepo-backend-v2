@@ -20,7 +20,18 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { TestCreateFromGrnRequestDto } from './swagger/request';
+import {
+  TestCreateFromGrnRequestDto,
+  TestIssueRequestDto,
+  TestAdjustmentInRequestDto,
+  TestAdjustmentOutRequestDto,
+  TestTransferRequestDto,
+  TestEopInRequestDto,
+  TestEopOutRequestDto,
+  TestCreditNoteQtyRequestDto,
+  TestCreditNoteAmountRequestDto,
+  ClearProductTransactionsRequestDto,
+} from './swagger/request';
 import {
   BaseHttpController,
   Serialize,
@@ -102,6 +113,7 @@ export class InventoryTransactionController extends BaseHttpController {
     operationId: 'testIssueTransaction',
     tags: ['[Method] Post'],
   })
+  @ApiBody({ type: TestIssueRequestDto })
   @HttpCode(HttpStatus.OK)
   async testIssue(
     @Param('bu_code') bu_code: string,
@@ -125,6 +137,7 @@ export class InventoryTransactionController extends BaseHttpController {
     operationId: 'testAdjustmentInTransaction',
     tags: ['[Method] Post'],
   })
+  @ApiBody({ type: TestAdjustmentInRequestDto })
   @HttpCode(HttpStatus.OK)
   async testAdjustmentIn(
     @Param('bu_code') bu_code: string,
@@ -148,6 +161,7 @@ export class InventoryTransactionController extends BaseHttpController {
     operationId: 'testAdjustmentOutTransaction',
     tags: ['[Method] Post'],
   })
+  @ApiBody({ type: TestAdjustmentOutRequestDto })
   @HttpCode(HttpStatus.OK)
   async testAdjustmentOut(
     @Param('bu_code') bu_code: string,
@@ -171,6 +185,7 @@ export class InventoryTransactionController extends BaseHttpController {
     operationId: 'testTransferTransaction',
     tags: ['[Method] Post'],
   })
+  @ApiBody({ type: TestTransferRequestDto })
   @HttpCode(HttpStatus.OK)
   async testTransfer(
     @Param('bu_code') bu_code: string,
@@ -198,6 +213,7 @@ export class InventoryTransactionController extends BaseHttpController {
     operationId: 'testEopInTransaction',
     tags: ['[Method] Post'],
   })
+  @ApiBody({ type: TestEopInRequestDto })
   @HttpCode(HttpStatus.OK)
   async testEopIn(
     @Param('bu_code') bu_code: string,
@@ -225,6 +241,7 @@ export class InventoryTransactionController extends BaseHttpController {
     operationId: 'testEopOutTransaction',
     tags: ['[Method] Post'],
   })
+  @ApiBody({ type: TestEopOutRequestDto })
   @HttpCode(HttpStatus.OK)
   async testEopOut(
     @Param('bu_code') bu_code: string,
@@ -260,6 +277,7 @@ export class InventoryTransactionController extends BaseHttpController {
     operationId: 'testCreditNoteQtyTransaction',
     tags: ['[Method] Post'],
   })
+  @ApiBody({ type: TestCreditNoteQtyRequestDto })
   @HttpCode(HttpStatus.OK)
   async testCreditNoteQty(
     @Param('bu_code') bu_code: string,
@@ -294,6 +312,7 @@ export class InventoryTransactionController extends BaseHttpController {
     operationId: 'testCreditNoteAmountTransaction',
     tags: ['[Method] Post'],
   })
+  @ApiBody({ type: TestCreditNoteAmountRequestDto })
   @HttpCode(HttpStatus.OK)
   async testCreditNoteAmount(
     @Param('bu_code') bu_code: string,
@@ -443,6 +462,7 @@ export class InventoryTransactionController extends BaseHttpController {
     tags: ['[Method] Post'],
     deprecated: true,
   })
+  @ApiBody({ type: ClearProductTransactionsRequestDto })
   @HttpCode(HttpStatus.OK)
   async clearProductTransactions(
     @Param('bu_code') bu_code: string,

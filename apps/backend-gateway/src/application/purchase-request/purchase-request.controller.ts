@@ -51,6 +51,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { CalculatePurchaseRequestDetail } from './dto/CalculatePurchaseRequestDetail.dto';
 import {
   DuplicatePurchaseRequestSwaggerDto,
+  SplitPurchaseRequestSwaggerDto,
   SubmitPurchaseRequestSwaggerDto,
   RejectPurchaseRequestSwaggerDto,
   ReviewPurchaseRequestSwaggerDto,
@@ -512,20 +513,7 @@ export class PurchaseRequestController extends BaseHttpController {
       },
     },
   })
-  @ApiBody({
-    description: 'Detail IDs to split into a new purchase request',
-    schema: {
-      type: 'object',
-      properties: {
-        detail_ids: {
-          type: 'array',
-          items: { type: 'string' },
-          description: 'Array of purchase request detail IDs to split',
-        },
-      },
-      required: ['detail_ids'],
-    },
-  })
+  @ApiBody({ type: SplitPurchaseRequestSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async splitPr(
     @Param('id') id: string,

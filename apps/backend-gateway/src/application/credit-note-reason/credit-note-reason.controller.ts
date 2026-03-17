@@ -29,7 +29,8 @@ import {
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CreditNoteReasonCreateRequestDto } from './swagger/request';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
@@ -99,7 +100,17 @@ export class CreditNoteReasonController extends BaseHttpController {
 
   @Post()
   @UseGuards(new AppIdGuard('creditNoteReason.create'))
-  @ApiOperation({ summary: 'Create a credit note reason' })
+  @ApiOperation({
+    summary: 'Create a credit note reason',
+    description: 'Creates a new reason that can be selected when issuing vendor credit notes, such as damaged goods, short delivery, or quality issues.',
+    operationId: 'createCreditNoteReason',
+    tags: ['Procurement', 'Credit Note Reason'],
+    responses: {
+      201: { description: 'Credit note reason created successfully' },
+      400: { description: 'Invalid request body' },
+    },
+  })
+  @ApiBody({ type: CreditNoteReasonCreateRequestDto })
   @Serialize(CreditNoteReasonMutationResponseSchema)
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
