@@ -38,6 +38,11 @@ export class PhysicalCountPeriodService {
   async findOne(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: "findOne", id, user_id, tenant_id }, PhysicalCountPeriodService.name);
 
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(id)) {
+      return Result.error("Invalid ID format", ErrorCode.INVALID_ARGUMENT);
+    }
+
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
       return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
@@ -288,6 +293,22 @@ export class PhysicalCountPeriodService {
     }
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    // Validate period exists
+    const periodExists = await prisma.tb_period.findFirst({
+      where: { id: data.period_id, deleted_at: null },
+    });
+    if (!periodExists) {
+      return Result.error("Period not found", ErrorCode.NOT_FOUND);
+    }
+
+    // Check duplicate: only one physical count period per period
+    const existing = await prisma.tb_physical_count_period.findFirst({
+      where: { period_id: data.period_id, deleted_at: null },
+    });
+    if (existing) {
+      return Result.error("Physical count period already exists for this period", ErrorCode.ALREADY_EXISTS);
+    }
 
     const period = await prisma.tb_physical_count_period.create({
       data: {
