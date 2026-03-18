@@ -471,7 +471,15 @@ export class UserService {
       // Continue with DB deletion even if Keycloak fails
     }
 
-    // 2. Delete tb_user_profile
+    // 2. Delete related records
+    await this.prismaSystem.tb_user_tb_business_unit.deleteMany({
+      where: { user_id: id },
+    });
+
+    await this.prismaSystem.tb_cluster_user.deleteMany({
+      where: { user_id: id },
+    });
+
     await this.prismaSystem.tb_user_profile.deleteMany({
       where: { user_id: id },
     });
