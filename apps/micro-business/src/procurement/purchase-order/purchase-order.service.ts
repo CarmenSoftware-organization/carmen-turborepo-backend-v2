@@ -681,11 +681,11 @@ export class PurchaseOrderService {
       },
     });
 
-    // Handle purchase_order_details add/remove/update
-    if (data.purchase_order_details) {
+    // Handle purchase_order_detail add/remove/update
+    if (data.purchase_order_detail) {
       // Add new details
-      if (data.purchase_order_details.add) {
-        for (const detail of data.purchase_order_details.add) {
+      if (data.purchase_order_detail.add) {
+        for (const detail of data.purchase_order_detail.add) {
           await this.prismaService.tb_purchase_order_detail.create({
             data: {
               purchase_order_id: updatedPO.id,
@@ -727,9 +727,9 @@ export class PurchaseOrderService {
       }
 
       // Remove details
-      if (data.purchase_order_details.remove) {
-        for (const detailId of data.purchase_order_details.remove) {
-          const id = typeof detailId === 'object' ? detailId.id : detailId;
+      if (data.purchase_order_detail.remove) {
+        for (const detailId of data.purchase_order_detail.remove) {
+          const id = detailId;
           // First delete junction records
           await this.prismaService.tb_purchase_order_detail_tb_purchase_request_detail.deleteMany(
             {
@@ -744,9 +744,9 @@ export class PurchaseOrderService {
       }
 
       // Update existing details
-      if (data.purchase_order_details.update) {
-        for (const detail of data.purchase_order_details.update) {
-          const detailId = typeof detail.id === 'object' ? (detail.id as unknown as Record<string, string>).id : detail.id;
+      if (data.purchase_order_detail.update) {
+        for (const detail of data.purchase_order_detail.update) {
+          const detailId = detail.id;
           await this.prismaService.tb_purchase_order_detail.update({
             where: { id: detailId },
             data: {

@@ -28,6 +28,7 @@ export const purchaseOrderDetail = z.object({
   base_net_amount: z.number().optional(),
   total_price: z.number().optional(),
   base_total_price: z.number().optional(),
+  product_id: z.string().uuid().optional(),
   info: z.any().optional(),
   history: z.any().optional(),
 });
@@ -53,12 +54,18 @@ export const PurchaseOrderCreate = z.object({
   info: z.any().optional(),
   history: z.any().optional(),
   doc_version: z.number().optional(),
-  purchase_order_detail: purchaseOrderDetail.optional(),
+  purchase_order_detail: z.object({
+    add: z.array(purchaseOrderDetail).optional(),
+  }).optional(),
 });
 
 export type PurchaseOrderCreateModel = z.infer<typeof PurchaseOrderCreate>;
 
-export class PurchaseOrderCreateDto extends createZodDto(PurchaseOrderCreate) {}
+export class PurchaseOrderCreateDto extends createZodDto(PurchaseOrderCreate) { }
+
+export const purchaseOrderDetailUpdate = purchaseOrderDetail.extend({
+  id: z.string().uuid(),
+});
 
 export const PurchaseOrderUpdate = z.object({
   name: z.string(),
@@ -81,12 +88,16 @@ export const PurchaseOrderUpdate = z.object({
   info: z.any().optional(),
   history: z.any().optional(),
   doc_version: z.number().optional(),
-  purchase_order_detail: purchaseOrderDetail.optional(),
+  purchase_order_detail: z.object({
+    add: z.array(purchaseOrderDetail).optional(),
+    update: z.array(purchaseOrderDetailUpdate).optional(),
+    remove: z.array(z.string().uuid()).optional(),
+  }).optional(),
 });
 
 export type PurchaseOrderUpdateModel = z.infer<typeof PurchaseOrderUpdate> & {
   id: string;
 };
 
-export class PurchaseOrderUpdateDto extends createZodDto(PurchaseOrderUpdate) {}
+export class PurchaseOrderUpdateDto extends createZodDto(PurchaseOrderUpdate) { }
 

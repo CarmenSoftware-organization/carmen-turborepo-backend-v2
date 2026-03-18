@@ -192,10 +192,10 @@ export interface IUpdatePurchaseOrder extends Partial<IPurchaseOrder> {
   id: string;
   po_status?: enum_purchase_order_doc_status;
   doc_version: number;
-  purchase_order_details?: {
+  purchase_order_detail?: {
     add?: Omit<IPurchaseOrderDetail, 'id' | 'purchase_order_id'>[];
     update?: IPurchaseOrderDetail[];
-    remove?: { id: string }[];
+    remove?: string[];
   };
 }
 
