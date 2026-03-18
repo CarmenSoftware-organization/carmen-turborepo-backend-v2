@@ -1,4 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import QueryParams from '@/libs/paginate.query';
 import { BackendLogger } from '@/common/helpers/backend.logger';
@@ -16,6 +18,8 @@ export class UserService {
   constructor(
     @Inject('PRISMA_SYSTEM')
     private readonly prismaSystem: typeof PrismaClient_SYSTEM,
+    @Inject('KEYCLOAK_SERVICE')
+    private readonly keycloakService: ClientProxy,
   ) {}
 
   @TryCatch
@@ -434,6 +438,47 @@ export class UserService {
         deleted_at: new Date(),
         updated_at: new Date(),
       },
+    });
+
+    return Result.ok(null);
+  }
+
+  @TryCatch
+  async hardDeleteUser(id: string): Promise<Result<null>> {
+    this.logger.debug({ function: 'hardDeleteUser', id }, UserService.name);
+
+    const user = await this.prismaSystem.tb_user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      return Result.error('User not found', ErrorCode.NOT_FOUND);
+    }
+
+    // 1. Delete from Keycloak (user.id is the Keycloak user ID)
+    try {
+      await firstValueFrom(
+        this.keycloakService.send(
+          { cmd: 'keycloak.users.delete', service: 'keycloak' },
+          { userId: id },
+        ),
+      );
+    } catch (error) {
+      this.logger.warn(
+        `Failed to delete user from Keycloak (may not exist): ${error instanceof Error ? error.message : String(error)}`,
+        UserService.name,
+      );
+      // Continue with DB deletion even if Keycloak fails
+    }
+
+    // 2. Delete tb_user_profile
+    await this.prismaSystem.tb_user_profile.deleteMany({
+      where: { user_id: id },
+    });
+
+    // 3. Delete tb_user
+    await this.prismaSystem.tb_user.delete({
+      where: { id },
     });
 
     return Result.ok(null);

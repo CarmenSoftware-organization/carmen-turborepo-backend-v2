@@ -375,4 +375,50 @@ export class PlatformUserController extends BaseHttpController {
     );
     this.respond(res, result);
   }
+
+  /**
+   * Hard delete a platform user (permanently removes from DB and Keycloak)
+   * ลบผู้ใช้แบบถาวร (ลบออกจากฐานข้อมูลและ Keycloak)
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param id - Target user ID / รหัสผู้ใช้เป้าหมาย
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
+  @Delete('user/:id/hard')
+  @UseGuards(new AppIdGuard('platform-user.delete'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiParam({ name: 'id', description: 'User ID', type: 'string' })
+  @ApiOperation({
+    summary: 'Hard delete a platform user',
+    description: 'Permanently removes a user from tb_user, tb_user_profile, and Keycloak. This action cannot be undone.',
+    operationId: 'platformUser_hardDelete',
+    tags: ['Platform Admin', 'Platform User'],
+    security: [{ bearerAuth: [] }],
+    responses: {
+      200: { description: 'User permanently deleted' },
+      401: { description: 'Unauthorized' },
+      404: { description: 'User not found' },
+    },
+  })
+  async hardDeleteUser(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'hardDeleteUser', id, version },
+      PlatformUserController.name,
+    );
+    const { user_id, tenant_id } = ExtractRequestHeader(req);
+    const result = await this.platformUserService.hardDeleteUser(
+      user_id,
+      tenant_id,
+      id,
+      version,
+    );
+    this.respond(res, result);
+  }
 }

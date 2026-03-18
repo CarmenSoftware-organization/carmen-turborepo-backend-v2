@@ -79,4 +79,15 @@ export class UserController extends BaseMicroserviceController {
     const result = await this.userService.deleteUser(id);
     return this.handleResult(result);
   }
+
+  @MessagePattern({ cmd: 'user.hard-delete', service: 'user' })
+  async hardDeleteUser(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'hardDeleteUser', payload: payload },
+      UserController.name,
+    );
+    const { id } = payload;
+    const result = await this.userService.hardDeleteUser(id);
+    return this.handleResult(result);
+  }
 }

@@ -430,6 +430,32 @@ export class KeycloakController extends BaseMicroserviceController {
   }
 
   /**
+   * Delete a user from Keycloak
+   * ลบผู้ใช้จาก Keycloak
+   * @param payload - Payload with userId / ข้อมูลพร้อม userId
+   * @returns Delete result / ผลการลบ
+   */
+  @MessagePattern({ cmd: 'keycloak.users.delete', service: 'keycloak' })
+  async handleDeleteUser(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'handleDeleteUser', payload },
+      KeycloakController.name,
+    );
+    try {
+      const { userId, realm } = payload;
+      const auditContext = this.createAuditContext(payload);
+      await runWithAuditContext(auditContext, () =>
+        this.keycloakService.deleteUser(userId, realm)
+      );
+      const result = Result.ok({ message: 'User deleted from Keycloak successfully' });
+      return this.handleResult(result);
+    } catch (error: unknown) {
+      const result = Result.error(error instanceof Error ? error.message : 'Failed to delete user from Keycloak', ErrorCode.INTERNAL);
+      return this.handleResult(result);
+    }
+  }
+
+  /**
    * Get all users from Keycloak realm
    * ค้นหารายการผู้ใช้ทั้งหมดจาก Keycloak realm
    * @param payload - Payload with optional realm / ข้อมูลพร้อม realm (ถ้ามี)

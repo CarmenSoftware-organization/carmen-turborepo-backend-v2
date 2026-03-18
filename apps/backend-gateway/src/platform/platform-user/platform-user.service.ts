@@ -300,4 +300,41 @@ export class PlatformUserService {
 
     return Result.ok(response.data);
   }
+
+  /**
+   * Hard delete a user (permanently remove from DB and Keycloak)
+   * ลบผู้ใช้แบบถาวร (ลบจากฐานข้อมูลและ Keycloak)
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param tenant_id - Tenant ID / รหัสผู้เช่า
+   * @param id - Target user ID / รหัสผู้ใช้เป้าหมาย
+   * @param version - API version / เวอร์ชัน API
+   * @returns Deletion result / ผลลัพธ์การลบ
+   */
+  async hardDeleteUser(
+    user_id: string,
+    tenant_id: string,
+    id: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'hardDeleteUser', user_id, tenant_id, id, version },
+      PlatformUserService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.clusterService.send(
+      { cmd: 'user.hard-delete', service: 'user' },
+      { id, user_id, tenant_id, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
 }
