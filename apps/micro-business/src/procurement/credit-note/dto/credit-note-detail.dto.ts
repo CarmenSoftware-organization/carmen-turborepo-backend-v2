@@ -35,6 +35,9 @@ export const CreditNoteDetailSchema = z
     inventory_transaction_id: z.string().uuid().optional(),
     credit_note_id: z.string().uuid(),
     amount: z.number().optional(),
+    product_id: z.string().uuid(),
+    product_name: z.string().optional(),
+    product_local_name: z.string().optional(),
   })
   .merge(
     z.object({

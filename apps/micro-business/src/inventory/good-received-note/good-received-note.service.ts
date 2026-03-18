@@ -181,10 +181,7 @@ export class GoodReceivedNoteService {
               await prisma.tb_good_received_note_detail.findMany({
                 where: {
                   good_received_note_id: item.id,
-                },
-                select: {
-                  // total_amount: true,
-                },
+                }
               });
 
             return {

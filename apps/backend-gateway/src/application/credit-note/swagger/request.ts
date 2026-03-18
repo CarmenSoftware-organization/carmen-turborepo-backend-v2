@@ -1,6 +1,21 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class CreateCreditNoteDetailItemSwaggerDto {
+export class CreditNoteDetailItemSwaggerDto {
+  @ApiProperty({ description: 'Product ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  product_id: string;
+
+  @ApiPropertyOptional({ description: 'Product name', example: 'Rice 5kg' })
+  product_name?: string;
+
+  @ApiPropertyOptional({ description: 'Product local name', example: 'ข้าวสาร 5 กก.' })
+  product_local_name?: string;
+
+  @ApiProperty({ description: 'Requested quantity', example: 5 })
+  requested_qty: number;
+
+  @ApiProperty({ description: 'Approved quantity', example: 5 })
+  approved_qty: number;
+
   @ApiPropertyOptional({ description: 'Description of the line item', example: 'Damaged item return' })
   description?: string;
 
@@ -21,15 +36,6 @@ export class CreateCreditNoteDetailItemSwaggerDto {
 
   @ApiPropertyOptional({ description: 'Delivery point name', example: 'Kitchen Receiving' })
   delivery_point_name?: string;
-
-  @ApiPropertyOptional({ description: 'Product ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  product_id?: string;
-
-  @ApiPropertyOptional({ description: 'Product name', example: 'Rice 5kg' })
-  product_name?: string;
-
-  @ApiPropertyOptional({ description: 'Product local name', example: 'ข้าวสาร 5 กก.' })
-  product_local_name?: string;
 
   @ApiPropertyOptional({ description: 'Return quantity', example: 5 })
   return_qty?: number;
@@ -113,12 +119,38 @@ export class CreateCreditNoteDetailItemSwaggerDto {
   dimension?: unknown;
 }
 
+export class UpdateCreditNoteDetailItemSwaggerDto extends CreditNoteDetailItemSwaggerDto {
+  @ApiProperty({ description: 'Credit note detail ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+
+  @ApiProperty({ description: 'Credit note ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  credit_note_id: string;
+}
+
+export class DeleteCreditNoteDetailItemSwaggerDto {
+  @ApiProperty({ description: 'Credit note detail ID to delete', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+}
+
+export class CreateCreditNoteDetailSwaggerDto {
+  @ApiPropertyOptional({ description: 'Detail items to add', type: [CreditNoteDetailItemSwaggerDto] })
+  add?: CreditNoteDetailItemSwaggerDto[];
+}
+
+export class UpdateCreditNoteDetailSwaggerDto {
+  @ApiPropertyOptional({ description: 'Detail items to add', type: [CreditNoteDetailItemSwaggerDto] })
+  add?: CreditNoteDetailItemSwaggerDto[];
+
+  @ApiPropertyOptional({ description: 'Detail items to update', type: [UpdateCreditNoteDetailItemSwaggerDto] })
+  update?: UpdateCreditNoteDetailItemSwaggerDto[];
+
+  @ApiPropertyOptional({ description: 'Detail items to delete', type: [DeleteCreditNoteDetailItemSwaggerDto] })
+  delete?: DeleteCreditNoteDetailItemSwaggerDto[];
+}
+
 export class CreateCreditNoteRequestDto {
   @ApiProperty({ description: 'Credit note type', enum: ['quantity_return', 'amount_discount'], example: 'quantity_return' })
   credit_note_type: string;
-
-  @ApiPropertyOptional({ description: 'Credit note number', example: 'CN-2026-001' })
-  cn_no?: string;
 
   @ApiPropertyOptional({ description: 'Credit note date (ISO 8601)', example: '2026-03-10T00:00:00.000Z' })
   cn_date?: string;
@@ -135,26 +167,8 @@ export class CreateCreditNoteRequestDto {
   @ApiPropertyOptional({ description: 'Vendor ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   vendor_id?: string;
 
-  @ApiPropertyOptional({ description: 'Vendor name', example: 'ABC Supplies Co.' })
-  vendor_name?: string;
-
-  @ApiPropertyOptional({ description: 'Pricelist detail ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  pricelist_detail_id?: string;
-
-  @ApiPropertyOptional({ description: 'Pricelist number', example: 'PL-2026-001' })
-  pricelist_no?: string;
-
-  @ApiPropertyOptional({ description: 'Pricelist unit', example: 'KG' })
-  pricelist_unit?: string;
-
-  @ApiPropertyOptional({ description: 'Pricelist price', example: 25.5 })
-  pricelist_price?: number;
-
   @ApiPropertyOptional({ description: 'Currency ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   currency_id?: string;
-
-  @ApiPropertyOptional({ description: 'Currency code', example: 'THB' })
-  currency_code?: string;
 
   @ApiPropertyOptional({ description: 'Exchange rate', example: 1.0 })
   exchange_rate?: number;
@@ -165,32 +179,8 @@ export class CreateCreditNoteRequestDto {
   @ApiPropertyOptional({ description: 'GRN ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   grn_id?: string;
 
-  @ApiPropertyOptional({ description: 'GRN number', example: 'GRN-2026-001' })
-  grn_no?: string;
-
-  @ApiPropertyOptional({ description: 'GRN date (ISO 8601)', example: '2026-03-09T00:00:00.000Z' })
-  grn_date?: string;
-
   @ApiPropertyOptional({ description: 'Credit note reason ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   cn_reason_id?: string;
-
-  @ApiPropertyOptional({ description: 'Credit note reason name', example: 'Damaged Goods' })
-  cn_reason_name?: string;
-
-  @ApiPropertyOptional({ description: 'Credit note reason description', example: 'Items damaged during transit' })
-  cn_reason_description?: string;
-
-  @ApiPropertyOptional({ description: 'Invoice number', example: 'INV-2026-001' })
-  invoice_no?: string;
-
-  @ApiPropertyOptional({ description: 'Invoice date (ISO 8601)', example: '2026-03-08T00:00:00.000Z' })
-  invoice_date?: string;
-
-  @ApiPropertyOptional({ description: 'Tax invoice number', example: 'TINV-2026-001' })
-  tax_invoice_no?: string;
-
-  @ApiPropertyOptional({ description: 'Tax invoice date (ISO 8601)', example: '2026-03-08T00:00:00.000Z' })
-  tax_invoice_date?: string;
 
   @ApiPropertyOptional({ description: 'Workflow ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   workflow_id?: string;
@@ -201,11 +191,56 @@ export class CreateCreditNoteRequestDto {
   @ApiPropertyOptional({ description: 'Dimension data (JSON)', example: [] })
   dimension?: unknown;
 
-  @ApiPropertyOptional({ description: 'Credit note detail line items', type: [CreateCreditNoteDetailItemSwaggerDto] })
-  details?: CreateCreditNoteDetailItemSwaggerDto[];
+  @ApiPropertyOptional({ description: 'Credit note detail line items', type: CreateCreditNoteDetailSwaggerDto })
+  credit_note_detail?: CreateCreditNoteDetailSwaggerDto;
 }
 
-export class UpdateCreditNoteRequestDto extends CreateCreditNoteRequestDto {
+export class UpdateCreditNoteRequestDto {
   @ApiPropertyOptional({ description: 'Credit note ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   id?: string;
+
+  @ApiPropertyOptional({ description: 'Credit note type', enum: ['quantity_return', 'amount_discount'], example: 'quantity_return' })
+  credit_note_type?: string;
+
+  @ApiPropertyOptional({ description: 'Credit note date (ISO 8601)', example: '2026-03-10T00:00:00.000Z' })
+  cn_date?: string;
+
+  @ApiPropertyOptional({ description: 'Document status', enum: ['draft', 'in_progress', 'completed', 'cancelled', 'voided'], example: 'draft' })
+  doc_status?: string;
+
+  @ApiPropertyOptional({ description: 'Description', example: 'Credit note for damaged goods' })
+  description?: string;
+
+  @ApiPropertyOptional({ description: 'Additional notes', example: 'Items returned to vendor' })
+  note?: string;
+
+  @ApiPropertyOptional({ description: 'Vendor ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  vendor_id?: string;
+
+  @ApiPropertyOptional({ description: 'Currency ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  currency_id?: string;
+
+  @ApiPropertyOptional({ description: 'Exchange rate', example: 1.0 })
+  exchange_rate?: number;
+
+  @ApiPropertyOptional({ description: 'Exchange rate date (ISO 8601)', example: '2026-03-10T00:00:00.000Z' })
+  exchange_rate_date?: string;
+
+  @ApiPropertyOptional({ description: 'GRN ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  grn_id?: string;
+
+  @ApiPropertyOptional({ description: 'Credit note reason ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  cn_reason_id?: string;
+
+  @ApiPropertyOptional({ description: 'Workflow ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  workflow_id?: string;
+
+  @ApiPropertyOptional({ description: 'Additional info (JSON)', example: {} })
+  info?: unknown;
+
+  @ApiPropertyOptional({ description: 'Dimension data (JSON)', example: [] })
+  dimension?: unknown;
+
+  @ApiPropertyOptional({ description: 'Credit note detail operations (add, update, delete)', type: UpdateCreditNoteDetailSwaggerDto })
+  credit_note_detail?: UpdateCreditNoteDetailSwaggerDto;
 }
