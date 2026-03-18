@@ -15,7 +15,7 @@ export class CreditNoteLogic implements IClassLogic {
     private readonly creditNoteService: CreditNoteService,
     private readonly mapperLogic: MapperLogic,
     private readonly notificationService: NotificationService,
-  ) {}
+  ) { }
   async create(data: any, user_id: string, tenant_id: string) {
     this.logger.debug(
       { function: 'create', data, user_id, tenant_id },
@@ -42,37 +42,32 @@ export class CreditNoteLogic implements IClassLogic {
     if (createCreditNote.credit_note_detail?.add?.length) {
       createCreditNote.credit_note_detail.add =
         createCreditNote.credit_note_detail.add.map((detail: Record<string, unknown>) => {
-          const returnUnit = populatedData.unit_ids.find(
+          const returnUnit = populatedData.unit_ids?.find(
             (unit: Record<string, unknown>) => unit.id === detail.return_unit_id,
           );
-          const product = populatedData.product_ids.find(
+          const product = populatedData.product_ids?.find(
             (product: Record<string, unknown>) => product.id === detail.product_id,
           );
-          const location = populatedData.location_ids.find(
+          const location = populatedData.location_ids?.find(
             (location: Record<string, unknown>) => location.id === detail.location_id,
           );
-
-          const product_obj = {
-            product_id: product.id,
-            product_name: product.name,
-            product_local_name: product.local_name,
-          };
-          const returnUnit_obj = {
-            return_unit_id: returnUnit?.id,
-            return_unit_name: returnUnit?.name,
-          };
-          const location_obj = {
-            location_id: location?.id,
-            location_name: location?.name,
-          };
-
 
           return JSON.parse(
             JSON.stringify({
               ...detail,
-              ...product_obj,
-              ...returnUnit_obj,
-              ...location_obj,
+              ...(product && {
+                product_id: product.id,
+                product_name: product.name,
+                product_local_name: product.local_name,
+              }),
+              ...(returnUnit && {
+                return_unit_id: returnUnit.id,
+                return_unit_name: returnUnit.name,
+              }),
+              ...(location && {
+                location_id: location.id,
+                location_name: location.name,
+              }),
             }),
           );
         });
@@ -114,36 +109,32 @@ export class CreditNoteLogic implements IClassLogic {
     if (updateCreditNote.credit_note_detail?.add?.length) {
       updateCreditNote.credit_note_detail.add =
         updateCreditNote.credit_note_detail.add.map((detail: Record<string, unknown>) => {
-          const returnUnit = populatedData.unit_ids.find(
+          const returnUnit = populatedData.unit_ids?.find(
             (unit: Record<string, unknown>) => unit.id === detail.return_unit_id,
           );
-          const product = populatedData.product_ids.find(
+          const product = populatedData.product_ids?.find(
             (product: Record<string, unknown>) => product.id === detail.product_id,
           );
-          const location = populatedData.location_ids.find(
+          const location = populatedData.location_ids?.find(
             (location: Record<string, unknown>) => location.id === detail.location_id,
           );
-
-          const product_obj = {
-            product_id: product.id,
-            product_name: product.name,
-            product_local_name: product.local_name,
-          };
-          const returnUnit_obj = {
-            return_unit_id: returnUnit?.id,
-            return_unit_name: returnUnit?.name,
-          };
-          const location_obj = {
-            location_id: location?.id,
-            location_name: location?.name,
-          };
 
           return JSON.parse(
             JSON.stringify({
               ...detail,
-              ...product_obj,
-              ...returnUnit_obj,
-              ...location_obj,
+              ...(product && {
+                product_id: product.id,
+                product_name: product.name,
+                product_local_name: product.local_name,
+              }),
+              ...(returnUnit && {
+                return_unit_id: returnUnit.id,
+                return_unit_name: returnUnit.name,
+              }),
+              ...(location && {
+                location_id: location.id,
+                location_name: location.name,
+              }),
             }),
           );
         });
@@ -152,36 +143,32 @@ export class CreditNoteLogic implements IClassLogic {
     if (updateCreditNote.credit_note_detail?.update?.length) {
       updateCreditNote.credit_note_detail.update =
         updateCreditNote.credit_note_detail.update.map((detail: Record<string, unknown>) => {
-          const returnUnit = populatedData.unit_ids.find(
+          const returnUnit = populatedData.unit_ids?.find(
             (unit: Record<string, unknown>) => unit.id === detail.return_unit_id,
           );
-          const product = populatedData.product_ids.find(
+          const product = populatedData.product_ids?.find(
             (product: Record<string, unknown>) => product.id === detail.product_id,
           );
-          const location = populatedData.location_ids.find(
+          const location = populatedData.location_ids?.find(
             (location: Record<string, unknown>) => location.id === detail.location_id,
           );
-
-          const product_obj = {
-            product_id: product.id,
-            product_name: product.name,
-            product_local_name: product.local_name,
-          };
-          const returnUnit_obj = {
-            return_unit_id: returnUnit?.id,
-            return_unit_name: returnUnit?.name,
-          };
-          const location_obj = {
-            location_id: location?.id,
-            location_name: location?.name,
-          };
 
           return JSON.parse(
             JSON.stringify({
               ...detail,
-              ...product_obj,
-              ...returnUnit_obj,
-              ...location_obj,
+              ...(product && {
+                product_id: product.id,
+                product_name: product.name,
+                product_local_name: product.local_name,
+              }),
+              ...(returnUnit && {
+                return_unit_id: returnUnit.id,
+                return_unit_name: returnUnit.name,
+              }),
+              ...(location && {
+                location_id: location.id,
+                location_name: location.name,
+              }),
             }),
           );
         });
@@ -198,7 +185,7 @@ export class CreditNoteLogic implements IClassLogic {
     const product_ids = [];
     const unit_ids = []
     const location_ids = []
-    const taxTypeInventory_ids = []
+    const taxProfile_ids = []
 
     const headerList = {
       vendor_ids: [data?.vendor_id],
@@ -212,37 +199,31 @@ export class CreditNoteLogic implements IClassLogic {
         if (detail?.product_id) {
           product_ids.push(detail.product_id);
         }
-        if(detail.return_quantity) {
-          unit_ids.push(detail.return_quantity);
+        if (detail.return_unit_id) {
+          unit_ids.push(detail.return_unit_id);
         }
-        if(detail.location_id) {
+        if (detail.location_id) {
           location_ids.push(detail.location_id);
         }
-        if(data?.return_unit_id) {
-          unit_ids.push(data?.return_unit_id);
-        }
-        if(detail.tax_type_inventory_id) {
-          taxTypeInventory_ids.push(detail.tax_type_inventory_id);
+        if (detail.tax_profile_id) {
+          taxProfile_ids.push(detail.tax_profile_id);
         }
       }
     }
 
     if (data.credit_note_detail?.update?.length) {
-      for (const detail of data.credit_note_detail.add) {
+      for (const detail of data.credit_note_detail.update) {
         if (detail?.product_id) {
           product_ids.push(detail.product_id);
         }
-        if(detail.return_quantity) {
-          unit_ids.push(detail.return_quantity);
+        if (detail.return_unit_id) {
+          unit_ids.push(detail.return_unit_id);
         }
-        if(detail.location_id) {
+        if (detail.location_id) {
           location_ids.push(detail.location_id);
         }
-        if(data?.return_unit_id) {
-          unit_ids.push(data?.return_unit_id);
-        }
-        if(detail.tax_type_inventory_id) {
-          taxTypeInventory_ids.push(detail.tax_type_inventory_id);
+        if (detail.tax_profile_id) {
+          taxProfile_ids.push(detail.tax_profile_id);
         }
       }
     }
@@ -254,7 +235,7 @@ export class CreditNoteLogic implements IClassLogic {
           product_ids,
           unit_ids,
           location_ids,
-          tax_type_inventory_ids: taxTypeInventory_ids,
+          tax_profile_ids: taxProfile_ids,
           // workflow_id: data.workflow_id,
         }),
       ),

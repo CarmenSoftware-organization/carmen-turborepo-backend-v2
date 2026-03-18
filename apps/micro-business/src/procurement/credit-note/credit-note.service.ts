@@ -231,12 +231,15 @@ export class CreditNoteService {
 
       if (data.credit_note_detail?.add?.length) {
         await tx.tb_credit_note_detail.createMany({
-          data: data.credit_note_detail.add.map((detail: Record<string, unknown>) => ({
-            ...detail,
-            sequence_no: seq++,
-            credit_note_id: creditNote.id,
-            created_by_id: this.userId,
-          })),
+          data: data.credit_note_detail.add.map((detail: Record<string, unknown>) => {
+            const { requested_qty, approved_qty, ...rest } = detail;
+            return {
+              ...rest,
+              sequence_no: seq++,
+              credit_note_id: creditNote.id,
+              created_by_id: this.userId,
+            };
+          }),
         });
       }
 

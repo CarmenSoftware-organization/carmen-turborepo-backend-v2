@@ -7,9 +7,6 @@ export class CreditNoteReasonCreateRequestDto {
   @ApiPropertyOptional({ description: 'Description of the reason', example: 'Items received were damaged during transit' })
   description?: string;
 
-  @ApiPropertyOptional({ description: 'Whether the reason is active', example: true, default: true })
-  is_active?: boolean;
-
   @ApiPropertyOptional({ description: 'Note', example: 'Common for fragile items' })
   note?: string;
 

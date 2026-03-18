@@ -136,7 +136,7 @@ export class CreditNoteReasonService {
    * @returns Credit note reason data / ข้อมูลเหตุผลใบลดหนี้
    */
   @TryCatch
-  async create(data: { name: string; description?: string; is_active?: boolean | null; note?: string; info?: unknown; dimension?: unknown }): Promise<Result<unknown>> {
+  async create(data: { name: string; description?: string; note?: string; info?: unknown; dimension?: unknown }): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
       CreditNoteReasonService.name,
