@@ -65,7 +65,10 @@ export const VendorListItemResponseSchema = z.object({
   created_at: z.coerce.date().optional(),
   updated_at: z.coerce.date().optional(),
   tb_vendor_contact: z.array(VendorContactEmbeddedSchema).optional(),
-});
+}).transform(({ tb_vendor_contact, ...rest }) => ({
+  ...rest,
+  contacts: tb_vendor_contact,
+}));
 
 export type VendorListItemResponse = z.infer<typeof VendorListItemResponseSchema>;
 

@@ -1,17 +1,17 @@
 meta {
-  name: 02 - Get Vendor
+  name: 01 - List PR Template filter
   type: http
   seq: 2
 }
 
 get {
-  url: {{host}}/api/config/{{bu_code}}/vendors/:id
+  url: {{host}}/api/{{bu_code}}/purchase-request-template?search=sss
   body: none
   auth: bearer
 }
 
-params:path {
-  id: 814611a7-2cf1-40e9-8e3d-346f0a7cb1aa
+params:query {
+  search: sss
 }
 
 headers {

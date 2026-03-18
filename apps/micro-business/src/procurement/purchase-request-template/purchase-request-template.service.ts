@@ -100,7 +100,7 @@ export class PurchaseRequestTemplateService {
       { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate },
       PurchaseRequestTemplateService.name,
     );
-    const defaultSearchFields = ['pr_no', 'note'];
+    const defaultSearchFields = ['name', 'note'];
 
     const q = new QueryParams(
       paginate.page,
