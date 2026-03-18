@@ -54,7 +54,7 @@ export class PhysicalCountPeriodService {
       where: { id, deleted_at: null },
       include: {
         tb_period: {
-          select: { id: true, period: true, start_at: true, end_at: true },
+          select: { id: true, period: true, start_at: true, end_at: true, status: true },
         },
         tb_physical_count: {
           select: {
@@ -123,7 +123,7 @@ export class PhysicalCountPeriodService {
         id: true,
         period_id: true,
         tb_period: {
-          select: { id: true, period: true, start_at: true, end_at: true },
+          select: { id: true, period: true, start_at: true, end_at: true, status: true },
         },
         tb_physical_count: {
           select: {
