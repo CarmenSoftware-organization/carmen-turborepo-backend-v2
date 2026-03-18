@@ -294,12 +294,15 @@ export class PhysicalCountPeriodService {
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
-    // Validate period exists
+    // Validate period exists and is open
     const periodExists = await prisma.tb_period.findFirst({
       where: { id: data.period_id, deleted_at: null },
     });
     if (!periodExists) {
       return Result.error("Period not found", ErrorCode.NOT_FOUND);
+    }
+    if (periodExists.status !== "open") {
+      return Result.error("Period is not open", ErrorCode.INVALID_ARGUMENT);
     }
 
     // Check duplicate: only one physical count period per period
