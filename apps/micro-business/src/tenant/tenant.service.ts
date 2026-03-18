@@ -82,36 +82,35 @@ export class TenantService {
 
     try {
 
-      const departments = await prisma.tb_department_user.findFirst({
+      const departmentUser = await prisma.tb_department_user.findFirst({
         where: {
           user_id: userId,
+          deleted_at: null,
+          OR: [{ is_hod: false }, { is_hod: null }],
         },
         select: {
-          user_id: true,
           department_id: true,
-          is_hod: true,
         },
-      }).then(async (res) => {
-
-        const department = await prisma.tb_department.findFirst({
-          where: {
-            id: res.department_id,
-          },
-          select: {
-            name: true,
-          },
-        });
-
-        return {
-          // user_id: userId,
-          // tenant_id: tenantId,
-          is_hod: res.is_hod ?? false,
-          id: res.department_id ?? null,
-          name: department.name ?? null,
-        };
       });
 
-      return departments;
+      if (!departmentUser) {
+        return null;
+      }
+
+      const department = await prisma.tb_department.findFirst({
+        where: {
+          id: departmentUser.department_id,
+          deleted_at: null,
+        },
+        select: {
+          name: true,
+        },
+      });
+
+      return {
+        id: departmentUser.department_id ?? null,
+        name: department?.name ?? null,
+      };
 
     } catch (error) {
       this.logger.error(
@@ -159,44 +158,49 @@ export class TenantService {
     );
 
     try {
-      const departments = await prisma.tb_department_user.findFirst({
+      const hodRecords = await prisma.tb_department_user.findMany({
         where: {
           user_id: userId,
           is_hod: true,
+          deleted_at: null,
         },
         select: {
           user_id: true,
           department_id: true,
           is_hod: true,
         },
-      }).then(async (res) => {
-        if (!res) {
-          return null;
-        }
-
-        const department = await prisma.tb_department.findFirst({
-          where: {
-            id: res.department_id,
-          },
-          select: {
-            name: true,
-          },
-        });
-
-        return {
-          is_hod: res.is_hod ?? false,
-          id: res.department_id ?? null,
-          name: department?.name ?? null,
-        };
       });
 
-      return departments;
+      if (!hodRecords || hodRecords.length === 0) {
+        return [];
+      }
+
+      const departments = await Promise.all(
+        hodRecords.map(async (res) => {
+          const department = await prisma.tb_department.findFirst({
+            where: {
+              id: res.department_id,
+              deleted_at: null,
+            },
+            select: {
+              name: true,
+            },
+          });
+
+          return {
+            id: res.department_id ?? null,
+            name: department?.name ?? null,
+          };
+        }),
+      );
+
+      return departments.filter((d) => d.name !== null);
     } catch (error) {
       this.logger.error(
         { function: 'getUserHodDepartment', error },
         TenantService.name,
       );
-      return null;
+      return [];
     }
   }
 
