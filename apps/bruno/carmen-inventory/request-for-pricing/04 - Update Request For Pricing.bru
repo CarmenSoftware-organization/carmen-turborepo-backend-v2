@@ -11,7 +11,7 @@ patch {
 }
 
 params:path {
-  id: {{rfp_id}}
+  id: 97e7fae5-18cc-4ae4-af9a-967799c0bffa
 }
 
 headers {
@@ -24,7 +24,20 @@ auth:bearer {
 
 body:json {
   {
-    "description": "",
-    "note": ""
+    "name": "aaaaa222",
+    "pricelist_template_id": "b28f5f93-3dd0-4c9d-a6f8-b05a7f6aa051",
+    "start_date": "2026-03-15T17:00:00.000Z",
+    "end_date": "2026-03-19T17:00:00.000Z",
+    "vendors": {
+      "remove": [
+        {
+          "id": "b164823f-deb5-41d8-bfe7-03203d12f69d"
+        }
+      ]
+    }
   }
+}
+
+vars:pre-request {
+  rfp_id: 97e7fae5-18cc-4ae4-af9a-967799c0bffa
 }

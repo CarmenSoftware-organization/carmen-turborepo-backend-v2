@@ -237,7 +237,7 @@ export class RequestForPricingService {
             },
           },
           tb_request_for_pricing_detail: {
-            where: {},
+            where: { deleted_at: null },
             select: {
               id: true,
               sequence_no: true,
@@ -391,7 +391,7 @@ export class RequestForPricingService {
         },
       },
       tb_request_for_pricing_detail: {
-        where: {},
+        where: { deleted_at: null },
         select: {
           id: true,
           vendor_id: true,
