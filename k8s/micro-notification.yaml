@@ -6,7 +6,7 @@ metadata:
   labels:
     app: micro-notification
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: micro-notification
@@ -45,13 +45,13 @@ spec:
           readinessProbe:
             httpGet:
               path: /health
-              port: 5006
+              port: 6006
             initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /health
-              port: 5006
+              port: 6006
             initialDelaySeconds: 20
             periodSeconds: 30
 ---

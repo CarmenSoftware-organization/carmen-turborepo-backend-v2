@@ -6,7 +6,7 @@ metadata:
   labels:
     app: micro-business
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: micro-business
@@ -34,21 +34,21 @@ spec:
                 optional: true
           resources:
             requests:
-              cpu: 200m
-              memory: 512Mi
+              cpu: 50m
+              memory: 256Mi
             limits:
               cpu: "1"
-              memory: 1Gi
+              memory: 512Mi
           readinessProbe:
             httpGet:
               path: /health
-              port: 5020
+              port: 6020
             initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /health
-              port: 5020
+              port: 6020
             initialDelaySeconds: 20
             periodSeconds: 30
 ---

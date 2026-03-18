@@ -51,6 +51,9 @@ COPY --from=builder /app/apps/backend-gateway/package.json ./apps/backend-gatewa
 # Copy x-app-id.json for API access control
 COPY apps/backend-gateway/x-app-id.json ./apps/backend-gateway/
 
+# Copy proto definitions for gRPC services
+COPY apps/backend-gateway/proto ./apps/backend-gateway/proto
+
 # Copy SSL certificates (.prod versions)
 COPY apps/backend-gateway/src/cert/key.pem.prod ./apps/backend-gateway/src/cert/key.pem
 COPY apps/backend-gateway/src/cert/cert.pem.prod ./apps/backend-gateway/src/cert/cert.pem
