@@ -11,7 +11,7 @@ delete {
 }
 
 params:path {
-  id: {{period_id}}
+  id: ca195e89-757d-439b-be23-f75a7c56d4b2
 }
 
 headers {
@@ -20,4 +20,8 @@ headers {
 
 auth:bearer {
   token: {{access_token}}
+}
+
+vars:pre-request {
+  period_id: ca195e89-757d-439b-be23-f75a7c56d4b2
 }

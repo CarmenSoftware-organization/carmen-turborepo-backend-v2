@@ -457,9 +457,9 @@ export class PeriodService {
     await prisma.tb_period.update({
       where: { id },
       data: {
-        deleted_at: new Date(),
+        deleted_at: new Date().toISOString(),
         deleted_by_id: user_id,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
         updated_by_id: user_id,
       },
     });
