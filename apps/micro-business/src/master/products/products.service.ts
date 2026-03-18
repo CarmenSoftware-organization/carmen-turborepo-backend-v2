@@ -374,6 +374,11 @@ export class ProductsService {
       where: q.where(),
       orderBy: q.orderBy(),
       ...pagination,
+      include: {
+        tb_unit: {
+          select: { id: true, name: true },
+        },
+      },
     });
 
     const products = await Promise.all(
@@ -417,7 +422,7 @@ export class ProductsService {
           description: product.description,
           product_status_type: product.product_status_type,
           inventory_unit_id: product.inventory_unit_id,
-          inventory_unit_name: product.inventory_unit_name,
+          inventory_unit_name: product.inventory_unit_name || product.tb_unit?.name,
           product_item_group: productItemGroup
             ? {
               id: productItemGroup.id,

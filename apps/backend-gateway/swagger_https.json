@@ -14703,12 +14703,12 @@
                 "items": {
                   "type": "object",
                   "properties": {
-                    "product_location_id": {
+                    "location_id": {
                       "type": "string"
                     }
                   },
                   "required": [
-                    "product_location_id"
+                    "location_id"
                   ]
                 }
               }

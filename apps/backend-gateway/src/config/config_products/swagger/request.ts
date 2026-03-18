@@ -60,6 +60,12 @@ export class ProductCreateRequestDto {
 
   @ApiPropertyOptional({ description: 'Additional info (JSON)', example: {} })
   info?: unknown;
+
+  @ApiPropertyOptional({
+    description: 'Locations to assign to the product',
+    example: { add: [{ location_id: 'uuid' }] },
+  })
+  locations?: { add?: { location_id: string }[] };
 }
 
 export class ProductUpdateRequestDto {
@@ -95,4 +101,16 @@ export class ProductUpdateRequestDto {
 
   @ApiPropertyOptional({ description: 'Additional notes', example: 'Imported from Italy' })
   note?: string;
+
+  @ApiPropertyOptional({
+    description: 'Locations to add or remove from the product',
+    example: {
+      add: [{ location_id: 'uuid' }],
+      remove: [{ location_id: 'uuid' }],
+    },
+  })
+  locations?: {
+    add?: { location_id: string }[];
+    remove?: { location_id: string }[];
+  };
 }
