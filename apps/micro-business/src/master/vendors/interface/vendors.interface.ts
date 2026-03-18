@@ -1,9 +1,19 @@
-
 import { enum_vendor_address_type } from "@repo/prisma-shared-schema-tenant";
 
 export interface IVendorBusinessType {
   id: string;
   name: string;
+}
+
+export interface IVendorAddressData {
+  address_line1?: string;
+  address_line2?: string;
+  sub_district?: string;
+  district?: string;
+  city?: string;
+  province?: string;
+  postal_code?: string;
+  country?: string;
 }
 
 export interface IVendorAddress {

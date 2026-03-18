@@ -1,24 +1,16 @@
-import { find } from 'rxjs';
-import { HttpStatus, Injectable, HttpException } from '@nestjs/common';
-import { TenantService } from '@/tenant/tenant.service';
-import {
-  ICreateVendor,
-  IUpdateVendor,
-  IVendorAddress,
-} from './interface/vendors.interface';
-import { IPaginate } from '@/common/shared-interface/paginate.interface';
-import QueryParams from '@/common/libs/paginate.query';
-import { BackendLogger } from '@/common/helpers/backend.logger';
-import { isUUID } from 'class-validator';
-import {
-  ERROR_MISSING_BU_CODE,
-  ERROR_MISSING_TENANT_ID,
-  ERROR_MISSING_USER_ID,
-} from '@/common/constant';
-import order from '@/common/helpers/order_by';
-import getPaginationParams from '@/common/helpers/pagination.params';
-import { PrismaClient, Prisma } from '@repo/prisma-shared-schema-tenant';
-import { TryCatch, Result, ErrorCode, VendorListItemResponseSchema, VendorDetailResponseSchema } from '@/common';
+import { find } from "rxjs";
+import { HttpStatus, Injectable, HttpException } from "@nestjs/common";
+import { TenantService } from "@/tenant/tenant.service";
+import { ICreateVendor, IUpdateVendor, IVendorAddress } from "./interface/vendors.interface";
+import { IPaginate } from "@/common/shared-interface/paginate.interface";
+import QueryParams from "@/common/libs/paginate.query";
+import { BackendLogger } from "@/common/helpers/backend.logger";
+import { isUUID } from "class-validator";
+import { ERROR_MISSING_BU_CODE, ERROR_MISSING_TENANT_ID, ERROR_MISSING_USER_ID } from "@/common/constant";
+import order from "@/common/helpers/order_by";
+import getPaginationParams from "@/common/helpers/pagination.params";
+import { PrismaClient, Prisma } from "@repo/prisma-shared-schema-tenant";
+import { TryCatch, Result, ErrorCode, VendorListItemResponseSchema, VendorDetailResponseSchema } from "@/common";
 
 @Injectable()
 export class VendorsService {
@@ -26,20 +18,14 @@ export class VendorsService {
     if (this._bu_code) {
       return String(this._bu_code);
     }
-    throw new HttpException(
-      ERROR_MISSING_BU_CODE,
-      HttpStatus.UNPROCESSABLE_ENTITY,
-    );
+    throw new HttpException(ERROR_MISSING_BU_CODE, HttpStatus.UNPROCESSABLE_ENTITY);
   }
 
   get userId(): string {
     if (isUUID(this._userId, 4)) {
       return String(this._userId);
     }
-    throw new HttpException(
-      ERROR_MISSING_USER_ID,
-      HttpStatus.UNPROCESSABLE_ENTITY,
-    );
+    throw new HttpException(ERROR_MISSING_USER_ID, HttpStatus.UNPROCESSABLE_ENTITY);
   }
 
   set bu_code(value: string) {
@@ -61,20 +47,14 @@ export class VendorsService {
 
   get prismaService(): PrismaClient {
     if (!this._prismaService) {
-      throw new HttpException(
-        'Prisma service is not initialized',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new HttpException("Prisma service is not initialized", HttpStatus.INTERNAL_SERVER_ERROR);
     }
     return this._prismaService;
   }
 
+  private readonly logger: BackendLogger = new BackendLogger(VendorsService.name);
 
-  private readonly logger: BackendLogger = new BackendLogger(
-    VendorsService.name,
-  );
-
-  constructor(private readonly tenantService: TenantService) { }
+  constructor(private readonly tenantService: TenantService) {}
 
   /**
    * Find a single vendor by ID with addresses and contacts
@@ -84,10 +64,7 @@ export class VendorsService {
    */
   @TryCatch
   async findOne(id: string): Promise<Result<unknown>> {
-    this.logger.debug(
-      { function: 'findOne', id, user_id: this.userId, tenant_id: this.bu_code },
-      VendorsService.name,
-    );
+    this.logger.debug({ function: "findOne", id, user_id: this.userId, tenant_id: this.bu_code }, VendorsService.name);
 
     const vendor = await this.prismaService.tb_vendor.findFirst({
       where: {
@@ -97,7 +74,7 @@ export class VendorsService {
     });
 
     if (!vendor) {
-      return Result.error('Vendor not found', ErrorCode.NOT_FOUND);
+      return Result.error("Vendor not found", ErrorCode.NOT_FOUND);
     }
 
     const vendorAddress = await this.prismaService.tb_vendor_address.findMany({
@@ -154,10 +131,10 @@ export class VendorsService {
   @TryCatch
   async findAll(paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
-      { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate },
+      { function: "findAll", user_id: this.userId, tenant_id: this.bu_code, paginate },
       VendorsService.name,
     );
-    const defaultSearchFields = ['code', 'name'];
+    const defaultSearchFields = ["code", "name"];
 
     const q = new QueryParams(
       paginate.page,
@@ -165,7 +142,7 @@ export class VendorsService {
       paginate.search,
       paginate.searchfields,
       defaultSearchFields,
-      typeof paginate.filter === 'object' && !Array.isArray(paginate.filter) ? paginate.filter : {},
+      typeof paginate.filter === "object" && !Array.isArray(paginate.filter) ? paginate.filter : {},
       paginate.sort,
       paginate.advance,
     );
@@ -235,7 +212,7 @@ export class VendorsService {
   @TryCatch
   async findAllById(ids: string[]): Promise<Result<unknown>> {
     this.logger.debug(
-      { function: 'findAllById', ids, user_id: this.userId, tenant_id: this.bu_code },
+      { function: "findAllById", ids, user_id: this.userId, tenant_id: this.bu_code },
       VendorsService.name,
     );
 
@@ -259,37 +236,28 @@ export class VendorsService {
    */
   @TryCatch
   async create(data: ICreateVendor): Promise<Result<unknown>> {
-    this.logger.debug(
-      { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
-      VendorsService.name,
-    );
+    this.logger.debug({ function: "create", data, user_id: this.userId, tenant_id: this.bu_code }, VendorsService.name);
 
-    const foundVendor = await this.prismaService.tb_vendor.findFirst({
+    const foundVendorByCode = await this.prismaService.tb_vendor.findFirst({
       where: {
         code: data.code,
-        name: data.name,
+        deleted_at: null,
       },
-      select: {
-        id: true,
-        code: true,
-        name: true,
-        deleted_at: true,
-      },
+      select: { id: true },
     });
 
-    if (foundVendor) {
-      return Result.error('Vendor already exists', ErrorCode.ALREADY_EXISTS);
+    if (foundVendorByCode) {
+      return Result.error("Vendor code already exists", ErrorCode.ALREADY_EXISTS);
     }
 
     // check business type is exists
     if (data.business_type && data.business_type.length > 0) {
       for (const businessType of data.business_type || []) {
-        const foundBusinessType =
-          await this.prismaService.tb_vendor_business_type.findFirst({
-            where: {
-              id: businessType.id,
-            },
-          });
+        const foundBusinessType = await this.prismaService.tb_vendor_business_type.findFirst({
+          where: {
+            id: businessType.id,
+          },
+        });
 
         if (!foundBusinessType) {
           return Result.error(`Vendor business type not found: ${businessType.name}`, ErrorCode.NOT_FOUND);
@@ -314,14 +282,23 @@ export class VendorsService {
       });
 
       if (data.vendor_address?.add?.length > 0) {
-        const vendorAddressObj = await Promise.all(
-          data.vendor_address.add.map((address) => ({
+        const vendorAddressObj = data.vendor_address.add.map((address) => {
+          const addr = address;
+          return {
             vendor_id: createVendor.id,
             is_active: true,
             created_by_id: this.userId,
-            ...address,
-          })),
-        );
+            address_type: address.address_type,
+            address_line1: addr.address_line1,
+            address_line2: addr.address_line2,
+            sub_district: addr.sub_district,
+            district: addr.district,
+            city: addr.city,
+            province: addr.province,
+            postal_code: addr.postal_code,
+            country: addr.country,
+          };
+        });
 
         await prisma.tb_vendor_address.createMany({
           data: vendorAddressObj,
@@ -357,10 +334,7 @@ export class VendorsService {
    */
   @TryCatch
   async update(data: IUpdateVendor): Promise<Result<unknown>> {
-    this.logger.debug(
-      { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code },
-      VendorsService.name,
-    );
+    this.logger.debug({ function: "update", data, user_id: this.userId, tenant_id: this.bu_code }, VendorsService.name);
 
     const vendor = await this.prismaService.tb_vendor.findFirst({
       where: {
@@ -369,18 +343,17 @@ export class VendorsService {
     });
 
     if (!vendor) {
-      return Result.error('Vendor not found', ErrorCode.NOT_FOUND);
+      return Result.error("Vendor not found", ErrorCode.NOT_FOUND);
     }
 
     // check business type is exists
     if (data.business_type && data.business_type.length > 0) {
       for (const businessType of data.business_type || []) {
-        const foundBusinessType =
-          await this.prismaService.tb_vendor_business_type.findFirst({
-            where: {
-              id: businessType.id,
-            },
-          });
+        const foundBusinessType = await this.prismaService.tb_vendor_business_type.findFirst({
+          where: {
+            id: businessType.id,
+          },
+        });
 
         if (!foundBusinessType) {
           return Result.error(`Vendor business type not found: ${businessType.name}`, ErrorCode.NOT_FOUND);
@@ -406,7 +379,7 @@ export class VendorsService {
         );
 
         if (vendorAddressNotFound.length > 0) {
-          return Result.error('Vendor address not found', ErrorCode.NOT_FOUND);
+          return Result.error("Vendor address not found", ErrorCode.NOT_FOUND);
         }
       }
 
@@ -427,7 +400,7 @@ export class VendorsService {
         );
 
         if (vendorAddressNotFound.length > 0) {
-          return Result.error('Vendor address not found', ErrorCode.NOT_FOUND);
+          return Result.error("Vendor address not found", ErrorCode.NOT_FOUND);
         }
       }
     }
@@ -450,7 +423,7 @@ export class VendorsService {
         );
 
         if (vendorContactNotFound.length > 0) {
-          return Result.error('Vendor contact not found', ErrorCode.NOT_FOUND);
+          return Result.error("Vendor contact not found", ErrorCode.NOT_FOUND);
         }
       }
 
@@ -471,7 +444,7 @@ export class VendorsService {
         );
 
         if (vendorContactNotFound.length > 0) {
-          return Result.error('Vendor contact not found', ErrorCode.NOT_FOUND);
+          return Result.error("Vendor contact not found", ErrorCode.NOT_FOUND);
         }
       }
     }
@@ -497,12 +470,23 @@ export class VendorsService {
 
       if (data.vendor_address) {
         if (data.vendor_address.add?.length > 0) {
-          const vendorAddressObj = await Promise.all(
-            data.vendor_address.add.map((address) => ({
-              ...address,
-              updated_by_id: this.userId,
-            })),
-          );
+          const vendorAddressObj = data.vendor_address.add.map((address) => {
+            const addr = address;
+            return {
+              vendor_id: data.id,
+              is_active: true,
+              created_by_id: this.userId,
+              address_type: address.address_type,
+              address_line1: addr.address_line1,
+              address_line2: addr.address_line2,
+              sub_district: addr.sub_district,
+              district: addr.district,
+              city: addr.city,
+              province: addr.province,
+              postal_code: addr.postal_code,
+              country: addr.country,
+            };
+          });
 
           await prisma.tb_vendor_address.createMany({
             data: vendorAddressObj,
@@ -519,14 +503,13 @@ export class VendorsService {
               });
 
               if (!vendorAddress) {
-                throw new Error('Vendor address not found');
+                throw new Error("Vendor address not found");
               }
 
               const data = {
                 id: vendorAddress.id,
                 vendor_id: vendorAddress.vendor_id,
-                address_type:
-                  address.address_type ?? vendorAddress.address_type,
+                address_type: address.address_type ?? vendorAddress.address_type,
                 address_line1: address.address_line1 ?? vendorAddress.address_line1,
                 address_line2: address.address_line2 ?? vendorAddress.address_line2,
                 sub_district: address.sub_district ?? vendorAddress.sub_district,
@@ -547,9 +530,7 @@ export class VendorsService {
         }
 
         if (data.vendor_address.remove?.length > 0) {
-          const vendorAddressIds = data.vendor_address?.remove?.map(
-            (address) => address.vendor_address_id,
-          );
+          const vendorAddressIds = data.vendor_address?.remove?.map((address) => address.vendor_address_id);
 
           await prisma.tb_vendor_address.deleteMany({
             where: {
@@ -581,7 +562,7 @@ export class VendorsService {
               });
 
               if (!vendorContact) {
-                throw new Error('Vendor contact not found');
+                throw new Error("Vendor contact not found");
               }
 
               const data = {
@@ -605,9 +586,7 @@ export class VendorsService {
         }
 
         if (data.vendor_contact.remove) {
-          const vendorContactIds = data.vendor_contact?.remove?.map(
-            (contact) => contact.vendor_contact_id,
-          );
+          const vendorContactIds = data.vendor_contact?.remove?.map((contact) => contact.vendor_contact_id);
 
           await prisma.tb_vendor_contact.deleteMany({
             where: { id: { in: vendorContactIds } },
@@ -629,10 +608,7 @@ export class VendorsService {
    */
   @TryCatch
   async delete(id: string): Promise<Result<unknown>> {
-    this.logger.debug(
-      { function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code },
-      VendorsService.name,
-    );
+    this.logger.debug({ function: "delete", id, user_id: this.userId, tenant_id: this.bu_code }, VendorsService.name);
 
     const vendor = await this.prismaService.tb_vendor.findFirst({
       where: {
@@ -641,7 +617,7 @@ export class VendorsService {
     });
 
     if (!vendor) {
-      return Result.error('Vendor not found', ErrorCode.NOT_FOUND);
+      return Result.error("Vendor not found", ErrorCode.NOT_FOUND);
     }
 
     const tx = await this.prismaService.$transaction(async (prisma) => {

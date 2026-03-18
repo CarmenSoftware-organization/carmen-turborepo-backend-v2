@@ -189,7 +189,11 @@ export class ProductsService {
             productLocation.map((location) => ({
               id: location.id,
               location_id: location.location_id,
-              location_name: location.tb_location.name,
+              location_name: location.tb_location?.name,
+              location_type: location.tb_location?.location_type,
+              is_active: location.tb_location?.is_active,
+              delivery_point_id: location.tb_location?.delivery_point_id,
+              delivery_point: location.tb_location?.delivery_point_name,
             })) || [],
           order_units:
             productOrderUnit.map((orderUnit) => ({

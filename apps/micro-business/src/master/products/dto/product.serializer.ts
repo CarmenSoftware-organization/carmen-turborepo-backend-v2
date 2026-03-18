@@ -11,6 +11,10 @@ const ProductLocationEmbeddedSchema = z.object({
   id: z.string(),
   location_id: z.string(),
   location_name: z.string().nullable().optional(),
+  location_type: z.string().nullable().optional(),
+  is_active: z.boolean().nullable().optional(),
+  delivery_point_id: z.string().nullable().optional(),
+  delivery_point: z.string().nullable().optional(),
 });
 
 const UnitConversionEmbeddedSchema = z.object({
