@@ -66,7 +66,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     summary: 'Get count of all pending store requisitions',
     description: 'Returns the count of store requisitions currently awaiting the user\'s action in the approval pipeline, used for dashboard badge notifications and workload tracking.',
     operationId: 'findAllPendingStoreRequisitionsCount',
-    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
+    tags: ['Pending Count', 'Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {

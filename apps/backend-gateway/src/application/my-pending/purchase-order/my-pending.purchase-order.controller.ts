@@ -52,7 +52,7 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
     summary: 'Get count of all pending purchase orders',
     description: 'Returns the count of purchase orders currently awaiting the user\'s action in the approval pipeline, used for dashboard badge notifications and workload indicators.',
     operationId: 'findAllPendingPurchaseOrdersCount',
-    tags: ['Workflow & Approval', 'My Pending - Purchase Order'],
+    tags: ['Pending Count', 'Workflow & Approval', 'My Pending - Purchase Order'],
     deprecated: false,
     parameters: [
       {

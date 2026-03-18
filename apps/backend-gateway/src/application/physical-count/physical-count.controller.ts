@@ -74,7 +74,7 @@ export class PhysicalCountController extends BaseHttpController {
     summary: 'Get pending physical count count',
     description: 'Returns the count of physical inventory counts awaiting the current user to record actual stock quantities, used to drive dashboard notifications and task prioritization.',
     operationId: 'findAllPendingPhysicalCountCount',
-    tags: ['Inventory', 'Physical Count'],
+    tags: ['Pending Count', 'Inventory', 'Physical Count'],
     responses: {
       200: { description: 'Pending physical count count retrieved successfully' },
     },

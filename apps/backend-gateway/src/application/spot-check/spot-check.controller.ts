@@ -73,7 +73,7 @@ export class SpotCheckController extends BaseHttpController {
     summary: 'Get pending spot check count',
     description: 'Returns the count of random inventory spot checks awaiting the current user, used to drive dashboard alerts for quality-control verification tasks.',
     operationId: 'findAllPendingSpotCheckCount',
-    tags: ['Inventory', 'Spot Check'],
+    tags: ['Pending Count', 'Inventory', 'Spot Check'],
     responses: {
       200: { description: 'Pending spot check count retrieved successfully' },
     },

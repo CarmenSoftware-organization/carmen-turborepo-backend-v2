@@ -50,7 +50,7 @@ export class MyApproveController extends BaseHttpController {
     description:
       'Provides a dashboard summary count of all documents awaiting the current user\'s approval across store requisitions, purchase requests, and purchase orders, helping approvers prioritize their workload.',
     operationId: 'findAllPendingApprovalsCount',
-    tags: ['Workflow & Approval', 'My Approve'],
+    tags: ['Pending Count', 'Workflow & Approval', 'My Approve'],
     deprecated: false,
     parameters: [
       {

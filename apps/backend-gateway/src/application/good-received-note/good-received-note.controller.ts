@@ -82,7 +82,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
     summary: 'Get pending Good Received Notes count',
     description: 'Returns the number of goods deliveries awaiting receiving action by the current user. Used on dashboards to alert receiving staff about pending vendor deliveries that need to be inspected and recorded.',
     operationId: 'findAllPendingGoodReceivedNoteCount',
-    tags: ['Procurement', 'Good Received Note'],
+    tags: ['Pending Count', 'Procurement', 'Good Received Note'],
     responses: {
       200: { description: 'Pending GRN count retrieved successfully' },
     },
