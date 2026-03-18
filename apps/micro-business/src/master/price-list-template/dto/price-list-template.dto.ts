@@ -33,7 +33,7 @@ export const PriceListTemplateStatusEnum = z.enum(['draft', 'active', 'inactive'
 
 export const PriceListTemplateSchema = z.object({
   id: z.string().uuid(),
-  name: z.string(),
+  name: z.string().min(1, 'Name is required'),
   description: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
   status: PriceListTemplateStatusEnum.optional().default('draft'),
@@ -134,8 +134,26 @@ export function createPriceListTemplateCreateValidation(prisma: PrismaClient) {
 /**
  * Create PriceListTemplateUpdate schema with async database validation
  */
-export function createPriceListTemplateUpdateValidation(prisma: PrismaClient) {
+export function createPriceListTemplateUpdateValidation(prisma: PrismaClient, excludeId?: string) {
   return PriceListTemplateUpdate.superRefine(async (data, ctx) => {
+    // Validate name uniqueness (exclude current record)
+    if (data.name) {
+      const existing = await prisma.tb_pricelist_template.findFirst({
+        where: {
+          name: data.name,
+          deleted_at: null,
+          ...(excludeId ? { id: { not: excludeId } } : {}),
+        },
+      });
+      if (existing) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Price list template name already exists',
+          path: ['name'],
+        });
+      }
+    }
+
     // Validate currency_id
     if (data.currency_id) {
       const currency = await validateCurrencyIdExists(prisma, data.currency_id);

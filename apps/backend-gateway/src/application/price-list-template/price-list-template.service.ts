@@ -146,7 +146,7 @@ export class PriceListTemplateService {
       );
     }
 
-    return Result.ok(response);
+    return Result.ok(response.data);
   }
 
   /**
@@ -189,7 +189,7 @@ export class PriceListTemplateService {
       );
     }
 
-    return Result.ok(response);
+    return Result.ok(response.data);
   }
 
   /**
@@ -232,7 +232,7 @@ export class PriceListTemplateService {
       );
     }
 
-    return Result.ok(response);
+    return Result.ok(response.data);
   }
 
   /**
@@ -278,6 +278,6 @@ export class PriceListTemplateService {
       );
     }
 
-    return Result.ok(response);
+    return Result.ok(response.data);
   }
 }

@@ -343,6 +343,19 @@ export class PriceListTemplateService {
       `create price-list-template ${JSON.stringify(data)} ${this.userId} ${this.bu_code}`,
     );
 
+    // Check for duplicate name
+    const existingTemplate = await this.prismaService.tb_pricelist_template.findFirst({
+      where: { name: data.name, deleted_at: null },
+    });
+    if (existingTemplate) {
+      return {
+        response: {
+          status: HttpStatus.CONFLICT,
+          message: 'Price list template name already exists',
+        },
+      };
+    }
+
     // Validate using factory function
     const validationSchema = createPriceListTemplateCreateValidation(this.prismaService);
     const validationResult = await validationSchema.safeParseAsync(data);
@@ -351,10 +364,11 @@ export class PriceListTemplateService {
         path: e.path.join('.'),
         message: e.message,
       }));
+      const message = errors.length === 1 ? errors[0].message : 'Validation failed';
       return {
         response: {
           status: HttpStatus.BAD_REQUEST,
-          message: 'Validation failed',
+          message,
           errors,
         },
       };
@@ -446,7 +460,7 @@ export class PriceListTemplateService {
     );
 
     // Validate using factory function
-    const validationSchema = createPriceListTemplateUpdateValidation(this.prismaService);
+    const validationSchema = createPriceListTemplateUpdateValidation(this.prismaService, data.id);
     const validationResult = await validationSchema.safeParseAsync(data);
     if (!validationResult.success) {
       const errors = validationResult.error.issues.map(e => ({

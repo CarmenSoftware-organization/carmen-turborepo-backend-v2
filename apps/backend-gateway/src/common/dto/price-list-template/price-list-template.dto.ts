@@ -18,7 +18,7 @@ const ProductsModificationSchema = z.object({
 
 export const PriceListTemplateSchema = z.object({
   id: z.string().uuid(),
-  name: z.string(),
+  name: z.string().min(1, 'Name is required'),
   description: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
   status: PriceListTemplateStatusEnum.optional().default('draft'),
