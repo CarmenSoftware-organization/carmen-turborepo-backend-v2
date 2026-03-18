@@ -1,0 +1,64 @@
+meta {
+  name: 03 - Create Exchange Rate Array
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/api/config/{{bu_code}}/exchange-rate
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  [
+    {
+      "currency_id": "93dabe25-1668-4c5b-bceb-3e0b83b78002",
+      "at_date": "2026-01-15T02:50:09.183Z",
+      "exchange_rate": 1
+    },
+    {
+      "currency_id": "93dabe25-1668-4c5b-bceb-3e0b83b78002",
+      "at_date": "2026-01-16T02:50:09.183Z",
+      "exchange_rate": 1
+    },
+    {
+      "currency_id": "93dabe25-1668-4c5b-bceb-3e0b83b78002",
+      "at_date": "2026-01-17T02:50:09.183Z",
+      "exchange_rate": 1
+    },
+    {
+      "currency_id": "93dabe25-1668-4c5b-bceb-3e0b83b78002",
+      "at_date": "2026-01-15T02:50:09.183Z",
+      "exchange_rate": 1
+    },
+    {
+      "currency_id": "ef1953fb-d4c9-4c7d-80c0-74d06997b6f2",
+      "at_date": "2026-01-16T02:50:09.184Z",
+      "exchange_rate": 0.03178
+    },
+    {
+      "currency_id": "ef1953fb-d4c9-4c7d-80c0-74d06997b6f2",
+      "at_date": "2026-01-17T02:50:09.184Z",
+      "exchange_rate": 0.03178
+    },
+    {
+      "currency_id": "ef1953fb-d4c9-4c7d-80c0-74d06997b6f2",
+      "at_date": "2026-01-18T02:50:09.184Z",
+      "exchange_rate": 0.03178
+    },
+    {
+      "currency_id": "ef1953fb-d4c9-4c7d-80c0-74d06997b6f2",
+      "at_date": "2026-01-19T02:50:09.184Z",
+      "exchange_rate": 0.03178
+    }
+  ]
+}

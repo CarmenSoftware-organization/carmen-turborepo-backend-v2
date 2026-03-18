@@ -72,13 +72,19 @@ export class ExchangeRateController extends BaseMicroserviceController {
   @MessagePattern({ cmd: 'exchange-rate.create', service: 'exchange-rate' })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'create', payload }, ExchangeRateController.name);
-    const data: ICreateExchangeRate = payload.data;
+    const data = payload.data;
     this.exchangeRateService.userId = payload.user_id;
     this.exchangeRateService.bu_code = payload.bu_code;
     await this.exchangeRateService.initializePrismaService(payload.bu_code, payload.user_id);
 
     const auditContext = this.createAuditContext(payload);
-    const result = await runWithAuditContext(auditContext, () => this.exchangeRateService.create(data));
+
+    if (Array.isArray(data)) {
+      const result = await runWithAuditContext(auditContext, () => this.exchangeRateService.createBulk(data));
+      return this.handleResult(result, HttpStatus.CREATED);
+    }
+
+    const result = await runWithAuditContext(auditContext, () => this.exchangeRateService.create(data as ICreateExchangeRate));
     return this.handleResult(result, HttpStatus.CREATED);
   }
 

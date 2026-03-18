@@ -233,7 +233,7 @@ export class Config_ExchangeRateController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Body() createDto: ExchangeRateCreateDto | ExchangeRateCreateDto[],
+    @Body() createDto: Record<string, unknown> | Record<string, unknown>[],
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
@@ -247,7 +247,7 @@ export class Config_ExchangeRateController extends BaseHttpController {
 
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.config_exchangeRateService.create(
-      createDto,
+      createDto as any,
       user_id,
       bu_code,
       version,
