@@ -19,7 +19,7 @@ export interface IAddLocation {
 }
 
 export interface IRemoveLocation {
-  product_location_id?: string;
+  location_id?: string;
 }
 
 export interface IAddOrderUnit {

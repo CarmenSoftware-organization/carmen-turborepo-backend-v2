@@ -706,12 +706,12 @@ export class ProductsService {
 
     // Business validation: check if product locations to remove exist
     if (data.locations?.remove) {
-      const productLocationIds = data.locations.remove.map((l) => l.product_location_id);
+      const locationIds = data.locations.remove.map((l) => l.location_id);
       const existingLocations = await this.prismaService.tb_product_location.findMany({
-        where: { id: { in: productLocationIds } },
+        where: { product_id: data.id, location_id: { in: locationIds } },
       });
 
-      if (existingLocations.length !== productLocationIds.length) {
+      if (existingLocations.length !== locationIds.length) {
         return Result.error('Remove Location not found', ErrorCode.NOT_FOUND);
       }
     }
@@ -823,13 +823,14 @@ export class ProductsService {
         }
 
         if (data.locations.remove.length > 0) {
-          const productLocationIds = data.locations?.remove?.map(
-            (location) => location.product_location_id,
+          const locationIds = data.locations?.remove?.map(
+            (location) => location.location_id,
           );
 
           await prisma.tb_product_location.deleteMany({
             where: {
-              id: { in: productLocationIds },
+              product_id: data.id,
+              location_id: { in: locationIds },
             },
           });
         }

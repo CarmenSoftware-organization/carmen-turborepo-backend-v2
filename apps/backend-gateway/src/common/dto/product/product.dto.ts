@@ -117,7 +117,7 @@ export const ProductUpdate = z.object({
   locations: z
     .object({
       add: z.array(z.object({ location_id: z.string() })).optional(),
-      remove: z.array(z.object({ product_location_id: z.string() })).optional(),
+      remove: z.array(z.object({ location_id: z.string() })).optional(),
     })
     .optional(),
   order_units: z
