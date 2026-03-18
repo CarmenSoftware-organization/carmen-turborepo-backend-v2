@@ -17,10 +17,12 @@ export interface IPurchaseOrderDetail {
   is_active?: boolean;
   sequence_no?: number;
 
-  // Product info (stored in info JSON since not in schema)
+  // Product info
   product_id?: string;
+  product_code?: string;
   product_name?: string;
   product_local_name?: string;
+  product_sku?: string;
 
   purchase_order_id?: string;
   order_qty?: number;
@@ -152,8 +154,10 @@ export interface ICreatePurchaseOrder {
 export interface ICreatePurchaseOrderDetail {
   sequence: number;
   product_id: string;
+  product_code?: string;
   product_name?: string;
   product_local_name?: string;
+  product_sku?: string;
   order_unit_id: string;
   order_unit_name?: string;
   order_unit_conversion_factor?: number;

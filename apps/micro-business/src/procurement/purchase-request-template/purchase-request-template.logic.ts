@@ -222,6 +222,8 @@ export class PurchaseRequestTemplateLogic {
       JSON.stringify({
         ...detail,
         product_name: product?.name,
+        product_code: product?.code,
+        product_sku: product?.sku,
         product_local_name: product?.local_name,
         requested_unit_name: requestedUnit?.name,
         foc_unit_name: focUnit?.name,

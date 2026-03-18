@@ -188,6 +188,8 @@ export class StockInService {
               productNotFound.push(item.product_id);
             } else {
               item.product_name = product.name;
+              item.product_code = product.code;
+              item.product_sku = product.sku;
               item.product_local_name = product.local_name;
             }
           }
@@ -294,6 +296,8 @@ export class StockInService {
                 productNotFound.push(item.product_id);
               } else {
                 item.product_name = product.name;
+              item.product_code = product.code;
+              item.product_sku = product.sku;
                 item.product_local_name = product.local_name;
               }
             }
@@ -704,6 +708,8 @@ export class StockInService {
         return Result.error('Product not found', ErrorCode.NOT_FOUND);
       }
       data.product_name = product.name;
+      data.product_code = product.code;
+      data.product_sku = product.sku;
       data.product_local_name = product.local_name;
     }
 
@@ -959,6 +965,8 @@ export class StockInService {
         return Result.error('Product not found', ErrorCode.NOT_FOUND);
       }
       data.product_name = product.name;
+      data.product_code = product.code;
+      data.product_sku = product.sku;
       data.product_local_name = product.local_name;
     }
 

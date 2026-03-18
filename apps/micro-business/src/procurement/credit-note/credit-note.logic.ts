@@ -58,6 +58,8 @@ export class CreditNoteLogic implements IClassLogic {
               ...(product && {
                 product_id: product.id,
                 product_name: product.name,
+            product_code: product.code,
+            product_sku: product.sku,
                 product_local_name: product.local_name,
               }),
               ...(returnUnit && {
@@ -125,6 +127,8 @@ export class CreditNoteLogic implements IClassLogic {
               ...(product && {
                 product_id: product.id,
                 product_name: product.name,
+            product_code: product.code,
+            product_sku: product.sku,
                 product_local_name: product.local_name,
               }),
               ...(returnUnit && {
@@ -159,6 +163,8 @@ export class CreditNoteLogic implements IClassLogic {
               ...(product && {
                 product_id: product.id,
                 product_name: product.name,
+            product_code: product.code,
+            product_sku: product.sku,
                 product_local_name: product.local_name,
               }),
               ...(returnUnit && {

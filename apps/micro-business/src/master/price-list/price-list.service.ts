@@ -154,6 +154,9 @@ export class PriceListService {
                 select: {
                   id: true,
                   name: true,
+                  code: true,
+                  local_name: true,
+                  sku: true,
                 },
               },
             },
@@ -183,6 +186,9 @@ export class PriceListService {
             dimension: item.dimension,
             product_id: item.tb_product.id,
             product_name: item.tb_product.name,
+            product_code: item.tb_product.code,
+            product_local_name: item.tb_product.local_name,
+            product_sku: item.tb_product.sku,
           };
         });
         return {
@@ -314,8 +320,11 @@ export class PriceListService {
           dimension: true,
           tb_product: {
             select: {
-              id: true,
-              name: true,
+                  id: true,
+                  name: true,
+                  code: true,
+                  local_name: true,
+                  sku: true,
             },
           },
         },
@@ -353,6 +362,9 @@ export class PriceListService {
           dimension: row.dimension,
           product_id: row.tb_product.id,
           product_name: row.tb_product.name,
+          product_code: row.tb_product.code,
+          product_local_name: row.tb_product.local_name,
+          product_sku: row.tb_product.sku,
         };
       });
       return {
@@ -469,8 +481,11 @@ export class PriceListService {
           dimension: true,
           tb_product: {
             select: {
-              id: true,
-              name: true,
+                  id: true,
+                  name: true,
+                  code: true,
+                  local_name: true,
+                  sku: true,
             },
           },
         },
@@ -517,6 +532,9 @@ export class PriceListService {
             dimension: row.dimension,
             product_id: row.tb_product.id,
             product_name: row.tb_product.name,
+          product_code: row.tb_product.code,
+          product_local_name: row.tb_product.local_name,
+          product_sku: row.tb_product.sku,
           };
         }),
       }
@@ -673,7 +691,7 @@ export class PriceListService {
       (data.pricelist_detail?.add || []).map(async (item) => {
         const product = await this.prismaService.tb_product.findFirst({
           where: { id: item.product_id },
-          select: { name: true },
+          select: { name: true, code: true, local_name: true, sku: true },
         });
 
         const unit = item.unit_id
@@ -705,6 +723,9 @@ export class PriceListService {
           is_active: item.is_active,
           tb_product: { connect: { id: item.product_id } },
           product_name: item.product_name ?? product?.name,
+          product_code: item.product_code ?? product?.code,
+          product_local_name: item.product_local_name ?? product?.local_name,
+          product_sku: item.product_sku ?? product?.sku,
           note: item.note,
           info: item.info,
           dimension: item.dimension,
@@ -809,7 +830,7 @@ export class PriceListService {
           const product = detail.product_id
             ? await this.prismaService.tb_product.findFirst({
                 where: { id: detail.product_id },
-                select: { name: true },
+                select: { name: true, code: true, local_name: true, sku: true },
               })
             : null;
 
@@ -832,6 +853,9 @@ export class PriceListService {
               pricelist_id: updatedPriceList.id,
               product_id: detail.product_id,
               product_name: detail.product_name ?? product?.name,
+              product_code: detail.product_code ?? product?.code,
+              product_local_name: detail.product_local_name ?? product?.local_name,
+              product_sku: detail.product_sku ?? product?.sku,
               sequence_no: detail.sequence_no,
               unit_id: detail.unit_id,
               unit_name: detail.unit_name ?? unit?.name,
@@ -876,7 +900,7 @@ export class PriceListService {
           const product = detail.product_id
             ? await this.prismaService.tb_product.findFirst({
                 where: { id: detail.product_id },
-                select: { name: true },
+                select: { name: true, code: true, local_name: true, sku: true },
               })
             : null;
 
@@ -899,6 +923,9 @@ export class PriceListService {
             data: {
               product_id: detail.product_id,
               product_name: detail.product_name ?? product?.name,
+              product_code: detail.product_code ?? product?.code,
+              product_local_name: detail.product_local_name ?? product?.local_name,
+              product_sku: detail.product_sku ?? product?.sku,
               sequence_no: detail.sequence_no,
               unit_id: detail.unit_id,
               unit_name: detail.unit_name ?? unit?.name,
@@ -1261,7 +1288,7 @@ export class PriceListService {
         .map(async ({ data }, index) => {
           const product = await this.prismaService.tb_product.findFirst({
             where: { id: data.product_id },
-            select: { name: true },
+            select: { name: true, code: true, local_name: true, sku: true },
           });
           const unit = data.unit_id
             ? await this.prismaService.tb_unit.findFirst({
@@ -1273,7 +1300,7 @@ export class PriceListService {
           return {
             sequence_no: index + 1,
             product_id: data.product_id,
-            product_name: product?.name || '',
+            product_name: product?.name || '',            product_code: product?.code || '',            product_local_name: product?.local_name || '',            product_sku: product?.sku || '',
             unit_id: data.unit_id || undefined,
             unit_name: unit?.name || '',
             tax_profile_id: data.tax_profile_id || undefined,

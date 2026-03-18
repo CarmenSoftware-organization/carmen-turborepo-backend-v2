@@ -25,6 +25,10 @@ export const EmbeddedVendorSchema = z.object({
 
 export const EmbeddedProductSchema = z.object({
   product_id: ValidateSchema.shape.uuid.optional(),
+  product_code: z.string().optional(),
+  product_name: z.string().optional(),
+  product_local_name: z.string().optional(),
+  product_sku: z.string().optional(),
 })
 
 export const EmbeddedWorkflowSchema = z.object({

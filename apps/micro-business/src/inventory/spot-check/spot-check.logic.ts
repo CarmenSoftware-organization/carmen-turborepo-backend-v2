@@ -4,9 +4,10 @@ import { BackendLogger } from '@/common/helpers/backend.logger';
 
 interface ProductAtLocation {
   product_id: string;
-  product_name: string;
   product_code: string;
-  product_sku: string;
+  product_name: string;
+  product_local_name: string | null;
+  product_sku: string | null;
   inventory_unit_id: string;
   on_hand_qty: Prisma.Decimal;
 }
@@ -38,7 +39,7 @@ export class SpotCheckLogic {
     // Get product details
     const productRecords = await prisma.tb_product.findMany({
       where: { id: { in: productIds }, deleted_at: null },
-      select: { id: true, name: true, code: true, sku: true, inventory_unit_id: true },
+      select: { id: true, name: true, local_name: true, code: true, sku: true, inventory_unit_id: true },
     });
 
     // Build on_hand_qty map
@@ -49,8 +50,9 @@ export class SpotCheckLogic {
     // Combine product details with on_hand_qty
     return productRecords.map((p) => ({
       product_id: p.id,
-      product_name: p.name,
       product_code: p.code,
+      product_name: p.name,
+      product_local_name: p.local_name,
       product_sku: p.sku,
       inventory_unit_id: p.inventory_unit_id,
       on_hand_qty: qtyMap.get(p.id) || new Prisma.Decimal(0),
@@ -87,8 +89,9 @@ export class SpotCheckLogic {
       spot_check_id: spotCheckId,
       sequence_no: index + 1,
       product_id: p.product_id,
-      product_name: p.product_name,
       product_code: p.product_code,
+      product_name: p.product_name,
+      product_local_name: p.product_local_name,
       product_sku: p.product_sku,
       on_hand_qty: p.on_hand_qty,
       count_qty: 0,

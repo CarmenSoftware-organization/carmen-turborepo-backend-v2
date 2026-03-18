@@ -446,11 +446,14 @@ export class PurchaseOrderLogic {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private enrichSaveDetail(detail: Record<string, any>, foreignValue: Record<string, any>): Record<string, any> {
+    const product = this.findByIdInArray(foreignValue?.product_ids, detail.product_id);
     return JSON.parse(
       JSON.stringify({
         ...detail,
-        product_name:
-          this.findByIdInArray(foreignValue?.product_ids, detail.product_id)?.name || detail.product_name,
+        product_code: product?.code || detail.product_code,
+        product_name: product?.name || detail.product_name,
+        product_local_name: product?.local_name || detail.product_local_name,
+        product_sku: product?.sku || detail.product_sku,
         order_unit_name:
           this.findByIdInArray(foreignValue?.unit_ids, detail.order_unit_id)?.name || detail.order_unit_name,
         base_unit_name:

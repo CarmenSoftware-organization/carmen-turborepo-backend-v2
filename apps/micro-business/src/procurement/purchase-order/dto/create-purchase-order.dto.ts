@@ -15,8 +15,10 @@ export const PurchaseOrderPrDetailSchema = z.object({
 export const PurchaseOrderDetailSchema = z.object({
   sequence: z.number().int().positive(),
   product_id: z.string().uuid(),
+  product_code: z.string().optional(),
   product_name: z.string().optional(),
   product_local_name: z.string().optional(),
+  product_sku: z.string().optional(),
   order_unit_id: z.string().uuid(),
   order_unit_name: z.string().optional(),
   order_unit_conversion_factor: z.number().optional().default(1),

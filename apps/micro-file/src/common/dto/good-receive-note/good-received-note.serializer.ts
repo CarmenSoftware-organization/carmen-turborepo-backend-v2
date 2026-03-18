@@ -8,6 +8,8 @@ const GoodReceivedNoteDetailEmbeddedSchema = z.object({
   product_id: z.string().nullable().optional(),
   product_name: z.string().nullable().optional(),
   product_code: z.string().nullable().optional(),
+  product_local_name: z.string().nullable().optional(),
+  product_sku: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   ordered_qty: decimalField,
   received_qty: decimalField,

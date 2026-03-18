@@ -40,11 +40,17 @@ export class PurchaseOrderDetailResponseDto {
   @ApiPropertyOptional({ description: 'Product ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   product_id?: string;
 
+  @ApiPropertyOptional({ description: 'Product code', example: 'PRD-001' })
+  product_code?: string;
+
   @ApiPropertyOptional({ description: 'Product name', example: 'Tomatoes' })
   product_name?: string;
 
   @ApiPropertyOptional({ description: 'Product local name', example: 'มะเขือเทศ' })
   product_local_name?: string;
+
+  @ApiPropertyOptional({ description: 'Product SKU', example: 'SKU-TOM-001' })
+  product_sku?: string;
 
   @ApiPropertyOptional({ description: 'Unit price', example: 50.0 })
   unit_price?: number;

@@ -20,8 +20,10 @@ export const TransferCreateSchema = z.object({
   dimension: z.any().optional().nullable(),
   details: z.array(z.object({
     product_id: z.string().uuid(),
+    product_code: z.string().optional().nullable(),
     product_name: z.string().optional().nullable(),
     product_local_name: z.string().optional().nullable(),
+    product_sku: z.string().optional().nullable(),
     description: z.string().optional().nullable(),
     qty: z.number().optional().nullable(),
     cost_per_unit: z.number().optional().nullable(),
@@ -71,8 +73,10 @@ export type ITransferUpdate = z.infer<typeof TransferUpdateSchema>;
 export const TransferDetailCreateSchema = z.object({
   transfer_id: z.string().uuid().optional(),
   product_id: z.string().uuid(),
+  product_code: z.string().optional().nullable(),
   product_name: z.string().optional().nullable(),
   product_local_name: z.string().optional().nullable(),
+  product_sku: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   qty: z.number().optional().nullable(),
   cost_per_unit: z.number().optional().nullable(),
@@ -89,8 +93,10 @@ export type ITransferDetailCreate = z.infer<typeof TransferDetailCreateSchema>;
 export const TransferDetailUpdateSchema = z.object({
   id: z.string().uuid(),
   product_id: z.string().uuid().optional(),
+  product_code: z.string().optional().nullable(),
   product_name: z.string().optional().nullable(),
   product_local_name: z.string().optional().nullable(),
+  product_sku: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   qty: z.number().optional().nullable(),
   cost_per_unit: z.number().optional().nullable(),

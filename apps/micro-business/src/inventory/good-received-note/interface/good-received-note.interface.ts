@@ -13,6 +13,8 @@ export interface IGoodReceivedNoteDetailCreate {
   product_id: string;
   product_name?: string;
   product_local_name?: string;
+  product_code?: string;
+  product_sku?: string;
 
   order_qty?: number;
   order_unit_id: string;
@@ -142,6 +144,8 @@ export interface IGoodReceivedNoteDetailUpdate {
   product_id?: string;
   product_name?: string;
   product_local_name?: string;
+  product_code?: string;
+  product_sku?: string;
 
   order_qty?: number;
   order_unit_id?: string;

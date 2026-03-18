@@ -5,6 +5,11 @@ import { enum_purchase_order_doc_status } from '@repo/prisma-shared-schema-tenan
 export const purchaseOrderDetail = z.object({
   name: z.string().optional(),
   description: z.string().optional(),
+  product_id: z.string().uuid().optional(),
+  product_code: z.string().optional(),
+  product_name: z.string().optional(),
+  product_local_name: z.string().optional(),
+  product_sku: z.string().optional(),
   exchange_rate: z.number().optional(),
   order_qty: z.number().optional(),
   order_unit_id: z.string().uuid().optional(),

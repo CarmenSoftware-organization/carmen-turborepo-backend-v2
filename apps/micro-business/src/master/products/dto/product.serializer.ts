@@ -87,6 +87,7 @@ export const ProductListItemResponseSchema = z.object({
   code: z.string(),
   name: z.string(),
   local_name: z.string().nullable().optional(),
+  sku: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   product_status_type: z.string(),
   inventory_unit_id: z.string().nullable().optional(),

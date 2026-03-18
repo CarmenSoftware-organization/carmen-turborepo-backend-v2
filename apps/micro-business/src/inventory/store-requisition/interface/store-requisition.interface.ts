@@ -96,6 +96,8 @@ export interface StoreRequisitionDetail {
   product_id: string;
   product_name?: string;
   product_local_name?: string;
+  product_code?: string;
+  product_sku?: string;
   requested_qty?: number;
   approved_qty?: number;
   issued_qty?: number;
@@ -196,6 +198,8 @@ export interface IStoreRequisitionDetail {
   product_id: string;
   product_name?: string;
   product_local_name?: string;
+  product_code?: string;
+  product_sku?: string;
   requested_qty?: number;
   approved_qty?: number;
   issued_qty?: number;

@@ -425,8 +425,10 @@ model tb_credit_note_detail {
   delivery_point_name String? @db.VarChar
 
   product_id         String  @db.Uuid
+  product_code       String? @db.VarChar
   product_name       String? @db.VarChar
   product_local_name String? @db.VarChar
+  product_sku        String? @db.VarChar
 
   return_qty               Decimal? @default(0) @db.Decimal(20, 5)
   return_unit_id           String?  @db.Uuid
@@ -898,8 +900,10 @@ model tb_good_received_note_detail {
   location_name String? @db.VarChar
 
   product_id         String  @db.Uuid
+  product_code       String? @db.VarChar
   product_name       String? @db.VarChar
   product_local_name String? @db.VarChar
+  product_sku        String? @db.VarChar
 
   tb_good_received_note                tb_good_received_note                  @relation(fields: [good_received_note_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tb_location                          tb_location                            @relation(fields: [location_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -1210,8 +1214,11 @@ model tb_period_snapshot {
   location_code String? @db.VarChar
   location_name String? @db.VarChar
 
-  product_id   String  @db.Uuid
-  product_name String? @db.VarChar
+  product_id         String  @db.Uuid
+  product_code       String? @db.VarChar
+  product_name       String? @db.VarChar
+  product_local_name String? @db.VarChar
+  product_sku        String? @db.VarChar
 
   lot_no      String?   @db.VarChar
   lot_index   Int?      @default(1) @db.Integer
@@ -1485,6 +1492,7 @@ model tb_product {
   tb_physical_count_detail            tb_physical_count_detail[]
   tb_product_comment                  tb_product_comment[]
   tb_recipe_ingredient                tb_recipe_ingredient[]
+  tb_purchase_order_detail            tb_purchase_order_detail[]
 
   @@unique([code, name, deleted_at], map: "product_code_name_u")
   @@index([code], map: "product_code_idx")
@@ -1744,10 +1752,13 @@ model tb_product_sub_category_comment {
 }
 
 model tb_product_tb_vendor {
-  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  product_id   String  @db.Uuid
-  product_name String? @db.VarChar
-  vendor_id    String? @db.Uuid
+  id                 String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  product_id         String  @db.Uuid
+  product_code       String? @db.VarChar
+  product_name       String? @db.VarChar
+  product_local_name String? @db.VarChar
+  product_sku        String? @db.VarChar
+  vendor_id          String? @db.Uuid
 
   vendor_product_code String? @db.VarChar
   vendor_product_name String? @db.VarChar
@@ -1888,6 +1899,12 @@ model tb_purchase_order_detail {
 
   is_active Boolean? @default(true)
 
+  product_id         String  @db.Uuid
+  product_code       String? @db.VarChar
+  product_name       String? @db.VarChar
+  product_local_name String? @db.VarChar
+  product_sku        String? @db.VarChar
+
   order_qty                    Decimal? @default(0) @db.Decimal(20, 5)
   order_unit_id                String?  @db.Uuid
   order_unit_conversion_factor Decimal? @default(0) @db.Decimal(20, 5)
@@ -1945,6 +1962,7 @@ model tb_purchase_order_detail {
   tb_tax_profile                                          tb_tax_profile?                                       @relation(fields: [tax_profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tb_purchase_order_detail_tb_purchase_request_detail     tb_purchase_order_detail_tb_purchase_request_detail[]
   tb_purchase_order_detail_comment                        tb_purchase_order_detail_comment[]
+  tb_product                                              tb_product?                                           @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([purchase_order_id, sequence_no, deleted_at], map: "PO1_purchase_order_detail_sequence_no_u")
   @@index([purchase_order_id], map: "PO1_purchase_order_detail_idx")
@@ -2132,8 +2150,10 @@ model tb_purchase_request_detail {
   delivery_date DateTime? @db.Timestamptz(6)
 
   product_id         String  @db.Uuid
+  product_code       String? @db.VarChar
   product_name       String? @db.VarChar
   product_local_name String? @db.VarChar
+  product_sku        String? @db.VarChar
 
   inventory_unit_id   String? @db.Uuid
   inventory_unit_name String? @db.VarChar
@@ -2374,8 +2394,10 @@ model tb_purchase_request_template_detail {
   // delivery_date       DateTime? @db.Timestamptz(6)
 
   product_id         String  @db.Uuid
+  product_code       String? @db.VarChar
   product_name       String? @db.VarChar
   product_local_name String? @db.VarChar
+  product_sku        String? @db.VarChar
 
   inventory_unit_id   String? @db.Uuid
   inventory_unit_name String? @db.VarChar
@@ -2585,8 +2607,10 @@ model tb_stock_in_detail {
   description              String? @db.VarChar
 
   product_id         String  @db.Uuid
+  product_code       String? @db.VarChar
   product_name       String? @db.VarChar
   product_local_name String? @db.VarChar
+  product_sku        String? @db.VarChar
 
   qty           Decimal? @default(0) @db.Decimal(20, 5)
   cost_per_unit Decimal? @default(0) @db.Decimal(20, 5)
@@ -2744,8 +2768,10 @@ model tb_stock_out_detail {
   description              String? @db.VarChar
 
   product_id         String  @db.Uuid
+  product_code       String? @db.VarChar
   product_name       String? @db.VarChar
   product_local_name String? @db.VarChar
+  product_sku        String? @db.VarChar
 
   qty Decimal? @default(0) @db.Decimal(20, 5)
 
@@ -2886,8 +2912,10 @@ model tb_transfer_detail {
   description              String? @db.VarChar
 
   product_id         String  @db.Uuid
+  product_code       String? @db.VarChar
   product_name       String? @db.VarChar
   product_local_name String? @db.VarChar
+  product_sku        String? @db.VarChar
 
   qty           Decimal? @default(0) @db.Decimal(20, 5)
   cost_per_unit Decimal? @default(0) @db.Decimal(20, 5)
@@ -3036,8 +3064,10 @@ model tb_store_requisition_detail {
   description              String? @db.VarChar
 
   product_id         String  @db.Uuid
+  product_code       String? @db.VarChar
   product_name       String? @db.VarChar
   product_local_name String? @db.VarChar
+  product_sku        String? @db.VarChar
 
   requested_qty Decimal? @default(0) @db.Decimal(20, 5)
   approved_qty  Decimal? @default(0) @db.Decimal(20, 5)
@@ -3535,9 +3565,13 @@ model tb_count_stock_detail {
   count_stock_id String @db.Uuid
   sequence_no    Int?   @default(1)
 
-  product_id   String   @db.Uuid
-  product_name String?  @db.VarChar
-  qty          Decimal? @default(0) @db.Decimal(20, 5)
+  product_id         String  @db.Uuid
+  product_code       String? @db.VarChar
+  product_name       String? @db.VarChar
+  product_local_name String? @db.VarChar
+  product_sku        String? @db.VarChar
+
+  qty Decimal? @default(0) @db.Decimal(20, 5)
 
   description String? @db.VarChar
   note        String? @db.VarChar
@@ -3687,9 +3721,13 @@ model tb_spot_check_detail {
   spot_check_id String @db.Uuid
   sequence_no   Int?   @default(1)
 
-  product_id   String   @db.Uuid
-  product_name String?  @db.VarChar
-  qty          Decimal? @default(0) @db.Decimal(20, 5)
+  product_id         String  @db.Uuid
+  product_code       String? @db.VarChar
+  product_name       String? @db.VarChar
+  product_local_name String? @db.VarChar
+  product_sku        String? @db.VarChar
+
+  qty Decimal? @default(0) @db.Decimal(20, 5)
 
   description String? @db.VarChar
   note        String? @db.VarChar
@@ -3931,8 +3969,11 @@ model tb_pricelist_template_detail {
   pricelist_template_id String @db.Uuid
   sequence_no           Int?   @default(1)
 
-  product_id   String  @db.Uuid
-  product_name String? @db.VarChar
+  product_id         String  @db.Uuid
+  product_code       String? @db.VarChar
+  product_name       String? @db.VarChar
+  product_local_name String? @db.VarChar
+  product_sku        String? @db.VarChar
 
   inventory_unit_id   String? @db.Uuid
   inventory_unit_name String? @db.VarChar
@@ -4255,8 +4296,11 @@ model tb_pricelist_detail {
 
   sequence_no Int? @default(1)
 
-  product_id   String  @db.Uuid
-  product_name String? @db.VarChar
+  product_id         String  @db.Uuid
+  product_code       String? @db.VarChar
+  product_name       String? @db.VarChar
+  product_local_name String? @db.VarChar
+  product_sku        String? @db.VarChar
 
   unit_id   String? @db.Uuid
   unit_name String? @db.VarChar
@@ -4339,8 +4383,11 @@ model tb_pricelist_detail_comment {
 model tb_product_location {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
-  product_id   String  @db.Uuid
-  product_name String? @db.VarChar
+  product_id         String  @db.Uuid
+  product_code       String? @db.VarChar
+  product_name       String? @db.VarChar
+  product_local_name String? @db.VarChar
+  product_sku        String? @db.VarChar
 
   location_id   String? @db.Uuid
   location_code String? @db.VarChar
@@ -5069,11 +5116,11 @@ model tb_physical_count_detail {
   physical_count_id String            @db.Uuid
   tb_physical_count tb_physical_count @relation(fields: [physical_count_id], references: [id], onDelete: Cascade)
 
-  product_id   String     @db.Uuid
-  tb_product   tb_product @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  product_name String     @db.VarChar
-  product_code String     @db.VarChar
-  product_sku  String     @db.VarChar
+  product_id         String  @db.Uuid
+  product_code       String? @db.VarChar
+  product_name       String? @db.VarChar
+  product_local_name String? @db.VarChar
+  product_sku        String? @db.VarChar
 
   inventory_unit_id String  @db.Uuid
   tb_unit_inventory tb_unit @relation(fields: [inventory_unit_id], references: [id], onDelete: Cascade)
@@ -5090,6 +5137,7 @@ model tb_physical_count_detail {
   deleted_by_id String?   @db.Uuid
 
   tb_physical_count_detail_comment tb_physical_count_detail_comment[]
+  tb_product                       tb_product                         @relation(fields: [product_id], references: [id], onDelete: Cascade)
 
   @@unique([physical_count_id, product_id, deleted_at], map: "physical_count_detail_delete_at_u")
   @@index([physical_count_id, product_id])

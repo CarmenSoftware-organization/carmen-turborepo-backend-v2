@@ -17,7 +17,9 @@ const PurchaseRequestDetailEmbeddedSchema = z.object({
   // Product
   product_id: z.string().nullable().optional(),
   product_name: z.string().nullable().optional(),
+  product_code: z.string().nullable().optional(),
   product_local_name: z.string().nullable().optional(),
+  product_sku: z.string().nullable().optional(),
 
   // Inventory unit
   inventory_unit_id: z.string().nullable().optional(),

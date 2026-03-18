@@ -30,11 +30,17 @@ export class PurchaseOrderDetailDto {
   @ApiProperty({ description: 'Product ID', format: 'uuid' })
   product_id: string;
 
+  @ApiPropertyOptional({ description: 'Product code' })
+  product_code?: string;
+
   @ApiPropertyOptional({ description: 'Product name' })
   product_name?: string;
 
   @ApiPropertyOptional({ description: 'Product local name' })
   product_local_name?: string;
+
+  @ApiPropertyOptional({ description: 'Product SKU' })
+  product_sku?: string;
 
   @ApiProperty({ description: 'Order unit ID', format: 'uuid' })
   order_unit_id: string;

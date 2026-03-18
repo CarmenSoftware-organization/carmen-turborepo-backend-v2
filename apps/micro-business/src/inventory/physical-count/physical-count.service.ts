@@ -281,13 +281,14 @@ export class PhysicalCountService {
     const products = productIdsWithStock.length > 0
       ? await prisma.tb_product.findMany({
         where: { id: { in: productIdsWithStock }, deleted_at: null },
-        select: { id: true, name: true, code: true, sku: true, inventory_unit_id: true },
+        select: { id: true, name: true, local_name: true, code: true, sku: true, inventory_unit_id: true },
       })
       : [];
 
     const stockByProduct = products.map((p) => ({
       product_id: p.id,
       product_name: p.name,
+      product_local_name: p.local_name,
       product_code: p.code,
       product_sku: p.sku,
       inventory_unit_id: p.inventory_unit_id,
@@ -317,6 +318,7 @@ export class PhysicalCountService {
           physical_count_id: physicalCount.id,
           product_id: item.product_id,
           product_name: item.product_name,
+          product_local_name: item.product_local_name,
           product_code: item.product_code,
           product_sku: item.product_sku,
           inventory_unit_id: item.inventory_unit_id,

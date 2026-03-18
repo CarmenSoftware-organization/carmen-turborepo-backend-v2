@@ -357,6 +357,8 @@ export class GoodReceivedNoteService {
             productNotFound.push(item.product_id);
           } else {
             item.product_name = findProduct.name;
+            item.product_code = findProduct.code;
+            item.product_sku = findProduct.sku;
             item.product_local_name = findProduct.local_name;
           }
 
@@ -736,6 +738,8 @@ export class GoodReceivedNoteService {
               productNotFound.push(item.product_id);
             } else {
               item.product_name = findProduct.name;
+            item.product_code = findProduct.code;
+            item.product_sku = findProduct.sku;
               item.product_local_name = findProduct.local_name;
             }
 
@@ -903,6 +907,8 @@ export class GoodReceivedNoteService {
                 productNotFound.push(item.product_id);
               } else {
                 item.product_name = findProduct.name;
+            item.product_code = findProduct.code;
+            item.product_sku = findProduct.sku;
                 item.product_local_name = findProduct.local_name;
               }
             }
