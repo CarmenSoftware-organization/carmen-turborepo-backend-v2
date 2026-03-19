@@ -17,6 +17,7 @@ import {
   ErrorCode,
   TryCatch,
 } from '@/common';
+import { InventoryTransactionService } from '@/inventory/inventory-transaction/inventory-transaction.service';
 
 @Injectable()
 export class StockOutService {
@@ -30,6 +31,7 @@ export class StockOutService {
     @Inject('MASTER_SERVICE')
     private readonly masterService: ClientProxy,
     private readonly tenantService: TenantService,
+    private readonly inventoryTransactionService: InventoryTransactionService,
   ) { }
 
   /**
@@ -146,8 +148,10 @@ export class StockOutService {
   }
 
   /**
-   * Create a new stock out with optional detail lines
-   * สร้างใบเบิกสินค้าออกใหม่พร้อมรายการรายละเอียด (ไม่บังคับ)
+   * Create a new stock out and immediately adjust inventory.
+   * สร้างใบเบิกสินค้าออกใหม่และหักสินค้าคงคลังทันที
+   * All operations (doc creation + inventory adjustment) run in a single transaction
+   * to prevent race conditions.
    * @param data - Stock out creation data / ข้อมูลสร้างใบเบิกสินค้าออก
    * @param user_id - User ID / ID ผู้ใช้
    * @param tenant_id - Tenant ID / ID ผู้เช่า
@@ -157,6 +161,14 @@ export class StockOutService {
   async create(data: IStockOutCreate, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'create', data, user_id, tenant_id }, StockOutService.name);
 
+    if (!data.stock_out_detail?.add || data.stock_out_detail.add.length === 0) {
+      return Result.error('Stock out detail items are required', ErrorCode.INVALID_ARGUMENT);
+    }
+
+    if (!data.location_id) {
+      return Result.error('Location is required for stock out', ErrorCode.INVALID_ARGUMENT);
+    }
+
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
       return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
@@ -164,82 +176,93 @@ export class StockOutService {
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
-    // Validate workflow if provided
-    // if (data.workflow_id) {
-    //   const workflow = await prisma.tb_workflow.findFirst({
-    //     where: { id: data.workflow_id },
-    //   });
-    //   if (!workflow) {
-    //     return Result.error('Workflow not found', ErrorCode.NOT_FOUND);
-    //   }
-    // }
-
-    // Validate stock_out_detail items
-    if (data.stock_out_detail?.add) {
-      const productNotFound: string[] = [];
-
-      await Promise.all(
-        data.stock_out_detail.add.map(async (item) => {
-          if (item.product_id) {
-            const product = await prisma.tb_product.findFirst({
-              where: { id: item.product_id },
-            });
-            if (!product) {
-              productNotFound.push(item.product_id);
-            } else {
-              item.product_name = product.name;
-              item.product_code = product.code;
-              item.product_sku = product.code;
-              item.product_local_name = product.local_name;
-            }
+    // Validate products before entering transaction
+    const productNotFound: string[] = [];
+    await Promise.all(
+      data.stock_out_detail.add.map(async (item) => {
+        if (item.product_id) {
+          const product = await prisma.tb_product.findFirst({
+            where: { id: item.product_id },
+          });
+          if (!product) {
+            productNotFound.push(item.product_id);
+          } else {
+            item.product_name = product.name;
+            item.product_code = product.code;
+            item.product_sku = product.code;
+            item.product_local_name = product.local_name;
           }
-        }),
-      );
+        }
+      }),
+    );
 
-      if (productNotFound.length > 0) {
-        return Result.error(`Product not found: ${productNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-      }
+    if (productNotFound.length > 0) {
+      return Result.error(`Product not found: ${productNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
     }
 
-    const tx = await prisma.$transaction(async (prisma) => {
+    // Get calculation method before transaction
+    const method = await this.inventoryTransactionService.getCalculationMethod(tenant_id);
+
+    // Single atomic transaction: create doc + details + inventory adjustments
+    const result = await prisma.$transaction(async (tx) => {
       const stockOutObject = { ...data };
       delete stockOutObject.stock_out_detail;
 
-      const createStockOut = await prisma.tb_stock_out.create({
+      const createStockOut = await tx.tb_stock_out.create({
         data: {
           ...stockOutObject,
           created_by_id: user_id,
           so_no: await this.generateSONo(new Date().toISOString(), tenant_id, user_id),
           doc_version: 0,
-          doc_status: enum_doc_status.draft,
+          doc_status: enum_doc_status.completed,
         },
       });
 
-      if (data.stock_out_detail?.add && data.stock_out_detail.add.length > 0) {
-        let sequenceNo = 1;
-        const stockOutDetailObj = data.stock_out_detail.add.map((item) => ({
-          stock_out_id: createStockOut.id,
-          created_by_id: user_id,
-          sequence_no: sequenceNo++,
-          product_id: item.product_id || '',
-          product_name: item.product_name || null,
-          product_local_name: item.product_local_name || null,
-          description: item.description || null,
-          qty: item.qty || 0,
-          note: item.note || null,
-          info: item.info || null,
-          dimension: item.dimension || null,
-        }));
+      let sequenceNo = 1;
+      const detailItems = data.stock_out_detail!.add!;
 
-        await prisma.tb_stock_out_detail.createMany({
-          data: stockOutDetailObj,
+      // Process each detail line sequentially to avoid race conditions on cost layers
+      for (const item of detailItems) {
+        const detail = await tx.tb_stock_out_detail.create({
+          data: {
+            stock_out_id: createStockOut.id,
+            created_by_id: user_id,
+            sequence_no: sequenceNo++,
+            product_id: item.product_id || '',
+            product_name: item.product_name || null,
+            product_local_name: item.product_local_name || null,
+            description: item.description || null,
+            qty: item.qty || 0,
+            note: item.note || null,
+            info: item.info || null,
+            dimension: item.dimension || null,
+          },
+        });
+
+        // Execute inventory adjustment in the same transaction
+        const inventoryTransactionId = await this.inventoryTransactionService.executeAdjustmentOut(
+          tx,
+          {
+            product_id: item.product_id || '',
+            location_id: data.location_id!,
+            location_code: data.location_code || null,
+            qty: Number(item.qty) || 0,
+            user_id,
+          },
+          method,
+        );
+
+        // Link inventory transaction back to detail
+        await tx.tb_stock_out_detail.update({
+          where: { id: detail.id },
+          data: { inventory_transaction_id: inventoryTransactionId },
         });
       }
 
       return { id: createStockOut.id, so_no: createStockOut.so_no };
     });
 
-    return Result.ok(tx);
+    return Result.ok(result);
   }
 
   /**
@@ -267,6 +290,10 @@ export class StockOutService {
 
     if (!stockOut) {
       return Result.error('Stock Out not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (stockOut.doc_status !== enum_doc_status.draft) {
+      return Result.error('Cannot update a completed Stock Out — inventory has already been adjusted', ErrorCode.INVALID_ARGUMENT);
     }
 
     // Validate workflow if provided
@@ -450,6 +477,10 @@ export class StockOutService {
 
     if (!stockOut) {
       return Result.error('Stock Out not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (stockOut.doc_status !== enum_doc_status.draft) {
+      return Result.error('Cannot delete a completed Stock Out — inventory has already been adjusted', ErrorCode.INVALID_ARGUMENT);
     }
 
     await prisma.$transaction(async (prisma) => {

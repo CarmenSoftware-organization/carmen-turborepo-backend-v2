@@ -6,10 +6,12 @@ import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
 import { TenantModule } from '@/tenant/tenant.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { envConfig } from '@/libs/config.env';
+import { InventoryTransactionModule } from '@/inventory/inventory-transaction/inventory-transaction.module';
 
 @Module({
   imports: [
     TenantModule,
+    InventoryTransactionModule,
     ClientsModule.register([
       {
         name: 'MASTER_SERVICE',

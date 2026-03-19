@@ -95,6 +95,31 @@ export interface ITestAdjustmentOutPayload {
   user_id: string;
 }
 
+/**
+ * Payload for executing adjustment-in within an existing Prisma transaction.
+ * Used by stock-in service to ensure document creation + inventory adjustment are atomic.
+ */
+export interface IAdjustmentInParams {
+  product_id: string;
+  location_id: string;
+  location_code: string | null;
+  qty: number;
+  cost_per_unit: number;
+  user_id: string;
+}
+
+/**
+ * Payload for executing adjustment-out within an existing Prisma transaction.
+ * Used by stock-out service to ensure document creation + inventory adjustment are atomic.
+ */
+export interface IAdjustmentOutParams {
+  product_id: string;
+  location_id: string;
+  location_code: string | null;
+  qty: number;
+  user_id: string;
+}
+
 export interface IEopInPayload {
   bu_code: string;
   product_id: string;
@@ -1045,6 +1070,156 @@ export class InventoryTransactionService {
     });
 
     return Result.ok({ id: transactionId });
+  }
+
+  // ==================== Public tx-aware methods for stock-in/stock-out ====================
+
+  /**
+   * Execute adjustment-in within an existing Prisma transaction.
+   * Creates inventory transaction header + detail + cost layers atomically.
+   * Returns the inventory_transaction_id to link back to the stock-in detail.
+   */
+  async executeAdjustmentIn(
+    tx: any,
+    params: IAdjustmentInParams,
+    method: string,
+  ): Promise<string> {
+    const now = new Date();
+    const nowIso = now.toISOString();
+    const atPeriod = format(now, 'yyMM');
+    const year = now.getFullYear().toString();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+
+    const inventoryTransaction = await tx.tb_inventory_transaction.create({
+      data: {
+        inventory_doc_type: enum_inventory_doc_type.stock_in,
+        inventory_doc_no: crypto.randomUUID(),
+        note: 'Adjustment in from stock-in',
+        created_by_id: params.user_id,
+        created_at: nowIso,
+        updated_by_id: params.user_id,
+        updated_at: nowIso,
+      },
+    });
+
+    const lotSeqNo = await this.getNextLotSeqNo(tx, atPeriod);
+    const lotNo = `ADI-${year}-${month}-${lotSeqNo.toString().padStart(4, '0')}`;
+    const totalCost = Math.round(params.qty * params.cost_per_unit * 100) / 100;
+
+    const txnDetail = await tx.tb_inventory_transaction_detail.create({
+      data: {
+        inventory_transaction_id: inventoryTransaction.id,
+        product_id: params.product_id,
+        location_id: params.location_id,
+        location_code: params.location_code,
+        current_lot_no: lotNo,
+        qty: params.qty,
+        cost_per_unit: params.cost_per_unit,
+        total_cost: totalCost,
+        created_by_id: params.user_id,
+        created_at: nowIso,
+        updated_by_id: params.user_id,
+        updated_at: nowIso,
+      },
+    });
+
+    if (method === 'fifo') {
+      const costLayers = splitFifoCost(params.qty, totalCost, 2);
+      for (let i = 0; i < costLayers.length; i++) {
+        const layer = costLayers[i];
+        await tx.tb_inventory_transaction_cost_layer.create({
+          data: {
+            inventory_transaction_detail_id: txnDetail.id,
+            lot_no: lotNo,
+            lot_index: i + 1,
+            location_id: params.location_id,
+            location_code: params.location_code,
+            lot_at_date: nowIso,
+            lot_seq_no: lotSeqNo,
+            product_id: params.product_id,
+            at_period: atPeriod,
+            transaction_type: enum_transaction_type.adjustment_in,
+            in_qty: layer.qty,
+            out_qty: 0,
+            cost_per_unit: layer.costPerUnit,
+            total_cost: layer.totalCost,
+            diff_amount: 0,
+            average_cost_per_unit: 0,
+            created_by_id: params.user_id,
+            created_at: nowIso,
+          },
+        });
+      }
+    } else {
+      const layers = await this.getReceivingLayers(tx, params.product_id);
+      const { totalInQty, totalInCost } = sumReceivingTotals(layers);
+      const newAvgCost = calculateNewAverageCost(totalInQty, totalInCost, params.qty, totalCost);
+
+      const costLayers = splitFifoCost(params.qty, totalCost, 2);
+      for (let i = 0; i < costLayers.length; i++) {
+        const layer = costLayers[i];
+        await tx.tb_inventory_transaction_cost_layer.create({
+          data: {
+            inventory_transaction_detail_id: txnDetail.id,
+            lot_no: lotNo,
+            lot_index: i + 1,
+            location_id: params.location_id,
+            location_code: params.location_code,
+            lot_at_date: nowIso,
+            lot_seq_no: lotSeqNo,
+            product_id: params.product_id,
+            at_period: atPeriod,
+            transaction_type: enum_transaction_type.adjustment_in,
+            in_qty: layer.qty,
+            out_qty: 0,
+            cost_per_unit: layer.costPerUnit,
+            total_cost: layer.totalCost,
+            diff_amount: 0,
+            average_cost_per_unit: newAvgCost,
+            created_by_id: params.user_id,
+            created_at: nowIso,
+          },
+        });
+      }
+
+      await tx.tb_inventory_transaction_cost_layer.updateMany({
+        where: { product_id: params.product_id, deleted_at: null },
+        data: { average_cost_per_unit: newAvgCost },
+      });
+    }
+
+    return inventoryTransaction.id;
+  }
+
+  /**
+   * Execute adjustment-out within an existing Prisma transaction.
+   * Consumes from FIFO/Average cost layers atomically.
+   * Returns the inventory_transaction_id to link back to the stock-out detail.
+   */
+  async executeAdjustmentOut(
+    tx: any,
+    params: IAdjustmentOutParams,
+    method: string,
+  ): Promise<string> {
+    const consumptionParams: IConsumptionParams = {
+      product_id: params.product_id,
+      location_id: params.location_id,
+      location_code: params.location_code,
+      qty: params.qty,
+      transactionType: enum_transaction_type.adjustment_out,
+      docType: enum_inventory_doc_type.stock_out,
+      lotPrefix: 'ADO',
+      note: 'Adjustment out from stock-out',
+      user_id: params.user_id,
+    };
+
+    if (method === 'fifo') {
+      const result = await this.createFifoConsumption(tx, consumptionParams);
+      return result.transactionId;
+    } else {
+      const result = await this.createAverageConsumption(tx, consumptionParams);
+      return result.transactionId;
+    }
   }
 
   @TryCatch

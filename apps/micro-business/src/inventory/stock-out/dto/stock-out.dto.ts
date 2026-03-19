@@ -40,6 +40,9 @@ export const StockOutSchema = z.object({
   adjustment_type_id: z.string().uuid().optional().nullable(),
   adjustment_type_code: z.string().optional().nullable(),
   doc_status: z.enum(Object.values(enum_doc_status) as [string, ...string[]]).optional().default('draft'),
+  location_id: z.string().uuid().optional().nullable(),
+  location_code: z.string().optional().nullable(),
+  location_name: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
   doc_version: z.number().int().optional().default(0),
 })
