@@ -1361,41 +1361,59 @@ export class GoodReceivedNoteService {
       return Result.error('Good received note not found', ErrorCode.NOT_FOUND);
     }
 
-    await prisma.tb_good_received_note_detail.deleteMany({
-      where: {
-        good_received_note_id: id,
-      },
-    });
+    const now = new Date().toISOString();
 
-    const extraCost = await prisma.tb_extra_cost
+    const detailIds = await prisma.tb_good_received_note_detail
       .findMany({
-        where: {
-          good_received_note_id: id,
-        },
-        select: {
-          id: true,
-        },
+        where: { good_received_note_id: id, deleted_at: null },
+        select: { id: true },
       })
-      .then((res) => {
-        return res.map((item) => item.id);
+      .then((res) => res.map((item) => item.id));
+
+    if (detailIds.length > 0) {
+      await prisma.tb_good_received_note_detail_item.updateMany({
+        where: { good_received_note_detail_id: { in: detailIds }, deleted_at: null },
+        data: { deleted_at: now, deleted_by_id: user_id },
       });
 
-    await prisma.tb_extra_cost_detail.deleteMany({
-      where: {
-        extra_cost_id: { in: extraCost },
-      },
+      await prisma.tb_good_received_note_detail_comment.updateMany({
+        where: { good_received_note_detail_id: { in: detailIds }, deleted_at: null },
+        data: { deleted_at: now, deleted_by_id: user_id },
+      });
+
+      await prisma.tb_good_received_note_detail.updateMany({
+        where: { good_received_note_id: id, deleted_at: null },
+        data: { deleted_at: now, deleted_by_id: user_id },
+      });
+    }
+
+    await prisma.tb_good_received_note_comment.updateMany({
+      where: { good_received_note_id: id, deleted_at: null },
+      data: { deleted_at: now, deleted_by_id: user_id },
     });
 
-    await prisma.tb_extra_cost.deleteMany({
-      where: {
-        good_received_note_id: id,
-      },
-    });
+    const extraCostIds = await prisma.tb_extra_cost
+      .findMany({
+        where: { good_received_note_id: id, deleted_at: null },
+        select: { id: true },
+      })
+      .then((res) => res.map((item) => item.id));
 
-    await prisma.tb_good_received_note.delete({
-      where: {
-        id: id,
-      },
+    if (extraCostIds.length > 0) {
+      await prisma.tb_extra_cost_detail.updateMany({
+        where: { extra_cost_id: { in: extraCostIds }, deleted_at: null },
+        data: { deleted_at: now, deleted_by_id: user_id },
+      });
+
+      await prisma.tb_extra_cost.updateMany({
+        where: { good_received_note_id: id, deleted_at: null },
+        data: { deleted_at: now, deleted_by_id: user_id },
+      });
+    }
+
+    await prisma.tb_good_received_note.update({
+      where: { id: id },
+      data: { deleted_at: now, deleted_by_id: user_id },
     });
 
     return Result.ok({ id });
