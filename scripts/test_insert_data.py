@@ -156,9 +156,9 @@ def fetch_reference_data():
         "units": f"config/{BU_CODE}/units",
         "currencies": f"config/{BU_CODE}/currencies",
         "departments": f"config/{BU_CODE}/departments",
-        "product_categories": f"config/{BU_CODE}/product-category",
-        "product_sub_categories": f"config/{BU_CODE}/product-sub-category",
-        "product_item_groups": f"config/{BU_CODE}/product-item-group",
+        "product_categories": f"config/{BU_CODE}/products/category",
+        "product_sub_categories": f"config/{BU_CODE}/products/sub-category",
+        "product_item_groups": f"config/{BU_CODE}/products/item-group",
         "products": f"config/{BU_CODE}/products",
         "vendors": f"config/{BU_CODE}/vendors",
         "delivery_points": f"config/{BU_CODE}/delivery-point",
@@ -321,7 +321,7 @@ def test_product_categories():
                  "Beverages", "Dry Goods", "Frozen", "Bakery", "Condiments"]
     for i in range(1, ROWS_PER_MENU + 1):
         name = cat_names[i-1] if i <= len(cat_names) else f"Category {i}"
-        api_post(f"config/{BU_CODE}/product-category", {
+        api_post(f"config/{BU_CODE}/products/category", {
             "code": rand_code("CAT"),
             "name": f"{name} {rand_code('', 3)}",
             "description": f"Test product category {i}",
@@ -334,13 +334,13 @@ def test_product_sub_categories():
     print("CONFIG: Product Sub-Categories")
     print(f"{'─'*40}")
     # Refresh categories after creation
-    fetch_single("product_categories", f"config/{BU_CODE}/product-category")
+    fetch_single("product_categories", f"config/{BU_CODE}/products/category")
     cat_id = get_ref_id("product_categories")
     if not cat_id:
         print("  ⚠ No product categories found, skipping sub-categories")
         return
     for i in range(1, ROWS_PER_MENU + 1):
-        api_post(f"config/{BU_CODE}/product-sub-category", {
+        api_post(f"config/{BU_CODE}/products/sub-category", {
             "code": rand_code("SUB"),
             "name": rand_str("SubCat"),
             "product_category_id": get_ref_id("product_categories", cat_id),
@@ -353,13 +353,13 @@ def test_product_item_groups():
     print(f"\n{'─'*40}")
     print("CONFIG: Product Item Groups")
     print(f"{'─'*40}")
-    fetch_single("product_sub_categories", f"config/{BU_CODE}/product-sub-category")
+    fetch_single("product_sub_categories", f"config/{BU_CODE}/products/sub-category")
     subcat_id = get_ref_id("product_sub_categories")
     if not subcat_id:
         print("  ⚠ No product sub-categories found, skipping item groups")
         return
     for i in range(1, ROWS_PER_MENU + 1):
-        api_post(f"config/{BU_CODE}/product-item-group", {
+        api_post(f"config/{BU_CODE}/products/item-group", {
             "code": rand_code("GRP"),
             "name": rand_str("ItemGrp"),
             "product_subcategory_id": get_ref_id("product_sub_categories", subcat_id),
@@ -418,7 +418,7 @@ def test_products():
     print("CONFIG: Products")
     print(f"{'─'*40}")
     fetch_single("units", f"config/{BU_CODE}/units")
-    fetch_single("product_item_groups", f"config/{BU_CODE}/product-item-group")
+    fetch_single("product_item_groups", f"config/{BU_CODE}/products/item-group")
     unit_id = get_ref_id("units")
     if not unit_id:
         print("  ⚠ No units found, skipping products")
@@ -458,7 +458,7 @@ def test_recipe_cuisines():
     print(f"\n{'─'*40}")
     print("CONFIG: Recipe Cuisines")
     print(f"{'─'*40}")
-    regions = ["asian", "european", "american", "african", "middle_eastern"]
+    regions = ["ASIA", "EUROPE", "AMERICAS", "AFRICA", "MIDDLE_EAST", "OCEANIA"]
     for i in range(1, ROWS_PER_MENU + 1):
         api_post(f"config/{BU_CODE}/recipe-cuisine", {
             "name": rand_str("Cuisine"),
@@ -610,7 +610,7 @@ def test_purchase_request():
     unit_id = get_ref_id("units")
 
     for i in range(1, ROWS_PER_MENU + 1):
-        pr_date = (datetime.now() + timedelta(days=random.randint(0, 30))).isoformat()
+        pr_date = (datetime.now() + timedelta(days=random.randint(0, 30))).strftime("%Y-%m-%dT%H:%M:%S.000Z")
         detail_items = []
         for j in range(random.randint(1, 3)):
             prod = random.choice(products) if products else {}
@@ -620,7 +620,8 @@ def test_purchase_request():
                 "product_name": prod.get("name", f"Product {j}"),
                 "requested_qty": random.randint(1, 100),
                 "requested_unit_id": unit_id,
-                "delivery_date": (datetime.now() + timedelta(days=random.randint(7, 60))).isoformat(),
+                "delivery_date": (datetime.now() + timedelta(days=random.randint(7, 60))).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+                "foc_qty": 0,
             })
 
         body = {
@@ -648,7 +649,7 @@ def test_store_requisition():
     dept_id = get_ref_id("departments")
 
     for i in range(1, ROWS_PER_MENU + 1):
-        sr_date = (datetime.now() + timedelta(days=random.randint(0, 14))).isoformat()
+        sr_date = (datetime.now() + timedelta(days=random.randint(0, 14))).strftime("%Y-%m-%dT%H:%M:%S.000Z")
         from_loc = random.choice(locations) if locations else {}
         to_loc = random.choice(locations) if locations else {}
 
@@ -666,7 +667,7 @@ def test_store_requisition():
             "stage_role": "create",
             "details": {
                 "sr_date": sr_date,
-                "expected_date": (datetime.now() + timedelta(days=random.randint(1, 30))).isoformat(),
+                "expected_date": (datetime.now() + timedelta(days=random.randint(1, 30))).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
                 "description": f"Test store requisition {i}",
                 "department_id": dept_id,
                 "from_location_id": from_loc.get("id"),
