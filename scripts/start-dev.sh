@@ -38,7 +38,7 @@ SERVICE_NOTIFICATION="notification|apps/micro-notification|node dist/main|node"
 SERVICE_CRONJOB="cronjob|apps/micro-cronjob|bun dist/server.js|bun"
 
 # External services (outside monorepo)
-CARMEN_DEV_DIR="$HOME/carmen-develop"
+CARMEN_DEV_DIR="$HOME"
 SERVICE_REPORT="report|$CARMEN_DEV_DIR/micro-report|go run ./cmd/server|go"
 SERVICE_REPORT_RENDER="report-render|$CARMEN_DEV_DIR/micro-report-render-dotnet|dotnet run|dotnet"
 

@@ -1,0 +1,3126 @@
+{
+  "timestamp": "2026-03-19T16:20:20.081680",
+  "base_url": "https://ec2-43-209-126-252.ap-southeast-7.compute.amazonaws.com",
+  "bu_code": "DEMO_AVG",
+  "total_requests": 210,
+  "successes": 110,
+  "errors_count": 100,
+  "errors": [
+    {
+      "menu": "currencies",
+      "row": 1,
+      "status": 500,
+      "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+        "timestamp": "2026-03-19T09:20:03.774Z"
+      }
+    },
+    {
+      "menu": "currencies",
+      "row": 2,
+      "status": 500,
+      "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+        "timestamp": "2026-03-19T09:20:03.868Z"
+      }
+    },
+    {
+      "menu": "currencies",
+      "row": 3,
+      "status": 500,
+      "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+        "timestamp": "2026-03-19T09:20:03.969Z"
+      }
+    },
+    {
+      "menu": "currencies",
+      "row": 4,
+      "status": 500,
+      "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+        "timestamp": "2026-03-19T09:20:04.072Z"
+      }
+    },
+    {
+      "menu": "currencies",
+      "row": 5,
+      "status": 500,
+      "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+        "timestamp": "2026-03-19T09:20:04.174Z"
+      }
+    },
+    {
+      "menu": "currencies",
+      "row": 6,
+      "status": 500,
+      "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+        "timestamp": "2026-03-19T09:20:04.285Z"
+      }
+    },
+    {
+      "menu": "currencies",
+      "row": 7,
+      "status": 500,
+      "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+        "timestamp": "2026-03-19T09:20:04.379Z"
+      }
+    },
+    {
+      "menu": "currencies",
+      "row": 8,
+      "status": 500,
+      "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+        "timestamp": "2026-03-19T09:20:04.483Z"
+      }
+    },
+    {
+      "menu": "currencies",
+      "row": 9,
+      "status": 500,
+      "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+        "timestamp": "2026-03-19T09:20:04.594Z"
+      }
+    },
+    {
+      "menu": "currencies",
+      "row": 10,
+      "status": 500,
+      "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `this.prismaService.tb_currency.create()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/master/currencies/currencies.service.js:173:69\n\n  170 if (foundCurrency) {\n  171     return common_2.Result.error('Currency already exists', common_2.ErrorCode.ALREADY_EXISTS);\n  172 }\n→ 173 const createCurrency = await this.prismaService.tb_currency.create(\nThe provided value for the column is too long for the column's type. Column: (not available)",
+        "timestamp": "2026-03-19T09:20:04.688Z"
+      }
+    },
+    {
+      "menu": "adjustment-type",
+      "row": 1,
+      "status": 400,
+      "message": [
+        "code: Required (expected string, received undefined)",
+        "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "code: Required (expected string, received undefined)",
+          "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:06.861Z",
+        "path": "/api/config/DEMO_AVG/adjustment-type",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "code",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined"
+          },
+          {
+            "field": "type",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "'STOCK_IN' | 'STOCK_OUT'",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "adjustment-type",
+      "row": 2,
+      "status": 400,
+      "message": [
+        "code: Required (expected string, received undefined)",
+        "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "code: Required (expected string, received undefined)",
+          "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:06.882Z",
+        "path": "/api/config/DEMO_AVG/adjustment-type",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "code",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined"
+          },
+          {
+            "field": "type",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "'STOCK_IN' | 'STOCK_OUT'",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "adjustment-type",
+      "row": 3,
+      "status": 400,
+      "message": [
+        "code: Required (expected string, received undefined)",
+        "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "code: Required (expected string, received undefined)",
+          "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:06.904Z",
+        "path": "/api/config/DEMO_AVG/adjustment-type",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "code",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined"
+          },
+          {
+            "field": "type",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "'STOCK_IN' | 'STOCK_OUT'",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "adjustment-type",
+      "row": 4,
+      "status": 400,
+      "message": [
+        "code: Required (expected string, received undefined)",
+        "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "code: Required (expected string, received undefined)",
+          "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:06.926Z",
+        "path": "/api/config/DEMO_AVG/adjustment-type",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "code",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined"
+          },
+          {
+            "field": "type",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "'STOCK_IN' | 'STOCK_OUT'",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "adjustment-type",
+      "row": 5,
+      "status": 400,
+      "message": [
+        "code: Required (expected string, received undefined)",
+        "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "code: Required (expected string, received undefined)",
+          "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:06.947Z",
+        "path": "/api/config/DEMO_AVG/adjustment-type",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "code",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined"
+          },
+          {
+            "field": "type",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "'STOCK_IN' | 'STOCK_OUT'",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "adjustment-type",
+      "row": 6,
+      "status": 400,
+      "message": [
+        "code: Required (expected string, received undefined)",
+        "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "code: Required (expected string, received undefined)",
+          "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:06.968Z",
+        "path": "/api/config/DEMO_AVG/adjustment-type",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "code",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined"
+          },
+          {
+            "field": "type",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "'STOCK_IN' | 'STOCK_OUT'",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "adjustment-type",
+      "row": 7,
+      "status": 400,
+      "message": [
+        "code: Required (expected string, received undefined)",
+        "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "code: Required (expected string, received undefined)",
+          "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:06.989Z",
+        "path": "/api/config/DEMO_AVG/adjustment-type",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "code",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined"
+          },
+          {
+            "field": "type",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "'STOCK_IN' | 'STOCK_OUT'",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "adjustment-type",
+      "row": 8,
+      "status": 400,
+      "message": [
+        "code: Required (expected string, received undefined)",
+        "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "code: Required (expected string, received undefined)",
+          "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:07.019Z",
+        "path": "/api/config/DEMO_AVG/adjustment-type",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "code",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined"
+          },
+          {
+            "field": "type",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "'STOCK_IN' | 'STOCK_OUT'",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "adjustment-type",
+      "row": 9,
+      "status": 400,
+      "message": [
+        "code: Required (expected string, received undefined)",
+        "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "code: Required (expected string, received undefined)",
+          "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:07.040Z",
+        "path": "/api/config/DEMO_AVG/adjustment-type",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "code",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined"
+          },
+          {
+            "field": "type",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "'STOCK_IN' | 'STOCK_OUT'",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "adjustment-type",
+      "row": 10,
+      "status": 400,
+      "message": [
+        "code: Required (expected string, received undefined)",
+        "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "code: Required (expected string, received undefined)",
+          "type: Required (expected 'STOCK_IN' | 'STOCK_OUT', received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:07.062Z",
+        "path": "/api/config/DEMO_AVG/adjustment-type",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "code",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "string",
+            "received": "undefined"
+          },
+          {
+            "field": "type",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "'STOCK_IN' | 'STOCK_OUT'",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "product-category",
+      "row": 1,
+      "status": 404,
+      "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+      "body": {
+        "success": false,
+        "status": 404,
+        "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+        "timestamp": "2026-03-19T09:20:10.922Z",
+        "path": "/api/config/DEMO_AVG/product-category",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "menu": "product-category",
+      "row": 2,
+      "status": 404,
+      "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+      "body": {
+        "success": false,
+        "status": 404,
+        "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+        "timestamp": "2026-03-19T09:20:10.936Z",
+        "path": "/api/config/DEMO_AVG/product-category",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "menu": "product-category",
+      "row": 3,
+      "status": 404,
+      "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+      "body": {
+        "success": false,
+        "status": 404,
+        "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+        "timestamp": "2026-03-19T09:20:10.949Z",
+        "path": "/api/config/DEMO_AVG/product-category",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "menu": "product-category",
+      "row": 4,
+      "status": 404,
+      "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+      "body": {
+        "success": false,
+        "status": 404,
+        "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+        "timestamp": "2026-03-19T09:20:10.962Z",
+        "path": "/api/config/DEMO_AVG/product-category",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "menu": "product-category",
+      "row": 5,
+      "status": 404,
+      "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+      "body": {
+        "success": false,
+        "status": 404,
+        "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+        "timestamp": "2026-03-19T09:20:10.975Z",
+        "path": "/api/config/DEMO_AVG/product-category",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "menu": "product-category",
+      "row": 6,
+      "status": 404,
+      "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+      "body": {
+        "success": false,
+        "status": 404,
+        "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+        "timestamp": "2026-03-19T09:20:10.987Z",
+        "path": "/api/config/DEMO_AVG/product-category",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "menu": "product-category",
+      "row": 7,
+      "status": 404,
+      "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+      "body": {
+        "success": false,
+        "status": 404,
+        "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+        "timestamp": "2026-03-19T09:20:11.000Z",
+        "path": "/api/config/DEMO_AVG/product-category",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "menu": "product-category",
+      "row": 8,
+      "status": 404,
+      "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+      "body": {
+        "success": false,
+        "status": 404,
+        "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+        "timestamp": "2026-03-19T09:20:11.013Z",
+        "path": "/api/config/DEMO_AVG/product-category",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "menu": "product-category",
+      "row": 9,
+      "status": 404,
+      "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+      "body": {
+        "success": false,
+        "status": 404,
+        "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+        "timestamp": "2026-03-19T09:20:11.027Z",
+        "path": "/api/config/DEMO_AVG/product-category",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "menu": "product-category",
+      "row": 10,
+      "status": 404,
+      "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+      "body": {
+        "success": false,
+        "status": 404,
+        "message": "Cannot POST /api/config/DEMO_AVG/product-category",
+        "timestamp": "2026-03-19T09:20:11.041Z",
+        "path": "/api/config/DEMO_AVG/product-category",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "menu": "vendors",
+      "row": 1,
+      "status": 400,
+      "message": [
+        "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+        ],
+        "timestamp": "2026-03-19T09:20:12.158Z",
+        "path": "/api/config/DEMO_AVG/vendors",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "vendor_address.add.0.address_type",
+            "message": "Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "vendors",
+      "row": 2,
+      "status": 400,
+      "message": [
+        "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+        ],
+        "timestamp": "2026-03-19T09:20:12.179Z",
+        "path": "/api/config/DEMO_AVG/vendors",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "vendor_address.add.0.address_type",
+            "message": "Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "vendors",
+      "row": 3,
+      "status": 400,
+      "message": [
+        "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+        ],
+        "timestamp": "2026-03-19T09:20:12.201Z",
+        "path": "/api/config/DEMO_AVG/vendors",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "vendor_address.add.0.address_type",
+            "message": "Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "vendors",
+      "row": 4,
+      "status": 400,
+      "message": [
+        "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+        ],
+        "timestamp": "2026-03-19T09:20:12.223Z",
+        "path": "/api/config/DEMO_AVG/vendors",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "vendor_address.add.0.address_type",
+            "message": "Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "vendors",
+      "row": 5,
+      "status": 400,
+      "message": [
+        "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+        ],
+        "timestamp": "2026-03-19T09:20:12.243Z",
+        "path": "/api/config/DEMO_AVG/vendors",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "vendor_address.add.0.address_type",
+            "message": "Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "vendors",
+      "row": 6,
+      "status": 400,
+      "message": [
+        "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+        ],
+        "timestamp": "2026-03-19T09:20:12.267Z",
+        "path": "/api/config/DEMO_AVG/vendors",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "vendor_address.add.0.address_type",
+            "message": "Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "vendors",
+      "row": 7,
+      "status": 400,
+      "message": [
+        "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+        ],
+        "timestamp": "2026-03-19T09:20:12.287Z",
+        "path": "/api/config/DEMO_AVG/vendors",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "vendor_address.add.0.address_type",
+            "message": "Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "vendors",
+      "row": 8,
+      "status": 400,
+      "message": [
+        "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+        ],
+        "timestamp": "2026-03-19T09:20:12.316Z",
+        "path": "/api/config/DEMO_AVG/vendors",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "vendor_address.add.0.address_type",
+            "message": "Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "vendors",
+      "row": 9,
+      "status": 400,
+      "message": [
+        "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+        ],
+        "timestamp": "2026-03-19T09:20:12.337Z",
+        "path": "/api/config/DEMO_AVG/vendors",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "vendor_address.add.0.address_type",
+            "message": "Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "vendors",
+      "row": 10,
+      "status": 400,
+      "message": [
+        "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "vendor_address.add.0.address_type: Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'"
+        ],
+        "timestamp": "2026-03-19T09:20:12.358Z",
+        "path": "/api/config/DEMO_AVG/vendors",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "vendor_address.add.0.address_type",
+            "message": "Invalid enum value. Expected 'contact_address' | 'mailing_address' | 'register_address', received 'billing'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "recipe-cuisine",
+      "row": 1,
+      "status": 400,
+      "message": [
+        "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'african'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'african'"
+        ],
+        "timestamp": "2026-03-19T09:20:14.096Z",
+        "path": "/api/config/DEMO_AVG/recipe-cuisine",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "region",
+            "message": "Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'african'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "recipe-cuisine",
+      "row": 2,
+      "status": 400,
+      "message": [
+        "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'african'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'african'"
+        ],
+        "timestamp": "2026-03-19T09:20:14.223Z",
+        "path": "/api/config/DEMO_AVG/recipe-cuisine",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "region",
+            "message": "Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'african'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "recipe-cuisine",
+      "row": 3,
+      "status": 400,
+      "message": [
+        "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'middle_eastern'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'middle_eastern'"
+        ],
+        "timestamp": "2026-03-19T09:20:14.245Z",
+        "path": "/api/config/DEMO_AVG/recipe-cuisine",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "region",
+            "message": "Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'middle_eastern'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "recipe-cuisine",
+      "row": 4,
+      "status": 400,
+      "message": [
+        "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'african'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'african'"
+        ],
+        "timestamp": "2026-03-19T09:20:14.398Z",
+        "path": "/api/config/DEMO_AVG/recipe-cuisine",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "region",
+            "message": "Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'african'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "recipe-cuisine",
+      "row": 5,
+      "status": 400,
+      "message": [
+        "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'middle_eastern'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'middle_eastern'"
+        ],
+        "timestamp": "2026-03-19T09:20:14.418Z",
+        "path": "/api/config/DEMO_AVG/recipe-cuisine",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "region",
+            "message": "Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'middle_eastern'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "recipe-cuisine",
+      "row": 6,
+      "status": 400,
+      "message": [
+        "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'middle_eastern'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'middle_eastern'"
+        ],
+        "timestamp": "2026-03-19T09:20:14.441Z",
+        "path": "/api/config/DEMO_AVG/recipe-cuisine",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "region",
+            "message": "Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'middle_eastern'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "recipe-cuisine",
+      "row": 7,
+      "status": 400,
+      "message": [
+        "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'american'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'american'"
+        ],
+        "timestamp": "2026-03-19T09:20:14.577Z",
+        "path": "/api/config/DEMO_AVG/recipe-cuisine",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "region",
+            "message": "Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'american'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "recipe-cuisine",
+      "row": 8,
+      "status": 400,
+      "message": [
+        "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'european'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'european'"
+        ],
+        "timestamp": "2026-03-19T09:20:14.598Z",
+        "path": "/api/config/DEMO_AVG/recipe-cuisine",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "region",
+            "message": "Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'european'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "recipe-cuisine",
+      "row": 9,
+      "status": 400,
+      "message": [
+        "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'european'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'european'"
+        ],
+        "timestamp": "2026-03-19T09:20:14.752Z",
+        "path": "/api/config/DEMO_AVG/recipe-cuisine",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "region",
+            "message": "Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'european'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "recipe-cuisine",
+      "row": 10,
+      "status": 400,
+      "message": [
+        "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'middle_eastern'"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "region: Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'middle_eastern'"
+        ],
+        "timestamp": "2026-03-19T09:20:14.772Z",
+        "path": "/api/config/DEMO_AVG/recipe-cuisine",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "region",
+            "message": "Invalid enum value. Expected 'ASIA' | 'EUROPE' | 'AMERICAS' | 'AFRICA' | 'MIDDLE_EAST' | 'OCEANIA', received 'middle_eastern'",
+            "code": "invalid_enum_value"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "stock-in",
+      "row": 1,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:16.099Z"
+      }
+    },
+    {
+      "menu": "stock-in",
+      "row": 2,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:16.214Z"
+      }
+    },
+    {
+      "menu": "stock-in",
+      "row": 3,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:16.254Z"
+      }
+    },
+    {
+      "menu": "stock-in",
+      "row": 4,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:16.377Z"
+      }
+    },
+    {
+      "menu": "stock-in",
+      "row": 5,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:16.528Z"
+      }
+    },
+    {
+      "menu": "stock-in",
+      "row": 6,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:16.565Z"
+      }
+    },
+    {
+      "menu": "stock-in",
+      "row": 7,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:16.671Z"
+      }
+    },
+    {
+      "menu": "stock-in",
+      "row": 8,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:16.814Z"
+      }
+    },
+    {
+      "menu": "stock-in",
+      "row": 9,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:16.917Z"
+      }
+    },
+    {
+      "menu": "stock-in",
+      "row": 10,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_in.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-in/stock-in.service.js:344:50\n\n  341     throw new Error('Tenant not found');\n  342 }\n  343 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 344 const stockIn = await prisma.tb_stock_in.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:16.957Z"
+      }
+    },
+    {
+      "menu": "stock-out",
+      "row": 1,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:17.004Z"
+      }
+    },
+    {
+      "menu": "stock-out",
+      "row": 2,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:17.094Z"
+      }
+    },
+    {
+      "menu": "stock-out",
+      "row": 3,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:17.192Z"
+      }
+    },
+    {
+      "menu": "stock-out",
+      "row": 4,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:17.407Z"
+      }
+    },
+    {
+      "menu": "stock-out",
+      "row": 5,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:17.478Z"
+      }
+    },
+    {
+      "menu": "stock-out",
+      "row": 6,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:17.599Z"
+      }
+    },
+    {
+      "menu": "stock-out",
+      "row": 7,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:17.700Z"
+      }
+    },
+    {
+      "menu": "stock-out",
+      "row": 8,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:17.802Z"
+      }
+    },
+    {
+      "menu": "stock-out",
+      "row": 9,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:17.906Z"
+      }
+    },
+    {
+      "menu": "stock-out",
+      "row": 10,
+      "status": 500,
+      "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "\nInvalid `prisma.tb_stock_out.findFirst()` invocation in\n/home/ec2-user/carmen-turborepo-backend-v2/apps/micro-business/dist/inventory/stock-out/stock-out.service.js:340:52\n\n  337     throw new Error('Tenant not found');\n  338 }\n  339 const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);\n→ 340 const stockOut = await prisma.tb_stock_out.findFirst(\nThe column `t0.location_id` does not exist in the current database.",
+        "timestamp": "2026-03-19T09:20:18.012Z"
+      }
+    },
+    {
+      "menu": "transfer",
+      "row": 1,
+      "status": 500,
+      "message": "There is no matching message handler defined in the remote service.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "There is no matching message handler defined in the remote service.",
+        "timestamp": "2026-03-19T09:20:18.110Z"
+      }
+    },
+    {
+      "menu": "transfer",
+      "row": 2,
+      "status": 500,
+      "message": "There is no matching message handler defined in the remote service.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "There is no matching message handler defined in the remote service.",
+        "timestamp": "2026-03-19T09:20:18.209Z"
+      }
+    },
+    {
+      "menu": "transfer",
+      "row": 3,
+      "status": 500,
+      "message": "There is no matching message handler defined in the remote service.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "There is no matching message handler defined in the remote service.",
+        "timestamp": "2026-03-19T09:20:18.317Z"
+      }
+    },
+    {
+      "menu": "transfer",
+      "row": 4,
+      "status": 500,
+      "message": "There is no matching message handler defined in the remote service.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "There is no matching message handler defined in the remote service.",
+        "timestamp": "2026-03-19T09:20:18.412Z"
+      }
+    },
+    {
+      "menu": "transfer",
+      "row": 5,
+      "status": 500,
+      "message": "There is no matching message handler defined in the remote service.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "There is no matching message handler defined in the remote service.",
+        "timestamp": "2026-03-19T09:20:18.525Z"
+      }
+    },
+    {
+      "menu": "transfer",
+      "row": 6,
+      "status": 500,
+      "message": "There is no matching message handler defined in the remote service.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "There is no matching message handler defined in the remote service.",
+        "timestamp": "2026-03-19T09:20:18.618Z"
+      }
+    },
+    {
+      "menu": "transfer",
+      "row": 7,
+      "status": 500,
+      "message": "There is no matching message handler defined in the remote service.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "There is no matching message handler defined in the remote service.",
+        "timestamp": "2026-03-19T09:20:18.724Z"
+      }
+    },
+    {
+      "menu": "transfer",
+      "row": 8,
+      "status": 500,
+      "message": "There is no matching message handler defined in the remote service.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "There is no matching message handler defined in the remote service.",
+        "timestamp": "2026-03-19T09:20:18.823Z"
+      }
+    },
+    {
+      "menu": "transfer",
+      "row": 9,
+      "status": 500,
+      "message": "There is no matching message handler defined in the remote service.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "There is no matching message handler defined in the remote service.",
+        "timestamp": "2026-03-19T09:20:18.926Z"
+      }
+    },
+    {
+      "menu": "transfer",
+      "row": 10,
+      "status": 500,
+      "message": "There is no matching message handler defined in the remote service.",
+      "body": {
+        "data": null,
+        "status": 500,
+        "success": false,
+        "message": "There is no matching message handler defined in the remote service.",
+        "timestamp": "2026-03-19T09:20:19.027Z"
+      }
+    },
+    {
+      "menu": "purchase-request",
+      "row": 1,
+      "status": 400,
+      "message": [
+        "details.pr_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)",
+        "details.purchase_request_detail.add.1.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.1.foc_qty: Required (expected number, received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.pr_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)",
+          "details.purchase_request_detail.add.1.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.1.foc_qty: Required (expected number, received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:19.334Z",
+        "path": "/api/DEMO_AVG/purchase-request",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.pr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          },
+          {
+            "field": "details.purchase_request_detail.add.1.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.1.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "purchase-request",
+      "row": 2,
+      "status": 400,
+      "message": [
+        "details.pr_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)",
+        "details.purchase_request_detail.add.1.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.1.foc_qty: Required (expected number, received undefined)",
+        "details.purchase_request_detail.add.2.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.2.foc_qty: Required (expected number, received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.pr_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)",
+          "details.purchase_request_detail.add.1.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.1.foc_qty: Required (expected number, received undefined)",
+          "details.purchase_request_detail.add.2.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.2.foc_qty: Required (expected number, received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:19.356Z",
+        "path": "/api/DEMO_AVG/purchase-request",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.pr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          },
+          {
+            "field": "details.purchase_request_detail.add.1.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.1.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          },
+          {
+            "field": "details.purchase_request_detail.add.2.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.2.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "purchase-request",
+      "row": 3,
+      "status": 400,
+      "message": [
+        "details.pr_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)",
+        "details.purchase_request_detail.add.1.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.1.foc_qty: Required (expected number, received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.pr_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)",
+          "details.purchase_request_detail.add.1.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.1.foc_qty: Required (expected number, received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:19.376Z",
+        "path": "/api/DEMO_AVG/purchase-request",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.pr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          },
+          {
+            "field": "details.purchase_request_detail.add.1.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.1.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "purchase-request",
+      "row": 4,
+      "status": 400,
+      "message": [
+        "details.pr_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)",
+        "details.purchase_request_detail.add.1.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.1.foc_qty: Required (expected number, received undefined)",
+        "details.purchase_request_detail.add.2.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.2.foc_qty: Required (expected number, received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.pr_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)",
+          "details.purchase_request_detail.add.1.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.1.foc_qty: Required (expected number, received undefined)",
+          "details.purchase_request_detail.add.2.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.2.foc_qty: Required (expected number, received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:19.398Z",
+        "path": "/api/DEMO_AVG/purchase-request",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.pr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          },
+          {
+            "field": "details.purchase_request_detail.add.1.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.1.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          },
+          {
+            "field": "details.purchase_request_detail.add.2.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.2.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "purchase-request",
+      "row": 5,
+      "status": 400,
+      "message": [
+        "details.pr_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.pr_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:19.420Z",
+        "path": "/api/DEMO_AVG/purchase-request",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.pr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "purchase-request",
+      "row": 6,
+      "status": 400,
+      "message": [
+        "details.pr_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.pr_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:19.528Z",
+        "path": "/api/DEMO_AVG/purchase-request",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.pr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "purchase-request",
+      "row": 7,
+      "status": 400,
+      "message": [
+        "details.pr_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.pr_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:19.625Z",
+        "path": "/api/DEMO_AVG/purchase-request",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.pr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "purchase-request",
+      "row": 8,
+      "status": 400,
+      "message": [
+        "details.pr_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)",
+        "details.purchase_request_detail.add.1.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.1.foc_qty: Required (expected number, received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.pr_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)",
+          "details.purchase_request_detail.add.1.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.1.foc_qty: Required (expected number, received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:19.728Z",
+        "path": "/api/DEMO_AVG/purchase-request",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.pr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          },
+          {
+            "field": "details.purchase_request_detail.add.1.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.1.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "purchase-request",
+      "row": 9,
+      "status": 400,
+      "message": [
+        "details.pr_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.pr_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:19.751Z",
+        "path": "/api/DEMO_AVG/purchase-request",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.pr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "purchase-request",
+      "row": 10,
+      "status": 400,
+      "message": [
+        "details.pr_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)",
+        "details.purchase_request_detail.add.1.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.1.foc_qty: Required (expected number, received undefined)",
+        "details.purchase_request_detail.add.2.delivery_date: Invalid datetime",
+        "details.purchase_request_detail.add.2.foc_qty: Required (expected number, received undefined)"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.pr_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.0.foc_qty: Required (expected number, received undefined)",
+          "details.purchase_request_detail.add.1.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.1.foc_qty: Required (expected number, received undefined)",
+          "details.purchase_request_detail.add.2.delivery_date: Invalid datetime",
+          "details.purchase_request_detail.add.2.foc_qty: Required (expected number, received undefined)"
+        ],
+        "timestamp": "2026-03-19T09:20:19.830Z",
+        "path": "/api/DEMO_AVG/purchase-request",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.pr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.0.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          },
+          {
+            "field": "details.purchase_request_detail.add.1.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.1.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          },
+          {
+            "field": "details.purchase_request_detail.add.2.delivery_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.purchase_request_detail.add.2.foc_qty",
+            "message": "Required",
+            "code": "invalid_type",
+            "expected": "number",
+            "received": "undefined"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "store-requisition",
+      "row": 1,
+      "status": 400,
+      "message": [
+        "details.sr_date: Invalid datetime",
+        "details.expected_date: Invalid datetime"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.sr_date: Invalid datetime",
+          "details.expected_date: Invalid datetime"
+        ],
+        "timestamp": "2026-03-19T09:20:19.853Z",
+        "path": "/api/DEMO_AVG/store-requisition",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.sr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.expected_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "store-requisition",
+      "row": 2,
+      "status": 400,
+      "message": [
+        "details.sr_date: Invalid datetime",
+        "details.expected_date: Invalid datetime"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.sr_date: Invalid datetime",
+          "details.expected_date: Invalid datetime"
+        ],
+        "timestamp": "2026-03-19T09:20:19.874Z",
+        "path": "/api/DEMO_AVG/store-requisition",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.sr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.expected_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "store-requisition",
+      "row": 3,
+      "status": 400,
+      "message": [
+        "details.sr_date: Invalid datetime",
+        "details.expected_date: Invalid datetime"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.sr_date: Invalid datetime",
+          "details.expected_date: Invalid datetime"
+        ],
+        "timestamp": "2026-03-19T09:20:19.895Z",
+        "path": "/api/DEMO_AVG/store-requisition",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.sr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.expected_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "store-requisition",
+      "row": 4,
+      "status": 400,
+      "message": [
+        "details.sr_date: Invalid datetime",
+        "details.expected_date: Invalid datetime"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.sr_date: Invalid datetime",
+          "details.expected_date: Invalid datetime"
+        ],
+        "timestamp": "2026-03-19T09:20:19.916Z",
+        "path": "/api/DEMO_AVG/store-requisition",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.sr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.expected_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "store-requisition",
+      "row": 5,
+      "status": 400,
+      "message": [
+        "details.sr_date: Invalid datetime",
+        "details.expected_date: Invalid datetime"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.sr_date: Invalid datetime",
+          "details.expected_date: Invalid datetime"
+        ],
+        "timestamp": "2026-03-19T09:20:19.937Z",
+        "path": "/api/DEMO_AVG/store-requisition",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.sr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.expected_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "store-requisition",
+      "row": 6,
+      "status": 400,
+      "message": [
+        "details.sr_date: Invalid datetime",
+        "details.expected_date: Invalid datetime"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.sr_date: Invalid datetime",
+          "details.expected_date: Invalid datetime"
+        ],
+        "timestamp": "2026-03-19T09:20:19.959Z",
+        "path": "/api/DEMO_AVG/store-requisition",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.sr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.expected_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "store-requisition",
+      "row": 7,
+      "status": 400,
+      "message": [
+        "details.sr_date: Invalid datetime",
+        "details.expected_date: Invalid datetime"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.sr_date: Invalid datetime",
+          "details.expected_date: Invalid datetime"
+        ],
+        "timestamp": "2026-03-19T09:20:19.980Z",
+        "path": "/api/DEMO_AVG/store-requisition",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.sr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.expected_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "store-requisition",
+      "row": 8,
+      "status": 400,
+      "message": [
+        "details.sr_date: Invalid datetime",
+        "details.expected_date: Invalid datetime"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.sr_date: Invalid datetime",
+          "details.expected_date: Invalid datetime"
+        ],
+        "timestamp": "2026-03-19T09:20:20.002Z",
+        "path": "/api/DEMO_AVG/store-requisition",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.sr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.expected_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "store-requisition",
+      "row": 9,
+      "status": 400,
+      "message": [
+        "details.sr_date: Invalid datetime",
+        "details.expected_date: Invalid datetime"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.sr_date: Invalid datetime",
+          "details.expected_date: Invalid datetime"
+        ],
+        "timestamp": "2026-03-19T09:20:20.024Z",
+        "path": "/api/DEMO_AVG/store-requisition",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.sr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.expected_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          }
+        ]
+      }
+    },
+    {
+      "menu": "store-requisition",
+      "row": 10,
+      "status": 400,
+      "message": [
+        "details.sr_date: Invalid datetime",
+        "details.expected_date: Invalid datetime"
+      ],
+      "body": {
+        "success": false,
+        "status": 400,
+        "message": [
+          "details.sr_date: Invalid datetime",
+          "details.expected_date: Invalid datetime"
+        ],
+        "timestamp": "2026-03-19T09:20:20.050Z",
+        "path": "/api/DEMO_AVG/store-requisition",
+        "statusCode": 400,
+        "error": "Validation failed",
+        "errors": [
+          {
+            "field": "details.sr_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          },
+          {
+            "field": "details.expected_date",
+            "message": "Invalid datetime",
+            "code": "invalid_string"
+          }
+        ]
+      }
+    }
+  ],
+  "success_details": [
+    {
+      "menu": "units",
+      "row": 1,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "units",
+      "row": 2,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "units",
+      "row": 3,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "units",
+      "row": 4,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "units",
+      "row": 5,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "units",
+      "row": 6,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "units",
+      "row": 7,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "units",
+      "row": 8,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "units",
+      "row": 9,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "units",
+      "row": 10,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "departments",
+      "row": 1,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "departments",
+      "row": 2,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "departments",
+      "row": 3,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "departments",
+      "row": 4,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "departments",
+      "row": 5,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "departments",
+      "row": 6,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "departments",
+      "row": 7,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "departments",
+      "row": 8,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "departments",
+      "row": 9,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "departments",
+      "row": 10,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "delivery-point",
+      "row": 1,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "delivery-point",
+      "row": 2,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "delivery-point",
+      "row": 3,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "delivery-point",
+      "row": 4,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "delivery-point",
+      "row": 5,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "delivery-point",
+      "row": 6,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "delivery-point",
+      "row": 7,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "delivery-point",
+      "row": 8,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "delivery-point",
+      "row": 9,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "delivery-point",
+      "row": 10,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "extra-cost-type",
+      "row": 1,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "extra-cost-type",
+      "row": 2,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "extra-cost-type",
+      "row": 3,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "extra-cost-type",
+      "row": 4,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "extra-cost-type",
+      "row": 5,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "extra-cost-type",
+      "row": 6,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "extra-cost-type",
+      "row": 7,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "extra-cost-type",
+      "row": 8,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "extra-cost-type",
+      "row": 9,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "extra-cost-type",
+      "row": 10,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "credit-term",
+      "row": 1,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "credit-term",
+      "row": 2,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "credit-term",
+      "row": 3,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "credit-term",
+      "row": 4,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "credit-term",
+      "row": 5,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "credit-term",
+      "row": 6,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "credit-term",
+      "row": 7,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "credit-term",
+      "row": 8,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "credit-term",
+      "row": 9,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "credit-term",
+      "row": 10,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "vendor-business-type",
+      "row": 1,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "vendor-business-type",
+      "row": 2,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "vendor-business-type",
+      "row": 3,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "vendor-business-type",
+      "row": 4,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "vendor-business-type",
+      "row": 5,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "vendor-business-type",
+      "row": 6,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "vendor-business-type",
+      "row": 7,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "vendor-business-type",
+      "row": 8,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "vendor-business-type",
+      "row": 9,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "vendor-business-type",
+      "row": 10,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "tax-profile",
+      "row": 1,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "tax-profile",
+      "row": 2,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "tax-profile",
+      "row": 3,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "tax-profile",
+      "row": 4,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "tax-profile",
+      "row": 5,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "tax-profile",
+      "row": 6,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "tax-profile",
+      "row": 7,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "tax-profile",
+      "row": 8,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "tax-profile",
+      "row": 9,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "tax-profile",
+      "row": 10,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "locations",
+      "row": 1,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "locations",
+      "row": 2,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "locations",
+      "row": 3,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "locations",
+      "row": 4,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "locations",
+      "row": 5,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "locations",
+      "row": 6,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "locations",
+      "row": 7,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "locations",
+      "row": 8,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "locations",
+      "row": 9,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "locations",
+      "row": 10,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "products",
+      "row": 1,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "products",
+      "row": 2,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "products",
+      "row": 3,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "products",
+      "row": 4,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "products",
+      "row": 5,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "products",
+      "row": 6,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "products",
+      "row": 7,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "products",
+      "row": 8,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "products",
+      "row": 9,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "products",
+      "row": 10,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-category",
+      "row": 1,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-category",
+      "row": 2,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-category",
+      "row": 3,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-category",
+      "row": 4,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-category",
+      "row": 5,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-category",
+      "row": 6,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-category",
+      "row": 7,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-category",
+      "row": 8,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-category",
+      "row": 9,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-category",
+      "row": 10,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-equipment",
+      "row": 1,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-equipment",
+      "row": 2,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-equipment",
+      "row": 3,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-equipment",
+      "row": 4,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-equipment",
+      "row": 5,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-equipment",
+      "row": 6,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-equipment",
+      "row": 7,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-equipment",
+      "row": 8,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-equipment",
+      "row": 9,
+      "status": 201,
+      "message": "Success"
+    },
+    {
+      "menu": "recipe-equipment",
+      "row": 10,
+      "status": 201,
+      "message": "Success"
+    }
+  ]
+}

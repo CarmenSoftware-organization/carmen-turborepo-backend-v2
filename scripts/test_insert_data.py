@@ -223,10 +223,10 @@ def test_currencies():
     print(f"{'─'*40}")
     currency_codes = ["USD", "EUR", "GBP", "JPY", "CNY", "KRW", "SGD", "HKD", "AUD", "CAD"]
     for i in range(1, ROWS_PER_MENU + 1):
-        code = f"{currency_codes[i-1] if i <= len(currency_codes) else rand_code('CUR', 3)}"
+        code = currency_codes[i-1] if i <= len(currency_codes) else f"X{random.randint(10,99)}"
         api_post(f"config/{BU_CODE}/currencies", {
-            "code": code + rand_code("", 2),
-            "name": f"Test Currency {code} {i}",
+            "code": code[:3],
+            "name": f"Test Currency {code}",
             "symbol": code[0],
             "description": f"Test currency {i}",
             "is_active": True,
@@ -266,8 +266,11 @@ def test_adjustment_types():
     print("CONFIG: Adjustment Types")
     print(f"{'─'*40}")
     for i in range(1, ROWS_PER_MENU + 1):
+        adj_type = random.choice(["STOCK_IN", "STOCK_OUT"])
         api_post(f"config/{BU_CODE}/adjustment-type", {
+            "code": rand_code("ADJ"),
             "name": rand_str("AdjType"),
+            "type": adj_type,
             "description": f"Test adjustment type {i}",
             "is_active": True,
         }, "adjustment-type", i)
@@ -399,7 +402,7 @@ def test_vendors():
             },
             "vendor_address": {
                 "add": [{
-                    "address_type": "billing",
+                    "address_type": random.choice(["contact_address", "mailing_address", "register_address"]),
                     "address_line1": f"{random.randint(1,999)} Test Street",
                     "city": "Bangkok",
                     "province": "Bangkok",
