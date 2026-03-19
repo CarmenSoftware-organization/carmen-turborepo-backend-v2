@@ -1396,7 +1396,7 @@ export class StoreRequisitionService {
     }
 
     return Result.ok({
-      results: allResults,
+      data: allResults,
       paginate: {
         total: grandTotal,
         page: Number(paginate.page),
