@@ -11,7 +11,7 @@ put {
 }
 
 params:path {
-  id:
+  id: 7e5b89e7-89fa-4db9-88d0-48fa2b1761d7
 }
 
 headers {
@@ -24,39 +24,58 @@ auth:bearer {
 
 body:json {
   {
-    "code": "BU-001",
-    "name": "Business Unit 01 Updated",
-    "alias_name": "",
-    "description": "",
-    "info": null,
-    "default_currency_id": null,
-    "max_license_users": null,
+    "cluster_id": "6a34662e-24c9-43cb-a2d5-cdedabcd2a8f",
+    "code": "BLAVG",
+    "name": "Blueledgers (AVG)",
+    "alias_name": "BL01",
     "is_hq": false,
     "is_active": true,
-    "db_connection": null,
-    "config": null,
-    "calculation_method": "average",
-    "branch_no": "",
-    "company_name": "",
-    "company_address": "",
-    "company_email": "",
-    "company_tel": "",
-    "company_zip_code": "",
-    "tax_no": "",
-    "hotel_name": "",
-    "hotel_address": "",
-    "hotel_email": "",
-    "hotel_tel": "",
-    "hotel_zip_code": "",
+    "max_license_users": 0,
+    "hotel_name": "BLUELEDGERS AVG",
+    "hotel_tel": "66 2667 5777",
+    "hotel_email": "gf_bangkok@sotetsu-group.jp",
+    "hotel_address": "7, Soi Sukhumvit 25, Khlong Toei Nuea Sub-district, Vadhana District, Bangkok.",
+    "hotel_zip_code": "10110",
+    "company_name": "SOTETSU INTERNATIONAL (THAILAND) COMPANY LIMITED",
+    "company_tel": "66 2667 5777",
+    "company_email": "gf_bangkok@sotetsu-group.jp",
+    "company_address": "7, Soi Sukhumvit 25, Khlong Toei Nuea Sub-district, Vadhana District, Bangkok.",
+    "company_zip_code": "10110",
+    "tax_no": "1111111111111",
+    "branch_no": "HEAD OFFICE",
     "date_format": "yyyy-MM-dd",
     "date_time_format": "yyyy-MM-dd HH:mm:ss",
     "time_format": "HH:mm:ss",
-    "short_time_format": "HH:mm",
     "long_time_format": "HH:mm:ss",
+    "short_time_format": "HH:mm",
     "timezone": "Asia/Bangkok",
-    "amount_format": null,
-    "quantity_format": null,
-    "perpage_format": null,
-    "recipe_format": null
+    "perpage_format": {
+      "locales": "th-TH",
+      "minimumIntegerDigits": 2
+    },
+    "amount_format": {
+      "locales": "th-TH",
+      "minimumIntegerDigits": 2
+    },
+    "quantity_format": {
+      "locales": "th-TH",
+      "minimumIntegerDigits": 2
+    },
+    "recipe_format": {
+      "locales": "th-TH",
+      "minimumIntegerDigits": 2
+    },
+    "calculation_method": "average",
+    "default_currency_id": "ec203445-3dd8-4511-a2a9-f54ca4d1b714",
+    "db_connection": {
+      "host": "dev.blueledgers.com",
+      "port": 6432,
+      "schema": "BL_AVG",
+      "database": "postgres",
+      "password": "123456",
+      "provider": "postgresql",
+      "username": "developer"
+    },
+    "config": []
   }
 }

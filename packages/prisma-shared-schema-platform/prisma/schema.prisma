@@ -81,7 +81,7 @@ model tb_business_unit {
   cluster_id  String  @db.Uuid
   code        String  @db.VarChar(30)
   name        String
-  alias_name  String? @db.VarChar(3)
+  alias_name  String? @db.VarChar(10)
   description String?
   info        Json?
 
@@ -192,12 +192,12 @@ model tb_cluster {
 }
 
 model tb_cluster_user {
-  id         String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id    String?                @db.Uuid
-  cluster_id String                 @db.Uuid
-  is_active  Boolean?               @default(true)
-  parent_bu_id  String?                @db.Uuid // เพื่อบอกว่าใคร BU ใหนเป็นเจ้าของ User คนนี้ เอาไว้ทำ invoice เก็บตังค์
-  role       enum_cluster_user_role @default(user)
+  id           String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id      String?                @db.Uuid
+  cluster_id   String                 @db.Uuid
+  is_active    Boolean?               @default(true)
+  parent_bu_id String?                @db.Uuid // เพื่อบอกว่าใคร BU ใหนเป็นเจ้าของ User คนนี้ เอาไว้ทำ invoice เก็บตังค์
+  role         enum_cluster_user_role @default(user)
 
   created_at    DateTime? @default(now()) @db.Timestamptz(6)
   created_by_id String?   @db.Uuid
