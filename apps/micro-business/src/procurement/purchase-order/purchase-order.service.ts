@@ -315,6 +315,211 @@ export class PurchaseOrderService {
   }
 
   /**
+   * List purchase orders available for GRN creation (sent/partial status).
+   * Returns PO headers + details with location breakdown from linked PR details.
+   * ค้นหาใบสั่งซื้อที่พร้อมสำหรับสร้างใบรับสินค้า (GRN) สถานะ sent/partial
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated PO list with location breakdown / รายการ PO พร้อมรายละเอียดตาม location
+   */
+  @TryCatch
+  async findAllForGrn(paginate: IPaginate): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findAllForGrn', user_id: this.userId, tenant_id: this.bu_code, paginate },
+      PurchaseOrderService.name,
+    );
+
+    const defaultSearchFields = ['po_no', 'vendor_name'];
+    const q = new QueryParams(
+      paginate.page,
+      paginate.perpage,
+      paginate.search,
+      paginate.searchfields,
+      defaultSearchFields,
+      paginate.filter,
+      paginate.sort,
+      paginate.advance,
+    );
+
+    const whereClause = {
+      ...q.where(),
+      deleted_at: null,
+      po_status: {
+        in: [
+          enum_purchase_order_doc_status.sent,
+          enum_purchase_order_doc_status.partial,
+        ],
+      },
+    };
+
+    const purchaseOrders = await this.prismaService.tb_purchase_order.findMany({
+      ...q.findMany(),
+      where: whereClause,
+      select: {
+        id: true,
+        po_no: true,
+        po_status: true,
+        vendor_id: true,
+        vendor_name: true,
+        order_date: true,
+        delivery_date: true,
+        currency_id: true,
+        currency_code: true,
+        exchange_rate: true,
+        tb_purchase_order_detail: {
+          where: { deleted_at: null },
+          orderBy: { sequence_no: 'asc' },
+          select: {
+            id: true,
+            sequence_no: true,
+            product_id: true,
+            product_code: true,
+            product_name: true,
+            product_local_name: true,
+            order_qty: true,
+            order_unit_id: true,
+            order_unit_name: true,
+            order_unit_conversion_factor: true,
+            base_qty: true,
+            base_unit_id: true,
+            base_unit_name: true,
+            received_qty: true,
+            cancelled_qty: true,
+            price: true,
+            net_amount: true,
+            is_foc: true,
+            tb_purchase_order_detail_tb_purchase_request_detail: {
+              where: { deleted_at: null },
+              select: {
+                id: true,
+                pr_detail_id: true,
+                pr_detail_qty: true,
+                pr_detail_base_qty: true,
+                pr_detail_base_unit_id: true,
+                pr_detail_base_unit_name: true,
+                pr_detail_order_unit_id: true,
+                pr_detail_order_unit_name: true,
+                received_qty: true,
+                foc_qty: true,
+                tb_purchase_request_detail: {
+                  select: {
+                    id: true,
+                    location_id: true,
+                    location_code: true,
+                    location_name: true,
+                    requested_unit_id: true,
+                    requested_unit_name: true,
+                    requested_unit_conversion_factor: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const total = await this.prismaService.tb_purchase_order.count({
+      where: whereClause,
+    });
+
+    const data = purchaseOrders.map((po) => ({
+      id: po.id,
+      po_no: po.po_no,
+      po_status: po.po_status,
+      vendor_id: po.vendor_id,
+      vendor_name: po.vendor_name,
+      order_date: po.order_date,
+      delivery_date: po.delivery_date,
+      currency_id: po.currency_id,
+      currency_code: po.currency_code,
+      exchange_rate: Number(po.exchange_rate),
+      po_detail: po.tb_purchase_order_detail.map((detail) => ({
+        id: detail.id,
+        sequence_no: detail.sequence_no,
+        product_id: detail.product_id,
+        product_code: detail.product_code,
+        product_name: detail.product_name,
+        product_local_name: detail.product_local_name,
+        order_qty: Number(detail.order_qty),
+        order_unit_id: detail.order_unit_id,
+        order_unit_name: detail.order_unit_name,
+        order_unit_conversion_factor: Number(detail.order_unit_conversion_factor),
+        base_qty: Number(detail.base_qty),
+        base_unit_id: detail.base_unit_id,
+        base_unit_name: detail.base_unit_name,
+        received_qty: Number(detail.received_qty),
+        cancelled_qty: Number(detail.cancelled_qty),
+        price: Number(detail.price),
+        net_amount: Number(detail.net_amount),
+        is_foc: detail.is_foc,
+        locations: (() => {
+          // Group by location_id and sum quantities across PR details
+          const locationMap = new Map<string, {
+            location_id: string | null;
+            location_code: string | null;
+            location_name: string | null;
+            requested_qty: number;
+            remain_qty: number;
+            request_unit_id: string | null;
+            request_unit_name: string | null;
+            foc_qty: number;
+            request_base_factor: number;
+            request_base_qty: number;
+            request_base_unit_id: string | null;
+            request_base_unit_name: string | null;
+            received_qty: number;
+          }>();
+
+          for (const prLink of detail.tb_purchase_order_detail_tb_purchase_request_detail) {
+            const prDetail = prLink.tb_purchase_request_detail;
+            const locId = prDetail?.location_id || 'no-location';
+
+            const existing = locationMap.get(locId);
+            const prQty = Number(prLink.pr_detail_qty);
+            const rcvQty = Number(prLink.received_qty);
+
+            if (existing) {
+              existing.requested_qty += prQty;
+              existing.remain_qty += prQty - rcvQty;
+              existing.foc_qty += Number(prLink.foc_qty);
+              existing.request_base_qty += Number(prLink.pr_detail_base_qty);
+              existing.received_qty += rcvQty;
+            } else {
+              locationMap.set(locId, {
+                location_id: prDetail?.location_id || null,
+                location_code: prDetail?.location_code || null,
+                location_name: prDetail?.location_name || null,
+                requested_qty: prQty,
+                remain_qty: prQty - rcvQty,
+                request_unit_id: prLink.pr_detail_order_unit_id,
+                request_unit_name: prLink.pr_detail_order_unit_name,
+                foc_qty: Number(prLink.foc_qty),
+                request_base_factor: Number(prDetail?.requested_unit_conversion_factor || 1),
+                request_base_qty: Number(prLink.pr_detail_base_qty),
+                request_base_unit_id: prLink.pr_detail_base_unit_id,
+                request_base_unit_name: prLink.pr_detail_base_unit_name,
+                received_qty: rcvQty,
+              });
+            }
+          }
+
+          return Array.from(locationMap.values());
+        })(),
+      })),
+    }));
+
+    return Result.ok({
+      data,
+      paginate: {
+        total,
+        page: q.page,
+        perpage: q.perpage,
+        pages: total === 0 ? 1 : Math.ceil(total / q.perpage),
+      },
+    });
+  }
+
+  /**
    * Find all purchase orders with pagination, search, and filtering
    * ค้นหาใบสั่งซื้อทั้งหมดพร้อมการแบ่งหน้า การค้นหา และการกรอง
    * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า

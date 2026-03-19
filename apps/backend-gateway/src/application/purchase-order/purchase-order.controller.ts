@@ -70,6 +70,46 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
+   * List purchase orders available for GRN creation, with location breakdown from PR details.
+   * ค้นหาใบสั่งซื้อที่พร้อมสำหรับสร้างใบรับสินค้า พร้อมรายละเอียดตาม location จาก PR
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination and filter parameters / พารามิเตอร์การแบ่งหน้าและตัวกรอง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated PO list with location-level detail breakdown / รายการ PO พร้อมรายละเอียดแยกตาม location
+   */
+  @Get('grn')
+  @UseGuards(new AppIdGuard('purchaseOrder.findAll'))
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'List purchase orders for GRN creation',
+    description: 'Lists purchase orders (sent/partial status) with detail lines broken down by delivery location from the linked purchase request details. Used by the GRN creation flow to select a PO and see which items go to which locations with remaining quantities.',
+    operationId: 'findAllPurchaseOrdersForGrn',
+    tags: ['Procurement', 'Purchase Order', 'Good Received Note'],
+    responses: {
+      200: { description: 'PO list with location breakdown retrieved successfully' },
+    },
+  })
+  @HttpCode(HttpStatus.OK)
+  async findAllForGrn(
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query() query: IPaginateQuery,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'findAllForGrn', query, version },
+      PurchaseOrderController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
+    const result = await this.purchaseOrderService.findAllForGrn(user_id, bu_code, paginate, version);
+    this.respond(res, result);
+  }
+
+  /**
    * Retrieve full details of a specific purchase order
    * ค้นหารายการเดียวตาม ID ของใบสั่งซื้อพร้อมรายละเอียดทั้งหมด
    * @param id - Purchase order ID / รหัสใบสั่งซื้อ
