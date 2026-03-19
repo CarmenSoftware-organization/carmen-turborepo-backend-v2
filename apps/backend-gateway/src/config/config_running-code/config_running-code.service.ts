@@ -100,6 +100,47 @@ export class Config_RunningCodeService {
   }
 
   /**
+   * Initialize all default running codes via microservice
+   * สร้างรหัสรันนิ่งเริ่มต้นทั้งหมดผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Initialized running codes or error / รหัสรันนิ่งที่สร้างขึ้นหรือข้อผิดพลาด
+   */
+  async init(
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<unknown> {
+    this.logger.debug(
+      {
+        function: 'init',
+        version,
+      },
+      Config_RunningCodeService.name,
+    );
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
+      { cmd: 'running-code.init', service: 'running-codes' },
+      {
+        user_id: user_id,
+        bu_code: bu_code,
+        version: version,
+      },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.CREATED) {
+      return ResponseLib.error(
+        response.response.status,
+        response.response.message,
+      );
+    }
+
+    return ResponseLib.created(response.data);
+  }
+
+  /**
    * Create a new running code via microservice
    * สร้างรหัสรันนิ่งใหม่ผ่านไมโครเซอร์วิส
    * @param createDto - Creation data / ข้อมูลสำหรับสร้าง

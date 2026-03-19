@@ -83,6 +83,23 @@ export class RunningCodeController {
   }
 
   /**
+   * Initialize all default running code configurations
+   * สร้างการตั้งค่ารหัสลำดับเริ่มต้นทั้งหมด (PL, PR, SI, SO, PO, GRN, CN)
+   * @param payload - Microservice payload / ข้อมูล payload
+   * @returns List of initialized running codes / รายการรหัสลำดับที่สร้างขึ้น
+   */
+  @MessagePattern({ cmd: 'running-code.init', service: 'running-codes' })
+  async init(@Payload() payload: MicroservicePayload): Promise<ICommonResponse<unknown>> {
+    this.logger.debug({ function: 'init', payload }, RunningCodeController.name);
+    this.runningCodeService.userId = payload.user_id;
+    this.runningCodeService.bu_code = payload.bu_code;
+    await this.runningCodeService.initializePrismaService(payload.bu_code, payload.user_id);
+
+    const auditContext = this.createAuditContext(payload);
+    return runWithAuditContext(auditContext, () => this.runningCodeService.init());
+  }
+
+  /**
    * Create a new running code configuration
    * สร้างการตั้งค่ารหัสลำดับใหม่
    * @param payload - Microservice payload containing running code data / ข้อมูล payload ที่มีข้อมูลรหัสลำดับ

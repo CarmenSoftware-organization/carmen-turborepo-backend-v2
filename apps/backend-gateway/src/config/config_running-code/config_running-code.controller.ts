@@ -163,6 +163,41 @@ export class Config_RunningCodeController extends BaseHttpController {
   }
 
   /**
+   * Initialize all default running code configurations (PL, PR, SI, SO, PO, GRN, CN)
+   * สร้างการตั้งค่ารหัสรันนิ่งเริ่มต้นทั้งหมดสำหรับหน่วยธุรกิจ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   */
+  @Post('init')
+  @UseGuards(new AppIdGuard('runningCode.init'))
+  @HttpCode(HttpStatus.CREATED)
+  @ApiVersionMinRequest()
+  @ApiOperation({ summary: 'Initialize default running codes', description: 'Creates all default auto-numbering rule configurations (PL, PR, SI, SO, PO, GRN, CN) for the business unit. Skips types that already exist.', operationId: 'configRunningCode_init', tags: ['Configuration', 'Running Code'] })
+  async init(
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      {
+        function: 'init',
+        version,
+      },
+      Config_RunningCodeController.name,
+    );
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.config_runningCodeService.init(
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result, HttpStatus.CREATED);
+  }
+
+  /**
    * Defines a new auto-numbering rule for a document type
    * สร้างกฎการกำหนดเลขอัตโนมัติใหม่สำหรับประเภทเอกสาร
    * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ

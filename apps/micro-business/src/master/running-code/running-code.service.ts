@@ -244,6 +244,51 @@ export class RunningCodeService {
   }
 
   /**
+   * Initialize all default running code configurations
+   * สร้างการตั้งค่ารหัสลำดับเริ่มต้นทั้งหมดสำหรับประเภทเอกสาร (PL, PR, SI, SO, PO, GRN, CN)
+   * @returns List of initialized running codes / รายการรหัสลำดับที่สร้างขึ้น
+   */
+  async init(): Promise<any> {
+    this.logger.debug(
+      { function: 'init', user_id: this.userId, tenant_id: this.bu_code },
+      RunningCodeService.name,
+    );
+
+    const defaultTypes = ['PL', 'PR', 'SI', 'SO', 'PO', 'GRN', 'CN'];
+    const results: { type: string; id: string; status: 'created' | 'exists' }[] = [];
+
+    for (const type of defaultTypes) {
+      const existing = await this.prismaService.tb_config_running_code.findFirst({
+        where: { type },
+      });
+
+      if (existing) {
+        results.push({ type, id: existing.id, status: 'exists' });
+        continue;
+      }
+
+      const created = await this.prismaService.tb_config_running_code.create({
+        data: {
+          type,
+          config: RUNNING_CODE_PRESET[type].config as Prisma.InputJsonValue,
+          note: 'initialized by system default.',
+          created_by_id: this.userId,
+        },
+      });
+
+      results.push({ type, id: created.id, status: 'created' });
+    }
+
+    return {
+      data: results,
+      response: {
+        status: HttpStatus.CREATED,
+        message: 'Running codes initialized successfully',
+      },
+    };
+  }
+
+  /**
    * Find a running code by type, or create with system defaults if not found
    * ค้นหารหัสลำดับตามประเภท หรือสร้างด้วยค่าเริ่มต้นของระบบหากไม่พบ
    * @param type - Running code type / ประเภทรหัสลำดับ
