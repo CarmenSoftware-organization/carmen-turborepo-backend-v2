@@ -383,7 +383,7 @@ export class StockInService {
         const updatePayload: Record<string, unknown> = {
           ...stockInUpdateData,
           updated_by_id: user_id,
-          updated_at: new Date(),
+          updated_at: new Date().toISOString(),
         };
         // Cast doc_status to enum if present
         if (stockInUpdateData.doc_status) {
@@ -433,7 +433,7 @@ export class StockInService {
                 data: {
                   ...updateData,
                   updated_by_id: user_id,
-                  updated_at: new Date(),
+                  updated_at: new Date().toISOString(),
                 },
               });
             }),
@@ -818,7 +818,7 @@ export class StockInService {
       data: {
         ...updateData,
         updated_by_id: user_id,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       },
     });
 

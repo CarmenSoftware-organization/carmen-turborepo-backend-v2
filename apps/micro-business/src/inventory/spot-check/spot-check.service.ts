@@ -325,7 +325,7 @@ export class SpotCheckService {
         description: data.description,
         note: data.note,
         updated_by_id: user_id,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       },
     });
 

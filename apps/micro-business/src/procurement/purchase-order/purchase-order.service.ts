@@ -2250,7 +2250,7 @@ export class PurchaseOrderService {
         data: {
           pr_status: enum_purchase_request_doc_status.completed,
           updated_by_id: this.userId,
-          updated_at: new Date(),
+          updated_at: new Date().toISOString(),
         },
       });
     });

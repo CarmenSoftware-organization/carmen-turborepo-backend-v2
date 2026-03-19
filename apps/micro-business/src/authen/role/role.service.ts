@@ -171,7 +171,7 @@ export class ApplicationRoleService {
         business_unit_id: data.business_unit_id,
         name: data.name,
         description: data.description,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       },
     });
 

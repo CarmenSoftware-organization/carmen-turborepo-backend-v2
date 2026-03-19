@@ -1203,7 +1203,7 @@ export class GoodReceivedNoteService {
           data: {
             ...goodReceivedNoteObject,
             updated_by_id: user_id,
-            updated_at: new Date(),
+            updated_at: new Date().toISOString(),
           },
         });
       }
@@ -1234,7 +1234,7 @@ export class GoodReceivedNoteService {
         //         data: {
         //           ...item,
         //           updated_by_id: user_id,
-        //           updated_at: new Date(),
+        //           updated_at: new Date().toISOString(),
         //         },
         //       });
         //     }),
@@ -1264,7 +1264,7 @@ export class GoodReceivedNoteService {
             data: {
               ...extraCostObject,
               updated_by_id: user_id,
-              updated_at: new Date(),
+              updated_at: new Date().toISOString(),
             },
           });
         } else {
@@ -1304,7 +1304,7 @@ export class GoodReceivedNoteService {
                 data: {
                   ...item,
                   updated_by_id: user_id,
-                  updated_at: new Date(),
+                  updated_at: new Date().toISOString(),
                 },
               });
             }),
@@ -1774,7 +1774,7 @@ export class GoodReceivedNoteService {
         doc_status: enum_good_received_note_status.voided,
         note: reason ? `Rejected: ${reason}` : grn.note,
         updated_by_id: user_id,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       },
     });
 
@@ -1919,7 +1919,7 @@ export class GoodReceivedNoteService {
         data: {
           doc_status: enum_good_received_note_status.committed,
           updated_by_id: user_id,
-          updated_at: new Date(),
+          updated_at: new Date().toISOString(),
         },
       });
     });
@@ -2260,7 +2260,7 @@ export class GoodReceivedNoteService {
             total_price: data.total_amount,
             note: data.note,
             updated_by_id: user_id,
-            updated_at: new Date(),
+            updated_at: new Date().toISOString(),
           },
         });
       }

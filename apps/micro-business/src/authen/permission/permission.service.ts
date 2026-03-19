@@ -180,7 +180,7 @@ export class PermissionService {
         resource: data.resource,
         action: data.action,
         description: data.description,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       },
     });
 

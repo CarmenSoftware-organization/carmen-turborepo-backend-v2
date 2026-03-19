@@ -355,7 +355,7 @@ export class PhysicalCountPeriodService {
 
     const updatePayload: Record<string, unknown> = {
       updated_by_id: user_id,
-      updated_at: new Date(),
+      updated_at: new Date().toISOString(),
     };
 
     if (updateData.period_id) {

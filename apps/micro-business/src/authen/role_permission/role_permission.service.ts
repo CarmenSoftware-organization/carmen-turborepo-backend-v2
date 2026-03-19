@@ -280,7 +280,7 @@ export class ApplicationRolePermissionService {
           name: data?.application_role_name || roleData.name,
           is_active: data?.is_active !== undefined ? data.is_active : roleData.is_active,
           updated_by_id: user_id,
-          updated_at: new Date(),
+          updated_at: new Date().toISOString(),
         }
       })
 

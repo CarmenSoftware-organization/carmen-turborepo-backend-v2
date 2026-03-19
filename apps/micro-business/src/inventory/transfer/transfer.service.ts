@@ -396,7 +396,7 @@ export class TransferService {
 
     const updatePayload: Record<string, unknown> = {
       updated_by_id: user_id,
-      updated_at: new Date(),
+      updated_at: new Date().toISOString(),
     };
 
     if (data.tr_date !== undefined) updatePayload.tr_date = data.tr_date || null;
@@ -644,7 +644,7 @@ export class TransferService {
 
     const updatePayload: Record<string, unknown> = {
       updated_by_id: user_id,
-      updated_at: new Date(),
+      updated_at: new Date().toISOString(),
     };
 
     if (data.product_id !== undefined) updatePayload.product_id = data.product_id;

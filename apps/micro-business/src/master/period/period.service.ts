@@ -228,7 +228,7 @@ export class PeriodService {
 
     const updateData: Record<string, unknown> = {
       updated_by_id: this.userId,
-      updated_at: new Date(),
+      updated_at: new Date().toISOString(),
     };
 
     if (data.period !== undefined) updateData.period = data.period;
@@ -277,7 +277,7 @@ export class PeriodService {
 
     const updateData: Record<string, unknown> = {
       updated_by_id: this.userId,
-      updated_at: new Date(),
+      updated_at: new Date().toISOString(),
     };
 
     if (data.period !== undefined) updateData.period = data.period;
@@ -332,7 +332,7 @@ export class PeriodService {
         deleted_by_id: this.userId,
         deleted_at: new Date(),
         updated_by_id: this.userId,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       },
     });
 

@@ -255,7 +255,7 @@ export class IssueService {
         resolution: data.resolution,
         note: data.note,
         info: data.info as Prisma.InputJsonValue,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
         updated_by_id: this.userId,
       },
     });
