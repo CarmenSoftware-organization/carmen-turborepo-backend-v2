@@ -10,7 +10,7 @@ const StockOutDetailEmbeddedSchema = z.object({
   product_local_name: z.string().nullable().optional(),
   product_sku: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
-  qty: z.number().nullable().optional(),
+  qty: z.any().transform(v => v != null ? Number(v) : null).nullable().optional(),
   note: z.string().nullable().optional(),
   info: z.any().nullable().optional(),
   dimension: z.any().nullable().optional(),
