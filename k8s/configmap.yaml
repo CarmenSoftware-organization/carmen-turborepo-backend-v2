@@ -28,6 +28,6 @@ data:
   REPORT_SERVICE_HOST: "micro-report.carmen-report.svc.cluster.local"
   REPORT_SERVICE_TCP_PORT: "5015"
   REPORT_SERVICE_HTTP_PORT: "6015"
-  REPORT_SERVICE_GRPC_PORT: "4015"
+  REPORT_SERVICE_GRPC_PORT: "5015"
   REPORT_RENDER_HOST: "micro-report.carmen-report.svc.cluster.local"
   REPORT_RENDER_TCP_PORT: "8001"
