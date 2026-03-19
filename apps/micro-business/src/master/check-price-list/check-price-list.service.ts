@@ -1,21 +1,15 @@
-import {
-  HttpStatus,
-  Injectable,
-  HttpException
-} from '@nestjs/common';
-import { PrismaClient } from '@repo/prisma-shared-schema-tenant';
-import { BackendLogger } from '@/common/helpers/backend.logger';
-import { TenantService } from '@/tenant/tenant.service';
-import { getPattern, GenerateCode, IPattern } from '@/common/helpers/running-code.helper';
-import { RUNNING_CODE_PRESET } from '@/master/running-code/const/running-code.const';
-import { format } from 'date-fns';
-import { TryCatch, Result, ErrorCode } from '@/common';
+import { HttpStatus, Injectable, HttpException } from "@nestjs/common";
+import { PrismaClient } from "@repo/prisma-shared-schema-tenant";
+import { BackendLogger } from "@/common/helpers/backend.logger";
+import { TenantService } from "@/tenant/tenant.service";
+import { getPattern, GenerateCode, IPattern } from "@/common/helpers/running-code.helper";
+import { RUNNING_CODE_PRESET } from "@/master/running-code/const/running-code.const";
+import { format } from "date-fns";
+import { TryCatch, Result, ErrorCode } from "@/common";
 
 @Injectable()
 export class CheckPriceListService {
-  private readonly logger: BackendLogger = new BackendLogger(
-    CheckPriceListService.name,
-  );
+  private readonly logger: BackendLogger = new BackendLogger(CheckPriceListService.name);
 
   /**
    * Initialize the Prisma service for external connection
@@ -31,18 +25,12 @@ export class CheckPriceListService {
 
   get prismaService(): PrismaClient {
     if (!this._prismaService) {
-      throw new HttpException(
-        'Prisma service is not initialized',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new HttpException("Prisma service is not initialized", HttpStatus.INTERNAL_SERVER_ERROR);
     }
     return this._prismaService;
   }
 
-
-  constructor(
-    private readonly tenantService: TenantService,
-  ) { }
+  constructor(private readonly tenantService: TenantService) {}
 
   /**
    * Check and retrieve or create a price list from a vendor token
@@ -55,7 +43,7 @@ export class CheckPriceListService {
   async checkPriceList(urlToken: string, decodedToken: Record<string, any>): Promise<Result<unknown>> {
     this.logger.debug(
       {
-        function: 'checkPriceList',
+        function: "checkPriceList",
         url_token: urlToken,
         decodedToken,
       },
@@ -63,11 +51,11 @@ export class CheckPriceListService {
     );
 
     if (!decodedToken) {
-      this.logger.warn({ url_token: urlToken }, 'decodedToken not provided');
-      return Result.error('Invalid token', ErrorCode.UNAUTHENTICATED);
+      this.logger.warn({ url_token: urlToken }, "decodedToken not provided");
+      return Result.error("Invalid token", ErrorCode.UNAUTHENTICATED);
     }
 
-    await this.initializePrismaService(decodedToken.bu, 'Vendor update price list')
+    await this.initializePrismaService(decodedToken.bu, "Vendor update price list");
     const pricing = await this.prismaService.tb_request_for_pricing_detail.findFirst({
       where: {
         id: decodedToken.rfp_detail_id,
@@ -81,17 +69,17 @@ export class CheckPriceListService {
             id: true,
             pricelist_template_id: true,
             start_date: true,
-            end_date: true
-          }
-        }
-      }
-    })
+            end_date: true,
+          },
+        },
+      },
+    });
 
     if (pricing.pricelist_id === null) {
       const pricelistTemplateId = pricing.tb_request_for_pricing?.pricelist_template_id;
 
       if (!pricelistTemplateId) {
-        return Result.error('Pricelist template not found', ErrorCode.NOT_FOUND);
+        return Result.error("Pricelist template not found", ErrorCode.NOT_FOUND);
       }
 
       const pricelistTemplate = await this.prismaService.tb_pricelist_template.findFirst({
@@ -109,7 +97,7 @@ export class CheckPriceListService {
               deleted_at: null,
             },
             orderBy: {
-              sequence_no: 'asc',
+              sequence_no: "asc",
             },
             select: {
               id: true,
@@ -124,17 +112,31 @@ export class CheckPriceListService {
       });
 
       if (!pricelistTemplate) {
-        return Result.error('Pricelist template not found', ErrorCode.NOT_FOUND);
+        return Result.error("Pricelist template not found", ErrorCode.NOT_FOUND);
       }
 
       const pricelistNo = await this.generatePLNo(new Date().toISOString(), decodedToken.bu);
       const effectiveFromDate = new Date();
       const effectiveToDate = new Date();
       if (pricelistTemplate.validity_period) {
-        effectiveToDate.setDate(effectiveToDate.getDate() + pricelistTemplate.validity_period);
-      } else {
-        effectiveToDate.setFullYear(effectiveToDate.getFullYear() + 1);
+        effectiveToDate.setDate(effectiveFromDate.getDate() + pricelistTemplate.validity_period);
       }
+
+      const rawStartDate = pricing.tb_request_for_pricing?.start_date;
+      const rawEndDate = pricing.tb_request_for_pricing?.end_date;
+
+      const resolvedFromDate =
+        rawStartDate instanceof Date
+          ? rawStartDate.toISOString()
+          : typeof rawStartDate === "string" && rawStartDate
+            ? rawStartDate
+            : effectiveFromDate.toISOString();
+      const resolvedToDate =
+        rawEndDate instanceof Date
+          ? rawEndDate.toISOString()
+          : typeof rawEndDate === "string" && rawEndDate
+            ? rawEndDate
+            : effectiveToDate.toISOString();
 
       const pricelistDetails = await Promise.all(
         pricelistTemplate.tb_pricelist_template_detail.map(async (detail, index) => ({
@@ -149,19 +151,19 @@ export class CheckPriceListService {
           price: 0,
           is_active: true,
           tax_profile_id: await this.get_tax_profile(detail.product_id),
-        }))
+        })),
       );
 
       const newPricelist = await this.prismaService.tb_pricelist.create({
         data: {
           pricelist_no: pricelistNo,
           name: pricelistTemplate.name,
-          status: 'draft',
+          status: "draft",
           url_token: urlToken,
           currency_id: pricelistTemplate.currency_id,
           currency_code: pricelistTemplate.currency_code,
-          effective_from_date: pricing.tb_request_for_pricing?.start_date ?? effectiveFromDate,
-          effective_to_date: pricing.tb_request_for_pricing?.end_date ?? effectiveToDate,
+          effective_from_date: resolvedFromDate,
+          effective_to_date: resolvedToDate,
           tb_pricelist_detail: {
             create: pricelistDetails,
           },
@@ -276,20 +278,17 @@ export class CheckPriceListService {
    * @returns Generated price list number / หมายเลขรายการราคาที่สร้างขึ้น
    */
   private async generatePLNo(PLDate: string, bu_code: string): Promise<string> {
-    this.logger.debug(
-      { function: 'generatePLNo', PLDate, bu_code },
-      CheckPriceListService.name,
-    );
+    this.logger.debug({ function: "generatePLNo", PLDate, bu_code }, CheckPriceListService.name);
 
-    const pattern = await this.getRunningPattern('PL');
+    const pattern = await this.getRunningPattern("PL");
     const prPatterns = getPattern(pattern);
 
     let datePattern: IPattern | undefined;
     let runningPattern: IPattern | undefined;
     prPatterns.forEach((p) => {
-      if (p.type === 'date') {
+      if (p.type === "date") {
         datePattern = p;
-      } else if (p.type === 'running') {
+      } else if (p.type === "running") {
         runningPattern = p;
       }
     });
@@ -304,7 +303,7 @@ export class CheckPriceListService {
         },
       },
       orderBy: {
-        pricelist_no: 'desc',
+        pricelist_no: "desc",
       },
     });
 
@@ -313,7 +312,7 @@ export class CheckPriceListService {
       : 0;
 
     const runningCode = await this.prismaService.tb_config_running_code.findFirst({
-      where: { type: { contains: 'PL', mode: 'insensitive' } },
+      where: { type: { contains: "PL", mode: "insensitive" } },
     });
 
     const PLNo = GenerateCode(runningCode.config, getDate, latestPLNumber);
@@ -328,10 +327,7 @@ export class CheckPriceListService {
    * @returns Running code pattern configuration / การตั้งค่ารูปแบบรหัสลำดับ
    */
   private async getRunningPattern(type: string): Promise<any> {
-    this.logger.debug(
-      { function: 'getRunningPattern', type },
-      CheckPriceListService.name,
-    );
+    this.logger.debug({ function: "getRunningPattern", type }, CheckPriceListService.name);
 
     let runningCode = await this.prismaService.tb_config_running_code.findFirst({
       where: { type },
@@ -342,14 +338,14 @@ export class CheckPriceListService {
         A: type,
         B: `date('yyyyMM')`,
         C: `running(5, '0')`,
-        format: '{A}{B}{C}',
+        format: "{A}{B}{C}",
       };
 
       runningCode = await this.prismaService.tb_config_running_code.create({
         data: {
           type,
           config: defaultConfig,
-          note: 'initialized by system default.',
+          note: "initialized by system default.",
         },
       });
     }
@@ -364,7 +360,7 @@ export class CheckPriceListService {
    * @returns Tax profile ID or null / รหัสโปรไฟล์ภาษีหรือ null
    */
   async get_tax_profile(product_id: string) {
-    const product = await this.prismaService.tb_product.findFirst({ where: { id: product_id } })
-    return product.tax_profile_id ? product.tax_profile_id : null
+    const product = await this.prismaService.tb_product.findFirst({ where: { id: product_id } });
+    return product.tax_profile_id ? product.tax_profile_id : null;
   }
 }
