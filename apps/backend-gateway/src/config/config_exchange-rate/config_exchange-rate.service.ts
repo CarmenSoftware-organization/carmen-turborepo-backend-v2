@@ -110,6 +110,50 @@ export class Config_ExchangeRateService {
   }
 
   /**
+   * Find exchange rate by date and currency code via microservice
+   * ค้นหาอัตราแลกเปลี่ยนตามวันที่และรหัสสกุลเงินผ่านไมโครเซอร์วิส
+   * @param date - Exchange rate date / วันที่ของอัตราแลกเปลี่ยน
+   * @param currency_code - Currency code / รหัสสกุลเงิน
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Exchange rate data or error / ข้อมูลอัตราแลกเปลี่ยนหรือข้อผิดพลาด
+   */
+  async findByDateAndCurrency(
+    date: string,
+    currency_code: string,
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      {
+        function: 'findByDateAndCurrency',
+        date,
+        currency_code,
+        version,
+      },
+      Config_ExchangeRateService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
+      { cmd: 'exchange-rate.findByDateAndCurrency', service: 'exchange-rate' },
+      { date, currency_code, user_id, bu_code, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
+  /**
    * Create a new exchange rate via microservice
    * สร้างอัตราแลกเปลี่ยนใหม่ผ่านไมโครเซอร์วิส
    * @param createDto - Exchange rate creation data (single or bulk) / ข้อมูลสำหรับสร้างอัตราแลกเปลี่ยน (เดี่ยวหรือจำนวนมาก)

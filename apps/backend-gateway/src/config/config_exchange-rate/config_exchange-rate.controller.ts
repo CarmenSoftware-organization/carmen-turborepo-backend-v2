@@ -191,6 +191,75 @@ export class Config_ExchangeRateController extends BaseHttpController {
   }
 
   /**
+   * Retrieves an exchange rate by date and currency code
+   * ค้นหาอัตราแลกเปลี่ยนตามวันที่และรหัสสกุลเงิน
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param date - Exchange rate date (yyyy-MM-dd) / วันที่อัตราแลกเปลี่ยน
+   * @param currency_code - Currency code (e.g. USD) / รหัสสกุลเงิน
+   * @param version - API version / เวอร์ชัน API
+   */
+  @Get('by-date/:date/:currency_code')
+  @UseGuards(new AppIdGuard('exchangeRate.findByDateAndCurrency'))
+  @Serialize(ExchangeRateDetailResponseSchema)
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get exchange rate by date and currency code',
+    description: 'Retrieves the exchange rate for a specific date and currency code. Used to look up historical or current conversion rates for procurement documents.',
+    operationId: 'configExchangeRate_findByDateAndCurrency',
+    tags: ['Configuration', 'Exchange Rate'],
+    parameters: [
+      {
+        name: 'date',
+        in: 'path',
+        required: true,
+        description: 'Exchange rate date (yyyy-MM-dd)',
+      },
+      {
+        name: 'currency_code',
+        in: 'path',
+        required: true,
+        description: 'Currency code (e.g. USD, EUR, THB)',
+      },
+    ],
+    responses: {
+      200: {
+        description: 'Exchange rate retrieved successfully',
+      },
+    },
+  })
+  async findByDateAndCurrency(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('bu_code') bu_code: string,
+    @Param('date') date: string,
+    @Param('currency_code') currency_code: string,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      {
+        function: 'findByDateAndCurrency',
+        date,
+        currency_code,
+        version,
+      },
+      Config_ExchangeRateController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.config_exchangeRateService.findByDateAndCurrency(
+      date,
+      currency_code,
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
    * Creates a new exchange rate between currencies
    * สร้างอัตราแลกเปลี่ยนใหม่ระหว่างสกุลเงินสำหรับการคำนวณการจัดซื้อหลายสกุลเงิน
    * @param req - HTTP request / คำขอ HTTP

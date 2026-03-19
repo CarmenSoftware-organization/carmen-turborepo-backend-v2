@@ -151,6 +151,49 @@ export class ExchangeRateService {
   }
 
   /**
+   * Find exchange rate by date and currency code
+   * ค้นหาอัตราแลกเปลี่ยนตามวันที่และรหัสสกุลเงิน
+   * @param date - Exchange rate date / วันที่ของอัตราแลกเปลี่ยน
+   * @param currencyCode - Currency code (e.g. USD, THB) / รหัสสกุลเงิน
+   * @returns Exchange rate detail or error if not found / รายละเอียดอัตราแลกเปลี่ยน หรือข้อผิดพลาดหากไม่พบ
+   */
+  @TryCatch
+  async findByDateAndCurrency(date: string, currencyCode: string): Promise<Result<unknown>> {
+    this.logger.debug(
+      {
+        function: "findByDateAndCurrency",
+        date,
+        currencyCode,
+        user_id: this.userId,
+        tenant_id: this.bu_code,
+      },
+      ExchangeRateService.name,
+    );
+
+    const targetDate = new Date(date);
+    const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
+
+    const exchangeRate = await this.prismaService.tb_exchange_rate.findFirst({
+      where: {
+        currency_code: currencyCode,
+        at_date: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+        deleted_at: null,
+      },
+    });
+
+    if (!exchangeRate) {
+      return Result.error("Exchange rate not found for the given date and currency code", ErrorCode.NOT_FOUND);
+    }
+
+    const serializedExchangeRate = ExchangeRateDetailResponseSchema.parse(exchangeRate);
+    return Result.ok(serializedExchangeRate);
+  }
+
+  /**
    * Create a new exchange rate
    * สร้างอัตราแลกเปลี่ยนใหม่
    * @param data - Exchange rate creation data / ข้อมูลการสร้างอัตราแลกเปลี่ยน

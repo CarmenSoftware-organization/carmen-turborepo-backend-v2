@@ -64,6 +64,25 @@ export class ExchangeRateController extends BaseMicroserviceController {
   }
 
   /**
+   * Find exchange rate by date and currency code
+   * ค้นหาอัตราแลกเปลี่ยนตามวันที่และรหัสสกุลเงิน
+   * @param payload - Microservice payload containing date and currency_code / ข้อมูล payload ที่มีวันที่และรหัสสกุลเงิน
+   * @returns Exchange rate detail / รายละเอียดอัตราแลกเปลี่ยน
+   */
+  @MessagePattern({ cmd: 'exchange-rate.findByDateAndCurrency', service: 'exchange-rate' })
+  async findByDateAndCurrency(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'findByDateAndCurrency', payload }, ExchangeRateController.name);
+    const { date, currency_code } = payload;
+    this.exchangeRateService.userId = payload.user_id;
+    this.exchangeRateService.bu_code = payload.bu_code;
+    await this.exchangeRateService.initializePrismaService(payload.bu_code, payload.user_id);
+
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () => this.exchangeRateService.findByDateAndCurrency(date, currency_code));
+    return this.handleResult(result);
+  }
+
+  /**
    * Create a new exchange rate
    * สร้างอัตราแลกเปลี่ยนใหม่
    * @param payload - Microservice payload containing exchange rate data / ข้อมูล payload ที่มีข้อมูลอัตราแลกเปลี่ยน
