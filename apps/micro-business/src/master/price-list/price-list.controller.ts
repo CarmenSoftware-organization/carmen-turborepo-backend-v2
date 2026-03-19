@@ -133,7 +133,7 @@ export class PriceListController extends BaseMicroserviceController {
   @MessagePattern({ cmd: 'price-list.update', service: 'price-list' })
   async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'update', payload }, PriceListController.name);
-    const data = payload.data;
+    const data = { ...payload.data, id: payload.id };
 
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
