@@ -12,6 +12,8 @@ export const CreateStoreRequisitionDetailSchema = z.object({
   }))
   .extend({
     requested_qty: z.number(),
+    approved_qty: z.number().optional(),
+    issued_qty: z.number().optional(),
     info: z.any().optional(),
     dimension: z.any().optional(),
   });
