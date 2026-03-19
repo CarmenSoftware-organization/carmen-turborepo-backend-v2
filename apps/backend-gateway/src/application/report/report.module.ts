@@ -18,6 +18,8 @@ import { ReportService } from './report.service';
             'proto/report/v1/report.proto',
           ),
           url: `${envConfig.REPORT_SERVICE_HOST}:${envConfig.REPORT_SERVICE_GRPC_PORT}`,
+          maxReceiveMessageLength: 50 * 1024 * 1024, // 50MB
+          maxSendMessageLength: 50 * 1024 * 1024, // 50MB
           loader: {
             keepCase: true,
             longs: String,
