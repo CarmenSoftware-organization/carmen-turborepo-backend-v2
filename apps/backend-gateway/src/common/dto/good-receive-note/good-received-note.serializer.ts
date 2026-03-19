@@ -69,6 +69,7 @@ export const GoodReceivedNoteListItemResponseSchema = z.object({
   grn_no: z.string().nullable().optional(),
   grn_date: z.coerce.date().nullable().optional(),
   doc_type: z.string().nullable().optional(),
+  invoice_no: z.string().nullable().optional(),
   name: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   status: z.string().nullable().optional(),
