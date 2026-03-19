@@ -1,7 +1,23 @@
 import { Logger } from '@nestjs/common';
 import { Result } from '../result/result';
+import { ErrorCode } from '../result/error';
 
 const errorLogger = new Logger('TryCatch');
+
+function isZodError(error: unknown): boolean {
+  if (error && typeof error === 'object' && 'name' in error) {
+    return (error as Error).name === 'ZodError';
+  }
+  return false;
+}
+
+function isPrismaValidationError(error: unknown): boolean {
+  if (error && typeof error === 'object' && 'name' in error) {
+    const name = (error as Error).name;
+    return name === 'PrismaClientValidationError' || name === 'PrismaClientKnownRequestError';
+  }
+  return false;
+}
 
 export function TryCatch(
   target: unknown,
@@ -22,6 +38,10 @@ export function TryCatch(
         err.stack,
         target.constructor.name,
       );
+
+      if (isZodError(error) || isPrismaValidationError(error)) {
+        return Result.error(err, ErrorCode.INVALID_ARGUMENT);
+      }
 
       return Result.error(err);
     }
