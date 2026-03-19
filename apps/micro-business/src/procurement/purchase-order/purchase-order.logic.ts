@@ -453,7 +453,7 @@ export class PurchaseOrderLogic {
         product_code: product?.code || detail.product_code,
         product_name: product?.name || detail.product_name,
         product_local_name: product?.local_name || detail.product_local_name,
-        product_sku: product?.sku || detail.product_sku,
+        product_sku: product?.code || detail.product_sku,
         order_unit_name:
           this.findByIdInArray(foreignValue?.unit_ids, detail.order_unit_id)?.name || detail.order_unit_name,
         base_unit_name:

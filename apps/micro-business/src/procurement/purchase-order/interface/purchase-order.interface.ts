@@ -148,7 +148,9 @@ export interface ICreatePurchaseOrder {
   email?: string;
   remarks?: string;
   note?: string;
-  details: ICreatePurchaseOrderDetail[];
+  purchase_order_detail?: {
+    add?: ICreatePurchaseOrderDetail[];
+  };
 }
 
 export interface ICreatePurchaseOrderDetail {

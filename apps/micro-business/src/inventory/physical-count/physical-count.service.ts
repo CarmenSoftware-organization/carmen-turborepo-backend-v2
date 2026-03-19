@@ -290,7 +290,7 @@ export class PhysicalCountService {
       product_name: p.name,
       product_local_name: p.local_name,
       product_code: p.code,
-      product_sku: p.sku,
+      product_sku: p.code,
       inventory_unit_id: p.inventory_unit_id,
     }));
 

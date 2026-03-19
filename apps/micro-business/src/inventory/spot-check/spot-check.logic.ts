@@ -53,7 +53,7 @@ export class SpotCheckLogic {
       product_code: p.code,
       product_name: p.name,
       product_local_name: p.local_name,
-      product_sku: p.sku,
+      product_sku: p.code,
       inventory_unit_id: p.inventory_unit_id,
       on_hand_qty: qtyMap.get(p.id) || new Prisma.Decimal(0),
     }));

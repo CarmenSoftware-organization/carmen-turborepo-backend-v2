@@ -255,7 +255,7 @@ export class TransferService {
             } else {
               item.product_name = product.name;
               item.product_code = product.code;
-              item.product_sku = product.sku;
+              item.product_sku = product.code;
               item.product_local_name = product.local_name;
             }
           }
@@ -529,7 +529,7 @@ export class TransferService {
       }
       data.product_name = product.name;
       data.product_code = product.code;
-      data.product_sku = product.sku;
+      data.product_sku = product.code;
       data.product_local_name = product.local_name;
     }
 

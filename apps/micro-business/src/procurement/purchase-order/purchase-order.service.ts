@@ -194,6 +194,11 @@ export class PurchaseOrderService {
             id: true,
             sequence_no: true,
             description: true,
+            product_id: true,
+            product_code: true,
+            product_name: true,
+            product_local_name: true,
+            product_sku: true,
             order_qty: true,
             order_unit_id: true,
             order_unit_name: true,
@@ -468,13 +473,15 @@ export class PurchaseOrderService {
     const orderDate = data.order_date ? new Date(String(data.order_date)) : new Date();
     const poNo = await this.generatePONo(orderDate.toISOString());
 
+    const details = data.purchase_order_detail?.add || [];
+
     // Calculate totals from details
     let total_qty = 0;
     let total_price = 0;
     let total_tax = 0;
     let total_amount = 0;
 
-    for (const detail of data.details) {
+    for (const detail of details) {
       total_qty += detail.order_qty || 0;
       total_price += detail.sub_total_price || 0;
       total_tax += detail.tax_amount || 0;
@@ -515,11 +522,21 @@ export class PurchaseOrderService {
       });
 
       // Create PO details and PR detail linkages
-      for (const detail of data.details) {
-        // Validate unit
-        const unit = await prismatx.tb_unit.findUnique({
-          where: { id: detail.order_unit_id },
-        });
+      for (const detail of details) {
+        // Look up product info
+        const product = detail.product_id
+          ? await prismatx.tb_product.findUnique({ where: { id: detail.product_id } })
+          : null;
+
+        // Look up order unit
+        const orderUnit = detail.order_unit_id
+          ? await prismatx.tb_unit.findUnique({ where: { id: detail.order_unit_id } })
+          : null;
+
+        // Look up base unit
+        const baseUnit = detail.base_unit_id
+          ? await prismatx.tb_unit.findUnique({ where: { id: detail.base_unit_id } })
+          : null;
 
         // Calculate base_qty if not provided
         const base_qty =
@@ -534,11 +551,11 @@ export class PurchaseOrderService {
             description: detail.description,
             order_qty: detail.order_qty,
             order_unit_id: detail.order_unit_id || undefined,
-            order_unit_name: detail.order_unit_name || unit?.name,
+            order_unit_name: detail.order_unit_name || orderUnit?.name,
             order_unit_conversion_factor: detail.order_unit_conversion_factor || 1,
             base_qty: base_qty,
             base_unit_id: detail.base_unit_id || undefined,
-            base_unit_name: detail.base_unit_name,
+            base_unit_name: detail.base_unit_name || baseUnit?.name,
             is_foc: detail.is_foc || false,
             // Pricing
             price: detail.price || 0,
@@ -556,12 +573,12 @@ export class PurchaseOrderService {
             discount_amount: detail.discount_amount || 0,
             is_discount_adjustment: detail.is_discount_adjustment || false,
             note: detail.note,
-            // Product info
+            // Product info - enrich from DB if not provided
             product_id: detail.product_id,
-            product_code: detail.product_code,
-            product_name: detail.product_name,
-            product_local_name: detail.product_local_name,
-            product_sku: detail.product_sku,
+            product_code: detail.product_code || product?.code,
+            product_name: detail.product_name || product?.name,
+            product_local_name: detail.product_local_name || product?.local_name,
+            product_sku: detail.product_sku || product?.code,
             is_active: true,
             doc_version: 1,
             created_by_id: this.userId,
@@ -686,23 +703,34 @@ export class PurchaseOrderService {
       // Add new details
       if (data.purchase_order_detail.add) {
         for (const detail of data.purchase_order_detail.add) {
+          // Look up product, order unit, base unit
+          const product = detail.product_id
+            ? await this.prismaService.tb_product.findUnique({ where: { id: detail.product_id } })
+            : null;
+          const orderUnit = detail.order_unit_id
+            ? await this.prismaService.tb_unit.findUnique({ where: { id: detail.order_unit_id } })
+            : null;
+          const baseUnit = detail.base_unit_id
+            ? await this.prismaService.tb_unit.findUnique({ where: { id: detail.base_unit_id } })
+            : null;
+
           await this.prismaService.tb_purchase_order_detail.create({
             data: {
               purchase_order_id: updatedPO.id,
               sequence_no: detail.sequence_no,
               description: detail.description,
               product_id: detail.product_id || undefined,
-              product_code: detail.product_code,
-              product_name: detail.product_name,
-              product_local_name: detail.product_local_name,
-              product_sku: detail.product_sku,
+              product_code: detail.product_code || product?.code,
+              product_name: detail.product_name || product?.name,
+              product_local_name: detail.product_local_name || product?.local_name,
+              product_sku: detail.product_sku || product?.code,
               order_qty: detail.order_qty,
               order_unit_id: detail.order_unit_id || undefined,
-              order_unit_name: detail.order_unit_name,
+              order_unit_name: detail.order_unit_name || orderUnit?.name,
               order_unit_conversion_factor: detail.order_unit_conversion_factor,
               base_qty: detail.base_qty,
               base_unit_id: detail.base_unit_id || undefined,
-              base_unit_name: detail.base_unit_name,
+              base_unit_name: detail.base_unit_name || baseUnit?.name,
               is_foc: detail.is_foc,
               tax_profile_id: detail.tax_profile_id || undefined,
               tax_profile_name: detail.tax_profile_name,
@@ -747,23 +775,35 @@ export class PurchaseOrderService {
       if (data.purchase_order_detail.update) {
         for (const detail of data.purchase_order_detail.update) {
           const detailId = detail.id;
+
+          // Look up product, order unit, base unit
+          const product = detail.product_id
+            ? await this.prismaService.tb_product.findUnique({ where: { id: detail.product_id } })
+            : null;
+          const orderUnit = detail.order_unit_id
+            ? await this.prismaService.tb_unit.findUnique({ where: { id: detail.order_unit_id } })
+            : null;
+          const baseUnit = detail.base_unit_id
+            ? await this.prismaService.tb_unit.findUnique({ where: { id: detail.base_unit_id } })
+            : null;
+
           await this.prismaService.tb_purchase_order_detail.update({
             where: { id: detailId },
             data: {
               sequence_no: detail.sequence_no,
               description: detail.description,
               product_id: detail.product_id || undefined,
-              product_code: detail.product_code,
-              product_name: detail.product_name,
-              product_local_name: detail.product_local_name,
-              product_sku: detail.product_sku,
+              product_code: detail.product_code || product?.code,
+              product_name: detail.product_name || product?.name,
+              product_local_name: detail.product_local_name || product?.local_name,
+              product_sku: detail.product_sku || product?.code,
               order_qty: detail.order_qty,
               order_unit_id: detail.order_unit_id || undefined,
-              order_unit_name: detail.order_unit_name,
+              order_unit_name: detail.order_unit_name || orderUnit?.name,
               order_unit_conversion_factor: detail.order_unit_conversion_factor,
               base_qty: detail.base_qty,
               base_unit_id: detail.base_unit_id || undefined,
-              base_unit_name: detail.base_unit_name,
+              base_unit_name: detail.base_unit_name || baseUnit?.name,
               is_foc: detail.is_foc,
               tax_profile_id: detail.tax_profile_id || undefined,
               tax_profile_name: detail.tax_profile_name,
@@ -918,6 +958,17 @@ export class PurchaseOrderService {
       // 3. Add new details
       if (details?.add?.length > 0) {
         for (const detail of details.add) {
+          // Look up product, order unit, base unit
+          const product = detail.product_id
+            ? await txp.tb_product.findUnique({ where: { id: detail.product_id } })
+            : null;
+          const orderUnit = detail.order_unit_id
+            ? await txp.tb_unit.findUnique({ where: { id: detail.order_unit_id } })
+            : null;
+          const baseUnit = detail.base_unit_id
+            ? await txp.tb_unit.findUnique({ where: { id: detail.base_unit_id } })
+            : null;
+
           const base_qty =
             detail.base_qty ||
             detail.order_qty * (detail.order_unit_conversion_factor || 1);
@@ -929,11 +980,11 @@ export class PurchaseOrderService {
               description: detail.description,
               order_qty: detail.order_qty,
               order_unit_id: detail.order_unit_id || undefined,
-              order_unit_name: detail.order_unit_name,
+              order_unit_name: detail.order_unit_name || orderUnit?.name,
               order_unit_conversion_factor: detail.order_unit_conversion_factor || 1,
               base_qty: base_qty,
               base_unit_id: detail.base_unit_id || undefined,
-              base_unit_name: detail.base_unit_name,
+              base_unit_name: detail.base_unit_name || baseUnit?.name,
               is_foc: detail.is_foc || false,
               price: detail.price || 0,
               sub_total_price: detail.sub_total_price || 0,
@@ -948,12 +999,12 @@ export class PurchaseOrderService {
               discount_amount: detail.discount_amount || 0,
               is_discount_adjustment: detail.is_discount_adjustment || false,
               note: detail.note,
-              // Product info
+              // Product info - enrich from DB if not provided
               product_id: detail.product_id,
-              product_code: detail.product_code,
-              product_name: detail.product_name,
-              product_local_name: detail.product_local_name,
-              product_sku: detail.product_sku,
+              product_code: detail.product_code || product?.code,
+              product_name: detail.product_name || product?.name,
+              product_local_name: detail.product_local_name || product?.local_name,
+              product_sku: detail.product_sku || product?.code,
               is_active: true,
               doc_version: 1,
               created_by_id: this.userId,
@@ -985,23 +1036,34 @@ export class PurchaseOrderService {
       // 4. Update existing details
       if (details?.update?.length > 0) {
         for (const detail of details.update) {
+          // Look up product, order unit, base unit
+          const product = detail.product_id
+            ? await txp.tb_product.findUnique({ where: { id: detail.product_id } })
+            : null;
+          const orderUnit = detail.order_unit_id
+            ? await txp.tb_unit.findUnique({ where: { id: detail.order_unit_id } })
+            : null;
+          const baseUnit = detail.base_unit_id
+            ? await txp.tb_unit.findUnique({ where: { id: detail.base_unit_id } })
+            : null;
+
           await txp.tb_purchase_order_detail.update({
             where: { id: detail.id },
             data: {
               sequence_no: detail.sequence,
               description: detail.description,
               product_id: detail.product_id || undefined,
-              product_code: detail.product_code,
-              product_name: detail.product_name,
-              product_local_name: detail.product_local_name,
-              product_sku: detail.product_sku,
+              product_code: detail.product_code || product?.code,
+              product_name: detail.product_name || product?.name,
+              product_local_name: detail.product_local_name || product?.local_name,
+              product_sku: detail.product_sku || product?.code,
               order_qty: detail.order_qty,
               order_unit_id: detail.order_unit_id || undefined,
-              order_unit_name: detail.order_unit_name,
+              order_unit_name: detail.order_unit_name || orderUnit?.name,
               order_unit_conversion_factor: detail.order_unit_conversion_factor,
               base_qty: detail.base_qty,
               base_unit_id: detail.base_unit_id || undefined,
-              base_unit_name: detail.base_unit_name,
+              base_unit_name: detail.base_unit_name || baseUnit?.name,
               is_foc: detail.is_foc,
               tax_profile_id: detail.tax_profile_id || undefined,
               tax_profile_name: detail.tax_profile_name,
@@ -1926,7 +1988,7 @@ export class PurchaseOrderService {
               product_code: item.product_code,
               product_name: item.product_name,
               product_local_name: item.product_local_name,
-              product_sku: item.product_sku,
+              product_sku: item.product_sku || item.product_code,
               info: {
                 pricelist_detail_id: item.pricelist_detail_id,
                 pricelist_no: item.pricelist_no,
@@ -3036,6 +3098,17 @@ export class PurchaseOrderService {
     const nextSequenceNo = (lastDetail?.sequence_no || 0) + 1;
 
     const tx = await this.prismaService.$transaction(async (prisma) => {
+      // Look up product, order unit, base unit
+      const product = detailData.product_id
+        ? await prisma.tb_product.findUnique({ where: { id: detailData.product_id } })
+        : null;
+      const orderUnit = detailData.order_unit_id
+        ? await prisma.tb_unit.findUnique({ where: { id: detailData.order_unit_id } })
+        : null;
+      const baseUnit = detailData.base_unit_id
+        ? await prisma.tb_unit.findUnique({ where: { id: detailData.base_unit_id } })
+        : null;
+
       // Create detail
       const newDetail = await prisma.tb_purchase_order_detail.create({
         data: {
@@ -3044,11 +3117,11 @@ export class PurchaseOrderService {
           description: detailData.description,
           order_qty: detailData.order_qty || 0,
           order_unit_id: detailData.order_unit_id,
-          order_unit_name: detailData.order_unit_name,
+          order_unit_name: detailData.order_unit_name || orderUnit?.name,
           order_unit_conversion_factor: detailData.order_unit_conversion_factor || 1,
           base_qty: detailData.base_qty || 0,
           base_unit_id: detailData.base_unit_id,
-          base_unit_name: detailData.base_unit_name,
+          base_unit_name: detailData.base_unit_name || baseUnit?.name,
           is_foc: detailData.is_foc || false,
           tax_profile_id: detailData.tax_profile_id,
           tax_profile_name: detailData.tax_profile_name,
@@ -3069,10 +3142,10 @@ export class PurchaseOrderService {
           base_total_price: detailData.base_total_price || 0,
           note: detailData.note,
           product_id: detailData.product_id,
-          product_code: detailData.product_code,
-          product_name: detailData.product_name,
-          product_local_name: detailData.product_local_name,
-          product_sku: detailData.product_sku,
+          product_code: detailData.product_code || product?.code,
+          product_name: detailData.product_name || product?.name,
+          product_local_name: detailData.product_local_name || product?.local_name,
+          product_sku: detailData.product_sku || product?.code,
           info: detailData.info || {},
           created_by_id: this.userId,
         },
@@ -3124,14 +3197,16 @@ export class PurchaseOrderService {
     }
 
     const tx = await this.prismaService.$transaction(async (prisma) => {
-      // Build update info object
-      const currentInfo = (existingDetail.info as unknown as Record<string, unknown>) || {};
-      const updatedInfo = {
-        ...currentInfo,
-        ...(detailData.product_id && { product_id: detailData.product_id }),
-        ...(detailData.product_name && { product_name: detailData.product_name }),
-        ...(detailData.product_local_name && { product_local_name: detailData.product_local_name }),
-      };
+      // Look up product, order unit, base unit if changed
+      const product = detailData.product_id
+        ? await prisma.tb_product.findUnique({ where: { id: detailData.product_id } })
+        : null;
+      const orderUnit = detailData.order_unit_id
+        ? await prisma.tb_unit.findUnique({ where: { id: detailData.order_unit_id } })
+        : null;
+      const baseUnit = detailData.base_unit_id
+        ? await prisma.tb_unit.findUnique({ where: { id: detailData.base_unit_id } })
+        : null;
 
       // Update detail
       const updatedDetail = await prisma.tb_purchase_order_detail.update({
@@ -3139,13 +3214,18 @@ export class PurchaseOrderService {
         data: {
           description: detailData.description ?? existingDetail.description,
           sequence_no: detailData.sequence_no ?? existingDetail.sequence_no,
+          product_id: detailData.product_id ?? existingDetail.product_id,
+          product_code: detailData.product_code || product?.code || existingDetail.product_code,
+          product_name: detailData.product_name || product?.name || existingDetail.product_name,
+          product_local_name: detailData.product_local_name || product?.local_name || existingDetail.product_local_name,
+          product_sku: detailData.product_sku || product?.code || existingDetail.product_sku,
           order_qty: detailData.order_qty ?? existingDetail.order_qty,
           order_unit_id: detailData.order_unit_id ?? existingDetail.order_unit_id,
-          order_unit_name: detailData.order_unit_name ?? existingDetail.order_unit_name,
+          order_unit_name: detailData.order_unit_name || orderUnit?.name || existingDetail.order_unit_name,
           order_unit_conversion_factor: detailData.order_unit_conversion_factor ?? existingDetail.order_unit_conversion_factor,
           base_qty: detailData.base_qty ?? existingDetail.base_qty,
           base_unit_id: detailData.base_unit_id ?? existingDetail.base_unit_id,
-          base_unit_name: detailData.base_unit_name ?? existingDetail.base_unit_name,
+          base_unit_name: detailData.base_unit_name || baseUnit?.name || existingDetail.base_unit_name,
           is_foc: detailData.is_foc ?? existingDetail.is_foc,
           tax_profile_id: detailData.tax_profile_id ?? existingDetail.tax_profile_id,
           tax_profile_name: detailData.tax_profile_name ?? existingDetail.tax_profile_name,
@@ -3165,7 +3245,7 @@ export class PurchaseOrderService {
           base_net_amount: detailData.base_net_amount ?? existingDetail.base_net_amount,
           base_total_price: detailData.base_total_price ?? existingDetail.base_total_price,
           note: detailData.note ?? existingDetail.note,
-          info: updatedInfo,
+          info: detailData.info ?? existingDetail.info,
           doc_version: { increment: 1 },
           updated_by_id: this.userId,
         },

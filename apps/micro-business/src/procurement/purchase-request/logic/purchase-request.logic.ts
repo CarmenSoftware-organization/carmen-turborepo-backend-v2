@@ -103,7 +103,7 @@ export class PurchaseRequestLogic {
         ...detail,
         product_name: product?.name,
         product_code: product?.code,
-        product_sku: product?.sku,
+        product_sku: product?.code,
         product_local_name: product?.local_name,
         requested_unit_name: requestedUnit?.name,
         location_name: location?.name,
@@ -205,7 +205,7 @@ export class PurchaseRequestLogic {
           if (detail?.product_id) {
             detail.product_name = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.name
             detail.product_code = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.code
-            detail.product_sku = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.sku
+            detail.product_sku = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.code
           }
           if (detail?.vendor_id) {
             detail.vendor_name = foreignValue?.vendor_ids?.find((vendor) => vendor?.id === detail?.vendor_id)?.name
@@ -246,7 +246,7 @@ export class PurchaseRequestLogic {
           if (detail?.product_id) {
             detail.product_name = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.name
             detail.product_code = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.code
-            detail.product_sku = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.sku
+            detail.product_sku = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.code
           }
           if (detail?.vendor_id) {
             detail.vendor_name = foreignValue?.vendor_ids?.find((vendor) => vendor?.id === detail?.vendor_id)?.name

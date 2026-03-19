@@ -188,7 +188,7 @@ export class PriceListService {
             product_name: item.tb_product.name,
             product_code: item.tb_product.code,
             product_local_name: item.tb_product.local_name,
-            product_sku: item.tb_product.sku,
+            product_sku: item.tb_product.code,
           };
         });
         return {
@@ -364,7 +364,7 @@ export class PriceListService {
           product_name: row.tb_product.name,
           product_code: row.tb_product.code,
           product_local_name: row.tb_product.local_name,
-          product_sku: row.tb_product.sku,
+          product_sku: row.tb_product.code,
         };
       });
       return {
@@ -534,7 +534,7 @@ export class PriceListService {
             product_name: row.tb_product.name,
           product_code: row.tb_product.code,
           product_local_name: row.tb_product.local_name,
-          product_sku: row.tb_product.sku,
+          product_sku: row.tb_product.code,
           };
         }),
       }
@@ -725,7 +725,7 @@ export class PriceListService {
           product_name: item.product_name ?? product?.name,
           product_code: item.product_code ?? product?.code,
           product_local_name: item.product_local_name ?? product?.local_name,
-          product_sku: item.product_sku ?? product?.sku,
+          product_sku: item.product_sku ?? product?.code,
           note: item.note,
           info: item.info,
           dimension: item.dimension,
@@ -855,7 +855,7 @@ export class PriceListService {
               product_name: detail.product_name ?? product?.name,
               product_code: detail.product_code ?? product?.code,
               product_local_name: detail.product_local_name ?? product?.local_name,
-              product_sku: detail.product_sku ?? product?.sku,
+              product_sku: detail.product_sku ?? product?.code,
               sequence_no: detail.sequence_no,
               unit_id: detail.unit_id,
               unit_name: detail.unit_name ?? unit?.name,
@@ -925,7 +925,7 @@ export class PriceListService {
               product_name: detail.product_name ?? product?.name,
               product_code: detail.product_code ?? product?.code,
               product_local_name: detail.product_local_name ?? product?.local_name,
-              product_sku: detail.product_sku ?? product?.sku,
+              product_sku: detail.product_sku ?? product?.code,
               sequence_no: detail.sequence_no,
               unit_id: detail.unit_id,
               unit_name: detail.unit_name ?? unit?.name,
@@ -1300,7 +1300,7 @@ export class PriceListService {
           return {
             sequence_no: index + 1,
             product_id: data.product_id,
-            product_name: product?.name || '',            product_code: product?.code || '',            product_local_name: product?.local_name || '',            product_sku: product?.sku || '',
+            product_name: product?.name || '',            product_code: product?.code || '',            product_local_name: product?.local_name || '',            product_sku: product?.code || '',
             unit_id: data.unit_id || undefined,
             unit_name: unit?.name || '',
             tax_profile_id: data.tax_profile_id || undefined,

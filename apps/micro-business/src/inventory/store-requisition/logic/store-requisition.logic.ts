@@ -104,7 +104,7 @@ export class StoreRequisitionLogic {
             detail.product_name = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.name;
             detail.product_local_name = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.local_name;
             detail.product_code = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.code;
-            detail.product_sku = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.sku;
+            detail.product_sku = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.code;
           }
         });
       }
@@ -116,7 +116,7 @@ export class StoreRequisitionLogic {
             detail.product_name = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.name;
             detail.product_local_name = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.local_name;
             detail.product_code = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.code;
-            detail.product_sku = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.sku;
+            detail.product_sku = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.code;
           }
         });
       }
@@ -136,7 +136,7 @@ export class StoreRequisitionLogic {
               product_name: foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.name,
               product_local_name: foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.local_name,
               product_code: foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.code,
-              product_sku: foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.sku,
+              product_sku: foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.code,
             })
           )
         );
@@ -256,7 +256,7 @@ export class StoreRequisitionLogic {
             product_name: foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.name,
             product_local_name: foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.local_name,
               product_code: foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.code,
-              product_sku: foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.sku,
+              product_sku: foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.code,
           })
         )
       );
