@@ -372,36 +372,34 @@ export default class QueryParams {
 
     if (this.advance != null && this.advance.where != null) {
       _where.AND = this.advance?.where;
-    } else {
-      if (this.filter && this.filter.length > 0) {
-        _where.AND = this.filter.map((filterStr) => {
-          const colonIndex = filterStr.indexOf(':');
-          if (colonIndex === -1) {
-            return {};
-          }
+    } else if (this.filter && this.filter.length > 0) {
+      _where.AND = this.filter.map((filterStr) => {
+        const colonIndex = filterStr.indexOf(':');
+        if (colonIndex === -1) {
+          return {};
+        }
 
-          const key = filterStr.substring(0, colonIndex);
-          const value = filterStr.substring(colonIndex + 1);
+        const key = filterStr.substring(0, colonIndex);
+        const value = filterStr.substring(colonIndex + 1);
 
-          const [fieldName, fieldType] = key.split('|');
-          return this.castFilterValue(fieldName.trim(), fieldType?.trim(), value);
-        });
-      }
+        const [fieldName, fieldType] = key.split('|');
+        return this.castFilterValue(fieldName.trim(), fieldType?.trim(), value);
+      });
+    }
 
-      if (this.searchFields.length <= 0) {
-        this.searchFields = this.defaultSearchFields;
-      }
+    if (this.searchFields.length <= 0) {
+      this.searchFields = this.defaultSearchFields;
+    }
 
-      if (this.search !== '') {
-        _where.OR = this.searchFields.map((field) => {
-          const [fieldName, fieldType] = field.split('|');
-          return this.castSearchValue(
-            fieldName.trim(),
-            fieldType?.trim(),
-            this.search,
-          );
-        });
-      }
+    if (this.search !== '') {
+      _where.OR = this.searchFields.map((field) => {
+        const [fieldName, fieldType] = field.split('|');
+        return this.castSearchValue(
+          fieldName.trim(),
+          fieldType?.trim(),
+          this.search,
+        );
+      });
     }
 
     return _where;
