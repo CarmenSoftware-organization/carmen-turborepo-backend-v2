@@ -17,7 +17,7 @@ export interface ICreateRecipeEquipment {
   next_maintenance_date?: string | Date | null;
   note?: string | null;
   is_active?: boolean;
-  is_poolable?: boolean;
+  is_portable?: boolean;
   available_qty?: number;
   total_qty?: number;
   usage_count?: number;
@@ -48,7 +48,7 @@ export interface IUpdateRecipeEquipment {
   next_maintenance_date?: string | Date | null;
   note?: string | null;
   is_active?: boolean;
-  is_poolable?: boolean;
+  is_portable?: boolean;
   available_qty?: number;
   total_qty?: number;
   usage_count?: number;

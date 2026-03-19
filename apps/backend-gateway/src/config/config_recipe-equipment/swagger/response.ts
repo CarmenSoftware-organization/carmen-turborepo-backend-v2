@@ -61,8 +61,8 @@ export class RecipeEquipmentResponseDto {
   @ApiPropertyOptional({ description: 'Whether the equipment is active', example: true })
   is_active?: boolean;
 
-  @ApiPropertyOptional({ description: 'Whether the equipment can be shared', example: false })
-  is_poolable?: boolean;
+  @ApiPropertyOptional({ description: 'Whether the equipment is portable', example: false })
+  is_portable?: boolean;
 
   @ApiPropertyOptional({ description: 'Available quantity', example: 2 })
   available_qty?: number;

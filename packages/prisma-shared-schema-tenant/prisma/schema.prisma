@@ -5292,7 +5292,7 @@ model tb_recipe_equipment {
 
   // status and availability
   is_active     Boolean? @default(true)
-  is_poolable   Boolean? @default(false)
+  is_portable   Boolean? @default(false)
   available_qty Int?     @default(0)
   total_qty     Int?     @default(0)
 

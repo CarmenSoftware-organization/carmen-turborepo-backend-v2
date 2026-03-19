@@ -20,7 +20,7 @@ import {
 } from './dto/recipe-equipment-category.dto';
 
 @Controller('api/config/:bu_code/recipe-equipment-category')
-@ApiTags('Configuration')
+@ApiTags('Configuration', 'Recipe Equipment Category')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
@@ -54,7 +54,7 @@ export class Config_RecipeEquipmentCategoryController extends BaseHttpController
   async findAll(@Req() req: Request, @Res() res: Response, @Param('bu_code') bu_code: string, @Query() query?: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'findAll', query, version }, Config_RecipeEquipmentCategoryController.name);
     const { user_id } = ExtractRequestHeader(req);
-    const paginate = PaginateQuery(query) as unknown;
+    const paginate = PaginateQuery(query);
     const result = await this.recipeEquipmentCategoryService.findAll(user_id, bu_code, paginate, version);
     this.respond(res, result);
   }

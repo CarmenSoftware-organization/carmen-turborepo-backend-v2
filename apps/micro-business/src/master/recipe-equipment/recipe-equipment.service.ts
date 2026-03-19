@@ -227,7 +227,7 @@ export class RecipeEquipmentService {
         next_maintenance_date: data.next_maintenance_date ? new Date(data.next_maintenance_date).toISOString() : null,
         note: data.note,
         is_active: data.is_active ?? true,
-        is_poolable: data.is_poolable ?? false,
+        is_portable: data.is_portable ?? false,
         available_qty: data.available_qty ?? 0,
         total_qty: data.total_qty ?? 0,
         usage_count: data.usage_count ?? 0,
