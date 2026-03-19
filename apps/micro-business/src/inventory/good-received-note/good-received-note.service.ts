@@ -168,37 +168,49 @@ export class GoodReceivedNoteService {
         select: {
           id: true,
           grn_no: true,
+          grn_date: true,
+          doc_type: true,
           description: true,
           vendor_name: true,
+          currency_code: true,
           created_at: true,
           is_active: true,
+          tb_good_received_note_detail: {
+            select: {
+              tb_good_received_note_detail_item: {
+                select: {
+                  total_price: true,
+                },
+              },
+            },
+          },
         },
       })
-      .then(async (res) => {
-        return await Promise.all(
-          res.map(async (item) => {
-            const goodReceivedNoteDetail =
-              await prisma.tb_good_received_note_detail.findMany({
-                where: {
-                  good_received_note_id: item.id,
-                }
-              });
+      .then((res) => {
+        return res.map((item) => {
+          const total_amount = item.tb_good_received_note_detail.reduce(
+            (acc, detail) =>
+              acc +
+              detail.tb_good_received_note_detail_item.reduce(
+                (sum, detailItem) => sum + Number(detailItem.total_price ?? 0),
+                0,
+              ),
+            0,
+          );
 
-            return {
-              id: item.id,
-              grn_no: item.grn_no,
-              description: item.description,
-              vendor_name: item.vendor_name,
-              created_at: item.created_at,
-              // total_amount: goodReceivedNoteDetail.reduce(
-              //   (acc, curr) => acc + Number(curr.total_amount),
-              //   0,
-              // ),
-              total_amount: 0, // todo calculate total amount
-              is_active: item.is_active,
-            };
-          }),
-        );
+          return {
+            id: item.id,
+            grn_no: item.grn_no,
+            grn_date: item.grn_date,
+            doc_type: item.doc_type,
+            description: item.description,
+            vendor_name: item.vendor_name,
+            currency_code: item.currency_code,
+            created_at: item.created_at,
+            total_amount,
+            is_active: item.is_active,
+          };
+        });
       });
 
     const total = await prisma.tb_good_received_note.count({
