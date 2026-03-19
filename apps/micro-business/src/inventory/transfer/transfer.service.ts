@@ -11,12 +11,14 @@ import { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 import { IPaginate } from '@/common/shared-interface/paginate.interface';
 import {
-  TransferDetailResponseSchema,
-  TransferListItemResponseSchema,
   Result,
   ErrorCode,
   TryCatch,
 } from '@/common';
+import {
+  TransferDetailResponseSchema,
+  TransferListItemResponseSchema,
+} from './dto/transfer.serializer';
 
 @Injectable()
 export class TransferService {
@@ -33,43 +35,89 @@ export class TransferService {
   ) {}
 
   /**
-   * Generate transfer document number
-   * สร้างเลขที่เอกสารโอนย้าย
-   * @param date - Transfer date / วันที่โอนย้าย
+   * Generate transfer document number using running code service
+   * สร้างเลขที่เอกสารโอนย้ายโดยใช้บริการรหัสลำดับ
+   * @param trDate - Transfer date / วันที่โอนย้าย
    * @param tenant_id - Tenant ID / ID ผู้เช่า
    * @param user_id - User ID / ID ผู้ใช้
    * @returns Generated document number / เลขที่เอกสารที่สร้างขึ้น
    */
-  private async generateTRNo(date: string, tenant_id: string, user_id: string): Promise<string> {
-    const datePrefix = format(new Date(date), 'yyyyMMdd');
-    const runningNumber = await this.getNextRunningNumber(tenant_id, user_id);
-    return `TR-${datePrefix}-${runningNumber.toString().padStart(5, '0')}`;
-  }
-
-  /**
-   * Get next running number for transfer document
-   * ดึงเลขลำดับถัดไปสำหรับเอกสารโอนย้าย
-   * @param tenant_id - Tenant ID / ID ผู้เช่า
-   * @param user_id - User ID / ID ผู้ใช้
-   * @returns Next running number / เลขลำดับถัดไป
-   */
-  private async getNextRunningNumber(tenant_id: string, user_id: string): Promise<number> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async generateTRNo(trDate: string, tenant_id: string, user_id: string): Promise<string> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
     const res: Observable<any> = this.masterService.send(
-      { cmd: 'running-code.generate', service: 'running-code' },
-      {
-        tenant_id,
-        user_id,
-        running_code_type: 'transfer_header',
-      },
+      { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
+      { type: 'TR', user_id, bu_code: tenant_id },
     );
     const response = await firstValueFrom(res);
 
-    if (!response?.data?.running_number) {
-      throw new Error(`Failed to get next running number for transfer: ${JSON.stringify(response)}`);
+    if (!response?.data || !Array.isArray(response.data)) {
+      throw new Error(`Failed to get running code pattern for transfer_header: ${JSON.stringify(response)}`);
     }
 
-    return response.data.running_number;
+    const patterns = response.data;
+
+    let datePattern: { pattern: string; type: string } | undefined;
+    let runningPattern: { pattern: string; type: string } | undefined;
+    patterns.forEach((pattern: { pattern: string; type: string }) => {
+      if (pattern.type === 'date') {
+        datePattern = pattern;
+      } else if (pattern.type === 'running') {
+        runningPattern = pattern;
+      }
+    });
+
+    if (!datePattern || !runningPattern) {
+      throw new Error(`Missing running code pattern config for transfer_header: datePattern=${!!datePattern}, runningPattern=${!!runningPattern}`);
+    }
+
+    const getDate = new Date(trDate);
+    const datePatternValue = format(getDate, datePattern.pattern);
+    const latestTR = await this.findLatestTRByPattern(datePatternValue, tenant_id, user_id);
+    const latestTRNumber = latestTR
+      ? Number(latestTR.tr_no.slice(-Number(runningPattern.pattern)))
+      : 0;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+    const generateCodeRes: Observable<any> = this.masterService.send(
+      { cmd: 'running-code.generate-code', service: 'running-codes' },
+      {
+        type: 'TR',
+        issueDate: getDate,
+        last_no: latestTRNumber,
+        user_id,
+        bu_code: tenant_id,
+      },
+    );
+    const generateCodeResponse = await firstValueFrom(generateCodeRes);
+
+    if (!generateCodeResponse?.data?.code) {
+      throw new Error(`Failed to generate TR number: ${JSON.stringify(generateCodeResponse)}`);
+    }
+
+    return generateCodeResponse.data.code;
+  }
+
+  /**
+   * Find latest transfer by date pattern for running number calculation
+   * ค้นหาใบโอนย้ายล่าสุดตามรูปแบบวันที่เพื่อคำนวณเลขลำดับ
+   * @param datePattern - Date pattern to match / รูปแบบวันที่ที่จะจับคู่
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param user_id - User ID / ID ผู้ใช้
+   * @returns Latest transfer or null / ใบโอนย้ายล่าสุดหรือ null
+   */
+  private async findLatestTRByPattern(datePattern: string, tenant_id: string, user_id: string) {
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) return null;
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    return prisma.tb_transfer.findFirst({
+      where: {
+        tr_no: { contains: datePattern },
+        deleted_at: null,
+      },
+      orderBy: { tr_no: 'desc' },
+    });
   }
 
   /**
@@ -271,7 +319,7 @@ export class TransferService {
       const createTransfer = await prisma.tb_transfer.create({
         data: {
           tr_no: await this.generateTRNo(new Date().toISOString(), tenant_id, user_id),
-          tr_date: data.tr_date ? new Date(data.tr_date) : new Date(),
+          tr_date: data.tr_date || new Date(),
           description: data.description || null,
           doc_status: enum_doc_status.draft,
           from_location_id: data.from_location_id || null,
@@ -351,7 +399,7 @@ export class TransferService {
       updated_at: new Date(),
     };
 
-    if (data.tr_date !== undefined) updatePayload.tr_date = data.tr_date ? new Date(data.tr_date) : null;
+    if (data.tr_date !== undefined) updatePayload.tr_date = data.tr_date || null;
     if (data.description !== undefined) updatePayload.description = data.description;
     if (data.doc_status) updatePayload.doc_status = data.doc_status as enum_doc_status;
     if (data.from_location_id !== undefined) updatePayload.from_location_id = data.from_location_id;

@@ -71,4 +71,12 @@ export const RUNNING_CODE_PRESET = {
       format: '{A}{B}{C}',
     },
   },
+  TR: {
+    config: {
+      A: 'TR',
+      B: `date('yyyyMM')`,
+      C: `running(5, '0')`,
+      format: '{A}{B}{C}',
+    },
+  },
 };
