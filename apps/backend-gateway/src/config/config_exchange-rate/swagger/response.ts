@@ -4,20 +4,23 @@ export class ExchangeRateResponseDto {
   @ApiProperty({ description: 'Exchange rate ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   id: string;
 
-  @ApiPropertyOptional({ description: 'Currency ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  @ApiPropertyOptional({ description: 'Effective date of the exchange rate', example: '2026-03-10T00:00:00.000Z' })
+  at_date?: string;
+
+  @ApiPropertyOptional({ description: 'Currency ID (UUID)', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   currency_id?: string;
+
+  @ApiPropertyOptional({ description: 'Currency code (ISO 4217)', example: 'USD' })
+  currency_code?: string;
+
+  @ApiPropertyOptional({ description: 'Currency name', example: 'US Dollar' })
+  currency_name?: string;
 
   @ApiPropertyOptional({ description: 'Exchange rate value', example: 34.50 })
   exchange_rate?: number;
 
-  @ApiPropertyOptional({ description: 'Effective date of the exchange rate', example: '2026-03-10T00:00:00.000Z' })
-  at_date?: string;
-
-  @ApiPropertyOptional({ description: 'Whether the exchange rate is active', example: true })
-  is_active?: boolean;
-
-  @ApiPropertyOptional({ description: 'Document version', example: 1 })
-  doc_version?: number;
+  @ApiPropertyOptional({ description: 'Note', example: 'Daily rate from BOT' })
+  note?: string;
 
   @ApiPropertyOptional({ description: 'Created timestamp', example: '2026-03-10T00:00:00.000Z' })
   created_at?: Date;
@@ -30,6 +33,23 @@ export class ExchangeRateResponseDto {
 
   @ApiPropertyOptional({ description: 'ID of the user who last updated the record', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   updated_by_id?: string;
+}
+
+export class ExchangeRateByDateResponseDto {
+  @ApiProperty({ description: 'Effective date of the exchange rate', example: '2026-03-10T00:00:00.000Z' })
+  at_date: string;
+
+  @ApiProperty({ description: 'Currency ID (UUID)', example: 'ef1953fb-d4c9-4c7d-80c0-74d06997b6f2' })
+  currency_id: string;
+
+  @ApiPropertyOptional({ description: 'Currency code (ISO 4217)', example: 'USD' })
+  currency_code?: string;
+
+  @ApiPropertyOptional({ description: 'Currency name', example: 'US Dollar' })
+  currency_name?: string;
+
+  @ApiProperty({ description: 'Exchange rate value (1 if default currency)', example: 0.03178 })
+  exchange_rate: number;
 }
 
 export class ExchangeRateListResponseDto {

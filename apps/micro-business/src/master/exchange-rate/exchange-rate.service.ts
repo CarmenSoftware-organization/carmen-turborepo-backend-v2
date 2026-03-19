@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, HttpException } from "@nestjs/common";
+import { HttpStatus, Injectable, HttpException, Inject } from "@nestjs/common";
 import { TenantService } from "@/tenant/tenant.service";
 import { ICreateExchangeRate, IUpdateExchangeRate } from "./interface/exchange-rate.interface";
 import { IPaginate } from "@/common/shared-interface/paginate.interface";
@@ -9,6 +9,7 @@ import { ERROR_MISSING_BU_CODE, ERROR_MISSING_TENANT_ID, ERROR_MISSING_USER_ID }
 import order from "@/common/helpers/order_by";
 import getPaginationParams from "@/common/helpers/pagination.params";
 import { PrismaClient } from "@repo/prisma-shared-schema-tenant";
+import { PrismaClient_SYSTEM } from "@repo/prisma-shared-schema-platform";
 import {
   TryCatch,
   Result,
@@ -60,7 +61,11 @@ export class ExchangeRateService {
     return this._prismaService;
   }
 
-  constructor(private readonly tenantService: TenantService) {}
+  constructor(
+    @Inject('PRISMA_SYSTEM')
+    private readonly prismaSystem: typeof PrismaClient_SYSTEM,
+    private readonly tenantService: TenantService,
+  ) {}
 
   /**
    * Find a single exchange rate by ID
@@ -170,18 +175,47 @@ export class ExchangeRateService {
       ExchangeRateService.name,
     );
 
+    // ตรวจสอบว่า currency_code ตรงกับ default currency ของ BU หรือไม่
+    // ถ้าตรงกันให้คืนค่า exchange_rate = 1
+    const businessUnit = await this.prismaSystem.tb_business_unit.findFirst({
+      where: {
+        code: this.bu_code,
+      },
+    });
+
+    if (businessUnit?.default_currency_id) {
+      const defaultCurrency = await this.prismaService.tb_currency.findFirst({
+        where: {
+          id: businessUnit.default_currency_id,
+        },
+      });
+
+      if (defaultCurrency && defaultCurrency.code === currencyCode) {
+        return Result.ok({
+          at_date: date,
+          currency_id: defaultCurrency.id,
+          currency_code: defaultCurrency.code,
+          currency_name: defaultCurrency.name,
+          exchange_rate: 1,
+        });
+      }
+    }
+
+    // ค้นหาอัตราแลกเปลี่ยนที่ตรงวันที่ หรือล่าสุดที่เก่ากว่าวันที่ที่ระบุ
     const targetDate = new Date(date);
-    const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
-    const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
+    const endOfDay = new Date(targetDate);
+    endOfDay.setHours(23, 59, 59, 999);
 
     const exchangeRate = await this.prismaService.tb_exchange_rate.findFirst({
       where: {
         currency_code: currencyCode,
         at_date: {
-          gte: startOfDay,
           lte: endOfDay,
         },
         deleted_at: null,
+      },
+      orderBy: {
+        at_date: "desc",
       },
     });
 
@@ -189,8 +223,13 @@ export class ExchangeRateService {
       return Result.error("Exchange rate not found for the given date and currency code", ErrorCode.NOT_FOUND);
     }
 
-    const serializedExchangeRate = ExchangeRateDetailResponseSchema.parse(exchangeRate);
-    return Result.ok(serializedExchangeRate);
+    return Result.ok({
+      at_date: exchangeRate.at_date,
+      currency_id: exchangeRate.currency_id,
+      currency_code: exchangeRate.currency_code,
+      currency_name: exchangeRate.currency_name,
+      exchange_rate: exchangeRate.exchange_rate,
+    });
   }
 
   /**
@@ -231,9 +270,20 @@ export class ExchangeRateService {
       return Result.error("Exchange rate already exists", ErrorCode.ALREADY_EXISTS);
     }
 
+    // ดึง currency_code และ currency_name จาก tb_currency ตาม currency_id
+    const currency = await this.prismaService.tb_currency.findFirst({
+      where: { id: data.currency_id },
+    });
+
+    if (!currency) {
+      return Result.error("Currency not found", ErrorCode.NOT_FOUND);
+    }
+
     const createExchangeRate = await this.prismaService.tb_exchange_rate.create({
       data: {
         ...data,
+        currency_code: currency.code,
+        currency_name: currency.name,
         created_by_id: this.userId,
       },
     });
@@ -282,9 +332,20 @@ export class ExchangeRateService {
         continue;
       }
 
+      // ดึง currency_code และ currency_name จาก tb_currency ตาม currency_id
+      const currency = await this.prismaService.tb_currency.findFirst({
+        where: { id: data.currency_id },
+      });
+
+      if (!currency) {
+        return Result.error(`Currency not found for currency_id: ${data.currency_id}`, ErrorCode.NOT_FOUND);
+      }
+
       const created = await this.prismaService.tb_exchange_rate.create({
         data: {
           ...data,
+          currency_code: currency.code,
+          currency_name: currency.name,
           created_by_id: this.userId,
         },
       });

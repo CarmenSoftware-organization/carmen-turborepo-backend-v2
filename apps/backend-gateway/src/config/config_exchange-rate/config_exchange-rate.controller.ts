@@ -19,6 +19,8 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiParam,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
@@ -43,6 +45,12 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import { ExchangeRateCreateRequest, ExchangeRateUpdateRequest } from './swagger/request';
+import {
+  ExchangeRateResponseDto,
+  ExchangeRateByDateResponseDto,
+  ExchangeRateListResponseDto,
+  ExchangeRateMutationResponseDto,
+} from './swagger/response';
 
 @Controller('api/config/:bu_code/exchange-rate')
 @ApiTags('Configuration')
@@ -79,25 +87,10 @@ export class Config_ExchangeRateController extends BaseHttpController {
     description: 'Retrieves a specific currency exchange rate record with its effective date and conversion factor. Exchange rates are used to convert foreign currency amounts in procurement documents to the base currency.',
     operationId: 'configExchangeRate_findOne',
     tags: ['Configuration', 'Exchange Rate'],
-    deprecated: false,
-    security: [
-      {
-        bearerAuth: [],
-      },
-    ],
-    parameters: [
-      {
-        name: 'id',
-        in: 'path',
-        required: true,
-      },
-    ],
-    responses: {
-      200: {
-        description: 'Exchange rate retrieved successfully',
-      },
-    },
   })
+  @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })
+  @ApiParam({ name: 'id', description: 'Exchange rate ID (UUID)', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  @ApiResponse({ status: 200, description: 'Exchange rate retrieved successfully', type: ExchangeRateResponseDto })
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -144,25 +137,9 @@ export class Config_ExchangeRateController extends BaseHttpController {
     description: 'Returns all configured currency exchange rates with their effective dates. Used by the procurement system to convert multi-currency purchase orders and invoices to the base currency.',
     operationId: 'configExchangeRate_findAll',
     tags: ['Configuration', 'Exchange Rate'],
-    deprecated: false,
-    security: [
-      {
-        bearerAuth: [],
-      },
-    ],
-    parameters: [
-      {
-        name: 'version',
-        in: 'query',
-        required: false,
-      },
-    ],
-    responses: {
-      200: {
-        description: 'Exchange rates retrieved successfully',
-      },
-    },
   })
+  @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })
+  @ApiResponse({ status: 200, description: 'Exchange rates retrieved successfully', type: ExchangeRateListResponseDto })
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -202,34 +179,19 @@ export class Config_ExchangeRateController extends BaseHttpController {
    */
   @Get('by-date/:date/:currency_code')
   @UseGuards(new AppIdGuard('exchangeRate.findByDateAndCurrency'))
-  @Serialize(ExchangeRateDetailResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get exchange rate by date and currency code',
-    description: 'Retrieves the exchange rate for a specific date and currency code. Used to look up historical or current conversion rates for procurement documents.',
+    description: 'Retrieves the exchange rate for a specific date and currency code. If the currency code matches the business unit default currency, returns exchange_rate = 1 without querying the exchange rate table.',
     operationId: 'configExchangeRate_findByDateAndCurrency',
     tags: ['Configuration', 'Exchange Rate'],
-    parameters: [
-      {
-        name: 'date',
-        in: 'path',
-        required: true,
-        description: 'Exchange rate date (yyyy-MM-dd)',
-      },
-      {
-        name: 'currency_code',
-        in: 'path',
-        required: true,
-        description: 'Currency code (e.g. USD, EUR, THB)',
-      },
-    ],
-    responses: {
-      200: {
-        description: 'Exchange rate retrieved successfully',
-      },
-    },
   })
+  @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })
+  @ApiParam({ name: 'date', description: 'Exchange rate date (yyyy-MM-dd)', example: '2026-03-19' })
+  @ApiParam({ name: 'currency_code', description: 'Currency code (ISO 4217)', example: 'USD' })
+  @ApiResponse({ status: 200, description: 'Exchange rate retrieved successfully', type: ExchangeRateByDateResponseDto })
+  @ApiResponse({ status: 404, description: 'Exchange rate not found for the given date and currency code' })
   async findByDateAndCurrency(
     @Req() req: Request,
     @Res() res: Response,
@@ -275,28 +237,12 @@ export class Config_ExchangeRateController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a new exchange rate',
-    description: 'Records a new currency exchange rate with its effective date. Supports single or bulk creation for maintaining up-to-date conversion rates used in multi-currency procurement.',
+    description: 'Records a new currency exchange rate with its effective date. Supports single or bulk creation. currency_code and currency_name are automatically populated from the currency_id.',
     operationId: 'configExchangeRate_create',
     tags: ['Configuration', 'Exchange Rate'],
-    deprecated: false,
-    security: [
-      {
-        bearerAuth: [],
-      },
-    ],
-    parameters: [
-      {
-        name: 'version',
-        in: 'query',
-        required: false,
-      },
-    ],
-    responses: {
-      201: {
-        description: 'Exchange rate created successfully',
-      },
-    },
   })
+  @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })
+  @ApiResponse({ status: 201, description: 'Exchange rate created successfully', type: ExchangeRateMutationResponseDto })
   @ApiBody({ type: ExchangeRateCreateRequest })
   async create(
     @Req() req: Request,
@@ -344,25 +290,10 @@ export class Config_ExchangeRateController extends BaseHttpController {
     description: 'Modifies an existing exchange rate record, such as correcting the conversion factor or adjusting the effective date. Changes affect future currency conversions in procurement documents.',
     operationId: 'configExchangeRate_update',
     tags: ['Configuration', 'Exchange Rate'],
-    deprecated: false,
-    security: [
-      {
-        bearerAuth: [],
-      },
-    ],
-    parameters: [
-      {
-        name: 'id',
-        in: 'path',
-        required: true,
-      },
-    ],
-    responses: {
-      200: {
-        description: 'Exchange rate updated successfully',
-      },
-    },
   })
+  @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })
+  @ApiParam({ name: 'id', description: 'Exchange rate ID (UUID)', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  @ApiResponse({ status: 200, description: 'Exchange rate updated successfully', type: ExchangeRateMutationResponseDto })
   @ApiBody({ type: ExchangeRateUpdateRequest })
   async update(
     @Req() req: Request,
@@ -412,28 +343,13 @@ export class Config_ExchangeRateController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete an exchange rate',
-    description: 'Removes an exchange rate record from the system. Historical procurement documents that used this rate are unaffected, but it will no longer be available for future currency conversions.',
+    description: 'Removes an exchange rate record from the system (soft delete). Historical procurement documents that used this rate are unaffected, but it will no longer be available for future currency conversions.',
     operationId: 'configExchangeRate_delete',
     tags: ['Configuration', 'Exchange Rate'],
-    deprecated: false,
-    security: [
-      {
-        bearerAuth: [],
-      },
-    ],
-    parameters: [
-      {
-        name: 'id',
-        in: 'path',
-        required: true,
-      },
-    ],
-    responses: {
-      200: {
-        description: 'Exchange rate deleted successfully',
-      },
-    },
   })
+  @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })
+  @ApiParam({ name: 'id', description: 'Exchange rate ID (UUID)', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  @ApiResponse({ status: 200, description: 'Exchange rate deleted successfully', type: ExchangeRateMutationResponseDto })
   async delete(
     @Req() req: Request,
     @Res() res: Response,

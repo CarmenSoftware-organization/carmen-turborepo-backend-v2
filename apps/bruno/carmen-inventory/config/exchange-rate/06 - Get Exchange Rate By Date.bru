@@ -1,0 +1,24 @@
+meta {
+  name: 06 - Get Exchange Rate By Date
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/exchange-rate/by-date/:date/:currency_code
+  body: none
+  auth: bearer
+}
+
+params:path {
+  date: 2026-01-16
+  currency_code: USD
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
