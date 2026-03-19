@@ -62,7 +62,7 @@ export const ValidateSRBeforeSubmitSchema = z.object({
   id: z.string().uuid(),
   sr_no: z.string(),
   sr_date: z.date().or(z.string()),
-  sr_status: z.string(),
+  doc_status: z.string(),
   requestor_id: z.string().uuid(),
   department_id: z.string().uuid(),
   workflow_id: z.string().uuid().optional().nullable(),
@@ -72,6 +72,5 @@ export const ValidateSRBeforeSubmitSchema = z.object({
     id: z.string().uuid().optional(),
     product_id: z.string().uuid(),
     requested_qty: z.number().positive(),
-    requested_unit_id: z.string().uuid(),
   })).optional(),
 }).passthrough();
