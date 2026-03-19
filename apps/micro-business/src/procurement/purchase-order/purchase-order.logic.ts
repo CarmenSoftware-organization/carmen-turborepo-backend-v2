@@ -160,17 +160,17 @@ export class PurchaseOrderLogic {
       // Final approval - no next stage
       workflow_history.push({
         action: enum_last_action.approved,
-        datetime: lastActionAtDate,
+        datetime: lastActionAtDate.toISOString(),
         user: {
           id: user_id,
           name: populateData?.user_id?.name,
         },
-        current_stage: workflowHeader.navigation_info.current_stage_info.name,
+        current_stage: workflowHeader.previous_stage,
         next_stage: '-',
       });
       workflow = {
-        workflow_previous_stage: purchaseOrderData.workflow_current_stage,
-        workflow_current_stage: workflowHeader.navigation_info.current_stage_info.name,
+        workflow_previous_stage: workflowHeader.previous_stage,
+        workflow_current_stage: workflowHeader.current_stage,
         workflow_next_stage: '-',
         user_action: [],
         last_action: enum_last_action.approved,
@@ -185,13 +185,13 @@ export class PurchaseOrderLogic {
       // More stages to go
       workflow_history.push({
         action: enum_last_action.approved,
-        datetime: lastActionAtDate,
+        datetime: lastActionAtDate.toISOString(),
         user: {
           id: user_id,
           name: populateData?.user_id?.name,
         },
-        current_stage: purchaseOrderData?.workflow_current_stage,
-        next_stage: workflowHeader.navigation_info.current_stage_info.name,
+        current_stage: workflowHeader.previous_stage,
+        next_stage: workflowHeader.current_stage,
       });
 
       const userAction = await this.buildUserAction(
@@ -201,9 +201,9 @@ export class PurchaseOrderLogic {
       );
 
       workflow = {
-        workflow_previous_stage: workflowHeader.navigation_info.workflow_previous_step,
-        workflow_current_stage: workflowHeader.navigation_info.current_stage_info.name,
-        workflow_next_stage: workflowHeader.navigation_info.next_stage_info?.name,
+        workflow_previous_stage: workflowHeader.previous_stage,
+        workflow_current_stage: workflowHeader.current_stage,
+        workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
         user_action: userAction,
         last_action: enum_last_action.approved,
         last_action_at_date: lastActionAtDate.toISOString(),
@@ -365,8 +365,8 @@ export class PurchaseOrderLogic {
     );
 
     const workflow = {
-      workflow_previous_stage: purchaseOrderData.workflow_current_stage,
-      workflow_current_stage: workflowHeader.navigation_info.current_stage_info.name,
+      workflow_previous_stage: workflowHeader.previous_stage,
+      workflow_current_stage: workflowHeader.current_stage,
       workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
       user_action: userAction,
       last_action: enum_last_action.reviewed,

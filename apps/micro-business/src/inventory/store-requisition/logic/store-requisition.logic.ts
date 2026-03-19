@@ -32,15 +32,17 @@ export class StoreRequisitionLogic {
     const data = payload.details;
     const extractId = this.populateData(data);
     const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractId, user_id, tenant_id);
+    const fromLocation = foreignValue?.location_ids?.find((loc) => loc?.id === data?.from_location_id);
+    const toLocation = foreignValue?.location_ids?.find((loc) => loc?.id === data?.to_location_id);
     const createSR = JSON.parse(JSON.stringify({
       ...data,
       workflow_name: foreignValue?.workflow_id?.name,
       department_name: foreignValue?.department_id?.name,
       requestor_name: foreignValue?.user_id?.name,
-      from_location_name: foreignValue?.from_location_id?.name,
-      from_location_code: foreignValue?.from_location_id?.code,
-      to_location_name: foreignValue?.to_location_id?.name,
-      to_location_code: foreignValue?.to_location_id?.code,
+      from_location_name: fromLocation?.name,
+      from_location_code: fromLocation?.code,
+      to_location_name: toLocation?.name,
+      to_location_code: toLocation?.code,
     }));
     delete createSR.store_requisition_detail;
 
@@ -78,15 +80,17 @@ export class StoreRequisitionLogic {
       const extractId = this.populateData(data);
       const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractId, user_id, tenant_id);
 
+      const fromLocation = foreignValue?.location_ids?.find((loc) => loc?.id === data?.from_location_id);
+      const toLocation = foreignValue?.location_ids?.find((loc) => loc?.id === data?.to_location_id);
       updateSR = JSON.parse(JSON.stringify({
         ...data,
         workflow_name: foreignValue?.workflow_id?.name,
         department_name: foreignValue?.department_id?.name,
         requestor_name: foreignValue?.user_id?.name,
-        from_location_name: foreignValue?.from_location_id?.name,
-        from_location_code: foreignValue?.from_location_id?.code,
-        to_location_name: foreignValue?.to_location_id?.name,
-        to_location_code: foreignValue?.to_location_id?.code,
+        from_location_name: fromLocation?.name,
+        from_location_code: fromLocation?.code,
+        to_location_name: toLocation?.name,
+        to_location_code: toLocation?.code,
       }));
 
       updateSRDetail = {
@@ -179,13 +183,13 @@ export class StoreRequisitionLogic {
     const workflow_history = storeRequisitionData?.workflow_history?.length > 0 ? storeRequisitionData?.workflow_history : [];
     workflow_history.push({
       action: enum_last_action.submitted,
-      datetime: lastActionAtDate,
+      datetime: lastActionAtDate.toISOString(),
       user: {
         id: user_id,
         name: populateData?.user_id?.name
       },
-      current_stage: workflowHeader.navigation_info.current_stage_info.name,
-      next_stage: workflowHeader.navigation_info.next_stage_info?.name
+      current_stage: workflowHeader.previous_stage,
+      next_stage: workflowHeader.current_stage
     });
 
     let userAction = null;
@@ -205,9 +209,9 @@ export class StoreRequisitionLogic {
     }
 
     const workflow: WorkflowHeader = {
-      workflow_previous_stage: workflowHeader.navigation_info.workflow_previous_step,
-      workflow_current_stage: workflowHeader.navigation_info.current_stage_info.name,
-      workflow_next_stage: workflowHeader.navigation_info.next_stage_info?.name,
+      workflow_previous_stage: workflowHeader.previous_stage,
+      workflow_current_stage: workflowHeader.current_stage,
+      workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
       user_action: userAction,
       last_action: enum_last_action.submitted,
       last_action_at_date: lastActionAtDate.toISOString(),
@@ -340,7 +344,7 @@ export class StoreRequisitionLogic {
       }
 
       workflow = {
-        workflow_previous_stage: workflowHeader.navigation_info.workflow_previous_step,
+        workflow_previous_stage: workflowHeader.previous_stage,
         workflow_current_stage: workflowHeader.current_stage,
         workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
         user_action: userAction,
@@ -371,9 +375,11 @@ export class StoreRequisitionLogic {
       requestor_id: data?.requestor_id,
       department_id: data?.department_id,
       user_id: data?.requestor_id,
-      from_location_id: data?.from_location_id,
-      to_location_id: data?.to_location_id,
     };
+
+    const location_ids = [];
+    if (data?.from_location_id) location_ids.push(data.from_location_id);
+    if (data?.to_location_id) location_ids.push(data.to_location_id);
 
     const product_ids = [];
 
@@ -396,6 +402,7 @@ export class StoreRequisitionLogic {
     const extractId = {
       ...headerFields,
       product_ids,
+      location_ids,
     };
 
     return extractId;

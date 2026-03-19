@@ -322,9 +322,9 @@ export class PhysicalCountService {
           product_code: item.product_code,
           product_sku: item.product_sku,
           inventory_unit_id: item.inventory_unit_id,
-          on_hand_qty: new Prisma.Decimal(0),
-          counted_qty: new Prisma.Decimal(0),
-          diff_qty: new Prisma.Decimal(0),
+          on_hand_qty: 0,
+          counted_qty: 0,
+          diff_qty: 0,
           created_by_id: user_id,
         }));
 
