@@ -319,7 +319,7 @@ export class TransferService {
       const createTransfer = await prisma.tb_transfer.create({
         data: {
           tr_no: await this.generateTRNo(new Date().toISOString(), tenant_id, user_id),
-          tr_date: data.tr_date ? new Date(data.tr_date) : new Date(),
+          tr_date: data.tr_date ? new Date(data.tr_date).toISOString() : new Date().toISOString(),
           description: data.description || null,
           doc_status: enum_doc_status.draft,
           from_location_id: data.from_location_id || null,
