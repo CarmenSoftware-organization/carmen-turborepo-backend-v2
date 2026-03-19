@@ -1365,7 +1365,7 @@ export class GoodReceivedNoteService {
 
     const detailIds = await prisma.tb_good_received_note_detail
       .findMany({
-        where: { good_received_note_id: id, deleted_at: null },
+        where: { good_received_note_id: id },
         select: { id: true },
       })
       .then((res) => res.map((item) => item.id));
@@ -1381,9 +1381,9 @@ export class GoodReceivedNoteService {
         data: { deleted_at: now, deleted_by_id: user_id },
       });
 
-      await prisma.tb_good_received_note_detail.updateMany({
-        where: { good_received_note_id: id, deleted_at: null },
-        data: { deleted_at: now, deleted_by_id: user_id },
+      // tb_good_received_note_detail has no deleted_at column — hard delete
+      await prisma.tb_good_received_note_detail.deleteMany({
+        where: { good_received_note_id: id },
       });
     }
 
