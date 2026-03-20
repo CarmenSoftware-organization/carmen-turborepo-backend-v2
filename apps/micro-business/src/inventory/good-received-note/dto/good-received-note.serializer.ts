@@ -38,6 +38,7 @@ const PurchaseOrderEmbeddedSchema = z.object({
 export const GoodReceivedNoteDetailResponseSchema = z.object({
   id: z.string(),
   grn_no: z.string().nullable().optional(),
+  doc_type: z.string().nullable().optional(),
   name: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   status: z.string().nullable().optional(),
