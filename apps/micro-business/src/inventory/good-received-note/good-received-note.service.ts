@@ -12,7 +12,7 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { Injectable, Inject, HttpStatus } from '@nestjs/common';
-import { enum_doc_status, enum_good_received_note_status } from '@repo/prisma-shared-schema-tenant';
+import { enum_doc_status, enum_good_received_note_status, enum_purchase_order_doc_status } from '@repo/prisma-shared-schema-tenant';
 import { InventoryTransactionService, ICreateFromGrnDetailItem } from '@/inventory/inventory-transaction/inventory-transaction.service';
 import { format } from 'date-fns';
 import * as ExcelJS from 'exceljs';
@@ -2346,5 +2346,175 @@ export class GoodReceivedNoteService {
     });
 
     return Result.ok({ id: detailId });
+  }
+
+  /**
+   * Confirm a GRN: set GRN status to in_progress, update PO received quantities,
+   * distribute received qty to junction rows (smallest remain first), update PO status.
+   * ยืนยัน GRN: เปลี่ยนสถานะ GRN เป็น in_progress, อัปเดตจำนวนรับใน PO,
+   * กระจายจำนวนรับไปยัง junction rows (เติมที่เหลือน้อยก่อน), อัปเดตสถานะ PO
+   * @param id - GRN ID / รหัสใบรับสินค้า
+   * @param data - Confirmation data / ข้อมูลการยืนยัน
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Confirmed GRN / ใบรับสินค้าที่ยืนยันแล้ว
+   */
+  @TryCatch
+  async confirm(
+    id: string,
+    data: Record<string, unknown>,
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'confirm', id, user_id, tenant_id },
+      GoodReceivedNoteService.name,
+    );
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) {
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+    }
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    // Fetch GRN with detail items (where received_qty lives)
+    const grn = await prisma.tb_good_received_note.findFirst({
+      where: { id, deleted_at: null },
+      include: {
+        tb_good_received_note_detail: {
+          select: {
+            id: true,
+            purchase_order_detail_id: true,
+            tb_good_received_note_detail_item: {
+              select: {
+                id: true,
+                received_qty: true,
+                received_base_qty: true,
+                purchase_order_detail_purchase_request_detail_id: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!grn) {
+      return Result.error('Good Received Note not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (grn.doc_status !== enum_good_received_note_status.draft) {
+      return Result.error('Only draft GRN can be confirmed', ErrorCode.INVALID_ARGUMENT);
+    }
+
+    await prisma.$transaction(async (tx) => {
+      // 1. Update GRN status to committed
+      await tx.tb_good_received_note.update({
+        where: { id },
+        data: {
+          doc_status: enum_good_received_note_status.committed,
+          updated_by_id: user_id,
+          updated_at: new Date(),
+        },
+      });
+
+      // Collect PO detail IDs for PO status update
+      const affectedPoDetailIds = new Set<string>();
+
+      // 2. For each GRN detail, aggregate received qty per PO detail
+      //    and distribute to junction rows (fill smallest remain first)
+      for (const grnDetail of grn.tb_good_received_note_detail) {
+        if (!grnDetail.purchase_order_detail_id) continue;
+
+        // Sum received_qty across all detail items for this GRN detail
+        const totalReceivedQty = grnDetail.tb_good_received_note_detail_item
+          .reduce((sum, item) => sum + (Number(item.received_qty) || 0), 0);
+
+        if (totalReceivedQty <= 0) continue;
+
+        affectedPoDetailIds.add(grnDetail.purchase_order_detail_id);
+
+        // Lock junction rows with FOR UPDATE to prevent race conditions
+        const junctionRows: any[] = await (tx as any).$queryRawUnsafe(
+          `SELECT * FROM tb_purchase_order_detail_tb_purchase_request_detail
+           WHERE po_detail_id = $1 AND deleted_at IS NULL
+           FOR UPDATE`,
+          grnDetail.purchase_order_detail_id,
+        );
+
+        const sorted = junctionRows
+          .map((row: any) => ({
+            ...row,
+            remain: Number(row.pr_detail_qty) - Number(row.received_qty),
+          }))
+          .sort((a: any, b: any) => a.remain - b.remain);
+
+        let remaining = totalReceivedQty;
+
+        for (const row of sorted) {
+          if (remaining <= 0) break;
+          if (row.remain <= 0) continue;
+
+          const fillQty = Math.min(remaining, row.remain);
+          remaining -= fillQty;
+
+          await tx.tb_purchase_order_detail_tb_purchase_request_detail.update({
+            where: { id: row.id },
+            data: {
+              received_qty: { increment: fillQty },
+              updated_by_id: user_id,
+              updated_at: new Date(),
+            },
+          });
+        }
+
+        // 3. Update PO detail received_qty — atomic increment, no lock needed
+        await tx.tb_purchase_order_detail.update({
+          where: { id: grnDetail.purchase_order_detail_id },
+          data: {
+            received_qty: { increment: totalReceivedQty },
+            updated_by_id: user_id,
+            updated_at: new Date(),
+          },
+        });
+      }
+
+      // 4. Update PO status for each affected PO
+      if (affectedPoDetailIds.size > 0) {
+        const poDetails = await tx.tb_purchase_order_detail.findMany({
+          where: { id: { in: Array.from(affectedPoDetailIds) } },
+          select: { purchase_order_id: true },
+        });
+
+        const uniquePoIds = new Set(poDetails.map((d) => d.purchase_order_id));
+
+        for (const poId of uniquePoIds) {
+          const allDetails = await tx.tb_purchase_order_detail.findMany({
+            where: { purchase_order_id: poId, deleted_at: null },
+            select: { order_qty: true, received_qty: true, cancelled_qty: true },
+          });
+
+          const allFullyReceived = allDetails.every((d) => {
+            const orderQty = Number(d.order_qty) || 0;
+            const receivedQty = Number(d.received_qty) || 0;
+            const cancelledQty = Number(d.cancelled_qty) || 0;
+            return receivedQty >= (orderQty - cancelledQty);
+          });
+
+          await tx.tb_purchase_order.update({
+            where: { id: poId },
+            data: {
+              po_status: allFullyReceived
+                ? enum_purchase_order_doc_status.completed
+                : enum_purchase_order_doc_status.partial,
+              updated_by_id: user_id,
+              updated_at: new Date(),
+            },
+          });
+        }
+      }
+    });
+
+    return Result.ok({ id });
   }
 }

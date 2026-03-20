@@ -114,6 +114,16 @@ const GoodReceivedNoteDetailSchema = z.object({
 // .merge(EmbeddedDeliverySchema)
 
 
+// Location breakdown for GRN detail (from PR locations)
+const GoodReceivedNoteDetailLocationSchema = z.object({
+  location_id: z.string().uuid(),
+  location_name: z.string().optional().nullable(),
+  request_qty: z.number(),
+  receive_qty: z.number(),
+});
+
+export type IGoodReceivedNoteDetailLocation = z.infer<typeof GoodReceivedNoteDetailLocationSchema>;
+
 export const GoodReceivedNoteDetail_PO_Create = GoodReceivedNoteDetailSchema.omit({
   id: true,
   inventory_transaction_id: true,
@@ -122,7 +132,10 @@ export const GoodReceivedNoteDetail_PO_Create = GoodReceivedNoteDetailSchema.omi
   is_tax_adjustment: true,
 }).extend({
   purchase_order_detail_id: z.string().uuid().optional(),
+  locations: z.array(GoodReceivedNoteDetailLocationSchema).optional(),
 })
+.merge(ReceivedQuantityAndUnitSchema)
+.merge(FocSchema);
 
 export const GoodReceivedNoteDetail_Manual_Create = GoodReceivedNoteDetailSchema.omit({
   id: true,
@@ -131,6 +144,8 @@ export const GoodReceivedNoteDetail_Manual_Create = GoodReceivedNoteDetailSchema
   purchase_order_detail_id: true,
   sequence_no: true,
   is_tax_adjustment: true,
+}).extend({
+  locations: z.array(GoodReceivedNoteDetailLocationSchema).optional(),
 })
 .merge(ReceivedQuantityAndUnitSchema)
 .merge(FocSchema);
@@ -154,7 +169,7 @@ export const GoodReceivedNoteCreate = GoodReceivedNoteSchema
 .extend({
   good_received_note_detail: z
     .object({
-      add: z.array(GoodReceivedNoteDetail_PO_Create || GoodReceivedNoteDetail_Manual_Create).optional(),
+      add: z.array(GoodReceivedNoteDetail_PO_Create).optional(),
     })
     .optional(),
   extra_cost: z
@@ -187,10 +202,13 @@ export const GoodReceivedNoteDetail_PO_Update = GoodReceivedNoteDetailSchema
   inventory_transaction_id: true,
   is_tax_adjustment: true,
 })
+.merge(ReceivedQuantityAndUnitSchema)
+.merge(FocSchema)
 .extend({
   tax_type: z
     .enum(Object.values(enum_tax_type) as [string, ...string[]])
     .optional(),
+  locations: z.array(GoodReceivedNoteDetailLocationSchema).optional(),
 })
 
 export const GoodReceivedNoteDetail_Manual_Update = GoodReceivedNoteDetailSchema
@@ -199,7 +217,10 @@ export const GoodReceivedNoteDetail_Manual_Update = GoodReceivedNoteDetailSchema
   is_tax_adjustment: true,
 })
 .merge(ReceivedQuantityAndUnitSchema)
-.merge(FocSchema);
+.merge(FocSchema)
+.extend({
+  locations: z.array(GoodReceivedNoteDetailLocationSchema).optional(),
+});
 
 export const ExtraCostDetailUpdate = ExtraCostDetailCreate.extend({
   id: z.string().uuid(),
@@ -241,8 +262,8 @@ export const GoodReceivedNoteUpdate = z.object({
   info: z.any().optional(),
   dimension: z.any().optional(),
   good_received_note_detail: z.object({
-    add: z.array(GoodReceivedNoteDetail_PO_Create || GoodReceivedNoteDetail_Manual_Create).optional(),
-    update: z.array(GoodReceivedNoteDetail_PO_Update || GoodReceivedNoteDetail_Manual_Update).optional(),
+    add: z.array(GoodReceivedNoteDetail_PO_Create).optional(),
+    update: z.array(GoodReceivedNoteDetail_PO_Update).optional(),
     remove: z.array(z.object({ id: z.string().uuid() })).optional(),
   }).optional(),
   extra_cost: z.object({

@@ -85,7 +85,7 @@ export class PurchaseOrderController extends BaseMicroserviceController {
     );
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.purchaseOrderService.findAllForGrn(payload.paginate),
+      this.purchaseOrderLogic.findAllForGrn(payload.paginate),
     );
     return this.handleResult(result);
   }

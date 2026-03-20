@@ -2,7 +2,8 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { PurchaseOrderService } from './purchase-order.service';
 import { MapperLogic } from '@/common/mapper/mapper.logic';
 import { BackendLogger } from '@/common/helpers/backend.logger';
-import { creatorAccess, NavigateForwardResult, NotificationService, NotificationType } from '@/common';
+import { creatorAccess, NavigateForwardResult, NotificationService, NotificationType, Result } from '@/common';
+import { IPaginate } from '@/common/shared-interface/paginate.interface';
 import { enum_last_action, enum_purchase_order_doc_status, enum_stage_role } from '@repo/prisma-shared-schema-tenant';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
@@ -681,6 +682,187 @@ export class PurchaseOrderLogic {
         { function: 'sendReviewNotification', error: (error as Error).message },
         PurchaseOrderLogic.name,
       );
+    }
+  }
+
+  /**
+   * Find all POs for GRN: query from service, enrich missing data, return result.
+   */
+  async findAllForGrn(paginate: IPaginate): Promise<Result<unknown>> {
+    const result = await this.purchaseOrderService.findAllForGrn(paginate);
+    if (!result.isOk) return result;
+
+    const val = result.value as { data: unknown; rawPurchaseOrders: any[]; paginate: unknown };
+    if (!val?.rawPurchaseOrders) return result;
+
+    await this.enrichGrnData(val.rawPurchaseOrders);
+    return Result.ok({
+      data: val.data,
+      paginate: val.paginate,
+    });
+  }
+
+  /**
+   * Enrich null/empty denormalized fields on PO details, PR details, and junction rows.
+   * Batch-fetches from tb_product, tb_location, tb_unit then updates the DB rows.
+   */
+  async enrichGrnData(purchaseOrders: any[]): Promise<void> {
+    const prisma = this.purchaseOrderService.prismaService;
+
+    // Collect IDs that need enrichment
+    const productIdsToEnrich = new Set<string>();
+    const locationIdsToEnrich = new Set<string>();
+    const unitIdsToEnrich = new Set<string>();
+
+    // Track which rows need updating
+    const poDetailUpdates: { id: string; data: Record<string, string> }[] = [];
+    const prDetailUpdates: { id: string; data: Record<string, string> }[] = [];
+    const junctionUpdates: { id: string; data: Record<string, string> }[] = [];
+
+    for (const po of purchaseOrders) {
+      for (const detail of po.tb_purchase_order_detail) {
+        if (detail.product_id && (!detail.product_name?.trim() || !detail.product_code?.trim())) {
+          productIdsToEnrich.add(detail.product_id);
+        }
+        if (detail.order_unit_id && !detail.order_unit_name?.trim()) {
+          unitIdsToEnrich.add(detail.order_unit_id);
+        }
+        if (detail.base_unit_id && !detail.base_unit_name?.trim()) {
+          unitIdsToEnrich.add(detail.base_unit_id);
+        }
+
+        for (const prLink of detail.tb_purchase_order_detail_tb_purchase_request_detail) {
+          if (prLink.pr_detail_order_unit_id && !prLink.pr_detail_order_unit_name?.trim()) {
+            unitIdsToEnrich.add(prLink.pr_detail_order_unit_id);
+          }
+          if (prLink.pr_detail_base_unit_id && !prLink.pr_detail_base_unit_name?.trim()) {
+            unitIdsToEnrich.add(prLink.pr_detail_base_unit_id);
+          }
+
+          const prDetail = prLink.tb_purchase_request_detail;
+          if (prDetail?.location_id && (!prDetail.location_name?.trim() || !prDetail.location_code?.trim())) {
+            locationIdsToEnrich.add(prDetail.location_id);
+          }
+          if (prDetail?.requested_unit_id && !prDetail.requested_unit_name?.trim()) {
+            unitIdsToEnrich.add(prDetail.requested_unit_id);
+          }
+        }
+      }
+    }
+
+    if (productIdsToEnrich.size === 0 && locationIdsToEnrich.size === 0 && unitIdsToEnrich.size === 0) {
+      return;
+    }
+
+    // Batch fetch from foreign tables
+    const [products, locations, units] = await Promise.all([
+      productIdsToEnrich.size > 0
+        ? prisma.tb_product.findMany({
+            where: { id: { in: Array.from(productIdsToEnrich) } },
+            select: { id: true, code: true, name: true, local_name: true },
+          })
+        : [],
+      locationIdsToEnrich.size > 0
+        ? prisma.tb_location.findMany({
+            where: { id: { in: Array.from(locationIdsToEnrich) } },
+            select: { id: true, code: true, name: true },
+          })
+        : [],
+      unitIdsToEnrich.size > 0
+        ? prisma.tb_unit.findMany({
+            where: { id: { in: Array.from(unitIdsToEnrich) } },
+            select: { id: true, name: true },
+          })
+        : [],
+    ]);
+
+    const productMap = new Map(products.map((p) => [p.id, p] as const));
+    const locationMap = new Map(locations.map((l) => [l.id, l] as const));
+    const unitMap = new Map(units.map((u) => [u.id, u] as const));
+
+    // Enrich in-memory objects and collect DB updates
+    for (const po of purchaseOrders) {
+      for (const detail of po.tb_purchase_order_detail) {
+        const poDetailPatch: Record<string, string> = {};
+
+        if (detail.product_id && (!detail.product_name?.trim() || !detail.product_code?.trim())) {
+          const product = productMap.get(detail.product_id);
+          if (product) {
+            if (!detail.product_name?.trim()) { detail.product_name = product.name; poDetailPatch.product_name = product.name ?? ''; }
+            if (!detail.product_code?.trim()) { detail.product_code = product.code; poDetailPatch.product_code = product.code ?? ''; }
+            if (!detail.product_local_name?.trim()) { detail.product_local_name = product.local_name; poDetailPatch.product_local_name = product.local_name ?? ''; }
+          }
+        }
+
+        if (detail.order_unit_id && !detail.order_unit_name?.trim()) {
+          const unit = unitMap.get(detail.order_unit_id);
+          if (unit) { detail.order_unit_name = unit.name; poDetailPatch.order_unit_name = unit.name ?? ''; }
+        }
+
+        if (detail.base_unit_id && !detail.base_unit_name?.trim()) {
+          const unit = unitMap.get(detail.base_unit_id);
+          if (unit) { detail.base_unit_name = unit.name; poDetailPatch.base_unit_name = unit.name ?? ''; }
+        }
+
+        if (Object.keys(poDetailPatch).length > 0) {
+          poDetailUpdates.push({ id: detail.id, data: poDetailPatch });
+        }
+
+        for (const prLink of detail.tb_purchase_order_detail_tb_purchase_request_detail) {
+          const junctionPatch: Record<string, string> = {};
+
+          if (prLink.pr_detail_order_unit_id && !prLink.pr_detail_order_unit_name?.trim()) {
+            const unit = unitMap.get(prLink.pr_detail_order_unit_id);
+            if (unit) { prLink.pr_detail_order_unit_name = unit.name; junctionPatch.pr_detail_order_unit_name = unit.name ?? ''; }
+          }
+          if (prLink.pr_detail_base_unit_id && !prLink.pr_detail_base_unit_name?.trim()) {
+            const unit = unitMap.get(prLink.pr_detail_base_unit_id);
+            if (unit) { prLink.pr_detail_base_unit_name = unit.name; junctionPatch.pr_detail_base_unit_name = unit.name ?? ''; }
+          }
+
+          if (Object.keys(junctionPatch).length > 0) {
+            junctionUpdates.push({ id: prLink.id, data: junctionPatch });
+          }
+
+          const prDetail = prLink.tb_purchase_request_detail;
+          if (prDetail?.location_id && (!prDetail.location_name?.trim() || !prDetail.location_code?.trim())) {
+            const location = locationMap.get(prDetail.location_id);
+            if (location) {
+              const prPatch: Record<string, string> = {};
+              if (!prDetail.location_name?.trim()) { prDetail.location_name = location.name; prPatch.location_name = location.name ?? ''; }
+              if (!prDetail.location_code?.trim()) { prDetail.location_code = location.code; prPatch.location_code = location.code ?? ''; }
+              if (Object.keys(prPatch).length > 0) {
+                prDetailUpdates.push({ id: prDetail.id, data: prPatch });
+              }
+            }
+          }
+
+          if (prDetail?.requested_unit_id && !prDetail.requested_unit_name?.trim()) {
+            const unit = unitMap.get(prDetail.requested_unit_id);
+            if (unit) {
+              prDetail.requested_unit_name = unit.name;
+              prDetailUpdates.push({ id: prDetail.id, data: { requested_unit_name: unit.name ?? '' } });
+            }
+          }
+        }
+      }
+    }
+
+    // Persist enriched data back to DB
+    const updates: Promise<unknown>[] = [];
+
+    for (const { id, data } of poDetailUpdates) {
+      updates.push(prisma.tb_purchase_order_detail.update({ where: { id }, data }));
+    }
+    for (const { id, data } of junctionUpdates) {
+      updates.push(prisma.tb_purchase_order_detail_tb_purchase_request_detail.update({ where: { id }, data }));
+    }
+    for (const { id, data } of prDetailUpdates) {
+      updates.push(prisma.tb_purchase_request_detail.update({ where: { id }, data }));
+    }
+
+    if (updates.length > 0) {
+      await Promise.allSettled(updates);
     }
   }
 }

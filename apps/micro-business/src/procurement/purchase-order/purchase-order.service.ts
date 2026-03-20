@@ -510,6 +510,7 @@ export class PurchaseOrderService {
 
     return Result.ok({
       data,
+      rawPurchaseOrders: purchaseOrders,
       paginate: {
         total,
         page: q.page,
@@ -817,16 +818,30 @@ export class PurchaseOrderService {
             if (!prDetail.pr_detail_id || !prDetail.order_unit_id) {
               continue;
             }
+
+            // Enrich missing unit names from DB
+            let orderUnitName = prDetail.order_unit_name || '';
+            let baseUnitName = prDetail.order_base_unit_name || '';
+
+            if (!orderUnitName && prDetail.order_unit_id) {
+              const unit = await prismatx.tb_unit.findFirst({ where: { id: prDetail.order_unit_id }, select: { name: true } });
+              orderUnitName = unit?.name || '';
+            }
+            if (!baseUnitName && prDetail.order_base_unit_id) {
+              const unit = await prismatx.tb_unit.findFirst({ where: { id: prDetail.order_base_unit_id }, select: { name: true } });
+              baseUnitName = unit?.name || '';
+            }
+
             await prismatx.tb_purchase_order_detail_tb_purchase_request_detail.create({
               data: {
                 po_detail_id: poDetail.id,
                 pr_detail_id: prDetail.pr_detail_id,
                 pr_detail_order_unit_id: prDetail.order_unit_id,
-                pr_detail_order_unit_name: prDetail.order_unit_name || '',
+                pr_detail_order_unit_name: orderUnitName,
                 pr_detail_qty: prDetail.order_qty,
                 pr_detail_base_qty: prDetail.order_base_qty,
                 pr_detail_base_unit_id: prDetail.order_base_unit_id || undefined,
-                pr_detail_base_unit_name: prDetail.order_base_unit_name,
+                pr_detail_base_unit_name: baseUnitName,
                 created_by_id: this.userId,
               },
             });
@@ -1240,16 +1255,30 @@ export class PurchaseOrderService {
           if (detail.pr_detail?.length > 0) {
             for (const prDetail of detail.pr_detail) {
               if (!prDetail.pr_detail_id || !prDetail.order_unit_id) continue;
+
+              // Enrich missing unit names from DB
+              let orderUnitName = prDetail.order_unit_name || '';
+              let baseUnitName = prDetail.order_base_unit_name || '';
+
+              if (!orderUnitName && prDetail.order_unit_id) {
+                const unit = await txp.tb_unit.findFirst({ where: { id: prDetail.order_unit_id }, select: { name: true } });
+                orderUnitName = unit?.name || '';
+              }
+              if (!baseUnitName && prDetail.order_base_unit_id) {
+                const unit = await txp.tb_unit.findFirst({ where: { id: prDetail.order_base_unit_id }, select: { name: true } });
+                baseUnitName = unit?.name || '';
+              }
+
               await txp.tb_purchase_order_detail_tb_purchase_request_detail.create({
                 data: {
                   po_detail_id: poDetail.id,
                   pr_detail_id: prDetail.pr_detail_id,
                   pr_detail_order_unit_id: prDetail.order_unit_id,
-                  pr_detail_order_unit_name: prDetail.order_unit_name || '',
+                  pr_detail_order_unit_name: orderUnitName,
                   pr_detail_qty: prDetail.order_qty,
                   pr_detail_base_qty: prDetail.order_base_qty,
                   pr_detail_base_unit_id: prDetail.order_base_unit_id || undefined,
-                  pr_detail_base_unit_name: prDetail.order_base_unit_name,
+                  pr_detail_base_unit_name: baseUnitName,
                   created_by_id: this.userId,
                 },
               });
@@ -2230,16 +2259,30 @@ export class PurchaseOrderService {
             if (!prDetail.pr_detail_id || !prDetail.order_unit_id) {
               continue;
             }
+
+            // Enrich missing unit names from DB
+            let orderUnitName = prDetail.order_unit_name || '';
+            let baseUnitName = prDetail.order_base_unit_name || '';
+
+            if (!orderUnitName && prDetail.order_unit_id) {
+              const unit = await prismatx.tb_unit.findFirst({ where: { id: prDetail.order_unit_id }, select: { name: true } });
+              orderUnitName = unit?.name || '';
+            }
+            if (!baseUnitName && prDetail.order_base_unit_id) {
+              const unit = await prismatx.tb_unit.findFirst({ where: { id: prDetail.order_base_unit_id }, select: { name: true } });
+              baseUnitName = unit?.name || '';
+            }
+
             await prismatx.tb_purchase_order_detail_tb_purchase_request_detail.create({
               data: {
                 po_detail_id: poDetail.id,
                 pr_detail_id: prDetail.pr_detail_id,
                 pr_detail_order_unit_id: prDetail.order_unit_id,
-                pr_detail_order_unit_name: prDetail.order_unit_name || '',
+                pr_detail_order_unit_name: orderUnitName,
                 pr_detail_qty: prDetail.order_qty,
                 pr_detail_base_qty: prDetail.order_base_qty,
                 pr_detail_base_unit_id: prDetail.order_base_unit_id || undefined,
-                pr_detail_base_unit_name: prDetail.order_base_unit_name,
+                pr_detail_base_unit_name: baseUnitName,
                 created_by_id: this.userId,
               },
             });
