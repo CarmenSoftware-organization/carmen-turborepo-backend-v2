@@ -125,12 +125,6 @@ export const PurchaseRequestDetailResponseSchema = z.object({
 
 export type PurchaseRequestDetailResponse = z.infer<typeof PurchaseRequestDetailResponseSchema>;
 
-// Purchase request list item detail (for total calculation)
-const PurchaseRequestListItemDetailSchema = z.object({
-  price: z.coerce.number().nullable().optional(),
-  total_price: z.coerce.number().nullable().optional(),
-});
-
 // Purchase request list item response schema (for findAll)
 export const PurchaseRequestListItemResponseSchema = z.object({
   id: z.string(),
@@ -155,7 +149,8 @@ export const PurchaseRequestListItemResponseSchema = z.object({
   department_id: z.string().nullable().optional(),
   department_name: z.string().nullable().optional(),
 
-  // total_amount: z.coerce.number().nullable().optional(),
+  total_amount: z.coerce.number().nullable().optional(),
+  base_total_amount: z.coerce.number().nullable().optional(),
 
   is_active: z.boolean().optional(),
   doc_version: z.number().nullable().optional(),
@@ -165,7 +160,6 @@ export const PurchaseRequestListItemResponseSchema = z.object({
 
   created_at: z.coerce.date().optional(),
   updated_at: z.coerce.date().optional(),
-  purchase_request_detail: z.array(PurchaseRequestListItemDetailSchema).optional(),
 });
 
 export type PurchaseRequestListItemResponse = z.infer<typeof PurchaseRequestListItemResponseSchema>;

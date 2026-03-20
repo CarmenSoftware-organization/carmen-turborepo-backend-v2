@@ -419,14 +419,11 @@ export class PurchaseRequestService {
             const purchase_request_detail = pr['tb_purchase_request_detail'];
             delete pr['tb_purchase_request_detail'];
             let total_amount = 0;
-            const PRdetailPrices = [];
+            let base_total_amount = 0;
 
             for (const detail of purchase_request_detail) {
               total_amount += Number(detail.total_price || 0);
-              PRdetailPrices.push({
-                price: Number(detail.total_price || 0),
-                total_price: Number(detail.total_price || 0),
-              });
+              base_total_amount += Number(detail.base_total_price || 0);
             }
             const returnPR = {
               id: pr.id,
@@ -438,8 +435,8 @@ export class PurchaseRequestService {
               department_name: pr.department_name,
               workflow_name: pr.workflow_name,
               created_at: pr.created_at,
-              purchase_request_detail: PRdetailPrices,
               total_amount,
+              base_total_amount,
               workflow_current_stage: pr.workflow_current_stage,
               workflow_next_stage: pr.workflow_next_stage,
               workflow_previous_stage: pr.workflow_previous_stage,
@@ -740,14 +737,11 @@ export class PurchaseRequestService {
               const purchase_request_detail = pr['tb_purchase_request_detail'];
               delete pr['tb_purchase_request_detail'];
               let total_amount = 0;
-              const PRdetailPrices = [];
+              let base_total_amount = 0;
 
               for (const detail of purchase_request_detail) {
                 total_amount += Number(detail.total_price || 0);
-                PRdetailPrices.push({
-                  price: Number(detail.total_price || 0),
-                  total_price: Number(detail.total_price || 0),
-                });
+                base_total_amount += Number(detail.base_total_price || 0);
               }
               const returnPR = {
                 id: pr.id,
@@ -759,8 +753,8 @@ export class PurchaseRequestService {
                 department_name: pr.department_name,
                 workflow_name: pr.workflow_name,
                 created_at: pr.created_at,
-                purchase_request_detail: PRdetailPrices,
                 total_amount,
+                base_total_amount,
                 workflow_current_stage: pr.workflow_current_stage,
                 workflow_next_stage: pr.workflow_next_stage,
                 workflow_previous_stage: pr.workflow_previous_stage,

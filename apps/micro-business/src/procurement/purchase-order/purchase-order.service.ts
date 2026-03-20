@@ -606,8 +606,7 @@ export class PurchaseOrderService {
       order_date: po.order_date,
       delivery_date: po.delivery_date,
       vendor_name: po.tb_vendor?.name ?? po.vendor_name ?? null,
-      vendor: po.tb_vendor,
-      currency: po.tb_currency_tb_purchase_order_currency_idTotb_currency,
+      currency_code: po.tb_currency_tb_purchase_order_currency_idTotb_currency?.code ?? po.currency_code ?? null,
       exchange_rate: Number(po.exchange_rate),
       buyer_id: po.buyer_id,
       buyer_name: po.buyer_name,
@@ -3795,36 +3794,33 @@ export class PurchaseOrderService {
               ],
             },
             include: {
-              tb_purchase_order_detail: true,
+              tb_vendor: { select: { id: true, name: true, code: true } },
+              tb_currency_tb_purchase_order_currency_idTotb_currency: { select: { id: true, name: true, code: true, symbol: true } },
             },
           })
           .then((res) => {
             return res.map((po) => {
-              const purchase_order_detail = po['tb_purchase_order_detail'];
-              delete po['tb_purchase_order_detail'];
-
               return {
                 id: po.id,
                 po_no: po.po_no,
+                po_status: po.po_status,
+                description: po.description,
                 order_date: po.order_date,
                 delivery_date: po.delivery_date,
-                description: po.description,
-                po_status: po.po_status,
-                vendor_name: po.vendor_name,
+                vendor_name: po.tb_vendor?.name ?? po.vendor_name ?? null,
+                currency_code: po.tb_currency_tb_purchase_order_currency_idTotb_currency?.code ?? po.currency_code ?? null,
+                exchange_rate: Number(po.exchange_rate),
                 buyer_name: po.buyer_name,
-                workflow_name: po.workflow_name,
-                created_at: po.created_at,
-                purchase_order_detail: purchase_order_detail.map((d) => ({
-                  base_qty: Number(d.base_qty),
-                  receive_qty: Number(d.received_qty),
-                  price: Number(d.price),
-                  total_price: Number(d.total_price),
-                })),
+                total_qty: Number(po.total_qty),
+                total_price: Number(po.total_price),
+                total_tax: Number(po.total_tax),
                 total_amount: Number(po.total_amount),
                 workflow_current_stage: po.workflow_current_stage,
                 workflow_next_stage: po.workflow_next_stage,
                 workflow_previous_stage: po.workflow_previous_stage,
                 last_action: po.last_action,
+                doc_version: po.doc_version,
+                created_at: po.created_at,
               };
             });
           });
