@@ -88,6 +88,35 @@ export const PurchaseRequestTemplateDetailResponseSchema = z.object({
   purchase_request_template_detail: z.array(PurchaseRequestTemplateDetailItemSchema).nullable().optional(),
 });
 
+const PurchaseRequestTemplateListDetailItemSchema = z.object({
+  id: z.string(),
+
+  // Location
+  location_id: z.string().nullable().optional(),
+  location_code: z.string().nullable().optional(),
+  location_name: z.string().nullable().optional(),
+
+  // Product
+  product_id: z.string().nullable().optional(),
+  product_name: z.string().nullable().optional(),
+  product_code: z.string().nullable().optional(),
+  product_local_name: z.string().nullable().optional(),
+  product_sku: z.string().nullable().optional(),
+
+  // Inventory Unit
+  inventory_unit_id: z.string().nullable().optional(),
+  inventory_unit_name: z.string().nullable().optional(),
+
+  // Currency
+  currency_id: z.string().nullable().optional(),
+  currency_code: z.string().nullable().optional(),
+
+  // Requested
+  requested_qty: z.coerce.number().nullable().optional(),
+  requested_unit_id: z.string().nullable().optional(),
+  requested_unit_name: z.string().nullable().optional(),
+});
+
 export const PurchaseRequestTemplateListItemResponseSchema = z.object({
   id: z.string(),
   name: z.string().nullable().optional(),
@@ -95,10 +124,9 @@ export const PurchaseRequestTemplateListItemResponseSchema = z.object({
   workflow_id: z.string().nullable().optional(),
   workflow_name: z.string().nullable().optional(),
   note: z.string().nullable().optional(),
-  info: z.any().nullable().optional(),
   is_active: z.boolean().nullable().optional(),
   created_at: z.coerce.date().nullable().optional(),
-  purchase_request_template_detail: z.array(PurchaseRequestTemplateDetailItemSchema).nullable().optional(),
+  purchase_request_template_detail: z.array(PurchaseRequestTemplateListDetailItemSchema).nullable().optional(),
 });
 
 export const PurchaseRequestTemplateMutationResponseSchema = z.object({

@@ -1,0 +1,23 @@
+meta {
+  name: 04 - Get Location By Product
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/locations/product/:product_id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  product_id: {{product_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

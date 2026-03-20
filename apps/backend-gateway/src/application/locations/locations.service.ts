@@ -155,6 +155,50 @@ export class LocationsService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
   /**
+   * Find all locations assigned to a specific product
+   * ค้นหารายการสถานที่ทั้งหมดที่มอบหมายให้สินค้าที่ระบุ
+   * @param product_id - Product ID / รหัสสินค้า
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of locations for the product / รายการสถานที่ของสินค้า
+   */
+  async findByProductId(
+    product_id: string,
+    user_id: string,
+    bu_code: string,
+    paginate: IPaginate,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      {
+        function: 'findByProductId',
+        product_id,
+        user_id,
+        bu_code,
+        paginate,
+        version,
+      },
+      LocationsService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
+      { cmd: 'locations.findAllByProductId', service: 'locations' },
+      { product_id, user_id, bu_code, paginate, version },
+    );
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok({ data: response.data, paginate: response.paginate });
+  }
+
+  /**
    * Get product inventory levels at a specific location
    * ดึงข้อมูลระดับสินค้าคงคลังของสินค้าที่สถานที่เฉพาะ
    * @param location_id - Location ID / รหัสสถานที่

@@ -23,5 +23,94 @@ auth:bearer {
 }
 
 body:json {
-  {}
+  {
+    "details": {
+      "add": [
+        {
+          "sequence": 1,
+          "product_id": "<product_uuid_1>",
+          "order_unit_id": "<order_unit_uuid_1>",
+          "order_qty": 10,
+          "price": 100,
+          "sub_total_price": 1000,
+          "net_amount": 1000,
+          "total_price": 1070,
+          "tax_rate": 7,
+          "tax_amount": 70,
+          "pr_detail": [
+            {
+              "pr_detail_id": "<pr_detail_uuid_location_1>",
+              "order_qty": 10,
+              "order_unit_id": "<order_unit_uuid_1>",
+              "order_base_qty": 10
+            }
+          ]
+        },
+        {
+          "sequence": 2,
+          "product_id": "<product_uuid_2>",
+          "order_unit_id": "<order_unit_uuid_2>",
+          "order_qty": 20,
+          "price": 50,
+          "sub_total_price": 1000,
+          "net_amount": 1000,
+          "total_price": 1070,
+          "tax_rate": 7,
+          "tax_amount": 70,
+          "pr_detail": [
+            {
+              "pr_detail_id": "<pr_detail_uuid_location_2>",
+              "order_qty": 20,
+              "order_unit_id": "<order_unit_uuid_2>",
+              "order_base_qty": 20
+            }
+          ]
+        },
+        {
+          "sequence": 3,
+          "product_id": "<product_uuid_3>",
+          "order_unit_id": "<order_unit_uuid_3>",
+          "order_qty": 15,
+          "price": 200,
+          "sub_total_price": 3000,
+          "net_amount": 3000,
+          "total_price": 3210,
+          "tax_rate": 7,
+          "tax_amount": 210,
+          "pr_detail": [
+            {
+              "pr_detail_id": "<pr_detail_uuid_location_3>",
+              "order_qty": 15,
+              "order_unit_id": "<order_unit_uuid_3>",
+              "order_base_qty": 15
+            }
+          ]
+        },
+        {
+          "sequence": 4,
+          "product_id": "<product_uuid_4>",
+          "order_unit_id": "<order_unit_uuid_4>",
+          "order_qty": 5,
+          "price": 500,
+          "sub_total_price": 2500,
+          "net_amount": 2500,
+          "total_price": 2675,
+          "tax_rate": 7,
+          "tax_amount": 175,
+          "pr_detail": [
+            {
+              "pr_detail_id": "<pr_detail_uuid_location_4>",
+              "order_qty": 5,
+              "order_unit_id": "<order_unit_uuid_4>",
+              "order_base_qty": 5
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
+vars:pre-request {
+  po_id: df32410a-2e54-40c2-9b57-017208ed10c0
 }

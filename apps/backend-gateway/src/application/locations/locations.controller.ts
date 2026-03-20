@@ -16,14 +16,16 @@ import {
   Serialize,
   LocationDetailResponseSchema,
   LocationListItemResponseSchema,
+  LocationByUserResponseSchema,
 } from '@/common';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
+  ApiUserFilterQueries,
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { IPaginateQuery } from 'src/shared-dto/paginate.dto';
+import { IPaginate, IPaginateQuery, PaginateDto } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import {
@@ -120,6 +122,125 @@ export class LocationsController extends BaseHttpController {
     const result = await this.locationsService.findByUserId(
       user_id,
       bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * Get all locations assigned to a specific product
+   * ค้นหารายการสถานที่ทั้งหมดที่มอบหมายให้สินค้าที่ระบุ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param product_id - Product ID / รหัสสินค้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of locations for the product / รายการสถานที่ของสินค้า
+   */
+  @Get(':bu_code/locations/product/:product_id')
+  @UseGuards(new AppIdGuard('locations.findAllByProductId'))
+  @Serialize(LocationByUserResponseSchema)
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'Get locations by product ID',
+    description:
+      'Lists all active storage locations assigned to a specific product, used to see where a product is stocked.',
+    operationId: 'findAllLocationsByProductId',
+    tags: ['Master Data', 'Location'],
+    deprecated: false,
+    parameters: [
+      {
+        name: 'product_id',
+        in: 'path',
+        required: true,
+        description: 'The ID of the product (UUID)',
+        example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+      },
+      {
+        name: 'version',
+        in: 'query',
+        required: false,
+        description: 'The version of the API',
+        example: 'latest',
+      },
+    ],
+    responses: {
+      200: {
+        description: 'Locations were successfully retrieved',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string', format: 'uuid' },
+                  code: { type: 'string' },
+                  name: { type: 'string' },
+                  location_type: { type: 'string' },
+                  physical_count_type: { type: 'string', nullable: true },
+                  description: { type: 'string', nullable: true },
+                  is_active: { type: 'boolean' },
+                  delivery_point: {
+                    type: 'object',
+                    nullable: true,
+                    properties: {
+                      id: { type: 'string', format: 'uuid' },
+                      name: { type: 'string' },
+                      is_active: { type: 'boolean' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      401: { description: 'Unauthorized — invalid or missing bearer token' },
+      404: { description: 'Product not found' },
+    },
+  })
+  async findByProductId(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('bu_code') bu_code: string,
+    @Param('product_id') product_id: string,
+    @Query() query: PaginateDto,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      {
+        function: 'findByProductId',
+        product_id,
+        query,
+        version,
+      },
+      LocationsController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+
+    const paginate: IPaginate = {
+      page: query.page,
+      perpage: query.perpage,
+      search: typeof query.search === 'string' ? query.search : '',
+      searchfields: Array.isArray(query.searchfields) ? query.searchfields : [],
+      sort: Array.isArray(query.sort) ? query.sort : [],
+      filter:
+        typeof query.filter === 'object' && !Array.isArray(query.filter)
+          ? query.filter
+          : {},
+      advance: query.advance ?? null,
+      bu_code: query.bu_code ?? [],
+    };
+
+    const result = await this.locationsService.findByProductId(
+      product_id,
+      user_id,
+      bu_code,
+      paginate,
       version,
     );
     this.respond(res, result);

@@ -116,6 +116,28 @@ export class LocationsController extends BaseMicroserviceController {
   }
 
   /**
+   * Find all locations assigned to a specific product
+   * ค้นหารายการสถานที่ทั้งหมดที่มอบหมายให้สินค้าที่ระบุ
+   * @param payload - Microservice payload containing product ID / ข้อมูล payload ที่มี ID ของสินค้า
+   * @returns List of locations for the product / รายการสถานที่ของสินค้า
+   */
+  @MessagePattern({ cmd: 'locations.findAllByProductId', service: 'locations' })
+  async findAllByProductId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'findAllByProductId', payload }, LocationsController.name);
+    this.locationsService.userId = payload.user_id;
+    this.locationsService.bu_code = payload.bu_code;
+    await this.locationsService.initializePrismaService(payload.bu_code, payload.user_id);
+    const paginate = payload.paginate;
+    const version = payload?.version || 'latest';
+
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.locationsService.findAllByProductId(payload.product_id, paginate, version),
+    );
+    return this.handlePaginatedResult(result);
+  }
+
+  /**
    * Get product inventory at a specific location
    * ดึงสินค้าคงคลังที่สถานที่เฉพาะ
    * @param payload - Microservice payload containing location ID and product ID / ข้อมูล payload ที่มี ID สถานที่และ ID สินค้า

@@ -435,6 +435,103 @@ export class LocationsService {
   }
 
   /**
+   * Find all active locations assigned to a specific product
+   * ค้นหาสถานที่ที่ใช้งานอยู่ทั้งหมดที่มอบหมายให้สินค้าที่ระบุ
+   * @param product_id - Product ID / รหัสสินค้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns List of locations assigned to product / รายการสถานที่ที่มอบหมายให้สินค้า
+   */
+  @TryCatch
+  async findAllByProductId(
+    product_id: string,
+    paginate: IPaginate,
+    version: string = 'latest',
+  ): Promise<any> {
+    this.logger.debug(
+      { function: 'findAllByProductId', product_id, user_id: this.userId, tenant_id: this.bu_code, paginate, version },
+      LocationsService.name,
+    );
+
+    const defaultSearchFields = ['name', 'code'];
+
+    const q = new QueryParams(
+      paginate.page,
+      paginate.perpage,
+      paginate.search,
+      paginate.searchfields,
+      defaultSearchFields,
+      typeof paginate.filter === 'object' && !Array.isArray(paginate.filter) ? paginate.filter : {},
+      paginate.sort,
+      paginate.advance,
+    );
+
+    const pagination = getPaginationParams(q.page, q.perpage);
+
+    const where = {
+      ...q.where(),
+      is_active: true,
+      tb_product_location: {
+        some: {
+          product_id: product_id,
+        },
+      },
+    };
+
+    const locations = await this.prismaService.tb_location.findMany({
+      where,
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        location_type: true,
+        physical_count_type: true,
+        description: true,
+        is_active: true,
+        tb_delivery_point: {
+          select: {
+            id: true,
+            name: true,
+            is_active: true,
+          },
+        },
+      },
+      orderBy: q.orderBy(),
+      ...pagination,
+    });
+
+    const total = await this.prismaService.tb_location.count({ where });
+
+    const transformed = locations.map((location) => ({
+      id: location.id,
+      code: location.code,
+      name: location.name,
+      location_type: location.location_type,
+      physical_count_type: location.physical_count_type,
+      description: location.description,
+      is_active: location.is_active,
+      delivery_point: location.tb_delivery_point
+        ? {
+            id: location.tb_delivery_point.id,
+            name: location.tb_delivery_point.name,
+            is_active: location.tb_delivery_point.is_active,
+          }
+        : null,
+    }));
+
+    const serializedLocations = transformed.map((location) => LocationByUserResponseSchema.parse(location));
+
+    return Result.ok({
+      paginate: {
+        total: total,
+        page: q.perpage < 0 ? 1 : q.page,
+        perpage: q.perpage < 0 ? 1 : q.perpage,
+        pages: total === 0 || q.perpage < 0 ? 1 : Math.ceil(total / q.perpage),
+      },
+      data: serializedLocations,
+    });
+  }
+
+  /**
    * Get product inventory information for a specific location and product
    * ดึงข้อมูลสินค้าคงคลังสำหรับสถานที่และสินค้าที่ระบุ
    * @param location_id - Location ID / รหัสสถานที่
