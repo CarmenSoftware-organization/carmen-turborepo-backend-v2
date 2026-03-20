@@ -299,6 +299,12 @@ export default class QueryParams {
   ): Record<string, unknown> {
     const trimmedValue = value?.trim() ?? '';
 
+    // Handle comma-separated values as IN query
+    if (trimmedValue.includes(',')) {
+      const values = trimmedValue.split(',').map((v) => v.trim());
+      return { [fieldName]: { in: values } };
+    }
+
     switch (fieldType) {
       case 'number':
       case 'num':

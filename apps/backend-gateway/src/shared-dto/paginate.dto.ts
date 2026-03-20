@@ -36,9 +36,15 @@ export const PaginateSchema = z.object({
     .transform((v) => {
       if (!v) return {};
       const result: Record<string, string> = {};
-      v.split(';').forEach((item) => {
-        const [k, val] = item.split(':');
-        if (k && val) result[k.trim()] = val.trim();
+      v.split(/[;,]/).forEach((item) => {
+        const colonIndex = item.indexOf(':');
+        if (colonIndex === -1) return;
+        const k = item.substring(0, colonIndex).trim();
+        const val = item.substring(colonIndex + 1).trim();
+        if (k && val) {
+          // Merge duplicate keys with comma for IN queries
+          result[k] = result[k] ? result[k] + ',' + val : val;
+        }
       });
       return result;
     }),
@@ -103,11 +109,15 @@ export function PaginateQuery(query: IPaginateQuery): IPaginate {
   let filterValue: Record<string, string> = {};
   if (query.filter) {
     if (typeof query.filter === 'string') {
-      // String format: "status:inactive;type:active"
-      query.filter.split(';').forEach((item) => {
-        const [key, value] = item.split(':');
+      // String format: "status:inactive;type:active" or comma-separated
+      query.filter.split(/[;,]/).forEach((item) => {
+        const colonIndex = item.indexOf(':');
+        if (colonIndex === -1) return;
+        const key = item.substring(0, colonIndex).trim();
+        const value = item.substring(colonIndex + 1).trim();
         if (key && value) {
-          filterValue[key.trim()] = value.trim();
+          // Merge duplicate keys with comma for IN queries
+          filterValue[key] = filterValue[key] ? filterValue[key] + ',' + value : value;
         }
       });
     } else if (typeof query.filter === 'object') {
