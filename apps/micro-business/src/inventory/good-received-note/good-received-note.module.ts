@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { GoodReceivedNoteService } from './good-received-note.service';
+import { GoodReceivedNoteLogic } from './good-received-note.logic';
 import { GoodReceivedNoteController } from './good-received-note.controller';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
@@ -31,6 +32,7 @@ import { InventoryTransactionModule } from '@/inventory/inventory-transaction/in
   controllers: [GoodReceivedNoteController],
   providers: [
     GoodReceivedNoteService,
+    GoodReceivedNoteLogic,
     {
       provide: 'PRISMA_SYSTEM',
       useValue: PrismaClient_SYSTEM,

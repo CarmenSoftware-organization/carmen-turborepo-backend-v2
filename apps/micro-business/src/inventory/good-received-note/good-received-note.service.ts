@@ -12,7 +12,7 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { Injectable, Inject, HttpStatus } from '@nestjs/common';
-import { enum_doc_status, enum_good_received_note_status, enum_purchase_order_doc_status } from '@repo/prisma-shared-schema-tenant';
+import { enum_doc_status, enum_good_received_note_status, enum_good_received_note_type, enum_purchase_order_doc_status } from '@repo/prisma-shared-schema-tenant';
 import { InventoryTransactionService, ICreateFromGrnDetailItem } from '@/inventory/inventory-transaction/inventory-transaction.service';
 import { format } from 'date-fns';
 import * as ExcelJS from 'exceljs';
@@ -247,6 +247,161 @@ export class GoodReceivedNoteService {
   }
 
   /**
+  // ==================== Shared Validation & Enrichment ====================
+
+  /**
+   * Validate and enrich GRN header fields (vendor, currency, credit term).
+   * Mutates data in place. Returns error string if validation fails, null if OK.
+   */
+  private async validateAndEnrichHeader(
+    prisma: any,
+    data: { vendor_id?: string; vendor_name?: string; currency_id?: string; currency_code?: string; credit_term_id?: string; credit_term_name?: string; credit_term_days?: number },
+  ): Promise<string | null> {
+    if (data.vendor_id) {
+      const vendor = await prisma.tb_vendor.findFirst({ where: { id: data.vendor_id } });
+      if (!vendor) return `Vendor not found: ${data.vendor_id}`;
+      data.vendor_name = vendor.name;
+    }
+
+    if (data.currency_id) {
+      const currency = await prisma.tb_currency.findFirst({ where: { id: data.currency_id } });
+      if (!currency) return `Currency not found: ${data.currency_id}`;
+      data.currency_code = currency.code;
+    }
+
+    if (data.credit_term_id) {
+      const creditTerm = await prisma.tb_credit_term.findFirst({ where: { id: data.credit_term_id } });
+      if (!creditTerm) return `Credit term not found: ${data.credit_term_id}`;
+      data.credit_term_name = creditTerm.name;
+      data.credit_term_days = Number(creditTerm.value);
+    }
+
+    return null;
+  }
+
+  /**
+   * Validate and enrich GRN detail items (product, location, units, tax, delivery point).
+   * Mutates items in place. Returns error string if validation fails, null if OK.
+   */
+  private async validateAndEnrichDetailItems(
+    prisma: any,
+    items: any[],
+  ): Promise<string | null> {
+    const errors: string[] = [];
+
+    // Collect all unique IDs for batch validation
+    const poDetailIds = items.map((i) => i.purchase_order_detail_id).filter(Boolean);
+    const locationIds = items.map((i) => i.location_id).filter(Boolean);
+    const productIds = items.map((i) => i.product_id).filter(Boolean);
+    const unitIds = [
+      ...items.map((i) => i.order_unit_id),
+      ...items.map((i) => i.received_unit_id),
+      ...items.map((i) => i.foc_unit_id),
+    ].filter(Boolean);
+    const taxProfileIds = items.map((i) => i.tax_profile_id).filter(Boolean);
+    const deliveryPointIds = items.map((i) => i.delivery_point_id).filter(Boolean);
+
+    // Batch fetch all foreign records
+    const [poDetails, locations, products, units, taxProfiles, deliveryPoints] = await Promise.all([
+      poDetailIds.length > 0 ? prisma.tb_purchase_order_detail.findMany({ where: { id: { in: poDetailIds } }, select: { id: true } }) : [],
+      locationIds.length > 0 ? prisma.tb_location.findMany({ where: { id: { in: locationIds } }, select: { id: true, name: true, code: true } }) : [],
+      productIds.length > 0 ? prisma.tb_product.findMany({ where: { id: { in: productIds } }, select: { id: true, name: true, code: true, local_name: true } }) : [],
+      unitIds.length > 0 ? prisma.tb_unit.findMany({ where: { id: { in: [...new Set(unitIds)] } }, select: { id: true, name: true } }) : [],
+      taxProfileIds.length > 0 ? prisma.tb_tax_profile.findMany({ where: { id: { in: taxProfileIds }, deleted_at: null }, select: { id: true } }) : [],
+      deliveryPointIds.length > 0 ? prisma.tb_delivery_point.findMany({ where: { id: { in: deliveryPointIds } }, select: { id: true, name: true } }) : [],
+    ]);
+
+    const poDetailMap = new Map<string, any>(poDetails.map((r: any) => [r.id, r]));
+    const locationMap = new Map<string, any>(locations.map((r: any) => [r.id, r]));
+    const productMap = new Map<string, any>(products.map((r: any) => [r.id, r]));
+    const unitMap = new Map<string, any>(units.map((r: any) => [r.id, r]));
+    const taxProfileMap = new Map<string, any>(taxProfiles.map((r: any) => [r.id, r]));
+    const deliveryPointMap = new Map<string, any>(deliveryPoints.map((r: any) => [r.id, r]));
+
+    for (const item of items) {
+      if (item.purchase_order_detail_id && !poDetailMap.has(item.purchase_order_detail_id)) {
+        errors.push(`Purchase order detail not found: ${item.purchase_order_detail_id}`);
+      }
+
+      if (item.location_id) {
+        const loc = locationMap.get(item.location_id);
+        if (!loc) { errors.push(`Location not found: ${item.location_id}`); }
+        else { item.location_name = loc.name; item.location_code = loc.code; }
+      }
+
+      if (item.product_id) {
+        const prod = productMap.get(item.product_id);
+        if (!prod) { errors.push(`Product not found: ${item.product_id}`); }
+        else {
+          item.product_name = prod.name;
+          item.product_code = prod.code;
+          item.product_sku = prod.code;
+          item.product_local_name = prod.local_name;
+        }
+      }
+
+      if (item.order_unit_id) {
+        const u = unitMap.get(item.order_unit_id);
+        if (!u) { errors.push(`Order unit not found: ${item.order_unit_id}`); }
+        else { item.order_unit_name = u.name; }
+      }
+
+      if (item.received_unit_id) {
+        const u = unitMap.get(item.received_unit_id);
+        if (!u) { errors.push(`Received unit not found: ${item.received_unit_id}`); }
+        else { item.received_unit_name = u.name; }
+      }
+
+      if (item.foc_unit_id) {
+        const u = unitMap.get(item.foc_unit_id);
+        if (!u) { errors.push(`FOC unit not found: ${item.foc_unit_id}`); }
+        else { item.foc_unit_name = u.name; }
+      }
+
+      if (item.tax_profile_id && !taxProfileMap.has(item.tax_profile_id)) {
+        errors.push(`Tax profile not found: ${item.tax_profile_id}`);
+      }
+
+      if (item.delivery_point_id) {
+        const dp = deliveryPointMap.get(item.delivery_point_id);
+        if (!dp) { errors.push(`Delivery point not found: ${item.delivery_point_id}`); }
+        else { item.delivery_point_name = dp.name; }
+      }
+    }
+
+    return errors.length > 0 ? errors.join('; ') : null;
+  }
+
+  /**
+   * Validate and enrich extra cost detail items.
+   * Returns error string if validation fails, null if OK.
+   */
+  private async validateAndEnrichExtraCost(
+    prisma: any,
+    items: any[],
+  ): Promise<string | null> {
+    const ids = items.map((i) => i.extra_cost_type_id).filter(Boolean);
+    if (ids.length === 0) return null;
+
+    const types = await prisma.tb_extra_cost_type.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, name: true },
+    });
+    const typeMap = new Map<string, any>(types.map((t: any) => [t.id, t]));
+
+    const notFound: string[] = [];
+    for (const item of items) {
+      const t = typeMap.get(item.extra_cost_type_id);
+      if (!t) { notFound.push(item.extra_cost_type_id); }
+      else { item.extra_cost_type_name = t.name; }
+    }
+
+    return notFound.length > 0 ? `Extra cost type not found: ${notFound.join(', ')}` : null;
+  }
+
+  // ==================== Create ====================
+
+  /**
    * Create a new good received note with details
    * สร้างใบรับสินค้าใหม่พร้อมรายการรายละเอียด
    * @param data - GRN creation data / ข้อมูลสร้างใบรับสินค้า
@@ -278,252 +433,20 @@ export class GoodReceivedNoteService {
       tenant.db_connection,
     );
 
-    if (data.vendor_id) {
-      const foundVendor = await prisma.tb_vendor.findFirst({
-        where: {
-          id: data.vendor_id,
-        },
-      });
+    // Validate & enrich header
+    const headerError = await this.validateAndEnrichHeader(prisma, data);
+    if (headerError) return Result.error(headerError, ErrorCode.NOT_FOUND);
 
-      if (!foundVendor) {
-        return Result.error('Vendor not found', ErrorCode.NOT_FOUND);
-      } else {
-        data.vendor_name = foundVendor.name;
-      }
-    }
-
-    const currency = await prisma.tb_currency.findFirst({
-      where: {
-        id: data.currency_id,
-      },
-    });
-
-    if (!currency) {
-      return Result.error('Currency not found', ErrorCode.NOT_FOUND);
-    } else {
-      // if (!data.currency_rate) {
-      //   data.currency_rate = Number(currency.exchange_rate);
-      // }
-      data.currency_code = currency.code;
-    }
-
-    // if (data.workflow_id) {
-    //   const workflow = await prisma.tb_workflow.findFirst({
-    //     where: {
-    //       id: data.workflow_id,
-    //     },
-    //   });
-
-    //   if (!workflow) {
-    //     return Result.error('Workflow not found', ErrorCode.NOT_FOUND);
-    //   }
-    // }
-
-    if (data.credit_term_id) {
-      const creditTerm = await prisma.tb_credit_term.findFirst({
-        where: {
-          id: data.credit_term_id,
-        },
-      });
-
-      if (!creditTerm) {
-        return Result.error('Credit term not found', ErrorCode.NOT_FOUND);
-      } else {
-        data.credit_term_name = creditTerm.name;
-        data.credit_term_days = Number(creditTerm.value);
-      }
-    }
-
+    // Validate & enrich detail items
     if (data.good_received_note_detail?.add) {
-      const purchaseOrderDetailNotFound: string[] = [];
-      const locationNotFound: string[] = [];
-      const productNotFound: string[] = [];
-      const orderUnitNotFound: string[] = [];
-      const receivedUnitNotFound: string[] = [];
-      const focUnitNotFound: string[] = [];
-      const taxProfileNotFound: string[] = [];
-      const deliveryPointNotFound: string[] = [];
-
-      await Promise.all(
-        data.good_received_note_detail.add.map(async (item) => {
-          if (item.purchase_order_detail_id) {
-            const findPurchaseOrderDetail =
-              await prisma.tb_purchase_order_detail.findFirst({
-                where: {
-                  id: item.purchase_order_detail_id,
-                },
-              });
-
-            if (!findPurchaseOrderDetail) {
-              purchaseOrderDetailNotFound.push(item.purchase_order_detail_id);
-            }
-          }
-
-          const findLocation = await prisma.tb_location.findFirst({
-            where: {
-              id: item.location_id,
-            },
-          });
-
-          if (!findLocation) {
-            locationNotFound.push(item.location_id);
-          } else {
-            item.location_name = findLocation.name;
-          }
-
-          const findProduct = await prisma.tb_product.findFirst({
-            where: {
-              id: item.product_id,
-            },
-          });
-
-          if (!findProduct) {
-            productNotFound.push(item.product_id);
-          } else {
-            item.product_name = findProduct.name;
-            item.product_code = findProduct.code;
-            item.product_sku = findProduct.code;
-            item.product_local_name = findProduct.local_name;
-          }
-
-          if (item.order_unit_id) {
-            const findOrderUnit = await prisma.tb_unit.findFirst({
-              where: {
-                id: item.order_unit_id,
-              },
-            });
-
-            if (!findOrderUnit) {
-              orderUnitNotFound.push(item.order_unit_id);
-            } else {
-              item.order_unit_name = findOrderUnit.name;
-            }
-          }
-
-          if (item.received_unit_id) {
-            const findReceivedUnit = await prisma.tb_unit.findFirst({
-              where: {
-                id: item.received_unit_id,
-              },
-            });
-
-            if (!findReceivedUnit) {
-              receivedUnitNotFound.push(item.received_unit_id);
-            } else {
-              item.received_unit_name = findReceivedUnit.name;
-            }
-          }
-
-          if (item.foc_unit_id) {
-            const findFocUnit = await prisma.tb_unit.findFirst({
-              where: {
-                id: item.foc_unit_id,
-              },
-            });
-
-            if (!findFocUnit) {
-              focUnitNotFound.push(item.foc_unit_id);
-            } else {
-              item.foc_unit_name = findFocUnit.name;
-            }
-          }
-
-          if (item.tax_profile_id) {
-            const findTaxProfile =
-              await prisma.tb_tax_profile.findFirst({
-                where: {
-                  id: item.tax_profile_id,
-                  deleted_at: null,
-                },
-              });
-
-            if (!findTaxProfile) {
-              taxProfileNotFound.push(item.tax_profile_name);
-            }
-          }
-
-          if (item.delivery_point_id) {
-            const findDeliveryPoint = await prisma.tb_delivery_point.findFirst(
-              {
-                where: {
-                  id: item.delivery_point_id,
-                },
-              },
-            );
-
-            if (!findDeliveryPoint) {
-              deliveryPointNotFound.push(item.delivery_point_id);
-            } else {
-              item.delivery_point_name = findDeliveryPoint.name;
-            }
-          }
-        }),
-      );
-
-      if (purchaseOrderDetailNotFound.length > 0) {
-        return Result.error(`Purchase order detail not found: ${purchaseOrderDetailNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-      }
-
-      if (locationNotFound.length > 0) {
-        return Result.error(`Location not found: ${locationNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-      }
-
-      if (productNotFound.length > 0) {
-        return Result.error(`Product not found: ${productNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-      }
-
-      if (orderUnitNotFound.length > 0) {
-        return Result.error(`Order unit not found: ${orderUnitNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-      }
-
-      if (receivedUnitNotFound.length > 0) {
-        return Result.error(`Received unit not found: ${receivedUnitNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-      }
-
-      if (focUnitNotFound.length > 0) {
-        return Result.error(`Foc unit not found: ${focUnitNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-      }
-
-      if (taxProfileNotFound.length > 0) {
-        return Result.error(`Tax profile not found: ${taxProfileNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-      }
-
-      if (deliveryPointNotFound.length > 0) {
-        return Result.error(`Delivery point not found: ${deliveryPointNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-      }
+      const detailError = await this.validateAndEnrichDetailItems(prisma, data.good_received_note_detail.add);
+      if (detailError) return Result.error(detailError, ErrorCode.NOT_FOUND);
     }
 
+    // Validate & enrich extra cost
     if (data.extra_cost?.extra_cost_detail?.add) {
-      const extraCostTypeNotFound: string[] = [];
-      const taxProfileNotFound: string[] = [];
-
-      await Promise.all(
-        data.extra_cost.extra_cost_detail.add.map(async (item) => {
-          console.log('extra cost item', item.extra_cost_type_id);
-          const findExtraCostType = await prisma.tb_extra_cost_type.findFirst({
-            where: {
-              id: item.extra_cost_type_id,
-            },
-          });
-
-          if (!findExtraCostType) {
-            extraCostTypeNotFound.push(item.extra_cost_type_id);
-          } else {
-            item.extra_cost_type_name = findExtraCostType.name;
-          }
-
-        }),
-      );
-
-      if (extraCostTypeNotFound.length > 0) {
-        return Result.error(`Extra cost type not found: ${extraCostTypeNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-      }
-
-      // if (taxProfileNotFound.length > 0) {
-      //   return Result.error('Tax profile not found', ErrorCode.NOT_FOUND, {
-      //     tax_profile_name: taxProfileNotFound,
-      //   });
-      // }
+      const extraCostError = await this.validateAndEnrichExtraCost(prisma, data.extra_cost.extra_cost_detail.add);
+      if (extraCostError) return Result.error(extraCostError, ErrorCode.NOT_FOUND);
     }
 
     const tx = await prisma.$transaction(async (prisma) => {
@@ -656,391 +579,33 @@ export class GoodReceivedNoteService {
       return Result.error('Good received note not found', ErrorCode.NOT_FOUND);
     }
 
-    if (data.vendor_id) {
-      const foundVendor = await prisma.tb_vendor.findFirst({
-        where: {
-          id: data.vendor_id,
-        },
-      });
-
-      if (!foundVendor) {
-        return Result.error('Vendor not found', ErrorCode.NOT_FOUND);
-      } else {
-        data.vendor_name = foundVendor.name;
-      }
-    }
-
-    if (data.currency_id) {
-      const foundCurrency = await prisma.tb_currency.findFirst({
-        where: {
-          id: data.currency_id,
-        },
-      });
-
-      if (!foundCurrency) {
-        return Result.error('Currency not found', ErrorCode.NOT_FOUND);
-      } else {
-        if (!data.currency_rate) {
-          data.currency_rate = Number(foundCurrency.exchange_rate);
-        }
-        data.currency_code = foundCurrency.code;
-      }
-    }
-
-    // if (data.workflow_id) {
-    //   const workflow = await prisma.tb_workflow.findFirst({
-    //     where: {
-    //       id: data.workflow_id,
-    //     },
-    //   });
-
-    //   if (!workflow) {
-    //     return Result.error('Workflow not found', ErrorCode.NOT_FOUND);
-    //   }
-    // }
-
-    if (data.credit_term_id) {
-      const creditTerm = await prisma.tb_credit_term.findFirst({
-        where: {
-          id: data.credit_term_id,
-        },
-      });
-
-      if (!creditTerm) {
-        return Result.error('Credit term not found', ErrorCode.NOT_FOUND);
-      } else {
-        data.credit_term_name = creditTerm.name;
-        data.credit_term_days = Number(creditTerm.value);
-      }
-    }
+    // Validate & enrich header
+    const headerError = await this.validateAndEnrichHeader(prisma, data as any);
+    if (headerError) return Result.error(headerError, ErrorCode.NOT_FOUND);
 
     if (data.good_received_note_detail) {
+      // Validate & enrich add items
       if (data.good_received_note_detail?.add) {
-        const purchaseOrderDetailNotFound: string[] = [];
-        const locationNotFound: string[] = [];
-        const productNotFound: string[] = [];
-        const orderUnitNotFound: string[] = [];
-        const receivedUnitNotFound: string[] = [];
-        const focUnitNotFound: string[] = [];
-        const taxProfileNotFound: string[] = [];
-        const deliveryPointNotFound: string[] = [];
-
-        await Promise.all(
-          data.good_received_note_detail.add.map(async (item) => {
-            if (item.purchase_order_detail_id) {
-              const findPurchaseOrderDetail =
-                await prisma.tb_purchase_order_detail.findFirst({
-                  where: {
-                    id: item.purchase_order_detail_id,
-                  },
-                });
-
-              if (!findPurchaseOrderDetail) {
-                purchaseOrderDetailNotFound.push(item.purchase_order_detail_id);
-              }
-            }
-
-            const findLocation = await prisma.tb_location.findFirst({
-              where: {
-                id: item.location_id,
-              },
-            });
-
-            if (!findLocation) {
-              locationNotFound.push(item.location_id);
-            } else {
-              item.location_name = findLocation.name;
-            }
-
-            const findProduct = await prisma.tb_product.findFirst({
-              where: {
-                id: item.product_id,
-              },
-            });
-
-            if (!findProduct) {
-              productNotFound.push(item.product_id);
-            } else {
-              item.product_name = findProduct.name;
-            item.product_code = findProduct.code;
-            item.product_sku = findProduct.code;
-              item.product_local_name = findProduct.local_name;
-            }
-
-            const findOrderUnit = await prisma.tb_unit.findFirst({
-              where: {
-                id: item.order_unit_id,
-              },
-            });
-
-            if (!findOrderUnit) {
-              orderUnitNotFound.push(item.order_unit_id);
-            } else {
-              item.order_unit_name = findOrderUnit.name;
-            }
-
-            const findReceivedUnit = await prisma.tb_unit.findFirst({
-              where: {
-                id: item.received_unit_id,
-              },
-            });
-
-            if (!findReceivedUnit) {
-              receivedUnitNotFound.push(item.received_unit_id);
-            } else {
-              item.received_unit_name = findReceivedUnit.name;
-            }
-
-            if (item.foc_unit_id) {
-              const findFocUnit = await prisma.tb_unit.findFirst({
-                where: {
-                  id: item.foc_unit_id,
-                },
-              });
-
-              if (!findFocUnit) {
-                focUnitNotFound.push(item.foc_unit_id);
-              } else {
-                item.foc_unit_name = findFocUnit.name;
-              }
-            }
-
-            if (item.tax_profile_id) {
-              const findTaxProfile =
-                await prisma.tb_tax_profile.findFirst({
-                  where: {
-                    id: item.tax_profile_id,
-                    deleted_at: null,
-                  },
-                });
-
-              if (!findTaxProfile) {
-                taxProfileNotFound.push(item.tax_profile_name);
-              }
-            }
-
-            if (item.delivery_point_id) {
-              const findDeliveryPoint =
-                await prisma.tb_delivery_point.findFirst({
-                  where: {
-                    id: item.delivery_point_id,
-                  },
-                });
-
-              if (!findDeliveryPoint) {
-                deliveryPointNotFound.push(item.delivery_point_id);
-              } else {
-                item.delivery_point_name = findDeliveryPoint.name;
-              }
-            }
-          }),
-        );
-
-        if (purchaseOrderDetailNotFound.length > 0) {
-          return Result.error(`Purchase order detail not found: ${purchaseOrderDetailNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-        }
-
-        if (locationNotFound.length > 0) {
-          return Result.error(`Location not found: ${locationNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-        }
-
-        if (productNotFound.length > 0) {
-          return Result.error(`Product not found: ${productNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-        }
-
-        if (orderUnitNotFound.length > 0) {
-          return Result.error(`Order unit not found: ${orderUnitNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-        }
-
-        if (receivedUnitNotFound.length > 0) {
-          return Result.error(`Received unit not found: ${receivedUnitNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-        }
-
-        if (focUnitNotFound.length > 0) {
-          return Result.error(`Foc unit not found: ${focUnitNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-        }
-
-        if (taxProfileNotFound.length > 0) {
-          return Result.error(`Tax profile not found: ${taxProfileNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-        }
-
-        if (deliveryPointNotFound.length > 0) {
-          return Result.error(`Delivery point not found: ${deliveryPointNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-        }
+        const addError = await this.validateAndEnrichDetailItems(prisma, data.good_received_note_detail.add as any[]);
+        if (addError) return Result.error(addError, ErrorCode.NOT_FOUND);
       }
 
+      // Validate & enrich update items (reuses same validation)
       if (data.good_received_note_detail?.update) {
-        const goodReceivedNoteDetailNotFound: string[] = [];
-        const purchaseOrderDetailNotFound: string[] = [];
-        const locationNotFound: string[] = [];
-        const productNotFound: string[] = [];
-        const orderUnitNotFound: string[] = [];
-        const receivedUnitNotFound: string[] = [];
-        const focUnitNotFound: string[] = [];
-        const taxProfileNotFound: string[] = [];
-        const deliveryPointNotFound: string[] = [];
-
+        // Check that detail IDs exist
+        const detailNotFound: string[] = [];
         await Promise.all(
           data.good_received_note_detail.update.map(async (item) => {
-            const findGoodReceivedNoteDetail =
-              await prisma.tb_good_received_note_detail.findFirst({
-                where: {
-                  id: item.id,
-                },
-              });
-
-            if (!findGoodReceivedNoteDetail) {
-              goodReceivedNoteDetailNotFound.push(item.id);
-            }
-
-            if (item.purchase_order_detail_id) {
-              const findPurchaseOrderDetail =
-                await prisma.tb_purchase_order_detail.findFirst({
-                  where: {
-                    id: item.purchase_order_detail_id,
-                  },
-                });
-
-              if (!findPurchaseOrderDetail) {
-                purchaseOrderDetailNotFound.push(item.purchase_order_detail_id);
-              }
-            }
-
-            if (item.location_id) {
-              const findLocation = await prisma.tb_location.findFirst({
-                where: {
-                  id: item.location_id,
-                },
-              });
-
-              if (!findLocation) {
-                locationNotFound.push(item.location_id);
-              } else {
-                item.location_name = findLocation.name;
-              }
-            }
-
-            if (item.product_id) {
-              const findProduct = await prisma.tb_product.findFirst({
-                where: {
-                  id: item.product_id,
-                },
-              });
-
-              if (!findProduct) {
-                productNotFound.push(item.product_id);
-              } else {
-                item.product_name = findProduct.name;
-            item.product_code = findProduct.code;
-            item.product_sku = findProduct.code;
-                item.product_local_name = findProduct.local_name;
-              }
-            }
-
-            if (item.order_unit_id) {
-              const findOrderUnit = await prisma.tb_unit.findFirst({
-                where: {
-                  id: item.order_unit_id,
-                },
-              });
-
-              if (!findOrderUnit) {
-                orderUnitNotFound.push(item.order_unit_id);
-              } else {
-                item.order_unit_name = findOrderUnit.name;
-              }
-            }
-
-            if (item.received_unit_id) {
-              const findReceivedUnit = await prisma.tb_unit.findFirst({
-                where: {
-                  id: item.received_unit_id,
-                },
-              });
-
-              if (!findReceivedUnit) {
-                receivedUnitNotFound.push(item.received_unit_id);
-              } else {
-                item.received_unit_name = findReceivedUnit.name;
-              }
-            }
-
-            if (item.foc_unit_id) {
-              const findFocUnit = await prisma.tb_unit.findFirst({
-                where: {
-                  id: item.foc_unit_id,
-                },
-              });
-
-              if (!findFocUnit) {
-                focUnitNotFound.push(item.foc_unit_id);
-              } else {
-                item.foc_unit_name = findFocUnit.name;
-              }
-            }
-
-            if (item.tax_profile_id) {
-              const findTaxProfile =
-                await prisma.tb_tax_profile.findFirst({
-                  where: {
-                    id: item.tax_profile_id,
-                    deleted_at: null,
-                  },
-                });
-
-              if (!findTaxProfile) {
-                taxProfileNotFound.push(item.tax_profile_name);
-              }
-            }
-
-            if (item.delivery_point_id) {
-              const findDeliveryPoint =
-                await prisma.tb_delivery_point.findFirst({
-                  where: {
-                    id: item.delivery_point_id,
-                  },
-                });
-
-              if (!findDeliveryPoint) {
-                deliveryPointNotFound.push(item.delivery_point_id);
-              } else {
-                item.delivery_point_name = findDeliveryPoint.name;
-              }
-            }
+            const found = await prisma.tb_good_received_note_detail.findFirst({ where: { id: item.id } });
+            if (!found) detailNotFound.push(item.id);
           }),
         );
-
-        if (goodReceivedNoteDetailNotFound.length > 0) {
-          return Result.error(`Good received note detail not found: ${goodReceivedNoteDetailNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
+        if (detailNotFound.length > 0) {
+          return Result.error(`Good received note detail not found: ${detailNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
         }
 
-        if (purchaseOrderDetailNotFound.length > 0) {
-          return Result.error(`Purchase order detail not found: ${purchaseOrderDetailNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-        }
-
-        if (locationNotFound.length > 0) {
-          return Result.error(`Location not found: ${locationNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-        }
-
-        if (orderUnitNotFound.length > 0) {
-          return Result.error(`Order unit not found: ${orderUnitNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-        }
-
-        if (receivedUnitNotFound.length > 0) {
-          return Result.error(`Received unit not found: ${receivedUnitNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-        }
-
-        if (focUnitNotFound.length > 0) {
-          return Result.error(`Foc unit not found: ${focUnitNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-        }
-
-        if (taxProfileNotFound.length > 0) {
-          return Result.error(`Tax profile not found: ${taxProfileNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-        }
-
-        if (deliveryPointNotFound.length > 0) {
-          return Result.error(`Delivery point not found: ${deliveryPointNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-        }
+        const updateError = await this.validateAndEnrichDetailItems(prisma, data.good_received_note_detail.update as any[]);
+        if (updateError) return Result.error(updateError, ErrorCode.NOT_FOUND);
       }
 
       if (data.good_received_note_detail?.remove) {
@@ -1721,227 +1286,10 @@ export class GoodReceivedNoteService {
     return Result.ok({ buffer: Buffer.from(buffer), filename });
   }
 
-  /**
-   * Reject a Good Received Note - changes status to voided
-   */
-  /**
-   * Reject a good received note
-   * ปฏิเสธใบรับสินค้า
-   * @param id - GRN ID / ID ใบรับสินค้า
-   * @param user_id - User ID / ID ผู้ใช้
-   * @param tenant_id - Tenant ID / ID ผู้เช่า
-   * @param reason - Rejection reason / เหตุผลการปฏิเสธ
-   * @returns Rejected GRN / ใบรับสินค้าที่ปฏิเสธแล้ว
-   */
-  @TryCatch
-  async reject(
-    id: string,
-    reason: string,
-    user_id: string,
-    tenant_id: string,
-  ): Promise<Result<unknown>> {
-    this.logger.debug(
-      { function: 'reject', id, reason, user_id, tenant_id },
-      GoodReceivedNoteService.name,
-    );
-
-    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
-    if (!tenant) {
-      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
-    }
-
-    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
-
-    // Find the GRN
-    const grn = await prisma.tb_good_received_note.findFirst({
-      where: {
-        id,
-        deleted_at: null,
-      },
-    });
-
-    if (!grn) {
-      return Result.error('Good Received Note not found', ErrorCode.NOT_FOUND);
-    }
-
-    // Validate status - only allow rejection from draft or saved status
-    const allowedStatuses: enum_good_received_note_status[] = [
-      enum_good_received_note_status.draft,
-      enum_good_received_note_status.saved,
-    ];
-
-    if (!allowedStatuses.includes(grn.doc_status)) {
-      return Result.error(
-        `Cannot reject GRN with status '${grn.doc_status}'. Only draft or saved GRNs can be rejected.`,
-        ErrorCode.INVALID_ARGUMENT,
-      );
-    }
-
-    // Update GRN status to voided
-    await prisma.tb_good_received_note.update({
-      where: { id },
-      data: {
-        doc_status: enum_good_received_note_status.voided,
-        note: reason ? `Rejected: ${reason}` : grn.note,
-        updated_by_id: user_id,
-        updated_at: new Date().toISOString(),
-      },
-    });
-
-    // Send rejection notification
-    await this.sendGRNRejectedNotification(grn, reason, user_id);
-
-    return Result.ok({ id, message: 'Good Received Note rejected successfully' });
-  }
-
-  /**
-   * Send notification when GRN is rejected
-   */
-  private async sendGRNRejectedNotification(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    grn: Record<string, any>,
-    reason: string,
-    rejectorId: string,
-  ): Promise<void> {
-    try {
-      const grnNo = grn.grn_no || 'N/A';
-      const creatorId = grn.created_by_id;
-
-      // Notify the creator
-      if (creatorId) {
-        await this.notificationService.sendGRNNotification(
-          creatorId,
-          `Good Received Note Rejected: ${grnNo}`,
-          `Good Received Note ${grnNo} has been rejected.${reason ? ` Reason: ${reason}` : ''}`,
-          {
-            grn_id: grn.id,
-            grn_no: grnNo,
-            vendor_id: grn.vendor_id,
-            vendor_name: grn.vendor_name,
-            action: 'rejected',
-            reason,
-          },
-          rejectorId,
-        );
-      }
-
-      this.logger.log(`Rejection notification sent for GRN ${grnNo}`);
-    } catch (error) {
-      this.logger.error('Failed to send GRN rejected notification:', error);
-    }
-  }
-
-  // ==================== Approve (Commit) Good Received Note ====================
-
-  /**
-   * Approve a Good Received Note — changes status to committed and creates
-   * inventory transactions with FIFO cost layers via InventoryTransactionService.
-   */
-  /**
-   * Approve a good received note and create inventory transactions
-   * อนุมัติใบรับสินค้าและสร้างรายการเคลื่อนไหวสินค้าคงคลัง
-   * @param id - GRN ID / ID ใบรับสินค้า
-   * @param user_id - User ID / ID ผู้ใช้
-   * @param tenant_id - Tenant ID / ID ผู้เช่า
-   * @returns Approved GRN / ใบรับสินค้าที่อนุมัติแล้ว
-   */
-  @TryCatch
-  async approve(
-    id: string,
-    user_id: string,
-    tenant_id: string,
-  ): Promise<Result<unknown>> {
-    this.logger.debug(
-      { function: 'approve', id, user_id, tenant_id },
-      GoodReceivedNoteService.name,
-    );
-
-    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
-    if (!tenant) {
-      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
-    }
-
-    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
-
-    // Find the GRN with all details and detail items
-    const grn = await prisma.tb_good_received_note.findFirst({
-      where: {
-        id,
-        deleted_at: null,
-      },
-      include: {
-        tb_good_received_note_detail: {
-          include: {
-            tb_good_received_note_detail_item: true,
-          },
-        },
-      },
-    });
-
-    if (!grn) {
-      return Result.error('Good Received Note not found', ErrorCode.NOT_FOUND);
-    }
-
-    // Validate status — only allow approval from saved status
-    if (grn.doc_status !== enum_good_received_note_status.saved) {
-      return Result.error(
-        `Cannot approve GRN with status '${grn.doc_status}'. Only saved GRNs can be approved.`,
-        ErrorCode.INVALID_ARGUMENT,
-      );
-    }
-
-    // Flatten detail items for the inventory transaction service
-    const detailItems: ICreateFromGrnDetailItem[] = [];
-    for (const detail of grn.tb_good_received_note_detail) {
-      for (const item of detail.tb_good_received_note_detail_item) {
-        detailItems.push({
-          detail_item_id: item.id,
-          product_id: detail.product_id,
-          location_id: detail.location_id,
-          location_code: detail.location_code || null,
-          received_base_qty: Number(item.received_base_qty) || 0,
-          base_net_amount: Number(item.base_net_amount) || 0,
-        });
-      }
-    }
-
-    if (detailItems.length === 0) {
-      return Result.error(
-        'Cannot approve GRN without detail items.',
-        ErrorCode.INVALID_ARGUMENT,
-      );
-    }
-
-    await prisma.$transaction(async (tx) => {
-      // 1. Create inventory transaction + details + FIFO cost layers
-      await this.inventoryTransactionService.createFromGoodReceivedNote(tx, {
-        bu_code: tenant_id,
-        grn_id: grn.id,
-        grn_no: grn.grn_no,
-        grn_date: grn.grn_date || new Date(),
-        detail_items: detailItems,
-        user_id,
-      });
-
-      // 2. Update GRN status to committed
-      await tx.tb_good_received_note.update({
-        where: { id },
-        data: {
-          doc_status: enum_good_received_note_status.committed,
-          updated_by_id: user_id,
-          updated_at: new Date().toISOString(),
-        },
-      });
-    });
-
-    return Result.ok({ id, message: 'Good Received Note approved successfully' });
-  }
+  // reject, approve, confirm — moved to good-received-note.logic.ts
 
   // ==================== Good Received Note Detail CRUD ====================
 
-  /**
-   * Find a GRN Detail by ID
-   */
   /**
    * Find a GRN detail by ID
    * ค้นหารายการรายละเอียดใบรับสินค้าตาม ID
@@ -2348,49 +1696,37 @@ export class GoodReceivedNoteService {
     return Result.ok({ id: detailId });
   }
 
+  // ==================== Methods used by GoodReceivedNoteLogic ====================
+
   /**
-   * Confirm a GRN: set GRN status to in_progress, update PO received quantities,
-   * distribute received qty to junction rows (smallest remain first), update PO status.
-   * ยืนยัน GRN: เปลี่ยนสถานะ GRN เป็น in_progress, อัปเดตจำนวนรับใน PO,
-   * กระจายจำนวนรับไปยัง junction rows (เติมที่เหลือน้อยก่อน), อัปเดตสถานะ PO
-   * @param id - GRN ID / รหัสใบรับสินค้า
-   * @param data - Confirmation data / ข้อมูลการยืนยัน
-   * @param user_id - User ID / รหัสผู้ใช้
-   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
-   * @returns Confirmed GRN / ใบรับสินค้าที่ยืนยันแล้ว
+   * Get a tenant prisma client for use in logic-layer transactions.
    */
-  @TryCatch
-  async confirm(
-    id: string,
-    data: Record<string, unknown>,
-    user_id: string,
-    tenant_id: string,
-  ): Promise<Result<unknown>> {
-    this.logger.debug(
-      { function: 'confirm', id, user_id, tenant_id },
-      GoodReceivedNoteService.name,
-    );
-
+  async getPrismaClient(user_id: string, tenant_id: string) {
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
-    if (!tenant) {
-      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
-    }
+    if (!tenant) return null;
+    return this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+  }
 
-    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
-
-    // Fetch GRN with detail items (where received_qty lives)
-    const grn = await prisma.tb_good_received_note.findFirst({
+  /**
+   * Find GRN with details and detail items for confirm/approve flow.
+   */
+  async findGrnWithDetails(prisma: any, id: string) {
+    return prisma.tb_good_received_note.findFirst({
       where: { id, deleted_at: null },
       include: {
         tb_good_received_note_detail: {
           select: {
             id: true,
             purchase_order_detail_id: true,
+            product_id: true,
+            location_id: true,
+            location_code: true,
             tb_good_received_note_detail_item: {
               select: {
                 id: true,
                 received_qty: true,
                 received_base_qty: true,
+                base_net_amount: true,
                 purchase_order_detail_purchase_request_detail_id: true,
               },
             },
@@ -2398,123 +1734,117 @@ export class GoodReceivedNoteService {
         },
       },
     });
+  }
 
-    if (!grn) {
-      return Result.error('Good Received Note not found', ErrorCode.NOT_FOUND);
-    }
-
-    if (grn.doc_status !== enum_good_received_note_status.draft) {
-      return Result.error('Only draft GRN can be confirmed', ErrorCode.INVALID_ARGUMENT);
-    }
-
-    await prisma.$transaction(async (tx) => {
-      // 1. Update GRN status to committed
-      await tx.tb_good_received_note.update({
-        where: { id },
-        data: {
-          doc_status: enum_good_received_note_status.committed,
-          updated_by_id: user_id,
-          updated_at: new Date(),
-        },
-      });
-
-      // Collect PO detail IDs for PO status update
-      const affectedPoDetailIds = new Set<string>();
-
-      // 2. For each GRN detail, aggregate received qty per PO detail
-      //    and distribute to junction rows (fill smallest remain first)
-      for (const grnDetail of grn.tb_good_received_note_detail) {
-        if (!grnDetail.purchase_order_detail_id) continue;
-
-        // Sum received_qty across all detail items for this GRN detail
-        const totalReceivedQty = grnDetail.tb_good_received_note_detail_item
-          .reduce((sum, item) => sum + (Number(item.received_qty) || 0), 0);
-
-        if (totalReceivedQty <= 0) continue;
-
-        affectedPoDetailIds.add(grnDetail.purchase_order_detail_id);
-
-        // Lock junction rows with FOR UPDATE to prevent race conditions
-        const junctionRows: any[] = await (tx as any).$queryRawUnsafe(
-          `SELECT * FROM tb_purchase_order_detail_tb_purchase_request_detail
-           WHERE po_detail_id = $1 AND deleted_at IS NULL
-           FOR UPDATE`,
-          grnDetail.purchase_order_detail_id,
-        );
-
-        const sorted = junctionRows
-          .map((row: any) => ({
-            ...row,
-            remain: Number(row.pr_detail_qty) - Number(row.received_qty),
-          }))
-          .sort((a: any, b: any) => a.remain - b.remain);
-
-        let remaining = totalReceivedQty;
-
-        for (const row of sorted) {
-          if (remaining <= 0) break;
-          if (row.remain <= 0) continue;
-
-          const fillQty = Math.min(remaining, row.remain);
-          remaining -= fillQty;
-
-          await tx.tb_purchase_order_detail_tb_purchase_request_detail.update({
-            where: { id: row.id },
-            data: {
-              received_qty: { increment: fillQty },
-              updated_by_id: user_id,
-              updated_at: new Date(),
-            },
-          });
-        }
-
-        // 3. Update PO detail received_qty — atomic increment, no lock needed
-        await tx.tb_purchase_order_detail.update({
-          where: { id: grnDetail.purchase_order_detail_id },
-          data: {
-            received_qty: { increment: totalReceivedQty },
-            updated_by_id: user_id,
-            updated_at: new Date(),
-          },
-        });
-      }
-
-      // 4. Update PO status for each affected PO
-      if (affectedPoDetailIds.size > 0) {
-        const poDetails = await tx.tb_purchase_order_detail.findMany({
-          where: { id: { in: Array.from(affectedPoDetailIds) } },
-          select: { purchase_order_id: true },
-        });
-
-        const uniquePoIds = new Set(poDetails.map((d) => d.purchase_order_id));
-
-        for (const poId of uniquePoIds) {
-          const allDetails = await tx.tb_purchase_order_detail.findMany({
-            where: { purchase_order_id: poId, deleted_at: null },
-            select: { order_qty: true, received_qty: true, cancelled_qty: true },
-          });
-
-          const allFullyReceived = allDetails.every((d) => {
-            const orderQty = Number(d.order_qty) || 0;
-            const receivedQty = Number(d.received_qty) || 0;
-            const cancelledQty = Number(d.cancelled_qty) || 0;
-            return receivedQty >= (orderQty - cancelledQty);
-          });
-
-          await tx.tb_purchase_order.update({
-            where: { id: poId },
-            data: {
-              po_status: allFullyReceived
-                ? enum_purchase_order_doc_status.completed
-                : enum_purchase_order_doc_status.partial,
-              updated_by_id: user_id,
-              updated_at: new Date(),
-            },
-          });
-        }
-      }
+  /**
+   * Update GRN status within a transaction.
+   */
+  async updateGrnStatus(tx: any, id: string, status: enum_good_received_note_status, user_id: string) {
+    await tx.tb_good_received_note.update({
+      where: { id },
+      data: {
+        doc_status: status,
+        updated_by_id: user_id,
+        updated_at: new Date(),
+      },
     });
+  }
 
-    return Result.ok({ id });
+  /**
+   * Lock and fetch junction rows for a PO detail (FOR UPDATE).
+   */
+  async lockJunctionRows(tx: any, poDetailId: string): Promise<any[]> {
+    return tx.$queryRawUnsafe(
+      `SELECT * FROM tb_purchase_order_detail_tb_purchase_request_detail
+       WHERE po_detail_id = $1 AND deleted_at IS NULL
+       FOR UPDATE`,
+      poDetailId,
+    );
+  }
+
+  /**
+   * Increment received_qty on a junction row.
+   */
+  async incrementJunctionReceivedQty(tx: any, junctionId: string, qty: number, user_id: string) {
+    await tx.tb_purchase_order_detail_tb_purchase_request_detail.update({
+      where: { id: junctionId },
+      data: {
+        received_qty: { increment: qty },
+        updated_by_id: user_id,
+        updated_at: new Date(),
+      },
+    });
+  }
+
+  /**
+   * Increment received_qty on a PO detail.
+   */
+  async incrementPoDetailReceivedQty(tx: any, poDetailId: string, qty: number, user_id: string) {
+    await tx.tb_purchase_order_detail.update({
+      where: { id: poDetailId },
+      data: {
+        received_qty: { increment: qty },
+        updated_by_id: user_id,
+        updated_at: new Date(),
+      },
+    });
+  }
+
+  /**
+   * Get all PO detail rows for the given IDs (to find their purchase_order_id).
+   */
+  async getPoDetailsByIds(tx: any, poDetailIds: string[]) {
+    return tx.tb_purchase_order_detail.findMany({
+      where: { id: { in: poDetailIds } },
+      select: { purchase_order_id: true },
+    });
+  }
+
+  /**
+   * Get all detail rows for a PO (to check if fully received).
+   */
+  async getPoDetailsForStatus(tx: any, poId: string) {
+    return tx.tb_purchase_order_detail.findMany({
+      where: { purchase_order_id: poId, deleted_at: null },
+      select: { order_qty: true, received_qty: true, cancelled_qty: true },
+    });
+  }
+
+  /**
+   * Update PO header status.
+   */
+  async updatePoStatus(tx: any, poId: string, status: any, user_id: string) {
+    await tx.tb_purchase_order.update({
+      where: { id: poId },
+      data: {
+        po_status: status,
+        updated_by_id: user_id,
+        updated_at: new Date(),
+      },
+    });
+  }
+
+  /**
+   * Find GRN for reject flow (header only).
+   */
+  async findGrnForReject(prisma: any, id: string) {
+    return prisma.tb_good_received_note.findFirst({
+      where: { id, deleted_at: null },
+    });
+  }
+
+  /**
+   * Void a GRN (for reject).
+   */
+  async voidGrn(prisma: any, id: string, reason: string, existingNote: string | null, user_id: string) {
+    await prisma.tb_good_received_note.update({
+      where: { id },
+      data: {
+        doc_status: enum_good_received_note_status.voided,
+        note: reason ? `Rejected: ${reason}` : existingNote,
+        updated_by_id: user_id,
+        updated_at: new Date().toISOString(),
+      },
+    });
   }
 }

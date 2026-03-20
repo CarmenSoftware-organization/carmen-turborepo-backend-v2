@@ -1,6 +1,7 @@
 import { Controller, HttpStatus } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { GoodReceivedNoteService } from './good-received-note.service';
+import { GoodReceivedNoteLogic } from './good-received-note.logic';
 import {
   IGoodReceivedNoteCreate,
   IGoodReceivedNoteUpdate,
@@ -14,6 +15,7 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
   private readonly logger = new BackendLogger(GoodReceivedNoteController.name);
   constructor(
     private readonly goodReceivedNoteService: GoodReceivedNoteService,
+    private readonly goodReceivedNoteLogic: GoodReceivedNoteLogic,
   ) {
     super();
   }
@@ -207,7 +209,7 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteService.reject(id, reason, user_id, tenant_id)
+      this.goodReceivedNoteLogic.reject(id, reason, user_id, tenant_id)
     );
     return this.handleResult(result);
   }
@@ -229,7 +231,7 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteService.approve(id, user_id, tenant_id)
+      this.goodReceivedNoteLogic.approve(id, user_id, tenant_id)
     );
     return this.handleResult(result);
   }
@@ -252,7 +254,7 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteService.confirm(id, data, user_id, tenant_id)
+      this.goodReceivedNoteLogic.confirm(id, data, user_id, tenant_id)
     );
     return this.handleResult(result);
   }
