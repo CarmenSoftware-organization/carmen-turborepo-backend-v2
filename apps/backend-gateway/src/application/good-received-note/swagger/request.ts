@@ -103,12 +103,21 @@ export class CreateGoodReceivedNoteSwaggerDto {
           purchase_order_detail_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
           product_id: 'b2c3d4e5-f6a7-8901-bcde-f12345678901',
           location_id: 'c3d4e5f6-a7b8-9012-cdef-123456789012',
+          received_qty: 10,
+          received_unit_id: 'unit-uuid',
+          received_unit_conversion_factor: 1,
+          received_base_qty: 10,
+          foc_qty: 0,
           tax_profile_id: 'd4e5f6a7-b8c9-0123-defa-234567890123',
           tax_profile_name: 'VAT 7%',
           tax_rate: 7,
           tax_amount: 70,
           base_tax_amount: 70,
           total_amount: 1070,
+          locations: [
+            { location_id: 'loc-uuid-1', location_name: 'Main Store', request_qty: 7, receive_qty: 7 },
+            { location_id: 'loc-uuid-2', location_name: 'Kitchen', request_qty: 5, receive_qty: 3 },
+          ],
         },
       ],
     },
@@ -118,12 +127,26 @@ export class CreateGoodReceivedNoteSwaggerDto {
       purchase_order_detail_id?: string;
       product_id?: string;
       location_id?: string;
+      received_qty?: number;
+      received_unit_id?: string;
+      received_unit_conversion_factor?: number;
+      received_base_qty?: number;
+      foc_qty?: number;
+      foc_unit_id?: string;
+      foc_unit_conversion_rate?: number;
+      foc_base_qty?: number;
       tax_profile_id?: string;
       tax_profile_name?: string;
       tax_rate?: number;
       tax_amount?: number;
       base_tax_amount?: number;
       total_amount?: number;
+      locations?: {
+        location_id: string;
+        location_name?: string;
+        request_qty: number;
+        receive_qty: number;
+      }[];
     }[];
   };
 
@@ -253,35 +276,39 @@ export class UpdateGoodReceivedNoteSwaggerDto {
     example: {
       add: [
         {
-          purchase_order_detail_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-          product_id: 'b2c3d4e5-f6a7-8901-bcde-f12345678901',
-          location_id: 'c3d4e5f6-a7b8-9012-cdef-123456789012',
-          tax_profile_id: 'd4e5f6a7-b8c9-0123-defa-234567890123',
-          tax_profile_name: 'VAT 7%',
+          purchase_order_detail_id: 'po-detail-uuid',
+          product_id: 'product-uuid',
+          location_id: 'location-uuid',
+          received_qty: 10,
+          received_unit_id: 'unit-uuid',
+          received_unit_conversion_factor: 1,
+          received_base_qty: 10,
+          foc_qty: 0,
+          tax_profile_id: 'tax-uuid',
           tax_rate: 7,
           tax_amount: 70,
-          base_tax_amount: 70,
           total_amount: 1070,
+          locations: [
+            { location_id: 'loc-1', location_name: 'Main Store', request_qty: 7, receive_qty: 7 },
+            { location_id: 'loc-2', location_name: 'Kitchen', request_qty: 5, receive_qty: 3 },
+          ],
         },
       ],
       update: [
         {
-          id: 'f6a7b8c9-d0e1-2345-abcd-456789012345',
-          good_received_note_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-          sequence_no: 1,
-          product_id: 'b2c3d4e5-f6a7-8901-bcde-f12345678901',
-          location_id: 'c3d4e5f6-a7b8-9012-cdef-123456789012',
-          tax_profile_id: 'd4e5f6a7-b8c9-0123-defa-234567890123',
-          tax_profile_name: 'VAT 7%',
-          tax_rate: 7,
-          tax_amount: 70,
-          base_tax_amount: 70,
-          total_amount: 1070,
-          tax_type: 'inclusive',
+          id: 'detail-uuid',
+          good_received_note_id: 'grn-uuid',
+          received_qty: 12,
+          received_unit_id: 'unit-uuid',
+          received_base_qty: 12,
+          locations: [
+            { location_id: 'loc-1', location_name: 'Main Store', request_qty: 7, receive_qty: 7 },
+            { location_id: 'loc-2', location_name: 'Kitchen', request_qty: 5, receive_qty: 5 },
+          ],
         },
       ],
       remove: [
-        { id: 'g7b8c9d0-e1f2-3456-bcde-567890123456' },
+        { id: 'detail-uuid-to-remove' },
       ],
     },
   })
@@ -290,12 +317,21 @@ export class UpdateGoodReceivedNoteSwaggerDto {
       purchase_order_detail_id?: string;
       product_id?: string;
       location_id?: string;
+      received_qty?: number;
+      received_unit_id?: string;
+      received_unit_conversion_factor?: number;
+      received_base_qty?: number;
+      foc_qty?: number;
+      foc_unit_id?: string;
+      foc_unit_conversion_rate?: number;
+      foc_base_qty?: number;
       tax_profile_id?: string;
       tax_profile_name?: string;
       tax_rate?: number;
       tax_amount?: number;
       base_tax_amount?: number;
       total_amount?: number;
+      locations?: { location_id: string; location_name?: string; request_qty: number; receive_qty: number }[];
     }[];
     update?: {
       id: string;
@@ -303,6 +339,11 @@ export class UpdateGoodReceivedNoteSwaggerDto {
       sequence_no?: number;
       product_id?: string;
       location_id?: string;
+      received_qty?: number;
+      received_unit_id?: string;
+      received_unit_conversion_factor?: number;
+      received_base_qty?: number;
+      foc_qty?: number;
       tax_profile_id?: string;
       tax_profile_name?: string;
       tax_rate?: number;
@@ -310,6 +351,7 @@ export class UpdateGoodReceivedNoteSwaggerDto {
       base_tax_amount?: number;
       total_amount?: number;
       tax_type?: string;
+      locations?: { location_id: string; location_name?: string; request_qty: number; receive_qty: number }[];
     }[];
     remove?: {
       id: string;
@@ -397,7 +439,10 @@ export class RejectGoodReceivedNoteSwaggerDto {
 }
 
 export class ConfirmGoodReceivedNoteSwaggerDto {
-  @ApiPropertyOptional({ description: 'Confirmation data (JSON)', example: {} })
+  @ApiPropertyOptional({
+    description: 'Optional confirmation data. The confirm action commits the GRN to inventory. For PO-based GRN, it also distributes received qty to PO/PR junction rows and updates PO status (partial/completed).',
+    example: {},
+  })
   data?: unknown;
 }
 
