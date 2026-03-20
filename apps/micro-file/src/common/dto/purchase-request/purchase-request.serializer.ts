@@ -149,6 +149,8 @@ export const PurchaseRequestListItemResponseSchema = z.object({
   department_id: z.string().nullable().optional(),
   department_name: z.string().nullable().optional(),
 
+  net_amount: z.coerce.number().nullable().optional(),
+  base_net_amount: z.coerce.number().nullable().optional(),
   total_amount: z.coerce.number().nullable().optional(),
   base_total_amount: z.coerce.number().nullable().optional(),
 

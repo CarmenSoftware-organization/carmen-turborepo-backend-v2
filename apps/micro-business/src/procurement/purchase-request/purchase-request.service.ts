@@ -418,10 +418,14 @@ export class PurchaseRequestService {
           const mapPr = res.map((pr) => {
             const purchase_request_detail = pr['tb_purchase_request_detail'];
             delete pr['tb_purchase_request_detail'];
+            let net_amount = 0;
+            let base_net_amount = 0;
             let total_amount = 0;
             let base_total_amount = 0;
 
             for (const detail of purchase_request_detail) {
+              net_amount += Number(detail.net_amount || 0);
+              base_net_amount += Number(detail.base_net_amount || 0);
               total_amount += Number(detail.total_price || 0);
               base_total_amount += Number(detail.base_total_price || 0);
             }
@@ -435,6 +439,8 @@ export class PurchaseRequestService {
               department_name: pr.department_name,
               workflow_name: pr.workflow_name,
               created_at: pr.created_at,
+              net_amount,
+              base_net_amount,
               total_amount,
               base_total_amount,
               workflow_current_stage: pr.workflow_current_stage,
@@ -736,10 +742,14 @@ export class PurchaseRequestService {
             const mapPr = res.map((pr) => {
               const purchase_request_detail = pr['tb_purchase_request_detail'];
               delete pr['tb_purchase_request_detail'];
+              let net_amount = 0;
+              let base_net_amount = 0;
               let total_amount = 0;
               let base_total_amount = 0;
 
               for (const detail of purchase_request_detail) {
+                net_amount += Number(detail.net_amount || 0);
+                base_net_amount += Number(detail.base_net_amount || 0);
                 total_amount += Number(detail.total_price || 0);
                 base_total_amount += Number(detail.base_total_price || 0);
               }
@@ -753,6 +763,8 @@ export class PurchaseRequestService {
                 department_name: pr.department_name,
                 workflow_name: pr.workflow_name,
                 created_at: pr.created_at,
+                net_amount,
+                base_net_amount,
                 total_amount,
                 base_total_amount,
                 workflow_current_stage: pr.workflow_current_stage,

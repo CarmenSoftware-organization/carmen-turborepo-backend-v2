@@ -585,6 +585,14 @@ export class PurchaseOrderService {
           symbol: true,
         },
       },
+      tb_purchase_order_detail: {
+        select: {
+          net_amount: true,
+          base_net_amount: true,
+          total_price: true,
+          base_total_price: true,
+        },
+      },
     };
 
     const purchaseOrders = await this.prismaService.tb_purchase_order.findMany({
@@ -598,28 +606,41 @@ export class PurchaseOrderService {
       where: q.where(),
     });
 
-    const transformedData = purchaseOrders.map((po) => ({
-      id: po.id,
-      po_no: po.po_no,
-      po_status: po.po_status,
-      description: po.description,
-      order_date: po.order_date,
-      delivery_date: po.delivery_date,
-      vendor_name: po.tb_vendor?.name ?? po.vendor_name ?? null,
-      currency_code: po.tb_currency_tb_purchase_order_currency_idTotb_currency?.code ?? po.currency_code ?? null,
-      exchange_rate: Number(po.exchange_rate),
-      buyer_id: po.buyer_id,
-      buyer_name: po.buyer_name,
-      total_qty: Number(po.total_qty),
-      total_price: Number(po.total_price),
-      total_tax: Number(po.total_tax),
-      total_amount: Number(po.total_amount),
-      workflow_current_stage: po.workflow_current_stage,
-      workflow_next_stage: po.workflow_next_stage,
-      last_action: po.last_action,
-      created_at: po.created_at,
-      doc_version: po.doc_version,
-    }));
+    const transformedData = purchaseOrders.map((po) => {
+      let net_amount = 0;
+      let base_net_amount = 0;
+      let base_total_amount = 0;
+      for (const detail of po.tb_purchase_order_detail) {
+        net_amount += Number(detail.net_amount || 0);
+        base_net_amount += Number(detail.base_net_amount || 0);
+        base_total_amount += Number(detail.base_total_price || 0);
+      }
+      return {
+        id: po.id,
+        po_no: po.po_no,
+        po_status: po.po_status,
+        description: po.description,
+        order_date: po.order_date,
+        delivery_date: po.delivery_date,
+        vendor_name: po.tb_vendor?.name ?? po.vendor_name ?? null,
+        currency_code: po.tb_currency_tb_purchase_order_currency_idTotb_currency?.code ?? po.currency_code ?? null,
+        exchange_rate: Number(po.exchange_rate),
+        buyer_id: po.buyer_id,
+        buyer_name: po.buyer_name,
+        total_qty: Number(po.total_qty),
+        total_price: Number(po.total_price),
+        total_tax: Number(po.total_tax),
+        net_amount,
+        base_net_amount,
+        total_amount: Number(po.total_amount),
+        base_total_amount,
+        workflow_current_stage: po.workflow_current_stage,
+        workflow_next_stage: po.workflow_next_stage,
+        last_action: po.last_action,
+        created_at: po.created_at,
+        doc_version: po.doc_version,
+      };
+    });
 
     const serializedPurchaseOrders = transformedData.map((item) => PurchaseOrderListItemResponseSchema.parse(item));
 
@@ -3796,10 +3817,19 @@ export class PurchaseOrderService {
             include: {
               tb_vendor: { select: { id: true, name: true, code: true } },
               tb_currency_tb_purchase_order_currency_idTotb_currency: { select: { id: true, name: true, code: true, symbol: true } },
+              tb_purchase_order_detail: { select: { net_amount: true, base_net_amount: true, total_price: true, base_total_price: true } },
             },
           })
           .then((res) => {
             return res.map((po) => {
+              let net_amount = 0;
+              let base_net_amount = 0;
+              let base_total_amount = 0;
+              for (const detail of po.tb_purchase_order_detail) {
+                net_amount += Number(detail.net_amount || 0);
+                base_net_amount += Number(detail.base_net_amount || 0);
+                base_total_amount += Number(detail.base_total_price || 0);
+              }
               return {
                 id: po.id,
                 po_no: po.po_no,
@@ -3814,7 +3844,10 @@ export class PurchaseOrderService {
                 total_qty: Number(po.total_qty),
                 total_price: Number(po.total_price),
                 total_tax: Number(po.total_tax),
+                net_amount,
+                base_net_amount,
                 total_amount: Number(po.total_amount),
+                base_total_amount,
                 workflow_current_stage: po.workflow_current_stage,
                 workflow_next_stage: po.workflow_next_stage,
                 workflow_previous_stage: po.workflow_previous_stage,

@@ -130,6 +130,8 @@ export class CreditNoteService {
         created_at: true,
         tb_credit_note_detail: {
           select: {
+            net_amount: true,
+            base_net_amount: true,
             total_price: true,
             base_total_price: true,
           },
@@ -145,9 +147,13 @@ export class CreditNoteService {
     });
 
     const transformedCreditNotes = creditNotes.map((cn) => {
+      let net_amount = 0;
+      let base_net_amount = 0;
       let total_amount = 0;
       let base_total_amount = 0;
       for (const detail of cn.tb_credit_note_detail) {
+        net_amount += Number(detail.net_amount || 0);
+        base_net_amount += Number(detail.base_net_amount || 0);
         total_amount += Number(detail.total_price || 0);
         base_total_amount += Number(detail.base_total_price || 0);
       }
@@ -163,6 +169,8 @@ export class CreditNoteService {
         cn_reason_description: cn.cn_reason_description,
         currency_code: cn.currency_code,
         exchange_rate: Number(cn.exchange_rate),
+        net_amount,
+        base_net_amount,
         total_amount,
         base_total_amount,
         created_at: cn.created_at,

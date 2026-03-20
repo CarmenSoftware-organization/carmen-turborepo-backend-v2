@@ -180,7 +180,10 @@ export class GoodReceivedNoteService {
             select: {
               tb_good_received_note_detail_item: {
                 select: {
+                  net_amount: true,
+                  base_net_amount: true,
                   total_price: true,
+                  base_total_price: true,
                 },
               },
             },
@@ -189,15 +192,19 @@ export class GoodReceivedNoteService {
       })
       .then((res) => {
         return res.map((item) => {
-          const total_amount = item.tb_good_received_note_detail.reduce(
-            (acc, detail) =>
-              acc +
-              detail.tb_good_received_note_detail_item.reduce(
-                (sum, detailItem) => sum + Number(detailItem.total_price ?? 0),
-                0,
-              ),
-            0,
-          );
+          let net_amount = 0;
+          let base_net_amount = 0;
+          let total_amount = 0;
+          let base_total_amount = 0;
+
+          for (const detail of item.tb_good_received_note_detail) {
+            for (const detailItem of detail.tb_good_received_note_detail_item) {
+              net_amount += Number(detailItem.net_amount ?? 0);
+              base_net_amount += Number(detailItem.base_net_amount ?? 0);
+              total_amount += Number(detailItem.total_price ?? 0);
+              base_total_amount += Number(detailItem.base_total_price ?? 0);
+            }
+          }
 
           return {
             id: item.id,
@@ -208,8 +215,11 @@ export class GoodReceivedNoteService {
             description: item.description,
             vendor_name: item.vendor_name,
             currency_code: item.currency_code,
-            created_at: item.created_at,
+            net_amount,
+            base_net_amount,
             total_amount,
+            base_total_amount,
+            created_at: item.created_at,
             is_active: item.is_active,
           };
         });
