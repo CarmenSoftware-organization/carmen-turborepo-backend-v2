@@ -17,6 +17,7 @@ import { UserBusinessUnitModule } from './application/user-business-unit/user-bu
 import { RouteApplicationModule } from './application/route-application';
 import { Platform_UserBusinessUnitModule } from './platform/platform_user-business-unit/platform_user-business-unit.module';
 import { PlatformUserModule } from './platform/platform-user/platform-user.module';
+import { Platform_ReportTemplateModule } from './platform/platform_report-template/platform_report-template.module';
 import { ExceptionFilter } from './exception/exception.fillter';
 import { NotificationModule } from './notification/notification.module';
 import { DatabaseModule } from './common/database/database.module';
@@ -69,6 +70,7 @@ import { RequestForPricingModule } from './application/request-for-pricing/reque
     Platform_UserClusterModule,
     Platform_UserBusinessUnitModule,
     PlatformUserModule,
+    Platform_ReportTemplateModule,
     // UserClusterModule,
     UserModule,
     RouteApplicationModule,

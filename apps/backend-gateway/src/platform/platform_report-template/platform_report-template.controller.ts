@@ -1,0 +1,251 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import { Response } from 'express';
+import { Platform_ReportTemplateService } from './platform_report-template.service';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam, ApiBody } from '@nestjs/swagger';
+import { ReportTemplateCreateDto, ReportTemplateUpdateDto } from './dto/report-template.dto';
+import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
+import {
+  ApiUserFilterQueries,
+  ApiVersionMinRequest,
+} from 'src/common/decorator/userfilter.decorator';
+import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
+import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
+import { BackendLogger } from 'src/common/helpers/backend.logger';
+import { AppIdGuard } from 'src/common/guard/app-id.guard';
+import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
+import { BaseHttpController } from '@/common';
+
+@Controller('api-system/report-template')
+@ApiTags('Platform Admin')
+@ApiHeaderRequiredXAppId()
+@UseGuards(KeycloakGuard)
+@ApiBearerAuth()
+export class Platform_ReportTemplateController extends BaseHttpController {
+  private readonly logger: BackendLogger = new BackendLogger(
+    Platform_ReportTemplateController.name,
+  );
+
+  constructor(
+    private readonly reportTemplateService: Platform_ReportTemplateService,
+  ) {
+    super();
+  }
+
+  /**
+   * List all report templates with pagination
+   * ค้นหารายการเทมเพลตรายงานทั้งหมดพร้อมการแบ่งหน้า
+   */
+  @Get()
+  @UseGuards(new AppIdGuard('report-template.findAll'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'Get list of report templates',
+    description: 'Lists all report templates with pagination. Each template contains dialog (XML) for parameter configuration and content (XML converted from .frx) for report layout.',
+    operationId: 'platformReportTemplate_findAll',
+    tags: ['Platform Admin', 'Report Template'],
+    responses: {
+      200: { description: 'Report templates retrieved successfully' },
+      401: { description: 'Unauthorized' },
+    },
+  })
+  async findAll(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query() query?: IPaginateQuery,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'findAll', query, version },
+      Platform_ReportTemplateController.name,
+    );
+    const { user_id, tenant_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
+    const result = await this.reportTemplateService.findAll(
+      user_id,
+      tenant_id,
+      paginate,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * Get a report template by ID
+   * ค้นหาเทมเพลตรายงานตาม ID
+   */
+  @Get(':id')
+  @UseGuards(new AppIdGuard('report-template.findOne'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiParam({ name: 'id', description: 'Report Template ID', type: 'string' })
+  @ApiOperation({
+    summary: 'Get report template by ID',
+    description: 'Retrieves a specific report template including its dialog (XML) and content (XML from .frx file).',
+    operationId: 'platformReportTemplate_findOne',
+    tags: ['Platform Admin', 'Report Template'],
+    responses: {
+      200: { description: 'Report template retrieved successfully' },
+      401: { description: 'Unauthorized' },
+      404: { description: 'Report template not found' },
+    },
+  })
+  async findOne(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'findOne', id, version },
+      Platform_ReportTemplateController.name,
+    );
+    const { user_id, tenant_id } = ExtractRequestHeader(req);
+    const result = await this.reportTemplateService.findOne(
+      id,
+      user_id,
+      tenant_id,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * Create a new report template
+   * สร้างเทมเพลตรายงานใหม่
+   */
+  @Post()
+  @UseGuards(new AppIdGuard('report-template.create'))
+  @HttpCode(HttpStatus.CREATED)
+  @ApiVersionMinRequest()
+  @ApiBody({ type: ReportTemplateCreateDto, description: 'Create report template data' })
+  @ApiOperation({
+    summary: 'Create a new report template',
+    description: 'Creates a new report template. The dialog field stores XML for parameter dialog configuration. The content field stores XML converted from .frx report layout file.',
+    operationId: 'platformReportTemplate_create',
+    tags: ['Platform Admin', 'Report Template'],
+    responses: {
+      201: { description: 'Report template created successfully' },
+      400: { description: 'Bad request' },
+      401: { description: 'Unauthorized' },
+    },
+  })
+  async create(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() createDto: ReportTemplateCreateDto,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'create', createDto, version },
+      Platform_ReportTemplateController.name,
+    );
+    const { user_id, tenant_id } = ExtractRequestHeader(req);
+    const result = await this.reportTemplateService.create(
+      createDto,
+      user_id,
+      tenant_id,
+      version,
+    );
+    this.respond(res, result, HttpStatus.CREATED);
+  }
+
+  /**
+   * Update an existing report template
+   * อัปเดตเทมเพลตรายงาน
+   */
+  @Put(':id')
+  @UseGuards(new AppIdGuard('report-template.update'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiParam({ name: 'id', description: 'Report Template ID', type: 'string' })
+  @ApiBody({ type: ReportTemplateUpdateDto, description: 'Update report template data' })
+  @ApiOperation({
+    summary: 'Update a report template',
+    description: 'Updates an existing report template. Can update dialog (XML), content (XML from .frx), and other metadata.',
+    operationId: 'platformReportTemplate_update',
+    tags: ['Platform Admin', 'Report Template'],
+    responses: {
+      200: { description: 'Report template updated successfully' },
+      400: { description: 'Bad request' },
+      401: { description: 'Unauthorized' },
+      404: { description: 'Report template not found' },
+    },
+  })
+  async update(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+    @Body() updateDto: ReportTemplateUpdateDto,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'update', id, updateDto, version },
+      Platform_ReportTemplateController.name,
+    );
+    const { user_id, tenant_id } = ExtractRequestHeader(req);
+    const result = await this.reportTemplateService.update(
+      id,
+      updateDto,
+      user_id,
+      tenant_id,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * Delete a report template
+   * ลบเทมเพลตรายงาน
+   */
+  @Delete(':id')
+  @UseGuards(new AppIdGuard('report-template.delete'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiParam({ name: 'id', description: 'Report Template ID', type: 'string' })
+  @ApiOperation({
+    summary: 'Delete a report template',
+    description: 'Soft-deletes a report template by setting deleted_at timestamp.',
+    operationId: 'platformReportTemplate_delete',
+    tags: ['Platform Admin', 'Report Template'],
+    responses: {
+      200: { description: 'Report template deleted successfully' },
+      401: { description: 'Unauthorized' },
+      404: { description: 'Report template not found' },
+    },
+  })
+  async delete(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'delete', id, version },
+      Platform_ReportTemplateController.name,
+    );
+    const { user_id, tenant_id } = ExtractRequestHeader(req);
+    const result = await this.reportTemplateService.delete(
+      id,
+      user_id,
+      tenant_id,
+      version,
+    );
+    this.respond(res, result);
+  }
+}

@@ -12,6 +12,7 @@ import { ClusterModule } from './cluster/cluster/cluster.module';
 import { BusinessUnitModule } from './cluster/business-unit/business-unit.module';
 import { CurrenciesModule as ClusterCurrenciesModule } from './cluster/currencies/currencies.module';
 import { NewsModule } from './cluster/news/news.module';
+import { ReportTemplateModule } from './cluster/report-template/report-template.module';
 import { UserModule } from './cluster/user/user.module';
 
 @Module({
@@ -37,6 +38,7 @@ import { UserModule } from './cluster/user/user.module';
     BusinessUnitModule,
     ClusterCurrenciesModule,
     NewsModule,
+    ReportTemplateModule,
     UserModule,
   ],
   controllers: [AppController],
