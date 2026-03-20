@@ -62,18 +62,18 @@ export type CreditNoteDetailResponse = z.infer<typeof CreditNoteDetailResponseSc
 export const CreditNoteListItemResponseSchema = z.object({
   id: z.string(),
   cn_no: z.string().nullable().optional(),
-  name: z.string().nullable().optional(),
+  cn_date: z.coerce.date().nullable().optional(),
+  credit_note_type: z.string().nullable().optional(),
+  doc_status: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
-  status: z.string().nullable().optional(),
-  credit_note_date: z.coerce.date().nullable().optional(),
-  vendor_id: z.string().nullable().optional(),
   vendor_name: z.string().nullable().optional(),
-  good_received_note_id: z.string().nullable().optional(),
-  grn_no: z.string().nullable().optional(),
-  total_amount: z.number().nullable().optional(),
-  is_active: z.boolean().optional(),
+  cn_reason_name: z.string().nullable().optional(),
+  cn_reason_description: z.string().nullable().optional(),
+  currency_code: z.string().nullable().optional(),
+  exchange_rate: z.coerce.number().nullable().optional(),
+  net_amount: z.coerce.number().nullable().optional(),
+  total_amount: z.coerce.number().nullable().optional(),
   created_at: z.coerce.date().optional(),
-  updated_at: z.coerce.date().optional(),
 });
 
 export type CreditNoteListItemResponse = z.infer<typeof CreditNoteListItemResponseSchema>;

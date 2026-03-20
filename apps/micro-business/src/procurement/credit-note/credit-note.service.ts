@@ -119,12 +119,21 @@ export class CreditNoteService {
         id: true,
         cn_no: true,
         cn_date: true,
-        // cn_status: true,
+        credit_note_type: true,
+        doc_status: true,
         description: true,
-        note: true,
-        info: true,
+        vendor_name: true,
+        cn_reason_name: true,
+        cn_reason_description: true,
+        currency_code: true,
+        exchange_rate: true,
         created_at: true,
-        tb_credit_note_detail: true,
+        tb_credit_note_detail: {
+          select: {
+            net_amount: true,
+            total_price: true,
+          },
+        },
       },
       where: q.where(),
       orderBy: q.orderBy(),
@@ -135,7 +144,32 @@ export class CreditNoteService {
       where: q.where(),
     });
 
-    const serializedCreditNotes = creditNotes.map((item) => CreditNoteListItemResponseSchema.parse(item));
+    const transformedCreditNotes = creditNotes.map((cn) => {
+      let net_amount = 0;
+      let total_amount = 0;
+      for (const detail of cn.tb_credit_note_detail) {
+        net_amount += Number(detail.net_amount || 0);
+        total_amount += Number(detail.total_price || 0);
+      }
+      return {
+        id: cn.id,
+        cn_no: cn.cn_no,
+        cn_date: cn.cn_date,
+        credit_note_type: cn.credit_note_type,
+        doc_status: cn.doc_status,
+        description: cn.description,
+        vendor_name: cn.vendor_name,
+        cn_reason_name: cn.cn_reason_name,
+        cn_reason_description: cn.cn_reason_description,
+        currency_code: cn.currency_code,
+        exchange_rate: Number(cn.exchange_rate),
+        net_amount,
+        total_amount,
+        created_at: cn.created_at,
+      };
+    });
+
+    const serializedCreditNotes = transformedCreditNotes.map((item) => CreditNoteListItemResponseSchema.parse(item));
 
     return Result.ok({
       paginate: {
