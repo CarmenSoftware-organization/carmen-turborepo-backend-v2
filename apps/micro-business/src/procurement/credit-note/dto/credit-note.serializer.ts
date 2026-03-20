@@ -71,8 +71,8 @@ export const CreditNoteListItemResponseSchema = z.object({
   cn_reason_description: z.string().nullable().optional(),
   currency_code: z.string().nullable().optional(),
   exchange_rate: z.coerce.number().nullable().optional(),
-  net_amount: z.coerce.number().nullable().optional(),
   total_amount: z.coerce.number().nullable().optional(),
+  base_total_amount: z.coerce.number().nullable().optional(),
   created_at: z.coerce.date().optional(),
 });
 
