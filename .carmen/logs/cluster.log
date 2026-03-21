@@ -1,0 +1,31 @@
+[dotenv@17.3.1] injecting env (43) from .env -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
+[2026-03-20T04:04:17.576Z] [32minfo[39m: Starting Nest application...
+[2026-03-20T04:04:17.586Z] [32minfo[39m: SentryModule dependencies initialized
+[2026-03-20T04:04:17.587Z] [32minfo[39m: ClientsModule dependencies initialized
+[2026-03-20T04:04:17.587Z] [32minfo[39m: ClientsModule dependencies initialized
+[2026-03-20T04:04:17.587Z] [32minfo[39m: LogEventsModule dependencies initialized
+[2026-03-20T04:04:17.587Z] [32minfo[39m: CurrenciesModule dependencies initialized
+[2026-03-20T04:04:17.587Z] [32minfo[39m: NewsModule dependencies initialized
+[2026-03-20T04:04:17.587Z] [32minfo[39m: UserModule dependencies initialized
+[2026-03-20T04:04:17.588Z] [32minfo[39m: AppModule dependencies initialized
+[2026-03-20T04:04:17.588Z] [32minfo[39m: ClusterModule dependencies initialized
+[2026-03-20T04:04:17.588Z] [32minfo[39m: BusinessUnitModule dependencies initialized
+[32m[Nest] 251954  - [39m03/20/2026, 11:04:17 AM [32m    LOG[39m [38;5;3m[bootstrap] [39m[32mClusterService is configured to run on 0.0.0.0:5014[39m
+[32m[Nest] 251954  - [39m03/20/2026, 11:04:17 AM [32m    LOG[39m [38;5;3m[bootstrap] [39mObject(0) {}
+[32m[Nest] 251954  - [39m03/20/2026, 11:04:17 AM [32m    LOG[39m [38;5;3m[bootstrap] [39m[32mHTTP server is configured to run on 0.0.0.0:6014[39m
+[32m[Nest] 251954  - [39m03/20/2026, 11:04:17 AM [32m    LOG[39m [38;5;3m[bootstrap] [39mObject(0) {}
+[2026-03-20T04:04:17.596Z] [32minfo[39m: Nest microservice successfully started
+[2026-03-20T04:04:17.598Z] [32minfo[39m: AppController {/}:
+[2026-03-20T04:04:17.599Z] [32minfo[39m: Mapped {/, GET} route
+[2026-03-20T04:04:17.599Z] [32minfo[39m: Mapped {/health, GET} route
+[2026-03-20T04:04:17.599Z] [32minfo[39m: ClusterController {/}:
+[2026-03-20T04:04:17.599Z] [32minfo[39m: BusinessUnitController {/}:
+[2026-03-20T04:04:17.599Z] [32minfo[39m: CurrenciesController {/}:
+[2026-03-20T04:04:17.600Z] [32minfo[39m: NewsController {/}:
+[2026-03-20T04:04:17.600Z] [32minfo[39m: UserController {/}:
+[2026-03-20T04:04:17.601Z] [32minfo[39m: Nest application successfully started
+[32m[Nest] 251954  - [39m03/20/2026, 11:04:17 AM [32m    LOG[39m [38;5;3m[bootstrap] [39m[32mClusterService TCP is running on 0.0.0.0:5014[39m
+[32m[Nest] 251954  - [39m03/20/2026, 11:04:17 AM [32m    LOG[39m [38;5;3m[bootstrap] [39mObject(0) {}
+[32m[Nest] 251954  - [39m03/20/2026, 11:04:17 AM [32m    LOG[39m [38;5;3m[bootstrap] [39m[32mClusterService HTTP is running on 0.0.0.0:6014[39m
+[32m[Nest] 251954  - [39m03/20/2026, 11:04:17 AM [32m    LOG[39m [38;5;3m[bootstrap] [39mObject(0) {}

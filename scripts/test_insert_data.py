@@ -679,6 +679,79 @@ def test_store_requisition():
         api_post(f"{BU_CODE}/store-requisition", body, "store-requisition", i)
 
 
+def test_physical_count():
+    print(f"\n{'─'*40}")
+    print("TRANSACTION: Physical Count")
+    print(f"{'─'*40}")
+    fetch_single("locations", f"config/{BU_CODE}/locations")
+    # Need a period - fetch or we'll let backend handle it
+    loc_id = get_ref_id("locations")
+    if not loc_id:
+        print("  ⚠ No locations found, skipping physical count")
+        return
+
+    for i in range(1, ROWS_PER_MENU + 1):
+        api_post(f"{BU_CODE}/physical-count", {
+            "location_id": get_ref_id("locations", loc_id),
+            "description": f"Test physical count {i}",
+        }, "physical-count", i)
+
+
+def test_spot_check():
+    print(f"\n{'─'*40}")
+    print("TRANSACTION: Spot Check")
+    print(f"{'─'*40}")
+    loc_id = get_ref_id("locations")
+    if not loc_id:
+        print("  ⚠ No locations found, skipping spot check")
+        return
+
+    methods = ["random", "high_value"]
+    for i in range(1, ROWS_PER_MENU + 1):
+        api_post(f"{BU_CODE}/spot-check", {
+            "location_id": get_ref_id("locations", loc_id),
+            "method": random.choice(methods),
+            "items": random.randint(3, 10),
+            "description": f"Test spot check {i}",
+        }, "spot-check", i)
+
+
+def test_good_received_note():
+    print(f"\n{'─'*40}")
+    print("TRANSACTION: Good Received Note")
+    print(f"{'─'*40}")
+    fetch_single("vendors", f"config/{BU_CODE}/vendors")
+    fetch_single("currencies", f"config/{BU_CODE}/currencies")
+    products = ref_data.get("products", [])
+
+    for i in range(1, ROWS_PER_MENU + 1):
+        vendor = random.choice(ref_data.get("vendors", [{}]))
+        detail_items = []
+        for j in range(random.randint(1, 3)):
+            prod = random.choice(products) if products else {}
+            loc_id = get_ref_id("locations")
+            qty = random.randint(1, 50)
+            price = round(random.uniform(10, 500), 2)
+            detail_items.append({
+                "product_id": prod.get("id", str(uuid.uuid4())),
+                "product_code": prod.get("code"),
+                "product_name": prod.get("name"),
+                "location_id": loc_id,
+                "qty": qty,
+                "price_per_unit": price,
+                "total_amount": round(qty * price, 2),
+            })
+
+        api_post(f"{BU_CODE}/good-received-note", {
+            "grn_date": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+            "doc_type": "manual",
+            "doc_status": "draft",
+            "vendor_id": vendor.get("id"),
+            "description": f"Test GRN {i}",
+            "good_received_note_detail": {"add": detail_items},
+        }, "good-received-note", i)
+
+
 # ============================================================
 # HELPER: REFRESH SINGLE REFERENCE
 # ============================================================
@@ -744,6 +817,9 @@ def main():
     test_transfer()
     test_purchase_request()
     test_store_requisition()
+    test_physical_count()
+    test_spot_check()
+    test_good_received_note()
 
     # --- REPORT ---
     print("\n" + "=" * 60)
