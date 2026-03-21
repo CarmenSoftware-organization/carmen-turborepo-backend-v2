@@ -853,7 +853,6 @@ export class PriceListService {
               pricelist_id: updatedPriceList.id,
               product_id: detail.product_id,
               product_name: detail.product_name ?? product?.name,
-              product_code: detail.product_code ?? product?.code,
               product_local_name: detail.product_local_name ?? product?.local_name,
               product_sku: detail.product_sku ?? product?.code,
               sequence_no: detail.sequence_no,
@@ -923,7 +922,6 @@ export class PriceListService {
             data: {
               product_id: detail.product_id,
               product_name: detail.product_name ?? product?.name,
-              product_code: detail.product_code ?? product?.code,
               product_local_name: detail.product_local_name ?? product?.local_name,
               product_sku: detail.product_sku ?? product?.code,
               sequence_no: detail.sequence_no,

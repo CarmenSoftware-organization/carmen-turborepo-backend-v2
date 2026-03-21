@@ -29,3 +29,3087 @@
 [32m[Nest] 251954  - [39m03/20/2026, 11:04:17 AM [32m    LOG[39m [38;5;3m[bootstrap] [39mObject(0) {}
 [32m[Nest] 251954  - [39m03/20/2026, 11:04:17 AM [32m    LOG[39m [38;5;3m[bootstrap] [39m[32mClusterService HTTP is running on 0.0.0.0:6014[39m
 [32m[Nest] 251954  - [39m03/20/2026, 11:04:17 AM [32m    LOG[39m [38;5;3m[bootstrap] [39mObject(0) {}
+[dotenv@17.3.1] injecting env (43) from .env -- tip: 🛡️ auth for agents: https://vestauth.com
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+[2026-03-21T05:14:57.634Z] [32minfo[39m: Starting Nest application...
+[2026-03-21T05:14:57.663Z] [32minfo[39m: SentryModule dependencies initialized
+[2026-03-21T05:14:57.664Z] [32minfo[39m: ClientsModule dependencies initialized
+[2026-03-21T05:14:57.665Z] [32minfo[39m: ClientsModule dependencies initialized
+[2026-03-21T05:14:57.666Z] [32minfo[39m: ClientsModule dependencies initialized
+[2026-03-21T05:14:57.667Z] [32minfo[39m: LogEventsModule dependencies initialized
+[2026-03-21T05:14:57.669Z] [32minfo[39m: CurrenciesModule dependencies initialized
+[2026-03-21T05:14:57.670Z] [32minfo[39m: NewsModule dependencies initialized
+[2026-03-21T05:14:57.670Z] [32minfo[39m: ReportTemplateModule dependencies initialized
+[2026-03-21T05:14:57.671Z] [32minfo[39m: ClusterModule dependencies initialized
+[2026-03-21T05:14:57.672Z] [32minfo[39m: BusinessUnitModule dependencies initialized
+[2026-03-21T05:14:57.672Z] [32minfo[39m: UserModule dependencies initialized
+[2026-03-21T05:14:57.672Z] [32minfo[39m: AppModule dependencies initialized
+[32m[Nest] 23927  - [39m03/21/2026, 12:14:57 PM [32m    LOG[39m [38;5;3m[bootstrap] [39m[32mClusterService is configured to run on 0.0.0.0:5014[39m
+[32m[Nest] 23927  - [39m03/21/2026, 12:14:57 PM [32m    LOG[39m [38;5;3m[bootstrap] [39mObject(0) {}
+[32m[Nest] 23927  - [39m03/21/2026, 12:14:57 PM [32m    LOG[39m [38;5;3m[bootstrap] [39m[32mHTTP server is configured to run on 0.0.0.0:6014[39m
+[32m[Nest] 23927  - [39m03/21/2026, 12:14:57 PM [32m    LOG[39m [38;5;3m[bootstrap] [39mObject(0) {}
+[2026-03-21T05:14:57.702Z] [32minfo[39m: Nest microservice successfully started
+[2026-03-21T05:14:57.706Z] [32minfo[39m: AppController {/}:
+[2026-03-21T05:14:57.708Z] [32minfo[39m: Mapped {/, GET} route
+[2026-03-21T05:14:57.708Z] [32minfo[39m: Mapped {/health, GET} route
+[2026-03-21T05:14:57.708Z] [32minfo[39m: ClusterController {/}:
+[2026-03-21T05:14:57.708Z] [32minfo[39m: BusinessUnitController {/}:
+[2026-03-21T05:14:57.709Z] [32minfo[39m: CurrenciesController {/}:
+[2026-03-21T05:14:57.709Z] [32minfo[39m: NewsController {/}:
+[2026-03-21T05:14:57.709Z] [32minfo[39m: ReportTemplateController {/}:
+[2026-03-21T05:14:57.709Z] [32minfo[39m: UserController {/}:
+[2026-03-21T05:14:57.712Z] [32minfo[39m: Nest application successfully started
+[32m[Nest] 23927  - [39m03/21/2026, 12:14:57 PM [32m    LOG[39m [38;5;3m[bootstrap] [39m[32mClusterService TCP is running on 0.0.0.0:5014[39m
+[32m[Nest] 23927  - [39m03/21/2026, 12:14:57 PM [32m    LOG[39m [38;5;3m[bootstrap] [39mObject(0) {}
+[32m[Nest] 23927  - [39m03/21/2026, 12:14:57 PM [32m    LOG[39m [38;5;3m[bootstrap] [39m[32mClusterService HTTP is running on 0.0.0.0:6014[39m
+[32m[Nest] 23927  - [39m03/21/2026, 12:14:57 PM [32m    LOG[39m [38;5;3m[bootstrap] [39mObject(0) {}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:42 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: [1mnull[22m,
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:42 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: [1mnull[22m,
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:42 PM [95m  DEBUG[39m [38;5;3m[ClusterController] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:42 PM [95m  DEBUG[39m [38;5;3m[ClusterService] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:42 PM [95m  DEBUG[39m [38;5;3m[ClusterController] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          is_active: [33mtrue[39m,
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:42 PM [95m  DEBUG[39m [38;5;3m[ClusterService] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        is_active: [33mtrue[39m,
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:42 PM [95m  DEBUG[39m [38;5;3m[ClusterController] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: {
+            not: [1mnull[22m
+          }
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:42 PM [95m  DEBUG[39m [38;5;3m[ClusterService] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: {
+          not: [1mnull[22m
+        }
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:42 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitController] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m,
+        [32m'description'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:42 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitService] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m,
+      [32m'description'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:42 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitController] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m,
+        [32m'description'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          is_active: [33mtrue[39m,
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:42 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitService] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m,
+      [32m'description'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        is_active: [33mtrue[39m,
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitController] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m,
+        [32m'description'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: {
+            not: [1mnull[22m
+          }
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitService] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m,
+      [32m'description'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: {
+          not: [1mnull[22m
+        }
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          is_active: [33mtrue[39m,
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        is_active: [33mtrue[39m,
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: {
+            not: [1mnull[22m
+          }
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: {
+          not: [1mnull[22m
+        }
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[ClusterController] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: {
+            not: [1mnull[22m
+          }
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[ClusterService] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: {
+          not: [1mnull[22m
+        }
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitController] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m,
+        [32m'description'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitService] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m,
+      [32m'description'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitController] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m,
+        [32m'description'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          is_active: [33mtrue[39m,
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitService] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m,
+      [32m'description'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        is_active: [33mtrue[39m,
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[ClusterController] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[ClusterService] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[ClusterController] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          is_active: [33mtrue[39m,
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[ClusterService] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        is_active: [33mtrue[39m,
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          is_active: [33mtrue[39m,
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        is_active: [33mtrue[39m,
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitController] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m,
+        [32m'description'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: {
+            not: [1mnull[22m
+          }
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:43 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitService] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m,
+      [32m'description'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: {
+          not: [1mnull[22m
+        }
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:44 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: {
+            not: [1mnull[22m
+          }
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:36:44 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: {
+          not: [1mnull[22m
+        }
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:37:06 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m10[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:37:06 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m10[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:37:06 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m10[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:37:06 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m10[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:38:55 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: [1mnull[22m,
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:38:55 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: [1mnull[22m,
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:38:55 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m10[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:38:55 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m10[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:38:55 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: [1mnull[22m,
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:38:55 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: [1mnull[22m,
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:38:56 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m10[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:38:56 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m10[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:38:56 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m10[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:38:56 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m10[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:38:56 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: [1mnull[22m,
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:38:56 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: [1mnull[22m,
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:38:56 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: [1mnull[22m,
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:38:56 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: [1mnull[22m,
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:40:29 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m10[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          is_active: [33mtrue[39m,
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:40:29 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m10[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        is_active: [33mtrue[39m,
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:40:36 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m10[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 12:40:36 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m10[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: [1mnull[22m,
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: [1mnull[22m,
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[ClusterController] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[ClusterService] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[ClusterController] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          is_active: [33mtrue[39m,
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[ClusterService] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        is_active: [33mtrue[39m,
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitController] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m,
+        [32m'description'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitService] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m,
+      [32m'description'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[ClusterController] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: {
+            not: [1mnull[22m
+          }
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[ClusterService] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: {
+          not: [1mnull[22m
+        }
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitController] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m,
+        [32m'description'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          is_active: [33mtrue[39m,
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitService] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m,
+      [32m'description'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        is_active: [33mtrue[39m,
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitController] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m,
+        [32m'description'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: {
+            not: [1mnull[22m
+          }
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitService] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m,
+      [32m'description'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: {
+          not: [1mnull[22m
+        }
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          is_active: [33mtrue[39m,
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        is_active: [33mtrue[39m,
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: {
+            not: [1mnull[22m
+          }
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: {
+          not: [1mnull[22m
+        }
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[ClusterController] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: {
+            not: [1mnull[22m
+          }
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[ClusterService] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: {
+          not: [1mnull[22m
+        }
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[ClusterController] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[ClusterService] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[ClusterController] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          is_active: [33mtrue[39m,
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:04 PM [95m  DEBUG[39m [38;5;3m[ClusterService] [39mObject(2) {
+  function: [32m'listCluster'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        is_active: [33mtrue[39m,
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:05 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitController] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m,
+        [32m'description'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:05 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitService] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m,
+      [32m'description'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:05 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitController] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m,
+        [32m'description'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          is_active: [33mtrue[39m,
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:05 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitService] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m,
+      [32m'description'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        is_active: [33mtrue[39m,
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:05 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitController] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'code'[39m,
+        [32m'description'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: {
+            not: [1mnull[22m
+          }
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:05 PM [95m  DEBUG[39m [38;5;3m[BusinessUnitService] [39mObject(2) {
+  function: [32m'listBusinessUnit'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'code'[39m,
+      [32m'description'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: {
+          not: [1mnull[22m
+        }
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:05 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          is_active: [33mtrue[39m,
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:05 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        is_active: [33mtrue[39m,
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:05 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:05 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:05 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: {
+            not: [1mnull[22m
+          }
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:05 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: {
+          not: [1mnull[22m
+        }
+      }
+    },
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:11 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m10[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:11 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m10[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:12 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m10[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:52:12 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m10[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:55:15 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: [1mnull[22m,
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:55:15 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: [1mnull[22m,
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:55:15 PM [95m  DEBUG[39m [38;5;3m[UserController] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  payload: {
+    data: [1mnull[22m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m1[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'username'[39m,
+        [32m'email'[39m
+      ],
+      sort: [],
+      filter: {},
+      advance: [1mnull[22m,
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:55:15 PM [95m  DEBUG[39m [38;5;3m[UserService] [39mObject(2) {
+  function: [32m'listUsers'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m1[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'username'[39m,
+      [32m'email'[39m
+    ],
+    sort: [],
+    filter: {},
+    advance: [1mnull[22m,
+    bu_code: []
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:57:12 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'create'[39m,
+  payload: {
+    data: {
+      name: [32m'test'[39m,
+      description: [32m'test Create'[39m,
+      report_group: [32m'PO'[39m,
+      dialog: [32m'<?xml version="1.0" encoding="utf-8"?>\n<Report ScriptLanguage="CSharp" ReportInfo.Description="This report demonstrates MSChartObject features." ReportInfo.Created="06/14/2009 20:37:10" ReportInfo.Modified="04/06/2022 16:22:23" ReportInfo.CreatorVersion="1.0.0.0">\n<Dictionary>\n  <TableDataSource Name="Orders" ReferenceName="NorthWind.Orders" DataType="System.Int32" Enabled="true">\n    <Column Name="OrderID" DataType="System.Int32"/>\n    <Column Name="CustomerID" DataType="System.String"/>\n    <Column Name="EmployeeID" DataType="System.Int32"/>\n    <Column Name="OrderDate" DataType="System.DateTime"/>\n    <Column Name="RequiredDate" DataType="System.DateTime"/>\n    <Column Name="ShippedDate" DataType="System.DateTime"/>\n    <Column Name="ShipVia" DataType="System.Int32"/>\n    <Column Name="Freight" DataType="System.Decimal"/>\n    <Column Name="ShipName" DataType="System.String"/>\n    <Column Name="ShipAddress" DataType="System.String"/>\n    <Column Name="ShipCity" DataType="System.String"/>\n    <Column Name="ShipRegion" DataType="System.String"/>\n    <Column Name="ShipPostalCode" DataType="System.String"/>\n    <Column Name="ShipCountry" DataType="System.String"/>\n    <Column Name="Latitude" DataType="System.Double"/>\n    <Column Name="Longitude" DataType="System.Double"/>\n  </TableDataSource>\n</Dictionary>\n<ReportPage Name="Page1" Watermark.Font="Arial, 60pt">\n  <DataBand Name="Data2" Width="718.2" Height="727.65">\n    <MSChartObject Name="MSChart16" Left="94.5" Top="56.7" Width="519.75" Height="321.3" ChartData="PENoYXJ0IFBhbGV0dGU9IlNlbWlUcmFuc3BhcmVudCIgU2l6ZT0iNDMyLCAzNDgiIEJvcmRlcmxpbmVDb2xvcj0iRGFya0dyYXkiIEJvcmRlcmxpbmVXaWR0aD0iMiI+DQogIDxTZXJpZXM+DQogICAgPFNlcmllcyBOYW1lPSJHZXJhbGQgIEsuIiBMZWdlbmQ9IkRlZmF1bHQiIFhWYWx1ZVR5cGU9IlN0cmluZyIgWVZhbHVlVHlwZT0iRG91YmxlIiBDaGFydEFyZWE9IkRlZmF1bHQiIEZvbnQ9Ik1pY3Jvc29mdCBTYW5zIFNlcmlmLCA5Ljc1cHQiPg0KICAgICAgPFBvaW50cz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxMDAwIiBBeGlzTGFiZWw9IkphbnVhcnkiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iMTE1NiIgQXhpc0xhYmVsPSJGZWJydWFyeSIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI5NDAiIEF4aXNMYWJlbD0iTWFyY2giIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iMTUwMCIgQXhpc0xhYmVsPSJBcHJpbCIgLz4NCiAgICAgIDwvUG9pbnRzPg0KICAgIDwvU2VyaWVzPg0KICAgIDxTZXJpZXMgTmFtZT0iSm9zZXBoaW5hIEEuIiBMZWdlbmQ9IkRlZmF1bHQiIFhWYWx1ZVR5cGU9IlN0cmluZyIgWVZhbHVlVHlwZT0iRG91YmxlIiBDaGFydEFyZWE9IkRlZmF1bHQiIEZvbnQ9Ik1pY3Jvc29mdCBTYW5zIFNlcmlmLCA4cHQiPg0KICAgICAgPFBvaW50cz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI5MDAiIEF4aXNMYWJlbD0iQSIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI3MDAiIEF4aXNMYWJlbD0iQiIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI4NTQiIEF4aXNMYWJlbD0iQyIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxMTUwIiBBeGlzTGFiZWw9IkQiIC8+DQogICAgICA8L1BvaW50cz4NCiAgICA8L1Nlcmllcz4NCiAgICA8U2VyaWVzIE5hbWU9IktldmluIFIuIiBMZWdlbmQ9IkRlZmF1bHQiIFhWYWx1ZVR5cGU9IlN0cmluZyIgWVZhbHVlVHlwZT0iRG91YmxlIiBDaGFydEFyZWE9IkRlZmF1bHQiIEZvbnQ9Ik1pY3Jvc29mdCBTYW5zIFNlcmlmLCA4cHQiPg0KICAgICAgPFBvaW50cz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI5MjAiIEF4aXNMYWJlbD0iQSIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxMjUwIiBBeGlzTGFiZWw9IkIiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iOTI3IiBBeGlzTGFiZWw9IkMiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iMTAyMCIgQXhpc0xhYmVsPSJEIiAvPg0KICAgICAgPC9Qb2ludHM+DQogICAgPC9TZXJpZXM+DQogIDwvU2VyaWVzPg0KICA8TGVnZW5kcz4NCiAgICA8TGVnZW5kIE5hbWU9IkRlZmF1bHQiIElzVGV4dEF1dG9GaXQ9IkZhbHNlIj4NCiAgICA8L0xlZ2VuZD4NCiAgPC9MZWdlbmRzPg0KICA8VGl0bGVzPg0KICAgIDxUaXRsZSBOYW1lPSJUaXRsZTEiIFRleHQ9IlNhbGVzIGNoYXJ0IiBGb250PSJNaWNyb3NvZnQgU2FucyBTZXJpZiwgMTJwdCI+DQogICAgPC9UaXRsZT4NCiAgPC9UaXRsZXM+DQogIDxDaGFydEFyZWFzPg0KICAgIDxDaGFydEFyZWEgTmFtZT0iRGVmYXVsdCI+DQogICAgICA8QXhpc1kgSXNMYWJlbEF1dG9GaXQ9IkZhbHNlIj4NCiAgICAgICAgPE1ham9yR3JpZCBMaW5lQ29sb3I9IjY0LCA2NCwgNjQsIDY0IiAvPg0KICAgICAgPC9BeGlzWT4NCiAgICAgIDxBeGlzWCBJc0xhYmVsQXV0b0ZpdD0iRmFsc2UiPg0KICAgICAgICA8TWFqb3JHcmlkIExpbmVDb2xvcj0iNjQsIDY0LCA2NCwgNjQiIC8+DQogICAgICA8L0F4aXNYPg0KICAgICAgPEF4aXNYMiBJc0xhYmVsQXV0b0ZpdD0iRmFsc2UiPg0KICAgICAgICA8TWFqb3JHcmlkIExpbmVDb2xvcj0iNjQsIDY0LCA2NCwgNjQiIC8+DQogICAgICA8L0F4aXNYMj4NCiAgICAgIDxBeGlzWTIgSXNMYWJlbEF1dG9GaXQ9IkZhbHNlIj4NCiAgICAgICAgPE1ham9yR3JpZCBMaW5lQ29sb3I9IjY0LCA2NCwgNjQsIDY0IiAvPg0KICAgICAgPC9BeGlzWTI+DQogICAgPC9DaGFydEFyZWE+DQogIDwvQ2hhcnRBcmVhcz4NCjwvQ2hhcnQ+">\n      <MSChartSeries Name="Series21"/>\n      <MSChartSeries Name="Series20"/>\n      <MSChartSeries Name="Series22"/>\n    </MSChartObject>\n    <TextObject Name="Text32" Left="226.8" Top="9.45" Width="236.25" Height="37.8" Text="Histogram" HorzAlign="Center" Font="Arial Black, 20pt"/>\n    <MSChartObject Name="MSChart17" Left="37.8" Top="387.45" Width="519.75" Height="292.95" ChartData="PENoYXJ0IFBhbGV0dGU9IlNlbWlUcmFuc3BhcmVudCIgU2l6ZT0iNDMyLCAzNDgiIEJvcmRlcmxpbmVDb2xvcj0iRGFya0dyYXkiIEJvcmRlcmxpbmVXaWR0aD0iMiI+DQogIDxTZXJpZXM+DQogICAgPFNlcmllcyBOYW1lPSJBbmRyZXcgSy4iIExlZ2VuZD0iRGVmYXVsdCIgWFZhbHVlVHlwZT0iU3RyaW5nIiBZVmFsdWVUeXBlPSJEb3VibGUiIENoYXJ0QXJlYT0iRGVmYXVsdCIgRm9udD0iTWljcm9zb2Z0IFNhbnMgU2VyaWYsIDkuNzVwdCI+DQogICAgICA8UG9pbnRzPg0KICAgICAgICA8RGF0YVBvaW50IFlWYWx1ZXM9IjEwMDAiIEF4aXNMYWJlbD0iSmFudWFyeSIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxMTU2IiBBeGlzTGFiZWw9IkZlYnJ1YXJ5IiAvPg0KICAgICAgICA8RGF0YVBvaW50IFlWYWx1ZXM9Ijk0MCIgQXhpc0xhYmVsPSJNYXJjaCIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxNTAwIiBBeGlzTGFiZWw9IkFwcmlsIiAvPg0KICAgICAgPC9Qb2ludHM+DQogICAgPC9TZXJpZXM+DQogICAgPFNlcmllcyBOYW1lPSJNYXhpbSBBLiIgTGVnZW5kPSJEZWZhdWx0IiBYVmFsdWVUeXBlPSJTdHJpbmciIFlWYWx1ZVR5cGU9IkRvdWJsZSIgQ2hhcnRBcmVhPSJEZWZhdWx0IiBGb250PSJNaWNyb3NvZnQgU2FucyBTZXJpZiwgOHB0Ij4NCiAgICAgIDxQb2ludHM+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iOTAwIiBBeGlzTGFiZWw9IkEiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iNzAwIiBBeGlzTGFiZWw9IkIiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iODU0IiBBeGlzTGFiZWw9IkMiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iMTE1MCIgQXhpc0xhYmVsPSJEIiAvPg0KICAgICAgPC9Qb2ludHM+DQogICAgPC9TZXJpZXM+DQogICAgPFNlcmllcyBOYW1lPSJNaWNoYWVsIFIuIiBMZWdlbmQ9IkRlZmF1bHQiIFhWYWx1ZVR5cGU9IlN0cmluZyIgWVZhbHVlVHlwZT0iRG91YmxlIiBDaGFydEFyZWE9IkRlZmF1bHQiIEZvbnQ9Ik1pY3Jvc29mdCBTYW5zIFNlcmlmLCA4cHQiPg0KICAgICAgPFBvaW50cz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI5MjAiIEF4aXNMYWJlbD0iQSIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxMjUwIiBBeGlzTGFiZWw9IkIiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iOTI3IiBBeGlzTGFiZWw9IkMiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iMTAyMCIgQXhpc0xhYmVsPSJEIiAvPg0KICAgICAgPC9Qb2ludHM+DQogICAgPC9TZXJpZXM+DQogIDwvU2VyaWVzPg0KICA8TGVnZW5kcz4NCiAgICA8TGVnZW5kIE5hbWU9IkRlZmF1bHQiIElzVGV4dEF1dG9GaXQ9IkZhbHNlIiBJc0RvY2tlZEluc2lkZUNoYXJ0QXJlYT0iRmFsc2UiIEVuYWJsZWQ9IkZhbHNlIj4NCiAgICA8L0xlZ2VuZD4NCiAgPC9MZWdlbmRzPg0KICA8VGl0bGVzPg0KICAgIDxUaXRsZSBOYW1lPSJUaXRsZTEiIFRleHQ9IlNhbGVzIGNoYXJ0IDNEIiBGb250PSJNaWNyb3NvZnQgU2FucyBTZXJpZiwgMTJwdCI+DQogICAgPC9UaXRsZT4NCiAgPC9UaXRsZXM+DQogIDxDaGFydEFyZWFzPg0KICAgIDxDaGFydEFyZWEgTmFtZT0iRGVmYXVsdCI+DQogICAgICA8QXhpc1kgSXNMYWJlbEF1dG9GaXQ9IkZhbHNlIj4NCiAgICAgICAgPE1ham9yR3JpZCBMaW5lQ29sb3I9IjY0LCA2NCwgNjQsIDY0IiAvPg0KICAgICAgPC9BeGlzWT4NCiAgICAgIDxBeGlzWCBJc0xhYmVsQXV0b0ZpdD0iRmFsc2UiIElzTWFyZ2luVmlzaWJsZT0iRmFsc2UiPg0KICAgICAgICA8TWFqb3JHcmlkIExpbmVDb2xvcj0iNjQsIDY0LCA2NCwgNjQiIC8+DQogICAgICA8L0F4aXNYPg0KICAgICAgPEF4aXNYMiBJc0xhYmVsQXV0b0ZpdD0iRmFsc2UiPg0KICAgICAgICA8TWFqb3JHcmlkIExpbmVDb2xvcj0iNjQsIDY0LCA2NCwgNjQiIC8+DQogICAgICA8L0F4aXNYMj4NCiAgICAgIDxBeGlzWTIgSXNMYWJlbEF1dG9GaXQ9IkZhbHNlIj4NCiAgICAgICAgPE1ham9yR3JpZCBMaW5lQ29sb3I9IjY0LCA2NCwgNjQsIDY0IiAvPg0KICAgICAgPC9BeGlzWTI+DQogICAgICA8QXJlYTNEU3R5bGUgRW5hYmxlM0Q9IlRydWUiIElzQ2x1c3RlcmVkPSJUcnVlIiAvPg0KICAgIDwvQ2hhcnRBcmVhPg0KICA8L0NoYXJ0QXJlYXM+DQo8L0NoYXJ0Pg==">\n      <MSChartSeries Name="Series23"/>\n      <MSChartSeries Name="Series24"/>\n      <MSChartSeries Name="Series25"/>\n    </MSChartObject>\n  </DataBand>\n</ReportPage>\n<ReportPage Name="Page2" Watermark.Font="Arial, 60pt">\n  <DataBand Name="Data5" Width="718.2" Height="812.7">\n    <MSChartObject Name="MSChart23" Left="56.7" Top="9.45" Width="519.75" Height="321.3" IsIntersectedWithOtherObject="true" ChartData="PENoYXJ0IFBhbGV0dGU9IlNlbWlUcmFuc3BhcmVudCIgU2l6ZT0iNDMyLCAzNDgiIEJvcmRlcmxpbmVDb2xvcj0iRGFya0dyYXkiIEJvcmRlcmxpbmVXaWR0aD0iMiI+DQogIDxTZXJpZXM+DQogICAgPFNlcmllcyBOYW1lPSJHZXJhbGQgIEsiIExlZ2VuZD0iRGVmYXVsdCIgWFZhbHVlVHlwZT0iU3RyaW5nIiBZVmFsdWVUeXBlPSJEb3VibGUiIENoYXJ0VHlwZT0iQmFyIiBDaGFydEFyZWE9IkRlZmF1bHQiIEZvbnQ9Ik1pY3Jvc29mdCBTYW5zIFNlcmlmLCA4cHQiPg0KICAgICAgPFBvaW50cz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxMDAwIiBBeGlzTGFiZWw9IkphbnVhcnkiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iMTE1NiIgQXhpc0xhYmVsPSJGZWJydWFyeSIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI5NDAiIEF4aXNMYWJlbD0iTWFyY2giIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iMTUwMCIgQXhpc0xhYmVsPSJBcHJpbCIgLz4NCiAgICAgIDwvUG9pbnRzPg0KICAgIDwvU2VyaWVzPg0KICAgIDxTZXJpZXMgTmFtZT0iSm9zZXBoaW5hIEEiIExlZ2VuZD0iRGVmYXVsdCIgWFZhbHVlVHlwZT0iU3RyaW5nIiBZVmFsdWVUeXBlPSJEb3VibGUiIENoYXJ0VHlwZT0iQmFyIiBDaGFydEFyZWE9IkRlZmF1bHQiIEZvbnQ9Ik1pY3Jvc29mdCBTYW5zIFNlcmlmLCA4cHQiPg0KICAgICAgPFBvaW50cz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI5MDAiIEF4aXNMYWJlbD0iQSIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI3MDAiIEF4aXNMYWJlbD0iQiIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI4NTQiIEF4aXNMYWJlbD0iQyIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxMTUwIiBBeGlzTGFiZWw9IkQiIC8+DQogICAgICA8L1BvaW50cz4NCiAgICA8L1Nlcmllcz4NCiAgICA8U2VyaWVzIE5hbWU9IktldmluIFIiIExlZ2VuZD0iRGVmYXVsdCIgWFZhbHVlVHlwZT0iU3RyaW5nIiBZVmFsdWVUeXBlPSJEb3VibGUiIENoYXJ0VHlwZT0iQmFyIiBDaGFydEFyZWE9IkRlZmF1bHQiIEZvbnQ9Ik1pY3Jvc29mdCBTYW5zIFNlcmlmLCA4cHQiPg0KICAgICAgPFBvaW50cz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI5MjAiIEF4aXNMYWJlbD0iQSIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxMjUwIiBBeGlzTGFiZWw9IkIiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iOTI3IiBBeGlzTGFiZWw9IkMiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iMTAyMCIgQXhpc0xhYmVsPSJEIiAvPg0KICAgICAgPC9Qb2ludHM+DQogICAgPC9TZXJpZXM+DQogIDwvU2VyaWVzPg0KICA8TGVnZW5kcz4NCiAgICA8TGVnZW5kIE5hbWU9IkRlZmF1bHQiIElzVGV4dEF1dG9GaXQ9IkZhbHNlIiBBbGlnbm1lbnQ9IkNlbnRlciIgRG9ja2luZz0iVG9wIj4NCiAgICA8L0xlZ2VuZD4NCiAgPC9MZ'[39m... 61754 more characters,
+      content: [32m'<?xml version="1.0" encoding="utf-8"?>\n<Report ScriptLanguage="CSharp" ReportInfo.Description="Demonstrates the data filtering feature of dialog controls. To create this report:&#13;&#10;- create the report layout;&#13;&#10;- add a new dialog form;&#13;&#10;- put the CheckedListBox control on it;&#13;&#10;- go to the &quot;Properties&quot; window and set the &quot;DataColumn&quot; property to the data column you want to display.&#13;&#10;&#13;&#10;When you run a report, the CheckedListBox will be filled automatically (&quot;AutoFill&quot; property is true by default). You may check some items that you want to see. When you switch to another control, the data will be automatically filtered (the &quot;AutoFilter&quot; property is true by default).&#13;&#10;&#13;&#10;Learn about various report objects on the Fast Reports Academy channel http://fast.report/afd51" ReportInfo.Created="01/18/2008 00:04:46" ReportInfo.Modified="03/29/2023 00:45:22" ReportInfo.CreatorVersion="1.0.0.0">\n<Styles>\n  <Style Name="EvenRows" Fill.Color="Linen" Font="Arial, 10pt"/>\n</Styles>\n<Dictionary>\n  <TableDataSource Name="Customers" ReferenceName="NorthWind.Customers" DataType="System.Int32" Enabled="true">\n    <Column Name="CustomerID" DataType="System.String"/>\n    <Column Name="CompanyName" DataType="System.String"/>\n    <Column Name="ContactName" DataType="System.String"/>\n    <Column Name="ContactTitle" DataType="System.String"/>\n    <Column Name="Address" DataType="System.String"/>\n    <Column Name="City" DataType="System.String"/>\n    <Column Name="Region" DataType="System.String"/>\n    <Column Name="PostalCode" DataType="System.String"/>\n    <Column Name="Country" DataType="System.String"/>\n    <Column Name="Phone" DataType="System.String"/>\n    <Column Name="Fax" DataType="System.String"/>\n  </TableDataSource>\n  <TableDataSource Name="Orders" ReferenceName="NorthWind.Orders" DataType="System.Int32" Enabled="true">\n    <Column Name="OrderID" DataType="System.Int32"/>\n    <Column Name="CustomerID" DataType="System.String"/>\n    <Column Name="EmployeeID" DataType="System.Int32"/>\n    <Column Name="OrderDate" DataType="System.DateTime"/>\n    <Column Name="RequiredDate" DataType="System.DateTime"/>\n    <Column Name="ShippedDate" DataType="System.DateTime"/>\n    <Column Name="ShipVia" DataType="System.Int32"/>\n    <Column Name="Freight" DataType="System.Decimal"/>\n    <Column Name="ShipName" DataType="System.String"/>\n    <Column Name="ShipAddress" DataType="System.String"/>\n    <Column Name="ShipCity" DataType="System.String"/>\n    <Column Name="ShipRegion" DataType="System.String"/>\n    <Column Name="ShipPostalCode" DataType="System.String"/>\n    <Column Name="ShipCountry" DataType="System.String"/>\n    <Column Name="Latitude" DataType="System.Double"/>\n    <Column Name="Longitude" DataType="System.Double"/>\n  </TableDataSource>\n  <Relation Name="CustomersOrders" ReferenceName="NorthWind.CustomersOrders" ParentDataSource="Customers" ChildDataSource="Orders" ParentColumns="CustomerID" ChildColumns="CustomerID" Enabled="true"/>\n  <Total Name="TotalOrders" TotalType="Count" Evaluator="Data1" PrintOn="GroupFooter2"/>\n</Dictionary>\n<DialogPage Name="Form1" AcceptButton="btnOk" CancelButton="btnCancel" AutoScaleDimensions="192, 192" Font="Segoe UI, 9pt" ClientSize="606, 552">\n  <LabelControl Name="Label1" Left="24" Top="16" Width="530" Font="Segoe UI, 9pt" TabIndex="2" Text="Select one or several customers to view its orders:"/>\n  <CheckedListBoxControl Name="lbCustomers" Left="24" Top="64" Width="556" Height="384" Font="Segoe UI, 9pt" TabIndex="3" Text="Ernst Handel" ClickEvent="" DataColumn="Orders.Customers.CompanyName" CheckOnClick="true"/>\n  <ButtonControl Name="btnOk" Left="272" Top="480" Width="150" Height="46" Font="Segoe UI, 9pt" TabIndex="0" Text="OK" DialogResult="OK"/>\n  <ButtonControl Name="btnCancel" Left="432" Top="480" Width="150" Height="46" Font="Segoe UI, 9pt" TabIndex="1" Text="Cancel" DialogResult="Cancel"/>\n</DialogPage>\n<ReportPage Name="Page2" Watermark.Font="Arial, 60pt">\n  <ReportTitleBand Name="ReportTitle2" Width="718.2" Height="37.8" CanGrow="true">\n    <TextObject Name="Text13" Width="718.2" Height="37.8" Text="CUSTOMERS ORDERS" HorzAlign="Center" VertAlign="Center" Font="Segoe UI, 14pt, style=Bold"/>\n  </ReportTitleBand>\n  <GroupHeaderBand Name="GroupHeader2" Top="39.8" Width="718.2" Height="28.35" Fill.Color="SandyBrown" KeepWithData="true" RepeatOnEveryPage="true" Condition="[Orders.CustomerID]">\n    <TextObject Name="Text14" Width="349.65" Height="28.35" Text="[Orders.Customers.CompanyName]" VertAlign="Center" Font="Segoe UI, 12pt, style=Bold"/>\n    <ChildBand Name="Child1" Top="70.15" Width="718.2" Height="18.9" Fill.Color="PeachPuff">\n      <TextObject Name="Text15" Left="255.15" Width="94.5" Height="18.9" Text="ShippedDate" HorzAlign="Right" VertAlign="Center" Font="Segoe UI, 9pt, style=Bold"/>\n      <TextObject Name="Text16" Width="94.5" Height="18.9" Text="OrderID" VertAlign="Center" Font="Segoe UI, 9pt, style=Bold"/>\n      <TextObject Name="Text17" Left="122.85" Width="94.5" Height="18.9" Text="OrderDate" HorzAlign="Right" VertAlign="Center" Font="Segoe UI, 9pt, style=Bold"/>\n    </ChildBand>\n    <DataBand Name="Data1" Top="91.05" Width="718.2" Height="18.9" EvenStyle="EvenRows" DataSource="Orders">\n      <TextObject Name="Text18" Width="94.5" Height="18.9" Text="[Orders.OrderID]" Font="Segoe UI, 9pt"/>\n      <TextObject Name="Text19" Left="122.85" Width="94.5" Height="18.9" Text="[Orders.OrderDate]" Format="Date" Format.Format="d" HorzAlign="Right" Font="Segoe UI, 9pt"/>\n      <TextObject Name="Text20" Left="255.15" Width="94.5" Height="18.9" Text="[Orders.ShippedDate]" Format="Date" Format.Format="d" HorzAlign="Right" Font="Segoe UI, 9pt"/>\n      <Sort>\n        <Sort Expression="[Orders.OrderID]"/>\n      </Sort>\n    </DataBand>\n    <GroupFooterBand Name="GroupFooter2" Top="111.95" Width="718.2" Height="28.35">\n      <TextObject Name="Text21" Width="349.65" Height="18.9" Text="Total orders: [TotalOrders]" HorzAlign="Right" Font="Segoe UI, 9pt, style=Bold"/>\n    </GroupFooterBand>\n  </GroupHeaderBand>\n  <PageFooterBand Name="PageFooter2" Top="142.3" Width="718.2" Height="28.35" Fill.Color="WhiteSmoke">\n    <TextObject Name="Text22" Left="614.25" Width="94.5" Height="28.35" Text="[PageN]" HorzAlign="Right" VertAlign="Center" Font="Segoe UI, 9pt"/>\n    <TextObject Name="Text23" Left="9.45" Width="217.35" Height="28.35" Cursor="Hand" Hyperlink.Value="https://www.fast-report.com/en/product/fast-report-net/" Text="Generated by FastReport" VertAlign="Center" Font="Segoe UI, 9pt, style=Underline" TextFill.Color="Blue"/>\n  </PageFooterBand>\n</ReportPage>\n</Report>'[39m,
+      is_standard: [33mfalse[39m,
+      allow_business_unit: [32m'T01, T02'[39m,
+      deny_business_unit: [32m''[39m,
+      is_active: [33mtrue[39m
+    },
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:57:12 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'create'[39m,
+  data: {
+    name: [32m'test'[39m,
+    description: [32m'test Create'[39m,
+    report_group: [32m'PO'[39m,
+    dialog: [32m'<?xml version="1.0" encoding="utf-8"?>\n<Report ScriptLanguage="CSharp" ReportInfo.Description="This report demonstrates MSChartObject features." ReportInfo.Created="06/14/2009 20:37:10" ReportInfo.Modified="04/06/2022 16:22:23" ReportInfo.CreatorVersion="1.0.0.0">\n<Dictionary>\n  <TableDataSource Name="Orders" ReferenceName="NorthWind.Orders" DataType="System.Int32" Enabled="true">\n    <Column Name="OrderID" DataType="System.Int32"/>\n    <Column Name="CustomerID" DataType="System.String"/>\n    <Column Name="EmployeeID" DataType="System.Int32"/>\n    <Column Name="OrderDate" DataType="System.DateTime"/>\n    <Column Name="RequiredDate" DataType="System.DateTime"/>\n    <Column Name="ShippedDate" DataType="System.DateTime"/>\n    <Column Name="ShipVia" DataType="System.Int32"/>\n    <Column Name="Freight" DataType="System.Decimal"/>\n    <Column Name="ShipName" DataType="System.String"/>\n    <Column Name="ShipAddress" DataType="System.String"/>\n    <Column Name="ShipCity" DataType="System.String"/>\n    <Column Name="ShipRegion" DataType="System.String"/>\n    <Column Name="ShipPostalCode" DataType="System.String"/>\n    <Column Name="ShipCountry" DataType="System.String"/>\n    <Column Name="Latitude" DataType="System.Double"/>\n    <Column Name="Longitude" DataType="System.Double"/>\n  </TableDataSource>\n</Dictionary>\n<ReportPage Name="Page1" Watermark.Font="Arial, 60pt">\n  <DataBand Name="Data2" Width="718.2" Height="727.65">\n    <MSChartObject Name="MSChart16" Left="94.5" Top="56.7" Width="519.75" Height="321.3" ChartData="PENoYXJ0IFBhbGV0dGU9IlNlbWlUcmFuc3BhcmVudCIgU2l6ZT0iNDMyLCAzNDgiIEJvcmRlcmxpbmVDb2xvcj0iRGFya0dyYXkiIEJvcmRlcmxpbmVXaWR0aD0iMiI+DQogIDxTZXJpZXM+DQogICAgPFNlcmllcyBOYW1lPSJHZXJhbGQgIEsuIiBMZWdlbmQ9IkRlZmF1bHQiIFhWYWx1ZVR5cGU9IlN0cmluZyIgWVZhbHVlVHlwZT0iRG91YmxlIiBDaGFydEFyZWE9IkRlZmF1bHQiIEZvbnQ9Ik1pY3Jvc29mdCBTYW5zIFNlcmlmLCA5Ljc1cHQiPg0KICAgICAgPFBvaW50cz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxMDAwIiBBeGlzTGFiZWw9IkphbnVhcnkiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iMTE1NiIgQXhpc0xhYmVsPSJGZWJydWFyeSIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI5NDAiIEF4aXNMYWJlbD0iTWFyY2giIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iMTUwMCIgQXhpc0xhYmVsPSJBcHJpbCIgLz4NCiAgICAgIDwvUG9pbnRzPg0KICAgIDwvU2VyaWVzPg0KICAgIDxTZXJpZXMgTmFtZT0iSm9zZXBoaW5hIEEuIiBMZWdlbmQ9IkRlZmF1bHQiIFhWYWx1ZVR5cGU9IlN0cmluZyIgWVZhbHVlVHlwZT0iRG91YmxlIiBDaGFydEFyZWE9IkRlZmF1bHQiIEZvbnQ9Ik1pY3Jvc29mdCBTYW5zIFNlcmlmLCA4cHQiPg0KICAgICAgPFBvaW50cz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI5MDAiIEF4aXNMYWJlbD0iQSIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI3MDAiIEF4aXNMYWJlbD0iQiIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI4NTQiIEF4aXNMYWJlbD0iQyIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxMTUwIiBBeGlzTGFiZWw9IkQiIC8+DQogICAgICA8L1BvaW50cz4NCiAgICA8L1Nlcmllcz4NCiAgICA8U2VyaWVzIE5hbWU9IktldmluIFIuIiBMZWdlbmQ9IkRlZmF1bHQiIFhWYWx1ZVR5cGU9IlN0cmluZyIgWVZhbHVlVHlwZT0iRG91YmxlIiBDaGFydEFyZWE9IkRlZmF1bHQiIEZvbnQ9Ik1pY3Jvc29mdCBTYW5zIFNlcmlmLCA4cHQiPg0KICAgICAgPFBvaW50cz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI5MjAiIEF4aXNMYWJlbD0iQSIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxMjUwIiBBeGlzTGFiZWw9IkIiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iOTI3IiBBeGlzTGFiZWw9IkMiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iMTAyMCIgQXhpc0xhYmVsPSJEIiAvPg0KICAgICAgPC9Qb2ludHM+DQogICAgPC9TZXJpZXM+DQogIDwvU2VyaWVzPg0KICA8TGVnZW5kcz4NCiAgICA8TGVnZW5kIE5hbWU9IkRlZmF1bHQiIElzVGV4dEF1dG9GaXQ9IkZhbHNlIj4NCiAgICA8L0xlZ2VuZD4NCiAgPC9MZWdlbmRzPg0KICA8VGl0bGVzPg0KICAgIDxUaXRsZSBOYW1lPSJUaXRsZTEiIFRleHQ9IlNhbGVzIGNoYXJ0IiBGb250PSJNaWNyb3NvZnQgU2FucyBTZXJpZiwgMTJwdCI+DQogICAgPC9UaXRsZT4NCiAgPC9UaXRsZXM+DQogIDxDaGFydEFyZWFzPg0KICAgIDxDaGFydEFyZWEgTmFtZT0iRGVmYXVsdCI+DQogICAgICA8QXhpc1kgSXNMYWJlbEF1dG9GaXQ9IkZhbHNlIj4NCiAgICAgICAgPE1ham9yR3JpZCBMaW5lQ29sb3I9IjY0LCA2NCwgNjQsIDY0IiAvPg0KICAgICAgPC9BeGlzWT4NCiAgICAgIDxBeGlzWCBJc0xhYmVsQXV0b0ZpdD0iRmFsc2UiPg0KICAgICAgICA8TWFqb3JHcmlkIExpbmVDb2xvcj0iNjQsIDY0LCA2NCwgNjQiIC8+DQogICAgICA8L0F4aXNYPg0KICAgICAgPEF4aXNYMiBJc0xhYmVsQXV0b0ZpdD0iRmFsc2UiPg0KICAgICAgICA8TWFqb3JHcmlkIExpbmVDb2xvcj0iNjQsIDY0LCA2NCwgNjQiIC8+DQogICAgICA8L0F4aXNYMj4NCiAgICAgIDxBeGlzWTIgSXNMYWJlbEF1dG9GaXQ9IkZhbHNlIj4NCiAgICAgICAgPE1ham9yR3JpZCBMaW5lQ29sb3I9IjY0LCA2NCwgNjQsIDY0IiAvPg0KICAgICAgPC9BeGlzWTI+DQogICAgPC9DaGFydEFyZWE+DQogIDwvQ2hhcnRBcmVhcz4NCjwvQ2hhcnQ+">\n      <MSChartSeries Name="Series21"/>\n      <MSChartSeries Name="Series20"/>\n      <MSChartSeries Name="Series22"/>\n    </MSChartObject>\n    <TextObject Name="Text32" Left="226.8" Top="9.45" Width="236.25" Height="37.8" Text="Histogram" HorzAlign="Center" Font="Arial Black, 20pt"/>\n    <MSChartObject Name="MSChart17" Left="37.8" Top="387.45" Width="519.75" Height="292.95" ChartData="PENoYXJ0IFBhbGV0dGU9IlNlbWlUcmFuc3BhcmVudCIgU2l6ZT0iNDMyLCAzNDgiIEJvcmRlcmxpbmVDb2xvcj0iRGFya0dyYXkiIEJvcmRlcmxpbmVXaWR0aD0iMiI+DQogIDxTZXJpZXM+DQogICAgPFNlcmllcyBOYW1lPSJBbmRyZXcgSy4iIExlZ2VuZD0iRGVmYXVsdCIgWFZhbHVlVHlwZT0iU3RyaW5nIiBZVmFsdWVUeXBlPSJEb3VibGUiIENoYXJ0QXJlYT0iRGVmYXVsdCIgRm9udD0iTWljcm9zb2Z0IFNhbnMgU2VyaWYsIDkuNzVwdCI+DQogICAgICA8UG9pbnRzPg0KICAgICAgICA8RGF0YVBvaW50IFlWYWx1ZXM9IjEwMDAiIEF4aXNMYWJlbD0iSmFudWFyeSIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxMTU2IiBBeGlzTGFiZWw9IkZlYnJ1YXJ5IiAvPg0KICAgICAgICA8RGF0YVBvaW50IFlWYWx1ZXM9Ijk0MCIgQXhpc0xhYmVsPSJNYXJjaCIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxNTAwIiBBeGlzTGFiZWw9IkFwcmlsIiAvPg0KICAgICAgPC9Qb2ludHM+DQogICAgPC9TZXJpZXM+DQogICAgPFNlcmllcyBOYW1lPSJNYXhpbSBBLiIgTGVnZW5kPSJEZWZhdWx0IiBYVmFsdWVUeXBlPSJTdHJpbmciIFlWYWx1ZVR5cGU9IkRvdWJsZSIgQ2hhcnRBcmVhPSJEZWZhdWx0IiBGb250PSJNaWNyb3NvZnQgU2FucyBTZXJpZiwgOHB0Ij4NCiAgICAgIDxQb2ludHM+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iOTAwIiBBeGlzTGFiZWw9IkEiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iNzAwIiBBeGlzTGFiZWw9IkIiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iODU0IiBBeGlzTGFiZWw9IkMiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iMTE1MCIgQXhpc0xhYmVsPSJEIiAvPg0KICAgICAgPC9Qb2ludHM+DQogICAgPC9TZXJpZXM+DQogICAgPFNlcmllcyBOYW1lPSJNaWNoYWVsIFIuIiBMZWdlbmQ9IkRlZmF1bHQiIFhWYWx1ZVR5cGU9IlN0cmluZyIgWVZhbHVlVHlwZT0iRG91YmxlIiBDaGFydEFyZWE9IkRlZmF1bHQiIEZvbnQ9Ik1pY3Jvc29mdCBTYW5zIFNlcmlmLCA4cHQiPg0KICAgICAgPFBvaW50cz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI5MjAiIEF4aXNMYWJlbD0iQSIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxMjUwIiBBeGlzTGFiZWw9IkIiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iOTI3IiBBeGlzTGFiZWw9IkMiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iMTAyMCIgQXhpc0xhYmVsPSJEIiAvPg0KICAgICAgPC9Qb2ludHM+DQogICAgPC9TZXJpZXM+DQogIDwvU2VyaWVzPg0KICA8TGVnZW5kcz4NCiAgICA8TGVnZW5kIE5hbWU9IkRlZmF1bHQiIElzVGV4dEF1dG9GaXQ9IkZhbHNlIiBJc0RvY2tlZEluc2lkZUNoYXJ0QXJlYT0iRmFsc2UiIEVuYWJsZWQ9IkZhbHNlIj4NCiAgICA8L0xlZ2VuZD4NCiAgPC9MZWdlbmRzPg0KICA8VGl0bGVzPg0KICAgIDxUaXRsZSBOYW1lPSJUaXRsZTEiIFRleHQ9IlNhbGVzIGNoYXJ0IDNEIiBGb250PSJNaWNyb3NvZnQgU2FucyBTZXJpZiwgMTJwdCI+DQogICAgPC9UaXRsZT4NCiAgPC9UaXRsZXM+DQogIDxDaGFydEFyZWFzPg0KICAgIDxDaGFydEFyZWEgTmFtZT0iRGVmYXVsdCI+DQogICAgICA8QXhpc1kgSXNMYWJlbEF1dG9GaXQ9IkZhbHNlIj4NCiAgICAgICAgPE1ham9yR3JpZCBMaW5lQ29sb3I9IjY0LCA2NCwgNjQsIDY0IiAvPg0KICAgICAgPC9BeGlzWT4NCiAgICAgIDxBeGlzWCBJc0xhYmVsQXV0b0ZpdD0iRmFsc2UiIElzTWFyZ2luVmlzaWJsZT0iRmFsc2UiPg0KICAgICAgICA8TWFqb3JHcmlkIExpbmVDb2xvcj0iNjQsIDY0LCA2NCwgNjQiIC8+DQogICAgICA8L0F4aXNYPg0KICAgICAgPEF4aXNYMiBJc0xhYmVsQXV0b0ZpdD0iRmFsc2UiPg0KICAgICAgICA8TWFqb3JHcmlkIExpbmVDb2xvcj0iNjQsIDY0LCA2NCwgNjQiIC8+DQogICAgICA8L0F4aXNYMj4NCiAgICAgIDxBeGlzWTIgSXNMYWJlbEF1dG9GaXQ9IkZhbHNlIj4NCiAgICAgICAgPE1ham9yR3JpZCBMaW5lQ29sb3I9IjY0LCA2NCwgNjQsIDY0IiAvPg0KICAgICAgPC9BeGlzWTI+DQogICAgICA8QXJlYTNEU3R5bGUgRW5hYmxlM0Q9IlRydWUiIElzQ2x1c3RlcmVkPSJUcnVlIiAvPg0KICAgIDwvQ2hhcnRBcmVhPg0KICA8L0NoYXJ0QXJlYXM+DQo8L0NoYXJ0Pg==">\n      <MSChartSeries Name="Series23"/>\n      <MSChartSeries Name="Series24"/>\n      <MSChartSeries Name="Series25"/>\n    </MSChartObject>\n  </DataBand>\n</ReportPage>\n<ReportPage Name="Page2" Watermark.Font="Arial, 60pt">\n  <DataBand Name="Data5" Width="718.2" Height="812.7">\n    <MSChartObject Name="MSChart23" Left="56.7" Top="9.45" Width="519.75" Height="321.3" IsIntersectedWithOtherObject="true" ChartData="PENoYXJ0IFBhbGV0dGU9IlNlbWlUcmFuc3BhcmVudCIgU2l6ZT0iNDMyLCAzNDgiIEJvcmRlcmxpbmVDb2xvcj0iRGFya0dyYXkiIEJvcmRlcmxpbmVXaWR0aD0iMiI+DQogIDxTZXJpZXM+DQogICAgPFNlcmllcyBOYW1lPSJHZXJhbGQgIEsiIExlZ2VuZD0iRGVmYXVsdCIgWFZhbHVlVHlwZT0iU3RyaW5nIiBZVmFsdWVUeXBlPSJEb3VibGUiIENoYXJ0VHlwZT0iQmFyIiBDaGFydEFyZWE9IkRlZmF1bHQiIEZvbnQ9Ik1pY3Jvc29mdCBTYW5zIFNlcmlmLCA4cHQiPg0KICAgICAgPFBvaW50cz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxMDAwIiBBeGlzTGFiZWw9IkphbnVhcnkiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iMTE1NiIgQXhpc0xhYmVsPSJGZWJydWFyeSIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI5NDAiIEF4aXNMYWJlbD0iTWFyY2giIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iMTUwMCIgQXhpc0xhYmVsPSJBcHJpbCIgLz4NCiAgICAgIDwvUG9pbnRzPg0KICAgIDwvU2VyaWVzPg0KICAgIDxTZXJpZXMgTmFtZT0iSm9zZXBoaW5hIEEiIExlZ2VuZD0iRGVmYXVsdCIgWFZhbHVlVHlwZT0iU3RyaW5nIiBZVmFsdWVUeXBlPSJEb3VibGUiIENoYXJ0VHlwZT0iQmFyIiBDaGFydEFyZWE9IkRlZmF1bHQiIEZvbnQ9Ik1pY3Jvc29mdCBTYW5zIFNlcmlmLCA4cHQiPg0KICAgICAgPFBvaW50cz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI5MDAiIEF4aXNMYWJlbD0iQSIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI3MDAiIEF4aXNMYWJlbD0iQiIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI4NTQiIEF4aXNMYWJlbD0iQyIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxMTUwIiBBeGlzTGFiZWw9IkQiIC8+DQogICAgICA8L1BvaW50cz4NCiAgICA8L1Nlcmllcz4NCiAgICA8U2VyaWVzIE5hbWU9IktldmluIFIiIExlZ2VuZD0iRGVmYXVsdCIgWFZhbHVlVHlwZT0iU3RyaW5nIiBZVmFsdWVUeXBlPSJEb3VibGUiIENoYXJ0VHlwZT0iQmFyIiBDaGFydEFyZWE9IkRlZmF1bHQiIEZvbnQ9Ik1pY3Jvc29mdCBTYW5zIFNlcmlmLCA4cHQiPg0KICAgICAgPFBvaW50cz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSI5MjAiIEF4aXNMYWJlbD0iQSIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIxMjUwIiBBeGlzTGFiZWw9IkIiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iOTI3IiBBeGlzTGFiZWw9IkMiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iMTAyMCIgQXhpc0xhYmVsPSJEIiAvPg0KICAgICAgPC9Qb2ludHM+DQogICAgPC9TZXJpZXM+DQogIDwvU2VyaWVzPg0KICA8TGVnZW5kcz4NCiAgICA8TGVnZW5kIE5hbWU9IkRlZmF1bHQiIElzVGV4dEF1dG9GaXQ9IkZhbHNlIiBBbGlnbm1lbnQ9IkNlbnRlciIgRG9ja2luZz0iVG9wIj4NCiAgICA8L0xlZ2VuZD4NCiAgPC9MZ'[39m... 61754 more characters,
+    content: [32m'<?xml version="1.0" encoding="utf-8"?>\n<Report ScriptLanguage="CSharp" ReportInfo.Description="Demonstrates the data filtering feature of dialog controls. To create this report:&#13;&#10;- create the report layout;&#13;&#10;- add a new dialog form;&#13;&#10;- put the CheckedListBox control on it;&#13;&#10;- go to the &quot;Properties&quot; window and set the &quot;DataColumn&quot; property to the data column you want to display.&#13;&#10;&#13;&#10;When you run a report, the CheckedListBox will be filled automatically (&quot;AutoFill&quot; property is true by default). You may check some items that you want to see. When you switch to another control, the data will be automatically filtered (the &quot;AutoFilter&quot; property is true by default).&#13;&#10;&#13;&#10;Learn about various report objects on the Fast Reports Academy channel http://fast.report/afd51" ReportInfo.Created="01/18/2008 00:04:46" ReportInfo.Modified="03/29/2023 00:45:22" ReportInfo.CreatorVersion="1.0.0.0">\n<Styles>\n  <Style Name="EvenRows" Fill.Color="Linen" Font="Arial, 10pt"/>\n</Styles>\n<Dictionary>\n  <TableDataSource Name="Customers" ReferenceName="NorthWind.Customers" DataType="System.Int32" Enabled="true">\n    <Column Name="CustomerID" DataType="System.String"/>\n    <Column Name="CompanyName" DataType="System.String"/>\n    <Column Name="ContactName" DataType="System.String"/>\n    <Column Name="ContactTitle" DataType="System.String"/>\n    <Column Name="Address" DataType="System.String"/>\n    <Column Name="City" DataType="System.String"/>\n    <Column Name="Region" DataType="System.String"/>\n    <Column Name="PostalCode" DataType="System.String"/>\n    <Column Name="Country" DataType="System.String"/>\n    <Column Name="Phone" DataType="System.String"/>\n    <Column Name="Fax" DataType="System.String"/>\n  </TableDataSource>\n  <TableDataSource Name="Orders" ReferenceName="NorthWind.Orders" DataType="System.Int32" Enabled="true">\n    <Column Name="OrderID" DataType="System.Int32"/>\n    <Column Name="CustomerID" DataType="System.String"/>\n    <Column Name="EmployeeID" DataType="System.Int32"/>\n    <Column Name="OrderDate" DataType="System.DateTime"/>\n    <Column Name="RequiredDate" DataType="System.DateTime"/>\n    <Column Name="ShippedDate" DataType="System.DateTime"/>\n    <Column Name="ShipVia" DataType="System.Int32"/>\n    <Column Name="Freight" DataType="System.Decimal"/>\n    <Column Name="ShipName" DataType="System.String"/>\n    <Column Name="ShipAddress" DataType="System.String"/>\n    <Column Name="ShipCity" DataType="System.String"/>\n    <Column Name="ShipRegion" DataType="System.String"/>\n    <Column Name="ShipPostalCode" DataType="System.String"/>\n    <Column Name="ShipCountry" DataType="System.String"/>\n    <Column Name="Latitude" DataType="System.Double"/>\n    <Column Name="Longitude" DataType="System.Double"/>\n  </TableDataSource>\n  <Relation Name="CustomersOrders" ReferenceName="NorthWind.CustomersOrders" ParentDataSource="Customers" ChildDataSource="Orders" ParentColumns="CustomerID" ChildColumns="CustomerID" Enabled="true"/>\n  <Total Name="TotalOrders" TotalType="Count" Evaluator="Data1" PrintOn="GroupFooter2"/>\n</Dictionary>\n<DialogPage Name="Form1" AcceptButton="btnOk" CancelButton="btnCancel" AutoScaleDimensions="192, 192" Font="Segoe UI, 9pt" ClientSize="606, 552">\n  <LabelControl Name="Label1" Left="24" Top="16" Width="530" Font="Segoe UI, 9pt" TabIndex="2" Text="Select one or several customers to view its orders:"/>\n  <CheckedListBoxControl Name="lbCustomers" Left="24" Top="64" Width="556" Height="384" Font="Segoe UI, 9pt" TabIndex="3" Text="Ernst Handel" ClickEvent="" DataColumn="Orders.Customers.CompanyName" CheckOnClick="true"/>\n  <ButtonControl Name="btnOk" Left="272" Top="480" Width="150" Height="46" Font="Segoe UI, 9pt" TabIndex="0" Text="OK" DialogResult="OK"/>\n  <ButtonControl Name="btnCancel" Left="432" Top="480" Width="150" Height="46" Font="Segoe UI, 9pt" TabIndex="1" Text="Cancel" DialogResult="Cancel"/>\n</DialogPage>\n<ReportPage Name="Page2" Watermark.Font="Arial, 60pt">\n  <ReportTitleBand Name="ReportTitle2" Width="718.2" Height="37.8" CanGrow="true">\n    <TextObject Name="Text13" Width="718.2" Height="37.8" Text="CUSTOMERS ORDERS" HorzAlign="Center" VertAlign="Center" Font="Segoe UI, 14pt, style=Bold"/>\n  </ReportTitleBand>\n  <GroupHeaderBand Name="GroupHeader2" Top="39.8" Width="718.2" Height="28.35" Fill.Color="SandyBrown" KeepWithData="true" RepeatOnEveryPage="true" Condition="[Orders.CustomerID]">\n    <TextObject Name="Text14" Width="349.65" Height="28.35" Text="[Orders.Customers.CompanyName]" VertAlign="Center" Font="Segoe UI, 12pt, style=Bold"/>\n    <ChildBand Name="Child1" Top="70.15" Width="718.2" Height="18.9" Fill.Color="PeachPuff">\n      <TextObject Name="Text15" Left="255.15" Width="94.5" Height="18.9" Text="ShippedDate" HorzAlign="Right" VertAlign="Center" Font="Segoe UI, 9pt, style=Bold"/>\n      <TextObject Name="Text16" Width="94.5" Height="18.9" Text="OrderID" VertAlign="Center" Font="Segoe UI, 9pt, style=Bold"/>\n      <TextObject Name="Text17" Left="122.85" Width="94.5" Height="18.9" Text="OrderDate" HorzAlign="Right" VertAlign="Center" Font="Segoe UI, 9pt, style=Bold"/>\n    </ChildBand>\n    <DataBand Name="Data1" Top="91.05" Width="718.2" Height="18.9" EvenStyle="EvenRows" DataSource="Orders">\n      <TextObject Name="Text18" Width="94.5" Height="18.9" Text="[Orders.OrderID]" Font="Segoe UI, 9pt"/>\n      <TextObject Name="Text19" Left="122.85" Width="94.5" Height="18.9" Text="[Orders.OrderDate]" Format="Date" Format.Format="d" HorzAlign="Right" Font="Segoe UI, 9pt"/>\n      <TextObject Name="Text20" Left="255.15" Width="94.5" Height="18.9" Text="[Orders.ShippedDate]" Format="Date" Format.Format="d" HorzAlign="Right" Font="Segoe UI, 9pt"/>\n      <Sort>\n        <Sort Expression="[Orders.OrderID]"/>\n      </Sort>\n    </DataBand>\n    <GroupFooterBand Name="GroupFooter2" Top="111.95" Width="718.2" Height="28.35">\n      <TextObject Name="Text21" Width="349.65" Height="18.9" Text="Total orders: [TotalOrders]" HorzAlign="Right" Font="Segoe UI, 9pt, style=Bold"/>\n    </GroupFooterBand>\n  </GroupHeaderBand>\n  <PageFooterBand Name="PageFooter2" Top="142.3" Width="718.2" Height="28.35" Fill.Color="WhiteSmoke">\n    <TextObject Name="Text22" Left="614.25" Width="94.5" Height="28.35" Text="[PageN]" HorzAlign="Right" VertAlign="Center" Font="Segoe UI, 9pt"/>\n    <TextObject Name="Text23" Left="9.45" Width="217.35" Height="28.35" Cursor="Hand" Hyperlink.Value="https://www.fast-report.com/en/product/fast-report-net/" Text="Generated by FastReport" VertAlign="Center" Font="Segoe UI, 9pt, style=Underline" TextFill.Color="Blue"/>\n  </PageFooterBand>\n</ReportPage>\n</Report>'[39m,
+    is_standard: [33mfalse[39m,
+    allow_business_unit: [32m'T01, T02'[39m,
+    deny_business_unit: [32m''[39m,
+    is_active: [33mtrue[39m
+  },
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:57:13 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findOne'[39m,
+  payload: {
+    id: [32m'364be9b0-ea3d-4680-99a7-56050d5d05f8'[39m,
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:57:13 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findOne'[39m,
+  id: [32m'364be9b0-ea3d-4680-99a7-56050d5d05f8'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:57:37 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m10[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:57:37 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m10[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:57:38 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m10[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 2:57:38 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m10[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 3:00:14 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m10[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 3:00:14 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m10[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 3:01:29 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m10[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 3:01:29 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m10[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 3:03:38 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m2[39m,
+      perpage: [33m10[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 3:03:38 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m2[39m,
+    perpage: [33m10[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 3:03:41 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m10[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 3:03:41 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m10[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 3:03:55 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m10[39m,
+      search: [32m'ยน'[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 3:03:55 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m10[39m,
+    search: [32m'ยน'[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 3:03:56 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m10[39m,
+      search: [32m''[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 3:03:56 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m10[39m,
+    search: [32m''[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
+[95m[Nest] 23927  - [39m03/21/2026, 3:03:59 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateController] [39mObject(2) {
+  function: [32m'findAll'[39m,
+  payload: {
+    user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+    tenant_id: [1mnull[22m,
+    paginate: {
+      page: [33m1[39m,
+      perpage: [33m10[39m,
+      search: [32m'po'[39m,
+      searchfields: [
+        [32m'name'[39m,
+        [32m'description'[39m,
+        [32m'report_group'[39m
+      ],
+      sort: [
+        [32m'created_at:desc'[39m
+      ],
+      filter: {},
+      advance: {
+        where: {
+          deleted_at: [1mnull[22m
+        }
+      },
+      bu_code: []
+    },
+    version: [32m'latest'[39m
+  }
+}
+[95m[Nest] 23927  - [39m03/21/2026, 3:03:59 PM [95m  DEBUG[39m [38;5;3m[ReportTemplateService] [39mObject(4) {
+  function: [32m'findAll'[39m,
+  user_id: [32m'42c291e5-2fee-40bb-b7c6-8f448ba17eda'[39m,
+  paginate: {
+    page: [33m1[39m,
+    perpage: [33m10[39m,
+    search: [32m'po'[39m,
+    searchfields: [
+      [32m'name'[39m,
+      [32m'description'[39m,
+      [32m'report_group'[39m
+    ],
+    sort: [
+      [32m'created_at:desc'[39m
+    ],
+    filter: {},
+    advance: {
+      where: {
+        deleted_at: [1mnull[22m
+      }
+    },
+    bu_code: []
+  },
+  version: [32m'latest'[39m
+}
