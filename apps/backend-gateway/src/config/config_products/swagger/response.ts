@@ -253,3 +253,69 @@ export class OnHandResponseDto {
   @ApiProperty({ description: 'On-hand per location', type: [OnHandLocationDto] })
   locations: OnHandLocationDto[];
 }
+
+// ==================== On-Order Response ====================
+
+export class OnOrderItemDto {
+  @ApiPropertyOptional({ description: 'Purchase order ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  po_id?: string;
+
+  @ApiPropertyOptional({ description: 'Purchase order number', example: 'PO260301001' })
+  po_no?: string;
+
+  @ApiPropertyOptional({ description: 'PO status', example: 'sent', enum: ['in_progress', 'sent', 'partial'] })
+  po_status?: string;
+
+  @ApiPropertyOptional({ description: 'Vendor name', example: 'ABC Supplies' })
+  vendor_name?: string;
+
+  @ApiPropertyOptional({ description: 'Expected delivery date', example: '2026-04-01T00:00:00.000Z' })
+  delivery_date?: Date;
+
+  @ApiProperty({ description: 'Ordered quantity', example: 100 })
+  order_qty: number;
+
+  @ApiProperty({ description: 'Received quantity', example: 40 })
+  received_qty: number;
+
+  @ApiProperty({ description: 'Cancelled quantity', example: 0 })
+  cancelled_qty: number;
+
+  @ApiProperty({ description: 'Pending quantity (order - received - cancelled)', example: 60 })
+  pending_qty: number;
+
+  @ApiPropertyOptional({ description: 'Unit name', example: 'KG' })
+  unit_name?: string;
+
+  @ApiProperty({ description: 'Unit price', example: 50 })
+  price: number;
+}
+
+export class OnOrderResponseDto {
+  @ApiProperty({ description: 'Product ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  product_id: string;
+
+  @ApiPropertyOptional({ description: 'Product code', example: 'PRD-001' })
+  product_code?: string;
+
+  @ApiPropertyOptional({ description: 'Product name', example: 'Beef Tenderloin' })
+  product_name?: string;
+
+  @ApiPropertyOptional({ description: 'Product local name', example: 'เนื้อสันใน' })
+  product_local_name?: string;
+
+  @ApiPropertyOptional({ description: 'Inventory unit ID', format: 'uuid' })
+  inventory_unit_id?: string;
+
+  @ApiPropertyOptional({ description: 'Inventory unit name', example: 'KG' })
+  inventory_unit_name?: string;
+
+  @ApiPropertyOptional({ description: 'Product SKU', example: 'SKU-001' })
+  sku?: string;
+
+  @ApiProperty({ description: 'Total on-order (pending) quantity', example: 60 })
+  total_on_order: number;
+
+  @ApiProperty({ description: 'Active purchase order details', type: [OnOrderItemDto] })
+  orders: OnOrderItemDto[];
+}

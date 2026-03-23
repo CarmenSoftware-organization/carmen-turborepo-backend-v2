@@ -126,4 +126,32 @@ export class ProductsService {
 
     return Result.ok(response.data);
   }
+
+  async getOnOrder(
+    product_id: string,
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'getOnOrder', product_id, user_id, bu_code, version },
+      ProductsService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
+      { cmd: 'product.get-on-order', service: 'product' },
+      { product_id, user_id, bu_code, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
 }

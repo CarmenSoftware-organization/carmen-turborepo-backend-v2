@@ -18,6 +18,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   LastPurchaseResponseDto,
   OnHandResponseDto,
+  OnOrderResponseDto,
 } from 'src/config/config_products/swagger/response';
 import {
   ApiUserFilterQueries,
@@ -171,6 +172,51 @@ export class ProductsController extends BaseHttpController {
       bu_code,
       version,
       location_id,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * Get on-order quantity for a product
+   * ดึงจำนวนสินค้าที่สั่งซื้อแล้วแต่ยังไม่ได้รับครบ
+   */
+  @Get(':bu_code/products/:product_id/on-order')
+  @UseGuards(new AppIdGuard('product.on-order'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get on-order quantity by product',
+    description: 'Retrieves the on-order quantity for a product from active purchase orders (in_progress, sent, partial). Shows pending quantity per PO.',
+    operationId: 'getOnOrderByProduct',
+    tags: ['Master Data', 'Products'],
+    parameters: [
+      { name: 'product_id', in: 'path', required: true, description: 'Product UUID' },
+    ],
+    responses: {
+      200: { description: 'On-order balance retrieved successfully' },
+      404: { description: 'Product not found' },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'On-order balance retrieved successfully', type: OnOrderResponseDto })
+  @ApiResponse({ status: 404, description: 'Product not found' })
+  async getOnOrder(
+    @Param('product_id') product_id: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'getOnOrder', product_id, version },
+      ProductsController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.productService.getOnOrder(
+      product_id,
+      user_id,
+      bu_code,
+      version,
     );
     this.respond(res, result);
   }

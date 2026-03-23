@@ -223,4 +223,19 @@ export class ProductsController extends BaseMicroserviceController {
     );
     return this.handleResult(result);
   }
+
+  @MessagePattern({ cmd: 'product.get-on-order', service: 'product' })
+  async getOnOrder(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'getOnOrder', payload }, ProductsController.name);
+    const bu_code = payload.bu_code;
+    const user_id = payload.user_id;
+    this.productsService.userId = user_id;
+    this.productsService.bu_code = bu_code;
+    await this.productsService.initializePrismaService(bu_code, user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.productsService.getOnOrder(payload.product_id),
+    );
+    return this.handleResult(result);
+  }
 }

@@ -1379,4 +1379,101 @@ export class ProductsService {
       locations,
     });
   }
+
+  /**
+   * Get on-order quantity for a product (ordered but not fully received)
+   * ดึงจำนวนสินค้าที่สั่งซื้อแล้วแต่ยังไม่ได้รับครบ
+   * @param product_id - Product ID / รหัสสินค้า
+   * @returns On-order details per PO / รายละเอียดการสั่งซื้อที่ยังไม่ได้รับครบ
+   */
+  @TryCatch
+  async getOnOrder(product_id: string): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'getOnOrder', product_id, user_id: this.userId, tenant_id: this.bu_code },
+      ProductsService.name,
+    );
+
+    // Fetch product info
+    const product = await this.prismaService.tb_product.findFirst({
+      where: { id: product_id, deleted_at: null },
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        local_name: true,
+        sku: true,
+        inventory_unit_id: true,
+        inventory_unit_name: true,
+        tb_unit: { select: { name: true } },
+      },
+    });
+
+    if (!product) {
+      return Result.error('Product not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Fetch PO details for active POs (in_progress, sent, partial)
+    const poDetails = await this.prismaService.tb_purchase_order_detail.findMany({
+      where: {
+        product_id,
+        deleted_at: null,
+        tb_purchase_order: {
+          po_status: { in: ['in_progress', 'sent', 'partial'] },
+          deleted_at: null,
+        },
+      },
+      select: {
+        id: true,
+        order_qty: true,
+        received_qty: true,
+        cancelled_qty: true,
+        order_unit_name: true,
+        price: true,
+        tb_purchase_order: {
+          select: {
+            id: true,
+            po_no: true,
+            po_status: true,
+            vendor_name: true,
+            delivery_date: true,
+          },
+        },
+      },
+    });
+
+    const orders = poDetails.map((detail) => {
+      const orderQty = Number(detail.order_qty) || 0;
+      const receivedQty = Number(detail.received_qty) || 0;
+      const cancelledQty = Number(detail.cancelled_qty) || 0;
+      const pendingQty = orderQty - receivedQty - cancelledQty;
+
+      return {
+        po_id: detail.tb_purchase_order?.id,
+        po_no: detail.tb_purchase_order?.po_no,
+        po_status: detail.tb_purchase_order?.po_status,
+        vendor_name: detail.tb_purchase_order?.vendor_name,
+        delivery_date: detail.tb_purchase_order?.delivery_date,
+        order_qty: orderQty,
+        received_qty: receivedQty,
+        cancelled_qty: cancelledQty,
+        pending_qty: pendingQty,
+        unit_name: detail.order_unit_name,
+        price: Number(detail.price) || 0,
+      };
+    });
+
+    const total_on_order = orders.reduce((sum, o) => sum + o.pending_qty, 0);
+
+    return Result.ok({
+      product_id: product.id,
+      product_code: product.code,
+      product_name: product.name,
+      product_local_name: product.local_name,
+      inventory_unit_id: product.inventory_unit_id,
+      inventory_unit_name: product.inventory_unit_name || product.tb_unit?.name,
+      sku: product.sku,
+      total_on_order,
+      orders,
+    });
+  }
 }

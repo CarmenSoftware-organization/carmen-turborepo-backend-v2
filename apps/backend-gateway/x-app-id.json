@@ -76,7 +76,8 @@
       "currencies.findAllActive",
       "product.last-purchase",
       "product.on-hand",
-      "priceList.priceCompare"
+      "priceList.priceCompare",
+      "product.on-order"
     ]
   }
 ]
