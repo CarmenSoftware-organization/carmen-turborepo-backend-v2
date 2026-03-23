@@ -283,6 +283,33 @@ export class PhysicalCountPeriodService {
 
     const countByLocation = new Map(existingCounts.map((c) => [c.location_id, { id: c.id, status: c.status }]));
 
+    // Count items already counted per physical_count_id
+    const physicalCountIds = existingCounts.map((c) => c.id);
+    let countedByPhysicalCount = new Map<string, number>();
+    if (physicalCountIds.length > 0) {
+      const countedItems = await prisma.tb_physical_count_detail.groupBy({
+        by: ["physical_count_id"],
+        where: {
+          physical_count_id: { in: physicalCountIds },
+          deleted_at: null,
+        },
+        _count: { id: true },
+      });
+      countedByPhysicalCount = new Map(countedItems.map((ci) => [ci.physical_count_id, ci._count.id]));
+    }
+
+    // Count products per location
+    const locationIds = locations.map((loc) => loc.id);
+    const productCounts = await prisma.tb_product_location.groupBy({
+      by: ["location_id"],
+      where: {
+        location_id: { in: locationIds },
+        deleted_at: null,
+      },
+      _count: { product_id: true },
+    });
+    const productCountByLocation = new Map(productCounts.map((pc) => [pc.location_id, pc._count.product_id]));
+
     const locationsWithStatus = locations.map((loc) => {
       const existingCount = countByLocation.get(loc.id);
       return {
@@ -290,6 +317,8 @@ export class PhysicalCountPeriodService {
         code: loc.code,
         name: loc.name,
         location_type: loc.location_type,
+        counted: existingCount ? countedByPhysicalCount.get(existingCount.id) || 0 : 0,
+        total_products: productCountByLocation.get(loc.id) || 0,
         physical_count_status: existingCount ? existingCount.status : "not_started",
         physical_count_id: existingCount ? existingCount.id : null,
       };
