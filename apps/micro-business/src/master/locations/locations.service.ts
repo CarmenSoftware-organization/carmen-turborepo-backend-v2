@@ -551,46 +551,54 @@ export class LocationsService {
       LocationsService.name,
     );
 
-    // todo: get product_location reorder , restock
+    let re_order_qty = 0;
+    let re_stock_qty = 0;
 
-    let reorder_qty = 0.00;
-    let restock_qty = 0.00;
-    const on_hand_qty = 0.00;
-    const on_order_qty = 0.00;
-    let min_qty = 0.00;
-    let max_qty = 0.00;
-
+    // Get product-location settings
     const productLocation = await this.prismaService.tb_product_location.findFirst({
-      where: {
-        location_id: location_id,
-        product_id: product_id,
-      },
-      select: {
-        min_qty: true,
-        max_qty: true,
-        re_order_qty: true,
-        par_qty: true,
-      },
+      where: { location_id, product_id },
+      select: { re_order_qty: true, par_qty: true },
     });
 
     if (productLocation) {
-      min_qty = productLocation.min_qty.toNumber();
-      max_qty = productLocation.max_qty.toNumber();
-      reorder_qty = productLocation.re_order_qty.toNumber();
-      restock_qty = productLocation.par_qty.toNumber();
+      re_order_qty = Number(productLocation.re_order_qty);
+      re_stock_qty = Number(productLocation.par_qty);
     }
 
-    // // get product_inventory on_hand // mock data random 100 - 1000
-    // on_hand_qty = Math.floor(Math.random() * 900) + 100;
+    // Calculate on-hand from cost layers
+    const layers = await this.prismaService.tb_inventory_transaction_cost_layer.findMany({
+      where: { product_id, location_id, deleted_at: null },
+      select: { in_qty: true, out_qty: true },
+    });
 
-    // // get product_inventory on_order // mock data random 100 - 1000
-    // on_order_qty = Math.floor(Math.random() * 900) + 100;
+    let on_hand_qty = 0;
+    for (const layer of layers) {
+      on_hand_qty += Number(layer.in_qty) - Number(layer.out_qty);
+    }
+
+    // Calculate on-order from active PO details
+    const poDetails = await this.prismaService.tb_purchase_order_detail.findMany({
+      where: {
+        product_id,
+        deleted_at: null,
+        tb_purchase_order: {
+          po_status: { in: ['in_progress', 'sent', 'partial'] },
+          deleted_at: null,
+        },
+      },
+      select: { order_qty: true, received_qty: true, cancelled_qty: true },
+    });
+
+    let on_order_qty = 0;
+    for (const detail of poDetails) {
+      on_order_qty += Number(detail.order_qty) - Number(detail.received_qty) - Number(detail.cancelled_qty);
+    }
 
     const productInventory: IProductInventoryInfo = {
-      on_hand_qty: on_hand_qty,
-      on_order_qty: on_order_qty,
-      re_order_qty: reorder_qty,
-      re_stock_qty: restock_qty,
+      on_hand_qty,
+      on_order_qty,
+      re_order_qty,
+      re_stock_qty,
     };
 
     return Result.ok(productInventory);

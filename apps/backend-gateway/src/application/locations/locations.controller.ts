@@ -24,7 +24,8 @@ import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ProductInventoryInfoResponseDto } from './swagger/response';
 import { IPaginate, IPaginateQuery, PaginateDto } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
@@ -347,24 +348,10 @@ export class LocationsController extends BaseHttpController {
       },
     ],
     responses: {
-      200: {
-        description: 'Product inventory was successfully retrieved',
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-              properties: {
-                on_hand_qty: { type: 'number' },
-                on_order_qty: { type: 'number' },
-                re_order_qty: { type: 'number' },
-                re_stock_qty: { type: 'number' },
-              },
-            },
-          },
-        },
-      },
+      200: { description: 'Product inventory was successfully retrieved' },
     },
   })
+  @ApiResponse({ status: 200, description: 'Product inventory was successfully retrieved', type: ProductInventoryInfoResponseDto })
   async getProductInventory(
     @Req() req: Request,
     @Res() res: Response,

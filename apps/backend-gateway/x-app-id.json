@@ -73,11 +73,12 @@
       "product.create",
       "product.update",
       "product.delete",
+      "product.on-hand",
+      "product.on-order",
       "currencies.findAllActive",
       "product.last-purchase",
-      "product.on-hand",
       "priceList.priceCompare",
-      "product.on-order"
+      "locations.getProductInventory"
     ]
   }
 ]
