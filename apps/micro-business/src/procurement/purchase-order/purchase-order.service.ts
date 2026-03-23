@@ -1186,6 +1186,10 @@ export class PurchaseOrderService {
       return Result.error('Purchase order not found or not editable (must be draft or in_progress)', ErrorCode.NOT_FOUND);
     }
 
+    if (purchaseOrder.po_type === 'purchase_request') {
+      return Result.error('Cannot update purchase order created from purchase request', ErrorCode.INVALID_ARGUMENT);
+    }
+
     await this.prismaService.$transaction(async (txp) => {
       // 1. Update PO header if any header fields provided
       if (Object.keys(header).length > 0) {

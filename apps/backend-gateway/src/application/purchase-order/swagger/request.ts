@@ -215,8 +215,8 @@ export class CreatePurchaseOrderSwaggerDto {
   @ApiPropertyOptional({ description: 'Note', example: 'Deliver to back entrance' })
   note?: string;
 
-  @ApiPropertyOptional({ description: 'Workflow ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  workflow_id?: string;
+  @ApiProperty({ description: 'Workflow ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  workflow_id: string;
 
   @ApiProperty({
     description: 'Purchase order detail operations (add line items) — at least 1 detail required',
