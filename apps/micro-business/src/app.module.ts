@@ -33,6 +33,7 @@ import { InventoryPeriodModule } from './inventory/period/period.module';
 import { SpotCheckModule } from './inventory/spot-check/spot-check.module';
 import { PhysicalCountModule } from './inventory/physical-count/physical-count.module';
 import { PhysicalCountPeriodModule } from './inventory/physical-count-period/physical-count-period.module';
+import { CountStockModule } from './inventory/count-stock/count-stock.module';
 
 // Master modules
 import { AdjustmentTypeModule } from './master/adjustment-type/adjustment-type.module';
@@ -44,6 +45,7 @@ import { DepartmentUserModule } from './master/department-user/department-user.m
 import { DepartmentsModule } from './master/departments/departments.module';
 import { ExchangeRateModule } from './master/exchange-rate/exchange-rate.module';
 import { ExtraCostTypeModule } from './master/extra_cost_type/extra_cost_type.module';
+import { ExtraCostModule } from './master/extra-cost/extra-cost.module';
 import { LocationsModule } from './master/locations/locations.module';
 import { PriceListModule } from './master/price-list/price-list.module';
 import { PriceListTemplateModule } from './master/price-list-template/price-list-template.module';
@@ -65,6 +67,10 @@ import { RecipeCategoryModule } from './master/recipe-category/recipe-category.m
 import { RecipeCuisineModule } from './master/recipe-cuisine/recipe-cuisine.module';
 import { RecipeEquipmentModule } from './master/recipe-equipment/recipe-equipment.module';
 import { RecipeEquipmentCategoryModule } from './master/recipe-equipment-category/recipe-equipment-category.module';
+import { JournalVoucherModule } from './master/journal-voucher/journal-voucher.module';
+import { DimensionModule } from './master/dimension/dimension.module';
+import { MenuModule } from './master/menu/menu.module';
+import { ApplicationConfigModule } from './master/application-config/application-config.module';
 
 // Procurement modules
 import { CreditNoteModule } from './procurement/credit-note/credit-note.module';
@@ -126,6 +132,7 @@ import { CommonModule } from './common/common.module';
     SpotCheckModule,
     PhysicalCountModule,
     PhysicalCountPeriodModule,
+    CountStockModule,
 
     // Master modules (from micro-tenant-master)
     AdjustmentTypeModule,
@@ -137,6 +144,7 @@ import { CommonModule } from './common/common.module';
     DepartmentsModule,
     ExchangeRateModule,
     ExtraCostTypeModule,
+    ExtraCostModule,
     LocationsModule,
     PriceListModule,
     PriceListTemplateModule,
@@ -158,6 +166,10 @@ import { CommonModule } from './common/common.module';
     RecipeCuisineModule,
     RecipeEquipmentModule,
     RecipeEquipmentCategoryModule,
+    JournalVoucherModule,
+    DimensionModule,
+    MenuModule,
+    ApplicationConfigModule,
 
     // Procurement modules (from micro-tenant-procurement)
     CreditNoteModule,

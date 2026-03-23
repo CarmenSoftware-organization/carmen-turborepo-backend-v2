@@ -44,6 +44,9 @@ import { PeriodModule } from './period/period.module';
 import { PhysicalCountPeriodModule } from './physical-count-period/physical-count-period.module';
 import { VendorProductModule } from './vendor-product/vendor-product.module';
 import { ReportModule } from './report/report.module';
+import { ExtraCostModule } from './extra-cost/extra-cost.module';
+import { JournalVoucherModule } from './journal-voucher/journal-voucher.module';
+import { CountStockModule } from './count-stock/count-stock.module';
 @Module({
   imports: [
     ApplicationRoleModule,
@@ -91,6 +94,9 @@ import { ReportModule } from './report/report.module';
     PhysicalCountPeriodModule,
     VendorProductModule,
     ReportModule,
+    ExtraCostModule,
+    JournalVoucherModule,
+    CountStockModule,
   ],
   controllers: [],
   providers: [],

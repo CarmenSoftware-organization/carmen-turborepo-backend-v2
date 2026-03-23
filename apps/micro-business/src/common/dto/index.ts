@@ -15,6 +15,8 @@ export * from '@/master/exchange-rate/dto/exchange-rate.dto';
 export * from '@/master/exchange-rate/dto/exchange-rate.serializer';
 export * from '@/master/extra_cost_type/dto/extra-cost-type.dto';
 export * from '@/master/extra_cost_type/dto/extra-cost-type.serializer';
+export * from '@/master/extra-cost/dto/extra-cost.dto';
+export * from '@/master/extra-cost/dto/extra-cost.serializer';
 export * from '@/master/locations/dto/location.dto';
 export * from '@/master/locations/dto/location.serializer';
 export * from '@/master/price-list/dto/price_list.dto';
@@ -71,6 +73,26 @@ export * from '@/procurement/purchase-request-template/dto/purchase-request-temp
 
 // Notification
 export * from '@/notification/dto/index';
+
+// Journal Voucher
+export * from '@/master/journal-voucher/dto/journal-voucher.dto';
+export * from '@/master/journal-voucher/dto/journal-voucher.serializer';
+
+// Dimension
+export * from '@/master/dimension/dto/dimension.dto';
+export * from '@/master/dimension/dto/dimension.serializer';
+
+// Menu
+export * from '@/master/menu/dto/menu.dto';
+export * from '@/master/menu/dto/menu.serializer';
+
+// Application Config
+export * from '@/master/application-config/dto/application-config.dto';
+export * from '@/master/application-config/dto/application-config.serializer';
+
+// Count Stock
+export * from '@/inventory/count-stock/dto/count-stock.dto';
+export * from '@/inventory/count-stock/dto/count-stock.serializer';
 
 // Common
 export * from './embedded.dto';
