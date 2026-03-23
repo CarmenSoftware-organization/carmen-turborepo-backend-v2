@@ -138,6 +138,11 @@ enum enum_good_received_note_type {
   purchase_order
 }
 
+enum enum_purchase_order_type {
+  manual
+  purchase_request
+}
+
 enum enum_product_status_type {
   active
   inactive
@@ -1786,12 +1791,15 @@ model tb_product_tb_vendor {
 }
 
 model tb_purchase_order {
-  id            String                          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  po_no         String                          @db.VarChar
-  po_status     enum_purchase_order_doc_status? @default(draft)
+  id        String                          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  po_no     String                          @db.VarChar
+  po_status enum_purchase_order_doc_status? @default(draft)
+
+  po_type enum_purchase_order_type @default(purchase_request)
+
   description   String?
-  order_date    DateTime?                       @db.Timestamptz(6)
-  delivery_date DateTime?                       @db.Timestamptz(6)
+  order_date    DateTime? @db.Timestamptz(6)
+  delivery_date DateTime? @db.Timestamptz(6)
 
   workflow_id             String? @db.Uuid
   workflow_name           String? @db.VarChar

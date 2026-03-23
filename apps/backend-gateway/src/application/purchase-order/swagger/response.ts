@@ -130,6 +130,9 @@ export class PurchaseOrderDetailResponseDto {
   @ApiPropertyOptional({ description: 'Purchase order status', example: 'draft', enum: ['draft', 'in_progress', 'approved', 'completed', 'cancelled', 'voided'] })
   po_status?: string;
 
+  @ApiPropertyOptional({ description: 'Purchase order type', example: 'purchase_request', enum: ['manual', 'purchase_request'] })
+  po_type?: string;
+
   @ApiPropertyOptional({ description: 'Description', example: 'PO for kitchen supplies' })
   description?: string;
 
@@ -260,6 +263,9 @@ export class PurchaseOrderListItemResponseDto {
 
   @ApiPropertyOptional({ description: 'Purchase order status', example: 'draft' })
   po_status?: string;
+
+  @ApiPropertyOptional({ description: 'Purchase order type', example: 'purchase_request', enum: ['manual', 'purchase_request'] })
+  po_type?: string;
 
   @ApiPropertyOptional({ description: 'Description', example: 'PO for kitchen supplies' })
   description?: string;

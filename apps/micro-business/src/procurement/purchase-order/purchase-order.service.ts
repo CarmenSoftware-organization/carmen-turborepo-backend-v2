@@ -141,6 +141,7 @@ export class PurchaseOrderService {
         id: true,
         po_no: true,
         po_status: true,
+        po_type: true,
         description: true,
         order_date: true,
         delivery_date: true,
@@ -596,6 +597,7 @@ export class PurchaseOrderService {
       id: true,
       po_no: true,
       po_status: true,
+      po_type: true,
       description: true,
       order_date: true,
       delivery_date: true,
@@ -2159,6 +2161,22 @@ export class PurchaseOrderService {
       return Result.error('No PR details found', ErrorCode.NOT_FOUND);
     }
 
+    // Pre-fetch products to enrich missing fields (code, sku, local_name, base_unit)
+    const productIds = [...new Set(prDetails.map((d) => d.product_id).filter(Boolean))];
+    const products = await this.prismaService.tb_product.findMany({
+      where: { id: { in: productIds } },
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        local_name: true,
+        sku: true,
+        inventory_unit_id: true,
+        inventory_unit_name: true,
+      },
+    });
+    const productMap = new Map(products.map((p) => [p.id, p]));
+
     // Group by vendor_id -> delivery_date -> currency_id
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const groupedData = new Map<string, Record<string, any>>();
@@ -2167,6 +2185,8 @@ export class PurchaseOrderService {
       if (!prDetail.vendor_id || !prDetail.currency_id || !prDetail.product_id) {
         continue;
       }
+
+      const product = productMap.get(prDetail.product_id);
 
       const deliveryDateStr = prDetail.delivery_date
         ? format(new Date(prDetail.delivery_date), 'yyyy-MM-dd')
@@ -2225,24 +2245,29 @@ export class PurchaseOrderService {
         existingItem.tax_amount += Number(prDetail.tax_amount) || 0;
         existingItem.total_price += Number(prDetail.total_price) || 0;
       } else {
+        // Calculate base_qty: if approved_base_qty is 0 or null, derive from approved_qty * conversion_factor
+        const orderQty = Number(prDetail.approved_qty) || 0;
+        const conversionFactor = Number(prDetail.approved_unit_conversion_factor) || 1;
+        const baseQty = Number(prDetail.approved_base_qty) || (orderQty * conversionFactor);
+
         group.items.push({
           sequence: group.items.length + 1,
           product_id: prDetail.product_id,
-          product_code: prDetail.product_code,
-          product_name: prDetail.product_name,
-          product_local_name: prDetail.product_local_name,
-          product_sku: prDetail.product_sku,
+          product_code: prDetail.product_code || product?.code,
+          product_name: prDetail.product_name || product?.name,
+          product_local_name: prDetail.product_local_name || product?.local_name,
+          product_sku: prDetail.product_sku || product?.sku || product?.code,
           order_unit_id: prDetail.approved_unit_id || prDetail.inventory_unit_id,
           order_unit_name: prDetail.approved_unit_name || prDetail.inventory_unit_name,
-          order_unit_conversion_factor: Number(prDetail.approved_unit_conversion_factor) || 1,
-          order_qty: Number(prDetail.approved_qty) || 0,
-          base_unit_id: prDetail.inventory_unit_id,
-          base_unit_name: prDetail.inventory_unit_name,
-          base_qty: Number(prDetail.approved_base_qty) || 0,
+          order_unit_conversion_factor: conversionFactor,
+          order_qty: orderQty,
+          base_unit_id: prDetail.inventory_unit_id || product?.inventory_unit_id,
+          base_unit_name: prDetail.inventory_unit_name || product?.inventory_unit_name,
+          base_qty: baseQty,
           price: Number(prDetail.pricelist_price) || 0,
-          sub_total_price: Number(prDetail.sub_total_price) || 0,
-          net_amount: Number(prDetail.net_amount) || 0,
-          total_price: Number(prDetail.total_price) || 0,
+          sub_total_price: Number(prDetail.sub_total_price) || (orderQty * (Number(prDetail.pricelist_price) || 0)),
+          net_amount: Number(prDetail.net_amount) || (orderQty * (Number(prDetail.pricelist_price) || 0)),
+          total_price: Number(prDetail.total_price) || (orderQty * (Number(prDetail.pricelist_price) || 0)),
           tax_profile_id: prDetail.tax_profile_id,
           tax_profile_name: prDetail.tax_profile_name,
           tax_rate: Number(prDetail.tax_rate) || 0,
@@ -2297,6 +2322,7 @@ export class PurchaseOrderService {
           data: {
             po_no: poNo,
             po_status: enum_purchase_order_doc_status.draft,
+            po_type: 'purchase_request',
             description: `PO from PR confirmation`,
             order_date: orderDate.toISOString(),
             delivery_date: group.delivery_date instanceof Date ? group.delivery_date.toISOString() : orderDate.toISOString(),
