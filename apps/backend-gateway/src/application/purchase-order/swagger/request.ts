@@ -164,11 +164,23 @@ export class CreatePurchaseOrderDetailOperationsSwaggerDto {
 // ==================== Create PO ====================
 
 export class CreatePurchaseOrderSwaggerDto {
-  @ApiProperty({ description: 'Purchase order name', example: 'PO Kitchen Supplies March 2026' })
-  name: string;
+  @ApiProperty({ description: 'Vendor ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  vendor_id: string;
 
-  @ApiPropertyOptional({ description: 'Vendor ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  vendor_id?: string;
+  @ApiProperty({ description: 'Expected delivery date (ISO 8601)', example: '2026-03-17T00:00:00.000Z' })
+  delivery_date: string;
+
+  @ApiProperty({ description: 'Currency ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  currency_id: string;
+
+  @ApiPropertyOptional({ description: 'Vendor name (auto-enriched from vendor_id)', example: 'ABC Supplies Co.' })
+  vendor_name?: string;
+
+  @ApiPropertyOptional({ description: 'Currency code (auto-enriched from currency_id)', example: 'THB' })
+  currency_code?: string;
+
+  @ApiPropertyOptional({ description: 'Exchange rate', example: 1.0, default: 1 })
+  exchange_rate?: number;
 
   @ApiPropertyOptional({ description: 'Description', example: 'PO for kitchen supplies' })
   description?: string;
@@ -176,44 +188,35 @@ export class CreatePurchaseOrderSwaggerDto {
   @ApiPropertyOptional({ description: 'Order date (ISO 8601)', example: '2026-03-10T00:00:00.000Z' })
   order_date?: string;
 
-  @ApiPropertyOptional({ description: 'Expected delivery date (ISO 8601)', example: '2026-03-17T00:00:00.000Z' })
-  delivery_date?: string;
+  @ApiPropertyOptional({ description: 'Credit term ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  credit_term_id?: string;
 
-  @ApiPropertyOptional({ description: 'Currency ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  currency_id?: string;
+  @ApiPropertyOptional({ description: 'Credit term name', example: 'Net 30' })
+  credit_term_name?: string;
 
-  @ApiPropertyOptional({ description: 'Base currency ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  base_currency_id?: string;
+  @ApiPropertyOptional({ description: 'Credit term value in days', example: 30 })
+  credit_term_value?: number;
 
-  @ApiPropertyOptional({ description: 'Exchange rate', example: 1.0 })
-  exchange_rate?: number;
-
-  @ApiPropertyOptional({ description: 'Notes', example: 'Deliver to back entrance' })
-  notes?: string;
-
-  @ApiPropertyOptional({ description: 'Vendor email', format: 'email', example: 'vendor@example.com' })
-  email?: string;
+  @ApiPropertyOptional({ description: 'Buyer ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  buyer_id?: string;
 
   @ApiPropertyOptional({ description: 'Buyer name', example: 'Jane Smith' })
   buyer_name?: string;
 
-  @ApiPropertyOptional({ description: 'Credit term (days)', example: 30 })
-  credit_term?: number;
+  @ApiPropertyOptional({ description: 'Vendor email', format: 'email', example: 'vendor@example.com' })
+  email?: string;
 
   @ApiPropertyOptional({ description: 'Remarks', example: 'Urgent order' })
   remarks?: string;
 
-  @ApiPropertyOptional({ description: 'Additional info (JSON)', example: {} })
-  info?: unknown;
+  @ApiPropertyOptional({ description: 'Note', example: 'Deliver to back entrance' })
+  note?: string;
 
-  @ApiPropertyOptional({ description: 'Document version', example: 1 })
-  doc_version?: number;
-
-  @ApiPropertyOptional({
-    description: 'Purchase order detail operations (add line items)',
+  @ApiProperty({
+    description: 'Purchase order detail operations (add line items) — at least 1 detail required',
     type: CreatePurchaseOrderDetailOperationsSwaggerDto,
   })
-  details?: CreatePurchaseOrderDetailOperationsSwaggerDto;
+  details: CreatePurchaseOrderDetailOperationsSwaggerDto;
 }
 
 // ==================== Update PO ====================
