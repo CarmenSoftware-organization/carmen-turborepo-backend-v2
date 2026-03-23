@@ -423,6 +423,31 @@ export class PurchaseRequestController extends BaseMicroserviceController {
   }
 
   /**
+   * Get previous workflow stages for a purchase request
+   * ดึงขั้นตอนอนุมัติก่อนหน้า current_stage ของใบขอซื้อ
+   */
+  @MessagePattern({
+    cmd: 'purchase-request.get-previous-stages',
+    service: 'purchase-request',
+  })
+  async getPreviousStages(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'getPreviousStages', payload },
+      PurchaseRequestController.name,
+    );
+    const user_id = payload.user_id;
+    const bu_code = payload.bu_code;
+    const pr_id = payload.pr_id;
+
+    await this.purchaseRequestService.initializePrismaService(bu_code, user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.purchaseRequestService.getPreviousStages(pr_id),
+    );
+    return this.handleResult(result);
+  }
+
+  /**
    * Find all purchase requests filtered by status with pagination
    * ค้นหาใบขอซื้อทั้งหมดตามสถานะพร้อมการแบ่งหน้า
    * @param payload - Payload containing status filter and pagination / payload ที่มีตัวกรองสถานะและการแบ่งหน้า

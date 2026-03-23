@@ -1,0 +1,23 @@
+meta {
+  name: 20 - Get Previous Stages
+  type: http
+  seq: 20
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request/:pr_id/previous-stages
+  body: none
+  auth: bearer
+}
+
+params:path {
+  pr_id: d2a87a6c-5b77-4b43-9df4-e2d2aeab2bd7
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

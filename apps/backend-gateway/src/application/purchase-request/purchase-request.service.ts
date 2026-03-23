@@ -895,4 +895,36 @@ export class PurchaseRequestService {
 
     return ResponseLib.success(response.data);
   }
+
+  /**
+   * Get previous workflow stages for a purchase request
+   * ดึงขั้นตอนอนุมัติก่อนหน้าของใบขอซื้อ
+   */
+  async getPreviousStages(
+    pr_id: string,
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'getPreviousStages', pr_id, user_id, bu_code, version },
+      PurchaseRequestService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
+      { cmd: 'purchase-request.get-previous-stages', service: 'purchase-request' },
+      { pr_id, user_id, bu_code, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
 }

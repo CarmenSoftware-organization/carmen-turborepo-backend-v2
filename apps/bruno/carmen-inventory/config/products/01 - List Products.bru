@@ -5,13 +5,14 @@ meta {
 }
 
 get {
-  url: {{host}}/api/config/{{bu_code}}/products?search=Ground
+  url: {{host}}/api/config/{{bu_code}}/products?perpage=-1
   body: none
   auth: bearer
 }
 
 params:query {
-  search: Ground
+  perpage: -1
+  ~search: 
 }
 
 headers {

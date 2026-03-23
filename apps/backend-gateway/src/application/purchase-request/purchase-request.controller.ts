@@ -295,6 +295,52 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
+   * Get previous workflow stages for a purchase request
+   * ดึงขั้นตอนอนุมัติก่อนหน้า current_stage ของใบขอซื้อ
+   * @param pr_id - Purchase request ID / รหัสใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Previous workflow stages / ขั้นตอนการทำงานก่อนหน้า
+   */
+  @Get(':bu_code/purchase-request/:pr_id/previous-stages')
+  @UseGuards(new AppIdGuard('purchaseRequest.findOne'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get previous workflow stages by PR ID',
+    description:
+      'Retrieves all workflow stages before the current stage of a purchase request. Used to determine revert/return-to options in the approval chain.',
+    operationId: 'getPreviousStagesByPrId',
+    tags: ['Procurement', 'Purchase Request', 'Workflow & Approval'],
+    responses: {
+      200: { description: 'Previous stages retrieved successfully' },
+      404: { description: 'Purchase request not found or no workflow assigned' },
+    },
+  })
+  async getPreviousStagesByPrId(
+    @Param('pr_id') pr_id: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'getPreviousStagesByPrId', pr_id, version },
+      PurchaseRequestController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.purchaseRequestService.getPreviousStages(
+      pr_id,
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
    * Retrieve a purchase request by ID with full details
    * ค้นหารายการเดียวตาม ID ของใบขอซื้อพร้อมรายละเอียดทั้งหมด
    * @param id - Purchase request ID / รหัสใบขอซื้อ

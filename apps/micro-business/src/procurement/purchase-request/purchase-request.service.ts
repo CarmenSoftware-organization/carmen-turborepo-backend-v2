@@ -2709,4 +2709,63 @@ export class PurchaseRequestService {
       },
     };
   }
+
+  /**
+   * Get previous workflow stages for a purchase request
+   * ดึงขั้นตอนอนุมัติก่อนหน้า current_stage ของใบขอซื้อ
+   * @param pr_id - Purchase request ID / รหัสใบขอซื้อ
+   * @returns Previous workflow stages / ขั้นตอนการทำงานก่อนหน้า
+   */
+  @TryCatch
+  async getPreviousStages(pr_id: string): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'getPreviousStages', pr_id, user_id: this.userId, tenant_id: this.bu_code },
+      PurchaseRequestService.name,
+    );
+
+    const pr = await this.prismaService.tb_purchase_request.findFirst({
+      where: { id: pr_id, deleted_at: null },
+      select: {
+        id: true,
+        workflow_id: true,
+        workflow_current_stage: true,
+      },
+    });
+
+    if (!pr) {
+      return Result.error('Purchase request not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (!pr.workflow_id || !pr.workflow_current_stage) {
+      return Result.error('No workflow assigned to this purchase request', ErrorCode.NOT_FOUND);
+    }
+
+    const res = this.masterService.send(
+      { cmd: 'workflows.get-previous-stages', service: 'workflows' },
+      {
+        workflow_id: pr.workflow_id,
+        stage: pr.workflow_current_stage,
+        user_id: this.userId,
+        bu_code: this.bu_code,
+      },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response?.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response?.message || 'Failed to get previous stages',
+        ErrorCode.INTERNAL,
+      );
+    }
+
+    // Transform array to numbered map: { "1": "Create Request", "2": "HOD", ... }
+    const stages = Array.isArray(response.data) ? response.data : [];
+    const numberedStages: Record<string, string> = {};
+    stages.forEach((name: string, index: number) => {
+      numberedStages[String(index + 1)] = name;
+    });
+
+    return Result.ok(numberedStages);
+  }
 }
