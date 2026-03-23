@@ -645,4 +645,36 @@ export class SpotCheckService {
 
     return Result.ok(response.data);
   }
+
+  /**
+   * Find current period spot checks grouped by location
+   * ค้นหาการตรวจสอบจุดในงวดปัจจุบันจัดกลุ่มตามสถานที่
+   */
+  async findCurrentByLocation(
+    user_id: string,
+    tenant_id: string,
+    version: string,
+    include_not_count?: boolean,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findCurrentByLocation', user_id, tenant_id, version, include_not_count },
+      SpotCheckService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      { cmd: 'spot-check.current', service: 'spot-check' },
+      { user_id, tenant_id, version, include_not_count },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
 }

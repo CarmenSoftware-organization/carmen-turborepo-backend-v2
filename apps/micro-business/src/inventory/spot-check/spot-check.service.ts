@@ -1,6 +1,12 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
-import { PrismaClient_TENANT, enum_spot_check_method } from '@repo/prisma-shared-schema-tenant';
+import {
+  PrismaClient_TENANT,
+  enum_spot_check_method,
+  enum_location_type,
+  enum_physical_count_type,
+  enum_period_status,
+} from '@repo/prisma-shared-schema-tenant';
 import { TenantService } from '@/tenant/tenant.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
@@ -456,5 +462,160 @@ export class SpotCheckService {
     }
 
     return generateCodeResponse.data.code;
+  }
+
+  /**
+   * Find current period spot checks grouped by location
+   * ค้นหาการตรวจสอบจุดในงวดปัจจุบันจัดกลุ่มตามสถานที่
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @param include_not_count - Include locations with physical_count_type=no / รวมสถานที่ที่ไม่ตรวจนับ
+   * @returns Locations with spot check status / สถานที่พร้อมสถานะการตรวจสอบจุด
+   */
+  @TryCatch
+  async findCurrentByLocation(
+    user_id: string,
+    tenant_id: string,
+    include_not_count?: boolean,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findCurrentByLocation', user_id, tenant_id, include_not_count },
+      SpotCheckService.name,
+    );
+
+    const prisma = await this.getPrisma(user_id, tenant_id);
+    if (!prisma) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+
+    // Get current open period
+    const open_period = await prisma.tb_period.findFirst({
+      where: {
+        status: enum_period_status.open,
+        deleted_at: null,
+      },
+      select: { id: true, start_at: true, end_at: true },
+    });
+
+    if (!open_period) {
+      return Result.error('No active period found', ErrorCode.NOT_FOUND);
+    }
+
+    // Get spot checks within the current period date range
+    const spotChecks = await prisma.tb_spot_check.findMany({
+      where: {
+        start_date: {
+          gte: open_period.start_at,
+          lte: open_period.end_at,
+        },
+        doc_status: { notIn: ['void', 'completed'] },
+        deleted_at: null,
+      },
+      select: {
+        id: true,
+        spot_check_no: true,
+        location_id: true,
+        doc_status: true,
+        start_date: true,
+        end_date: true,
+        method: true,
+        size: true,
+      },
+    });
+
+    // Group spot checks by location
+    const spotCheckByLocation = new Map<string, typeof spotChecks>();
+    for (const sc of spotChecks) {
+      const existing = spotCheckByLocation.get(sc.location_id) || [];
+      existing.push(sc);
+      spotCheckByLocation.set(sc.location_id, existing);
+    }
+
+    // Count spot check details per spot_check_id
+    const spotCheckIds = spotChecks.map((sc) => sc.id);
+    let countedBySpotCheck = new Map<string, number>();
+    if (spotCheckIds.length > 0) {
+      const countedItems = await prisma.tb_spot_check_detail.groupBy({
+        by: ['spot_check_id'],
+        where: {
+          spot_check_id: { in: spotCheckIds },
+          deleted_at: null,
+        },
+        _count: { id: true },
+      });
+      countedBySpotCheck = new Map(
+        countedItems.map((ci) => [ci.spot_check_id, ci._count.id]),
+      );
+    }
+
+    // Get locations
+    let locations = await prisma.tb_location.findMany({
+      where: {
+        location_type: {
+          in: [enum_location_type.inventory, enum_location_type.consignment],
+        },
+        ...(include_not_count ? {} : { physical_count_type: enum_physical_count_type.yes }),
+        is_active: true,
+        deleted_at: null,
+      },
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        location_type: true,
+        physical_count_type: true,
+      },
+    });
+
+    // Union locations that already have spot checks in this period
+    if (!include_not_count) {
+      const existingLocationIds = new Set(locations.map((loc) => loc.id));
+      const missingLocationIds = [...spotCheckByLocation.keys()]
+        .filter((id) => !existingLocationIds.has(id));
+
+      if (missingLocationIds.length > 0) {
+        const extraLocations = await prisma.tb_location.findMany({
+          where: {
+            id: { in: missingLocationIds },
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+            code: true,
+            name: true,
+            location_type: true,
+            physical_count_type: true,
+          },
+        });
+        locations = [...locations, ...extraLocations];
+      }
+    }
+
+    const locationsWithStatus = locations.map((loc) => {
+      const scList = spotCheckByLocation.get(loc.id) || [];
+      // Latest spot check for this location
+      const latestSc = scList.length > 0
+        ? scList.sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime())[0]
+        : null;
+
+      return {
+        id: loc.id,
+        code: loc.code,
+        name: loc.name,
+        location_type: loc.location_type,
+        physical_count_type: loc.physical_count_type,
+        method: latestSc?.method || null,
+        size: latestSc?.size || 0,
+        counted: latestSc ? (countedBySpotCheck.get(latestSc.id) || 0) : 0,
+        spot_check_count: scList.length,
+        latest_spot_check: latestSc ? {
+          id: latestSc.id,
+          spot_check_no: latestSc.spot_check_no,
+          doc_status: latestSc.doc_status,
+          start_date: latestSc.start_date,
+          end_date: latestSc.end_date,
+        } : null,
+      };
+    });
+
+    return Result.ok(locationsWithStatus);
   }
 }

@@ -1,0 +1,23 @@
+meta {
+  name: 10 - Get Current Spot Check
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/spot-check/current?include_not_count=true
+  body: none
+  auth: bearer
+}
+
+params:query {
+  include_not_count: true
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

@@ -19,8 +19,10 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { SpotCheckCurrentResponseDto } from './swagger/response';
 import {
   SpotCheckCreateRequestDto,
   SpotCheckUpdateRequestDto,
@@ -95,6 +97,67 @@ export class SpotCheckController extends BaseHttpController {
     const result = await this.spotCheckService.findAllPendingSpotCheckCount(
       user_id,
       version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * Get current period spot checks grouped by location
+   * ค้นหาการตรวจสอบจุดในงวดปัจจุบันจัดกลุ่มตามสถานที่
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @param include_not_count - Include locations with physical_count_type=no / รวมสถานที่ที่ไม่ตรวจนับ
+   * @returns Locations with spot check status / สถานที่พร้อมสถานะการตรวจสอบจุด
+   */
+  @Get(':bu_code/spot-check/current')
+  @UseGuards(new AppIdGuard('spotCheck.findAll'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get current period spot checks by location',
+    description:
+      'Lists all inventory locations with their spot check status for the current open period. Similar to the physical count current endpoint. Use include_not_count=true to include locations with physical_count_type=no.',
+    operationId: 'findCurrentSpotCheckByLocation',
+    tags: ['Inventory', 'Spot Check'],
+    parameters: [
+      {
+        name: 'bu_code',
+        in: 'path',
+        required: true,
+        description: 'Business Unit Code',
+      },
+      {
+        name: 'include_not_count',
+        in: 'query',
+        required: false,
+        description: 'Include locations with physical_count_type=no (default: false)',
+      },
+    ],
+    responses: {
+      200: { description: 'Spot checks by location retrieved successfully' },
+      404: { description: 'No active period found' },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Spot checks by location retrieved successfully', type: SpotCheckCurrentResponseDto })
+  @ApiResponse({ status: 404, description: 'No active period found' })
+  async findCurrentByLocation(
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+    @Query('include_not_count') include_not_count: string = 'false',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'findCurrentByLocation', version, include_not_count },
+      SpotCheckController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.spotCheckService.findCurrentByLocation(
+      user_id,
+      bu_code,
+      version,
+      include_not_count === 'true',
     );
     this.respond(res, result);
   }

@@ -168,3 +168,76 @@ export class SpotCheckPendingCountResponseDto {
   @ApiProperty({ description: 'Number of pending spot checks', example: 5 })
   count: number;
 }
+
+// ==================== Current Spot Check by Location ====================
+
+export class SpotCheckCurrentPeriodDto {
+  @ApiProperty({ description: 'Period ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+
+  @ApiProperty({ description: 'Period code (YYMM)', example: '2603' })
+  period: string;
+
+  @ApiProperty({ description: 'Period start date', example: '2026-03-01T00:00:00.000Z' })
+  start_at: Date;
+
+  @ApiProperty({ description: 'Period end date', example: '2026-03-31T23:59:59.999Z' })
+  end_at: Date;
+}
+
+export class SpotCheckLatestDto {
+  @ApiProperty({ description: 'Spot check ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+
+  @ApiPropertyOptional({ description: 'Spot check number', example: 'SC260301001' })
+  spot_check_no?: string;
+
+  @ApiProperty({ description: 'Document status', example: 'pending', enum: ['pending', 'in_progress', 'void', 'completed'] })
+  doc_status: string;
+
+  @ApiProperty({ description: 'Method', example: 'random', enum: ['random', 'high_value', 'manual'] })
+  method: string;
+
+  @ApiProperty({ description: 'Sample size', example: 10 })
+  size: number;
+
+  @ApiProperty({ description: 'Number of items counted', example: 8 })
+  counted: number;
+
+  @ApiProperty({ description: 'Start date', example: '2026-03-15T08:00:00.000Z' })
+  start_date: Date;
+
+  @ApiPropertyOptional({ description: 'End date', example: '2026-03-15T10:00:00.000Z' })
+  end_date?: Date;
+}
+
+export class SpotCheckLocationItemDto {
+  @ApiProperty({ description: 'Location ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+
+  @ApiPropertyOptional({ description: 'Location code', example: 'LOC-001' })
+  code?: string;
+
+  @ApiPropertyOptional({ description: 'Location name', example: 'Main Kitchen' })
+  name?: string;
+
+  @ApiPropertyOptional({ description: 'Location type', example: 'inventory', enum: ['inventory', 'consignment'] })
+  location_type?: string;
+
+  @ApiPropertyOptional({ description: 'Physical count type', example: 'yes', enum: ['yes', 'no'] })
+  physical_count_type?: string;
+
+  @ApiProperty({ description: 'Total products in this location', example: 45 })
+  total_products: number;
+
+  @ApiProperty({ description: 'Number of spot checks in current period', example: 2 })
+  spot_check_count: number;
+
+  @ApiPropertyOptional({ description: 'Latest spot check for this location', type: SpotCheckLatestDto })
+  latest_spot_check?: SpotCheckLatestDto;
+}
+
+export class SpotCheckCurrentResponseDto {
+  @ApiProperty({ description: 'Locations with spot check status', type: [SpotCheckLocationItemDto] })
+  data: SpotCheckLocationItemDto[];
+}
