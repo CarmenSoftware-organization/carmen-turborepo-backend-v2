@@ -444,8 +444,9 @@ export class PurchaseRequestController extends BaseMicroserviceController {
 
     await this.purchaseRequestService.initializePrismaService(bu_code, user_id);
     const auditContext = this.createAuditContext(payload);
+    const options = payload.options;
     const result = await runWithAuditContext(auditContext, () =>
-      this.purchaseRequestService.findAllByStatus(status, paginate),
+      this.purchaseRequestService.findAllByStatus(status, paginate, options),
     );
     return this.handlePaginatedResult(result);
   }

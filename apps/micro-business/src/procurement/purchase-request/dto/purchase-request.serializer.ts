@@ -164,6 +164,13 @@ export const PurchaseRequestListItemResponseSchema = z.object({
 
 export type PurchaseRequestListItemResponse = z.infer<typeof PurchaseRequestListItemResponseSchema>;
 
+// Purchase request list item for PO creation (excludes workflow_history)
+export const PurchaseRequestForPoResponseSchema = PurchaseRequestListItemResponseSchema.omit({
+  workflow_history: true,
+});
+
+export type PurchaseRequestForPoResponse = z.infer<typeof PurchaseRequestForPoResponseSchema>;
+
 // Mutation response schema
 export const PurchaseRequestMutationResponseSchema = z.object({
   id: z.string(),

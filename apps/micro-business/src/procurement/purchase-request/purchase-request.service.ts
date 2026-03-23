@@ -36,6 +36,7 @@ import {
   GlobalApiReturn,
   PurchaseRequestDetailResponseSchema,
   PurchaseRequestListItemResponseSchema,
+  PurchaseRequestForPoResponseSchema,
   TryCatch,
   Result,
   ErrorCode,
@@ -1853,6 +1854,7 @@ export class PurchaseRequestService {
   async findAllByStatus(
     status: string,
     paginate: IPaginate,
+    options?: { excludeWorkflowHistory?: boolean },
   ): Promise<Result<unknown>> {
     this.logger.debug(
       {
@@ -1913,8 +1915,12 @@ export class PurchaseRequestService {
       where: whereQry,
     });
 
+    const responseSchema = options?.excludeWorkflowHistory
+      ? PurchaseRequestForPoResponseSchema
+      : PurchaseRequestListItemResponseSchema;
+
     const serializedPurchaseRequests = purchaseRequests.map((item) =>
-      PurchaseRequestListItemResponseSchema.parse(item),
+      responseSchema.parse(item),
     );
 
     return Result.ok({

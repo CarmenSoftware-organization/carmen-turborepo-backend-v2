@@ -615,6 +615,7 @@ export class PurchaseRequestService {
     bu_code: string,
     paginate: IPaginate,
     version: string,
+    options?: { excludeWorkflowHistory?: boolean },
   ): Promise<Result<unknown>> {
     this.logger.debug(
       {
@@ -637,6 +638,7 @@ export class PurchaseRequestService {
         bu_code: bu_code,
         paginate: paginate,
         version: version,
+        options: options,
       },
     );
 

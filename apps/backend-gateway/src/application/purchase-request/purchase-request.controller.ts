@@ -122,6 +122,7 @@ export class PurchaseRequestController extends BaseHttpController {
       bu_code,
       paginate,
       version,
+      { excludeWorkflowHistory: true },
     );
     this.respond(res, result);
   }
