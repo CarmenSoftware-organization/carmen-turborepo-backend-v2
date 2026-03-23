@@ -50,6 +50,11 @@ export const PurchaseOrderDetailSchema = z.object({
   note: z.string().optional(),
 });
 
+// Create PO Detail Operations schema (add only)
+export const CreatePurchaseOrderDetailOperationsSchema = z.object({
+  add: z.array(PurchaseOrderDetailSchema).min(1),
+});
+
 // Create PO schema
 export const CreatePurchaseOrderSchema = z.object({
   vendor_id: z.string().uuid(),
@@ -70,9 +75,10 @@ export const CreatePurchaseOrderSchema = z.object({
   remarks: z.string().optional(),
   note: z.string().optional(),
   // Details
-  details: z.array(PurchaseOrderDetailSchema).min(1),
+  details: CreatePurchaseOrderDetailOperationsSchema,
 });
 
 export type CreatePurchaseOrderDto = z.infer<typeof CreatePurchaseOrderSchema>;
+export type CreatePurchaseOrderDetailOperationsDto = z.infer<typeof CreatePurchaseOrderDetailOperationsSchema>;
 export type PurchaseOrderDetailDto = z.infer<typeof PurchaseOrderDetailSchema>;
 export type PurchaseOrderPrDetailDto = z.infer<typeof PurchaseOrderPrDetailSchema>;

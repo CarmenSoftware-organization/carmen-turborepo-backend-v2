@@ -106,66 +106,66 @@ export class PurchaseOrderDetailDto {
   history?: unknown;
 }
 
-export class PurchaseOrderDetailOperationsDto {
-  @ApiPropertyOptional({
+export class CreatePurchaseOrderDetailOperationsDto {
+  @ApiProperty({
     description: 'Detail line items to add',
     type: [PurchaseOrderDetailDto],
   })
-  add?: PurchaseOrderDetailDto[];
+  add: PurchaseOrderDetailDto[];
 }
 
 export class CreatePurchaseOrderDto {
-  @ApiProperty({ description: 'Purchase order name' })
-  name: string;
+  @ApiProperty({ description: 'Vendor ID', format: 'uuid' })
+  vendor_id: string;
+
+  @ApiPropertyOptional({ description: 'Vendor name' })
+  vendor_name?: string;
+
+  @ApiProperty({ description: 'Delivery date (ISO 8601)' })
+  delivery_date: string;
+
+  @ApiProperty({ description: 'Currency ID', format: 'uuid' })
+  currency_id: string;
+
+  @ApiPropertyOptional({ description: 'Currency code' })
+  currency_code?: string;
+
+  @ApiPropertyOptional({ description: 'Exchange rate', default: 1 })
+  exchange_rate?: number;
 
   @ApiPropertyOptional({ description: 'Description' })
   description?: string;
 
-  @ApiPropertyOptional({ description: 'Order date' })
-  order_date?: Date;
+  @ApiPropertyOptional({ description: 'Order date (ISO 8601)' })
+  order_date?: string;
 
-  @ApiPropertyOptional({ description: 'Delivery date' })
-  delivery_date?: Date;
+  @ApiPropertyOptional({ description: 'Credit term ID', format: 'uuid' })
+  credit_term_id?: string;
 
-  @ApiPropertyOptional({ description: 'Vendor ID', format: 'uuid' })
-  vendor_id?: string;
+  @ApiPropertyOptional({ description: 'Credit term name' })
+  credit_term_name?: string;
 
-  @ApiPropertyOptional({ description: 'Currency ID', format: 'uuid' })
-  currency_id?: string;
+  @ApiPropertyOptional({ description: 'Credit term value (days)' })
+  credit_term_value?: number;
 
-  @ApiPropertyOptional({ description: 'Base currency ID', format: 'uuid' })
-  base_currency_id?: string;
-
-  @ApiPropertyOptional({ description: 'Exchange rate' })
-  exchange_rate?: number;
-
-  @ApiPropertyOptional({ description: 'Notes' })
-  notes?: string;
-
-  @ApiPropertyOptional({ description: 'Email address', format: 'email' })
-  email?: string;
+  @ApiPropertyOptional({ description: 'Buyer ID', format: 'uuid' })
+  buyer_id?: string;
 
   @ApiPropertyOptional({ description: 'Buyer name' })
   buyer_name?: string;
 
-  @ApiPropertyOptional({ description: 'Credit term (days)' })
-  credit_term?: number;
+  @ApiPropertyOptional({ description: 'Email address', format: 'email' })
+  email?: string;
 
   @ApiPropertyOptional({ description: 'Remarks' })
   remarks?: string;
 
-  @ApiPropertyOptional({ description: 'Additional info (JSON)' })
-  info?: unknown;
+  @ApiPropertyOptional({ description: 'Note' })
+  note?: string;
 
-  @ApiPropertyOptional({ description: 'Change history (JSON)' })
-  history?: unknown;
-
-  @ApiPropertyOptional({ description: 'Document version' })
-  doc_version?: number;
-
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: 'Purchase order detail operations (add line items)',
-    type: PurchaseOrderDetailOperationsDto,
+    type: CreatePurchaseOrderDetailOperationsDto,
   })
-  details?: PurchaseOrderDetailOperationsDto;
+  details: CreatePurchaseOrderDetailOperationsDto;
 }
