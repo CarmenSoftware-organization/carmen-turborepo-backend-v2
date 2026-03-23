@@ -613,12 +613,14 @@ export class PurchaseRequestService {
     status: string,
     user_id: string,
     bu_code: string,
+    paginate: IPaginate,
     version: string,
   ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'findAllByStatus',
         status,
+        paginate,
         version,
       },
       PurchaseRequestService.name,
@@ -633,6 +635,7 @@ export class PurchaseRequestService {
         status: status,
         user_id: user_id,
         bu_code: bu_code,
+        paginate: paginate,
         version: version,
       },
     );

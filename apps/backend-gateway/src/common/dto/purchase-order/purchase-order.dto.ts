@@ -53,7 +53,7 @@ export const PurchaseOrderCreate = z.object({
   info: z.any().optional(),
   history: z.any().optional(),
   doc_version: z.number().optional(),
-  purchase_order_detail: z.object({
+  details: z.object({
     add: z.array(purchaseOrderDetail).optional(),
   }).optional(),
 });
@@ -87,7 +87,7 @@ export const PurchaseOrderUpdate = z.object({
   info: z.any().optional(),
   history: z.any().optional(),
   doc_version: z.number().optional(),
-  purchase_order_detail: z.object({
+  details: z.object({
     add: z.array(purchaseOrderDetail).optional(),
     update: z.array(purchaseOrderDetailUpdate).optional(),
     remove: z.array(z.string().uuid()).optional(),

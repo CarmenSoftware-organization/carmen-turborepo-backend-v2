@@ -76,6 +76,57 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
+   * List approved purchase requests available for PO creation
+   * ค้นหาใบขอซื้อที่อนุมัติแล้วสำหรับสร้างใบสั่งซื้อ
+   * @param query - Pagination and filter parameters / พารามิเตอร์การแบ่งหน้าและตัวกรอง
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of approved purchase requests / รายการใบขอซื้อที่อนุมัติแบบแบ่งหน้า
+   */
+  @Get(':bu_code/purchase-request/for-po')
+  @UseGuards(new AppIdGuard('purchaseRequest.findAll'))
+  @Serialize(PurchaseRequestListItemResponseSchema)
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'Get approved purchase requests for PO creation',
+    description: 'Lists all purchase requests with approved status that are available for creating purchase orders. Used by purchasers to select which approved PRs to convert into POs.',
+    operationId: 'findAllApprovedPurchaseRequestsForPo',
+    tags: ['Procurement', 'Purchase Request', 'Purchase Order'],
+    responses: {
+      200: { description: 'Approved purchase requests retrieved successfully' },
+    },
+  })
+  @HttpCode(HttpStatus.OK)
+  async findAllForPo(
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query() query: IPaginateQuery,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      {
+        function: 'findAllForPo',
+        query,
+        version,
+      },
+      PurchaseRequestController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
+    const result = await this.purchaseRequestService.findAllByStatus(
+      'approve',
+      user_id,
+      bu_code,
+      paginate,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
    * List all purchase requests with pagination and filtering
    * ค้นหารายการทั้งหมดของใบขอซื้อพร้อมการแบ่งหน้าและตัวกรอง
    * @param query - Pagination and filter parameters / พารามิเตอร์การแบ่งหน้าและตัวกรอง
@@ -329,6 +380,7 @@ export class PurchaseRequestController extends BaseHttpController {
   @UseGuards(new AppIdGuard('purchaseRequest.approval'))
   @Serialize(PurchaseRequestListItemResponseSchema)
   @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get purchase requests by status',
     description: 'Filters purchase requests by a specific workflow status (e.g., draft, pending, approved, rejected). Used by approvers and managers to view PRs at a particular stage of the approval workflow.',
@@ -341,6 +393,7 @@ export class PurchaseRequestController extends BaseHttpController {
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
+    @Query() query: IPaginateQuery,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
@@ -353,10 +406,12 @@ export class PurchaseRequestController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
     const result = await this.purchaseRequestService.findAllByStatus(
       status,
       user_id,
       bu_code,
+      paginate,
       version,
     );
     this.respond(res, result);

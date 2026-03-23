@@ -20,6 +20,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
@@ -30,20 +31,36 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
 import {
+  CreatePurchaseOrderSwaggerDto,
   UpdatePurchaseOrderSwaggerDto,
+  SavePurchaseOrderSwaggerDto,
+  ApprovePurchaseOrderSwaggerDto,
+  RejectPurchaseOrderSwaggerDto,
+  ReviewPurchaseOrderSwaggerDto,
   GroupPrForPoSwaggerDto,
   ConfirmPrToPoSwaggerDto,
 } from './swagger/request';
+import {
+  PurchaseOrderDetailResponseDto,
+  PurchaseOrderListResponseDto,
+  PurchaseOrderMutationResponseDto,
+  PurchaseOrderDetailItemResponseDto,
+} from './swagger/response';
 import {
   ApprovePurchaseOrderDto,
   SavePurchaseOrderDto,
   RejectPurchaseOrderDto,
   ReviewPurchaseOrderDto,
-  EXAMPLE_APPROVE_PO,
+} from './dto/state-change.dto';
+import {
+  EXAMPLE_CREATE_PO,
   EXAMPLE_SAVE_PO,
+  EXAMPLE_APPROVE_PO,
   EXAMPLE_REJECT_PO,
   EXAMPLE_REVIEW_PO,
-} from './dto/state-change.dto';
+  EXAMPLE_GROUP_PR_FOR_PO,
+  EXAMPLE_CONFIRM_PR_TO_PO,
+} from './example/purchase-order.example';
 import { PermissionGuard } from 'src/auth';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
@@ -90,6 +107,7 @@ export class PurchaseOrderController extends BaseHttpController {
       200: { description: 'PO list with location breakdown retrieved successfully' },
     },
   })
+  @ApiResponse({ status: 200, description: 'PO list with location breakdown retrieved successfully', type: PurchaseOrderListResponseDto })
   @HttpCode(HttpStatus.OK)
   async findAllForGrn(
     @Param('bu_code') bu_code: string,
@@ -148,6 +166,8 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
+  @ApiResponse({ status: 200, description: 'The purchase order was successfully retrieved', type: PurchaseOrderDetailResponseDto })
+  @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async findOne(
     @Param('id') id: string,
@@ -210,6 +230,7 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
+  @ApiResponse({ status: 200, description: 'The purchase orders were successfully retrieved', type: PurchaseOrderListResponseDto })
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Req() req: Request,
@@ -279,52 +300,16 @@ export class PurchaseOrderController extends BaseHttpController {
     },
   })
   @ApiBody({
-    type: CreatePurchaseOrderDto,
+    type: CreatePurchaseOrderSwaggerDto,
     examples: {
-      'T02': {
-        summary: 'bu_code T02',
-        value: {
-          vendor_id: 'e0363f5a-3637-4d27-a421-8693550aa816',
-          delivery_date: '2024-01-15T00:00:00Z',
-          currency_id: '93dabe25-1668-4c5b-bceb-3e0b83b78002',
-          details: [
-            {
-              sequence: 1,
-              product_id: 'bb96415b-dff0-40ec-aa2f-2b4099418314',
-              order_unit_id: 'c03abcb6-8a3a-4576-85f0-0e2df8d34bf5',
-              order_qty: 10,
-              pr_detail: [
-                {
-                  pr_detail_id: '6457d871-f8fc-4b56-b4ab-0173297caab5',
-                  order_qty: 10,
-                  order_unit_id: 'c03abcb6-8a3a-4576-85f0-0e2df8d34bf5',
-                  order_base_qty: 10,
-                },
-              ],
-              order_unit_conversion_factor: 1,
-              base_unit_id: 'c03abcb6-8a3a-4576-85f0-0e2df8d34bf5',
-              base_qty: 10,
-              price: 0,
-              sub_total_price: 0,
-              net_amount: 0,
-              total_price: 0,
-              tax_profile_id: '337d3a49-f9de-497d-af33-acf2b4cfc731',
-              tax_profile_name: 'Vat 7%',
-              tax_rate: 0,
-              tax_amount: 0,
-              is_tax_adjustment: false,
-              discount_rate: 0,
-              discount_amount: 0,
-              is_discount_adjustment: false,
-              is_foc: false,
-              description: 'string',
-              note: 'string',
-            },
-          ],
-        },
+      create: {
+        summary: 'Create PO with multiple line items',
+        value: EXAMPLE_CREATE_PO,
       },
     },
   })
+  @ApiResponse({ status: 201, description: 'The purchase order was successfully created', type: PurchaseOrderMutationResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid request body' })
   @HttpCode(HttpStatus.CREATED)
   async create(
     @Body() createDto: CreatePurchaseOrderDto,
@@ -393,6 +378,8 @@ export class PurchaseOrderController extends BaseHttpController {
     },
   })
   @ApiBody({ type: UpdatePurchaseOrderSwaggerDto })
+  @ApiResponse({ status: 200, description: 'The purchase order was successfully updated', type: PurchaseOrderMutationResponseDto })
+  @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id') id: string,
@@ -462,6 +449,8 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
+  @ApiResponse({ status: 200, description: 'The purchase order was successfully deleted', type: PurchaseOrderMutationResponseDto })
+  @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async delete(
     @Param('id') id: string,
@@ -529,7 +518,7 @@ export class PurchaseOrderController extends BaseHttpController {
     },
   })
   @ApiBody({
-    type: SavePurchaseOrderDto,
+    type: SavePurchaseOrderSwaggerDto,
     description: 'Save purchase order with header changes and detail add/update/remove',
     examples: {
       save: {
@@ -538,6 +527,9 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
+  @ApiResponse({ status: 200, description: 'The purchase order was successfully saved', type: PurchaseOrderMutationResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid data or user does not have permission' })
+  @ApiResponse({ status: 404, description: 'The purchase order was not found or not in progress' })
   @HttpCode(HttpStatus.OK)
   async save(
     @Param('id') id: string,
@@ -612,7 +604,7 @@ export class PurchaseOrderController extends BaseHttpController {
     },
   })
   @ApiBody({
-    type: ApprovePurchaseOrderDto,
+    type: ApprovePurchaseOrderSwaggerDto,
     description: 'Approve purchase order payload',
     examples: {
       approve: {
@@ -621,6 +613,9 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
+  @ApiResponse({ status: 200, description: 'The purchase order was successfully approved', type: PurchaseOrderMutationResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid stage_role or user does not have permission' })
+  @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async approve(
     @Param('id') id: string,
@@ -695,7 +690,7 @@ export class PurchaseOrderController extends BaseHttpController {
     },
   })
   @ApiBody({
-    type: RejectPurchaseOrderDto,
+    type: RejectPurchaseOrderSwaggerDto,
     description: 'Reject purchase order payload',
     examples: {
       reject: {
@@ -704,6 +699,9 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
+  @ApiResponse({ status: 200, description: 'The purchase order was successfully rejected', type: PurchaseOrderMutationResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid stage_role or user does not have permission' })
+  @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async reject(
     @Param('id') id: string,
@@ -778,7 +776,7 @@ export class PurchaseOrderController extends BaseHttpController {
     },
   })
   @ApiBody({
-    type: ReviewPurchaseOrderDto,
+    type: ReviewPurchaseOrderSwaggerDto,
     description: 'Review purchase order payload',
     examples: {
       review: {
@@ -787,6 +785,9 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
+  @ApiResponse({ status: 200, description: 'The purchase order was successfully sent back for review', type: PurchaseOrderMutationResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid stage_role or user does not have permission' })
+  @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async review(
     @Param('id') id: string,
@@ -859,6 +860,9 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
+  @ApiResponse({ status: 200, description: 'The purchase order was successfully cancelled', type: PurchaseOrderMutationResponseDto })
+  @ApiResponse({ status: 400, description: 'The purchase order cannot be cancelled due to invalid status' })
+  @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async cancel(
     @Param('id') id: string,
@@ -924,6 +928,9 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
+  @ApiResponse({ status: 200, description: 'The purchase order was successfully closed', type: PurchaseOrderMutationResponseDto })
+  @ApiResponse({ status: 400, description: 'The purchase order cannot be closed due to invalid status' })
+  @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async closePO(
     @Param('id') id: string,
@@ -986,7 +993,17 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
-  @ApiBody({ type: GroupPrForPoSwaggerDto })
+  @ApiBody({
+    type: GroupPrForPoSwaggerDto,
+    examples: {
+      group: {
+        summary: 'Group PRs by vendor for PO creation',
+        value: EXAMPLE_GROUP_PR_FOR_PO,
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'PR details grouped successfully', type: PurchaseOrderListResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid request body' })
   @HttpCode(HttpStatus.OK)
   async groupPrForPo(
     @Body() body: { pr_ids: string[] },
@@ -1054,7 +1071,17 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
-  @ApiBody({ type: ConfirmPrToPoSwaggerDto })
+  @ApiBody({
+    type: ConfirmPrToPoSwaggerDto,
+    examples: {
+      confirm: {
+        summary: 'Confirm PRs and create POs',
+        value: EXAMPLE_CONFIRM_PR_TO_PO,
+      },
+    },
+  })
+  @ApiResponse({ status: 201, description: 'Purchase Orders created successfully from PRs', type: PurchaseOrderMutationResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid request body' })
   @HttpCode(HttpStatus.CREATED)
   async confirmPrToPo(
     @Body() body: { pr_ids: string[] },
@@ -1270,6 +1297,8 @@ export class PurchaseOrderController extends BaseHttpController {
       404: { description: 'The purchase order was not found' },
     },
   })
+  @ApiResponse({ status: 200, description: 'The purchase order details were successfully retrieved', type: [PurchaseOrderDetailItemResponseDto] })
+  @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async findAllDetails(
     @Param('id') id: string,
@@ -1316,6 +1345,8 @@ export class PurchaseOrderController extends BaseHttpController {
       404: { description: 'The purchase order detail was not found' },
     },
   })
+  @ApiResponse({ status: 200, description: 'The purchase order detail was successfully retrieved', type: PurchaseOrderDetailItemResponseDto })
+  @ApiResponse({ status: 404, description: 'The purchase order detail was not found' })
   @HttpCode(HttpStatus.OK)
   async findOneDetail(
     @Param('id') id: string,
@@ -1365,6 +1396,9 @@ export class PurchaseOrderController extends BaseHttpController {
       404: { description: 'The purchase order detail was not found' },
     },
   })
+  @ApiResponse({ status: 200, description: 'The purchase order detail was successfully deleted', type: PurchaseOrderMutationResponseDto })
+  @ApiResponse({ status: 400, description: 'Purchase order is not in draft status' })
+  @ApiResponse({ status: 404, description: 'The purchase order detail was not found' })
   @HttpCode(HttpStatus.OK)
   async deleteDetail(
     @Param('id') id: string,

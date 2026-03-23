@@ -267,7 +267,7 @@ export class PurchaseOrderService {
       total_tax: Number(purchaseOrder.total_tax),
       total_amount: Number(purchaseOrder.total_amount),
       exchange_rate: Number(purchaseOrder.exchange_rate),
-      purchase_order_detail: purchaseOrder.tb_purchase_order_detail.map((detail) => ({
+      details: purchaseOrder.tb_purchase_order_detail.map((detail) => ({
         ...detail,
         order_qty: Number(detail.order_qty),
         order_unit_conversion_factor: Number(detail.order_unit_conversion_factor),
@@ -699,7 +699,7 @@ export class PurchaseOrderService {
     const orderDate = data.order_date ? new Date(String(data.order_date)) : new Date();
     const poNo = await this.generatePONo(orderDate.toISOString());
 
-    const details = data.purchase_order_detail?.add || [];
+    const details = data.details?.add || [];
 
     // Calculate totals from details
     let total_qty = 0;
@@ -938,11 +938,11 @@ export class PurchaseOrderService {
       },
     });
 
-    // Handle purchase_order_detail add/remove/update
-    if (data.purchase_order_detail) {
+    // Handle details add/remove/update
+    if (data.details) {
       // Add new details
-      if (data.purchase_order_detail.add) {
-        for (const detail of data.purchase_order_detail.add) {
+      if (data.details.add) {
+        for (const detail of data.details.add) {
           // Look up product, order unit, base unit
           const product = detail.product_id
             ? await this.prismaService.tb_product.findUnique({ where: { id: detail.product_id } })
@@ -995,8 +995,8 @@ export class PurchaseOrderService {
       }
 
       // Remove details
-      if (data.purchase_order_detail.remove) {
-        for (const detailId of data.purchase_order_detail.remove) {
+      if (data.details.remove) {
+        for (const detailId of data.details.remove) {
           const id = detailId;
           // First delete junction records
           await this.prismaService.tb_purchase_order_detail_tb_purchase_request_detail.deleteMany(
@@ -1012,8 +1012,8 @@ export class PurchaseOrderService {
       }
 
       // Update existing details
-      if (data.purchase_order_detail.update) {
-        for (const detail of data.purchase_order_detail.update) {
+      if (data.details.update) {
+        for (const detail of data.details.update) {
           const detailId = detail.id;
 
           // Look up product, order unit, base unit

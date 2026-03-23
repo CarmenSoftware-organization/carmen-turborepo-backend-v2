@@ -92,7 +92,7 @@ export const PurchaseOrderCreate = z.object({
   info: z.any().optional(),
   history: z.any().optional(),
   doc_version: z.number().optional(),
-  purchase_order_detail: purchaseOrderDetail.optional(),
+  details: purchaseOrderDetail.optional(),
 });
 
 export type PurchaseOrderCreateModel = z.infer<typeof PurchaseOrderCreate>;
@@ -120,7 +120,7 @@ export const PurchaseOrderUpdate = z.object({
   info: z.any().optional(),
   history: z.any().optional(),
   doc_version: z.number().optional(),
-  purchase_order_detail: purchaseOrderDetail.optional(),
+  details: purchaseOrderDetail.optional(),
 });
 
 export type PurchaseOrderUpdateModel = z.infer<typeof PurchaseOrderUpdate> & {
@@ -210,12 +210,12 @@ export function createPurchaseOrderCreateValidation(prisma: PrismaClient) {
       }
     }
 
-    // Validate purchase_order_detail
+    // Validate details
     await validatePurchaseOrderDetailItem(
       prisma,
-      data.purchase_order_detail,
+      data.details,
       ctx,
-      ['purchase_order_detail'],
+      ['details'],
     );
   });
 }
@@ -261,12 +261,12 @@ export function createPurchaseOrderUpdateValidation(prisma: PrismaClient) {
       }
     }
 
-    // Validate purchase_order_detail
+    // Validate details
     await validatePurchaseOrderDetailItem(
       prisma,
-      data.purchase_order_detail,
+      data.details,
       ctx,
-      ['purchase_order_detail'],
+      ['details'],
     );
   });
 }
