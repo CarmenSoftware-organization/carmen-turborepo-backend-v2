@@ -57,6 +57,7 @@ export const CreatePurchaseOrderDetailOperationsSchema = z.object({
 
 // Create PO schema
 export const CreatePurchaseOrderSchema = z.object({
+  po_type: z.enum(['manual', 'purchase_request']).optional().default('manual'),
   vendor_id: z.string().uuid(),
   vendor_name: z.string().optional(),
   delivery_date: z.string().datetime().or(z.string()),

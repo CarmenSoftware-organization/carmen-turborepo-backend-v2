@@ -768,6 +768,7 @@ export class PurchaseOrderService {
         data: {
           po_no: poNo,
           po_status: enum_purchase_order_doc_status.draft,
+          po_type: (data.po_type as any) || 'manual',
           description: data.description,
           order_date: orderDate.toISOString(),
           delivery_date: new Date(String(data.delivery_date)).toISOString(),

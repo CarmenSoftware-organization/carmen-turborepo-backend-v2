@@ -164,6 +164,9 @@ export class CreatePurchaseOrderDetailOperationsSwaggerDto {
 // ==================== Create PO ====================
 
 export class CreatePurchaseOrderSwaggerDto {
+  @ApiPropertyOptional({ description: 'Purchase order type (defaults to manual)', enum: ['manual', 'purchase_request'], default: 'manual', example: 'manual' })
+  po_type?: string;
+
   @ApiProperty({ description: 'Vendor ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   vendor_id: string;
 

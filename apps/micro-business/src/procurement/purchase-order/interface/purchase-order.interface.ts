@@ -132,6 +132,7 @@ export interface IPurchaseOrder {
 }
 
 export interface ICreatePurchaseOrder {
+  po_type?: 'manual' | 'purchase_request';
   vendor_id: string;
   vendor_name?: string;
   delivery_date: string;

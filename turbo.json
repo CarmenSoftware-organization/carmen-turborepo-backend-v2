@@ -7,6 +7,11 @@
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**"]
     },
+    "build:bump": {
+      "dependsOn": ["db:generate", "^db:generate", "^build:package", "^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**"]
+    },
     "build:package": {
       "dependsOn": ["db:generate", "^db:generate", "^build:package", "^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
@@ -45,23 +50,12 @@
       "cache": false
     },
     "dev:base": {
-      "dependsOn": [
-        "^db:generate",
-        "^build:package",
-        "dev:business",
-        "dev:gateway",
-        "dev:keycloak-api",
-        "dev:cluster"
-      ],
+      "dependsOn": ["^db:generate", "^build:package", "dev:business", "dev:gateway", "dev:keycloak-api", "dev:cluster"],
       "cache": false,
       "persistent": true
     },
     "prod:base": {
-      "dependsOn": [
-        "^db:generate",
-        "^build:package",
-        "start:prod"
-      ],
+      "dependsOn": ["^db:generate", "^build:package", "start:prod"],
       "cache": true,
       "persistent": true
     },

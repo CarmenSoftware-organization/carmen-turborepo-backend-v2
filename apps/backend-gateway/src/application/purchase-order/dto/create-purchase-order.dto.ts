@@ -115,6 +115,9 @@ export class CreatePurchaseOrderDetailOperationsDto {
 }
 
 export class CreatePurchaseOrderDto {
+  @ApiPropertyOptional({ description: 'Purchase order type', enum: ['manual', 'purchase_request'], default: 'manual', example: 'manual' })
+  po_type?: string;
+
   @ApiProperty({ description: 'Vendor ID', format: 'uuid' })
   vendor_id: string;
 
