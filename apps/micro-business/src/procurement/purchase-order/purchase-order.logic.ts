@@ -66,12 +66,125 @@ export class PurchaseOrderLogic {
     private readonly notificationService: NotificationService,
   ) {}
 
+  async submit(
+    id: string,
+    payload: { stage_role: string; details: { id: string; stage_status: string; stage_message?: string | null }[] },
+    user_id: string,
+    tenant_id: string,
+  ) {
+    this.logger.debug({ function: 'submit', id, user_id, tenant_id }, PurchaseOrderLogic.name);
+    this.purchaseOrderService.userId = user_id;
+    this.purchaseOrderService.bu_code = tenant_id;
+    await this.purchaseOrderService.initializePrismaService(tenant_id, user_id);
+
+    const poResult = await this.purchaseOrderService.findById(id);
+    if (poResult.isError()) throw new Error('Purchase Order not found');
+    const poData = poResult.value;
+
+    const populateData: Record<string, any> = await this.mapperLogic.populate({
+      workflow_id: poData?.workflow_id,
+      user_id,
+    }, user_id, tenant_id);
+
+    const workflowData = populateData?.workflow_id?.data;
+
+    if (!workflowData) {
+      throw new Error('Cannot submit PO: workflow not found. Please set workflow_id on the purchase order before submitting.');
+    }
+
+    // Determine current stage
+    let currentStageForNavigation = poData?.workflow_current_stage;
+    let previousStage = poData?.workflow_current_stage;
+
+    if (!currentStageForNavigation) {
+      const firstStageRes = this.masterService.send(
+        { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
+        { workflowData, currentStatus: '', requestData: {} },
+      );
+      const firstStageNav: NavigateForwardResult = await firstValueFrom(firstStageRes);
+      currentStageForNavigation = firstStageNav.navigation_info.current_stage_info?.name;
+      previousStage = currentStageForNavigation;
+    }
+
+    const res = this.masterService.send(
+      { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
+      { workflowData, currentStatus: currentStageForNavigation, requestData: {} },
+    );
+    const workflowHeader: NavigateForwardResult = await firstValueFrom(res);
+    const lastActionAtDate = new Date();
+
+    const workflow_history = poData?.workflow_history?.length > 0 ? poData?.workflow_history : [];
+    workflow_history.push({
+      action: enum_last_action.submitted,
+      datetime: lastActionAtDate.toISOString(),
+      user: { id: user_id, name: populateData?.user_id?.name },
+      current_stage: previousStage,
+      next_stage: workflowHeader.current_stage,
+    });
+
+    let userAction = null;
+    if (workflowHeader.navigation_info.current_stage_info.creator_access === creatorAccess.ALL_PEOPLE_IN_DEPARTMENT_CAN_ACTION) {
+      const deptRes = this.masterService.send(
+        { cmd: 'department-users.find-by-department', service: 'department-users' },
+        { department_id: poData.department_id, user_id, tenant_id },
+      );
+      const usersInDepartment: { data: string[] } = await firstValueFrom(deptRes);
+      const distinctUsers = [...new Set([
+        ...(workflowHeader?.navigation_info?.current_stage_info?.assigned_users || []),
+        ...usersInDepartment.data,
+      ])];
+      userAction = { execute: distinctUsers };
+    }
+
+    const workflow = {
+      workflow_previous_stage: workflowHeader.previous_stage,
+      workflow_current_stage: workflowHeader.current_stage,
+      workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
+      user_action: userAction,
+      last_action: enum_last_action.submitted,
+      last_action_at_date: lastActionAtDate.toISOString(),
+      last_action_by_id: user_id,
+      last_action_by_name: populateData?.user_id?.name,
+      workflow_history,
+    };
+
+    const result = await this.purchaseOrderService.submit(id, payload, workflow);
+
+    if (result.isOk()) {
+      this.sendSubmitNotification(poData, workflow, user_id, populateData?.user_id?.name);
+    }
+
+    return result;
+  }
+
+  private async sendSubmitNotification(poData: any, workflow: any, userId: string, userName: string) {
+    try {
+      const poNo = poData.po_no || 'N/A';
+      const assignedUsers = workflow.user_action?.execute || [];
+      for (const assignedUser of assignedUsers) {
+        const targetUserId = typeof assignedUser === 'string' ? assignedUser : assignedUser?.id;
+        if (!targetUserId || targetUserId === userId) continue;
+        await this.notificationService.sendPONotification(
+          targetUserId,
+          `Purchase Order Submitted: ${poNo}`,
+          `Purchase Order ${poNo} has been submitted for approval.`,
+          { po_id: poData.id, po_no: poNo, action: 'submitted' },
+          userId,
+        );
+      }
+    } catch (error) {
+      this.logger.error({ function: 'sendSubmitNotification', error: (error as Error).message }, PurchaseOrderLogic.name);
+    }
+  }
+
   async save(
     id: string,
     data: SavePurchaseOrderDto,
     user_id: string,
     tenant_id: string,
   ) {
+    this.purchaseOrderService.userId = user_id;
+    this.purchaseOrderService.bu_code = tenant_id;
     await this.purchaseOrderService.initializePrismaService(tenant_id, user_id);
 
     // Extract IDs from add/update details for bulk population
@@ -112,6 +225,8 @@ export class PurchaseOrderLogic {
     user_id: string,
     tenant_id: string,
   ) {
+    this.purchaseOrderService.userId = user_id;
+    this.purchaseOrderService.bu_code = tenant_id;
     await this.purchaseOrderService.initializePrismaService(tenant_id, user_id);
 
     // Validate user's role matches the payload's stage_role
@@ -239,6 +354,8 @@ export class PurchaseOrderLogic {
     user_id: string,
     tenant_id: string,
   ) {
+    this.purchaseOrderService.userId = user_id;
+    this.purchaseOrderService.bu_code = tenant_id;
     await this.purchaseOrderService.initializePrismaService(tenant_id, user_id);
 
     // Validate user's role matches the payload's stage_role
@@ -306,6 +423,8 @@ export class PurchaseOrderLogic {
     user_id: string,
     tenant_id: string,
   ) {
+    this.purchaseOrderService.userId = user_id;
+    this.purchaseOrderService.bu_code = tenant_id;
     await this.purchaseOrderService.initializePrismaService(tenant_id, user_id);
 
     // Validate user's role matches the payload's stage_role
@@ -442,6 +561,7 @@ export class PurchaseOrderLogic {
     if (data.email !== undefined) header.email = data.email;
     if (data.remarks !== undefined) header.remarks = data.remarks;
     if (data.note !== undefined) header.note = data.note;
+    if (data.workflow_id !== undefined) header.workflow_id = data.workflow_id;
     return header;
   }
 

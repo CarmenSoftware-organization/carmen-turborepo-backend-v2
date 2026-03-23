@@ -19,6 +19,21 @@ enum stage_role {
   issue = 'issue',
 }
 
+// ==================== Submit PO ====================
+
+export const SubmitPurchaseOrderDetailSchema = z.object({
+  id: z.string().uuid(),
+  stage_status: z.nativeEnum(stage_status),
+  stage_message: z.string().nullable(),
+});
+
+export const SubmitPurchaseOrderSchema = z.object({
+  stage_role: z.nativeEnum(stage_role),
+  details: z.array(SubmitPurchaseOrderDetailSchema).min(1),
+});
+
+export class SubmitPurchaseOrderDto extends createZodDto(SubmitPurchaseOrderSchema) {}
+
 // ==================== Approve PO ====================
 
 export const ApprovePurchaseOrderDetailSchema = z.object({
@@ -107,6 +122,7 @@ export const SavePurchaseOrderSchema = z.object({
   email: z.string().email().optional(),
   remarks: z.string().optional(),
   note: z.string().optional(),
+  workflow_id: z.string().uuid().optional(),
 
   // Details with add/update/remove
   details: z.object({

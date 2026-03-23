@@ -215,6 +215,9 @@ export class CreatePurchaseOrderSwaggerDto {
   @ApiPropertyOptional({ description: 'Note', example: 'Deliver to back entrance' })
   note?: string;
 
+  @ApiPropertyOptional({ description: 'Workflow ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  workflow_id?: string;
+
   @ApiProperty({
     description: 'Purchase order detail operations (add line items) — at least 1 detail required',
     type: CreatePurchaseOrderDetailOperationsSwaggerDto,
@@ -331,11 +334,38 @@ export class SavePurchaseOrderSwaggerDto {
   @ApiPropertyOptional({ description: 'Note', example: 'Deliver to back entrance' })
   note?: string;
 
+  @ApiPropertyOptional({ description: 'Workflow ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  workflow_id?: string;
+
   @ApiPropertyOptional({
     description: 'Detail operations (add, update, remove line items)',
     type: PurchaseOrderDetailOperationsSwaggerDto,
   })
   details?: PurchaseOrderDetailOperationsSwaggerDto;
+}
+
+// ==================== Submit PO ====================
+
+export class SubmitPurchaseOrderDetailSwaggerDto {
+  @ApiProperty({ description: 'Detail line item ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+
+  @ApiProperty({ description: 'Stage status', example: 'submit', enum: ['submit', 'pending', 'approve', 'reject', 'review'] })
+  stage_status: string;
+
+  @ApiPropertyOptional({ description: 'Stage message', example: null })
+  stage_message?: string | null;
+}
+
+export class SubmitPurchaseOrderSwaggerDto {
+  @ApiProperty({ description: 'Stage role for submit', example: 'create', enum: ['create', 'approve', 'purchase', 'view_only', 'issue'] })
+  stage_role: string;
+
+  @ApiProperty({
+    description: 'Detail items to submit',
+    type: [SubmitPurchaseOrderDetailSwaggerDto],
+  })
+  details: SubmitPurchaseOrderDetailSwaggerDto[];
 }
 
 // ==================== Approve PO ====================

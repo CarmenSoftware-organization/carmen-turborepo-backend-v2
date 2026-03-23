@@ -6,6 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import { Result, PurchaseOrderUpdateDto } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import {
+  SubmitPurchaseOrderDto,
   ApprovePurchaseOrderDto,
   SavePurchaseOrderDto,
   RejectPurchaseOrderDto,
@@ -585,6 +586,35 @@ export class PurchaseOrderService {
    * @param version - API version / เวอร์ชัน API
    * @returns Approved purchase order / ใบสั่งซื้อที่อนุมัติแล้ว
    */
+  async submit(
+    id: string,
+    payload: SubmitPurchaseOrderDto,
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'submit', id, version },
+      PurchaseOrderService.name,
+    );
+
+    const response = await firstValueFrom(
+      this.procurementService.send(
+        { cmd: 'purchase-order.submit', service: 'purchase-order' },
+        { id, payload, user_id, bu_code, version },
+      ),
+    );
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
   async approve(
     id: string,
     data: ApprovePurchaseOrderDto,

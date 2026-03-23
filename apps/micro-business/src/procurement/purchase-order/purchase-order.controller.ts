@@ -369,6 +369,24 @@ export class PurchaseOrderController extends BaseMicroserviceController {
    * @returns Saved purchase order result / ผลลัพธ์การบันทึกใบสั่งซื้อ
    */
   @MessagePattern({
+    cmd: 'purchase-order.submit',
+    service: 'purchase-order',
+  })
+  async submit(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'submit', payload }, PurchaseOrderController.name);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.purchaseOrderLogic.submit(
+        payload.id,
+        payload.payload,
+        payload.user_id,
+        payload.tenant_id || payload.bu_code,
+      ),
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
     cmd: 'purchase-order.save',
     service: 'purchase-order',
   })

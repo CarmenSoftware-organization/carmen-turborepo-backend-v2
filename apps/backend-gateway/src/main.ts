@@ -4,6 +4,7 @@ import { patchNestJsSwagger } from 'nestjs-zod';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as fs from 'fs';
+import { execSync } from 'child_process';
 import { envConfig } from 'src/libs/config.env';
 import { winstonLogger } from './common/helpers/backend.logger';
 import { apiReference } from '@scalar/nestjs-api-reference';
@@ -12,6 +13,12 @@ import { WinstonModule } from 'nest-winston';
 import { BackendLogger } from './common/helpers/backend.logger';
 import { ExceptionFilter } from './exception/exception.fillter';
 import { NotificationNativeGateway } from './notification/notification-native.gateway';
+
+// Read git commit hash once at startup
+let GIT_COMMIT = 'unknown';
+try {
+  GIT_COMMIT = execSync('git rev-parse --short HEAD').toString().trim();
+} catch { /* not a git repo or git not available */ }
 
 async function bootstrap() {
   // https options
@@ -124,6 +131,10 @@ async function bootstrap() {
       version: APP_VERSION,
     }),
   );
+
+  // Add git commit hash to every response header
+  app_http.use((_req: any, res: any, next: any) => { res.setHeader('X-Build', GIT_COMMIT); next(); });
+  app_https.use((_req: any, res: any, next: any) => { res.setHeader('X-Build', GIT_COMMIT); next(); });
 
   app_http.useGlobalFilters(new ExceptionFilter());
   app_https.useGlobalFilters(new ExceptionFilter());

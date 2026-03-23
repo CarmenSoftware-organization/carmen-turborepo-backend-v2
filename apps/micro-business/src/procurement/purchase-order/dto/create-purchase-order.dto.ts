@@ -75,6 +75,7 @@ export const CreatePurchaseOrderSchema = z.object({
   email: z.string().email().optional(),
   remarks: z.string().optional(),
   note: z.string().optional(),
+  workflow_id: z.string().uuid().optional(),
   // Details
   details: CreatePurchaseOrderDetailOperationsSchema,
 });

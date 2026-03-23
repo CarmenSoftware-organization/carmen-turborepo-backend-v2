@@ -612,6 +612,7 @@ export class PurchaseOrderService {
       total_price: true,
       total_tax: true,
       total_amount: true,
+      workflow_name: true,
       workflow_current_stage: true,
       workflow_next_stage: true,
       last_action: true,
@@ -1203,12 +1204,17 @@ export class PurchaseOrderService {
     const purchaseOrder = await this.prismaService.tb_purchase_order.findFirst({
       where: {
         id: id,
-        po_status: enum_purchase_order_doc_status.in_progress,
+        po_status: {
+          in: [
+            enum_purchase_order_doc_status.draft,
+            enum_purchase_order_doc_status.in_progress,
+          ],
+        },
       },
     });
 
     if (!purchaseOrder) {
-      return Result.error('Purchase order not found or not in progress', ErrorCode.NOT_FOUND);
+      return Result.error('Purchase order not found or not editable (must be draft or in_progress)', ErrorCode.NOT_FOUND);
     }
 
     await this.prismaService.$transaction(async (txp) => {
@@ -1430,6 +1436,78 @@ export class PurchaseOrderService {
    * @param payload - Approval detail data for each line / ข้อมูลรายละเอียดการอนุมัติของแต่ละรายการ
    * @returns Approved purchase order ID / ID ของใบสั่งซื้อที่อนุมัติแล้ว
    */
+  @TryCatch
+  async submit(
+    id: string,
+    payload: { stage_role: string; details: { id: string; stage_status: string; stage_message?: string | null }[] },
+    workflowHeader: Record<string, unknown>,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'submit', id, user_id: this.userId, tenant_id: this.bu_code },
+      PurchaseOrderService.name,
+    );
+
+    const purchaseOrder = await this.prismaService.tb_purchase_order.findFirst({
+      where: { id, po_status: enum_purchase_order_doc_status.draft },
+    });
+
+    if (!purchaseOrder) {
+      return Result.error('Purchase order not found or not in draft status', ErrorCode.NOT_FOUND);
+    }
+
+    const newPoNo = await this.generatePONo(
+      new Date(purchaseOrder.order_date || new Date()).toISOString(),
+    );
+
+    await this.prismaService.$transaction(async (tx) => {
+      // Update PO header with workflow info and status
+      await tx.tb_purchase_order.update({
+        where: { id },
+        data: {
+          ...workflowHeader,
+          workflow_history: workflowHeader.workflow_history as any,
+          user_action: workflowHeader.user_action as any,
+          doc_version: { increment: 1 },
+          po_status: enum_purchase_order_doc_status.in_progress,
+          po_no: newPoNo,
+          updated_by_id: this.userId,
+        },
+      });
+
+      // Update detail history
+      for (const detail of payload.details) {
+        const poDetail = await tx.tb_purchase_order_detail.findFirst({
+          where: { id: detail.id, deleted_at: null },
+          select: { id: true, history: true },
+        });
+        if (!poDetail) continue;
+
+        const history: any[] = Array.isArray(poDetail.history)
+          ? (poDetail.history as any[])
+          : [];
+
+        history.push({
+          seq: history.length + 1,
+          status: detail.stage_status,
+          name: workflowHeader.workflow_previous_stage,
+          message: detail.stage_message || 'submit for approval',
+          user: { id: this.userId },
+        });
+
+        await tx.tb_purchase_order_detail.update({
+          where: { id: detail.id },
+          data: {
+            history: history as any,
+            doc_version: { increment: 1 },
+            updated_by_id: this.userId,
+          },
+        });
+      }
+    });
+
+    return Result.ok({ id: purchaseOrder.id, po_no: newPoNo });
+  }
+
   @TryCatch
   async approve(id: string, workflow: Record<string, unknown>, payload: ApprovePurchaseOrderDetailDto[]): Promise<Result<unknown>> {
     this.logger.debug(

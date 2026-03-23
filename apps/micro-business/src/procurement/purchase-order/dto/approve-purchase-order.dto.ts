@@ -45,6 +45,7 @@ export const SavePurchaseOrderSchema = z.object({
   email: z.string().email().optional(),
   remarks: z.string().optional(),
   note: z.string().optional(),
+  workflow_id: z.string().uuid().optional(),
 
   // Details with add/update/remove
   details: z.object({

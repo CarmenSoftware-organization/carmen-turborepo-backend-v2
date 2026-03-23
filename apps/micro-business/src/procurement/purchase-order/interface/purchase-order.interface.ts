@@ -149,6 +149,7 @@ export interface ICreatePurchaseOrder {
   email?: string;
   remarks?: string;
   note?: string;
+  workflow_id?: string;
   details?: {
     add?: ICreatePurchaseOrderDetail[];
   };

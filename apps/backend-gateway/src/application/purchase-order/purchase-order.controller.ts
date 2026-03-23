@@ -34,6 +34,7 @@ import {
   CreatePurchaseOrderSwaggerDto,
   UpdatePurchaseOrderSwaggerDto,
   SavePurchaseOrderSwaggerDto,
+  SubmitPurchaseOrderSwaggerDto,
   ApprovePurchaseOrderSwaggerDto,
   RejectPurchaseOrderSwaggerDto,
   ReviewPurchaseOrderSwaggerDto,
@@ -49,6 +50,7 @@ import {
   ConfirmPrToPoResponseDto,
 } from './swagger/response';
 import {
+  SubmitPurchaseOrderDto,
   ApprovePurchaseOrderDto,
   SavePurchaseOrderDto,
   RejectPurchaseOrderDto,
@@ -558,6 +560,40 @@ export class PurchaseOrderController extends BaseHttpController {
       bu_code,
       version,
     );
+    this.respond(res, result);
+  }
+
+  /**
+   * Submit a purchase order into the approval workflow
+   * ส่งใบสั่งซื้อเข้าสู่ขั้นตอนการอนุมัติ
+   */
+  @Patch(':id/submit')
+  @UseGuards(new AppIdGuard('purchaseOrder.submit'))
+  @Serialize(PurchaseOrderMutationResponseSchema)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Submit a purchase order',
+    description: 'Submits a draft purchase order into the approval workflow. Once submitted, the PO moves from draft to in_progress status and enters the configured approval chain.',
+    operationId: 'submitPurchaseOrder',
+    tags: ['Procurement', 'Purchase Order'],
+  })
+  @ApiBody({ type: SubmitPurchaseOrderSwaggerDto })
+  @HttpCode(HttpStatus.OK)
+  async submit(
+    @Param('id') id: string,
+    @Param('bu_code') bu_code: string,
+    @Body() payload: SubmitPurchaseOrderDto,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'submit', id, version },
+      PurchaseOrderController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.purchaseOrderService.submit(id, payload, user_id, bu_code, version);
     this.respond(res, result);
   }
 

@@ -166,6 +166,9 @@ export class CreatePurchaseOrderDto {
   @ApiPropertyOptional({ description: 'Note' })
   note?: string;
 
+  @ApiPropertyOptional({ description: 'Workflow ID', format: 'uuid' })
+  workflow_id?: string;
+
   @ApiProperty({
     description: 'Purchase order detail operations (add line items)',
     type: CreatePurchaseOrderDetailOperationsDto,
