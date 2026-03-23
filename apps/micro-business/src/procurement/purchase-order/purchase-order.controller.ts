@@ -249,7 +249,7 @@ export class PurchaseOrderController extends BaseMicroserviceController {
     const pr_ids = payload.data?.pr_ids || payload.pr_ids;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () => this.purchaseOrderService.confirmPrToPo(pr_ids));
-    return this.handleResult(result);
+    return this.handleResult(result, HttpStatus.CREATED);
   }
 
   /**
