@@ -162,16 +162,15 @@ cmd_build() {
                 dotnet build
                 ;;
             *)
-                # NestJS: build ไปที่ dist_tmp ถ้าสำเร็จ swap กับ dist เดิม
-                rm -rf dist_tmp
-                if npx nest build --outputPath dist_tmp; then
-                    rm -rf dist_old
-                    [ -d dist ] && mv dist dist_old
-                    mv dist_tmp dist
+                # NestJS: rename dist ออกก่อน build ใหม่ ถ้าสำเร็จลบของเก่า ถ้า fail เอาของเก่ากลับ
+                rm -rf dist_old
+                [ -d dist ] && mv dist dist_old
+                if npx nest build; then
                     rm -rf dist_old
                     echo "  $name: build success, dist swapped"
                 else
-                    rm -rf dist_tmp
+                    rm -rf dist
+                    [ -d dist_old ] && mv dist_old dist
                     echo "  $name: BUILD FAILED — keeping old dist"
                 fi
                 ;;
