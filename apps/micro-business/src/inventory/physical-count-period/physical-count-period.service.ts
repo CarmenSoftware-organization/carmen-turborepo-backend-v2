@@ -261,10 +261,17 @@ export class PhysicalCountPeriodService {
         id: true,
         location_id: true,
         status: true,
+        start_counting_at: true,
+        completed_at: true,
       },
     });
 
-    const countByLocation = new Map(existingCounts.map((c) => [c.location_id, { id: c.id, status: c.status }]));
+    const countByLocation = new Map(existingCounts.map((c) => [c.location_id, {
+      id: c.id,
+      status: c.status,
+      start_counting_at: c.start_counting_at,
+      completed_at: c.completed_at,
+    }]));
 
     // Get locations with physical_count_type filter
     let locations = await prisma.tb_location.findMany({
@@ -349,6 +356,8 @@ export class PhysicalCountPeriodService {
         total_products: productCountByLocation.get(loc.id) || 0,
         physical_count_status: existingCount ? existingCount.status : "not_started",
         physical_count_id: existingCount ? existingCount.id : null,
+        start_counting_at: existingCount?.start_counting_at || null,
+        completed_at: existingCount?.completed_at || null,
       };
     });
 
