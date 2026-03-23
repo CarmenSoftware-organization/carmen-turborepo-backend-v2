@@ -46,6 +46,7 @@ import {
   PurchaseOrderMutationResponseDto,
   PurchaseOrderDetailItemResponseDto,
   GroupPrForPoResponseDto,
+  ConfirmPrToPoResponseDto,
 } from './swagger/response';
 import {
   ApprovePurchaseOrderDto,
@@ -989,7 +990,10 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'PR details grouped successfully',
       },
       400: {
-        description: 'Invalid request body',
+        description: 'Invalid request body or workflow_id format',
+      },
+      404: {
+        description: 'Workflow not found',
       },
     },
   })
@@ -1003,7 +1007,8 @@ export class PurchaseOrderController extends BaseHttpController {
     },
   })
   @ApiResponse({ status: 200, description: 'PR details grouped successfully', type: GroupPrForPoResponseDto })
-  @ApiResponse({ status: 400, description: 'Invalid request body' })
+  @ApiResponse({ status: 400, description: 'Invalid request body or workflow_id format' })
+  @ApiResponse({ status: 404, description: 'Workflow not found' })
   @HttpCode(HttpStatus.OK)
   async groupPrForPo(
     @Body() body: { workflow_id?: string; pr_ids: string[] },
@@ -1043,12 +1048,11 @@ export class PurchaseOrderController extends BaseHttpController {
    */
   @Post('confirm-pr')
   @UseGuards(new AppIdGuard('purchaseOrder.confirmPr'))
-  @Serialize(PurchaseOrderMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Confirm PR and create PO(s)',
     description:
-      'Converts approved purchase requests into purchase orders by grouping PR line items by vendor, delivery date, and currency. This is the primary action that transitions procurement from the request phase to the ordering phase.',
+      'Converts approved purchase requests into purchase orders by grouping PR line items by vendor, delivery date, and currency. Optionally accepts a workflow_id; if omitted, auto-resolves the default purchase_order_workflow. Created POs are linked to the resolved workflow.',
     operationId: 'confirmPrToPo',
     tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
@@ -1069,7 +1073,10 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'Purchase Orders created successfully from PRs',
       },
       400: {
-        description: 'Invalid request body',
+        description: 'Invalid request body or workflow_id format',
+      },
+      404: {
+        description: 'Workflow not found',
       },
     },
   })
@@ -1082,11 +1089,12 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
-  @ApiResponse({ status: 201, description: 'Purchase Orders created successfully from PRs', type: PurchaseOrderMutationResponseDto })
-  @ApiResponse({ status: 400, description: 'Invalid request body' })
+  @ApiResponse({ status: 201, description: 'Purchase Orders created successfully from PRs', type: ConfirmPrToPoResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid request body or workflow_id format' })
+  @ApiResponse({ status: 404, description: 'Workflow not found' })
   @HttpCode(HttpStatus.CREATED)
   async confirmPrToPo(
-    @Body() body: { pr_ids: string[] },
+    @Body() body: { workflow_id?: string; pr_ids: string[] },
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1095,6 +1103,7 @@ export class PurchaseOrderController extends BaseHttpController {
     this.logger.debug(
       {
         function: 'confirmPrToPo',
+        workflow_id: body.workflow_id,
         pr_ids: body.pr_ids,
         version,
       },
@@ -1107,6 +1116,7 @@ export class PurchaseOrderController extends BaseHttpController {
       user_id,
       bu_code,
       version,
+      body.workflow_id,
     );
     this.respond(res, result, HttpStatus.CREATED);
   }

@@ -327,11 +327,13 @@ export class PurchaseOrderService {
     user_id: string,
     bu_code: string,
     version: string,
+    workflow_id?: string,
   ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'confirmPrToPo',
         pr_ids,
+        workflow_id,
         version,
       },
       PurchaseOrderService.name,
@@ -340,7 +342,7 @@ export class PurchaseOrderService {
     const response = await firstValueFrom(
       this.procurementService.send(
         { cmd: 'purchase-order.confirm-pr', service: 'purchase-order' },
-        { data: { pr_ids }, user_id, bu_code, version },
+        { data: { pr_ids, workflow_id }, user_id, bu_code, version },
       ),
     );
 

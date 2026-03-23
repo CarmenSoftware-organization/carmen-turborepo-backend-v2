@@ -1991,11 +1991,12 @@ export class PurchaseOrderService {
    * @returns Created purchase order IDs / ID ของใบสั่งซื้อที่สร้างแล้ว
    */
   @TryCatch
-  async confirmPrToPo(pr_ids: string[]): Promise<Result<unknown>> {
+  async confirmPrToPo(pr_ids: string[], workflow_id?: string): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'confirmPrToPo',
         pr_ids,
+        workflow_id,
         user_id: this.userId,
         tenant_id: this.bu_code,
       },
@@ -2004,6 +2005,32 @@ export class PurchaseOrderService {
 
     if (!pr_ids || pr_ids.length === 0) {
       return Result.error('PR IDs are required', ErrorCode.INVALID_ARGUMENT);
+    }
+
+    // Resolve workflow
+    let resolvedWorkflow: { id: string; name: string } | null = null;
+    if (workflow_id) {
+      const uuidResult = z.string().uuid().safeParse(workflow_id);
+      if (!uuidResult.success) {
+        return Result.error('Invalid workflow_id format', ErrorCode.INVALID_ARGUMENT);
+      }
+      const wf = await this.prismaService.tb_workflow.findFirst({
+        where: { id: workflow_id, deleted_at: null },
+        select: { id: true, name: true },
+      });
+      if (!wf) {
+        return Result.error('Workflow not found', ErrorCode.NOT_FOUND);
+      }
+      resolvedWorkflow = wf;
+    } else {
+      const wf = await this.prismaService.tb_workflow.findFirst({
+        where: { workflow_type: 'purchase_order_workflow', deleted_at: null },
+        select: { id: true, name: true },
+      });
+      if (!wf) {
+        return Result.error('No purchase order workflow configured', ErrorCode.NOT_FOUND);
+      }
+      resolvedWorkflow = wf;
     }
 
     // Fetch PR details with related data based on PR IDs
@@ -2239,6 +2266,8 @@ export class PurchaseOrderService {
             total_price: group.total_price,
             total_tax: group.total_tax,
             total_amount: group.total_amount,
+            workflow_id: resolvedWorkflow?.id,
+            workflow_name: resolvedWorkflow?.name,
             is_active: true,
             doc_version: 1,
             created_by_id: this.userId,

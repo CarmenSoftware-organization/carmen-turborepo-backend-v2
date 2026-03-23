@@ -230,6 +230,7 @@ export const EXAMPLE_GROUP_PR_FOR_PO = {
 };
 
 export const EXAMPLE_CONFIRM_PR_TO_PO = {
+  workflow_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
   pr_ids: [
     'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
     'b2c3d4e5-f6a7-8901-bcde-f12345678901',

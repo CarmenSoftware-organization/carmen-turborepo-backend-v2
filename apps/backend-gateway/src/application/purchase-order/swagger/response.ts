@@ -366,6 +366,65 @@ export class GroupPrForPoResponseDto {
   groups: GroupPrGroupItemResponseDto[];
 }
 
+// ==================== Confirm PR Response ====================
+
+export class ConfirmPrCreatedPoResponseDto {
+  @ApiProperty({ description: 'Purchase order ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+
+  @ApiPropertyOptional({ description: 'Purchase order number', example: 'PO260301001' })
+  po_no?: string;
+
+  @ApiPropertyOptional({ description: 'Vendor ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  vendor_id?: string;
+
+  @ApiPropertyOptional({ description: 'Vendor name', example: 'Fresh Farm Supplies Co.' })
+  vendor_name?: string;
+
+  @ApiPropertyOptional({ description: 'Delivery date', example: '2026-04-01T00:00:00.000Z' })
+  delivery_date?: string;
+
+  @ApiPropertyOptional({ description: 'Currency ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  currency_id?: string;
+
+  @ApiPropertyOptional({ description: 'Currency code', example: 'THB' })
+  currency_code?: string;
+
+  @ApiPropertyOptional({ description: 'Total quantity', example: 80 })
+  total_qty?: number;
+
+  @ApiPropertyOptional({ description: 'Total price', example: 3600 })
+  total_price?: number;
+
+  @ApiPropertyOptional({ description: 'Total tax', example: 252 })
+  total_tax?: number;
+
+  @ApiPropertyOptional({ description: 'Total amount', example: 3852 })
+  total_amount?: number;
+
+  @ApiPropertyOptional({ description: 'Number of line items', example: 2 })
+  items_count?: number;
+}
+
+export class ConfirmPrSummaryResponseDto {
+  @ApiProperty({ description: 'Total POs created', example: 1 })
+  total_pos_created: number;
+
+  @ApiProperty({ description: 'Total PRs processed', example: 2 })
+  total_prs_processed: number;
+
+  @ApiProperty({ description: 'Total PR details processed', example: 5 })
+  total_pr_details_processed: number;
+}
+
+export class ConfirmPrToPoResponseDto {
+  @ApiProperty({ description: 'Created purchase orders', type: [ConfirmPrCreatedPoResponseDto] })
+  purchase_orders: ConfirmPrCreatedPoResponseDto[];
+
+  @ApiProperty({ description: 'Summary of the operation', type: ConfirmPrSummaryResponseDto })
+  summary: ConfirmPrSummaryResponseDto;
+}
+
 // ==================== Mutation Response ====================
 
 export class PurchaseOrderMutationResponseDto {
