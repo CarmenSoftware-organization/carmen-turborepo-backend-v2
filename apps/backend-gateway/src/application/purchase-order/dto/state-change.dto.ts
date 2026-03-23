@@ -100,7 +100,9 @@ const SavePurchaseOrderDetailSchema = z.object({
   note: z.string().optional(),
 });
 
-const UpdateSavePurchaseOrderDetailSchema = SavePurchaseOrderDetailSchema.extend({
+const UpdateSavePurchaseOrderDetailSchema = SavePurchaseOrderDetailSchema.omit({
+  pr_detail: true,
+}).extend({
   id: z.string().uuid(),
 });
 
