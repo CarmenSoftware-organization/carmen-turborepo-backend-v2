@@ -2313,11 +2313,29 @@ export class PurchaseOrderService {
     // Create POs from grouped data
     const createdPOs: Record<string, unknown>[] = [];
 
+    // Generate first PO number outside transaction, then increment for subsequent POs
+    const orderDate = new Date();
+    const firstPoNo = await this.generatePONo(orderDate.toISOString());
+
     await this.prismaService.$transaction(async (prismatx) => {
+      let poNoCounter = 0;
       for (const group of groups) {
-        // Generate PO number
-        const orderDate = new Date();
-        const poNo = await this.generatePONo(orderDate.toISOString());
+        // Derive PO number: first one uses generated number, subsequent ones increment
+        let poNo: string;
+        if (poNoCounter === 0) {
+          poNo = firstPoNo;
+        } else {
+          // Extract the running number portion and increment
+          const runningDigits = firstPoNo.match(/\d+$/);
+          if (runningDigits) {
+            const baseNo = parseInt(runningDigits[0], 10) + poNoCounter;
+            const prefix = firstPoNo.slice(0, -runningDigits[0].length);
+            poNo = `${prefix}${String(baseNo).padStart(runningDigits[0].length, '0')}`;
+          } else {
+            poNo = `${firstPoNo}-${poNoCounter + 1}`;
+          }
+        }
+        poNoCounter++;
 
         // Create PO header
         const po = await prismatx.tb_purchase_order.create({
