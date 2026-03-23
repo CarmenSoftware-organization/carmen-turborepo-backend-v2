@@ -9,6 +9,7 @@ import { enum_last_action, enum_stage_role } from '@repo/prisma-shared-schema-te
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { ValidateSRBeforeSubmitSchema } from '../dto/store-requisition.dto';
+import { InventoryTransactionService } from '@/inventory/inventory-transaction/inventory-transaction.service';
 
 // Re-export for backward compatibility
 export { WorkflowHeader, StageStatus } from '../interface/workflow.interface';
@@ -24,6 +25,7 @@ export class StoreRequisitionLogic {
     @Inject('MASTER_SERVICE')
     private readonly masterService: ClientProxy,
     private readonly notificationService: NotificationService,
+    private readonly inventoryTransactionService: InventoryTransactionService,
   ) {}
 
   async create(payload: CreateStoreRequisition, user_id: string, tenant_id: string) {
@@ -359,6 +361,11 @@ export class StoreRequisitionLogic {
     this.logger.debug({ function: 'approve', id, stage_role, details, user_id, tenant_id }, StoreRequisitionLogic.name);
     const result = await this.storeRequisitionService.approve(id, workflow, updateSRDetail);
 
+    // When SR reaches last stage (completed), trigger inventory transfer
+    if (!workflowHeader.navigation_info.workflow_next_step) {
+      await this.executeTransferOnComplete(storeRequisitionData, updateSRDetail, user_id, tenant_id);
+    }
+
     this.sendApproveNotification(
       storeRequisitionData,
       workflow as WorkflowHeader,
@@ -367,6 +374,66 @@ export class StoreRequisitionLogic {
     );
 
     return result;
+  }
+
+  /**
+   * When SR is completed, transfer issued_qty from from_location to to_location
+   * for each detail line. Runs in a single transaction.
+   */
+  private async executeTransferOnComplete(
+    sr: any,
+    details: any[],
+    user_id: string,
+    tenant_id: string,
+  ): Promise<void> {
+    const fromLocationId = sr.from_location_id;
+    const toLocationId = sr.to_location_id;
+
+    if (!fromLocationId || !toLocationId) {
+      this.logger.warn(
+        { function: 'executeTransferOnComplete', message: 'SR missing from/to location, skipping transfer' },
+        StoreRequisitionLogic.name,
+      );
+      return;
+    }
+
+    // Filter details that have issued_qty > 0
+    const itemsToTransfer = details.filter((d) => {
+      const issuedQty = Number(d.issued_qty) || 0;
+      return issuedQty > 0 && d.product_id;
+    });
+
+    if (itemsToTransfer.length === 0) return;
+
+    const method = await this.inventoryTransactionService.getCalculationMethod(tenant_id);
+    const prisma = this.storeRequisitionService.prismaService;
+
+    await prisma.$transaction(async (tx: any) => {
+      for (const detail of itemsToTransfer) {
+        const issuedQty = Number(detail.issued_qty);
+
+        await this.inventoryTransactionService.executeTransfer(
+          tx,
+          {
+            product_id: detail.product_id,
+            from_location_id: fromLocationId,
+            from_location_code: sr.from_location_code || null,
+            to_location_id: toLocationId,
+            to_location_code: sr.to_location_code || null,
+            qty: issuedQty,
+            user_id,
+          },
+          method,
+        );
+      }
+
+      // Link inventory transaction to SR detail (update inventory_transaction_id)
+      // This is optional — SR details already have the issued_qty recorded
+    });
+
+    this.logger.log(
+      `Transfer completed for SR ${sr.sr_no}: ${itemsToTransfer.length} items from ${fromLocationId} to ${toLocationId}`,
+    );
   }
 
   private populateData(data: any) {

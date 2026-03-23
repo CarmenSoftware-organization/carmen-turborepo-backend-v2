@@ -8,11 +8,13 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { envConfig } from '@/libs/config.env';
 import { StoreRequisitionLogic } from './logic/store-requisition.logic';
 import { NotificationModule, MapperModule } from '@/common';
+import { InventoryTransactionModule } from '@/inventory/inventory-transaction/inventory-transaction.module';
 
 @Module({
   imports: [
     TenantModule,
     MapperModule,
+    InventoryTransactionModule,
     ClientsModule.register([
       {
         name: 'AUTH_SERVICE',

@@ -279,4 +279,43 @@ export class CreditNoteController extends BaseHttpController {
     const result = await this.creditNoteService.delete(id, user_id, bu_code, version);
     this.respond(res, result);
   }
+
+  /**
+   * Approve a credit note and trigger inventory transaction
+   * อนุมัติใบลดหนี้และสร้างรายการเคลื่อนไหวสินค้าคงคลัง
+   */
+  @Post(':id/approve')
+  @UseGuards(new AppIdGuard('creditNote.approve'))
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Approve a credit note',
+    description: 'Approves a credit note and triggers inventory: quantity_return deducts stock from GRN lots, amount_discount adjusts cost without stock movement.',
+    operationId: 'approveCreditNote',
+    tags: ['Procurement', 'Credit Note'],
+    parameters: [
+      { name: 'id', in: 'path', required: true, description: 'Credit Note ID' },
+    ],
+    responses: {
+      200: { description: 'Credit note approved and inventory updated' },
+      400: { description: 'Credit note cannot be approved' },
+      404: { description: 'Credit note not found' },
+    },
+  })
+  @HttpCode(HttpStatus.OK)
+  async approve(
+    @Param('id') id: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'approve', id, version },
+      CreditNoteController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.creditNoteService.approve(id, user_id, bu_code, version);
+    this.respond(res, result);
+  }
 }

@@ -6,11 +6,13 @@ import { CreditNoteLogic } from './credit-note.logic';
 import { TenantModule } from '@/tenant/tenant.module';
 import { NotificationModule } from '@/common';
 import { envConfig } from '@/libs/config.env';
+import { InventoryTransactionModule } from '@/inventory/inventory-transaction/inventory-transaction.module';
 
 @Module({
   imports: [
     TenantModule,
     CommonModule,
+    InventoryTransactionModule,
     NotificationModule.forRoot({
       host: envConfig.NOTIFICATION_SERVICE_HOST,
       port: envConfig.NOTIFICATION_SERVICE_TCP_PORT,

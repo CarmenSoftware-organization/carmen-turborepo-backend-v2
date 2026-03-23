@@ -3,7 +3,9 @@ import { CreditNoteService } from './credit-note.service';
 import { IClassLogic } from '../interface/class-logic.interface';
 import { MapperLogic } from '@/common/mapper/mapper.logic';
 import { BackendLogger } from '@/common/helpers/backend.logger';
-import { NotificationService, NotificationType } from '@/common';
+import { NotificationService, NotificationType, Result, ErrorCode } from '@/common';
+import { InventoryTransactionService } from '@/inventory/inventory-transaction/inventory-transaction.service';
+import { enum_credit_note_doc_status, enum_credit_note_type } from '@repo/prisma-shared-schema-tenant';
 
 @Injectable()
 export class CreditNoteLogic implements IClassLogic {
@@ -15,6 +17,7 @@ export class CreditNoteLogic implements IClassLogic {
     private readonly creditNoteService: CreditNoteService,
     private readonly mapperLogic: MapperLogic,
     private readonly notificationService: NotificationService,
+    private readonly inventoryTransactionService: InventoryTransactionService,
   ) { }
   async create(data: any, user_id: string, tenant_id: string) {
     this.logger.debug(
@@ -283,5 +286,94 @@ export class CreditNoteLogic implements IClassLogic {
     } catch (error) {
       this.logger.error('Failed to send CN created notification:', error);
     }
+  }
+
+  // ==================== Approve ====================
+
+  /**
+   * Approve a credit note. When reaching last stage (completed):
+   * - quantity_return → deduct stock from GRN lots (executeCreditNoteQty)
+   * - amount_discount → adjust cost on GRN lots (executeCreditNoteAmount)
+   */
+  async approve(
+    id: string,
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'approve', id, user_id, tenant_id }, CreditNoteLogic.name);
+
+    await this.creditNoteService.initializePrismaService(tenant_id, user_id);
+    const prisma = this.creditNoteService.prismaService;
+
+    // Fetch CN with details
+    const cn = await prisma.tb_credit_note.findFirst({
+      where: { id, deleted_at: null },
+      include: {
+        tb_credit_note_detail: {
+          where: { deleted_at: null },
+        },
+      },
+    });
+
+    if (!cn) return Result.error('Credit note not found', ErrorCode.NOT_FOUND);
+
+    if (cn.doc_status !== enum_credit_note_doc_status.in_progress) {
+      return Result.error(
+        `Cannot approve credit note with status '${cn.doc_status}'. Only in_progress can be approved.`,
+        ErrorCode.INVALID_ARGUMENT,
+      );
+    }
+
+    // Update status to completed
+    await prisma.tb_credit_note.update({
+      where: { id },
+      data: {
+        doc_status: enum_credit_note_doc_status.completed,
+        updated_by_id: user_id,
+        updated_at: new Date(),
+      },
+    });
+
+    // Trigger inventory transaction based on credit_note_type
+    if (!cn.grn_id || cn.tb_credit_note_detail.length === 0) {
+      return Result.ok({ id, message: 'Credit note approved (no inventory impact — missing GRN or details)' });
+    }
+
+    const method = await this.inventoryTransactionService.getCalculationMethod(tenant_id);
+
+    await prisma.$transaction(async (tx: any) => {
+      if (cn.credit_note_type === enum_credit_note_type.quantity_return) {
+        // Deduct stock from inventory
+        const detailItems = cn.tb_credit_note_detail.map((d) => ({
+          product_id: d.product_id,
+          location_id: d.location_id || '',
+          location_code: d.location_code || null,
+          qty: Number(d.return_base_qty) || 0,
+          cost_per_unit: Number(d.price) || 0,
+        }));
+
+        await this.inventoryTransactionService.executeCreditNoteQty(
+          tx,
+          { grn_id: cn.grn_id, detail_items: detailItems, user_id },
+          method,
+        );
+      } else if (cn.credit_note_type === enum_credit_note_type.amount_discount) {
+        // Adjust cost without moving stock
+        const detailItems = cn.tb_credit_note_detail.map((d) => ({
+          product_id: d.product_id,
+          location_id: d.location_id || '',
+          location_code: d.location_code || null,
+          amount: Number(d.base_net_amount) || 0,
+        }));
+
+        await this.inventoryTransactionService.executeCreditNoteAmount(
+          tx,
+          { grn_id: cn.grn_id, detail_items: detailItems, user_id },
+          method,
+        );
+      }
+    });
+
+    return Result.ok({ id, message: 'Credit note approved and inventory updated' });
   }
 }
