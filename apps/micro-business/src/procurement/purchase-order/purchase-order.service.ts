@@ -666,6 +666,7 @@ export class PurchaseOrderService {
         id: po.id,
         po_no: po.po_no,
         po_status: po.po_status,
+        po_type: po.po_type,
         description: po.description,
         order_date: po.order_date,
         delivery_date: po.delivery_date,
