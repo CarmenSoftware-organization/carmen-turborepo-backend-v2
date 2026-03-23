@@ -132,9 +132,14 @@ export class AdjustmentTypeService {
     };
 
     const pagination = getPaginationParams(q.page, q.perpage);
+    const customOrderBy = q.orderBy();
+    const hasCustomSort = Array.isArray(customOrderBy)
+      ? customOrderBy.length > 0
+      : Object.keys(customOrderBy).length > 0;
+
     const adjustmentTypes = await this.prismaService.tb_adjustment_type.findMany({
       where: baseWhere,
-      orderBy: q.orderBy(),
+      orderBy: hasCustomSort ? customOrderBy : [{ code: 'asc' }, { name: 'asc' }],
       ...pagination,
     });
 

@@ -137,9 +137,14 @@ export class ExtraCostTypeService {
 
     // const prisma = await this.tenantService.prismaTenantInstance(this.bu_code, this.userId);
     const pagination = getPaginationParams(q.page, q.perpage);
+    const customOrderBy = q.orderBy();
+    const hasCustomSort = Array.isArray(customOrderBy)
+      ? customOrderBy.length > 0
+      : Object.keys(customOrderBy).length > 0;
+
     const extraCostType = await this.prismaService.tb_extra_cost_type.findMany({
       where: q.where(),
-      orderBy: q.orderBy(),
+      orderBy: hasCustomSort ? customOrderBy : [{ name: 'asc' }],
       ...pagination,
     });
 

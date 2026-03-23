@@ -323,12 +323,17 @@ export class LocationsService {
       paginate.advance,
     );
     const pagination = getPaginationParams(q.page, q.perpage);
+    const customOrderBy = q.orderBy();
+    const hasCustomSort = Array.isArray(customOrderBy)
+      ? customOrderBy.length > 0
+      : Object.keys(customOrderBy).length > 0;
+
     const prismaParams = {
       where: q.where(),
       include: {
         tb_delivery_point: true,
       },
-      orderBy: q.orderBy(),
+      orderBy: hasCustomSort ? customOrderBy : [{ code: 'asc' as const }, { name: 'asc' as const }],
       ...pagination,
     };
     const data = await this.prismaService.tb_location.findMany(prismaParams);
