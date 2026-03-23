@@ -117,7 +117,7 @@ export class PurchaseRequestController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
     const result = await this.purchaseRequestService.findAllByStatus(
-      'approve',
+      'approved',
       user_id,
       bu_code,
       paginate,

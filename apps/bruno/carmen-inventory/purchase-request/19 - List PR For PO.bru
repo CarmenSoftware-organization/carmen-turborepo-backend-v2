@@ -1,0 +1,19 @@
+meta {
+  name: 19 - List PR For PO
+  type: http
+  seq: 19
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request/for-po
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
