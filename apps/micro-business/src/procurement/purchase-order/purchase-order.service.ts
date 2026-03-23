@@ -1,5 +1,7 @@
 import { HttpStatus, HttpException, Inject, Injectable } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { isUUID } from 'class-validator';
+import { firstValueFrom } from 'rxjs';
 import { z } from 'zod';
 import { TenantService } from '@/tenant/tenant.service';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
@@ -7,6 +9,7 @@ import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
 import {
   enum_purchase_order_doc_status,
   enum_purchase_request_doc_status,
+  enum_stage_role,
   Prisma,
   PrismaClient,
 } from '@repo/prisma-shared-schema-tenant';
@@ -30,6 +33,8 @@ import {
   TryCatch,
   Result,
   ErrorCode,
+  GlobalApiReturn,
+  Stage,
 } from '@/common';
 import {
   ApprovePurchaseOrderDetailDto,
@@ -107,6 +112,8 @@ export class PurchaseOrderService {
     private readonly prismaSystem: typeof PrismaClient_SYSTEM,
     @Inject('PRISMA_TENANT')
     private readonly prismaTenant: typeof PrismaClient_TENANT,
+    @Inject('MASTER_SERVICE')
+    private readonly masterService: ClientProxy,
     private readonly tenantService: TenantService,
     private readonly commonLogic: CommonLogic,
     private readonly notificationService: NotificationService,
@@ -168,6 +175,7 @@ export class PurchaseOrderService {
         info: true,
         doc_version: true,
         created_at: true,
+        created_by_id: true,
         tb_vendor: {
           select: {
             id: true,
@@ -254,9 +262,44 @@ export class PurchaseOrderService {
       return Result.error('Purchase order not found', ErrorCode.NOT_FOUND);
     }
 
+    // Determine user role for this PO (same pattern as PR)
+    let role: string = enum_stage_role.view_only;
+    if (
+      purchaseOrder.po_status === enum_purchase_order_doc_status.draft &&
+      purchaseOrder.created_by_id === this.userId
+    ) {
+      role = enum_stage_role.create;
+    } else if (purchaseOrder.workflow_id && purchaseOrder.workflow_current_stage) {
+      try {
+        const workflowCallReq = this.masterService.send(
+          { cmd: 'workflows.get-workflow-stage-detail', service: 'workflows' },
+          {
+            workflow_id: purchaseOrder.workflow_id,
+            stage: purchaseOrder.workflow_current_stage,
+            user_id: this.userId,
+            bu_code: this.bu_code,
+          },
+        );
+        const callResult: GlobalApiReturn<Stage> = await firstValueFrom(workflowCallReq);
+        const stageDetail = callResult.data;
+
+        const userActionExecute = (purchaseOrder.user_action as { execute: any[] })?.execute || [];
+        const userIds: string[] = userActionExecute
+          .map((u) => (typeof u === 'string' ? u : u?.user_id))
+          .filter(Boolean);
+
+        role = userIds.includes(this.userId)
+          ? (stageDetail.role as string)
+          : enum_stage_role.view_only;
+      } catch {
+        role = enum_stage_role.view_only;
+      }
+    }
+
     // Transform the response
     const transformedData = {
       ...purchaseOrder,
+      role,
       vendor: purchaseOrder.tb_vendor,
       currency: purchaseOrder.tb_currency_tb_purchase_order_currency_idTotb_currency,
       //credit_term: purchaseOrder.tb_credit_term?.value,

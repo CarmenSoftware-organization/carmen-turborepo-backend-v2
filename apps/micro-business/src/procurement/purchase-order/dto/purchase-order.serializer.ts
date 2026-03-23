@@ -49,10 +49,10 @@ const CurrencyEmbeddedSchema = z.object({
 // Purchase order detail response schema (for findOne)
 export const PurchaseOrderDetailResponseSchema = z.object({
   id: z.string(),
+  role: z.string(),
   po_no: z.string().nullable().optional(),
-  name: z.string().nullable().optional(),
+  po_status: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
-  purchase_order_status: z.string().nullable().optional(),
   order_date: z.coerce.date().nullable().optional(),
   delivery_date: z.coerce.date().nullable().optional(),
   approval_date: z.coerce.date().nullable().optional(),
