@@ -125,7 +125,7 @@ cmd_install() {
 
 cmd_build() {
     services=$(resolve_services "$1")
-    echo "=== Building services (safe swap) ==="
+    echo "=== Building services ==="
 
     for name in $services; do
         def=$(get_service_def "$name")
@@ -139,41 +139,11 @@ cmd_build() {
         echo ""
         echo "--- Building: $name ---"
         cd "$dir"
-
         case "$svc_type" in
-            bun)
-                # Build ไปที่ dist_tmp ถ้าสำเร็จ swap กับ dist เดิม
-                rm -rf dist_tmp
-                if bun build src/server.ts --outdir=dist_tmp --target=bun; then
-                    rm -rf dist_old
-                    [ -d dist ] && mv dist dist_old
-                    mv dist_tmp dist
-                    rm -rf dist_old
-                    echo "  $name: build success, dist swapped"
-                else
-                    rm -rf dist_tmp
-                    echo "  $name: BUILD FAILED — keeping old dist"
-                fi
-                ;;
-            go)
-                go build -o bin/micro-report ./cmd/server
-                ;;
-            dotnet)
-                dotnet build
-                ;;
-            *)
-                # NestJS: rename dist ออกก่อน build ใหม่ ถ้าสำเร็จลบของเก่า ถ้า fail เอาของเก่ากลับ
-                rm -rf dist_old
-                [ -d dist ] && mv dist dist_old
-                if npx nest build; then
-                    rm -rf dist_old
-                    echo "  $name: build success, dist swapped"
-                else
-                    rm -rf dist
-                    [ -d dist_old ] && mv dist_old dist
-                    echo "  $name: BUILD FAILED — keeping old dist"
-                fi
-                ;;
+            bun)    bun build src/server.ts --outdir=dist --target=bun ;;
+            go)     go build -o bin/micro-report ./cmd/server ;;
+            dotnet) dotnet build ;;
+            *)      npx nest build ;;
         esac
     done
 
@@ -360,70 +330,6 @@ cmd_clean_logs() {
     echo "Done"
 }
 
-cmd_clean_cache() {
-    services=$(resolve_services "${1:-all}")
-    echo "=== Cleaning cache ==="
-
-    # Turbo cache
-    if [ -d "$ROOT_DIR/.turbo" ]; then
-        rm -rf "$ROOT_DIR/.turbo"
-        echo "  Removed: .turbo"
-    fi
-
-    # Root node_modules/.cache
-    if [ -d "$ROOT_DIR/node_modules/.cache" ]; then
-        rm -rf "$ROOT_DIR/node_modules/.cache"
-        echo "  Removed: node_modules/.cache"
-    fi
-
-    for name in $services; do
-        def=$(get_service_def "$name")
-        if [ -z "$def" ]; then
-            continue
-        fi
-        dir=$(resolve_dir "$(get_field "$def" 2)")
-        svc_type=$(get_field "$def" 4)
-
-        case "$svc_type" in
-            go|dotnet) continue ;;
-        esac
-
-        if [ ! -d "$dir" ]; then
-            continue
-        fi
-
-        cleaned=""
-
-        # dist
-        if [ -d "$dir/dist" ]; then
-            rm -rf "$dir/dist"
-            cleaned="dist"
-        fi
-
-        # dist_old / dist_tmp (leftover from build)
-        rm -rf "$dir/dist_old" "$dir/dist_tmp" 2>/dev/null
-
-        # .swc cache (NestJS SWC compiler)
-        if [ -d "$dir/.swc" ]; then
-            rm -rf "$dir/.swc"
-            cleaned="$cleaned .swc"
-        fi
-
-        # .tsbuildinfo
-        if [ -f "$dir/tsconfig.tsbuildinfo" ]; then
-            rm -f "$dir/tsconfig.tsbuildinfo"
-            cleaned="$cleaned tsbuildinfo"
-        fi
-
-        if [ -n "$cleaned" ]; then
-            echo "  $name: removed$cleaned"
-        fi
-    done
-
-    echo ""
-    echo "=== Cache cleaned ==="
-}
-
 cmd_help() {
     echo "Carmen Backend V2 — Service Management (no Docker)"
     echo ""
@@ -439,7 +345,6 @@ cmd_help() {
     echo "  status                          ดู status ทุก service"
     echo "  health                          เช็ค health endpoints"
     echo "  clean-logs                      ลบ log files"
-    echo "  clean-cache [core|all|SERVICE]  ลบ dist, .swc, .turbo, tsbuildinfo"
     echo ""
     echo "Targets:"
     echo "  core           gateway, business, cluster, keycloak (default, 4 services)"
@@ -472,7 +377,6 @@ case "${1:-help}" in
     logs)       cmd_logs "$2" ;;
     status)     cmd_status ;;
     health)     cmd_health ;;
-    clean-logs)  cmd_clean_logs ;;
-    clean-cache) cmd_clean_cache "$2" ;;
-    help|*)      cmd_help ;;
+    clean-logs) cmd_clean_logs ;;
+    help|*)     cmd_help ;;
 esac
