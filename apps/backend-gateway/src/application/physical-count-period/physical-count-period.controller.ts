@@ -89,9 +89,10 @@ export class PhysicalCountPeriodController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
+    @Query('include_not_count') include_not_count: string = 'false',
   ): Promise<void> {
     this.logger.debug(
-      { function: 'findCurrent', version },
+      { function: 'findCurrent', version, include_not_count },
       PhysicalCountPeriodController.name,
     );
 
@@ -100,6 +101,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
       user_id,
       bu_code,
       version,
+      include_not_count === 'true',
     );
     this.respond(res, result);
   }

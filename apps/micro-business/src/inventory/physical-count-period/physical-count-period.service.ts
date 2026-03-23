@@ -170,8 +170,8 @@ export class PhysicalCountPeriodService {
    * @returns Current period with locations and their count statuses / รอบปัจจุบันพร้อมสถานที่และสถานะการนับ
    */
   @TryCatch
-  async findCurrent(user_id: string, tenant_id: string): Promise<Result<unknown>> {
-    this.logger.debug({ function: "findCurrent", user_id, tenant_id }, PhysicalCountPeriodService.name);
+  async findCurrent(user_id: string, tenant_id: string, include_not_count?: boolean): Promise<Result<unknown>> {
+    this.logger.debug({ function: "findCurrent", user_id, tenant_id, include_not_count }, PhysicalCountPeriodService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
@@ -252,23 +252,6 @@ export class PhysicalCountPeriodService {
       });
     }
 
-    const locations = await prisma.tb_location.findMany({
-      where: {
-        location_type: {
-          in: [enum_location_type.inventory, enum_location_type.consignment],
-        },
-        physical_count_type: enum_physical_count_type.yes,
-        is_active: true,
-        deleted_at: null,
-      },
-      select: {
-        id: true,
-        code: true,
-        name: true,
-        location_type: true,
-      },
-    });
-
     const existingCounts = await prisma.tb_physical_count.findMany({
       where: {
         physical_count_period_id: period.id,
@@ -282,6 +265,50 @@ export class PhysicalCountPeriodService {
     });
 
     const countByLocation = new Map(existingCounts.map((c) => [c.location_id, { id: c.id, status: c.status }]));
+
+    // Get locations with physical_count_type filter
+    let locations = await prisma.tb_location.findMany({
+      where: {
+        location_type: {
+          in: [enum_location_type.inventory, enum_location_type.consignment],
+        },
+        ...(include_not_count ? {} : { physical_count_type: enum_physical_count_type.yes }),
+        is_active: true,
+        deleted_at: null,
+      },
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        location_type: true,
+        physical_count_type: true,
+      },
+    });
+
+    // When not including all, union locations that already have physical counts in this period
+    if (!include_not_count) {
+      const existingLocationIds = new Set(locations.map((loc) => loc.id));
+      const missingLocationIds = existingCounts
+        .map((c) => c.location_id)
+        .filter((id) => !existingLocationIds.has(id));
+
+      if (missingLocationIds.length > 0) {
+        const extraLocations = await prisma.tb_location.findMany({
+          where: {
+            id: { in: missingLocationIds },
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+            code: true,
+            name: true,
+            location_type: true,
+            physical_count_type: true,
+          },
+        });
+        locations = [...locations, ...extraLocations];
+      }
+    }
 
     // Count items already counted per physical_count_id
     const physicalCountIds = existingCounts.map((c) => c.id);
@@ -317,6 +344,7 @@ export class PhysicalCountPeriodService {
         code: loc.code,
         name: loc.name,
         location_type: loc.location_type,
+        physical_count_type: loc.physical_count_type,
         counted: existingCount ? countedByPhysicalCount.get(existingCount.id) || 0 : 0,
         total_products: productCountByLocation.get(loc.id) || 0,
         physical_count_status: existingCount ? existingCount.status : "not_started",

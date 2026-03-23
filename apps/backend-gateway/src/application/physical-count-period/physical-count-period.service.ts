@@ -137,9 +137,10 @@ export class PhysicalCountPeriodService {
     user_id: string,
     tenant_id: string,
     version: string,
+    include_not_count?: boolean,
   ): Promise<Result<unknown>> {
     this.logger.debug(
-      { function: 'findCurrent', user_id, tenant_id, version },
+      { function: 'findCurrent', user_id, tenant_id, version, include_not_count },
       PhysicalCountPeriodService.name,
     );
 
@@ -148,7 +149,7 @@ export class PhysicalCountPeriodService {
         cmd: 'physical-count-period.current',
         service: 'physical-count-period',
       },
-      { user_id, tenant_id, version },
+      { user_id, tenant_id, version, include_not_count },
     );
 
     const response = await firstValueFrom(res);

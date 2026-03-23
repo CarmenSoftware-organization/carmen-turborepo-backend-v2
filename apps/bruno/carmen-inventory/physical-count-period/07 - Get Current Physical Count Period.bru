@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: {{host}}/api/{{bu_code}}/physical-count-period/current
+  url: {{host}}/api/{{bu_code}}/physical-count-period/current?include_not_count=true
   body: none
   auth: bearer
+}
+
+params:query {
+  include_not_count: true
 }
 
 headers {

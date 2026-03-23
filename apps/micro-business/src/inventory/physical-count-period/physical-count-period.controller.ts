@@ -79,9 +79,10 @@ export class PhysicalCountPeriodController extends BaseMicroserviceController {
     this.logger.debug({ function: "findCurrent", payload }, PhysicalCountPeriodController.name);
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
+    const include_not_count = payload.include_not_count || false;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.physicalCountPeriodService.findCurrent(user_id, tenant_id),
+      this.physicalCountPeriodService.findCurrent(user_id, tenant_id, include_not_count),
     );
     return this.handleResult(result);
   }
