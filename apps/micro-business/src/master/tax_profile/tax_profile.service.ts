@@ -174,7 +174,7 @@ export class TaxProfileService {
 
     const prismaParams = {
       where: q.where(),
-      orderBy: hasCustomSort ? customOrderBy : [{ name: 'asc' as const }, { rate: 'asc' as const }],
+      orderBy: hasCustomSort ? customOrderBy : [{ name: 'asc' as const }, { tax_rate: 'asc' as const }],
       ...pagination,
     };
     const data = await this.prismaService.tb_tax_profile.findMany(prismaParams);
