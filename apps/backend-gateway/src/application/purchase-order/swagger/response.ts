@@ -299,6 +299,73 @@ export class PurchaseOrderListResponseDto {
   perpage?: number;
 }
 
+// ==================== Group PR Response ====================
+
+export class GroupPrWorkflowResponseDto {
+  @ApiProperty({ description: 'Workflow ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+
+  @ApiProperty({ description: 'Workflow name', example: 'PO Approval Workflow' })
+  name: string;
+}
+
+export class GroupPrProductResponseDto {
+  @ApiProperty({ description: 'Product ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  product_id: string;
+
+  @ApiPropertyOptional({ description: 'Product name', example: 'Fresh Tomatoes' })
+  product_name?: string;
+
+  @ApiPropertyOptional({ description: 'Quantity', example: 50 })
+  qty?: number;
+
+  @ApiPropertyOptional({ description: 'Price per unit', example: 45 })
+  price_per_unit?: number;
+
+  @ApiPropertyOptional({ description: 'Total price', example: 2250 })
+  total?: number;
+
+  @ApiPropertyOptional({ description: 'Base total price', example: 2250 })
+  base_total_price?: number;
+}
+
+export class GroupPrGroupItemResponseDto {
+  @ApiProperty({ description: 'Draft PO number', example: '#01' })
+  po_no: string;
+
+  @ApiPropertyOptional({ description: 'Delivery date', example: '2026-04-01' })
+  delivery_date?: string;
+
+  @ApiPropertyOptional({ description: 'Vendor name', example: 'Fresh Farm Supplies Co.' })
+  vendor_name?: string;
+
+  @ApiPropertyOptional({ description: 'Currency code', example: 'THB' })
+  currency_code?: string;
+
+  @ApiPropertyOptional({ description: 'Exchange rate', example: 1 })
+  exchange_rate?: number;
+
+  @ApiPropertyOptional({ description: 'Total price', example: 2250 })
+  total_price?: number;
+
+  @ApiPropertyOptional({ description: 'Base price', example: 2250 })
+  base_price?: number;
+
+  @ApiPropertyOptional({ description: 'Products in this group', type: [GroupPrProductResponseDto] })
+  products?: GroupPrProductResponseDto[];
+
+  @ApiPropertyOptional({ description: 'PR numbers included', type: [String], example: ['PR-2026-0001'] })
+  pr?: string[];
+}
+
+export class GroupPrForPoResponseDto {
+  @ApiPropertyOptional({ description: 'Resolved workflow', type: GroupPrWorkflowResponseDto })
+  workflow?: GroupPrWorkflowResponseDto;
+
+  @ApiProperty({ description: 'Grouped PO previews', type: [GroupPrGroupItemResponseDto] })
+  groups: GroupPrGroupItemResponseDto[];
+}
+
 // ==================== Mutation Response ====================
 
 export class PurchaseOrderMutationResponseDto {

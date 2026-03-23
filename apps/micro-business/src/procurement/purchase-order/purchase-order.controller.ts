@@ -220,8 +220,9 @@ export class PurchaseOrderController extends BaseMicroserviceController {
       payload.user_id,
     );
     const pr_ids = payload.data?.pr_ids || payload.pr_ids;
+    const workflow_id = payload.data?.workflow_id;
     const auditContext = this.createAuditContext(payload);
-    const result = await runWithAuditContext(auditContext, () => this.purchaseOrderService.groupPrForPo(pr_ids));
+    const result = await runWithAuditContext(auditContext, () => this.purchaseOrderService.groupPrForPo(pr_ids, workflow_id));
     return this.handleResult(result);
   }
 

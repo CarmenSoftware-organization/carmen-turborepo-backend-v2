@@ -45,6 +45,7 @@ import {
   PurchaseOrderListResponseDto,
   PurchaseOrderMutationResponseDto,
   PurchaseOrderDetailItemResponseDto,
+  GroupPrForPoResponseDto,
 } from './swagger/response';
 import {
   ApprovePurchaseOrderDto,
@@ -963,12 +964,11 @@ export class PurchaseOrderController extends BaseHttpController {
    */
   @Post('group-pr')
   @UseGuards(new AppIdGuard('purchaseOrder.groupPr'))
-  @Serialize(PurchaseOrderListItemResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Group PR details for PO creation',
     description:
-      'Previews how approved purchase request line items will be grouped into purchase orders by vendor, delivery date, and currency. Used by purchasers to review the PO structure before confirming the conversion from PRs to POs.',
+      'Previews how approved purchase request line items will be grouped into purchase orders by vendor, delivery date, and currency. Optionally accepts a workflow_id; if omitted, auto-resolves the default purchase_order_workflow. Used by purchasers to review the PO structure before confirming the conversion from PRs to POs.',
     operationId: 'groupPrForPo',
     tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
@@ -1002,11 +1002,11 @@ export class PurchaseOrderController extends BaseHttpController {
       },
     },
   })
-  @ApiResponse({ status: 200, description: 'PR details grouped successfully', type: PurchaseOrderListResponseDto })
+  @ApiResponse({ status: 200, description: 'PR details grouped successfully', type: GroupPrForPoResponseDto })
   @ApiResponse({ status: 400, description: 'Invalid request body' })
   @HttpCode(HttpStatus.OK)
   async groupPrForPo(
-    @Body() body: { pr_ids: string[] },
+    @Body() body: { workflow_id?: string; pr_ids: string[] },
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1015,6 +1015,7 @@ export class PurchaseOrderController extends BaseHttpController {
     this.logger.debug(
       {
         function: 'groupPrForPo',
+        workflow_id: body.workflow_id,
         pr_ids: body.pr_ids,
         version,
       },
@@ -1027,6 +1028,7 @@ export class PurchaseOrderController extends BaseHttpController {
       user_id,
       bu_code,
       version,
+      body.workflow_id,
     );
     this.respond(res, result);
   }

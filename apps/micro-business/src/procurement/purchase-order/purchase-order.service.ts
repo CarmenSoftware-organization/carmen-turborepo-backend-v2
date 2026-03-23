@@ -1,5 +1,6 @@
 import { HttpStatus, HttpException, Inject, Injectable } from '@nestjs/common';
 import { isUUID } from 'class-validator';
+import { z } from 'zod';
 import { TenantService } from '@/tenant/tenant.service';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
@@ -1791,11 +1792,12 @@ export class PurchaseOrderService {
    * @returns Grouped purchase request data by vendor / ข้อมูลใบขอซื้อที่จัดกลุ่มตามผู้ขาย
    */
   @TryCatch
-  async groupPrForPo(pr_ids: string[]): Promise<Result<unknown>> {
+  async groupPrForPo(pr_ids: string[], workflow_id?: string): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'groupPrForPo',
         pr_ids,
+        workflow_id,
         user_id: this.userId,
         tenant_id: this.bu_code,
       },
@@ -1804,6 +1806,32 @@ export class PurchaseOrderService {
 
     if (!pr_ids || pr_ids.length === 0) {
       return Result.error('PR IDs are required', ErrorCode.INVALID_ARGUMENT);
+    }
+
+    // Resolve workflow: use provided workflow_id or find default purchase_order_workflow
+    let resolvedWorkflow: { id: string; name: string } | null = null;
+    if (workflow_id) {
+      const uuidResult = z.string().uuid().safeParse(workflow_id);
+      if (!uuidResult.success) {
+        return Result.error('Invalid workflow_id format', ErrorCode.INVALID_ARGUMENT);
+      }
+      const wf = await this.prismaService.tb_workflow.findFirst({
+        where: { id: workflow_id, deleted_at: null },
+        select: { id: true, name: true },
+      });
+      if (!wf) {
+        return Result.error('Workflow not found', ErrorCode.NOT_FOUND);
+      }
+      resolvedWorkflow = wf;
+    } else {
+      const wf = await this.prismaService.tb_workflow.findFirst({
+        where: { workflow_type: 'purchase_order_workflow', deleted_at: null },
+        select: { id: true, name: true },
+      });
+      if (!wf) {
+        return Result.error('No purchase order workflow configured', ErrorCode.NOT_FOUND);
+      }
+      resolvedWorkflow = wf;
     }
 
     // Fetch PR details with related data based on PR IDs
@@ -1946,7 +1974,10 @@ export class PurchaseOrderService {
       draftCounter++;
     }
 
-    return Result.ok(result);
+    return Result.ok({
+      workflow: resolvedWorkflow,
+      groups: result,
+    });
   }
 
   /**

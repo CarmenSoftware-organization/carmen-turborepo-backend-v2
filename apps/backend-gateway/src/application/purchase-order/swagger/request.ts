@@ -407,6 +407,9 @@ export class ReviewPurchaseOrderSwaggerDto {
 // ==================== Group PR for PO ====================
 
 export class GroupPrForPoSwaggerDto {
+  @ApiPropertyOptional({ description: 'Workflow ID for PO (auto-resolves purchase_order_workflow if omitted)', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  workflow_id?: string;
+
   @ApiProperty({ description: 'Array of PR IDs to group for PO creation', type: [String], example: ['a1b2c3d4-e5f6-7890-abcd-ef1234567890'] })
   pr_ids: string[];
 }
