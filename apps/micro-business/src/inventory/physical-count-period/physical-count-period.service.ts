@@ -193,7 +193,7 @@ export class PhysicalCountPeriodService {
       return Result.error("No active period found", ErrorCode.INVALID_ARGUMENT);
     }
 
-    const period = await prisma.tb_physical_count_period.findFirst({
+    let period = await prisma.tb_physical_count_period.findFirst({
       where: {
         period_id: open_period.id,
         deleted_at: null,
@@ -219,13 +219,44 @@ export class PhysicalCountPeriodService {
       orderBy: { tb_period: { start_at: "desc" } },
     });
 
+    // Auto-create physical count period if none exists for current period
     if (!period) {
-      return Result.error("No active Physical Count Period found", ErrorCode.INVALID_ARGUMENT);
+      const created = await prisma.tb_physical_count_period.create({
+        data: {
+          period_id: open_period.id,
+          status: enum_physical_count_period_status.draft,
+          created_by_id: user_id,
+        },
+      });
+
+      period = await prisma.tb_physical_count_period.findFirst({
+        where: { id: created.id },
+        include: {
+          tb_period: {
+            select: { id: true, period: true, start_at: true, end_at: true },
+          },
+          tb_physical_count: {
+            select: {
+              id: true,
+              location_id: true,
+              status: true,
+              tb_location: {
+                select: {
+                  name: true,
+                  code: true,
+                },
+              },
+            },
+          },
+        },
+      });
     }
 
     const locations = await prisma.tb_location.findMany({
       where: {
-        location_type: enum_location_type.inventory,
+        location_type: {
+          in: [enum_location_type.inventory, enum_location_type.consignment],
+        },
         physical_count_type: enum_physical_count_type.yes,
         is_active: true,
         deleted_at: null,

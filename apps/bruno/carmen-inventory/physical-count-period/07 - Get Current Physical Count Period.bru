@@ -1,0 +1,19 @@
+meta {
+  name: 07 - Get Current Physical Count Period
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/physical-count-period/current
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
