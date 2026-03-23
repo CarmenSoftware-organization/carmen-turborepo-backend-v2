@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
+    "build:bump": "turbo run build:bump",
     "dev": "turbo run dev",
     "dev:base": "turbo run dev:base",
     "dev:business": "turbo run dev:business",
