@@ -23,5 +23,13 @@ auth:bearer {
 }
 
 body:json {
-  {}
+  {
+    "stage_role": "approve",
+    "details": [
+      {
+        "id": "<po_detail_uuid>",
+        "stage_status": "approve"
+      }
+    ]
+  }
 }

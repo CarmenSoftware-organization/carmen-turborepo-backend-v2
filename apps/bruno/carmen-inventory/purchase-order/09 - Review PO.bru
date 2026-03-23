@@ -23,5 +23,15 @@ auth:bearer {
 }
 
 body:json {
-  {}
+  {
+    "stage_role": "approve",
+    "des_stage": "purchase",
+    "details": [
+      {
+        "id": "<po_detail_uuid>",
+        "stage_status": "review",
+        "stage_message": "Please verify the delivery date with vendor"
+      }
+    ]
+  }
 }

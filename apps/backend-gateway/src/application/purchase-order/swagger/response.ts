@@ -118,20 +118,20 @@ export class PurchaseOrderDetailItemResponseDto {
 // ==================== PO Detail Response (findOne) ====================
 
 export class PurchaseOrderDetailResponseDto {
-  @ApiProperty({ description: 'Purchase order ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  @ApiProperty({ description: 'Purchase order ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   id: string;
 
-  @ApiPropertyOptional({ description: 'Purchase order number', example: 'PO-2026-0001' })
+  @ApiProperty({ description: 'User role for this PO (create, approve, purchase, view_only, issue)', example: 'approve', enum: ['create', 'approve', 'purchase', 'view_only', 'issue'] })
+  role: string;
+
+  @ApiPropertyOptional({ description: 'Purchase order number', example: 'PO260301001' })
   po_no?: string;
 
-  @ApiPropertyOptional({ description: 'Purchase order name', example: 'PO Kitchen Supplies March' })
-  name?: string;
+  @ApiPropertyOptional({ description: 'Purchase order status', example: 'draft', enum: ['draft', 'in_progress', 'approved', 'completed', 'cancelled', 'voided'] })
+  po_status?: string;
 
   @ApiPropertyOptional({ description: 'Description', example: 'PO for kitchen supplies' })
   description?: string;
-
-  @ApiPropertyOptional({ description: 'Purchase order status', example: 'draft' })
-  purchase_order_status?: string;
 
   @ApiPropertyOptional({ description: 'Order date', example: '2026-03-10T00:00:00.000Z' })
   order_date?: string;
@@ -142,49 +142,49 @@ export class PurchaseOrderDetailResponseDto {
   @ApiPropertyOptional({ description: 'Approval date', example: '2026-03-15T00:00:00.000Z' })
   approval_date?: string;
 
-  @ApiPropertyOptional({ description: 'Vendor ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  @ApiPropertyOptional({ description: 'Vendor ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   vendor_id?: string;
+
+  @ApiPropertyOptional({ description: 'Vendor name', example: 'Fresh Farm Supplies Co.' })
+  vendor_name?: string;
 
   @ApiPropertyOptional({ description: 'Vendor details', type: VendorEmbeddedResponseDto })
   vendor?: VendorEmbeddedResponseDto;
 
-  @ApiPropertyOptional({ description: 'Currency ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  @ApiPropertyOptional({ description: 'Currency ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   currency_id?: string;
+
+  @ApiPropertyOptional({ description: 'Currency code', example: 'THB' })
+  currency_code?: string;
 
   @ApiPropertyOptional({ description: 'Currency details', type: CurrencyEmbeddedResponseDto })
   currency?: CurrencyEmbeddedResponseDto;
 
-  @ApiPropertyOptional({ description: 'Base currency ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  base_currency_id?: string;
-
-  @ApiPropertyOptional({ description: 'Base currency details', type: CurrencyEmbeddedResponseDto })
-  base_currency?: CurrencyEmbeddedResponseDto;
-
   @ApiPropertyOptional({ description: 'Exchange rate', example: 1.0 })
   exchange_rate?: number;
 
-  @ApiPropertyOptional({ description: 'Sub total', example: 25000.0 })
-  sub_total?: number;
+  @ApiPropertyOptional({ description: 'Total quantity', example: 80 })
+  total_qty?: number;
 
-  @ApiPropertyOptional({ description: 'Discount amount', example: 1250.0 })
-  discount_amount?: number;
+  @ApiPropertyOptional({ description: 'Total price', example: 25000.0 })
+  total_price?: number;
 
-  @ApiPropertyOptional({ description: 'Tax amount', example: 1662.5 })
-  tax_amount?: number;
+  @ApiPropertyOptional({ description: 'Total tax', example: 1750.0 })
+  total_tax?: number;
 
-  @ApiPropertyOptional({ description: 'Total amount', example: 25412.5 })
+  @ApiPropertyOptional({ description: 'Total amount', example: 26750.0 })
   total_amount?: number;
-
-  @ApiPropertyOptional({ description: 'Notes', example: 'Deliver to back entrance' })
-  notes?: string;
 
   @ApiPropertyOptional({ description: 'Vendor email', example: 'vendor@example.com' })
   email?: string;
 
+  @ApiPropertyOptional({ description: 'Buyer ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  buyer_id?: string;
+
   @ApiPropertyOptional({ description: 'Buyer name', example: 'Jane Smith' })
   buyer_name?: string;
 
-  @ApiPropertyOptional({ description: 'Credit term ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  @ApiPropertyOptional({ description: 'Credit term ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   credit_term_id?: string;
 
   @ApiPropertyOptional({ description: 'Credit term name', example: 'Net 30' })
@@ -195,6 +195,40 @@ export class PurchaseOrderDetailResponseDto {
 
   @ApiPropertyOptional({ description: 'Remarks', example: 'Urgent order' })
   remarks?: string;
+
+  @ApiPropertyOptional({ description: 'Note', example: 'Deliver to back entrance' })
+  note?: string;
+
+  // Workflow
+  @ApiPropertyOptional({ description: 'Workflow ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  workflow_id?: string;
+
+  @ApiPropertyOptional({ description: 'Workflow name', example: 'PO Approval Workflow' })
+  workflow_name?: string;
+
+  @ApiPropertyOptional({ description: 'Workflow current stage', example: 'purchase' })
+  workflow_current_stage?: string;
+
+  @ApiPropertyOptional({ description: 'Workflow previous stage', example: 'draft' })
+  workflow_previous_stage?: string;
+
+  @ApiPropertyOptional({ description: 'Workflow next stage', example: 'approve' })
+  workflow_next_stage?: string;
+
+  @ApiPropertyOptional({ description: 'User actions for current stage (JSON)' })
+  user_action?: unknown;
+
+  @ApiPropertyOptional({ description: 'Last action performed', example: 'submitted' })
+  last_action?: string;
+
+  @ApiPropertyOptional({ description: 'Last action timestamp', example: '2026-03-10T00:00:00.000Z' })
+  last_action_at_date?: string;
+
+  @ApiPropertyOptional({ description: 'Last action by user ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  last_action_by_id?: string;
+
+  @ApiPropertyOptional({ description: 'Last action by user name', example: 'Jane Smith' })
+  last_action_by_name?: string;
 
   @ApiPropertyOptional({ description: 'Document version', example: 1 })
   doc_version?: number;

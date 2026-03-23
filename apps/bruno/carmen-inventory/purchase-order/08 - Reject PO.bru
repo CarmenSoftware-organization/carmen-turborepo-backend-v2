@@ -23,5 +23,14 @@ auth:bearer {
 }
 
 body:json {
-  {}
+  {
+    "stage_role": "approve",
+    "details": [
+      {
+        "id": "<po_detail_uuid>",
+        "stage_status": "reject",
+        "stage_message": "Price is too high, please renegotiate with vendor"
+      }
+    ]
+  }
 }

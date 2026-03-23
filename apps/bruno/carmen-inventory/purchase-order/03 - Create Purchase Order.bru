@@ -20,7 +20,51 @@ auth:bearer {
 
 body:json {
   {
-    "description": "",
-    "note": ""
+    "vendor_id": "<vendor_uuid>",
+    "vendor_name": "ABC Food Supplies Co., Ltd.",
+    "delivery_date": "2026-04-01",
+    "currency_id": "<currency_uuid>",
+    "currency_code": "THB",
+    "exchange_rate": 1,
+    "description": "PO for kitchen supplies",
+    "order_date": "2026-03-23",
+    "credit_term_id": "<credit_term_uuid>",
+    "credit_term_name": "Net 30",
+    "credit_term_value": 30,
+    "buyer_id": "<buyer_uuid>",
+    "buyer_name": "John Doe",
+    "email": "purchasing@hotel.com",
+    "remarks": "Please deliver to back entrance",
+    "note": "Urgent order",
+    "details": {
+      "add": [
+        {
+          "sequence": 1,
+          "product_id": "<product_uuid>",
+          "product_code": "RICE-001",
+          "product_name": "Jasmine Rice 5kg",
+          "order_unit_id": "<unit_uuid>",
+          "order_unit_name": "Bag",
+          "order_qty": 10,
+          "price": 250.00,
+          "sub_total_price": 2500.00,
+          "discount_rate": 5,
+          "discount_amount": 125.00,
+          "tax_rate": 7,
+          "tax_amount": 166.25,
+          "net_amount": 2375.00,
+          "total_price": 2541.25,
+          "is_foc": false,
+          "pr_detail": [
+            {
+              "pr_detail_id": "<pr_detail_uuid>",
+              "order_qty": 10,
+              "order_unit_id": "<unit_uuid>",
+              "order_base_qty": 10
+            }
+          ]
+        }
+      ]
+    }
   }
 }

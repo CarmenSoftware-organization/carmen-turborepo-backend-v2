@@ -143,7 +143,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a purchase order by ID',
-    description: 'Retrieves the full details of a specific purchase order including vendor information, line items, pricing, delivery dates, and current workflow status. Used to review PO contents before sending to a vendor or during goods receiving.',
+    description: 'Retrieves the full details of a specific purchase order including vendor information, line items, pricing, delivery dates, workflow status, and the authenticated user\'s role (create, approve, purchase, view_only, issue) for this PO.',
     operationId: 'findOnePurchaseOrder',
     tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
