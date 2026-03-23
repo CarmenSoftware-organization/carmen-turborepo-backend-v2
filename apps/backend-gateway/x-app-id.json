@@ -74,7 +74,8 @@
       "product.update",
       "product.delete",
       "currencies.findAllActive",
-      "goodReceivedNote.findOneByProduct",
+      "product.last-purchase",
+      "product.on-hand",
       "priceList.priceCompare"
     ]
   }

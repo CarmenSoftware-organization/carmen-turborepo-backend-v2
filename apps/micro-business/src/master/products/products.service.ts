@@ -1235,4 +1235,148 @@ export class ProductsService {
       items,
     });
   }
+
+  /**
+   * Get on-hand quantity for a product, optionally filtered by location
+   * ดึงจำนวนสินค้าคงเหลือ โดยกรองตามสถานที่ได้
+   * @param product_id - Product ID / รหัสสินค้า
+   * @param location_id - Optional location ID / รหัสสถานที่ (ไม่บังคับ)
+   * @returns On-hand balance per location / ยอดคงเหลือตามสถานที่
+   */
+  @TryCatch
+  async getOnHand(product_id: string, location_id?: string): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'getOnHand', product_id, location_id, user_id: this.userId, tenant_id: this.bu_code },
+      ProductsService.name,
+    );
+
+    // Fetch product info with unit relation
+    const product = await this.prismaService.tb_product.findFirst({
+      where: { id: product_id, deleted_at: null },
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        local_name: true,
+        sku: true,
+        inventory_unit_id: true,
+        inventory_unit_name: true,
+        tb_unit: { select: { name: true } },
+      },
+    });
+
+    if (!product) {
+      return Result.error('Product not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Fetch product-location settings (min/max qty)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const plWhere: any = { product_id, deleted_at: null };
+    if (location_id) plWhere.location_id = location_id;
+
+    const productLocations = await this.prismaService.tb_product_location.findMany({
+      where: plWhere,
+      select: {
+        location_id: true,
+        location_name: true,
+        min_qty: true,
+        max_qty: true,
+      },
+    });
+    const plMap = new Map(productLocations.map((pl) => [pl.location_id, pl]));
+
+    // Fetch cost layers
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const layerWhere: any = { product_id, deleted_at: null };
+    if (location_id) layerWhere.location_id = location_id;
+
+    const layers = await this.prismaService.tb_inventory_transaction_cost_layer.findMany({
+      where: layerWhere,
+      select: {
+        product_id: true,
+        location_id: true,
+        location_code: true,
+        in_qty: true,
+        out_qty: true,
+        average_cost_per_unit: true,
+      },
+    });
+
+    // Aggregate per location
+    const balanceMap = new Map<string, {
+      location_id: string | null;
+      location_code: string | null;
+      total_in: number;
+      total_out: number;
+      latest_avg_cost: number;
+    }>();
+
+    for (const layer of layers) {
+      const key = layer.location_id || '_no_location_';
+      const existing = balanceMap.get(key);
+      if (existing) {
+        existing.total_in += Number(layer.in_qty);
+        existing.total_out += Number(layer.out_qty);
+        existing.latest_avg_cost = Number(layer.average_cost_per_unit) || existing.latest_avg_cost;
+      } else {
+        balanceMap.set(key, {
+          location_id: layer.location_id,
+          location_code: layer.location_code,
+          total_in: Number(layer.in_qty),
+          total_out: Number(layer.out_qty),
+          latest_avg_cost: Number(layer.average_cost_per_unit),
+        });
+      }
+    }
+
+    // Fetch last counted date per location from physical count details
+    const locationIds = [...balanceMap.keys()].filter((k) => k !== '_no_location_');
+    let lastCountedMap = new Map<string, Date>();
+    if (locationIds.length > 0) {
+      const lastCounted = await this.prismaService.tb_physical_count.findMany({
+        where: {
+          location_id: { in: locationIds },
+          status: 'completed',
+          deleted_at: null,
+        },
+        select: {
+          location_id: true,
+          completed_at: true,
+        },
+        orderBy: { completed_at: 'desc' },
+      });
+      for (const lc of lastCounted) {
+        if (lc.completed_at && !lastCountedMap.has(lc.location_id)) {
+          lastCountedMap.set(lc.location_id, lc.completed_at);
+        }
+      }
+    }
+
+    const locations = [...balanceMap.values()].map((item) => {
+      const balance = item.total_in - item.total_out;
+      const pl = item.location_id ? plMap.get(item.location_id) : undefined;
+      return {
+        location_id: item.location_id,
+        location_name: pl?.location_name || null,
+        on_hand_qty: balance,
+        max_qty: pl ? Number(pl.max_qty) : 0,
+        min_qty: pl ? Number(pl.min_qty) : 0,
+        last_counted_date: item.location_id ? (lastCountedMap.get(item.location_id) || null) : null,
+      };
+    });
+
+    const total_on_hand = locations.reduce((sum, loc) => sum + loc.on_hand_qty, 0);
+
+    return Result.ok({
+      product_id: product.id,
+      product_code: product.code,
+      product_name: product.name,
+      product_local_name: product.local_name,
+      inventory_unit_id: product.inventory_unit_id,
+      inventory_unit_name: product.inventory_unit_name || product.tb_unit?.name,
+      sku: product.sku,
+      total_on_hand,
+      locations,
+    });
+  }
 }

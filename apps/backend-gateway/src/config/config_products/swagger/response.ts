@@ -202,3 +202,54 @@ export class LastPurchaseResponseDto {
   @ApiProperty({ description: 'Purchase detail items', type: [LastPurchaseItemDto] })
   items: LastPurchaseItemDto[];
 }
+
+// ==================== On-Hand Response ====================
+
+export class OnHandLocationDto {
+  @ApiPropertyOptional({ description: 'Location ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  location_id?: string;
+
+  @ApiPropertyOptional({ description: 'Location name', example: 'Main Kitchen' })
+  location_name?: string;
+
+  @ApiProperty({ description: 'On-hand quantity', example: 47 })
+  on_hand_qty: number;
+
+  @ApiProperty({ description: 'Maximum quantity', example: 100 })
+  max_qty: number;
+
+  @ApiProperty({ description: 'Minimum quantity', example: 10 })
+  min_qty: number;
+
+  @ApiPropertyOptional({ description: 'Last physical count date', example: '2025-09-15T08:22:03.921Z' })
+  last_counted_date?: Date;
+}
+
+export class OnHandResponseDto {
+  @ApiProperty({ description: 'Product ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  product_id: string;
+
+  @ApiPropertyOptional({ description: 'Product code', example: 'PRD-001' })
+  product_code?: string;
+
+  @ApiPropertyOptional({ description: 'Product name', example: 'Beef Tenderloin' })
+  product_name?: string;
+
+  @ApiPropertyOptional({ description: 'Product local name', example: 'เนื้อสันใน' })
+  product_local_name?: string;
+
+  @ApiPropertyOptional({ description: 'Inventory unit ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  inventory_unit_id?: string;
+
+  @ApiPropertyOptional({ description: 'Inventory unit name', example: 'KG' })
+  inventory_unit_name?: string;
+
+  @ApiPropertyOptional({ description: 'Product SKU', example: 'PRODUCT_CODE_01' })
+  sku?: string;
+
+  @ApiProperty({ description: 'Total on-hand across all locations', example: 105 })
+  total_on_hand: number;
+
+  @ApiProperty({ description: 'On-hand per location', type: [OnHandLocationDto] })
+  locations: OnHandLocationDto[];
+}

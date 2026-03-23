@@ -1,0 +1,27 @@
+meta {
+  name: 02 - Get On Hand by Product
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/products/:product_id/on-hand
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~location_id: 
+}
+
+params:path {
+  product_id: bb96415b-dff0-40ec-aa2f-2b4099418314
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

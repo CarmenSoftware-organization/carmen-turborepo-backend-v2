@@ -19,10 +19,8 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { LastPurchaseResponseDto } from 'src/config/config_products/swagger/response';
 import {
   CreateGoodReceivedNoteSwaggerDto,
   UpdateGoodReceivedNoteSwaggerDto,
@@ -110,72 +108,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
         user_id,
         version,
       );
-    this.respond(res, result);
-  }
-
-  /**
-   * Get last GRN by product ID and receiving date
-   * ค้นหาใบรับสินค้าล่าสุดตาม ID สินค้าและวันที่รับ
-   */
-  @Get(':bu_code/products/:product_id/last-purchase/:date')
-  @UseGuards(new AppIdGuard('goodReceivedNote.findOneByProduct'))
-  @HttpCode(HttpStatus.OK)
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Get last purchase by product and date',
-    description:
-      'Retrieves the last committed good received note detail for a product on or before the specified date. Used to check the most recent purchase price and receiving information.',
-    operationId: 'getLastPurchaseByProduct',
-    tags: ['Procurement', 'Good Received Note'],
-    parameters: [
-      {
-        name: 'product_id',
-        in: 'path',
-        required: true,
-        description: 'Product UUID',
-      },
-      {
-        name: 'date',
-        in: 'path',
-        required: true,
-        description: 'Receiving date (YYYY-MM-DD)',
-      },
-    ],
-    responses: {
-      200: { description: 'Last purchase retrieved successfully' },
-      404: { description: 'No purchase found for this product' },
-    },
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Last purchase retrieved successfully',
-    type: LastPurchaseResponseDto,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'No purchase found for this product',
-  })
-  async getLastPurchaseByProduct(
-    @Param('product_id') product_id: string,
-    @Param('date') date: string,
-    @Param('bu_code') bu_code: string,
-    @Req() req: Request,
-    @Res() res: Response,
-    @Query('version') version: string = 'latest',
-  ): Promise<void> {
-    this.logger.debug(
-      { function: 'getLastPurchaseByProduct', product_id, date, version },
-      GoodReceivedNoteController.name,
-    );
-
-    const { user_id } = ExtractRequestHeader(req);
-    const result = await this.goodReceivedNoteService.getLastPurchaseByProduct(
-      product_id,
-      date,
-      user_id,
-      bu_code,
-      version,
-    );
     this.respond(res, result);
   }
 

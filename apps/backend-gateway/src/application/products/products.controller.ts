@@ -14,7 +14,11 @@ import { ProductsService } from './products.service';
 import { PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { IPaginateQuery } from 'src/shared-dto/paginate.dto';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  LastPurchaseResponseDto,
+  OnHandResponseDto,
+} from 'src/config/config_products/swagger/response';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -45,6 +49,133 @@ export class ProductsController extends BaseHttpController {
   }
 
   /**
+   * Get last purchase by product ID and date
+   * ค้นหาการซื้อล่าสุดตาม ID สินค้าและวันที่
+   */
+  @Get(':bu_code/products/:product_id/last-purchase/:date')
+  @UseGuards(new AppIdGuard('product.last-purchase'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get last purchase by product and date',
+    description:
+      'Retrieves the last committed good received note detail for a product on or before the specified date. Used to check the most recent purchase price and receiving information.',
+    operationId: 'getLastPurchaseByProduct',
+    tags: ['Master Data', 'Products'],
+    parameters: [
+      {
+        name: 'product_id',
+        in: 'path',
+        required: true,
+        description: 'Product UUID',
+      },
+      {
+        name: 'date',
+        in: 'path',
+        required: true,
+        description: 'Receiving date (YYYY-MM-DD)',
+      },
+    ],
+    responses: {
+      200: { description: 'Last purchase retrieved successfully' },
+      404: { description: 'No purchase found for this product' },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Last purchase retrieved successfully',
+    type: LastPurchaseResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No purchase found for this product',
+  })
+  async getLastPurchase(
+    @Param('product_id') product_id: string,
+    @Param('date') date: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'getLastPurchase', product_id, date, version },
+      ProductsController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.productService.getLastPurchase(
+      product_id,
+      date,
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * Get on-hand quantity for a product
+   * ดึงจำนวนสินค้าคงเหลือ
+   */
+  @Get(':bu_code/products/:product_id/on-hand')
+  @UseGuards(new AppIdGuard('product.on-hand'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get on-hand quantity by product',
+    description:
+      'Retrieves the on-hand inventory balance for a product across all locations, or filtered by a specific location. Returns quantity, average cost, and total value.',
+    operationId: 'getOnHandByProduct',
+    tags: ['Master Data', 'Products'],
+    parameters: [
+      {
+        name: 'product_id',
+        in: 'path',
+        required: true,
+        description: 'Product UUID',
+      },
+      {
+        name: 'location_id',
+        in: 'query',
+        required: false,
+        description: 'Optional location UUID to filter',
+      },
+    ],
+    responses: {
+      200: { description: 'On-hand balance retrieved successfully' },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'On-hand balance retrieved successfully',
+    type: OnHandResponseDto,
+  })
+  async getOnHand(
+    @Param('product_id') product_id: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+    @Query('location_id') location_id?: string,
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'getOnHand', product_id, location_id, version },
+      ProductsController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.productService.getOnHand(
+      product_id,
+      user_id,
+      bu_code,
+      version,
+      location_id,
+    );
+    this.respond(res, result);
+  }
+
+  /**
    * Get all products by location ID
    * ค้นหารายการสินค้าทั้งหมดตามรหัสสถานที่
    * @param req - HTTP request / คำขอ HTTP
@@ -63,7 +194,8 @@ export class ProductsController extends BaseHttpController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all products by location id',
-    description: 'Retrieves all products assigned to a specific storage location or warehouse, used for inventory operations such as stock-in, physical counts, and requisition fulfillment.',
+    description:
+      'Retrieves all products assigned to a specific storage location or warehouse, used for inventory operations such as stock-in, physical counts, and requisition fulfillment.',
     operationId: 'findAllProductsByLocationId',
     tags: ['Master Data', 'Products'],
     deprecated: false,

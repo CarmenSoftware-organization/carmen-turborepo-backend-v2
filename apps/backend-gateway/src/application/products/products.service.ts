@@ -68,4 +68,62 @@ export class ProductsService {
 
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
+
+  async getLastPurchase(
+    product_id: string,
+    date: string,
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'getLastPurchase', product_id, date, user_id, bu_code, version },
+      ProductsService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
+      { cmd: 'product.get-last-purchase', service: 'product' },
+      { product_id, date, user_id, bu_code, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
+  async getOnHand(
+    product_id: string,
+    user_id: string,
+    bu_code: string,
+    version: string,
+    location_id?: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'getOnHand', product_id, location_id, user_id, bu_code, version },
+      ProductsService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
+      { cmd: 'product.get-on-hand', service: 'product' },
+      { product_id, location_id, user_id, bu_code, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
 }

@@ -204,4 +204,23 @@ export class ProductsController extends BaseMicroserviceController {
     );
     return this.handleResult(result);
   }
+
+  /**
+   * Get on-hand quantity for a product
+   * ดึงจำนวนสินค้าคงเหลือ
+   */
+  @MessagePattern({ cmd: 'product.get-on-hand', service: 'product' })
+  async getOnHand(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'getOnHand', payload }, ProductsController.name);
+    const bu_code = payload.bu_code;
+    const user_id = payload.user_id;
+    this.productsService.userId = user_id;
+    this.productsService.bu_code = bu_code;
+    await this.productsService.initializePrismaService(bu_code, user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.productsService.getOnHand(payload.product_id, payload.location_id),
+    );
+    return this.handleResult(result);
+  }
 }
