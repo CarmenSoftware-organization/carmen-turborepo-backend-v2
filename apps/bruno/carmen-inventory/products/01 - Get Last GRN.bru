@@ -1,0 +1,24 @@
+meta {
+  name: 01 - Get Last Purchase by Product
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/products/:product_id/last-purchase/:date
+  body: none
+  auth: bearer
+}
+
+params:path {
+  product_id: bb96415b-dff0-40ec-aa2f-2b4099418314
+  date: 2026-03-23
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

@@ -285,11 +285,4 @@ export class Config_ProductsService {
     return Result.ok(response.data);
   }
 
-  // async getOrderUnitByProductId(id: string) {
-
-  // }
-
-  // async getIngredientUnitByProductId(id: string) {
-
-  // }
 }

@@ -5,9 +5,15 @@ meta {
 }
 
 get {
-  url: {{host}}/api/{{bu_code}}/price-list/price-compare
+  url: {{host}}/api/{{bu_code}}/price-list/price-compare?product_id=bb96415b-dff0-40ec-aa2f-2b4099418314&at_date=2026-03-16&currency_id=93dabe25-1668-4c5b-bceb-3e0b83b78002
   body: none
   auth: bearer
+}
+
+params:query {
+  product_id: bb96415b-dff0-40ec-aa2f-2b4099418314
+  at_date: 2026-03-16
+  currency_id: 93dabe25-1668-4c5b-bceb-3e0b83b78002
 }
 
 headers {

@@ -115,3 +115,90 @@ export class ProductMutationResponseDto {
   @ApiProperty({ description: 'Product ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   id: string;
 }
+
+// ==================== Last Purchase Response ====================
+
+export class LastPurchaseItemDto {
+  @ApiProperty({ description: 'Detail item ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+
+  @ApiPropertyOptional({ description: 'Received quantity', example: 12 })
+  received_qty?: number;
+
+  @ApiPropertyOptional({ description: 'Received unit name', example: 'BTL' })
+  received_unit_name?: string;
+
+  @ApiPropertyOptional({ description: 'Received base quantity', example: 12 })
+  received_base_qty?: number;
+
+  @ApiPropertyOptional({ description: 'Sub total price', example: 600 })
+  sub_total_price?: number;
+
+  @ApiPropertyOptional({ description: 'Net amount', example: 600 })
+  net_amount?: number;
+
+  @ApiPropertyOptional({ description: 'Total price', example: 642 })
+  total_price?: number;
+
+  @ApiPropertyOptional({ description: 'Base total price', example: 642 })
+  base_total_price?: number;
+
+  @ApiPropertyOptional({ description: 'Tax rate', example: 7 })
+  tax_rate?: number;
+
+  @ApiPropertyOptional({ description: 'Tax amount', example: 42 })
+  tax_amount?: number;
+
+  @ApiPropertyOptional({ description: 'Discount rate', example: 0 })
+  discount_rate?: number;
+
+  @ApiPropertyOptional({ description: 'Discount amount', example: 0 })
+  discount_amount?: number;
+}
+
+export class LastPurchaseResponseDto {
+  @ApiProperty({ description: 'GRN detail ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+
+  @ApiProperty({ description: 'GRN ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  grn_id: string;
+
+  @ApiPropertyOptional({ description: 'GRN number', example: 'GRN260301001' })
+  grn_no?: string;
+
+  @ApiPropertyOptional({ description: 'GRN date', example: '2026-03-20T00:00:00.000Z' })
+  grn_date?: Date;
+
+  @ApiPropertyOptional({ description: 'Vendor ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  vendor_id?: string;
+
+  @ApiPropertyOptional({ description: 'Vendor name', example: 'ABC Supplies' })
+  vendor_name?: string;
+
+  @ApiPropertyOptional({ description: 'Currency code', example: 'THB' })
+  currency_code?: string;
+
+  @ApiPropertyOptional({ description: 'Exchange rate', example: 1 })
+  exchange_rate?: number;
+
+  @ApiProperty({ description: 'Product ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  product_id: string;
+
+  @ApiPropertyOptional({ description: 'Product code', example: 'PRD-001' })
+  product_code?: string;
+
+  @ApiPropertyOptional({ description: 'Product name', example: 'NESTLE PURE LIFE Drinking Water 6L' })
+  product_name?: string;
+
+  @ApiPropertyOptional({ description: 'Product local name', example: 'น้ำดื่มเนสท์เล่ เพียวไลฟ์ 6 ลิตร' })
+  product_local_name?: string;
+
+  @ApiPropertyOptional({ description: 'Location ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  location_id?: string;
+
+  @ApiPropertyOptional({ description: 'Location name', example: 'Main Kitchen' })
+  location_name?: string;
+
+  @ApiProperty({ description: 'Purchase detail items', type: [LastPurchaseItemDto] })
+  items: LastPurchaseItemDto[];
+}

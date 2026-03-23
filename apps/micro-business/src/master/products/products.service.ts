@@ -1130,4 +1130,109 @@ export class ProductsService {
 
     return Result.ok(serializedRes);
   }
+
+  /**
+   * Get last GRN detail by product ID and receiving date
+   * ค้นหาใบรับสินค้าล่าสุดตาม ID สินค้าและวันที่รับ
+   * @param product_id - Product ID / รหัสสินค้า
+   * @param date - Receiving date (YYYY-MM-DD) / วันที่รับ
+   * @returns Last GRN detail for this product / รายละเอียดใบรับสินค้าล่าสุด
+   */
+  @TryCatch
+  async getLastPurchase(product_id: string, date: string): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'getLastPurchase', product_id, date, user_id: this.userId, tenant_id: this.bu_code },
+      ProductsService.name,
+    );
+
+    const endDate = new Date(`${date}T23:59:59.999Z`);
+
+    const grnDetail = await this.prismaService.tb_good_received_note_detail.findFirst({
+      where: {
+        product_id,
+        tb_good_received_note: {
+          grn_date: { lte: endDate },
+          doc_status: 'committed',
+          deleted_at: null,
+        },
+      },
+      orderBy: {
+        tb_good_received_note: { grn_date: 'desc' },
+      },
+      select: {
+        id: true,
+        good_received_note_id: true,
+        product_id: true,
+        product_code: true,
+        product_name: true,
+        product_local_name: true,
+        location_id: true,
+        location_name: true,
+        tb_good_received_note: {
+          select: {
+            id: true,
+            grn_no: true,
+            grn_date: true,
+            vendor_id: true,
+            vendor_name: true,
+            currency_code: true,
+            exchange_rate: true,
+          },
+        },
+        tb_good_received_note_detail_item: {
+          select: {
+            id: true,
+            received_qty: true,
+            received_unit_name: true,
+            received_base_qty: true,
+            sub_total_price: true,
+            net_amount: true,
+            total_price: true,
+            base_total_price: true,
+            tax_rate: true,
+            tax_amount: true,
+            discount_rate: true,
+            discount_amount: true,
+          },
+        },
+      },
+    });
+
+    if (!grnDetail) {
+      return Result.error('No GRN found for this product', ErrorCode.NOT_FOUND);
+    }
+
+    const items = grnDetail.tb_good_received_note_detail_item.map((item) => ({
+      id: item.id,
+      received_qty: Number(item.received_qty),
+      received_unit_name: item.received_unit_name,
+      received_base_qty: Number(item.received_base_qty),
+      sub_total_price: Number(item.sub_total_price),
+      net_amount: Number(item.net_amount),
+      total_price: Number(item.total_price),
+      base_total_price: Number(item.base_total_price),
+      tax_rate: Number(item.tax_rate),
+      tax_amount: Number(item.tax_amount),
+      discount_rate: Number(item.discount_rate),
+      discount_amount: Number(item.discount_amount),
+    }));
+
+    return Result.ok({
+      id: grnDetail.id,
+      grn_id: grnDetail.good_received_note_id,
+      grn_no: grnDetail.tb_good_received_note.grn_no,
+      grn_date: grnDetail.tb_good_received_note.grn_date,
+      vendor_id: grnDetail.tb_good_received_note.vendor_id,
+      vendor_name: grnDetail.tb_good_received_note.vendor_name,
+      currency_code: grnDetail.tb_good_received_note.currency_code,
+      exchange_rate: Number(grnDetail.tb_good_received_note.exchange_rate),
+      product_id: grnDetail.product_id,
+      product_code: grnDetail.product_code,
+      product_name: grnDetail.product_name,
+      product_local_name: grnDetail.product_local_name,
+      location_id: grnDetail.location_id,
+      location_name: grnDetail.location_name,
+      items,
+    });
+  }
 }

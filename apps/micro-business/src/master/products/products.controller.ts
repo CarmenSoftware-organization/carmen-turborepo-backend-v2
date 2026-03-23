@@ -185,4 +185,23 @@ export class ProductsController extends BaseMicroserviceController {
     ));
     return this.handlePaginatedResult(result);
   }
+
+  /**
+   * Get last GRN by product ID and date
+   * ค้นหาใบรับสินค้าล่าสุดตาม ID สินค้าและวันที่
+   */
+  @MessagePattern({ cmd: 'product.get-last-purchase', service: 'product' })
+  async getLastPurchase(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'getLastPurchase', payload }, ProductsController.name);
+    const bu_code = payload.bu_code;
+    const user_id = payload.user_id;
+    this.productsService.userId = user_id;
+    this.productsService.bu_code = bu_code;
+    await this.productsService.initializePrismaService(bu_code, user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.productsService.getLastPurchase(payload.product_id, payload.date),
+    );
+    return this.handleResult(result);
+  }
 }

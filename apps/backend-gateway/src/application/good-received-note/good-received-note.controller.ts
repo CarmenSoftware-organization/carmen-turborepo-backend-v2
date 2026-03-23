@@ -19,8 +19,10 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { LastPurchaseResponseDto } from 'src/config/config_products/swagger/response';
 import {
   CreateGoodReceivedNoteSwaggerDto,
   UpdateGoodReceivedNoteSwaggerDto,
@@ -80,7 +82,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get pending Good Received Notes count',
-    description: 'Returns the number of goods deliveries awaiting receiving action by the current user. Used on dashboards to alert receiving staff about pending vendor deliveries that need to be inspected and recorded.',
+    description:
+      'Returns the number of goods deliveries awaiting receiving action by the current user. Used on dashboards to alert receiving staff about pending vendor deliveries that need to be inspected and recorded.',
     operationId: 'findAllPendingGoodReceivedNoteCount',
     tags: ['Pending Count', 'Procurement', 'Good Received Note'],
     responses: {
@@ -102,8 +105,75 @@ export class GoodReceivedNoteController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.goodReceivedNoteService.findAllPendingGoodReceivedNoteCount(
+    const result =
+      await this.goodReceivedNoteService.findAllPendingGoodReceivedNoteCount(
+        user_id,
+        version,
+      );
+    this.respond(res, result);
+  }
+
+  /**
+   * Get last GRN by product ID and receiving date
+   * ค้นหาใบรับสินค้าล่าสุดตาม ID สินค้าและวันที่รับ
+   */
+  @Get(':bu_code/products/:product_id/last-purchase/:date')
+  @UseGuards(new AppIdGuard('goodReceivedNote.findOneByProduct'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get last purchase by product and date',
+    description:
+      'Retrieves the last committed good received note detail for a product on or before the specified date. Used to check the most recent purchase price and receiving information.',
+    operationId: 'getLastPurchaseByProduct',
+    tags: ['Procurement', 'Good Received Note'],
+    parameters: [
+      {
+        name: 'product_id',
+        in: 'path',
+        required: true,
+        description: 'Product UUID',
+      },
+      {
+        name: 'date',
+        in: 'path',
+        required: true,
+        description: 'Receiving date (YYYY-MM-DD)',
+      },
+    ],
+    responses: {
+      200: { description: 'Last purchase retrieved successfully' },
+      404: { description: 'No purchase found for this product' },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Last purchase retrieved successfully',
+    type: LastPurchaseResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No purchase found for this product',
+  })
+  async getLastPurchaseByProduct(
+    @Param('product_id') product_id: string,
+    @Param('date') date: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'getLastPurchaseByProduct', product_id, date, version },
+      GoodReceivedNoteController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.goodReceivedNoteService.getLastPurchaseByProduct(
+      product_id,
+      date,
       user_id,
+      bu_code,
       version,
     );
     this.respond(res, result);
@@ -124,12 +194,23 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a Good Received Note by ID',
-    description: 'Retrieves the full details of a goods receiving record including received items, quantities, quality notes, and the associated purchase order. Used to verify what was delivered against what was ordered.',
+    description:
+      'Retrieves the full details of a goods receiving record including received items, quantities, quality notes, and the associated purchase order. Used to verify what was delivered against what was ordered.',
     operationId: 'findOneGoodReceivedNote',
     tags: ['Procurement', 'Good Received Note'],
     parameters: [
-      { name: 'id', in: 'path', required: true, description: 'Good Received Note ID' },
-      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+      {
+        name: 'id',
+        in: 'path',
+        required: true,
+        description: 'Good Received Note ID',
+      },
+      {
+        name: 'bu_code',
+        in: 'path',
+        required: true,
+        description: 'Business Unit Code',
+      },
     ],
     responses: {
       200: { description: 'The Good Received Note was successfully retrieved' },
@@ -170,14 +251,15 @@ export class GoodReceivedNoteController extends BaseHttpController {
    * @param version - API version / เวอร์ชัน API
    * @returns Paginated list of Good Received Notes / รายการใบรับสินค้าแบบแบ่งหน้า
    */
-  @Get(":bu_code/good-received-note/")
+  @Get(':bu_code/good-received-note/')
   @UseGuards(new AppIdGuard('goodReceivedNote.findAll'))
   @Serialize(GoodReceivedNoteListItemResponseSchema)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all Good Received Notes',
-    description: 'Lists all goods receiving records for the business unit with pagination and filtering. Used by receiving staff and inventory managers to track vendor deliveries, monitor receiving status, and reconcile with purchase orders.',
+    description:
+      'Lists all goods receiving records for the business unit with pagination and filtering. Used by receiving staff and inventory managers to track vendor deliveries, monitor receiving status, and reconcile with purchase orders.',
     operationId: 'findAllGoodReceivedNotes',
     tags: ['Procurement', 'Good Received Note'],
     responses: {
@@ -226,7 +308,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Scan PO',
-    description: 'Looks up a purchase order by scanning its QR code to begin the goods receiving process. Used by receiving staff at the loading dock to quickly pull up PO details when a delivery arrives.',
+    description:
+      'Looks up a purchase order by scanning its QR code to begin the goods receiving process. Used by receiving staff at the loading dock to quickly pull up PO details when a delivery arrives.',
     operationId: 'scanPO',
     tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
@@ -272,7 +355,10 @@ export class GoodReceivedNoteController extends BaseHttpController {
     this.respond(res, result);
   }
 
-  private ExtractPO_QRCode(qr_code: string): { bu_code: string; po_id: string } {
+  private ExtractPO_QRCode(qr_code: string): {
+    bu_code: string;
+    po_id: string;
+  } {
     const [bu_code, po_id] = qr_code.split('|');
     return { bu_code, po_id };
   }
@@ -285,14 +371,15 @@ export class GoodReceivedNoteController extends BaseHttpController {
    * @param version - API version / เวอร์ชัน API
    * @returns Created Good Received Note / ใบรับสินค้าที่สร้างแล้ว
    */
-  @Post(":bu_code/good-received-note")
+  @Post(':bu_code/good-received-note')
   @UseGuards(new AppIdGuard('goodReceivedNote.create'))
   @Serialize(GoodReceivedNoteMutationResponseSchema)
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a Good Received Note',
-    description: 'Records a new goods delivery from a vendor against a purchase order. Captures received quantities, quality inspection results, and any discrepancies between ordered and delivered items. This is the first step in updating inventory levels from vendor deliveries.',
+    description:
+      'Records a new goods delivery from a vendor against a purchase order. Captures received quantities, quality inspection results, and any discrepancies between ordered and delivered items. This is the first step in updating inventory levels from vendor deliveries.',
     operationId: 'createGoodReceivedNote',
     tags: ['Procurement', 'Good Received Note'],
     responses: {
@@ -303,7 +390,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiBody({
     type: CreateGoodReceivedNoteSwaggerDto,
     examples: {
-      'T02': {
+      T02: {
         summary: 'bu_code T02',
         value: {
           note: 'string',
@@ -332,7 +419,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
           good_received_note_detail: {
             add: [
               {
-                purchase_order_detail_id: '0a7b59a2-c041-446d-a82e-aae2640ceee9',
+                purchase_order_detail_id:
+                  '0a7b59a2-c041-446d-a82e-aae2640ceee9',
                 product_id: 'bb96415b-dff0-40ec-aa2f-2b4099418314',
                 location_id: '30053105-d69d-4389-9426-d82b7b87b7fc',
               },
@@ -409,11 +497,17 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Update a Good Received Note',
-    description: 'Modifies a goods receiving record to correct quantities, update quality notes, or adjust line items before the GRN is approved. Used when receiving staff need to amend details after the initial entry.',
+    description:
+      'Modifies a goods receiving record to correct quantities, update quality notes, or adjust line items before the GRN is approved. Used when receiving staff need to amend details after the initial entry.',
     operationId: 'updateGoodReceivedNote',
     tags: ['Procurement', 'Good Received Note'],
     parameters: [
-      { name: 'id', in: 'path', required: true, description: 'Good Received Note ID' },
+      {
+        name: 'id',
+        in: 'path',
+        required: true,
+        description: 'Good Received Note ID',
+      },
     ],
     responses: {
       200: { description: 'The Good Received Note was successfully updated' },
@@ -435,7 +529,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
       },
       'update-grn-with-details': {
         summary: 'Update GRN with add/update/remove details',
-        description: 'Add new detail items, update existing ones, and remove by ID.',
+        description:
+          'Add new detail items, update existing ones, and remove by ID.',
         value: {
           good_received_note_detail: {
             add: [
@@ -464,9 +559,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
                 total_amount: 1070,
               },
             ],
-            remove: [
-              { id: '<detail_uuid_to_remove>' },
-            ],
+            remove: [{ id: '<detail_uuid_to_remove>' }],
           },
         },
       },
@@ -519,11 +612,17 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a Good Received Note',
-    description: 'Removes a goods receiving record that was created in error or is no longer valid. Only applicable to GRNs that have not been approved, as approved GRNs have already updated inventory levels.',
+    description:
+      'Removes a goods receiving record that was created in error or is no longer valid. Only applicable to GRNs that have not been approved, as approved GRNs have already updated inventory levels.',
     operationId: 'deleteGoodReceivedNote',
     tags: ['Procurement', 'Good Received Note'],
     parameters: [
-      { name: 'id', in: 'path', required: true, description: 'Good Received Note ID' },
+      {
+        name: 'id',
+        in: 'path',
+        required: true,
+        description: 'Good Received Note ID',
+      },
     ],
     responses: {
       200: { description: 'The Good Received Note was successfully deleted' },
@@ -547,7 +646,12 @@ export class GoodReceivedNoteController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.goodReceivedNoteService.delete(id, user_id, bu_code, version);
+    const result = await this.goodReceivedNoteService.delete(
+      id,
+      user_id,
+      bu_code,
+      version,
+    );
     this.respond(res, result);
   }
 
@@ -564,7 +668,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Export a Good Received Note to Excel',
-    description: 'Exports a goods receiving record to Excel with all received items, quantities, and vendor details. Used for record-keeping, sharing with accounts payable for invoice matching, or vendor dispute resolution.',
+    description:
+      'Exports a goods receiving record to Excel with all received items, quantities, and vendor details. Used for record-keeping, sharing with accounts payable for invoice matching, or vendor dispute resolution.',
     operationId: 'exportGoodReceivedNote',
     tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
@@ -616,7 +721,12 @@ export class GoodReceivedNoteController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.goodReceivedNoteService.exportToExcel(id, user_id, bu_code, version);
+    const result = await this.goodReceivedNoteService.exportToExcel(
+      id,
+      user_id,
+      bu_code,
+      version,
+    );
 
     if (!result.isOk()) {
       this.respond(res, result);
@@ -625,7 +735,10 @@ export class GoodReceivedNoteController extends BaseHttpController {
 
     const { buffer, filename } = result.value;
 
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.setHeader('Content-Length', buffer.length);
     res.send(buffer);
@@ -668,7 +781,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
         description: 'The Good Received Note was successfully rejected',
       },
       400: {
-        description: 'The Good Received Note cannot be rejected due to invalid status',
+        description:
+          'The Good Received Note cannot be rejected due to invalid status',
       },
       404: {
         description: 'The Good Received Note was not found',
@@ -742,7 +856,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
         description: 'The Good Received Note was successfully approved',
       },
       400: {
-        description: 'The Good Received Note cannot be approved due to invalid status or missing details',
+        description:
+          'The Good Received Note cannot be approved due to invalid status or missing details',
       },
       404: {
         description: 'The Good Received Note was not found',
@@ -791,13 +906,19 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get all details for a Good Received Note',
-    description: 'Lists all received items on a GRN including product details, ordered vs. received quantities, and inspection notes. Used to review what was actually delivered and compare against the purchase order.',
+    description:
+      'Lists all received items on a GRN including product details, ordered vs. received quantities, and inspection notes. Used to review what was actually delivered and compare against the purchase order.',
     operationId: 'findAllGRNDetails',
     tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
-      { name: 'id', in: 'path', required: true, description: 'Good Received Note ID' },
+      {
+        name: 'id',
+        in: 'path',
+        required: true,
+        description: 'Good Received Note ID',
+      },
     ],
     responses: {
       200: { description: 'GRN details retrieved successfully' },
@@ -818,7 +939,12 @@ export class GoodReceivedNoteController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.goodReceivedNoteService.findDetailsByGrnId(id, user_id, bu_code, version);
+    const result = await this.goodReceivedNoteService.findDetailsByGrnId(
+      id,
+      user_id,
+      bu_code,
+      version,
+    );
     this.respond(res, result);
   }
 
@@ -836,14 +962,25 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a specific GRN detail by ID',
-    description: 'Retrieves a single received item line from a GRN with full quantity, pricing, and quality details. Used to inspect a specific delivery item when resolving quantity or quality discrepancies.',
+    description:
+      'Retrieves a single received item line from a GRN with full quantity, pricing, and quality details. Used to inspect a specific delivery item when resolving quantity or quality discrepancies.',
     operationId: 'findGRNDetailById',
     tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
-      { name: 'id', in: 'path', required: true, description: 'Good Received Note ID' },
-      { name: 'detail_id', in: 'path', required: true, description: 'GRN Detail ID' },
+      {
+        name: 'id',
+        in: 'path',
+        required: true,
+        description: 'Good Received Note ID',
+      },
+      {
+        name: 'detail_id',
+        in: 'path',
+        required: true,
+        description: 'GRN Detail ID',
+      },
     ],
     responses: {
       200: { description: 'GRN detail retrieved successfully' },
@@ -865,7 +1002,12 @@ export class GoodReceivedNoteController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.goodReceivedNoteService.findDetailById(detailId, user_id, bu_code, version);
+    const result = await this.goodReceivedNoteService.findDetailById(
+      detailId,
+      user_id,
+      bu_code,
+      version,
+    );
     this.respond(res, result);
   }
 
@@ -884,14 +1026,25 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Delete a GRN detail',
-    description: 'Removes a line item from a draft GRN when an item was recorded in error or was not actually part of the delivery. Only applicable before the GRN is approved.',
+    description:
+      'Removes a line item from a draft GRN when an item was recorded in error or was not actually part of the delivery. Only applicable before the GRN is approved.',
     operationId: 'deleteGRNDetail',
     tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
-      { name: 'id', in: 'path', required: true, description: 'Good Received Note ID' },
-      { name: 'detail_id', in: 'path', required: true, description: 'GRN Detail ID' },
+      {
+        name: 'id',
+        in: 'path',
+        required: true,
+        description: 'Good Received Note ID',
+      },
+      {
+        name: 'detail_id',
+        in: 'path',
+        required: true,
+        description: 'GRN Detail ID',
+      },
     ],
     responses: {
       200: { description: 'GRN detail deleted successfully' },
@@ -914,7 +1067,12 @@ export class GoodReceivedNoteController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.goodReceivedNoteService.deleteDetail(detailId, user_id, bu_code, version);
+    const result = await this.goodReceivedNoteService.deleteDetail(
+      detailId,
+      user_id,
+      bu_code,
+      version,
+    );
     this.respond(res, result);
   }
 
@@ -933,14 +1091,25 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Manual check PO (return new GRN)',
-    description: 'Looks up a purchase order by its document number to start the goods receiving process. Used when receiving staff need to manually enter a PO number (instead of scanning a QR code) to begin recording a delivery.',
+    description:
+      'Looks up a purchase order by its document number to start the goods receiving process. Used when receiving staff need to manually enter a PO number (instead of scanning a QR code) to begin recording a delivery.',
     operationId: 'manualCheckPO',
     tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
-      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
-      { name: 'po_no', in: 'path', required: true, description: 'Purchase Order Number' },
+      {
+        name: 'bu_code',
+        in: 'path',
+        required: true,
+        description: 'Business Unit Code',
+      },
+      {
+        name: 'po_no',
+        in: 'path',
+        required: true,
+        description: 'Purchase Order Number',
+      },
     ],
     responses: {
       200: { description: 'GRN retrieved successfully' },
@@ -961,7 +1130,12 @@ export class GoodReceivedNoteController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.goodReceivedNoteService.findByManualPO(po_no, user_id, bu_code, version);
+    const result = await this.goodReceivedNoteService.findByManualPO(
+      po_no,
+      user_id,
+      bu_code,
+      version,
+    );
     this.respond(res, result);
   }
 
@@ -980,14 +1154,25 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Confirm a Good Received Note',
-    description: 'Confirms the goods receiving record from the mobile app, finalizing the delivery inspection. Used by receiving staff on-site to mark a delivery as fully checked and ready for inventory posting.',
+    description:
+      'Confirms the goods receiving record from the mobile app, finalizing the delivery inspection. Used by receiving staff on-site to mark a delivery as fully checked and ready for inventory posting.',
     operationId: 'confirmGoodReceivedNote',
     tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
-      { name: 'id', in: 'path', required: true, description: 'Good Received Note ID' },
-      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+      {
+        name: 'id',
+        in: 'path',
+        required: true,
+        description: 'Good Received Note ID',
+      },
+      {
+        name: 'bu_code',
+        in: 'path',
+        required: true,
+        description: 'Business Unit Code',
+      },
     ],
     responses: {
       200: { description: 'GRN confirmed successfully' },
@@ -1011,7 +1196,13 @@ export class GoodReceivedNoteController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.goodReceivedNoteService.confirm(id, data, user_id, bu_code, version);
+    const result = await this.goodReceivedNoteService.confirm(
+      id,
+      data,
+      user_id,
+      bu_code,
+      version,
+    );
     this.respond(res, result);
   }
 
@@ -1028,14 +1219,25 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get GRN comments',
-    description: 'Retrieves all comments and notes attached to a goods receiving record. Used by receiving staff and managers to review communication about delivery issues, quality concerns, or special handling instructions.',
+    description:
+      'Retrieves all comments and notes attached to a goods receiving record. Used by receiving staff and managers to review communication about delivery issues, quality concerns, or special handling instructions.',
     operationId: 'getGRNComments',
     tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
-      { name: 'id', in: 'path', required: true, description: 'Good Received Note ID' },
-      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+      {
+        name: 'id',
+        in: 'path',
+        required: true,
+        description: 'Good Received Note ID',
+      },
+      {
+        name: 'bu_code',
+        in: 'path',
+        required: true,
+        description: 'Business Unit Code',
+      },
     ],
     responses: {
       200: { description: 'Comments retrieved successfully' },
@@ -1056,7 +1258,12 @@ export class GoodReceivedNoteController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.goodReceivedNoteService.getComments(id, user_id, bu_code, version);
+    const result = await this.goodReceivedNoteService.getComments(
+      id,
+      user_id,
+      bu_code,
+      version,
+    );
     this.respond(res, result);
   }
 
@@ -1074,14 +1281,25 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create GRN comment',
-    description: 'Adds a comment or note to a goods receiving record for documenting delivery issues, quality observations, or communication between receiving staff and managers.',
+    description:
+      'Adds a comment or note to a goods receiving record for documenting delivery issues, quality observations, or communication between receiving staff and managers.',
     operationId: 'createGRNComment',
     tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
-      { name: 'id', in: 'path', required: true, description: 'Good Received Note ID' },
-      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+      {
+        name: 'id',
+        in: 'path',
+        required: true,
+        description: 'Good Received Note ID',
+      },
+      {
+        name: 'bu_code',
+        in: 'path',
+        required: true,
+        description: 'Business Unit Code',
+      },
     ],
     responses: {
       201: { description: 'Comment created successfully' },
@@ -1105,7 +1323,13 @@ export class GoodReceivedNoteController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.goodReceivedNoteService.createComment(id, data, user_id, bu_code, version);
+    const result = await this.goodReceivedNoteService.createComment(
+      id,
+      data,
+      user_id,
+      bu_code,
+      version,
+    );
     this.respond(res, result, HttpStatus.CREATED);
   }
 }

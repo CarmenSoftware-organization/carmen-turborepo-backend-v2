@@ -73,7 +73,9 @@
       "product.create",
       "product.update",
       "product.delete",
-      "currencies.findAllActive"
+      "currencies.findAllActive",
+      "goodReceivedNote.findOneByProduct",
+      "priceList.priceCompare"
     ]
   }
 ]

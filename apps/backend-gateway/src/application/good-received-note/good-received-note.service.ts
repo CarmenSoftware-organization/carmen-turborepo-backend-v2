@@ -710,4 +710,37 @@ if (response.response.status !== HttpStatus.OK) {
 
     return Result.ok(response.data);
   }
+
+  /**
+   * Get last GRN by product ID and date
+   * ค้นหาใบรับสินค้าล่าสุดตาม ID สินค้าและวันที่
+   */
+  async getLastPurchaseByProduct(
+    product_id: string,
+    date: string,
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'getLastPurchaseByProduct', product_id, date, user_id, bu_code, version },
+      GoodReceivedNoteService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      { cmd: 'product.get-last-purchase', service: 'product' },
+      { product_id, date, user_id, bu_code, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
 }
