@@ -101,3 +101,6 @@ SETUP_GUIDE.md
 
 # Environment config exports
 folder-env/
+
+# Carmen service logs/pids
+.carmen/

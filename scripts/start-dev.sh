@@ -40,7 +40,7 @@ SERVICE_CRONJOB="cronjob|apps/micro-cronjob|bun dist/server.js|bun"
 # External services (outside monorepo)
 CARMEN_DEV_DIR="$HOME"
 SERVICE_REPORT="report|$CARMEN_DEV_DIR/micro-report|go run ./cmd/server|go"
-SERVICE_REPORT_RENDER="report-render|$CARMEN_DEV_DIR/micro-report-render-dotnet|dotnet run|dotnet"
+SERVICE_REPORT_RENDER="report-render|$CARMEN_DEV_DIR/report-render|dotnet run|dotnet"
 
 CORE_LIST="gateway business cluster keycloak"
 ALL_LIST="gateway business cluster keycloak file notification cronjob report report-render"
