@@ -1692,32 +1692,58 @@ export class AuthService {
           );
 
           let default_currency = undefined;
+          let current_period = undefined;
 
-          if (item.tb_business_unit.default_currency_id) {
-            const tenant = await this.tenantService.getdb_connection(
-              id,
-              item.tb_business_unit.id,
-            );
+          const tenant = await this.tenantService.getdb_connection(
+            id,
+            item.tb_business_unit.id,
+          );
 
+          if (tenant) {
             const prismaTenant = await this.prismaTenant(
               tenant.tenant_id,
               tenant.db_connection,
             );
 
-            const currency = await prismaTenant.tb_currency.findFirst({
-              where: {
-                id: item.tb_business_unit.default_currency_id,
-              },
-              select: {
-                code: true,
-                name: true,
-                symbol: true,
-                description: true,
-                decimal_places: true,
-              },
-            });
+            if (item.tb_business_unit.default_currency_id) {
+              const currency = await prismaTenant.tb_currency.findFirst({
+                where: {
+                  id: item.tb_business_unit.default_currency_id,
+                },
+                select: {
+                  code: true,
+                  name: true,
+                  symbol: true,
+                  description: true,
+                  decimal_places: true,
+                },
+              });
 
-            default_currency = currency;
+              default_currency = currency;
+            }
+
+            // Fetch current period (open or locked)
+            try {
+              const period = await prismaTenant.tb_period.findFirst({
+                where: {
+                  status: { in: ['open', 'locked'] },
+                  deleted_at: null,
+                },
+                orderBy: [{ fiscal_year: 'asc' }, { fiscal_month: 'asc' }],
+                select: {
+                  id: true,
+                  period: true,
+                  fiscal_year: true,
+                  fiscal_month: true,
+                  start_at: true,
+                  end_at: true,
+                  status: true,
+                },
+              });
+              current_period = period || undefined;
+            } catch {
+              // Period query failed — skip silently
+            }
           }
 
           data.push({
@@ -1730,6 +1756,7 @@ export class AuthService {
             is_active: item.is_active,
             department: user_department,
             hod_department: hod_department,
+            current_period: current_period,
             config: {
               calculation_method: item.tb_business_unit.calculation_method,
               default_currency_id: item.tb_business_unit.default_currency_id,
