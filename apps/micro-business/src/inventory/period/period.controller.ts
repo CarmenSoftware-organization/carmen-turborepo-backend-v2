@@ -127,6 +127,24 @@ export class PeriodController extends BaseMicroserviceController {
   }
 
   /**
+   * Find the current inventory period (open or locked)
+   * ค้นหางวดสินค้าคงคลังปัจจุบัน (สถานะเปิดหรือล็อค)
+   * @param payload - Contains user_id, tenant_id / ประกอบด้วย user_id, tenant_id
+   * @returns Current inventory period / งวดสินค้าคงคลังปัจจุบัน
+   */
+  @MessagePattern({ cmd: 'inventory-period.findCurrent', service: 'inventory-period' })
+  async findCurrent(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'findCurrent', payload }, PeriodController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.periodService.findCurrent(user_id, tenant_id),
+    );
+    return this.handleResult(result);
+  }
+
+  /**
    * Delete an inventory period
    * ลบงวดสินค้าคงคลัง
    * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id

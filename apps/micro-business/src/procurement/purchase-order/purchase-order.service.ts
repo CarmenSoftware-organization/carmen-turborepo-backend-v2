@@ -1991,8 +1991,10 @@ export class PurchaseOrderService {
         delivery_point_id: true,
         delivery_point_name: true,
         product_id: true,
+        product_code: true,
         product_name: true,
         product_local_name: true,
+        product_sku: true,
         inventory_unit_id: true,
         inventory_unit_name: true,
         description: true,
@@ -2061,7 +2063,7 @@ export class PurchaseOrderService {
     const groupedData = new Map<string, Record<string, any>>();
 
     for (const prDetail of prDetails) {
-      if (!prDetail.vendor_id || !prDetail.currency_id) {
+      if (!prDetail.vendor_id || !prDetail.currency_id || !prDetail.product_id) {
         continue;
       }
 
@@ -2108,8 +2110,8 @@ export class PurchaseOrderService {
           pr_id: prDetail.purchase_request_id,
           pr_no: prDetail.tb_purchase_request?.pr_no,
           order_qty: Number(prDetail.approved_qty) || 0,
-          order_unit_id: prDetail.approved_unit_id,
-          order_unit_name: prDetail.approved_unit_name,
+          order_unit_id: prDetail.approved_unit_id || prDetail.inventory_unit_id,
+          order_unit_name: prDetail.approved_unit_name || prDetail.inventory_unit_name,
           order_unit_conversion_factor: Number(prDetail.approved_unit_conversion_factor) || 1,
           order_base_qty: Number(prDetail.approved_base_qty) || 0,
           location_id: prDetail.location_id,
@@ -2125,10 +2127,12 @@ export class PurchaseOrderService {
         group.items.push({
           sequence: group.items.length + 1,
           product_id: prDetail.product_id,
+          product_code: prDetail.product_code,
           product_name: prDetail.product_name,
           product_local_name: prDetail.product_local_name,
-          order_unit_id: prDetail.approved_unit_id,
-          order_unit_name: prDetail.approved_unit_name,
+          product_sku: prDetail.product_sku,
+          order_unit_id: prDetail.approved_unit_id || prDetail.inventory_unit_id,
+          order_unit_name: prDetail.approved_unit_name || prDetail.inventory_unit_name,
           order_unit_conversion_factor: Number(prDetail.approved_unit_conversion_factor) || 1,
           order_qty: Number(prDetail.approved_qty) || 0,
           base_unit_id: prDetail.inventory_unit_id,
@@ -2155,8 +2159,8 @@ export class PurchaseOrderService {
               pr_id: prDetail.purchase_request_id,
               pr_no: prDetail.tb_purchase_request?.pr_no,
               order_qty: Number(prDetail.approved_qty) || 0,
-              order_unit_id: prDetail.approved_unit_id,
-              order_unit_name: prDetail.approved_unit_name,
+              order_unit_id: prDetail.approved_unit_id || prDetail.inventory_unit_id,
+              order_unit_name: prDetail.approved_unit_name || prDetail.inventory_unit_name,
               order_unit_conversion_factor: Number(prDetail.approved_unit_conversion_factor) || 1,
               order_base_qty: Number(prDetail.approved_base_qty) || 0,
               location_id: prDetail.location_id,

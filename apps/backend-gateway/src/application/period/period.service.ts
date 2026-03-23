@@ -209,6 +209,41 @@ export class PeriodService {
   }
 
   /**
+   * Find the current period (open or locked)
+   * ค้นหางวดปัจจุบัน (สถานะเปิดหรือล็อค)
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Tenant ID / รหัส tenant
+   * @param version - API version / เวอร์ชัน API
+   * @returns Current period / งวดปัจจุบัน
+   */
+  async findCurrent(
+    user_id: string,
+    tenant_id: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findCurrent', user_id, tenant_id, version },
+      PeriodService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      { cmd: 'inventory-period.findCurrent', service: 'inventory-period' },
+      { user_id, tenant_id, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
+  /**
    * Delete a fiscal/accounting period
    * ลบงวด/รอบบัญชี
    * @param id - Period ID / รหัสงวด

@@ -48,6 +48,49 @@ export class PeriodController extends BaseHttpController {
   }
 
   /**
+   * Find the current period (status is open or locked)
+   * ค้นหางวดปัจจุบัน (สถานะเปิดหรือล็อค)
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param version - API version / เวอร์ชัน API
+   * @returns Current period / งวดปัจจุบัน
+   */
+  @Get(':bu_code/period/current')
+  @UseGuards(new AppIdGuard('period.findOne'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get current period',
+    description: 'Retrieves the current fiscal/accounting period with status open or locked. Returns the earliest open/locked period ordered by fiscal year and month.',
+    operationId: 'findCurrentPeriod',
+    tags: ['Inventory', 'Period'],
+    responses: {
+      200: { description: 'Current period retrieved successfully' },
+      404: { description: 'No current period found' },
+    },
+  })
+  async findCurrent(
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'findCurrent', version },
+      PeriodController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.periodService.findCurrent(
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
    * Find a period by ID
    * ค้นหางวด/รอบบัญชีรายการเดียวตาม ID
    * @param id - Period ID / รหัสงวด

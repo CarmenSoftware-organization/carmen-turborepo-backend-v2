@@ -428,6 +428,39 @@ export class PeriodService {
   }
 
   /**
+   * Find the current period (status is open or locked)
+   * ค้นหางวดปัจจุบัน (สถานะเปิดหรือล็อค)
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Current period / งวดปัจจุบัน
+   */
+  @TryCatch
+  async findCurrent(user_id: string, tenant_id: string): Promise<Result<unknown>> {
+    this.logger.debug({ function: "findCurrent", user_id, tenant_id }, PeriodService.name);
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) {
+      return Result.error("Tenant not found", ErrorCode.NOT_FOUND);
+    }
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    const period = await prisma.tb_period.findFirst({
+      where: {
+        status: { in: [enum_period_status.open, enum_period_status.locked] },
+        deleted_at: null,
+      },
+      orderBy: [{ fiscal_year: "asc" }, { fiscal_month: "asc" }],
+    });
+
+    if (!period) {
+      return Result.error("No current period found", ErrorCode.NOT_FOUND);
+    }
+
+    return Result.ok(period);
+  }
+
+  /**
    * Soft delete a period
    * ลบงวดแบบซอฟต์ดีลีท
    * @param id - Period ID / ID งวด

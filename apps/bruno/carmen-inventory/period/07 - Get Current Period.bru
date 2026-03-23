@@ -1,0 +1,19 @@
+meta {
+  name: 07 - Get Current Period
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/period/current
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
