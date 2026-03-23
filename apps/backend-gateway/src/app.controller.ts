@@ -1,21 +1,25 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Header } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { BackendLogger } from './common/helpers/backend.logger';
 import { ApiHeaderRequiredXAppId } from './common/decorator/x-app-id.decorator';
+import * as httpdocs from './httpdocs/index';
 
 @Controller()
 @ApiTags('App')
 @ApiHeaderRequiredXAppId()
 export class AppController {
-  private readonly logger: BackendLogger = new BackendLogger(AppController.name);
+  private readonly logger: BackendLogger = new BackendLogger(
+    AppController.name,
+  );
   constructor(private readonly appService: AppService) {}
 
   @Get()
   @ApiExcludeEndpoint(true)
-  getHello(): string {
-    this.logger.debug({ function: 'getHello' }, AppController.name);
-    return this.appService.getHello();
+  @Header('Content-Type', 'text/html')
+  getWelcomeHtml(): string {
+    this.logger.debug({ function: 'getWelcomeHtml' }, AppController.name);
+    return httpdocs.defaultRootHtml();
   }
 
   @Get('health')
