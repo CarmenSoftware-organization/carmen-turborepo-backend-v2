@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: {{host}}/api/{{bu_code}}/spot-check/current
+  url: {{host}}/api/{{bu_code}}/spot-check/current?include_not_count=false
   body: none
   auth: bearer
+}
+
+params:query {
+  include_not_count: false
 }
 
 headers {

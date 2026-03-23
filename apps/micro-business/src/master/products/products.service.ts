@@ -370,82 +370,70 @@ export class ProductsService {
     );
 
     const pagination = getPaginationParams(q.page, q.perpage);
-    const data = await this.prismaService.tb_product.findMany({
-      where: q.where(),
-      orderBy: q.orderBy(),
-      ...pagination,
-      include: {
-        tb_unit: {
-          select: { id: true, name: true },
-        },
-      },
-    });
+    const whereClause = q.where();
 
-    const products = await Promise.all(
-      data.map(async (product) => {
-        let productItemGroup;
-        let productSubCategory;
-        let productCategory;
-
-        if (product.product_item_group_id) {
-          productItemGroup = await this.prismaService.tb_product_item_group.findFirst({
-            where: {
-              id: product.product_item_group_id,
-            },
-          });
-
-          if (productItemGroup) {
-            productSubCategory =
-              await this.prismaService.tb_product_sub_category.findFirst({
-                where: {
-                  id: productItemGroup.product_subcategory_id,
-                },
-              });
-
-            if (productSubCategory) {
-              productCategory = await this.prismaService.tb_product_category.findFirst(
-                {
-                  where: {
-                    id: productSubCategory.product_category_id,
+    const [data, total] = await Promise.all([
+      this.prismaService.tb_product.findMany({
+        where: whereClause,
+        orderBy: q.orderBy(),
+        ...pagination,
+        select: {
+          id: true,
+          code: true,
+          name: true,
+          local_name: true,
+          description: true,
+          product_status_type: true,
+          inventory_unit_id: true,
+          inventory_unit_name: true,
+          tb_unit: {
+            select: { id: true, name: true },
+          },
+          tb_product_item_group: {
+            select: {
+              id: true,
+              name: true,
+              tb_product_sub_category: {
+                select: {
+                  id: true,
+                  name: true,
+                  tb_product_category: {
+                    select: { id: true, name: true },
                   },
                 },
-              );
-            }
-          }
-        }
-
-        return {
-          id: product.id,
-          code: product.code,
-          name: product.name,
-          local_name: product.local_name,
-          description: product.description,
-          product_status_type: product.product_status_type,
-          inventory_unit_id: product.inventory_unit_id,
-          inventory_unit_name: product.inventory_unit_name || product.tb_unit?.name,
-          product_item_group: productItemGroup
-            ? {
-              id: productItemGroup.id,
-              name: productItemGroup.name,
-            }
-            : {},
-          product_sub_category: productSubCategory
-            ? {
-              id: productSubCategory.id,
-              name: productSubCategory.name,
-            }
-            : {},
-          product_category: productCategory
-            ? {
-              id: productCategory.id,
-              name: productCategory.name,
-            }
-            : {},
-        };
+              },
+            },
+          },
+        },
       }),
-    );
+      this.prismaService.tb_product.count({ where: whereClause }),
+    ]);
 
-    const total = await this.prismaService.tb_product.count({ where: q.where() });
+    const products = data.map((product) => {
+      const itemGroup = product.tb_product_item_group;
+      const subCategory = itemGroup?.tb_product_sub_category;
+      const category = subCategory?.tb_product_category;
+
+      return {
+        id: product.id,
+        code: product.code,
+        name: product.name,
+        local_name: product.local_name,
+        description: product.description,
+        product_status_type: product.product_status_type,
+        inventory_unit_id: product.inventory_unit_id,
+        inventory_unit_name: product.inventory_unit_name || product.tb_unit?.name,
+        product_item_group: itemGroup
+          ? { id: itemGroup.id, name: itemGroup.name }
+          : {},
+        product_sub_category: subCategory
+          ? { id: subCategory.id, name: subCategory.name }
+          : {},
+        product_category: category
+          ? { id: category.id, name: category.name }
+          : {},
+      };
+    });
 
     // Serialize response data
     const serializedProducts = products.map((product) => ProductListItemResponseSchema.parse(product));

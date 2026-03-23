@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: {{host}}/api/config/{{bu_code}}/products
+  url: {{host}}/api/config/{{bu_code}}/products?search=Ground
   body: none
   auth: bearer
+}
+
+params:query {
+  search: Ground
 }
 
 headers {
