@@ -177,28 +177,6 @@ export class PurchaseOrderService {
         doc_version: true,
         created_at: true,
         created_by_id: true,
-        tb_vendor: {
-          select: {
-            id: true,
-            name: true,
-            code: true,
-          },
-        },
-        tb_currency_tb_purchase_order_currency_idTotb_currency: {
-          select: {
-            id: true,
-            name: true,
-            code: true,
-            symbol: true,
-          },
-        },
-        tb_credit_term: {
-          select: {
-            id: true,
-            name: true,
-            value: true,
-          },
-        },
         tb_purchase_order_detail: {
           select: {
             id: true,
@@ -301,12 +279,6 @@ export class PurchaseOrderService {
     const transformedData = {
       ...purchaseOrder,
       role,
-      vendor: purchaseOrder.tb_vendor,
-      currency: purchaseOrder.tb_currency_tb_purchase_order_currency_idTotb_currency,
-      //credit_term: purchaseOrder.tb_credit_term?.value,
-      credit_term_value: purchaseOrder.tb_credit_term?.value,
-      credit_term_id: purchaseOrder.tb_credit_term?.id,
-      credit_term_name: purchaseOrder.tb_credit_term?.name,
       total_qty: Number(purchaseOrder.total_qty),
       total_price: Number(purchaseOrder.total_price),
       total_tax: Number(purchaseOrder.total_tax),
@@ -348,10 +320,7 @@ export class PurchaseOrderService {
       })),
     };
 
-    // Remove the original nested relations
-    delete (transformedData as Record<string, unknown>).tb_vendor;
-    delete (transformedData as Record<string, unknown>).tb_currency_tb_purchase_order_currency_idTotb_currency;
-    delete (transformedData as Record<string, unknown>).tb_credit_term;
+    // Remove the original nested relation
     delete (transformedData as Record<string, unknown>).tb_purchase_order_detail;
 
     const serializedPurchaseOrder = PurchaseOrderDetailResponseSchema.parse(transformedData);
