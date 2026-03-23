@@ -7,6 +7,7 @@ import * as fs from 'fs';
 import { envConfig } from 'src/libs/config.env';
 import { winstonLogger } from './common/helpers/backend.logger';
 import { apiReference } from '@scalar/nestjs-api-reference';
+import { APP_VERSION } from './version';
 import { WinstonModule } from 'nest-winston';
 import { BackendLogger } from './common/helpers/backend.logger';
 import { ExceptionFilter } from './exception/exception.fillter';
@@ -50,7 +51,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('CarmenSoftware')
     .setDescription('CarmenSoftware API Gateway')
-    .setVersion('1.0.1')
+    .setVersion(APP_VERSION)
     .addServer(`http://localhost:${gatewayPort}`, 'local environment (http)')
     .addServer(
       `https://localhost:${gatewayPortHttps}`,
@@ -109,7 +110,7 @@ async function bootstrap() {
         content: document_http,
       },
       name: 'CarmenSoftware API Gateway',
-      version: '1.0.1',
+      version: APP_VERSION,
     }),
   );
 
@@ -120,7 +121,7 @@ async function bootstrap() {
         content: document_https,
       },
       name: 'CarmenSoftware API Gateway',
-      version: '1.0.1',
+      version: APP_VERSION,
     }),
   );
 

@@ -1,6 +1,6 @@
 {
   "name": "backend-gateway",
-  "version": "0.0.1",
+  "version": "1.0.2",
   "description": "",
   "author": "",
   "private": true,
@@ -10,7 +10,8 @@
     "dev:gateway": "nest start --watch",
     "dev:prod": "nest start",
     "prod:gateway": "nest start",
-    "build": "nest build",
+    "version:bump": "bun run scripts/bump-version.ts",
+    "build": "bun run version:bump && nest build",
     "build:gateway": "nest build --project gateway",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
