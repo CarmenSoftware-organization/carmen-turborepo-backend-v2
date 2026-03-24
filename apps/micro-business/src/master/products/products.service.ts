@@ -189,11 +189,16 @@ export class ProductsService {
             productLocation.map((location) => ({
               id: location.id,
               location_id: location.location_id,
+              location_code: location.tb_location?.code,
               location_name: location.tb_location?.name,
               location_type: location.tb_location?.location_type,
               is_active: location.tb_location?.is_active,
               delivery_point_id: location.tb_location?.delivery_point_id,
               delivery_point: location.tb_location?.delivery_point_name,
+              min_qty: location.min_qty != null ? Number(location.min_qty) : null,
+              max_qty: location.max_qty != null ? Number(location.max_qty) : null,
+              reorder_qty: location.re_order_qty != null ? Number(location.re_order_qty) : null,
+              par_qty: location.par_qty != null ? Number(location.par_qty) : null,
             })) || [],
           order_units:
             productOrderUnit.map((orderUnit) => ({
@@ -769,29 +774,55 @@ export class ProductsService {
     }
 
     const tx = await this.prismaService.$transaction(async (prisma) => {
-      const productObject: IUpdateProduct = { ...data };
+      const productObject: Record<string, unknown> = { ...data };
+
+      // Remove fields that are not direct tb_product columns
       delete productObject.id;
-      if (data.inventory_unit_id) {
-        productObject.inventory_unit_name = inventoryUnitName;
-      }
-      const info = { ...productObject.product_info as IProductInfo }
       delete productObject.product_info;
       delete productObject.locations;
       delete productObject.order_units;
       delete productObject.ingredient_units;
 
-      if (Object.keys(productObject).length > 0) {
-        productObject.id = data.id;
+      // Extract relation IDs — Prisma update requires connect syntax
+      const inventoryUnitId = productObject.inventory_unit_id as string | undefined;
+      const productItemGroupId = productObject.product_item_group_id as string | undefined;
+      const taxProfileId = productObject.tax_profile_id as string | undefined;
+      delete productObject.inventory_unit_id;
+      delete productObject.product_item_group_id;
+      delete productObject.tax_profile_id;
 
+      if (data.inventory_unit_id) {
+        productObject.inventory_unit_name = inventoryUnitName;
+      }
+
+      // Extract product_info fields that are direct columns on tb_product
+      const info = data.product_info ?? {};
+      const productInfoFields: Record<string, unknown> = {};
+      if ('is_used_in_recipe' in info) productInfoFields.is_used_in_recipe = info.is_used_in_recipe;
+      if ('is_sold_directly' in info) productInfoFields.is_sold_directly = info.is_sold_directly;
+      if ('barcode' in info) productInfoFields.barcode = info.barcode;
+      if ('sku' in info) productInfoFields.sku = info.sku;
+      if ('price_deviation_limit' in info) productInfoFields.price_deviation_limit = info.price_deviation_limit;
+      if ('qty_deviation_limit' in info) productInfoFields.qty_deviation_limit = info.qty_deviation_limit;
+      if ('tax_profile_name' in info) productInfoFields.tax_profile_name = info.tax_profile_name;
+      if ('tax_profile_rate' in info) productInfoFields.tax_profile_rate = info.tax_profile_rate;
+      if ('info' in info) productInfoFields.info = info.info ? { attributes: info.info } : undefined;
+
+      const updateData: Record<string, unknown> = {
+        ...productObject,
+        ...productInfoFields,
+        ...(inventoryUnitId && { tb_unit: { connect: { id: inventoryUnitId } } }),
+        ...(productItemGroupId && { tb_product_item_group: { connect: { id: productItemGroupId } } }),
+        ...(taxProfileId && { tb_tax_profile: { connect: { id: taxProfileId } } }),
+        updated_by_id: this.userId,
+      };
+
+      if (Object.keys(updateData).length > 1) {
         await prisma.tb_product.update({
           where: {
             id: data.id,
           },
-          data: {
-            ...productObject,
-            ...info,
-            updated_by_id: this.userId,
-          },
+          data: updateData,
         });
       }
 
@@ -858,7 +889,7 @@ export class ProductsService {
       }
 
       if (data.order_units) {
-        if (data.order_units.add.length > 0) {
+        if (data.order_units.add?.length > 0) {
           const productOrderUnitAddObj = await Promise.all(
             data.order_units.add.map(async (orderUnit) => {
               const fromUnit = await prisma.tb_unit.findFirst({
@@ -892,7 +923,7 @@ export class ProductsService {
           });
         }
 
-        if (data.order_units.update.length > 0) {
+        if (data.order_units.update?.length > 0) {
           await Promise.all(
             data.order_units.update.map(async (orderUnit) => {
               const productOrderUnit =
@@ -934,7 +965,7 @@ export class ProductsService {
           );
         }
 
-        if (data.order_units.remove.length > 0) {
+        if (data.order_units.remove?.length > 0) {
           const productOrderUnitIds = data.order_units?.remove?.map(
             (orderUnit) => orderUnit.product_order_unit_id,
           );
@@ -946,7 +977,7 @@ export class ProductsService {
       }
 
       if (data.ingredient_units) {
-        if (data.ingredient_units.add.length > 0) {
+        if (data.ingredient_units.add?.length > 0) {
           const productIngredientUnitObj = await Promise.all(
             data.ingredient_units.add.map(async (ingredientUnit) => {
               const fromUnit = await prisma.tb_unit.findFirst({
@@ -984,7 +1015,7 @@ export class ProductsService {
           });
         }
 
-        if (data.ingredient_units.update.length > 0) {
+        if (data.ingredient_units.update?.length > 0) {
           await Promise.all(
             data.ingredient_units.update.map(async (ingredientUnit) => {
               const productIngredientUnit =
@@ -1031,7 +1062,7 @@ export class ProductsService {
           );
         }
 
-        if (data.ingredient_units.remove.length > 0) {
+        if (data.ingredient_units.remove?.length > 0) {
           const productIngredientUnitIds = data.ingredient_units?.remove?.map(
             (ingredientUnit) => ingredientUnit.product_ingredient_unit_id,
           );

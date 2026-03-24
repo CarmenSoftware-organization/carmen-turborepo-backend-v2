@@ -87,10 +87,10 @@ export const ProductCreate = z.object({
     .object({
       add: z.array(z.object({
         location_id: z.string(),
-        min_qty: z.number().optional(),
-        max_qty: z.number().optional(),
-        re_order_qty: z.number().optional(),
-        par_qty: z.number().optional(),
+        min_qty: z.number().nullable().optional(),
+        max_qty: z.number().nullable().optional(),
+        re_order_qty: z.number().nullable().optional(),
+        par_qty: z.number().nullable().optional(),
       })).optional(),
     })
     .optional(),
@@ -147,13 +147,14 @@ export const ProductUpdate = z.object({
     .object({
       is_used_in_recipe: z.boolean().optional(),
       is_sold_directly: z.boolean().optional(),
-      barcode: z.string().optional(),
-      sku: z.string().optional(),
-      price_deviation_limit: z.number().optional(),
-      qty_deviation_limit: z.number().optional(),
-      tax_profile_id: z.string().optional(),
-      tax_profile_name: z.string().optional(),
-      tax_profile_rate: z.number().optional(),
+      barcode: z.string().nullable().optional(),
+      sku: z.string().nullable().optional(),
+      price: z.number().nullable().optional(),
+      price_deviation_limit: z.number().nullable().optional(),
+      qty_deviation_limit: z.number().nullable().optional(),
+      tax_profile_id: z.string().nullable().optional(),
+      tax_profile_name: z.string().nullable().optional(),
+      tax_profile_rate: z.number().nullable().optional(),
       info: z
         .array(
           z.object({
@@ -171,20 +172,21 @@ export const ProductUpdate = z.object({
     .object({
       add: z.array(z.object({
         location_id: z.string(),
-        min_qty: z.number().optional(),
-        max_qty: z.number().optional(),
-        re_order_qty: z.number().optional(),
-        par_qty: z.number().optional(),
+        min_qty: z.number().nullable().optional(),
+        max_qty: z.number().nullable().optional(),
+        re_order_qty: z.number().nullable().optional(),
+        par_qty: z.number().nullable().optional(),
       })).optional(),
       update: z.array(z.object({
         location_id: z.string(),
-        min_qty: z.number().optional(),
-        max_qty: z.number().optional(),
-        re_order_qty: z.number().optional(),
-        par_qty: z.number().optional(),
+        min_qty: z.number().nullable().optional(),
+        max_qty: z.number().nullable().optional(),
+        re_order_qty: z.number().nullable().optional(),
+        par_qty: z.number().nullable().optional(),
       })).optional(),
       remove: z.array(z.object({ location_id: z.string() })).optional(),
     })
+    .nullable()
     .optional(),
   order_units: z
     .object({
