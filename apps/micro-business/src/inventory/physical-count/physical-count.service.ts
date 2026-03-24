@@ -76,6 +76,14 @@ export class PhysicalCountService {
       tenant.db_connection,
     );
 
+    return this.getPhysicalCountWithDetails(prisma, id);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async getPhysicalCountWithDetails(
+    prisma: any,
+    id: string,
+  ): Promise<Result<unknown>> {
     const physicalCount = await prisma.tb_physical_count.findFirst({
       where: { id, deleted_at: null },
     });
@@ -94,19 +102,46 @@ export class PhysicalCountService {
       orderBy: [{ product_code: 'asc' }, { product_name: 'asc' }],
     });
 
-    const serializedDetails = details.map((d) => ({
-      ...d,
+    const serializedDetails = details.map((d: any) => ({
+      id: d.id,
+      physical_count_id: d.physical_count_id,
+      product_id: d.product_id,
+      product_code: d.product_code,
+      product_name: d.product_name,
+      product_local_name: d.product_local_name,
+      product_sku: d.product_sku,
+      inventory_unit_id: d.inventory_unit_id,
+      inventory_unit_name: d.tb_unit_inventory?.name ?? null,
       on_hand_qty: d.on_hand_qty != null ? Number(d.on_hand_qty) : null,
       actual_qty: d.actual_qty != null ? Number(d.actual_qty) : null,
       diff_qty: d.diff_qty != null ? Number(d.diff_qty) : null,
+      counted_at: d.counted_at,
+      counted_by_id: d.counted_by_id,
+      created_at: d.created_at,
+      updated_at: d.updated_at,
     }));
 
-    const responseData = {
-      ...physicalCount,
+    return Result.ok({
+      id: physicalCount.id,
+      physical_count_period_id: physicalCount.physical_count_period_id,
+      location_id: physicalCount.location_id,
+      location_code: physicalCount.location_code,
+      location_name: physicalCount.location_name,
+      physical_count_type: physicalCount.physical_count_type,
+      description: physicalCount.description,
+      status: physicalCount.status,
+      start_counting_at: physicalCount.start_counting_at,
+      start_counting_by_id: physicalCount.start_counting_by_id,
+      completed_at: physicalCount.completed_at,
+      completed_by_id: physicalCount.completed_by_id,
+      product_counted: physicalCount.product_counted,
+      product_total: physicalCount.product_total,
+      created_at: physicalCount.created_at,
+      created_by_id: physicalCount.created_by_id,
+      updated_at: physicalCount.updated_at,
+      updated_by_id: physicalCount.updated_by_id,
       details: serializedDetails,
-    };
-
-    return Result.ok(responseData);
+    });
   }
 
   /**
@@ -339,7 +374,7 @@ export class PhysicalCountService {
         });
       }
 
-      return this.findOne(existingCount.id, user_id, tenant_id);
+      return Result.ok({ id: existingCount.id });
     }
 
     // Create physical count and details in transaction
@@ -384,7 +419,7 @@ export class PhysicalCountService {
       return physicalCount;
     });
 
-    return this.findOne(result.id, user_id, tenant_id);
+    return Result.ok({ id: result.id });
   }
 
   /**
