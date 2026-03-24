@@ -138,6 +138,7 @@ export const PurchaseOrderListItemResponseSchema = z.object({
   base_net_amount: decimalField,
   total_amount: decimalField,
   base_total_amount: decimalField,
+  workflow_name: z.string().nullable().optional(),
   workflow_current_stage: z.string().nullable().optional(),
   workflow_next_stage: z.string().nullable().optional(),
   last_action: z.string().nullable().optional(),

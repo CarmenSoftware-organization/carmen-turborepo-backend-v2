@@ -723,6 +723,7 @@ export class PurchaseOrderService {
         base_net_amount,
         total_amount: Number(po.total_amount),
         base_total_amount,
+        workflow_name: po.workflow_name,
         workflow_current_stage: po.workflow_current_stage,
         workflow_next_stage: po.workflow_next_stage,
         last_action: po.last_action,
