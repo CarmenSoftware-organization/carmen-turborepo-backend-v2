@@ -19,6 +19,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import {
@@ -27,6 +28,9 @@ import {
   PhysicalCountSaveItemsRequestDto,
   PhysicalCountDetailCommentRequestDto,
 } from './swagger/request';
+import {
+  PhysicalCountResponseDto,
+} from './swagger/response';
 import {
   BaseHttpController,
 } from '@/common';
@@ -368,7 +372,7 @@ export class PhysicalCountController extends BaseHttpController {
    * @param version - API version / เวอร์ชัน API
    * @returns Refreshed physical count with updated product list / การตรวจนับสินค้าที่รีเฟรชแล้วพร้อมรายการสินค้าล่าสุด
    */
-  @Patch(':bu_code/physical_count/:id/refresh')
+  @Patch(':bu_code/physical-count/:id/refresh')
   @UseGuards(new AppIdGuard('physicalCount.update'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
@@ -381,12 +385,10 @@ export class PhysicalCountController extends BaseHttpController {
       { name: 'id', in: 'path', required: true, description: 'Physical Count ID' },
       { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
     ],
-    responses: {
-      200: { description: 'Physical count product list refreshed successfully' },
-      400: { description: 'Physical count is already completed' },
-      404: { description: 'Physical count not found' },
-    },
   })
+  @ApiResponse({ status: 200, description: 'Physical count product list refreshed successfully', type: PhysicalCountResponseDto })
+  @ApiResponse({ status: 400, description: 'Physical count is already completed' })
+  @ApiResponse({ status: 404, description: 'Physical count not found' })
   async refresh(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
