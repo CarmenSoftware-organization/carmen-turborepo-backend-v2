@@ -563,6 +563,7 @@ export class SpotCheckService {
         location_type: true,
         physical_count_type: true,
       },
+      orderBy: [{ code: 'asc' }, { name: 'asc' }],
     });
 
     // Union locations that already have spot checks in this period
@@ -584,8 +585,11 @@ export class SpotCheckService {
             location_type: true,
             physical_count_type: true,
           },
+          orderBy: [{ code: 'asc' }, { name: 'asc' }],
         });
-        locations = [...locations, ...extraLocations];
+        locations = [...locations, ...extraLocations].sort((a, b) =>
+          (a.code || '').localeCompare(b.code || '') || (a.name || '').localeCompare(b.name || ''),
+        );
       }
     }
 

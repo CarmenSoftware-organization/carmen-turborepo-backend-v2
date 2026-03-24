@@ -618,8 +618,10 @@ model tb_delivery_point {
   deleted_at    DateTime? @db.Timestamptz(6)
   deleted_by_id String?   @db.Uuid
 
-  tb_location               tb_location[]
-  tb_delivery_point_comment tb_delivery_point_comment[]
+  tb_location                                   tb_location[]
+  tb_delivery_point_comment                     tb_delivery_point_comment[]
+  tbPurchaseRequestDetails                      tb_purchase_request_detail[]
+  tbPurchaseOrderDetailTbPurchaseRequestDetails tb_purchase_order_detail_tb_purchase_request_detail[]
 
   @@unique([name, deleted_at], map: "deliverypoint_name_u")
   @@index([name], map: "deliverypoint_name_idx")
@@ -1290,23 +1292,24 @@ model tb_location {
   deleted_at    DateTime? @db.Timestamptz(6)
   deleted_by_id String?   @db.Uuid
 
-  tb_count_stock                      tb_count_stock[]
-  tb_good_received_note_detail        tb_good_received_note_detail[]
-  tb_delivery_point                   tb_delivery_point?                    @relation(fields: [delivery_point_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tb_product_location                 tb_product_location[]
-  tb_purchase_request_detail          tb_purchase_request_detail[]
-  tb_purchase_request_template_detail tb_purchase_request_template_detail[]
-  tb_user_location                    tb_user_location[]
-  tb_credit_note_detail               tb_credit_note_detail[]
-  tb_store_requisition_from           tb_store_requisition[]                @relation("store_requisition_from_location")
-  tb_store_requisition_to             tb_store_requisition[]                @relation("store_requisition_to_location")
-  tb_transfer_from                    tb_transfer[]                         @relation("transfer_from_location")
-  tb_transfer_to                      tb_transfer[]                         @relation("transfer_to_location")
-  tb_spot_check                       tb_spot_check[]
-  tb_physical_count                   tb_physical_count[]
-  tb_location_comment                 tb_location_comment[]
-  tb_stock_in                         tb_stock_in[]
-  tb_stock_out                        tb_stock_out[]
+  tb_count_stock                                tb_count_stock[]
+  tb_good_received_note_detail                  tb_good_received_note_detail[]
+  tb_delivery_point                             tb_delivery_point?                                    @relation(fields: [delivery_point_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_product_location                           tb_product_location[]
+  tb_purchase_request_detail                    tb_purchase_request_detail[]
+  tb_purchase_request_template_detail           tb_purchase_request_template_detail[]
+  tb_user_location                              tb_user_location[]
+  tb_credit_note_detail                         tb_credit_note_detail[]
+  tb_store_requisition_from                     tb_store_requisition[]                                @relation("store_requisition_from_location")
+  tb_store_requisition_to                       tb_store_requisition[]                                @relation("store_requisition_to_location")
+  tb_transfer_from                              tb_transfer[]                                         @relation("transfer_from_location")
+  tb_transfer_to                                tb_transfer[]                                         @relation("transfer_to_location")
+  tb_spot_check                                 tb_spot_check[]
+  tb_physical_count                             tb_physical_count[]
+  tb_location_comment                           tb_location_comment[]
+  tb_stock_in                                   tb_stock_in[]
+  tb_stock_out                                  tb_stock_out[]
+  tbPurchaseOrderDetailTbPurchaseRequestDetails tb_purchase_order_detail_tb_purchase_request_detail[]
 
   @@unique([code, name, deleted_at], map: "location_code_name_u")
   @@index([name], map: "location_name_idx")
@@ -2011,15 +2014,21 @@ model tb_purchase_order_detail_comment {
 }
 
 model tb_purchase_order_detail_tb_purchase_request_detail {
-  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  po_detail_id String @db.Uuid
-  pr_detail_id String @db.Uuid
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  po_detail_id String  @db.Uuid
+  pr_detail_id String? @db.Uuid
 
-  pr_detail_order_unit_id   String   @db.Uuid
-  pr_detail_order_unit_name String   @db.VarChar
+  pr_detail_order_unit_id   String?  @db.Uuid
+  pr_detail_order_unit_name String?  @db.VarChar
   pr_detail_qty             Decimal? @default(0) @db.Decimal(20, 5)
   received_qty              Decimal? @default(0) @db.Decimal(20, 5)
   foc_qty                   Decimal? @default(0) @db.Decimal(20, 5)
+
+  location_id         String? @db.Uuid
+  location_code       String? @db.VarChar
+  location_name       String? @db.VarChar
+  delivery_point_id   String? @db.Uuid
+  delivery_point_name String? @db.VarChar
 
   pr_detail_base_qty       Decimal? @default(0) @db.Decimal(20, 5)
   pr_detail_base_unit_id   String?  @db.Uuid
@@ -2032,8 +2041,10 @@ model tb_purchase_order_detail_tb_purchase_request_detail {
   deleted_at    DateTime? @db.Timestamptz(6)
   deleted_by_id String?   @db.Uuid
 
-  tb_purchase_order_detail   tb_purchase_order_detail   @relation(fields: [po_detail_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tb_purchase_request_detail tb_purchase_request_detail @relation(fields: [pr_detail_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_purchase_order_detail   tb_purchase_order_detail    @relation(fields: [po_detail_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_purchase_request_detail tb_purchase_request_detail? @relation(fields: [pr_detail_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_delivery_point          tb_delivery_point?          @relation(fields: [delivery_point_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_location                tb_location?                @relation(fields: [location_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([po_detail_id, pr_detail_id, deleted_at], map: "PO1_purchase_order_purchase_request_detail_u")
   @@index([po_detail_id, pr_detail_id], map: "PO1_purchase_order_purchase_request_detail_idx")
@@ -2283,6 +2294,7 @@ model tb_purchase_request_detail {
   tb_tax_profile                                                tb_tax_profile?                                       @relation(fields: [tax_profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tb_vendor                                                     tb_vendor?                                            @relation(fields: [vendor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tb_purchase_request_detail_comment                            tb_purchase_request_detail_comment[]
+  tb_delivery_point                                             tb_delivery_point?                                    @relation(fields: [delivery_point_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([purchase_request_id, product_id, location_id, dimension, deleted_at], map: "PR1_purchase_request_product_location_dimension_u")
   @@index([product_id], map: "PRD1_product_id_idx")
