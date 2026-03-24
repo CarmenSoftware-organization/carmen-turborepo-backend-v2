@@ -428,7 +428,7 @@ export class PhysicalCountService {
           product_sku: item.product_sku,
           inventory_unit_id: item.inventory_unit_id,
           on_hand_qty: 0,
-          actual_qty: 0,
+          actual_qty: null,
           diff_qty: 0,
           created_by_id: user_id,
         }));
@@ -549,7 +549,7 @@ export class PhysicalCountService {
           product_sku: item.product_sku,
           inventory_unit_id: item.inventory_unit_id,
           on_hand_qty: 0,
-          actual_qty: 0,
+          actual_qty: null,
           diff_qty: 0,
           created_by_id: user_id,
         })),
