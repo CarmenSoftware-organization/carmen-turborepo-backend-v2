@@ -360,6 +360,50 @@ export class PhysicalCountController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Refresh the product list for a physical count session
+   * รีเฟรชรายการสินค้าในการตรวจนับสินค้า โดยดึงสินค้าใหม่จาก location แล้วเพิ่มเข้าไป
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Refreshed physical count with updated product list / การตรวจนับสินค้าที่รีเฟรชแล้วพร้อมรายการสินค้าล่าสุด
+   */
+  @Patch(':bu_code/physical_count/:id/refresh')
+  @UseGuards(new AppIdGuard('physicalCount.update'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Refresh product list for a physical count',
+    description: 'Re-fetches the product list from the location (product_location + inventory transactions) and adds any new products that are not yet in the physical count detail list. Existing counted items are preserved.',
+    operationId: 'refreshPhysicalCount',
+    tags: ['Inventory', 'Physical Count'],
+    parameters: [
+      { name: 'id', in: 'path', required: true, description: 'Physical Count ID' },
+      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+    ],
+    responses: {
+      200: { description: 'Physical count product list refreshed successfully' },
+      400: { description: 'Physical count is already completed' },
+      404: { description: 'Physical count not found' },
+    },
+  })
+  async refresh(
+    @Param('id') id: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'refresh', id, version },
+      PhysicalCountController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.physicalCountService.refresh(id, user_id, bu_code, version);
+    this.respond(res, result);
+  }
+
   // ==================== Physical Count Detail CRUD ====================
 
   /**

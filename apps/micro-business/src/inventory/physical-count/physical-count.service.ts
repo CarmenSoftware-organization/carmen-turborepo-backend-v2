@@ -445,6 +445,129 @@ export class PhysicalCountService {
   }
 
   /**
+   * Refresh product list for a physical count
+   * รีเฟรชรายการสินค้าในการตรวจนับสินค้า โดยดึงสินค้าใหม่จาก location แล้วเพิ่มเข้าไป
+   * @param id - Physical count ID / ID การตรวจนับ
+   * @param user_id - User ID / ID ผู้ใช้
+   * @param tenant_id - Tenant ID / ID ผู้เช่า
+   * @returns Refreshed physical count with details / การตรวจนับสินค้าที่รีเฟรชแล้วพร้อมรายละเอียด
+   */
+  @TryCatch
+  async refresh(
+    id: string,
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'refresh', id, user_id, tenant_id },
+      PhysicalCountService.name,
+    );
+
+    const tenant = await this.tenantService.getdb_connection(
+      user_id,
+      tenant_id,
+    );
+    if (!tenant) {
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+    }
+
+    const prisma = await this.prismaTenant(
+      tenant.tenant_id,
+      tenant.db_connection,
+    );
+
+    const physicalCount = await prisma.tb_physical_count.findFirst({
+      where: { id, deleted_at: null },
+    });
+
+    if (!physicalCount) {
+      return Result.error('Physical Count not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (physicalCount.status === enum_physical_count_status.completed) {
+      return Result.error(
+        'Physical Count is already completed',
+        ErrorCode.INVALID_ARGUMENT,
+      );
+    }
+
+    // Get products assigned to this location via tb_product_location
+    const productLocations = await prisma.tb_product_location.findMany({
+      where: { location_id: physicalCount.location_id, deleted_at: null },
+      select: { product_id: true },
+    });
+    const assignedProductIds = productLocations.map((pl) => pl.product_id);
+
+    // Also get products that have stock at this location
+    const stockGrouped = await prisma.tb_inventory_transaction_detail.groupBy({
+      by: ['product_id'],
+      where: { location_id: physicalCount.location_id },
+      _sum: { qty: true },
+    });
+    const productIdsWithStock = stockGrouped
+      .filter((g) => g._sum.qty && !g._sum.qty.equals(0))
+      .map((g) => g.product_id);
+
+    // Union both sets of product IDs
+    const allProductIds = [...new Set([...assignedProductIds, ...productIdsWithStock])];
+
+    // Get product details
+    const products = allProductIds.length > 0
+      ? await prisma.tb_product.findMany({
+        where: { id: { in: allProductIds }, deleted_at: null },
+        select: { id: true, name: true, local_name: true, code: true, sku: true, inventory_unit_id: true },
+        orderBy: [{ code: 'asc' }, { name: 'asc' }],
+      })
+      : [];
+
+    const stockByProduct = products.map((p) => ({
+      product_id: p.id,
+      product_name: p.name,
+      product_local_name: p.local_name,
+      product_code: p.code,
+      product_sku: p.code,
+      inventory_unit_id: p.inventory_unit_id,
+    }));
+
+    // Find existing details and add new products
+    const existingDetails = await prisma.tb_physical_count_detail.findMany({
+      where: { physical_count_id: id, deleted_at: null },
+      select: { product_id: true },
+    });
+    const existingProductIds = new Set(existingDetails.map((d) => d.product_id));
+
+    const newProducts = stockByProduct.filter((p) => !existingProductIds.has(p.product_id));
+
+    if (newProducts.length > 0) {
+      await prisma.tb_physical_count_detail.createMany({
+        data: newProducts.map((item) => ({
+          physical_count_id: id,
+          product_id: item.product_id,
+          product_name: item.product_name,
+          product_local_name: item.product_local_name,
+          product_code: item.product_code,
+          product_sku: item.product_sku,
+          inventory_unit_id: item.inventory_unit_id,
+          on_hand_qty: 0,
+          actual_qty: 0,
+          diff_qty: 0,
+          created_by_id: user_id,
+        })),
+      });
+
+      await prisma.tb_physical_count.update({
+        where: { id },
+        data: {
+          product_total: existingProductIds.size + newProducts.length,
+          updated_by_id: user_id,
+        },
+      });
+    }
+
+    return this.getPhysicalCountWithDetails(prisma, id);
+  }
+
+  /**
    * Save physical count detail quantities
    * บันทึกจำนวนรายการรายละเอียดการตรวจนับสินค้า
    * @param data - Physical count save data with detail items / ข้อมูลบันทึกการตรวจนับพร้อมรายการรายละเอียด

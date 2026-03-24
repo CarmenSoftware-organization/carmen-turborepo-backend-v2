@@ -96,6 +96,25 @@ export class PhysicalCountController extends BaseMicroserviceController {
   }
 
   /**
+   * Refresh product list for a physical count
+   * รีเฟรชรายการสินค้าในการตรวจนับสินค้า
+   * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id
+   * @returns Refreshed physical count with details / การตรวจนับสินค้าที่รีเฟรชแล้วพร้อมรายละเอียด
+   */
+  @MessagePattern({ cmd: 'physical-count.refresh', service: 'physical-count' })
+  async refresh(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'refresh', payload }, PhysicalCountController.name);
+    const id = payload.id;
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.physicalCountService.refresh(id, user_id, tenant_id),
+    );
+    return this.handleResult(result);
+  }
+
+  /**
    * Save physical count data
    * บันทึกข้อมูลการตรวจนับสินค้า
    * @param payload - Contains id, data, user_id, tenant_id / ประกอบด้วย id, data, user_id, tenant_id

@@ -242,6 +242,43 @@ export class PhysicalCountService {
     return Result.ok(response.data);
   }
 
+  /**
+   * Refresh product list for a physical count via microservice
+   * รีเฟรชรายการสินค้าในการตรวจนับสินค้าผ่านไมโครเซอร์วิส
+   * @param id - Physical count ID / รหัสการตรวจนับสินค้า
+   * @param user_id - Authenticated user ID / รหัสผู้ใช้ที่ยืนยันตัวตนแล้ว
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Refreshed physical count with details / การตรวจนับสินค้าที่รีเฟรชแล้วพร้อมรายละเอียด
+   */
+  async refresh(
+    id: string,
+    user_id: string,
+    tenant_id: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'refresh', id, user_id, tenant_id, version },
+      PhysicalCountService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      { cmd: 'physical-count.refresh', service: 'physical-count' },
+      { id, user_id, tenant_id, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
   // ==================== Physical Count Detail CRUD ====================
 
   /**
