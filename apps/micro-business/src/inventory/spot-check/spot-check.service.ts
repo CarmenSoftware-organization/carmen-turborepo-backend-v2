@@ -618,4 +618,62 @@ export class SpotCheckService {
 
     return Result.ok(locationsWithStatus);
   }
+
+  /**
+   * Count pending spot checks for a user across all business units
+   * นับจำนวนการตรวจสอบจุดที่รอดำเนินการของผู้ใช้ทุก BU
+   * @param user_id - User ID / ID ผู้ใช้
+   * @returns Pending count per BU and total / จำนวนที่รอดำเนินการต่อ BU และรวม
+   */
+  @TryCatch
+  async findAllPendingCount(user_id: string): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findAllPendingCount', user_id },
+      SpotCheckService.name,
+    );
+
+    // Get all business units for this user
+    const userBUs = await this.prismaSystem.tb_user_tb_business_unit.findMany({
+      where: { user_id, is_active: true },
+      select: {
+        tb_business_unit: {
+          select: { id: true, code: true, name: true },
+        },
+      },
+    });
+
+    let totalPending = 0;
+    const details: { bu_code: string; bu_name: string; pending: number }[] = [];
+
+    for (const userBU of userBUs) {
+      const bu = userBU.tb_business_unit;
+      try {
+        const tenant = await this.tenantService.getdb_connection(user_id, bu.id);
+        if (!tenant) continue;
+
+        const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+        const count = await prisma.tb_spot_check.count({
+          where: {
+            doc_status: 'pending',
+            deleted_at: null,
+          },
+        });
+
+        totalPending += count;
+        details.push({
+          bu_code: bu.code,
+          bu_name: bu.name,
+          pending: count,
+        });
+      } catch {
+        // Skip BU if tenant connection fails
+      }
+    }
+
+    return Result.ok({
+      pending: totalPending,
+      details,
+    });
+  }
 }

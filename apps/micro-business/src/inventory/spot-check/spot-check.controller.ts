@@ -150,4 +150,19 @@ export class SpotCheckController extends BaseMicroserviceController {
     );
     return this.handleResult(result);
   }
+
+  /**
+   * Count pending spot checks for a user across all business units
+   * นับจำนวนการตรวจสอบจุดที่รอดำเนินการของผู้ใช้
+   */
+  @MessagePattern({ cmd: 'spot-check.find-all-pending-count', service: 'spot-check' })
+  async findAllPendingCount(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'findAllPendingCount', payload }, SpotCheckController.name);
+    const user_id = payload.user_id;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.spotCheckService.findAllPendingCount(user_id),
+    );
+    return this.handleResult(result);
+  }
 }

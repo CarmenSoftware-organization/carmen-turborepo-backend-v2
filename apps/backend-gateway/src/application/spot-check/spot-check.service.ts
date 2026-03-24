@@ -8,7 +8,7 @@ import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ISpotCheckCreate, ISpotCheckUpdate } from 'src/common/dto/spot-check/spot-check.dto';
-import { randomInt } from 'crypto';
+
 
 @Injectable()
 export class SpotCheckService {
@@ -30,47 +30,18 @@ export class SpotCheckService {
   async findAllPendingSpotCheckCount(
     user_id: string,
     version: string,
-  ): Promise<unknown> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
-      {
-        function: 'findAllPendingSpotCheckCount',
-        version,
-        user_id,
-      },
+      { function: 'findAllPendingSpotCheckCount', version, user_id },
       SpotCheckService.name,
     );
 
-    // const res: Observable<MicroserviceResponse> = this.inventoryService.send(
-    //   { cmd: 'spot-check.find-all.count', service: 'spot-check' },
-    //   {
-    //     user_id,
-    //     version: version,
-    //   },
-    // );
-
-    // const response = await firstValueFrom(res);
-
-    // todo: implement the actual call to inventory service
-    // mock response for testing purpose
-    const response = {
-      data: {
-        pending: randomInt(1, 100),
-      },
-      response: {
-        status: HttpStatus.OK,
-        message: 'Success',
-      },
-    };
-
-    this.logger.debug(
-      {
-        function: 'findAllPendingSpotCheckCount',
-        version,
-        user_id,
-        response,
-      },
-      SpotCheckService.name,
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      { cmd: 'spot-check.find-all-pending-count', service: 'spot-check' },
+      { user_id, version },
     );
+
+    const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.OK) {
       return Result.error(
