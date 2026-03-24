@@ -549,6 +549,10 @@ export class ProductsService {
         const productLocationObj = data.locations?.add?.map((location) => ({
           location_id: location.location_id,
           product_id: createProduct.id,
+          min_qty: location.min_qty ?? 0,
+          max_qty: location.max_qty ?? 0,
+          re_order_qty: location.re_order_qty ?? 0,
+          par_qty: location.par_qty ?? 0,
         }));
 
         await prisma.tb_product_location.createMany({
@@ -802,11 +806,15 @@ export class ProductsService {
       }
 
       if (data.locations) {
-        if (data.locations.add.length > 0) {
-          const productLocationAddObj = data.locations?.add?.map(
+        if (data.locations.add?.length > 0) {
+          const productLocationAddObj = data.locations.add.map(
             (location) => ({
               location_id: location.location_id,
               product_id: data.id,
+              min_qty: location.min_qty ?? 0,
+              max_qty: location.max_qty ?? 0,
+              re_order_qty: location.re_order_qty ?? 0,
+              par_qty: location.par_qty ?? 0,
             }),
           );
 
@@ -815,8 +823,28 @@ export class ProductsService {
           });
         }
 
-        if (data.locations.remove.length > 0) {
-          const locationIds = data.locations?.remove?.map(
+        if (data.locations.update?.length > 0) {
+          for (const location of data.locations.update) {
+            await prisma.tb_product_location.updateMany({
+              where: {
+                product_id: data.id,
+                location_id: location.location_id,
+                deleted_at: null,
+              },
+              data: {
+                min_qty: location.min_qty,
+                max_qty: location.max_qty,
+                re_order_qty: location.re_order_qty,
+                par_qty: location.par_qty,
+                updated_by_id: this.userId,
+                updated_at: new Date().toISOString(),
+              },
+            });
+          }
+        }
+
+        if (data.locations.remove?.length > 0) {
+          const locationIds = data.locations.remove.map(
             (location) => location.location_id,
           );
 

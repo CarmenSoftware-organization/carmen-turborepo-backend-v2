@@ -16,6 +16,18 @@ export interface IProductInfo {
 
 export interface IAddLocation {
   location_id?: string;
+  min_qty?: number;
+  max_qty?: number;
+  re_order_qty?: number;
+  par_qty?: number;
+}
+
+export interface IUpdateLocation {
+  location_id: string;
+  min_qty?: number;
+  max_qty?: number;
+  re_order_qty?: number;
+  par_qty?: number;
 }
 
 export interface IRemoveLocation {
@@ -116,6 +128,7 @@ export interface IUpdateProduct {
   product_info?: IProductInfo;
   locations?: {
     add?: IAddLocation[];
+    update?: IUpdateLocation[];
     remove?: IRemoveLocation[];
   };
   order_units?: {

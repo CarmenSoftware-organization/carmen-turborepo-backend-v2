@@ -63,9 +63,13 @@ export class ProductCreateRequestDto {
 
   @ApiPropertyOptional({
     description: 'Locations to assign to the product',
-    example: { add: [{ location_id: 'uuid' }] },
+    example: {
+      add: [{ location_id: 'uuid', min_qty: 0, max_qty: 100, re_order_qty: 10, par_qty: 50 }],
+    },
   })
-  locations?: { add?: { location_id: string }[] };
+  locations?: {
+    add?: { location_id: string; min_qty?: number; max_qty?: number; re_order_qty?: number; par_qty?: number }[];
+  };
 }
 
 export class ProductUpdateRequestDto {
@@ -103,14 +107,16 @@ export class ProductUpdateRequestDto {
   note?: string;
 
   @ApiPropertyOptional({
-    description: 'Locations to add or remove from the product',
+    description: 'Locations to add, update, or remove from the product',
     example: {
-      add: [{ location_id: 'uuid' }],
+      add: [{ location_id: 'uuid', min_qty: 0, max_qty: 100, re_order_qty: 10, par_qty: 50 }],
+      update: [{ location_id: 'uuid', min_qty: 5, max_qty: 200, re_order_qty: 20, par_qty: 80 }],
       remove: [{ location_id: 'uuid' }],
     },
   })
   locations?: {
-    add?: { location_id: string }[];
+    add?: { location_id: string; min_qty?: number; max_qty?: number; re_order_qty?: number; par_qty?: number }[];
+    update?: { location_id: string; min_qty?: number; max_qty?: number; re_order_qty?: number; par_qty?: number }[];
     remove?: { location_id: string }[];
   };
 }

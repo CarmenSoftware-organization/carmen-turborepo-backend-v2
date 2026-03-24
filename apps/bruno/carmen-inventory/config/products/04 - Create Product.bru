@@ -20,8 +20,61 @@ auth:bearer {
 
 body:json {
   {
-    "name": "",
-    "code": "",
-    "is_active": true
+    "name": "Olive Oil 1L",
+    "code": "PRD-001",
+    "local_name": "น้ำมันมะกอก 1 ลิตร",
+    "description": "Extra virgin olive oil 1 liter",
+    "inventory_unit_id": "",
+    "product_status_type": "active",
+    "product_item_group_id": "",
+    "product_info": {
+      "is_used_in_recipe": true,
+      "is_sold_directly": false,
+      "barcode": "",
+      "sku": "",
+      "price_deviation_limit": 0,
+      "qty_deviation_limit": 0,
+      "tax_profile_id": "",
+      "tax_profile_name": "",
+      "tax_rate": 0,
+      "info": []
+    },
+    "locations": {
+      "add": [
+        {
+          "location_id": "",
+          "min_qty": 0,
+          "max_qty": 100,
+          "re_order_qty": 10,
+          "par_qty": 50
+        }
+      ]
+    },
+    "order_units": {
+      "add": [
+        {
+          "from_unit_id": "",
+          "from_unit_qty": 1,
+          "to_unit_id": "",
+          "to_unit_qty": 1,
+          "description": "",
+          "is_default": true,
+          "is_active": true
+        }
+      ]
+    },
+    "ingredient_units": {
+      "add": [
+        {
+          "from_unit_id": "",
+          "from_unit_qty": 1,
+          "to_unit_id": "",
+          "to_unit_qty": 1,
+          "description": "",
+          "is_default": true,
+          "is_active": true
+        }
+      ]
+    }
   }
 }

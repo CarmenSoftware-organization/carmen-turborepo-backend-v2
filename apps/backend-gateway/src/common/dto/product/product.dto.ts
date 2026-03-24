@@ -38,7 +38,13 @@ export const ProductCreate = z.object({
     .optional(),
   locations: z
     .object({
-      add: z.array(z.object({ location_id: z.string() })).optional(),
+      add: z.array(z.object({
+        location_id: z.string(),
+        min_qty: z.number().optional(),
+        max_qty: z.number().optional(),
+        re_order_qty: z.number().optional(),
+        par_qty: z.number().optional(),
+      })).optional(),
     })
     .optional(),
   order_units: z
@@ -116,7 +122,20 @@ export const ProductUpdate = z.object({
     .optional(),
   locations: z
     .object({
-      add: z.array(z.object({ location_id: z.string() })).optional(),
+      add: z.array(z.object({
+        location_id: z.string(),
+        min_qty: z.number().optional(),
+        max_qty: z.number().optional(),
+        re_order_qty: z.number().optional(),
+        par_qty: z.number().optional(),
+      })).optional(),
+      update: z.array(z.object({
+        location_id: z.string(),
+        min_qty: z.number().optional(),
+        max_qty: z.number().optional(),
+        re_order_qty: z.number().optional(),
+        par_qty: z.number().optional(),
+      })).optional(),
       remove: z.array(z.object({ location_id: z.string() })).optional(),
     })
     .optional(),
