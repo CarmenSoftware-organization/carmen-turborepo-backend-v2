@@ -1,8 +1,11 @@
-import { HttpStatus, Injectable, HttpException } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, HttpException } from '@nestjs/common';
 import {
   enum_workflow_type,
+  Prisma,
   PrismaClient,
 } from '@repo/prisma-shared-schema-tenant';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 import {
   ICreateWorkflow,
   IUpdateWorkflow,
@@ -26,7 +29,9 @@ import {
   WorkflowResponseSchema,
   WorkflowListItemResponseSchema,
   WorkflowByTypeResponseSchema,
+  creatorAccess,
 } from '@/common';
+import { WorkflowNavigatorService } from './workflows.navagation.service';
 
 @Injectable()
 export class WorkflowsService {
@@ -93,7 +98,11 @@ export class WorkflowsService {
     WorkflowsService.name,
   );
 
-  constructor(private readonly tenantService: TenantService) {}
+  constructor(
+    private readonly tenantService: TenantService,
+    @Inject('AUTH_SERVICE')
+    private readonly authService: ClientProxy,
+  ) {}
 
   /**
    * Find a single workflow by ID
@@ -687,5 +696,173 @@ export class WorkflowsService {
     // });
 
     return Result.ok(null);
+  }
+
+  private static readonly DOCUMENT_TABLE_MAP: Record<string, string> = {
+    po: 'tb_purchase_order',
+    pr: 'tb_purchase_request',
+    sr: 'tb_store_requisition',
+    grn: 'tb_good_received_note',
+    cn: 'tb_credit_note',
+    si: 'tb_stock_in',
+    so: 'tb_stock_out',
+    tf: 'tb_transfer',
+    jv: 'tb_jv_header',
+  };
+
+  @TryCatch
+  async patchUserAction(
+    doc_type: string,
+    doc_id: string,
+    user_ids?: string[],
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'patchUserAction', doc_type, doc_id, user_ids },
+      WorkflowsService.name,
+    );
+
+    const tableName = WorkflowsService.DOCUMENT_TABLE_MAP[doc_type];
+    if (!tableName) {
+      return Result.error(
+        `Invalid doc_type: ${doc_type}. Supported: ${Object.keys(WorkflowsService.DOCUMENT_TABLE_MAP).join(', ')}`,
+        ErrorCode.INVALID_ARGUMENT,
+      );
+    }
+
+    // Fetch document with workflow fields
+    // Not all tables have department_id/department_name, so we select common fields
+    // and catch any extra fields that may not exist
+    let doc: any;
+    try {
+      doc = await (this.prismaService[tableName] as any).findFirst({
+        where: { id: doc_id, deleted_at: null },
+        select: {
+          id: true,
+          workflow_id: true,
+          workflow_current_stage: true,
+          department_id: true,
+          department_name: true,
+          created_by_id: true,
+        },
+      });
+    } catch {
+      // Fallback: some tables may not have department fields
+      doc = await (this.prismaService[tableName] as any).findFirst({
+        where: { id: doc_id, deleted_at: null },
+        select: {
+          id: true,
+          workflow_id: true,
+          workflow_current_stage: true,
+          created_by_id: true,
+        },
+      });
+    }
+
+    if (!doc) {
+      return Result.error(`Document not found: ${doc_type}/${doc_id}`, ErrorCode.NOT_FOUND);
+    }
+
+    let resolvedUserIds: string[] = user_ids?.length > 0 ? user_ids : [];
+
+    // Auto-resolve from workflow stage if user_ids not provided
+    if (resolvedUserIds.length === 0 && doc.workflow_id && doc.workflow_current_stage) {
+      resolvedUserIds = await this.resolveUserIdsFromWorkflow(doc);
+    }
+
+    // Fetch full user profiles
+    let userAction: { execute: any[] } | null = null;
+    if (resolvedUserIds.length > 0) {
+      const distinctIds = [...new Set(resolvedUserIds)];
+      const profilesRes = this.authService.send(
+        { cmd: 'get-user-profiles-by-ids', service: 'auth' },
+        {
+          user_ids: distinctIds,
+          department: doc.department_id ? { id: doc.department_id, name: doc.department_name } : undefined,
+        },
+      );
+      const profilesResult: { data: any[] } = await firstValueFrom(profilesRes);
+      userAction = { execute: profilesResult.data || [] };
+    }
+
+    // Update user_action on the document
+    await (this.prismaService[tableName] as any).update({
+      where: { id: doc_id },
+      data: {
+        user_action: (userAction ?? {}) as unknown as Prisma.InputJsonValue,
+        updated_by_id: this.userId,
+      },
+    });
+
+    return Result.ok({
+      doc_type,
+      doc_id,
+      user_action: userAction,
+    });
+  }
+
+  private async resolveUserIdsFromWorkflow(doc: {
+    workflow_id: string;
+    workflow_current_stage: string;
+    department_id?: string;
+    created_by_id?: string;
+  }): Promise<string[]> {
+    // Get workflow data
+    const workflow = await this.prismaService.tb_workflow.findFirst({
+      where: { id: doc.workflow_id, deleted_at: null },
+      select: { data: true },
+    });
+    if (!workflow?.data) return [];
+
+    // Get current stage info
+    const workflowNav = new WorkflowNavigatorService(workflow.data as any, doc.workflow_current_stage);
+    const stageDetail = workflowNav.getCurrentStageDetail();
+    if (!stageDetail) return [];
+
+    const userIds: string[] = [];
+
+    // Add assigned_users
+    for (const user of stageDetail.assigned_users || []) {
+      if (typeof user === 'string') {
+        userIds.push(user);
+      } else if ((user as any)?.user_id) {
+        userIds.push((user as any).user_id);
+      }
+    }
+
+    // Resolve department_id: use doc field, or look up from created_by_id
+    let department_id = doc.department_id;
+    if (!department_id && doc.created_by_id) {
+      const deptUser = await this.prismaService.tb_department_user.findFirst({
+        where: {
+          user_id: doc.created_by_id,
+          deleted_at: null,
+          OR: [{ is_hod: false }, { is_hod: null }],
+        },
+        select: { department_id: true },
+      });
+      department_id = deptUser?.department_id;
+    }
+
+    if (department_id) {
+      // Add department users if creator_access flag is set
+      if (stageDetail.creator_access === creatorAccess.ALL_PEOPLE_IN_DEPARTMENT_CAN_ACTION) {
+        const deptUsers = await this.prismaService.tb_department_user.findMany({
+          where: { department_id, deleted_at: null },
+          select: { user_id: true },
+        });
+        userIds.push(...deptUsers.map(u => u.user_id));
+      }
+
+      // Add HOD users if is_hod flag is set
+      if (stageDetail.is_hod === true) {
+        const hodUsers = await this.prismaService.tb_department_user.findMany({
+          where: { department_id, deleted_at: null, is_hod: true },
+          select: { user_id: true },
+        });
+        userIds.push(...hodUsers.map(u => u.user_id));
+      }
+    }
+
+    return userIds;
   }
 }

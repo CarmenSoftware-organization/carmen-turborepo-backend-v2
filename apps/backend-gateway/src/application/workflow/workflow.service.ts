@@ -113,4 +113,36 @@ export class WorkflowService {
 
     return Result.ok(response.data);
   }
+
+  async patchUserAction(
+    doc_type: string,
+    doc_id: string,
+    user_ids: string[] | undefined,
+    user_id: string,
+    bu_code: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'patchUserAction', doc_type, doc_id, user_ids },
+      WorkflowService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
+      { cmd: 'workflows.patch-user-action', service: 'workflows' },
+      {
+        data: { doc_type, doc_id, user_ids },
+        user_id,
+        bu_code,
+      },
+    );
+
+    const response = await firstValueFrom(res);
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
 }

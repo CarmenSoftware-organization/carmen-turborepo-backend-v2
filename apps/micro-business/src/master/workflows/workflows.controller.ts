@@ -316,4 +316,22 @@ export class WorkflowsController extends BaseMicroserviceController {
       data: Array.from(stages),
     };
   }
+
+  @MessagePattern({ cmd: 'workflows.patch-user-action', service: 'workflows' })
+  async patchUserAction(@Payload() payload: MicroservicePayload) {
+    this.logger.debug({ function: 'patchUserAction', payload }, WorkflowsController.name);
+    const { doc_type, doc_id, user_ids } = payload.data || payload;
+    const user_id = payload.user_id;
+    const bu_code = payload.bu_code;
+
+    this.workflowsService.userId = user_id;
+    this.workflowsService.bu_code = bu_code;
+    await this.workflowsService.initializePrismaService(bu_code, user_id);
+
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.workflowsService.patchUserAction(doc_type, doc_id, user_ids),
+    );
+    return this.handleResult(result);
+  }
 }

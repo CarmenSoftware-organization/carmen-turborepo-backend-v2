@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, Param, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { WorkflowService } from './workflow.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -137,6 +137,47 @@ export class WorkflowController extends BaseHttpController {
       user_id,
       bu_code,
       version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * Patch user_action on a document to fix workflow assignment
+   * แก้ไข user_action บนเอกสารเพื่อแก้ไขการมอบหมายขั้นตอนการทำงาน
+   */
+  @Patch('patch-user-action')
+  @UseGuards(new AppIdGuard('workflow.patchUserAction'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Patch user_action on a document',
+    description: 'Manually override the user_action field on any workflow-enabled document (po, pr, sr, grn, cn, si, so, tf, jv). Use this to fix broken workflow assignments so the approval process can continue.',
+    operationId: 'patchUserAction',
+    tags: ['Workflow & Approval', 'Workflow'],
+    responses: {
+      200: { description: 'user_action updated successfully' },
+      400: { description: 'Invalid doc_type' },
+      404: { description: 'Document not found' },
+    },
+  })
+  async patchUserAction(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('bu_code') bu_code: string,
+    @Body() body: { doc_type: string; doc_id: string; user_ids?: string[] },
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'patchUserAction', body },
+      WorkflowController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.workflowService.patchUserAction(
+      body.doc_type,
+      body.doc_id,
+      body.user_ids,
+      user_id,
+      bu_code,
     );
     this.respond(res, result);
   }
