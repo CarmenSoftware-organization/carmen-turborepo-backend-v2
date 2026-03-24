@@ -139,6 +139,10 @@ export class LocationsService {
         tb_product_location: {
           select: {
             product_id: true,
+            min_qty: true,
+            max_qty: true,
+            re_order_qty: true,
+            par_qty: true,
           },
         },
       });
@@ -168,59 +172,50 @@ export class LocationsService {
       })
       .then(async (res) => {
         if (!res) return null;
-        const user_location = [];
-        const product_location = [];
+        let user_location: any[] = [];
+        let product_location: any[] = [];
 
         if (withUsers && (res as any)?.tb_user_location) {
-          for (const user of (res as any).tb_user_location) {
-            this.logger.debug(
-              { function: 'with user option', user },
-              LocationsService.name,
-            );
-            const userProfile = await this.prismaSystem.tb_user_profile.findFirst({
-              where: {
-                user_id: user.user_id,
-              },
-              select: {
-                firstname: true,
-                lastname: true,
-                middlename: true,
-                telephone: true,
-              },
+          const userIds = (res as any).tb_user_location.map((u: any) => u.user_id);
+          if (userIds.length > 0) {
+            const userProfiles = await this.prismaSystem.tb_user_profile.findMany({
+              where: { user_id: { in: userIds } },
+              select: { user_id: true, firstname: true, lastname: true, middlename: true, telephone: true },
             });
-
-            user_location.push({
-              id: user.user_id,
-              firstname: userProfile?.firstname ?? null,
-              lastname: userProfile?.lastname ?? null,
-              middlename: userProfile?.middlename ?? null,
-              telephone: userProfile?.telephone ?? null,
+            const profileMap = new Map(userProfiles.map((p) => [p.user_id, p]));
+            user_location = userIds.map((uid: string) => {
+              const profile = profileMap.get(uid);
+              return {
+                id: uid,
+                firstname: profile?.firstname ?? null,
+                lastname: profile?.lastname ?? null,
+                middlename: profile?.middlename ?? null,
+                telephone: profile?.telephone ?? null,
+              };
             });
           }
         }
 
         if (withProducts && (res as any)?.tb_product_location) {
-          for (const product of (res as any).tb_product_location) {
-            this.logger.debug(
-              { function: 'with product option', product },
-              LocationsService.name,
-            );
-            const product_info = await this.prismaService.tb_product.findFirst({
-              where: { id: product.product_id },
-              select: {
-                id: true,
-                name: true,
-                code: true
-              },
+          const plItems = (res as any).tb_product_location;
+          const productIds = plItems.map((p: any) => p.product_id);
+          if (productIds.length > 0) {
+            const products = await this.prismaService.tb_product.findMany({
+              where: { id: { in: productIds } },
+              select: { id: true, name: true, code: true },
             });
-            product_location.push({
-              id: product.product_id,
-              name: product_info?.name ?? null,
-              code: product_info?.code ?? null,
-              min_qty: product.min_qty ?? null,
-              max_qty: product.max_qty ?? null,
-              re_order_qty: product.re_order_qty ?? null,
-              par_qty: product.par_qty ?? null,
+            const productMap = new Map(products.map((p) => [p.id, p]));
+            product_location = plItems.map((pl: any) => {
+              const info = productMap.get(pl.product_id);
+              return {
+                id: pl.product_id,
+                name: info?.name ?? null,
+                code: info?.code ?? null,
+                min_qty: pl.min_qty != null ? Number(pl.min_qty) : null,
+                max_qty: pl.max_qty != null ? Number(pl.max_qty) : null,
+                re_order_qty: pl.re_order_qty != null ? Number(pl.re_order_qty) : null,
+                par_qty: pl.par_qty != null ? Number(pl.par_qty) : null,
+              };
             });
           }
         }
