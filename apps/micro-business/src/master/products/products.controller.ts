@@ -187,6 +187,58 @@ export class ProductsController extends BaseMicroserviceController {
   }
 
   /**
+   * ค้นหา product_location ตาม product_id
+   */
+  @MessagePattern({ cmd: 'productLocation.findByProductId', service: 'product-location' })
+  async findProductLocationsByProductId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'findProductLocationsByProductId', payload }, ProductsController.name);
+    this.productsService.userId = payload.user_id;
+    this.productsService.bu_code = payload.bu_code;
+    await this.productsService.initializePrismaService(payload.bu_code, payload.user_id);
+
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.productsService.findProductLocationsByProductId(payload.product_id),
+    );
+    return this.handleResult(result);
+  }
+
+  /**
+   * ค้นหา product_location ตาม location_id
+   */
+  @MessagePattern({ cmd: 'productLocation.findByLocationId', service: 'product-location' })
+  async findProductLocationsByLocationId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'findProductLocationsByLocationId', payload }, ProductsController.name);
+    this.productsService.userId = payload.user_id;
+    this.productsService.bu_code = payload.bu_code;
+    await this.productsService.initializePrismaService(payload.bu_code, payload.user_id);
+
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.productsService.findProductLocationsByLocationId(payload.location_id),
+    );
+    return this.handleResult(result);
+  }
+
+  /**
+   * Refresh denormalized fields in tb_product_location
+   * อัปเดตฟิลด์ denormalized จาก tb_product และ tb_location
+   */
+  @MessagePattern({ cmd: 'productLocation.refresh', service: 'product-location' })
+  async refreshProductLocations(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'refreshProductLocations', payload }, ProductsController.name);
+    this.productsService.userId = payload.user_id;
+    this.productsService.bu_code = payload.bu_code;
+    await this.productsService.initializePrismaService(payload.bu_code, payload.user_id);
+
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.productsService.refreshProductLocations(),
+    );
+    return this.handleResult(result);
+  }
+
+  /**
    * Get last GRN by product ID and date
    * ค้นหาใบรับสินค้าล่าสุดตาม ID สินค้าและวันที่
    */

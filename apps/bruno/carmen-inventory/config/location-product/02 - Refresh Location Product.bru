@@ -1,0 +1,19 @@
+meta {
+  name: 02 - Refresh Location Product
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host}}/api/config/{{bu_code}}/location-product/refresh
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

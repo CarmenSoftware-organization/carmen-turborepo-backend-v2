@@ -348,6 +348,153 @@ export class ProductsService {
   }
 
   /**
+   * ค้นหา product_location ตาม product_id
+   * @param product_id - Product ID / รหัสสินค้า
+   * @returns รายการ product_location ที่ผูกกับสินค้า
+   */
+  @TryCatch
+  async findProductLocationsByProductId(
+    product_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findProductLocationsByProductId', product_id, user_id: this.userId, tenant_id: this.bu_code },
+      ProductsService.name,
+    );
+
+    const productLocations = await this.prismaService.tb_product_location.findMany({
+      where: {
+        product_id,
+        deleted_at: null,
+      },
+      select: {
+        id: true,
+        product_id: true,
+        product_code: true,
+        product_name: true,
+        product_local_name: true,
+        product_sku: true,
+        location_id: true,
+        location_code: true,
+        location_name: true,
+        min_qty: true,
+        max_qty: true,
+        re_order_qty: true,
+        par_qty: true,
+        note: true,
+      },
+    });
+
+    return Result.ok(productLocations);
+  }
+
+  /**
+   * ค้นหา product_location ตาม location_id
+   * @param location_id - Location ID / รหัสสถานที่
+   * @returns รายการ product_location ที่ผูกกับสถานที่
+   */
+  @TryCatch
+  async findProductLocationsByLocationId(
+    location_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findProductLocationsByLocationId', location_id, user_id: this.userId, tenant_id: this.bu_code },
+      ProductsService.name,
+    );
+
+    const productLocations = await this.prismaService.tb_product_location.findMany({
+      where: {
+        location_id,
+        deleted_at: null,
+      },
+      select: {
+        id: true,
+        product_id: true,
+        product_code: true,
+        product_name: true,
+        product_local_name: true,
+        product_sku: true,
+        location_id: true,
+        location_code: true,
+        location_name: true,
+        min_qty: true,
+        max_qty: true,
+        re_order_qty: true,
+        par_qty: true,
+        note: true,
+      },
+    });
+
+    return Result.ok(productLocations);
+  }
+
+  /**
+   * Refresh denormalized fields in tb_product_location
+   * อัปเดตฟิลด์ denormalized (product_code, product_name, product_local_name, product_sku, location_code, location_name)
+   * โดยดึงค่าจริงจาก tb_product และ tb_location
+   * @returns จำนวนรายการที่อัปเดต
+   */
+  @TryCatch
+  async refreshProductLocations(): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'refreshProductLocations', user_id: this.userId, tenant_id: this.bu_code },
+      ProductsService.name,
+    );
+
+    const productLocations = await this.prismaService.tb_product_location.findMany({
+      where: { deleted_at: null },
+      select: {
+        id: true,
+        product_id: true,
+        location_id: true,
+      },
+    });
+
+    if (productLocations.length === 0) {
+      return Result.ok({ updated: 0 });
+    }
+
+    const productIds = [...new Set(productLocations.map((pl) => pl.product_id))];
+    const locationIds = [...new Set(productLocations.map((pl) => pl.location_id).filter(Boolean))] as string[];
+
+    const [products, locations] = await Promise.all([
+      this.prismaService.tb_product.findMany({
+        where: { id: { in: productIds } },
+        select: { id: true, code: true, name: true, local_name: true, sku: true },
+      }),
+      this.prismaService.tb_location.findMany({
+        where: { id: { in: locationIds } },
+        select: { id: true, code: true, name: true },
+      }),
+    ]);
+
+    const productMap = new Map(products.map((p) => [p.id, p]));
+    const locationMap = new Map(locations.map((l) => [l.id, l]));
+
+    let updated = 0;
+    for (const pl of productLocations) {
+      const product = productMap.get(pl.product_id);
+      const location = pl.location_id ? locationMap.get(pl.location_id) : null;
+
+      await this.prismaService.tb_product_location.update({
+        where: { id: pl.id },
+        data: {
+          product_code: product?.code ?? null,
+          product_name: product?.name ?? null,
+          product_local_name: product?.local_name ?? null,
+          product_sku: product?.sku ?? null,
+          location_code: location?.code ?? null,
+          location_name: location?.name ?? null,
+          updated_at: new Date().toISOString(),
+          updated_by_id: this.userId,
+        },
+      });
+      updated++;
+    }
+
+    return Result.ok({ updated });
+  }
+
+  /**
    * Find all products with pagination, search, and sorting
    * ค้นหารายการสินค้าทั้งหมดพร้อมการแบ่งหน้า ค้นหา และเรียงลำดับ
    * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า

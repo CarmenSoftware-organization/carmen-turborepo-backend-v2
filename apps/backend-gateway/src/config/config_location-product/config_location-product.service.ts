@@ -1,6 +1,9 @@
-import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { Observable, firstValueFrom } from 'rxjs';
+import { Result, MicroserviceResponse } from '@/common';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
+import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
 @Injectable()
 export class Config_LocationProductService {
@@ -14,28 +17,88 @@ export class Config_LocationProductService {
   ) {}
 
   /**
-   * Get all products assigned to a location via microservice
-   * ค้นหารายการสินค้าทั้งหมดที่ผูกกับสถานที่ผ่านไมโครเซอร์วิส
+   * ค้นหา product_location ตาม location_id ผ่านไมโครเซอร์วิส
    * @param locationId - Location ID / รหัสสถานที่
    * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
    * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
    * @param version - API version / เวอร์ชัน API
-   * @returns List of products for the location / รายการสินค้าของสถานที่
+   * @returns รายการ product_location ที่ผูกกับสถานที่
    */
   async getProductByLocationId(
     locationId: string,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<unknown> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getProductByLocationId',
         locationId,
+        user_id,
+        bu_code,
         version,
       },
       Config_LocationProductService.name,
     );
-    throw new NotImplementedException('Not implemented');
+
+    const res: Observable<MicroserviceResponse> = this._masterService.send(
+      { cmd: 'productLocation.findByLocationId', service: 'product-location' },
+      {
+        location_id: locationId,
+        user_id: user_id,
+        bu_code: bu_code,
+        version: version,
+      },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
+  /**
+   * Refresh denormalized fields ใน tb_product_location ผ่านไมโครเซอร์วิส
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns จำนวนรายการที่อัปเดต
+   */
+  async refreshProductLocations(
+    user_id: string,
+    bu_code: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      {
+        function: 'refreshProductLocations',
+        user_id,
+        bu_code,
+      },
+      Config_LocationProductService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this._masterService.send(
+      { cmd: 'productLocation.refresh', service: 'product-location' },
+      {
+        user_id: user_id,
+        bu_code: bu_code,
+      },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
   }
 }

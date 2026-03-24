@@ -1,6 +1,9 @@
-import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { Observable, firstValueFrom } from 'rxjs';
+import { Result, MicroserviceResponse } from '@/common';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
+import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
 @Injectable()
 export class Config_ProductLocationService {
@@ -14,20 +17,19 @@ export class Config_ProductLocationService {
   ) {}
 
   /**
-   * Get all locations assigned to a product via microservice
-   * ค้นหารายการสถานที่ทั้งหมดที่ผูกกับสินค้าผ่านไมโครเซอร์วิส
+   * ค้นหา product_location ตาม product_id ผ่านไมโครเซอร์วิส
    * @param productId - Product ID / รหัสสินค้า
    * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
    * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
    * @param version - API version / เวอร์ชัน API
-   * @returns List of locations for the product / รายการสถานที่ของสินค้า
+   * @returns รายการ product_location ที่ผูกกับสินค้า
    */
   async getLocationsByProductId(
     productId: string,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<unknown> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
       {
         function: 'getLocationsByProductId',
@@ -39,6 +41,25 @@ export class Config_ProductLocationService {
       Config_ProductLocationService.name,
     );
 
-    throw new NotImplementedException('Not implemented');
+    const res: Observable<MicroserviceResponse> = this._masterService.send(
+      { cmd: 'productLocation.findByProductId', service: 'product-location' },
+      {
+        product_id: productId,
+        user_id: user_id,
+        bu_code: bu_code,
+        version: version,
+      },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
   }
 }
