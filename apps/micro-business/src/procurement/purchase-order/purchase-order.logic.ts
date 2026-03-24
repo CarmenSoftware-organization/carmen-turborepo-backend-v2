@@ -94,6 +94,11 @@ export class PurchaseOrderLogic {
       throw new Error('Cannot submit PO: workflow not found. Please set workflow_id on the purchase order before submitting.');
     }
 
+    const total_amount = poData?.tb_purchase_order_detail?.reduce(
+      (curr, acc) => curr + Number(acc.total_price || 0),
+      0,
+    );
+
     // Determine current stage
     let currentStageForNavigation = poData?.workflow_current_stage;
     let previousStage = poData?.workflow_current_stage;
@@ -101,7 +106,7 @@ export class PurchaseOrderLogic {
     if (!currentStageForNavigation) {
       const firstStageRes = this.masterService.send(
         { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
-        { workflowData, currentStatus: '', requestData: {} },
+        { workflowData, currentStatus: '', requestData: { amount: total_amount } },
       );
       const firstStageNav: NavigateForwardResult = await firstValueFrom(firstStageRes);
       currentStageForNavigation = firstStageNav.navigation_info.current_stage_info?.name;
@@ -110,7 +115,7 @@ export class PurchaseOrderLogic {
 
     const res = this.masterService.send(
       { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
-      { workflowData, currentStatus: currentStageForNavigation, requestData: {} },
+      { workflowData, currentStatus: currentStageForNavigation, requestData: { amount: total_amount } },
     );
     const workflowHeader: NavigateForwardResult = await firstValueFrom(res);
     const lastActionAtDate = new Date();
@@ -124,19 +129,13 @@ export class PurchaseOrderLogic {
       next_stage: workflowHeader.current_stage,
     });
 
-    let userAction = null;
-    if (workflowHeader.navigation_info.current_stage_info.creator_access === creatorAccess.ALL_PEOPLE_IN_DEPARTMENT_CAN_ACTION) {
-      const deptRes = this.masterService.send(
-        { cmd: 'department-users.find-by-department', service: 'department-users' },
-        { department_id: poData.department_id, user_id, tenant_id },
-      );
-      const usersInDepartment: { data: string[] } = await firstValueFrom(deptRes);
-      const distinctUsers = [...new Set([
-        ...(workflowHeader?.navigation_info?.current_stage_info?.assigned_users || []),
-        ...usersInDepartment.data,
-      ])];
-      userAction = { execute: distinctUsers };
-    }
+    const userAction = await this.buildUserAction(
+      workflowHeader.navigation_info.current_stage_info,
+      poData.department_id,
+      poData.department_name,
+      user_id,
+      tenant_id,
+    );
 
     const workflow = {
       workflow_previous_stage: workflowHeader.previous_stage,
@@ -359,6 +358,8 @@ export class PurchaseOrderLogic {
 
       const userAction = await this.buildUserAction(
         workflowHeader.navigation_info.current_stage_info,
+        purchaseOrderData.department_id,
+        purchaseOrderData.department_name,
         user_id,
         tenant_id,
       );
@@ -527,6 +528,8 @@ export class PurchaseOrderLogic {
 
     const userAction = await this.buildUserAction(
       workflowHeader.navigation_info.current_stage_info,
+      purchaseOrderData.department_id,
+      purchaseOrderData.department_name,
       user_id,
       tenant_id,
     );
@@ -685,6 +688,8 @@ export class PurchaseOrderLogic {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async buildUserAction(
     currentStageInfo: any,
+    department_id: string | null | undefined,
+    department_name: string | null | undefined,
     user_id: string,
     bu_code: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -692,6 +697,7 @@ export class PurchaseOrderLogic {
     const userIdsToAssign: string[] = [];
 
     // Always add assigned_users from workflow stage
+    // assigned_users can be either string[] (IDs) or object[] (full profiles)
     const assignedUsers: any[] = currentStageInfo?.assigned_users || [];
     for (const user of assignedUsers) {
       if (typeof user === 'string') {
@@ -702,8 +708,23 @@ export class PurchaseOrderLogic {
     }
 
     // Add all users in department if creator_access flag is set
-    if (currentStageInfo?.creator_access === creatorAccess.ALL_PEOPLE_IN_DEPARTMENT_CAN_ACTION) {
-      // For PO, we don't have department_id in the same way as PR
+    if (currentStageInfo?.creator_access === creatorAccess.ALL_PEOPLE_IN_DEPARTMENT_CAN_ACTION && department_id) {
+      const res = this.masterService.send(
+        { cmd: 'department-users.find-by-department', service: 'department-users' },
+        { department_id, user_id, bu_code },
+      );
+      const usersInDepartment: { data: { user_id: string }[] } = await firstValueFrom(res);
+      userIdsToAssign.push(...usersInDepartment.data.map(u => u.user_id));
+    }
+
+    // Add HOD users if is_hod flag is set
+    if (currentStageInfo?.is_hod === true && department_id) {
+      const hodRes = this.masterService.send(
+        { cmd: 'department-users.get-hod-in-department', service: 'department-users' },
+        { department_id, user_id, bu_code },
+      );
+      const hodUsers: { data: string[] } = await firstValueFrom(hodRes);
+      userIdsToAssign.push(...hodUsers.data);
     }
 
     if (userIdsToAssign.length === 0) {
@@ -716,7 +737,10 @@ export class PurchaseOrderLogic {
     // Fetch full user profiles from auth service
     const profilesRes = this.authService.send(
       { cmd: 'get-user-profiles-by-ids', service: 'auth' },
-      { user_ids: distinctUserIds, bu_code },
+      {
+        user_ids: distinctUserIds,
+        department: department_id ? { id: department_id, name: department_name } : undefined,
+      },
     );
     const profilesResult: { data: UserActionProfile[] } = await firstValueFrom(profilesRes);
 
