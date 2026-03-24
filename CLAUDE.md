@@ -109,6 +109,8 @@ TypeScript path alias `@repo/*` maps to `packages/*/src`. Individual services us
 - **One export per file**
 - **Validation**: Zod schemas with `nestjs-zod` for input DTOs; simple TypeScript types for output
 - **Avoid**: `any` type, magic numbers, deep nesting
+- **Timestamps**: Always use `.toISOString()` when writing `Date` values to Prisma timestamp fields (e.g., `approval_date: date.toISOString()`, not `approval_date: date`). Prisma with PostgreSQL `@db.Timestamptz` columns requires ISO string format.
+- **Swagger sync**: When changing a DTO (add/remove/rename fields), always update the corresponding Swagger request/response DTOs, examples, and serializers in the gateway to stay in sync.
 - **NestJS modules**: One module per domain/route. Controllers for routing, Services for business logic
 - **Testing**: Arrange-Act-Assert pattern, Given-When-Then for acceptance tests
 

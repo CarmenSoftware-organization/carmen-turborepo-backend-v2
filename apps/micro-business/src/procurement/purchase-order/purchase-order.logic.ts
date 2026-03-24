@@ -359,7 +359,7 @@ export class PurchaseOrderLogic {
         last_action_by_name: populateData?.user_id?.name,
         workflow_history: workflow_history,
         po_status: enum_purchase_order_doc_status.sent,
-        approval_date: lastActionAtDate,
+        approval_date: lastActionAtDate.toISOString(),
       };
     } else {
       // More stages to go
