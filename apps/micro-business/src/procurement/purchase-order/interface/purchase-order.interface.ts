@@ -9,6 +9,11 @@ export interface IPurchaseOrderPrDetail {
   order_base_qty: number;
   order_base_unit_id?: string;
   order_base_unit_name?: string;
+  location_id?: string;
+  location_code?: string;
+  location_name?: string;
+  delivery_point_id?: string;
+  delivery_point_name?: string;
 }
 
 export interface IPurchaseOrderDetail {

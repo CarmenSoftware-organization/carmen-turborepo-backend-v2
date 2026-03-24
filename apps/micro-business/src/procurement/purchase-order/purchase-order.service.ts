@@ -230,6 +230,11 @@ export class PurchaseOrderService {
                 pr_detail_base_unit_name: true,
                 received_qty: true,
                 foc_qty: true,
+                location_id: true,
+                location_code: true,
+                location_name: true,
+                delivery_point_id: true,
+                delivery_point_name: true,
               },
             },
           },
@@ -414,6 +419,11 @@ export class PurchaseOrderService {
                 pr_detail_order_unit_name: true,
                 received_qty: true,
                 foc_qty: true,
+                location_id: true,
+                location_code: true,
+                location_name: true,
+                delivery_point_id: true,
+                delivery_point_name: true,
                 tb_purchase_request_detail: {
                   select: {
                     id: true,
@@ -862,6 +872,11 @@ export class PurchaseOrderService {
                 pr_detail_base_qty: prDetail.order_base_qty,
                 pr_detail_base_unit_id: prDetail.order_base_unit_id || undefined,
                 pr_detail_base_unit_name: baseUnitName,
+                location_id: prDetail.location_id || undefined,
+                location_code: prDetail.location_code,
+                location_name: prDetail.location_name,
+                delivery_point_id: prDetail.delivery_point_id || undefined,
+                delivery_point_name: prDetail.delivery_point_name,
                 created_by_id: this.userId,
               },
             });
@@ -1308,6 +1323,11 @@ export class PurchaseOrderService {
                   pr_detail_base_qty: prDetail.order_base_qty,
                   pr_detail_base_unit_id: prDetail.order_base_unit_id || undefined,
                   pr_detail_base_unit_name: baseUnitName,
+                  location_id: prDetail.location_id || undefined,
+                  location_code: prDetail.location_code,
+                  location_name: prDetail.location_name,
+                  delivery_point_id: prDetail.delivery_point_id || undefined,
+                  delivery_point_name: prDetail.delivery_point_name,
                   created_by_id: this.userId,
                 },
               });
@@ -2291,7 +2311,10 @@ export class PurchaseOrderService {
           order_unit_conversion_factor: Number(prDetail.approved_unit_conversion_factor) || 1,
           order_base_qty: Number(prDetail.approved_base_qty) || 0,
           location_id: prDetail.location_id,
+          location_code: prDetail.location_code,
           location_name: prDetail.location_name,
+          delivery_point_id: prDetail.delivery_point_id,
+          delivery_point_name: prDetail.delivery_point_name,
         });
 
         existingItem.order_qty += Number(prDetail.approved_qty) || 0;
@@ -2345,7 +2368,10 @@ export class PurchaseOrderService {
               order_unit_conversion_factor: Number(prDetail.approved_unit_conversion_factor) || 1,
               order_base_qty: Number(prDetail.approved_base_qty) || 0,
               location_id: prDetail.location_id,
+              location_code: prDetail.location_code,
               location_name: prDetail.location_name,
+              delivery_point_id: prDetail.delivery_point_id,
+              delivery_point_name: prDetail.delivery_point_name,
             },
           ],
         });
@@ -2489,6 +2515,11 @@ export class PurchaseOrderService {
                 pr_detail_base_qty: prDetail.order_base_qty,
                 pr_detail_base_unit_id: prDetail.order_base_unit_id || undefined,
                 pr_detail_base_unit_name: baseUnitName,
+                location_id: prDetail.location_id || undefined,
+                location_code: prDetail.location_code,
+                location_name: prDetail.location_name,
+                delivery_point_id: prDetail.delivery_point_id || undefined,
+                delivery_point_name: prDetail.delivery_point_name,
                 created_by_id: this.userId,
               },
             });
