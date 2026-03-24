@@ -129,10 +129,11 @@ export class PurchaseOrderLogic {
       next_stage: workflowHeader.current_stage,
     });
 
+    const creatorDept = await this.getCreatorDepartment(poData.created_by_id);
     const userAction = await this.buildUserAction(
       workflowHeader.navigation_info.current_stage_info,
-      poData.department_id,
-      poData.department_name,
+      creatorDept?.id,
+      creatorDept?.name,
       user_id,
       tenant_id,
     );
@@ -356,10 +357,11 @@ export class PurchaseOrderLogic {
         next_stage: workflowHeader.current_stage,
       });
 
+      const creatorDept = await this.getCreatorDepartment(purchaseOrderData.created_by_id);
       const userAction = await this.buildUserAction(
         workflowHeader.navigation_info.current_stage_info,
-        purchaseOrderData.department_id,
-        purchaseOrderData.department_name,
+        creatorDept?.id,
+        creatorDept?.name,
         user_id,
         tenant_id,
       );
@@ -526,10 +528,11 @@ export class PurchaseOrderLogic {
       next_stage: workflowHeader.navigation_info.workflow_next_step,
     });
 
+    const creatorDept = await this.getCreatorDepartment(purchaseOrderData.created_by_id);
     const userAction = await this.buildUserAction(
       workflowHeader.navigation_info.current_stage_info,
-      purchaseOrderData.department_id,
-      purchaseOrderData.department_name,
+      creatorDept?.id,
+      creatorDept?.name,
       user_id,
       tenant_id,
     );
@@ -682,6 +685,34 @@ export class PurchaseOrderLogic {
       throw new BadRequestException(
         `Invalid stage_role. Expected: ${userActualRole}, Received: ${payloadStageRole}`,
       );
+    }
+  }
+
+  private async getCreatorDepartment(
+    created_by_id: string,
+  ): Promise<{ id: string; name: string } | null> {
+    try {
+      const prisma = this.purchaseOrderService.prismaService;
+      const departmentUser = await prisma.tb_department_user.findFirst({
+        where: {
+          user_id: created_by_id,
+          deleted_at: null,
+          OR: [{ is_hod: false }, { is_hod: null }],
+        },
+        select: {
+          department_id: true,
+          tb_department: {
+            select: { name: true },
+          },
+        },
+      });
+      if (!departmentUser) return null;
+      return {
+        id: departmentUser.department_id,
+        name: departmentUser.tb_department?.name ?? null,
+      };
+    } catch {
+      return null;
     }
   }
 

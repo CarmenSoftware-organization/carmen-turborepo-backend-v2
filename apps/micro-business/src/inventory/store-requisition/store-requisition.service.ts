@@ -923,6 +923,8 @@ export class StoreRequisitionService {
   @TryCatch
   async reject(
     id: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    workflow: Record<string, any>,
     payload: RejectStoreRequisitionDto,
   ): Promise<Result<unknown>> {
     this.logger.debug(
@@ -949,7 +951,7 @@ export class StoreRequisitionService {
         },
       });
 
-    const tx = await this.prismaService.$transaction(async (txp) => {
+    await this.prismaService.$transaction(async (txp) => {
       for (const detail of storeRequisitionDetail) {
         const findSR = payload.details.find((d) => d.id === detail.id);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -984,6 +986,7 @@ export class StoreRequisitionService {
           id,
         },
         data: {
+          ...workflow,
           doc_status: enum_doc_status.voided,
           updated_by_id: this.userId,
         },
@@ -1004,6 +1007,8 @@ export class StoreRequisitionService {
    */
   async review(
     id: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    workflow: Record<string, any>,
     payload: ReviewStoreRequisitionDto,
   ): Promise<Result<unknown>> {
     this.logger.debug(
@@ -1059,8 +1064,7 @@ export class StoreRequisitionService {
           id,
         },
         data: {
-          workflow_current_stage: payload.des_stage,
-          workflow_previous_stage: storeRequisition.workflow_current_stage,
+          ...workflow,
           updated_by_id: this.userId,
         },
       });

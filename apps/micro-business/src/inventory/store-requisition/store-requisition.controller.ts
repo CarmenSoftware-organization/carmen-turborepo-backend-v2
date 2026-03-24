@@ -215,10 +215,9 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     const bu_code = payload.bu_code;
     const body: RejectStoreRequisitionDto = payload.body;
 
-    await this.storeRequisitionService.initializePrismaService(bu_code, user_id);
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.storeRequisitionService.reject(payload.id, body),
+      this.storeRequisitionLogic.reject(payload.id, body, user_id, bu_code),
     );
 
     return this.handleResult(result);
@@ -249,10 +248,9 @@ export class StoreRequisitionController extends BaseMicroserviceController {
     const bu_code = payload.bu_code;
     const body: ReviewStoreRequisitionDto = payload.body;
 
-    await this.storeRequisitionService.initializePrismaService(bu_code, user_id);
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.storeRequisitionService.review(payload.id, body),
+      this.storeRequisitionLogic.review(payload.id, body, user_id, bu_code),
     );
 
     return this.handleResult(result);

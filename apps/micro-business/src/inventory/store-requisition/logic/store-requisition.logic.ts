@@ -1,14 +1,15 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { StoreRequisitionService } from '../store-requisition.service';
 import { MapperLogic } from '@/common/mapper/mapper.logic';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { IUpdateStoreRequisition, StoreRequisition } from '../interface/store-requisition.interface';
-import { WorkflowHeader, StageStatus } from '../interface/workflow.interface';
+import { UserActionProfile, WorkflowHeader, StageStatus } from '../interface/workflow.interface';
 import { CreateStoreRequisition, creatorAccess, NavigateForwardResult, NotificationService, NotificationType, stage_status, SubmitStoreRequisition } from '@/common';
 import { enum_last_action, enum_stage_role } from '@repo/prisma-shared-schema-tenant';
 import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { ValidateSRBeforeSubmitSchema } from '../dto/store-requisition.dto';
+import { RejectStoreRequisitionDto, ReviewStoreRequisitionDto } from '../dto/stage_role/store-requisition.stage-role.dto';
 import { InventoryTransactionService } from '@/inventory/inventory-transaction/inventory-transaction.service';
 
 // Re-export for backward compatibility
@@ -24,6 +25,8 @@ export class StoreRequisitionLogic {
     private readonly mapperLogic: MapperLogic,
     @Inject('MASTER_SERVICE')
     private readonly masterService: ClientProxy,
+    @Inject('AUTH_SERVICE')
+    private readonly authService: ClientProxy,
     private readonly notificationService: NotificationService,
     private readonly inventoryTransactionService: InventoryTransactionService,
   ) {}
@@ -194,21 +197,13 @@ export class StoreRequisitionLogic {
       next_stage: workflowHeader.current_stage
     });
 
-    let userAction = null;
-
-    if (workflowHeader.navigation_info.current_stage_info.creator_access === creatorAccess.ALL_PEOPLE_IN_DEPARTMENT_CAN_ACTION) {
-      const res = this.masterService.send(
-        { cmd: 'department-users.find-by-department', service: 'department-users' },
-        {
-          department_id: storeRequisitionData.department_id,
-          user_id,
-          bu_code
-        },
-      );
-      const usersInDepartment: { data: string[] } = await firstValueFrom(res);
-      const distinctUsers = this.distinctData([...workflowHeader?.navigation_info?.current_stage_info?.assigned_users || [], ...usersInDepartment.data]);
-      userAction = { execute: distinctUsers };
-    }
+    const userAction = await this.buildUserAction(
+      workflowHeader.navigation_info.current_stage_info,
+      storeRequisitionData.department_id,
+      storeRequisitionData.department_name,
+      user_id,
+      bu_code,
+    );
 
     const workflow: WorkflowHeader = {
       workflow_previous_stage: workflowHeader.previous_stage,
@@ -329,21 +324,13 @@ export class StoreRequisitionLogic {
         current_stage: storeRequisitionData?.workflow_current_stage,
         next_stage: workflowHeader.navigation_info.workflow_next_step
       });
-      let userAction = null;
-
-      if (workflowHeader.navigation_info.current_stage_info.creator_access === creatorAccess.ALL_PEOPLE_IN_DEPARTMENT_CAN_ACTION) {
-        const res = this.masterService.send(
-          { cmd: 'department-users.find-by-department', service: 'department-users' },
-          {
-            department_id: storeRequisitionData.department_id,
-            user_id,
-            tenant_id
-          },
-        );
-        const usersInDepartment: { data: string[] } = await firstValueFrom(res);
-        const distinctUsers = this.distinctData([...workflowHeader?.navigation_info?.current_stage_info?.assigned_users || [], ...usersInDepartment.data]);
-        userAction = { execute: distinctUsers };
-      }
+      const userAction = await this.buildUserAction(
+        workflowHeader.navigation_info.current_stage_info,
+        storeRequisitionData.department_id,
+        storeRequisitionData.department_name,
+        user_id,
+        tenant_id,
+      );
 
       workflow = {
         workflow_previous_stage: workflowHeader.previous_stage,
@@ -436,6 +423,162 @@ export class StoreRequisitionLogic {
     );
   }
 
+  async reject(
+    id: string,
+    body: RejectStoreRequisitionDto,
+    user_id: string,
+    bu_code: string,
+  ) {
+    this.logger.debug({ function: 'reject', id, user_id, bu_code }, StoreRequisitionLogic.name);
+    await this.storeRequisitionService.initializePrismaService(bu_code, user_id);
+
+    const storeRequisitionResult = await this.storeRequisitionService.findById(id);
+    if (storeRequisitionResult.isError()) {
+      throw new Error('Store Requisition not found');
+    }
+    const storeRequisitionData = storeRequisitionResult.value;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const populateData: Record<string, any> = await this.mapperLogic.populate(
+      { user_id },
+      user_id,
+      bu_code,
+    );
+
+    const workflow_history = storeRequisitionData?.workflow_history || [];
+    const lastActionAtDate = new Date();
+
+    workflow_history.push({
+      action: enum_last_action.rejected,
+      datetime: lastActionAtDate.toISOString(),
+      user: {
+        id: user_id,
+        name: populateData?.user_id?.name,
+      },
+      current_stage: storeRequisitionData?.workflow_current_stage,
+      next_stage: '-',
+    });
+
+    const workflow = {
+      workflow_previous_stage: storeRequisitionData?.workflow_current_stage,
+      workflow_current_stage: storeRequisitionData?.workflow_current_stage,
+      workflow_next_stage: '-',
+      user_action: [],
+      last_action: enum_last_action.rejected,
+      last_action_at_date: lastActionAtDate.toISOString(),
+      last_action_by_id: user_id,
+      last_action_by_name: populateData?.user_id?.name,
+      workflow_history,
+    };
+
+    const result = await this.storeRequisitionService.reject(id, workflow, body);
+
+    // Send notification for rejection
+    this.sendRejectNotification(
+      storeRequisitionData,
+      user_id,
+      populateData?.user_id?.name,
+    );
+
+    return result;
+  }
+
+  async review(
+    id: string,
+    body: ReviewStoreRequisitionDto,
+    user_id: string,
+    bu_code: string,
+  ) {
+    this.logger.debug({ function: 'review', id, body, user_id, bu_code }, StoreRequisitionLogic.name);
+    await this.storeRequisitionService.initializePrismaService(bu_code, user_id);
+
+    const storeRequisitionResult = await this.storeRequisitionService.findById(id);
+    if (storeRequisitionResult.isError()) {
+      throw new Error('Store Requisition not found');
+    }
+    const storeRequisitionData = storeRequisitionResult.value;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const userRes: Observable<any> = this.authService.send(
+      { cmd: 'get-user-by-id', service: 'auth' },
+      { id: user_id },
+    );
+    const userResponse = await firstValueFrom(userRes);
+
+    const workflowRes = this.masterService.send(
+      { cmd: 'workflows.findOne', service: 'workflows' },
+      {
+        id: storeRequisitionData.workflow_id,
+        user_id,
+        bu_code,
+      },
+    );
+    const workflowResponse = await firstValueFrom(workflowRes);
+    if (workflowResponse.response.status !== HttpStatus.OK) {
+      throw new Error(workflowResponse.response.message);
+    }
+
+    const workflowNavRes = this.masterService.send(
+      { cmd: 'workflows.navigate-back-to-stage', service: 'workflows' },
+      {
+        workflow_id: storeRequisitionData.workflow_id,
+        user_id,
+        bu_code,
+        stage: body.des_stage,
+        current_stage: storeRequisitionData.workflow_current_stage,
+        requestData: {},
+      },
+    );
+    const backToStageRes = await firstValueFrom(workflowNavRes);
+    const workflowHeader: NavigateForwardResult = backToStageRes.data;
+
+    const workflow_history = storeRequisitionData?.workflow_history || [];
+    const lastActionAtDate = new Date();
+
+    workflow_history.push({
+      action: enum_last_action.reviewed,
+      datetime: lastActionAtDate.toISOString(),
+      user: {
+        id: user_id,
+        name: userResponse?.data?.name,
+      },
+      current_stage: storeRequisitionData?.workflow_current_stage,
+      next_stage: workflowHeader.navigation_info.workflow_next_step,
+    });
+
+    const userAction = await this.buildUserAction(
+      workflowHeader.navigation_info.current_stage_info,
+      storeRequisitionData.department_id,
+      storeRequisitionData.department_name,
+      user_id,
+      bu_code,
+    );
+
+    const workflow = {
+      workflow_previous_stage: workflowHeader.previous_stage,
+      workflow_current_stage: workflowHeader.current_stage,
+      workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
+      user_action: userAction,
+      last_action: enum_last_action.reviewed,
+      last_action_at_date: lastActionAtDate.toISOString(),
+      last_action_by_id: user_id,
+      last_action_by_name: userResponse?.data?.name,
+      workflow_history,
+    };
+
+    const result = await this.storeRequisitionService.review(id, workflow, body);
+
+    // Send notification for review (send back)
+    this.sendReviewNotification(
+      storeRequisitionData,
+      workflow as WorkflowHeader,
+      user_id,
+      userResponse?.data?.name,
+    );
+
+    return result;
+  }
+
   private populateData(data: any) {
     const headerFields = {
       workflow_id: data?.workflow_id,
@@ -497,6 +640,68 @@ export class StoreRequisitionLogic {
     return [...new Set(d)];
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async buildUserAction(
+    currentStageInfo: any,
+    department_id: string | null | undefined,
+    department_name: string | null | undefined,
+    user_id: string,
+    bu_code: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): Promise<{ execute: any[] } | null> {
+    const userIdsToAssign: string[] = [];
+
+    // Always add assigned_users from workflow stage
+    // assigned_users can be either string[] (IDs) or object[] (full profiles)
+    const assignedUsers: any[] = currentStageInfo?.assigned_users || [];
+    for (const user of assignedUsers) {
+      if (typeof user === 'string') {
+        userIdsToAssign.push(user);
+      } else if (user?.user_id) {
+        userIdsToAssign.push(user.user_id);
+      }
+    }
+
+    // Add all users in department if creator_access flag is set
+    if (currentStageInfo?.creator_access === creatorAccess.ALL_PEOPLE_IN_DEPARTMENT_CAN_ACTION && department_id) {
+      const res = this.masterService.send(
+        { cmd: 'department-users.find-by-department', service: 'department-users' },
+        { department_id, user_id, bu_code },
+      );
+      const usersInDepartment: { data: { user_id: string }[] } = await firstValueFrom(res);
+      userIdsToAssign.push(...usersInDepartment.data.map(u => u.user_id));
+    }
+
+    // Add HOD users if is_hod flag is set
+    if (currentStageInfo?.is_hod === true && department_id) {
+      const hodRes = this.masterService.send(
+        { cmd: 'department-users.get-hod-in-department', service: 'department-users' },
+        { department_id, user_id, bu_code },
+      );
+      const hodUsers: { data: string[] } = await firstValueFrom(hodRes);
+      userIdsToAssign.push(...hodUsers.data);
+    }
+
+    if (userIdsToAssign.length === 0) {
+      return null;
+    }
+
+    // Get distinct user IDs
+    const distinctUserIds = [...new Set(userIdsToAssign)];
+
+    // Fetch full user profiles from auth service
+    const profilesRes = this.authService.send(
+      { cmd: 'get-user-profiles-by-ids', service: 'auth' },
+      {
+        user_ids: distinctUserIds,
+        department: department_id ? { id: department_id, name: department_name } : undefined,
+      },
+    );
+    const profilesResult: { data: UserActionProfile[] } = await firstValueFrom(profilesRes);
+
+    return { execute: profilesResult.data || [] };
+  }
+
   private async sendSubmitNotification(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     storeRequisition: Record<string, any>,
@@ -505,9 +710,10 @@ export class StoreRequisitionLogic {
     submitterName: string,
   ): Promise<void> {
     try {
-      const approverIds = workflow.user_action?.execute || [];
-      if (approverIds.length === 0) return;
+      const approverProfiles = workflow.user_action?.execute || [];
+      if (approverProfiles.length === 0) return;
 
+      const approverIds = approverProfiles.map(p => p.user_id);
       const srNo = storeRequisition?.sr_no || 'N/A';
       const title = `Store Requisition Submitted: ${srNo}`;
       const message = `${submitterName} has submitted Store Requisition ${srNo} for your approval.`;
@@ -568,7 +774,8 @@ export class StoreRequisitionLogic {
       }
 
       if (!isFullyApproved) {
-        const nextApproverIds = workflow.user_action?.execute || [];
+        const nextApproverProfiles = workflow.user_action?.execute || [];
+        const nextApproverIds = nextApproverProfiles.map(p => p.user_id);
         if (nextApproverIds.length > 0) {
           await this.notificationService.sendToUsers({
             to_user_ids: nextApproverIds,
@@ -589,6 +796,84 @@ export class StoreRequisitionLogic {
       this.logger.log(`Approval notification sent for SR ${srNo}`);
     } catch (error) {
       this.logger.error('Failed to send approve notification:', error);
+    }
+  }
+
+  private async sendRejectNotification(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    storeRequisition: Record<string, any>,
+    userId: string,
+    userName: string,
+  ): Promise<void> {
+    try {
+      const srNo = storeRequisition?.sr_no || 'N/A';
+      const requestorId = storeRequisition?.requestor_id;
+      if (requestorId) {
+        await this.notificationService.sendSRNotification(
+          requestorId,
+          `Store Requisition Rejected: ${srNo}`,
+          `Your Store Requisition ${srNo} has been rejected by ${userName}.`,
+          {
+            sr_id: storeRequisition?.id,
+            sr_no: srNo,
+            action: 'rejected',
+          },
+          userId,
+        );
+      }
+      this.logger.log(`Reject notification sent for SR ${srNo}`);
+    } catch (error) {
+      this.logger.error('Failed to send reject notification:', error);
+    }
+  }
+
+  private async sendReviewNotification(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    storeRequisition: Record<string, any>,
+    workflow: WorkflowHeader,
+    reviewerId: string,
+    reviewerName: string,
+  ): Promise<void> {
+    try {
+      const srNo = storeRequisition?.sr_no || 'N/A';
+      const requestorId = storeRequisition?.requestor_id;
+
+      if (requestorId) {
+        await this.notificationService.sendSRNotification(
+          requestorId,
+          `Store Requisition Returned: ${srNo}`,
+          `Your Store Requisition ${srNo} has been returned by ${reviewerName} to stage: ${workflow.workflow_current_stage}.`,
+          {
+            sr_id: storeRequisition?.id,
+            sr_no: srNo,
+            action: 'reviewed',
+            current_stage: workflow.workflow_current_stage,
+          },
+          reviewerId,
+        );
+      }
+
+      const actionUserProfiles = workflow.user_action?.execute || [];
+      const actionUserIds = actionUserProfiles.map(p => p.user_id).filter(id => id !== requestorId);
+      if (actionUserIds.length > 0) {
+        await this.notificationService.sendToUsers({
+          to_user_ids: actionUserIds,
+          from_user_id: reviewerId,
+          title: `Store Requisition Needs Attention: ${srNo}`,
+          message: `Store Requisition ${srNo} has been returned and requires action at stage: ${workflow.workflow_current_stage}.`,
+          type: NotificationType.SR,
+          metadata: {
+            sr_id: storeRequisition?.id,
+            sr_no: srNo,
+            action: 'review_pending',
+            current_stage: workflow.workflow_current_stage,
+          },
+        });
+      }
+
+      this.logger.log(`Review notification sent for SR ${srNo}`);
+    } catch (error) {
+      this.logger.error('Failed to send review notification:', error);
     }
   }
 }
