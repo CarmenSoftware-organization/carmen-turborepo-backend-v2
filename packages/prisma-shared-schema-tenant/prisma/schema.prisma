@@ -1952,7 +1952,43 @@ model tb_purchase_order_detail {
   received_qty  Decimal? @default(0) @db.Decimal(20, 5)
   cancelled_qty Decimal? @default(0) @db.Decimal(20, 5)
 
-  history Json? @default("[]") @db.JsonB // [{"order_qty": 10, "price": 100, "by": {id: "00000000-0000-0000-0000-000000000000", "name": "User A"}, "at": "2023-01-01T00:00:00Z"}, {...}]
+  history Json? @default("[]") @db.JsonB
+  /**
+   * [
+   * {"seq" : 1, "name" : "stage1", "status": "submit", "message": "", "by_id": "xxxxxx", "by_name" : "User1", "at_date" : "2024-01-01 01:01:01"},
+   * {"seq" : 2, "name" : "stage2", "status": "approved", "message": "", "by_id": "xxxxxx", "by_name" : "User2", "at_date" : "2024-01-01 01:01:01"},
+   * {"seq" : 3, "name" : "stage3", "status": "review", "to_stage" : "stage2", "message": "check price" , "by_id": "xxxxxx", "by_name" : "User3", "at_date" : "2024-01-01 01:01:01"},
+   * {"seq" : 4, "name" : "stage2", "status": "rejected", "message": "void item", "by_id": "xxxxxx", "by_name" : "User2", "at_date" : "2024-01-01 01:01:01"},
+   * ]
+   */
+
+  // approved_message String?   @db.VarChar
+  // approved_by_id   String?   @db.Uuid
+  // approved_by_name String?   @db.VarChar
+  // approved_date_at DateTime? @db.Timestamptz(6)
+
+  // review_message String?   @db.VarChar
+  // review_by_id   String?   @db.Uuid
+  // review_by_name String?   @db.VarChar
+  // review_date_at DateTime? @db.Timestamptz(6)
+
+  // reject_message String?   @db.VarChar
+  // reject_by_id   String?   @db.Uuid
+  // reject_by_name String?   @db.VarChar
+  // reject_date_at DateTime? @db.Timestamptz(6)
+
+  stages_status Json? @default("{}") @db.JsonB
+
+  /**
+   * [
+   * {"seq" : 1, "name" : "stage1", "status": "submit"},
+   * {"seq" : 2, "name" : "stage2", "status": "approved"},
+   * {"seq" : 3, "name" : "stage3", "status": null},
+   * {"seq" : 4, "name" : "stage4", "status": null},
+   * ]
+   */
+
+  current_stage_status String? @db.VarChar // temp field to store current stage status
 
   note        String? @db.VarChar
   info        Json?   @default("{}") @db.JsonB
