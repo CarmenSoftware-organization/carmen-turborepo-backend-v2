@@ -20,8 +20,13 @@ auth:bearer {
 
 body:json {
   {
-    "period_id": "",
-    "location_id": "",
+    "period_id": "{{period_id}}",
+    "location_id": "{{location_id}}",
     "description": "Physical Count Test"
   }
+}
+
+vars:pre-request {
+  period_id: 4b589f8b-9fa7-4e62-a5b5-e6bf45c4f9bb
+  location_id: 47414c16-9d52-4b16-8428-4a4c4e89986e
 }

@@ -260,28 +260,32 @@ export class PhysicalCountService {
       },
     });
 
-    if (existingCount) {
-      return this.findOne(existingCount.id, user_id, tenant_id);
-    }
+    // Get products assigned to this location via tb_product_location
+    const productLocations = await prisma.tb_product_location.findMany({
+      where: { location_id: data.location_id, deleted_at: null },
+      select: { product_id: true },
+    });
+    const assignedProductIds = productLocations.map((pl) => pl.product_id);
 
-    // Get products that have stock at this location (to know WHICH products to count)
-    // on_hand_qty will be computed later during the review step
+    // Also get products that have stock at this location (in case they're not assigned but have inventory)
     const stockGrouped = await prisma.tb_inventory_transaction_detail.groupBy({
       by: ['product_id'],
       where: { location_id: data.location_id },
       _sum: { qty: true },
     });
-
-    // Filter products with non-zero stock
     const productIdsWithStock = stockGrouped
       .filter((g) => g._sum.qty && !g._sum.qty.equals(0))
       .map((g) => g.product_id);
 
+    // Union both sets of product IDs
+    const allProductIds = [...new Set([...assignedProductIds, ...productIdsWithStock])];
+
     // Get product details
-    const products = productIdsWithStock.length > 0
+    const products = allProductIds.length > 0
       ? await prisma.tb_product.findMany({
-        where: { id: { in: productIdsWithStock }, deleted_at: null },
+        where: { id: { in: allProductIds }, deleted_at: null },
         select: { id: true, name: true, local_name: true, code: true, sku: true, inventory_unit_id: true },
+        orderBy: [{ code: 'asc' }, { name: 'asc' }],
       })
       : [];
 
@@ -293,6 +297,42 @@ export class PhysicalCountService {
       product_sku: p.code,
       inventory_unit_id: p.inventory_unit_id,
     }));
+
+    // If physical count already exists, sync product list and return
+    if (existingCount) {
+      const existingDetails = await prisma.tb_physical_count_detail.findMany({
+        where: { physical_count_id: existingCount.id, deleted_at: null },
+        select: { product_id: true },
+      });
+      const existingProductIds = new Set(existingDetails.map((d) => d.product_id));
+
+      const newProducts = stockByProduct.filter((p) => !existingProductIds.has(p.product_id));
+
+      if (newProducts.length > 0) {
+        await prisma.tb_physical_count_detail.createMany({
+          data: newProducts.map((item) => ({
+            physical_count_id: existingCount.id,
+            product_id: item.product_id,
+            product_name: item.product_name,
+            product_local_name: item.product_local_name,
+            product_code: item.product_code,
+            product_sku: item.product_sku,
+            inventory_unit_id: item.inventory_unit_id,
+            on_hand_qty: 0,
+            counted_qty: 0,
+            diff_qty: 0,
+            created_by_id: user_id,
+          })),
+        });
+
+        await prisma.tb_physical_count.update({
+          where: { id: existingCount.id },
+          data: { product_total: existingProductIds.size + newProducts.length },
+        });
+      }
+
+      return this.findOne(existingCount.id, user_id, tenant_id);
+    }
 
     // Create physical count and details in transaction
     const result = await prisma.$transaction(async (tx) => {
