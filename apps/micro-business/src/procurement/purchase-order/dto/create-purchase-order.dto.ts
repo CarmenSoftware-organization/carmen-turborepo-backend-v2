@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { stage_status } from '@/procurement/purchase-request/dto/purchase-request-detail.dto';
 
 // Location schema - for manual PO with location breakdown
 export const PurchaseOrderLocationSchema = z.object({
@@ -58,6 +59,8 @@ export const PurchaseOrderDetailSchema = z.object({
   pr_detail: z.array(PurchaseOrderPrDetailSchema).optional(),
   // Location breakdown
   locations: z.array(PurchaseOrderLocationSchema).min(1),
+  // Stage status
+  current_stage_status: z.nativeEnum(stage_status).optional(),
   // Optional fields
   description: z.string().optional(),
   note: z.string().optional(),

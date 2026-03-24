@@ -234,36 +234,54 @@ export class PurchaseOrderLogic {
     this.purchaseOrderService.bu_code = tenant_id;
     await this.purchaseOrderService.initializePrismaService(tenant_id, user_id);
 
-    // Extract IDs from add/update details for bulk population
-    const extractIds = this.populateSaveData(data);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id);
+    const stage_role = data.stage_role || enum_stage_role.create;
 
-    // Enrich header with foreign values
-    const header = this.enrichSaveHeader(data, foreignValue);
+    if (stage_role === enum_stage_role.create) {
+      // Creator can edit everything: header + details (add/update/remove)
+      const extractIds = this.populateSaveData(data);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id);
 
-    // Enrich details
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const details: Record<string, any> = {};
-    if (data.details?.add) {
-      details.add = data.details.add.map((d) => this.enrichSaveDetail(d, foreignValue));
+      const header = this.enrichSaveHeader(data, foreignValue);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const details: Record<string, any> = {};
+      if (data.details?.add) {
+        details.add = data.details.add.map((d) => this.enrichSaveDetail(d, foreignValue));
+      }
+      if (data.details?.update) {
+        details.update = data.details.update.map((d) => ({
+          ...this.enrichSaveDetail(d, foreignValue),
+          id: (d as { id: string }).id,
+        }));
+      }
+      if (data.details?.remove) {
+        details.remove = data.details.remove;
+      }
+
+      this.logger.debug(
+        { function: 'save', id, stage_role, header, details, user_id, tenant_id },
+        PurchaseOrderLogic.name,
+      );
+
+      return this.purchaseOrderService.save(id, header, details);
+    } else {
+      // Non-creator roles (approve, purchase, etc.) can only update current_stage_status on existing details
+      const detailUpdates = [];
+      for (const detail of data.details?.update || []) {
+        detailUpdates.push({
+          id: (detail as { id: string }).id,
+          current_stage_status: detail.current_stage_status,
+        });
+      }
+
+      this.logger.debug(
+        { function: 'save', id, stage_role, detailUpdates, user_id, tenant_id },
+        PurchaseOrderLogic.name,
+      );
+
+      return this.purchaseOrderService.saveDetailStageStatus(id, detailUpdates);
     }
-    if (data.details?.update) {
-      details.update = data.details.update.map((d) => ({
-        ...this.enrichSaveDetail(d, foreignValue),
-        id: (d as { id: string }).id,
-      }));
-    }
-    if (data.details?.remove) {
-      details.remove = data.details.remove;
-    }
-
-    this.logger.debug(
-      { function: 'save', id, header, details, user_id, tenant_id },
-      PurchaseOrderLogic.name,
-    );
-
-    return this.purchaseOrderService.save(id, header, details);
   }
 
   async approve(

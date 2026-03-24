@@ -28,6 +28,7 @@ const UpdateSavePurchaseOrderDetailSchema = PurchaseOrderDetailSchema.extend({
 
 // Save PO schema - header fields (all optional) + details with add/update/remove
 export const SavePurchaseOrderSchema = z.object({
+  stage_role: z.nativeEnum(enum_stage_role).optional(),
   // Header fields (all optional for save)
   vendor_id: z.string().uuid().optional(),
   vendor_name: z.string().optional(),

@@ -35,7 +35,9 @@ import {
   ErrorCode,
   GlobalApiReturn,
   Stage,
+  stage_status,
 } from '@/common';
+import { StageStatus } from '../purchase-request/interface/workflow.interface';
 import {
   ApprovePurchaseOrderDetailDto,
   RejectPurchaseOrderDetailDto,
@@ -215,6 +217,8 @@ export class PurchaseOrderService {
             base_total_price: true,
             received_qty: true,
             cancelled_qty: true,
+            stages_status: true,
+            current_stage_status: true,
             note: true,
             info: true,
             doc_version: true,
@@ -1371,6 +1375,7 @@ export class PurchaseOrderService {
               product_name: detail.product_name || product?.name,
               product_local_name: detail.product_local_name || product?.local_name,
               product_sku: detail.product_sku || product?.code,
+              current_stage_status: detail.current_stage_status || null,
               is_active: true,
               doc_version: 1,
               created_by_id: this.userId,
@@ -1463,6 +1468,7 @@ export class PurchaseOrderService {
               net_amount: detail.net_amount,
               total_price: detail.total_price,
               note: detail.note,
+              current_stage_status: detail.current_stage_status !== undefined ? detail.current_stage_status : undefined,
               doc_version: { increment: 1 },
               updated_by_id: this.userId,
             },
@@ -1500,6 +1506,39 @@ export class PurchaseOrderService {
       });
 
       return id;
+    });
+
+    return Result.ok({ id: purchaseOrder.id });
+  }
+
+  @TryCatch
+  async saveDetailStageStatus(
+    id: string,
+    detailUpdates: { id: string; current_stage_status?: string }[],
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'saveDetailStageStatus', id, detailUpdates },
+      PurchaseOrderService.name,
+    );
+
+    const purchaseOrder = await this.prismaService.tb_purchase_order.findFirst({
+      where: { id, po_status: enum_purchase_order_doc_status.in_progress },
+    });
+
+    if (!purchaseOrder) {
+      return Result.error('Purchase order not found or not in progress', ErrorCode.NOT_FOUND);
+    }
+
+    await this.prismaService.$transaction(async (txp) => {
+      for (const detail of detailUpdates) {
+        await txp.tb_purchase_order_detail.update({
+          where: { id: detail.id },
+          data: {
+            current_stage_status: detail.current_stage_status || null,
+            updated_by_id: this.userId,
+          },
+        });
+      }
     });
 
     return Result.ok({ id: purchaseOrder.id });
@@ -1551,16 +1590,19 @@ export class PurchaseOrderService {
         },
       });
 
-      // Update detail history
+      // Update detail history and stages_status
       for (const detail of payload.details) {
         const poDetail = await tx.tb_purchase_order_detail.findFirst({
           where: { id: detail.id, deleted_at: null },
-          select: { id: true, history: true },
+          select: { id: true, history: true, stages_status: true },
         });
         if (!poDetail) continue;
 
         const history: any[] = Array.isArray(poDetail.history)
           ? (poDetail.history as any[])
+          : [];
+        const stages_status: any[] = Array.isArray(poDetail.stages_status)
+          ? (poDetail.stages_status as unknown as StageStatus[])
           : [];
 
         history.push({
@@ -1571,10 +1613,21 @@ export class PurchaseOrderService {
           user: { id: this.userId },
         });
 
+        if (detail.stage_status === stage_status.submit) {
+          stages_status.push({
+            seq: 1,
+            status: detail.stage_status,
+            name: workflowHeader.workflow_previous_stage,
+            message: detail.stage_message || 'submit for approval',
+          });
+        }
+
         await tx.tb_purchase_order_detail.update({
           where: { id: detail.id },
           data: {
             history: history as any,
+            stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            current_stage_status: '',
             doc_version: { increment: 1 },
             updated_by_id: this.userId,
           },
@@ -1615,6 +1668,7 @@ export class PurchaseOrderService {
       select: {
         id: true,
         history: true,
+        stages_status: true,
       },
     });
 
@@ -1626,6 +1680,8 @@ export class PurchaseOrderService {
         }
 
         const history: Record<string, unknown>[] = (findPODoc?.history as unknown as Record<string, unknown>[]) || [];
+        const stages_status: StageStatus[] = (findPODoc?.stages_status as unknown as StageStatus[]) || [];
+        const latestStageStatus = stages_status[stages_status.length - 1];
 
         history.push({
           seq: history.length + 1,
@@ -1637,6 +1693,26 @@ export class PurchaseOrderService {
           at: new Date().toISOString(),
         });
 
+        if (latestStageStatus?.status === stage_status.reject) {
+          // skip rejected details
+        } else if (
+          latestStageStatus?.status === stage_status.pending &&
+          latestStageStatus?.name === (workflow as any).workflow_previous_stage
+        ) {
+          stages_status[stages_status.length - 1] = {
+            ...latestStageStatus,
+            status: detail.stage_status,
+            message: '',
+          };
+        } else {
+          stages_status.push({
+            seq: stages_status.length + 1,
+            status: detail.stage_status,
+            name: (workflow as any).workflow_previous_stage,
+            message: '',
+          });
+        }
+
         await txp.tb_purchase_order_detail.update({
           where: {
             id: detail.id,
@@ -1644,6 +1720,8 @@ export class PurchaseOrderService {
           data: {
             doc_version: { increment: 1 },
             history: history as unknown as Prisma.InputJsonValue,
+            stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            current_stage_status: '',
             updated_by_id: this.userId,
           },
         });
@@ -1704,6 +1782,7 @@ export class PurchaseOrderService {
       select: {
         id: true,
         history: true,
+        stages_status: true,
       },
     });
 
@@ -1715,6 +1794,17 @@ export class PurchaseOrderService {
         }
 
         const history: Record<string, unknown>[] = (findPODoc?.history as unknown as Record<string, unknown>[]) || [];
+        let stages_status = (findPODoc?.stages_status as unknown as StageStatus[]) || [];
+        stages_status = stages_status.map((stage) => ({
+          ...stage,
+          status: stage_status.reject,
+        }));
+        stages_status.push({
+          seq: stages_status.length + 1,
+          status: detail.stage_status,
+          name: purchaseOrder.workflow_current_stage,
+          message: detail.stage_message || '',
+        });
 
         history.push({
           seq: history.length + 1,
@@ -1734,6 +1824,8 @@ export class PurchaseOrderService {
           data: {
             doc_version: { increment: 1 },
             history: history as unknown as Prisma.InputJsonValue,
+            stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            current_stage_status: '',
             updated_by_id: this.userId,
           },
         });
@@ -1794,8 +1886,11 @@ export class PurchaseOrderService {
       select: {
         id: true,
         history: true,
+        stages_status: true,
       },
     });
+
+    const desStage = (workflow as any).workflow_current_stage;
 
     await this.prismaService.$transaction(async (txp) => {
       for (const detail of payload) {
@@ -1805,6 +1900,7 @@ export class PurchaseOrderService {
         }
 
         const history: Record<string, unknown>[] = (findPODoc?.history as unknown as Record<string, unknown>[]) || [];
+        const stagesStatus: StageStatus[] = (findPODoc?.stages_status as unknown as StageStatus[]) || [];
 
         history.push({
           seq: history.length + 1,
@@ -1817,6 +1913,19 @@ export class PurchaseOrderService {
           at: new Date().toISOString(),
         });
 
+        // Trim stages_status back to des_stage and set it to pending
+        for (let index = stagesStatus.length - 1; index > 0; index--) {
+          if (stagesStatus[index].name === desStage) {
+            stagesStatus[index] = {
+              ...stagesStatus[index],
+              status: stage_status.pending,
+            };
+            break;
+          } else {
+            stagesStatus.splice(index + 1, stagesStatus.length - index - 1);
+          }
+        }
+
         await txp.tb_purchase_order_detail.update({
           where: {
             id: detail.id,
@@ -1824,6 +1933,8 @@ export class PurchaseOrderService {
           data: {
             doc_version: { increment: 1 },
             history: history as unknown as Prisma.InputJsonValue,
+            stages_status: stagesStatus as unknown as Prisma.InputJsonValue,
+            current_stage_status: '',
             updated_by_id: this.userId,
           },
         });
