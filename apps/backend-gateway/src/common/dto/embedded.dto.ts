@@ -38,7 +38,7 @@ export const EmbeddedWorkflowSchema = z.object({
 export const EmbeddedCurrencySchema = z.object({
   currency_id: z.string().uuid().optional(),
   exchange_rate: z.number().optional(),
-  exchange_rate_date: ValidateSchema.shape.date.optional(),
+  exchange_rate_date: ValidateSchema.shape.date.optional().nullable(),
 })
 
 export const EmbeddedDiscountSchema = z.object({
