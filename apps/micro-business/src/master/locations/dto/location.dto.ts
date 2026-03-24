@@ -158,12 +158,17 @@ export function createLocationCreateValidation(prisma: PrismaClient) {
       }
     }
 
-    // Validate products
-    if (data.products?.add) {
+    // Batch validate products
+    if (data.products?.add && data.products.add.length > 0) {
+      const productIds = data.products.add.map((p) => p.id).filter(Boolean);
+      const existingProducts = await prisma.tb_product.findMany({
+        where: { id: { in: productIds } },
+        select: { id: true },
+      });
+      const existingIds = new Set(existingProducts.map((p) => p.id));
+
       for (let i = 0; i < data.products.add.length; i++) {
-        const prod = data.products.add[i];
-        const product = await validateProductIdExists(prisma, prod.id);
-        if (!product) {
+        if (!existingIds.has(data.products.add[i].id)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: 'Product not found',
@@ -192,32 +197,40 @@ export function createLocationUpdateValidation(prisma: PrismaClient) {
       }
     }
 
-    // Validate products.add
-    if (data.products?.add) {
-      for (let i = 0; i < data.products.add.length; i++) {
-        const prod = data.products.add[i];
-        const product = await validateProductIdExists(prisma, prod.id);
-        if (!product) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'Product not found',
-            path: ['products', 'add', i, 'id'],
-          });
+    // Batch validate products.add + products.update in a single query
+    const allProductIds: string[] = [
+      ...(data.products?.add || []).map((p) => p.id),
+      ...(data.products?.update || []).map((p) => p.id),
+    ].filter(Boolean);
+
+    if (allProductIds.length > 0) {
+      const existingProducts = await prisma.tb_product.findMany({
+        where: { id: { in: allProductIds } },
+        select: { id: true },
+      });
+      const existingIds = new Set(existingProducts.map((p) => p.id));
+
+      if (data.products?.add) {
+        for (let i = 0; i < data.products.add.length; i++) {
+          if (!existingIds.has(data.products.add[i].id)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Product not found',
+              path: ['products', 'add', i, 'id'],
+            });
+          }
         }
       }
-    }
 
-    // Validate products.update
-    if (data.products?.update) {
-      for (let i = 0; i < data.products.update.length; i++) {
-        const prod = data.products.update[i];
-        const product = await validateProductIdExists(prisma, prod.id);
-        if (!product) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'Product not found',
-            path: ['products', 'update', i, 'id'],
-          });
+      if (data.products?.update) {
+        for (let i = 0; i < data.products.update.length; i++) {
+          if (!existingIds.has(data.products.update[i].id)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Product not found',
+              path: ['products', 'update', i, 'id'],
+            });
+          }
         }
       }
     }

@@ -842,7 +842,7 @@ export class LocationsService {
       }
 
       return updateLocation;
-    });
+    }, { timeout: 30000 });
 
     return Result.ok({ id: updateLocation.id });
   }
