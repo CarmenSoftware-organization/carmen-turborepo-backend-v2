@@ -20,13 +20,13 @@ export class PhysicalCountSaveItemDto {
   @ApiProperty({ description: 'Physical count detail ID', example: 'c3d4e5f6-a7b8-9012-cdef-123456789012' })
   id: string;
 
-  @ApiProperty({ description: 'Actual counted quantity', example: 150.5 })
+  @ApiProperty({ description: 'Counted quantity', example: 150.5 })
   actual_qty: number;
 }
 
 export class PhysicalCountSaveItemsRequestDto {
   @ApiProperty({
-    description: 'Array of items with actual quantities',
+    description: 'Array of items with counted quantities',
     type: [PhysicalCountSaveItemDto],
   })
   items: PhysicalCountSaveItemDto[];

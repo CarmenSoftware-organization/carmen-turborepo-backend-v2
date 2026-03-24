@@ -403,7 +403,7 @@ export class SpotCheckService {
    */
   async saveItems(
     id: string,
-    data: { items: Array<{ product_id: string; actual_qty: number }> },
+    data: { items: Array<{ id: string; actual_qty: number }> },
     user_id: string,
     tenant_id: string,
     version: string,
@@ -442,7 +442,7 @@ export class SpotCheckService {
    */
   async reviewItems(
     id: string,
-    data: { items: Array<{ product_id: string; actual_qty: number }> },
+    data: { items: Array<{ id: string; actual_qty: number }> },
     user_id: string,
     tenant_id: string,
     version: string,

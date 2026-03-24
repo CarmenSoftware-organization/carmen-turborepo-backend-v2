@@ -13,11 +13,35 @@ export class SpotCheckDetailResponseDto {
   @ApiProperty({ description: 'Product ID', example: 'c3d4e5f6-a7b8-9012-cdef-123456789012' })
   product_id: string;
 
+  @ApiPropertyOptional({ description: 'Product code', example: 'PRD-001' })
+  product_code?: string;
+
   @ApiPropertyOptional({ description: 'Product name', example: 'Olive Oil 1L' })
   product_name?: string;
 
-  @ApiPropertyOptional({ description: 'Quantity', example: 42.5 })
-  qty?: number;
+  @ApiPropertyOptional({ description: 'Product local name', example: 'น้ำมันมะกอก 1 ลิตร' })
+  product_local_name?: string;
+
+  @ApiPropertyOptional({ description: 'Product SKU', example: 'SKU-OIL-001' })
+  product_sku?: string;
+
+  @ApiProperty({ description: 'Inventory unit ID', example: 'd4e5f6a7-b8c9-0123-defa-234567890123' })
+  inventory_unit_id: string;
+
+  @ApiPropertyOptional({ description: 'On-hand quantity from system', example: 50.0 })
+  on_hand_qty?: number;
+
+  @ApiPropertyOptional({ description: 'Counted quantity', example: 48.0 })
+  actual_qty?: number;
+
+  @ApiPropertyOptional({ description: 'Difference quantity (actual_qty - on_hand_qty)', example: -2.0 })
+  diff_qty?: number;
+
+  @ApiPropertyOptional({ description: 'Counted at timestamp', example: '2026-03-10T09:30:00.000Z' })
+  counted_at?: Date;
+
+  @ApiPropertyOptional({ description: 'Counted by user ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  counted_by_id?: string;
 
   @ApiPropertyOptional({ description: 'Description', example: 'Item description' })
   description?: string;
@@ -69,10 +93,10 @@ export class SpotCheckResponseDto {
   @ApiPropertyOptional({ description: 'Location name', example: 'Main Kitchen' })
   location_name?: string;
 
-  @ApiProperty({ description: 'Document status', example: 'pending' })
+  @ApiProperty({ description: 'Document status', example: 'pending', enum: ['pending', 'in_progress', 'void', 'completed'] })
   doc_status: string;
 
-  @ApiProperty({ description: 'Spot check method', example: 'random' })
+  @ApiProperty({ description: 'Spot check method', example: 'random', enum: ['random', 'high_value', 'manual'] })
   method: string;
 
   @ApiProperty({ description: 'Sample size', example: 10 })
@@ -90,36 +114,6 @@ export class SpotCheckResponseDto {
   @ApiPropertyOptional({ description: 'Dimension data (JSON)', example: [] })
   dimension?: unknown;
 
-  @ApiPropertyOptional({ description: 'Workflow ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  workflow_id?: string;
-
-  @ApiPropertyOptional({ description: 'Workflow name', example: 'Spot Check Workflow' })
-  workflow_name?: string;
-
-  @ApiPropertyOptional({ description: 'Workflow current stage', example: 'draft' })
-  workflow_current_stage?: string;
-
-  @ApiPropertyOptional({ description: 'Workflow previous stage', example: null })
-  workflow_previous_stage?: string;
-
-  @ApiPropertyOptional({ description: 'Workflow next stage', example: 'approval' })
-  workflow_next_stage?: string;
-
-  @ApiPropertyOptional({ description: 'User action (JSON)', example: {} })
-  user_action?: unknown;
-
-  @ApiPropertyOptional({ description: 'Last action performed', example: 'submitted' })
-  last_action?: string;
-
-  @ApiPropertyOptional({ description: 'Last action date', example: '2026-03-10T10:30:00.000Z' })
-  last_action_at_date?: string;
-
-  @ApiPropertyOptional({ description: 'Last action by user ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  last_action_by_id?: string;
-
-  @ApiPropertyOptional({ description: 'Last action by user name', example: 'John Doe' })
-  last_action_by_name?: string;
-
   @ApiPropertyOptional({ description: 'Document version', example: 0 })
   doc_version?: number;
 
@@ -136,7 +130,7 @@ export class SpotCheckResponseDto {
   updated_by_id?: string;
 
   @ApiPropertyOptional({ description: 'Spot check details (line items)', type: [SpotCheckDetailResponseDto] })
-  details?: SpotCheckDetailResponseDto[];
+  tb_spot_check_detail?: SpotCheckDetailResponseDto[];
 }
 
 export class SpotCheckListResponseDto {

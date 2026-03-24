@@ -319,7 +319,7 @@ export class PhysicalCountService {
             product_sku: item.product_sku,
             inventory_unit_id: item.inventory_unit_id,
             on_hand_qty: 0,
-            counted_qty: 0,
+            actual_qty: 0,
             diff_qty: 0,
             created_by_id: user_id,
           })),
@@ -363,7 +363,7 @@ export class PhysicalCountService {
           product_sku: item.product_sku,
           inventory_unit_id: item.inventory_unit_id,
           on_hand_qty: 0,
-          counted_qty: 0,
+          actual_qty: 0,
           diff_qty: 0,
           created_by_id: user_id,
         }));
@@ -436,13 +436,13 @@ export class PhysicalCountService {
           continue;
         }
 
-        const countedQty = new Prisma.Decimal(detail.counted_qty);
+        const countedQty = new Prisma.Decimal(detail.actual_qty);
         const diffQty = countedQty.minus(existingDetail.on_hand_qty);
 
         await tx.tb_physical_count_detail.update({
           where: { id: detail.id },
           data: {
-            counted_qty: countedQty,
+            actual_qty: countedQty,
             diff_qty: diffQty,
             updated_by_id: user_id,
             updated_at: new Date().toISOString(),
@@ -455,7 +455,7 @@ export class PhysicalCountService {
       });
 
       const totalCounted = allDetails.filter(
-        (d) => d.counted_qty && !d.counted_qty.equals(0),
+        (d) => d.actual_qty && !d.actual_qty.equals(0),
       ).length;
 
       await tx.tb_physical_count.update({
@@ -540,17 +540,17 @@ export class PhysicalCountService {
       onHandGrouped.map((item) => [item.product_id, item._sum.qty || new Prisma.Decimal(0)]),
     );
 
-    // Update each detail with actual_qty (counted_qty), computed on_hand_qty, and diff_qty
+    // Update each detail with actual_qty (actual_qty), computed on_hand_qty, and diff_qty
     await prisma.$transaction(async (tx) => {
       for (const detail of details) {
         const onHandQty = onHandMap.get(detail.product_id) || new Prisma.Decimal(0);
-        const countedQty = actualQtyMap.get(detail.id) || detail.counted_qty;
+        const countedQty = actualQtyMap.get(detail.id) || detail.actual_qty;
         const diffQty = countedQty.minus(onHandQty);
 
         await tx.tb_physical_count_detail.update({
           where: { id: detail.id },
           data: {
-            counted_qty: countedQty,
+            actual_qty: countedQty,
             on_hand_qty: onHandQty,
             diff_qty: diffQty,
             updated_by_id: user_id,
@@ -561,7 +561,7 @@ export class PhysicalCountService {
 
       // Update product_counted
       const totalCounted = details.filter(
-        (d) => actualQtyMap.has(d.id) || (d.counted_qty && !d.counted_qty.equals(0)),
+        (d) => actualQtyMap.has(d.id) || (d.actual_qty && !d.actual_qty.equals(0)),
       ).length;
 
       await tx.tb_physical_count.update({
@@ -638,7 +638,7 @@ export class PhysicalCountService {
     });
 
     const uncountedDetails = details.filter(
-      (d) => d.counted_qty === null || d.counted_qty.equals(0),
+      (d) => d.actual_qty === null || d.actual_qty.equals(0),
     );
 
     if (uncountedDetails.length > 0) {

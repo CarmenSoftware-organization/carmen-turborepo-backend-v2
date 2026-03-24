@@ -508,7 +508,7 @@ export class PhysicalCountController extends BaseHttpController {
    * บันทึกจำนวนที่นับได้เป็นร่างจากอุปกรณ์มือถือ
    * @param id - Physical count ID / รหัสการตรวจนับสินค้า
    * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param data - Items with actual quantities / รายการสินค้าพร้อมจำนวนจริง
+   * @param data - Items with counted quantities / รายการสินค้าพร้อมจำนวนที่นับได้
    * @param version - API version / เวอร์ชัน API
    * @returns Save result / ผลลัพธ์การบันทึก
    */
@@ -517,7 +517,7 @@ export class PhysicalCountController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Save Physical Count items',
-    description: 'Persists the actual counted quantities entered by warehouse staff on a mobile device as a draft, allowing them to pause and resume the physical count without finalizing it.',
+    description: 'Persists the counted quantities entered by warehouse staff on a mobile device as a draft, allowing them to pause and resume the physical count without finalizing it.',
     operationId: 'savePhysicalCountItems',
     tags: ['Inventory', 'Physical Count'],
     deprecated: false,
@@ -557,7 +557,7 @@ export class PhysicalCountController extends BaseHttpController {
    * คำนวณผลต่างระหว่างจำนวนจริงกับจำนวนในระบบ
    * @param id - Physical count ID / รหัสการตรวจนับสินค้า
    * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param data - Items with actual quantities / รายการสินค้าพร้อมจำนวนจริง
+   * @param data - Items with counted quantities / รายการสินค้าพร้อมจำนวนที่นับได้
    * @param version - API version / เวอร์ชัน API
    * @returns Variance review result / ผลลัพธ์การตรวจสอบผลต่าง
    */
@@ -566,7 +566,7 @@ export class PhysicalCountController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Review Physical Count items',
-    description: 'Compares the actual counted quantities against system stock levels and calculates variances for each item, enabling warehouse staff to review discrepancies before final submission.',
+    description: 'Compares the counted quantities against system stock levels and calculates variances for each item, enabling warehouse staff to review discrepancies before final submission.',
     operationId: 'reviewPhysicalCountItems',
     tags: ['Inventory', 'Physical Count'],
     deprecated: false,

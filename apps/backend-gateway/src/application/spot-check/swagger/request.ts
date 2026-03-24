@@ -45,16 +45,16 @@ export class SpotCheckUpdateRequestDto {
 }
 
 export class SpotCheckSaveItemDto {
-  @ApiProperty({ description: 'Product ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  product_id: string;
+  @ApiProperty({ description: 'Spot check detail ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
 
-  @ApiProperty({ description: 'Actual counted quantity', example: 42.5 })
+  @ApiProperty({ description: 'Counted quantity', example: 42.5 })
   actual_qty: number;
 }
 
 export class SpotCheckSaveItemsRequestDto {
   @ApiProperty({
-    description: 'Array of items with actual quantities',
+    description: 'Array of items with counted quantities',
     type: [SpotCheckSaveItemDto],
   })
   items: SpotCheckSaveItemDto[];

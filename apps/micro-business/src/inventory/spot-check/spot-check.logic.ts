@@ -94,7 +94,7 @@ export class SpotCheckLogic {
       product_local_name: p.product_local_name,
       product_sku: p.product_sku,
       on_hand_qty: p.on_hand_qty,
-      count_qty: 0,
+      actual_qty: 0,
       diff_qty: 0,
       inventory_unit_id: p.inventory_unit_id,
       created_by_id: userId,

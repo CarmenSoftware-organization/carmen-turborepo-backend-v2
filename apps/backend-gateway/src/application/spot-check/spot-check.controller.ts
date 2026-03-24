@@ -570,7 +570,7 @@ export class SpotCheckController extends BaseHttpController {
    * บันทึกจำนวนที่นับได้เป็นร่างจากอุปกรณ์มือถือ
    * @param id - Spot check ID / รหัสการตรวจสอบแบบสุ่ม
    * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param data - Items with actual quantities / รายการสินค้าพร้อมจำนวนจริง
+   * @param data - Items with counted quantities / รายการสินค้าพร้อมจำนวนที่นับได้
    * @param version - API version / เวอร์ชัน API
    * @returns Save result / ผลลัพธ์การบันทึก
    */
@@ -579,7 +579,7 @@ export class SpotCheckController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Save Spot Check items',
-    description: 'Persists the actual counted quantities entered by staff on a mobile device as a draft, allowing them to pause and resume the spot check without finalizing results.',
+    description: 'Persists the counted quantities entered by staff on a mobile device as a draft, allowing them to pause and resume the spot check without finalizing results.',
     operationId: 'saveSpotCheckItems',
     tags: ['Inventory', 'Spot Check'],
     deprecated: false,
@@ -599,7 +599,7 @@ export class SpotCheckController extends BaseHttpController {
   async saveItems(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() data: { items: Array<{ product_id: string; actual_qty: number }> },
+    @Body() data: { items: Array<{ id: string; actual_qty: number }> },
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -619,7 +619,7 @@ export class SpotCheckController extends BaseHttpController {
    * คำนวณผลต่างระหว่างจำนวนจริงกับจำนวนในระบบสำหรับการตรวจสอบแบบสุ่ม
    * @param id - Spot check ID / รหัสการตรวจสอบแบบสุ่ม
    * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param data - Items with actual quantities / รายการสินค้าพร้อมจำนวนจริง
+   * @param data - Items with counted quantities / รายการสินค้าพร้อมจำนวนที่นับได้
    * @param version - API version / เวอร์ชัน API
    * @returns Variance review result / ผลลัพธ์การตรวจสอบผลต่าง
    */
@@ -628,7 +628,7 @@ export class SpotCheckController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Review Spot Check items',
-    description: 'Compares the actual counted quantities against system stock levels and calculates variances for each spot-checked item, enabling staff to review discrepancies before submission.',
+    description: 'Compares the counted quantities against system stock levels and calculates variances for each spot-checked item, enabling staff to review discrepancies before submission.',
     operationId: 'reviewSpotCheckItems',
     tags: ['Inventory', 'Spot Check'],
     deprecated: false,
@@ -648,7 +648,7 @@ export class SpotCheckController extends BaseHttpController {
   async reviewItems(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
-    @Body() data: { items: Array<{ product_id: string; actual_qty: number }> },
+    @Body() data: { items: Array<{ id: string; actual_qty: number }> },
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',

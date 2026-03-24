@@ -3752,7 +3752,7 @@ model tb_spot_check_detail {
   tb_unit_inventory tb_unit @relation(fields: [inventory_unit_id], references: [id], onDelete: Cascade)
 
   on_hand_qty Decimal? @default(0) @db.Decimal(20, 5)
-  count_qty   Decimal? @db.Decimal(20, 5)
+  actual_qty  Decimal? @db.Decimal(20, 5)
   diff_qty    Decimal? @default(0) @db.Decimal(20, 5)
 
   counted_at    DateTime? @db.Timestamptz(6)
@@ -5155,7 +5155,7 @@ model tb_physical_count_detail {
   tb_unit_inventory tb_unit @relation(fields: [inventory_unit_id], references: [id], onDelete: Cascade)
 
   on_hand_qty Decimal? @default(0) @db.Decimal(20, 5)
-  counted_qty Decimal? @db.Decimal(20, 5)
+  actual_qty  Decimal? @db.Decimal(20, 5)
   diff_qty    Decimal? @default(0) @db.Decimal(20, 5)
 
   counted_at    DateTime? @db.Timestamptz(6)

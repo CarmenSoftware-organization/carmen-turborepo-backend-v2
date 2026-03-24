@@ -8,7 +8,7 @@ export interface IPhysicalCountSave {
   id: string;
   details: {
     id: string;
-    counted_qty: number;
+    actual_qty: number;
   }[];
 }
 
