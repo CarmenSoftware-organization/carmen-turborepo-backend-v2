@@ -440,58 +440,26 @@ export class ProductsService {
       ProductsService.name,
     );
 
-    const productLocations = await this.prismaService.tb_product_location.findMany({
-      where: { deleted_at: null },
-      select: {
-        id: true,
-        product_id: true,
-        location_id: true,
-      },
-    });
+    const now = new Date().toISOString();
 
-    if (productLocations.length === 0) {
-      return Result.ok({ updated: 0 });
-    }
+    const result = await this.prismaService.$executeRaw`
+      UPDATE tb_product_location AS pl
+      SET
+        product_code = p.code,
+        product_name = p.name,
+        product_local_name = p.local_name,
+        product_sku = p.sku,
+        location_code = l.code,
+        location_name = l.name,
+        updated_at = ${now}::timestamptz,
+        updated_by_id = ${this.userId}::uuid
+      FROM tb_product p, tb_location l
+      WHERE p.id = pl.product_id
+        AND l.id = pl.location_id
+        AND pl.deleted_at IS NULL
+    `;
 
-    const productIds = [...new Set(productLocations.map((pl) => pl.product_id))];
-    const locationIds = [...new Set(productLocations.map((pl) => pl.location_id).filter(Boolean))] as string[];
-
-    const [products, locations] = await Promise.all([
-      this.prismaService.tb_product.findMany({
-        where: { id: { in: productIds } },
-        select: { id: true, code: true, name: true, local_name: true, sku: true },
-      }),
-      this.prismaService.tb_location.findMany({
-        where: { id: { in: locationIds } },
-        select: { id: true, code: true, name: true },
-      }),
-    ]);
-
-    const productMap = new Map(products.map((p) => [p.id, p]));
-    const locationMap = new Map(locations.map((l) => [l.id, l]));
-
-    let updated = 0;
-    for (const pl of productLocations) {
-      const product = productMap.get(pl.product_id);
-      const location = pl.location_id ? locationMap.get(pl.location_id) : null;
-
-      await this.prismaService.tb_product_location.update({
-        where: { id: pl.id },
-        data: {
-          product_code: product?.code ?? null,
-          product_name: product?.name ?? null,
-          product_local_name: product?.local_name ?? null,
-          product_sku: product?.sku ?? null,
-          location_code: location?.code ?? null,
-          location_name: location?.name ?? null,
-          updated_at: new Date().toISOString(),
-          updated_by_id: this.userId,
-        },
-      });
-      updated++;
-    }
-
-    return Result.ok({ updated });
+    return Result.ok({ updated: result });
   }
 
   /**

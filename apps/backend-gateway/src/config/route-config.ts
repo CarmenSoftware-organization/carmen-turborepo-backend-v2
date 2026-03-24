@@ -30,6 +30,8 @@ import { Config_RecipeCategoryModule } from './config_recipe-category/config_rec
 import { Config_RecipeCuisineModule } from './config_recipe-cuisine/config_recipe-cuisine.module';
 import { Config_RecipeEquipmentModule } from './config_recipe-equipment/config_recipe-equipment.module';
 import { Config_RecipeEquipmentCategoryModule } from './config_recipe-equipment-category/config_recipe-equipment-category.module';
+import { Config_LocationProductModule } from './config_location-product/config_location-product.module';
+import { Config_ProductLocationModule } from './config_product-location/config_product-location.module';
 
 @Module({
   imports: [
@@ -64,6 +66,8 @@ import { Config_RecipeEquipmentCategoryModule } from './config_recipe-equipment-
     Config_RecipeCuisineModule,
     Config_RecipeEquipmentModule,
     Config_RecipeEquipmentCategoryModule,
+    Config_LocationProductModule,
+    Config_ProductLocationModule,
   ],
   controllers: [],
   providers: [],
