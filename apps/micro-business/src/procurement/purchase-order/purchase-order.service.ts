@@ -321,6 +321,11 @@ export class PurchaseOrderService {
           base_unit_name: prLink.pr_detail_base_unit_name,
           received_qty: Number(prLink.received_qty),
           foc_qty: Number(prLink.foc_qty),
+          location_id: prLink.location_id,
+          location_code: prLink.location_code,
+          location_name: prLink.location_name,
+          delivery_point_id: prLink.delivery_point_id,
+          delivery_point_name: prLink.delivery_point_name,
         })),
       })),
     };
@@ -328,9 +333,67 @@ export class PurchaseOrderService {
     // Remove the original nested relation
     delete (transformedData as Record<string, unknown>).tb_purchase_order_detail;
 
+    // Group pr_details by location for purchase_request POs
+    if (purchaseOrder.po_type === 'purchase_request') {
+      this.enrichLocationFromPrDetails(transformedData);
+    }
+
     const serializedPurchaseOrder = PurchaseOrderDetailResponseSchema.parse(transformedData);
 
     return Result.ok(serializedPurchaseOrder);
+  }
+
+  /**
+   * Group pr_details by location_id for each detail.
+   * Produces a `locations` array with summed qty fields and nested pr_details.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private enrichLocationFromPrDetails(transformedData: Record<string, any>): void {
+    if (!transformedData.details) return;
+
+    for (const detail of transformedData.details) {
+      if (!detail.pr_details || detail.pr_details.length === 0) {
+        detail.locations = [];
+        continue;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const locMap = new Map<string, any>();
+
+      for (const pr of detail.pr_details) {
+        const key = pr.location_id || '__no_location__';
+
+        if (!locMap.has(key)) {
+          locMap.set(key, {
+            location_id: pr.location_id || null,
+            location_code: pr.location_code || null,
+            location_name: pr.location_name || null,
+            delivery_point_id: pr.delivery_point_id || null,
+            delivery_point_name: pr.delivery_point_name || null,
+            order_qty: 0,
+            order_base_qty: 0,
+            received_qty: 0,
+            foc_qty: 0,
+            pr_details: [],
+          });
+        }
+
+        const loc = locMap.get(key);
+        loc.order_qty += pr.order_qty || 0;
+        loc.order_base_qty += pr.order_base_qty || 0;
+        loc.received_qty += pr.received_qty || 0;
+        loc.foc_qty += pr.foc_qty || 0;
+        loc.pr_details.push({
+          pr_detail_id: pr.pr_detail_id,
+          order_qty: pr.order_qty,
+          order_base_qty: pr.order_base_qty,
+          received_qty: pr.received_qty,
+          foc_qty: pr.foc_qty,
+        });
+      }
+
+      detail.locations = Array.from(locMap.values());
+    }
   }
 
   /**

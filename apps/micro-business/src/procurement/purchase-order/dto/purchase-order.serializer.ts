@@ -2,6 +2,27 @@ import { z } from 'zod';
 import { decimalField } from '@/common/validation/zod-helpers';
 
 // Embedded schemas
+const LocationPrDetailSchema = z.object({
+  pr_detail_id: z.string().nullable().optional(),
+  order_qty: decimalField,
+  order_base_qty: decimalField,
+  received_qty: decimalField,
+  foc_qty: decimalField,
+});
+
+const LocationEmbeddedSchema = z.object({
+  location_id: z.string().nullable().optional(),
+  location_code: z.string().nullable().optional(),
+  location_name: z.string().nullable().optional(),
+  delivery_point_id: z.string().nullable().optional(),
+  delivery_point_name: z.string().nullable().optional(),
+  order_qty: decimalField,
+  order_base_qty: decimalField,
+  received_qty: decimalField,
+  foc_qty: decimalField,
+  pr_details: z.array(LocationPrDetailSchema).optional(),
+});
+
 const PurchaseOrderDetailEmbeddedSchema = z.object({
   id: z.string(),
   sequence_no: z.number().nullable().optional(),
@@ -31,6 +52,7 @@ const PurchaseOrderDetailEmbeddedSchema = z.object({
   total_price: decimalField,
   base_total_price: decimalField,
   info: z.any().nullable().optional(),
+  locations: z.array(LocationEmbeddedSchema).optional(),
 });
 
 const VendorEmbeddedSchema = z.object({
