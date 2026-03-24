@@ -290,6 +290,7 @@ export class PhysicalCountPeriodService {
         location_type: true,
         physical_count_type: true,
       },
+      orderBy: [{ code: 'asc' }, { name: 'asc' }],
     });
 
     // When not including all, union locations that already have physical counts in this period
@@ -312,8 +313,10 @@ export class PhysicalCountPeriodService {
             location_type: true,
             physical_count_type: true,
           },
+          orderBy: [{ code: 'asc' }, { name: 'asc' }],
         });
         locations = [...locations, ...extraLocations];
+        locations.sort((a, b) => (a.code ?? '').localeCompare(b.code ?? '') || (a.name ?? '').localeCompare(b.name ?? ''));
       }
     }
 
