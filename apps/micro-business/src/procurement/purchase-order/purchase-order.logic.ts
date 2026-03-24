@@ -199,6 +199,28 @@ export class PurchaseOrderLogic {
       workflow_name: foreignValue?.workflow_id?.name,
     } as ICreatePurchaseOrder;
 
+    // Enrich location data in details
+    if (enrichedData.details?.add) {
+      for (const detail of enrichedData.details.add) {
+        if (!detail.locations) continue;
+        for (const loc of detail.locations) {
+          if (loc.location_id) {
+            const location = this.findByIdInArray(foreignValue?.location_ids, loc.location_id);
+            if (location) {
+              loc.location_code = loc.location_code || location.code;
+              loc.location_name = loc.location_name || location.name;
+            }
+          }
+          if (loc.delivery_point_id) {
+            const dp = this.findByIdInArray(foreignValue?.delivery_point_ids, loc.delivery_point_id);
+            if (dp) {
+              loc.delivery_point_name = loc.delivery_point_name || dp.name;
+            }
+          }
+        }
+      }
+    }
+
     return this.purchaseOrderService.create(enrichedData);
   }
 
@@ -542,7 +564,18 @@ export class PurchaseOrderLogic {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private populateCreateData(data: CreatePurchaseOrderDto): Record<string, any> {
     const workflow_id = data.workflow_id;
-    return { workflow_id };
+    const location_ids: string[] = [];
+    const delivery_point_ids: string[] = [];
+
+    const allDetails = data.details?.add || [];
+    for (const detail of allDetails) {
+      for (const loc of detail.locations || []) {
+        if (loc.location_id) location_ids.push(loc.location_id);
+        if (loc.delivery_point_id) delivery_point_ids.push(loc.delivery_point_id);
+      }
+    }
+
+    return { workflow_id, location_ids, delivery_point_ids };
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

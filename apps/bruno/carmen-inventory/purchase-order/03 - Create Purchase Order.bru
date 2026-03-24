@@ -36,6 +36,7 @@ body:json {
     "email": "purchasing@hotel.com",
     "remarks": "Please deliver to back entrance",
     "note": "Urgent order",
+    "workflow_id": "<workflow_uuid>",
     "details": {
       "add": [
         {
@@ -64,13 +65,18 @@ body:json {
           "total_price": 2541.25,
           "is_foc": false,
           "description": "For main kitchen",
-          "pr_detail": [
+          "locations": [
             {
-              "pr_detail_id": "<pr_detail_uuid>",
-              "order_qty": 10,
-              "order_unit_id": "<unit_uuid>",
-              "order_unit_name": "Bag",
-              "order_base_qty": 10
+              "location_id": "<location_uuid>",
+              "delivery_point_id": "<delivery_point_uuid>",
+              "order_qty": 6,
+              "order_base_qty": 6
+            },
+            {
+              "location_id": "<location_uuid_2>",
+              "delivery_point_id": "<delivery_point_uuid_2>",
+              "order_qty": 4,
+              "order_base_qty": 4
             }
           ]
         }

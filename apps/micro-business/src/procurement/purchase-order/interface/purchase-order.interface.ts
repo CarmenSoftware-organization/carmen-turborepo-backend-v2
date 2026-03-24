@@ -1,5 +1,15 @@
 import { enum_purchase_order_doc_status } from '@repo/prisma-shared-schema-tenant';
 
+export interface IPurchaseOrderLocation {
+  location_id: string;
+  location_code?: string;
+  location_name?: string;
+  delivery_point_id?: string;
+  delivery_point_name?: string;
+  order_qty: number;
+  order_base_qty?: number;
+}
+
 // PR Detail linkage interface - links PO detail to PR detail
 export interface IPurchaseOrderPrDetail {
   pr_detail_id: string;
@@ -193,7 +203,9 @@ export interface ICreatePurchaseOrderDetail {
   // FOC
   is_foc?: boolean;
   // PR detail linkage
-  pr_detail: IPurchaseOrderPrDetail[];
+  pr_detail?: IPurchaseOrderPrDetail[];
+  // Location breakdown
+  locations: IPurchaseOrderLocation[];
   description?: string;
   note?: string;
 }

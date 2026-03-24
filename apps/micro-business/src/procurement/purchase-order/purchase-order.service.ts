@@ -333,10 +333,8 @@ export class PurchaseOrderService {
     // Remove the original nested relation
     delete (transformedData as Record<string, unknown>).tb_purchase_order_detail;
 
-    // Group pr_details by location for purchase_request POs
-    if (purchaseOrder.po_type === 'purchase_request') {
-      this.enrichLocationFromPrDetails(transformedData);
-    }
+    // Group junction records by location into detail.locations
+    this.enrichLocationFromPrDetails(transformedData);
 
     const serializedPurchaseOrder = PurchaseOrderDetailResponseSchema.parse(transformedData);
 
@@ -940,6 +938,26 @@ export class PurchaseOrderService {
                 location_name: prDetail.location_name,
                 delivery_point_id: prDetail.delivery_point_id || undefined,
                 delivery_point_name: prDetail.delivery_point_name,
+                created_by_id: this.userId,
+              },
+            });
+          }
+        }
+
+        // Create location junction records (for manual PO with locations, pr_detail_id = null)
+        if (detail.locations && detail.locations.length > 0) {
+          for (const loc of detail.locations) {
+            await prismatx.tb_purchase_order_detail_tb_purchase_request_detail.create({
+              data: {
+                po_detail_id: poDetail.id,
+                pr_detail_id: null,
+                pr_detail_qty: loc.order_qty,
+                pr_detail_base_qty: loc.order_base_qty || 0,
+                location_id: loc.location_id,
+                location_code: loc.location_code,
+                location_name: loc.location_name,
+                delivery_point_id: loc.delivery_point_id || undefined,
+                delivery_point_name: loc.delivery_point_name,
                 created_by_id: this.userId,
               },
             });

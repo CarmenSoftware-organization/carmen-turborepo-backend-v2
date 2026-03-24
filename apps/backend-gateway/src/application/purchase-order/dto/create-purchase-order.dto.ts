@@ -1,5 +1,28 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
+export class PurchaseOrderLocationDto {
+  @ApiProperty({ description: 'Location ID', format: 'uuid' })
+  location_id: string;
+
+  @ApiPropertyOptional({ description: 'Location code' })
+  location_code?: string;
+
+  @ApiPropertyOptional({ description: 'Location name' })
+  location_name?: string;
+
+  @ApiPropertyOptional({ description: 'Delivery point ID', format: 'uuid' })
+  delivery_point_id?: string;
+
+  @ApiPropertyOptional({ description: 'Delivery point name' })
+  delivery_point_name?: string;
+
+  @ApiProperty({ description: 'Order quantity for this location' })
+  order_qty: number;
+
+  @ApiPropertyOptional({ description: 'Order base quantity for this location' })
+  order_base_qty?: number;
+}
+
 export class PurchaseOrderPrDetailDto {
   @ApiProperty({ description: 'PR Detail ID', format: 'uuid' })
   pr_detail_id: string;
@@ -104,6 +127,9 @@ export class PurchaseOrderDetailDto {
 
   @ApiPropertyOptional({ description: 'Change history (JSON)' })
   history?: unknown;
+
+  @ApiProperty({ description: 'Location breakdown for this line item', type: [PurchaseOrderLocationDto] })
+  locations: PurchaseOrderLocationDto[];
 }
 
 export class CreatePurchaseOrderDetailOperationsDto {

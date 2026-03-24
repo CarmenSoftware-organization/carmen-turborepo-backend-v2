@@ -1,5 +1,16 @@
 import { z } from 'zod';
 
+// Location schema - for manual PO with location breakdown
+export const PurchaseOrderLocationSchema = z.object({
+  location_id: z.string().uuid(),
+  location_code: z.string().optional(),
+  location_name: z.string().optional(),
+  delivery_point_id: z.string().uuid().optional(),
+  delivery_point_name: z.string().optional(),
+  order_qty: z.number().nonnegative(),
+  order_base_qty: z.number().nonnegative().optional().default(0),
+});
+
 // PR Detail linkage schema - links PO detail to PR detail
 export const PurchaseOrderPrDetailSchema = z.object({
   pr_detail_id: z.string().uuid(),
@@ -44,7 +55,9 @@ export const PurchaseOrderDetailSchema = z.object({
   // FOC
   is_foc: z.boolean().optional().default(false),
   // PR detail linkage
-  pr_detail: z.array(PurchaseOrderPrDetailSchema).min(1),
+  pr_detail: z.array(PurchaseOrderPrDetailSchema).optional(),
+  // Location breakdown
+  locations: z.array(PurchaseOrderLocationSchema).min(1),
   // Optional fields
   description: z.string().optional(),
   note: z.string().optional(),
