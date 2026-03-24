@@ -218,19 +218,41 @@ export class PhysicalCountService {
         location_code: true,
         location_name: true,
         status: true,
-        product_counted: true,
         product_total: true,
         created_at: true,
         updated_at: true,
+        _count: {
+          select: {
+            tb_physical_count_detail: {
+              where: {
+                counted_at: { not: null },
+                deleted_at: null,
+              },
+            },
+          },
+        },
       },
     });
+
+    const mappedList = physicalCountList.map((item: any) => ({
+      id: item.id,
+      physical_count_period_id: item.physical_count_period_id,
+      location_id: item.location_id,
+      location_code: item.location_code,
+      location_name: item.location_name,
+      status: item.status,
+      product_counted: item._count.tb_physical_count_detail,
+      product_total: item.product_total,
+      created_at: item.created_at,
+      updated_at: item.updated_at,
+    }));
 
     const total = await prisma.tb_physical_count.count({
       where: whereClause,
     });
 
     return Result.ok({
-      data: physicalCountList,
+      data: mappedList,
       paginate: {
         total,
         page: q.page,

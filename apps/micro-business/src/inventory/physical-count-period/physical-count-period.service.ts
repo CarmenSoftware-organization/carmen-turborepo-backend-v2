@@ -320,7 +320,7 @@ export class PhysicalCountPeriodService {
       }
     }
 
-    // Count items already counted per physical_count_id
+    // Count items already counted per physical_count_id (only those with counted_at)
     const physicalCountIds = existingCounts.map((c) => c.id);
     let countedByPhysicalCount = new Map<string, number>();
     if (physicalCountIds.length > 0) {
@@ -328,6 +328,7 @@ export class PhysicalCountPeriodService {
         by: ["physical_count_id"],
         where: {
           physical_count_id: { in: physicalCountIds },
+          counted_at: { not: null },
           deleted_at: null,
         },
         _count: { id: true },
@@ -355,8 +356,8 @@ export class PhysicalCountPeriodService {
         name: loc.name,
         location_type: loc.location_type,
         physical_count_type: loc.physical_count_type,
-        counted: existingCount ? countedByPhysicalCount.get(existingCount.id) || 0 : 0,
-        total_products: productCountByLocation.get(loc.id) || 0,
+        product_counted: existingCount ? countedByPhysicalCount.get(existingCount.id) || 0 : 0,
+        product_total: productCountByLocation.get(loc.id) || 0,
         physical_count_status: existingCount ? existingCount.status : "not_started",
         physical_count_id: existingCount ? existingCount.id : null,
         start_counting_at: existingCount?.start_counting_at || null,
