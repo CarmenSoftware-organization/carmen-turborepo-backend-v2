@@ -113,7 +113,7 @@ export const PurchaseOrderDetailResponseSchema = z.object({
   is_active: z.boolean().optional(),
   created_at: z.coerce.date().optional(),
   updated_at: z.coerce.date().optional(),
-  details: z.array(PurchaseOrderDetailEmbeddedSchema).optional(),
+  purchase_order_detail: z.array(PurchaseOrderDetailEmbeddedSchema).optional(),
 });
 
 export type PurchaseOrderDetailResponse = z.infer<typeof PurchaseOrderDetailResponseSchema>;

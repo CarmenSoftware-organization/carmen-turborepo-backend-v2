@@ -249,7 +249,7 @@ export class PurchaseOrderDetailResponseDto {
   updated_at?: string;
 
   @ApiPropertyOptional({ description: 'Purchase order detail line items', type: [PurchaseOrderDetailItemResponseDto] })
-  details?: PurchaseOrderDetailItemResponseDto[];
+  purchase_order_detail?: PurchaseOrderDetailItemResponseDto[];
 }
 
 // ==================== PO List Response (findAll) ====================
