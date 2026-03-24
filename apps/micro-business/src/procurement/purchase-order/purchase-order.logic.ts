@@ -13,6 +13,8 @@ import {
   ReviewPurchaseOrderDto,
   SavePurchaseOrderDto,
 } from './dto/approve-purchase-order.dto';
+import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
+import { ICreatePurchaseOrder } from './interface/purchase-order.interface';
 
 export interface UserActionProfile {
   user_id: string;
@@ -175,6 +177,29 @@ export class PurchaseOrderLogic {
     } catch (error) {
       this.logger.error({ function: 'sendSubmitNotification', error: (error as Error).message }, PurchaseOrderLogic.name);
     }
+  }
+
+  async create(
+    data: CreatePurchaseOrderDto,
+    user_id: string,
+    tenant_id: string,
+  ) {
+    this.purchaseOrderService.userId = user_id;
+    this.purchaseOrderService.bu_code = tenant_id;
+    await this.purchaseOrderService.initializePrismaService(tenant_id, user_id);
+
+    // Extract IDs for bulk population
+    const extractIds = this.populateCreateData(data);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id);
+
+    // Enrich header
+    const enrichedData = {
+      ...data,
+      workflow_name: foreignValue?.workflow_id?.name,
+    } as ICreatePurchaseOrder;
+
+    return this.purchaseOrderService.create(enrichedData);
   }
 
   async save(
@@ -515,13 +540,18 @@ export class PurchaseOrderLogic {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private populateCreateData(data: CreatePurchaseOrderDto): Record<string, any> {
+    const workflow_id = data.workflow_id;
+    return { workflow_id };
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private populateSaveData(data: SavePurchaseOrderDto): Record<string, any> {
     const unit_ids: string[] = [];
     const tax_profile_ids: string[] = [];
     const product_ids: string[] = [];
     const vendor_ids: string[] = [];
     const currency_ids: string[] = [];
-
     // Header IDs
     if (data.vendor_id) vendor_ids.push(data.vendor_id);
     if (data.currency_id) currency_ids.push(data.currency_id);
@@ -535,7 +565,7 @@ export class PurchaseOrderLogic {
       if (detail.tax_profile_id) tax_profile_ids.push(detail.tax_profile_id);
     }
 
-    return { unit_ids, tax_profile_ids, product_ids, vendor_ids, currency_ids };
+    return { unit_ids, tax_profile_ids, product_ids, vendor_ids, currency_ids, workflow_id: data.workflow_id };
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -562,6 +592,9 @@ export class PurchaseOrderLogic {
     if (data.remarks !== undefined) header.remarks = data.remarks;
     if (data.note !== undefined) header.note = data.note;
     if (data.workflow_id !== undefined) header.workflow_id = data.workflow_id;
+    if (data.workflow_id) {
+      header.workflow_name = foreignValue?.workflow_id?.name;
+    }
     return header;
   }
 

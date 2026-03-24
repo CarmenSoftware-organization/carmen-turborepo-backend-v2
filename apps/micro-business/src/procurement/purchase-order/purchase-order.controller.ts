@@ -132,15 +132,11 @@ export class PurchaseOrderController extends BaseMicroserviceController {
       { function: 'create', payload },
       PurchaseOrderController.name,
     );
-    this.purchaseOrderService.userId = payload.user_id;
-    this.purchaseOrderService.bu_code = payload.tenant_id || payload.bu_code;
-    await this.purchaseOrderService.initializePrismaService(
-      payload.tenant_id || payload.bu_code,
-      payload.user_id,
-    );
     const data = payload.data;
     const auditContext = this.createAuditContext(payload);
-    const result = await runWithAuditContext(auditContext, () => this.purchaseOrderService.create(data));
+    const result = await runWithAuditContext(auditContext, () =>
+      this.purchaseOrderLogic.create(data, payload.user_id, payload.tenant_id || payload.bu_code),
+    );
     return this.handleResult(result, HttpStatus.CREATED);
   }
 

@@ -755,6 +755,8 @@ export class PurchaseOrderService {
           credit_term_value: data.credit_term_value || creditTerm?.value,
           remarks: data.remarks,
           note: data.note,
+          workflow_id: data.workflow_id,
+          workflow_name: data.workflow_name,
           total_qty,
           total_price,
           total_tax,
