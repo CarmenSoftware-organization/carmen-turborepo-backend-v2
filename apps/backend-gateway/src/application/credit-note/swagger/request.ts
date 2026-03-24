@@ -182,9 +182,6 @@ export class CreateCreditNoteRequestDto {
   @ApiPropertyOptional({ description: 'Credit note reason ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   cn_reason_id?: string;
 
-  @ApiPropertyOptional({ description: 'Workflow ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  workflow_id?: string;
-
   @ApiPropertyOptional({ description: 'Additional info (JSON)', example: {} })
   info?: unknown;
 
@@ -231,9 +228,6 @@ export class UpdateCreditNoteRequestDto {
 
   @ApiPropertyOptional({ description: 'Credit note reason ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   cn_reason_id?: string;
-
-  @ApiPropertyOptional({ description: 'Workflow ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  workflow_id?: string;
 
   @ApiPropertyOptional({ description: 'Additional info (JSON)', example: {} })
   info?: unknown;
