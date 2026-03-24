@@ -91,11 +91,19 @@ export class PhysicalCountService {
           select: { id: true, name: true },
         },
       },
+      orderBy: [{ product_code: 'asc' }, { product_name: 'asc' }],
     });
+
+    const serializedDetails = details.map((d) => ({
+      ...d,
+      on_hand_qty: d.on_hand_qty != null ? Number(d.on_hand_qty) : null,
+      actual_qty: d.actual_qty != null ? Number(d.actual_qty) : null,
+      diff_qty: d.diff_qty != null ? Number(d.diff_qty) : null,
+    }));
 
     const responseData = {
       ...physicalCount,
-      details: details,
+      details: serializedDetails,
     };
 
     return Result.ok(responseData);
@@ -230,7 +238,7 @@ export class PhysicalCountService {
     );
 
     const period = await prisma.tb_physical_count_period.findFirst({
-      where: { id: data.period_id, deleted_at: null },
+      where: { id: data.physical_count_period_id, deleted_at: null },
     });
 
     if (!period) {
@@ -254,7 +262,7 @@ export class PhysicalCountService {
 
     const existingCount = await prisma.tb_physical_count.findFirst({
       where: {
-        physical_count_period_id: data.period_id,
+        physical_count_period_id: data.physical_count_period_id,
         location_id: data.location_id,
         deleted_at: null,
       },
@@ -338,7 +346,7 @@ export class PhysicalCountService {
     const result = await prisma.$transaction(async (tx) => {
       const physicalCount = await tx.tb_physical_count.create({
         data: {
-          physical_count_period_id: data.period_id,
+          physical_count_period_id: data.physical_count_period_id,
           location_id: data.location_id,
           location_code: location.code,
           location_name: location.name,

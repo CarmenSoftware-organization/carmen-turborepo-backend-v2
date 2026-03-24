@@ -6,7 +6,7 @@ meta {
 
 post {
   url: {{host}}/api/{{bu_code}}/spot-check/:id/reset
-  body: json
+  body: none
   auth: bearer
 }
 
@@ -22,6 +22,6 @@ auth:bearer {
   token: {{access_token}}
 }
 
-body:json {
-  {}
+vars:pre-request {
+  spot_check_id:
 }

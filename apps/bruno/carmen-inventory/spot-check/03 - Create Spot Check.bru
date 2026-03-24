@@ -20,10 +20,14 @@ auth:bearer {
 
 body:json {
   {
-    "location_id": "<location_uuid>",
+    "location_id": "{{location_id}}",
     "method": "random",
     "items": 10,
     "description": "Weekly spot check for dry goods storage",
     "note": "Focus on high-value items"
   }
+}
+
+vars:pre-request {
+  location_id:
 }

@@ -1,5 +1,5 @@
 export interface IPhysicalCountCreate {
-  period_id: string;
+  physical_count_period_id: string;
   location_id: string;
   description?: string;
 }

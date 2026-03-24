@@ -25,6 +25,12 @@ auth:bearer {
 
 body:json {
   {
-    "comment": "Test comment"
+    "message": "Test comment",
+    "attachments": []
   }
+}
+
+vars:pre-request {
+  physical_count_id:
+  physical_count_detail_id:
 }

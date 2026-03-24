@@ -89,7 +89,17 @@ export class SpotCheckService {
       return Result.error('Spot check not found', ErrorCode.NOT_FOUND);
     }
 
-    return Result.ok(spotCheck);
+    const serialized = {
+      ...spotCheck,
+      tb_spot_check_detail: spotCheck.tb_spot_check_detail.map((d) => ({
+        ...d,
+        on_hand_qty: d.on_hand_qty != null ? Number(d.on_hand_qty) : null,
+        actual_qty: d.actual_qty != null ? Number(d.actual_qty) : null,
+        diff_qty: d.diff_qty != null ? Number(d.diff_qty) : null,
+      })),
+    };
+
+    return Result.ok(serialized);
   }
 
   /**

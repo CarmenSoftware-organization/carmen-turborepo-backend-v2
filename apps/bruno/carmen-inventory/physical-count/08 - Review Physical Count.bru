@@ -26,9 +26,14 @@ body:json {
   {
     "items": [
       {
-        "id": "",
+        "id": "{{physical_count_detail_id}}",
         "actual_qty": 10
       }
     ]
   }
+}
+
+vars:pre-request {
+  physical_count_id:
+  physical_count_detail_id:
 }

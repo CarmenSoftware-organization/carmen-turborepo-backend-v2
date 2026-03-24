@@ -26,13 +26,14 @@ body:json {
   {
     "items": [
       {
-        "product_id": "<product_uuid_1>",
+        "id": "{{spot_check_detail_id}}",
         "actual_qty": 42.5
-      },
-      {
-        "product_id": "<product_uuid_2>",
-        "actual_qty": 15
       }
     ]
   }
+}
+
+vars:pre-request {
+  spot_check_id:
+  spot_check_detail_id:
 }

@@ -4,7 +4,7 @@ import { createZodDto } from 'nestjs-zod';
 // ==================== Physical Count Create ====================
 
 export const PhysicalCountCreate = z.object({
-  period_id: z.string().uuid(),
+  physical_count_period_id: z.string().uuid(),
   location_id: z.string().uuid(),
   description: z.string().optional().nullable(),
 });
