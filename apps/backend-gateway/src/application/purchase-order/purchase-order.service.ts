@@ -846,4 +846,36 @@ export class PurchaseOrderService {
 
     return Result.ok(response.data);
   }
+
+  /**
+   * Get previous workflow stages for a purchase order
+   * ดึงขั้นตอนอนุมัติก่อนหน้าของใบสั่งซื้อ
+   */
+  async getPreviousStages(
+    po_id: string,
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'getPreviousStages', po_id, user_id, bu_code, version },
+      PurchaseOrderService.name,
+    );
+
+    const response = await firstValueFrom(
+      this.procurementService.send(
+        { cmd: 'purchase-order.get-previous-stages', service: 'purchase-order' },
+        { po_id, user_id, bu_code, version },
+      ),
+    );
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
 }

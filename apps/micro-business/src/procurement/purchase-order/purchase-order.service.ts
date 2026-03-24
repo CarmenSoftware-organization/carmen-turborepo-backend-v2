@@ -4500,6 +4500,63 @@ export class PurchaseOrderService {
 
     return Result.ok({ pending: total });
   }
+
+  /**
+   * Get previous workflow stages for a purchase order
+   * ดึงขั้นตอนอนุมัติก่อนหน้า current_stage ของใบสั่งซื้อ
+   */
+  @TryCatch
+  async getPreviousStages(po_id: string): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'getPreviousStages', po_id, user_id: this.userId, tenant_id: this.bu_code },
+      PurchaseOrderService.name,
+    );
+
+    const po = await this.prismaService.tb_purchase_order.findFirst({
+      where: { id: po_id, deleted_at: null },
+      select: {
+        id: true,
+        workflow_id: true,
+        workflow_current_stage: true,
+      },
+    });
+
+    if (!po) {
+      return Result.error('Purchase order not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (!po.workflow_id || !po.workflow_current_stage) {
+      return Result.error('No workflow assigned to this purchase order', ErrorCode.NOT_FOUND);
+    }
+
+    const res = this.masterService.send(
+      { cmd: 'workflows.get-previous-stages', service: 'workflows' },
+      {
+        workflow_id: po.workflow_id,
+        stage: po.workflow_current_stage,
+        user_id: this.userId,
+        bu_code: this.bu_code,
+      },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response?.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response?.message || 'Failed to get previous stages',
+        ErrorCode.INTERNAL,
+      );
+    }
+
+    // Transform array to numbered map: { "1": "Create Request", "2": "HOD", ... }
+    const stages = Array.isArray(response.data) ? response.data : [];
+    const numberedStages: Record<string, string> = {};
+    stages.forEach((name: string, index: number) => {
+      numberedStages[String(index + 1)] = name;
+    });
+
+    return Result.ok(numberedStages);
+  }
 }
 
 // Force reload at Wed Jan 28 09:54:59 AM +07 2026

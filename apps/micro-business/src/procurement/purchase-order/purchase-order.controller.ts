@@ -671,4 +671,29 @@ export class PurchaseOrderController extends BaseMicroserviceController {
     );
     return this.handleResult(result);
   }
+
+  /**
+   * Get previous workflow stages for a purchase order
+   * ดึงขั้นตอนอนุมัติก่อนหน้า current_stage ของใบสั่งซื้อ
+   */
+  @MessagePattern({
+    cmd: 'purchase-order.get-previous-stages',
+    service: 'purchase-order',
+  })
+  async getPreviousStages(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'getPreviousStages', payload },
+      PurchaseOrderController.name,
+    );
+    const user_id = payload.user_id;
+    const bu_code = payload.bu_code;
+    const po_id = payload.po_id;
+
+    await this.purchaseOrderService.initializePrismaService(bu_code, user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.purchaseOrderService.getPreviousStages(po_id),
+    );
+    return this.handleResult(result);
+  }
 }

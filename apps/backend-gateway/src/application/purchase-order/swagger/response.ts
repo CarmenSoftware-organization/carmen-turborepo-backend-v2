@@ -465,6 +465,16 @@ export class ConfirmPrToPoResponseDto {
   summary: ConfirmPrSummaryResponseDto;
 }
 
+// ==================== Previous Stages Response ====================
+
+export class PurchaseOrderPreviousStagesResponseDto {
+  @ApiProperty({
+    description: 'Numbered map of workflow stages before the current stage',
+    example: { '1': 'Create Request', '2': 'HOD Approval', '3': 'Purchaser' },
+  })
+  [key: string]: string;
+}
+
 // ==================== Mutation Response ====================
 
 export class PurchaseOrderMutationResponseDto {

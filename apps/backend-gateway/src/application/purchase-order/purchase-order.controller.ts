@@ -46,6 +46,7 @@ import {
   PurchaseOrderListResponseDto,
   PurchaseOrderMutationResponseDto,
   PurchaseOrderDetailItemResponseDto,
+  PurchaseOrderPreviousStagesResponseDto,
   GroupPrForPoResponseDto,
   ConfirmPrToPoResponseDto,
 } from './swagger/response';
@@ -129,6 +130,53 @@ export class PurchaseOrderController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
     const result = await this.purchaseOrderService.findAllForGrn(user_id, bu_code, paginate, version);
+    this.respond(res, result);
+  }
+
+  /**
+   * Get previous workflow stages for a purchase order
+   * ดึงขั้นตอนอนุมัติก่อนหน้า current_stage ของใบสั่งซื้อ
+   * @param po_id - Purchase order ID / รหัสใบสั่งซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Previous workflow stages / ขั้นตอนการทำงานก่อนหน้า
+   */
+  @Get(':po_id/previous-stages')
+  @UseGuards(new AppIdGuard('purchaseOrder.findOne'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get previous workflow stages by PO ID',
+    description:
+      'Retrieves all workflow stages before the current stage of a purchase order. Used to determine revert/return-to options in the approval chain.',
+    operationId: 'getPreviousStagesByPoId',
+    tags: ['Procurement', 'Purchase Order', 'Workflow & Approval'],
+    responses: {
+      200: { description: 'Previous stages retrieved successfully' },
+      404: { description: 'Purchase order not found or no workflow assigned' },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Previous stages retrieved successfully', type: PurchaseOrderPreviousStagesResponseDto })
+  @ApiResponse({ status: 404, description: 'Purchase order not found or no workflow assigned' })
+  async getPreviousStagesByPoId(
+    @Param('po_id') po_id: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'getPreviousStagesByPoId', po_id, version },
+      PurchaseOrderController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.purchaseOrderService.getPreviousStages(
+      po_id,
+      user_id,
+      bu_code,
+      version,
+    );
     this.respond(res, result);
   }
 
