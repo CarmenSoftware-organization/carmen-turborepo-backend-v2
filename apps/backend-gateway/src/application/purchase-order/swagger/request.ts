@@ -161,9 +161,9 @@ export class CreatePurchaseOrderDetailOperationsSwaggerDto {
   add?: CreatePurchaseOrderDetailSwaggerDto[];
 }
 
-// ==================== Create PO ====================
+// ==================== Create PO Inner Data ====================
 
-export class CreatePurchaseOrderSwaggerDto {
+export class CreatePurchaseOrderDataSwaggerDto {
   @ApiPropertyOptional({ description: 'Purchase order type (defaults to manual)', enum: ['manual', 'purchase_request'], default: 'manual', example: 'manual' })
   po_type?: string;
 
@@ -222,7 +222,17 @@ export class CreatePurchaseOrderSwaggerDto {
     description: 'Purchase order detail operations (add line items) — at least 1 detail required',
     type: CreatePurchaseOrderDetailOperationsSwaggerDto,
   })
-  details: CreatePurchaseOrderDetailOperationsSwaggerDto;
+  purchase_order_detail: CreatePurchaseOrderDetailOperationsSwaggerDto;
+}
+
+// ==================== Create PO (wrapper) ====================
+
+export class CreatePurchaseOrderSwaggerDto {
+  @ApiProperty({ description: 'Stage role', enum: ['create'], example: 'create' })
+  stage_role: string;
+
+  @ApiProperty({ description: 'Purchase order data', type: CreatePurchaseOrderDataSwaggerDto })
+  details: CreatePurchaseOrderDataSwaggerDto;
 }
 
 // ==================== Update PO ====================
@@ -283,65 +293,24 @@ export class UpdatePurchaseOrderSwaggerDto {
   doc_version?: number;
 }
 
-// ==================== Save PO (add/update/remove details) ====================
+// ==================== Save PO (wrapper) ====================
+// For create role: details is an object with header fields + purchase_order_detail
+// For approve/purchase role: details is a flat array of [{ id, current_stage_status }]
+
+export class SavePurchaseOrderApproveDetailSwaggerDto {
+  @ApiProperty({ description: 'Detail line item ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+
+  @ApiPropertyOptional({ description: 'Current stage status', example: 'approve', enum: ['submit', 'pending', 'approve', 'reject', 'review'] })
+  current_stage_status?: string;
+}
 
 export class SavePurchaseOrderSwaggerDto {
-  @ApiPropertyOptional({ description: 'Vendor ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  vendor_id?: string;
+  @ApiProperty({ description: 'Stage role — determines payload shape. "create": details is object with header + purchase_order_detail. Other roles: details is flat array of [{ id, current_stage_status }]', enum: ['create', 'approve', 'purchase', 'view_only', 'issue'], example: 'create' })
+  stage_role: string;
 
-  @ApiPropertyOptional({ description: 'Vendor name', example: 'ABC Supplies Co.' })
-  vendor_name?: string;
-
-  @ApiPropertyOptional({ description: 'Expected delivery date (ISO 8601)', example: '2026-03-17T00:00:00.000Z' })
-  delivery_date?: string;
-
-  @ApiPropertyOptional({ description: 'Currency ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  currency_id?: string;
-
-  @ApiPropertyOptional({ description: 'Currency code', example: 'THB' })
-  currency_code?: string;
-
-  @ApiPropertyOptional({ description: 'Exchange rate', example: 1.0 })
-  exchange_rate?: number;
-
-  @ApiPropertyOptional({ description: 'Description', example: 'Updated PO for kitchen supplies' })
-  description?: string;
-
-  @ApiPropertyOptional({ description: 'Purchase order date (ISO 8601)', example: '2026-03-10T00:00:00.000Z' })
-  order_date?: string;
-
-  @ApiPropertyOptional({ description: 'Credit term ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  credit_term_id?: string;
-
-  @ApiPropertyOptional({ description: 'Credit term name', example: 'Net 30' })
-  credit_term_name?: string;
-
-  @ApiPropertyOptional({ description: 'Credit term value in days', example: 30 })
-  credit_term_value?: number;
-
-  @ApiPropertyOptional({ description: 'Buyer ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  buyer_id?: string;
-
-  @ApiPropertyOptional({ description: 'Buyer name', example: 'Jane Smith' })
-  buyer_name?: string;
-
-  @ApiPropertyOptional({ description: 'Vendor email', format: 'email', example: 'vendor@example.com' })
-  email?: string;
-
-  @ApiPropertyOptional({ description: 'Remarks', example: 'Urgent order' })
-  remarks?: string;
-
-  @ApiPropertyOptional({ description: 'Note', example: 'Deliver to back entrance' })
-  note?: string;
-
-  @ApiPropertyOptional({ description: 'Workflow ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  workflow_id?: string;
-
-  @ApiPropertyOptional({
-    description: 'Detail operations (add, update, remove line items)',
-    type: PurchaseOrderDetailOperationsSwaggerDto,
-  })
-  details?: PurchaseOrderDetailOperationsSwaggerDto;
+  @ApiProperty({ description: 'For create role: object with header fields + purchase_order_detail. For approve/purchase: array of { id, current_stage_status }. See examples.' })
+  details: unknown;
 }
 
 // ==================== Submit PO ====================

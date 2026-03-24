@@ -792,7 +792,7 @@ export class PurchaseOrderService {
     const orderDate = data.order_date ? new Date(String(data.order_date)) : new Date();
     const poNo = await this.generatePONo(orderDate.toISOString());
 
-    const details = data.details?.add || [];
+    const details = data.purchase_order_detail?.add || [];
 
     // Calculate totals from details
     let total_qty = 0;

@@ -1,22 +1,24 @@
 export const EXAMPLE_CREATE_PO = {
-  vendor_id: 'e0363f5a-3637-4d27-a421-8693550aa816',
-  vendor_name: 'Fresh Farm Supplies Co.',
-  delivery_date: '2026-04-01T00:00:00.000Z',
-  currency_id: '93dabe25-1668-4c5b-bceb-3e0b83b78002',
-  currency_code: 'THB',
-  exchange_rate: 1,
-  description: 'PO for kitchen raw materials - March 2026',
-  order_date: '2026-03-20T00:00:00.000Z',
-  credit_term_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-  credit_term_name: 'Net 30',
-  credit_term_value: 30,
-  buyer_id: 'd4e5f6a7-b8c9-0123-defa-234567890123',
-  buyer_name: 'Jane Smith',
-  email: 'vendor@freshfarm.com',
-  remarks: 'Delivery before 10:00 AM',
-  note: 'Deliver to back entrance - Kitchen receiving',
+  stage_role: 'create',
   details: {
-    add: [
+    vendor_id: 'e0363f5a-3637-4d27-a421-8693550aa816',
+    vendor_name: 'Fresh Farm Supplies Co.',
+    delivery_date: '2026-04-01T00:00:00.000Z',
+    currency_id: '93dabe25-1668-4c5b-bceb-3e0b83b78002',
+    currency_code: 'THB',
+    exchange_rate: 1,
+    description: 'PO for kitchen raw materials - March 2026',
+    order_date: '2026-03-20T00:00:00.000Z',
+    credit_term_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    credit_term_name: 'Net 30',
+    credit_term_value: 30,
+    buyer_id: 'd4e5f6a7-b8c9-0123-defa-234567890123',
+    buyer_name: 'Jane Smith',
+    email: 'vendor@freshfarm.com',
+    remarks: 'Delivery before 10:00 AM',
+    note: 'Deliver to back entrance - Kitchen receiving',
+    purchase_order_detail: {
+      add: [
       {
         sequence: 1,
         product_id: 'bb96415b-dff0-40ec-aa2f-2b4099418314',
@@ -88,11 +90,14 @@ export const EXAMPLE_CREATE_PO = {
         description: 'Yellow onions for daily use',
       },
     ],
+    },
   },
 };
 
 export const EXAMPLE_SAVE_PO = {
-  vendor_id: 'e0363f5a-3637-4d27-a421-8693550aa816',
+  stage_role: 'create',
+  details: {
+    vendor_id: 'e0363f5a-3637-4d27-a421-8693550aa816',
   vendor_name: 'Fresh Farm Supplies Co.',
   delivery_date: '2026-04-05T00:00:00.000Z',
   currency_id: '93dabe25-1668-4c5b-bceb-3e0b83b78002',
@@ -106,7 +111,7 @@ export const EXAMPLE_SAVE_PO = {
   email: 'vendor@freshfarm.com',
   remarks: 'Urgent delivery required',
   note: 'Deliver to back entrance',
-  details: {
+  purchase_order_detail: {
     add: [
       {
         sequence: 3,
@@ -181,7 +186,22 @@ export const EXAMPLE_SAVE_PO = {
     remove: [
       { id: 'bb000000-0000-0000-0000-000000000002' },
     ],
+    },
   },
+};
+
+export const EXAMPLE_SAVE_PO_APPROVE = {
+  stage_role: 'approve',
+  details: [
+    {
+      id: 'aa000000-0000-0000-0000-000000000001',
+      current_stage_status: 'approve',
+    },
+    {
+      id: 'dd000000-0000-0000-0000-000000000003',
+      current_stage_status: 'approve',
+    },
+  ],
 };
 
 export const EXAMPLE_APPROVE_PO = {

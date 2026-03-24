@@ -26,9 +26,8 @@ const UpdateSavePurchaseOrderDetailSchema = PurchaseOrderDetailSchema.extend({
   id: z.string().uuid(),
 });
 
-// Save PO schema - header fields (all optional) + details with add/update/remove
-export const SavePurchaseOrderSchema = z.object({
-  stage_role: z.nativeEnum(enum_stage_role).optional(),
+// Save PO data schema (inside details) - for create role
+export const SavePurchaseOrderDataSchema = z.object({
   // Header fields (all optional for save)
   vendor_id: z.string().uuid().optional(),
   vendor_name: z.string().optional(),
@@ -49,14 +48,29 @@ export const SavePurchaseOrderSchema = z.object({
   workflow_id: z.string().uuid().optional(),
 
   // Details with add/update/remove
-  details: z.object({
+  purchase_order_detail: z.object({
     add: z.array(PurchaseOrderDetailSchema).optional(),
     update: z.array(UpdateSavePurchaseOrderDetailSchema).optional(),
     remove: z.array(z.object({ id: z.string().uuid() })).optional(),
   }).optional(),
 });
 
+// Save PO detail schema - for approve/purchase role (flat array like submit/reject)
+export const SavePurchaseOrderApproveDetailSchema = z.object({
+  id: z.string().uuid(),
+  current_stage_status: z.nativeEnum(stage_status).optional(),
+});
+
+// Save PO schema - stage_role + details (shape depends on role)
+export const SavePurchaseOrderSchema = z.object({
+  stage_role: z.nativeEnum(enum_stage_role),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  details: z.any(),
+});
+
 export type SavePurchaseOrderDto = z.infer<typeof SavePurchaseOrderSchema>;
+export type SavePurchaseOrderDataDto = z.infer<typeof SavePurchaseOrderDataSchema>;
+export type SavePurchaseOrderApproveDetailDto = z.infer<typeof SavePurchaseOrderApproveDetailSchema>;
 export type SavePurchaseOrderDetailDto = z.infer<typeof PurchaseOrderDetailSchema>;
 
 export class SavePurchaseOrderDtoClass extends createZodDto(SavePurchaseOrderSchema) {}

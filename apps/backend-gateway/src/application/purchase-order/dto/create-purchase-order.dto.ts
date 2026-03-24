@@ -140,7 +140,7 @@ export class CreatePurchaseOrderDetailOperationsDto {
   add: PurchaseOrderDetailDto[];
 }
 
-export class CreatePurchaseOrderDto {
+export class CreatePurchaseOrderDetailsDto {
   @ApiPropertyOptional({ description: 'Purchase order type', enum: ['manual', 'purchase_request'], default: 'manual', example: 'manual' })
   po_type?: string;
 
@@ -199,5 +199,13 @@ export class CreatePurchaseOrderDto {
     description: 'Purchase order detail operations (add line items)',
     type: CreatePurchaseOrderDetailOperationsDto,
   })
-  details: CreatePurchaseOrderDetailOperationsDto;
+  purchase_order_detail: CreatePurchaseOrderDetailOperationsDto;
+}
+
+export class CreatePurchaseOrderDto {
+  @ApiProperty({ description: 'Stage role', enum: ['create'], default: 'create' })
+  stage_role: string;
+
+  @ApiProperty({ description: 'Purchase order data', type: CreatePurchaseOrderDetailsDto })
+  details: CreatePurchaseOrderDetailsDto;
 }

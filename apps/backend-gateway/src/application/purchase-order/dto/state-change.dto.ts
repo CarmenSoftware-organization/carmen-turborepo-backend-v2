@@ -95,6 +95,9 @@ const SavePurchaseOrderDetailSchema = z.object({
     order_base_unit_name: z.string().optional(),
   })).min(1),
 
+  // Stage status
+  current_stage_status: z.nativeEnum(stage_status).optional(),
+
   // Optional fields
   description: z.string().optional(),
   note: z.string().optional(),
@@ -106,32 +109,12 @@ const UpdateSavePurchaseOrderDetailSchema = SavePurchaseOrderDetailSchema.omit({
   id: z.string().uuid(),
 });
 
+// Save PO schema - stage_role + details (shape depends on role)
 export const SavePurchaseOrderSchema = z.object({
-  // Header fields (all optional for save)
-  vendor_id: z.string().uuid().optional(),
-  vendor_name: z.string().optional(),
-  delivery_date: z.string().optional(),
-  currency_id: z.string().uuid().optional(),
-  currency_code: z.string().optional(),
-  exchange_rate: z.number().positive().optional(),
-  description: z.string().optional(),
-  order_date: z.string().optional(),
-  credit_term_id: z.string().uuid().optional(),
-  credit_term_name: z.string().optional(),
-  credit_term_value: z.number().int().nonnegative().optional(),
-  buyer_id: z.string().uuid().optional(),
-  buyer_name: z.string().optional(),
-  email: z.string().email().optional(),
-  remarks: z.string().optional(),
-  note: z.string().optional(),
-  workflow_id: z.string().uuid().optional(),
-
-  // Details with add/update/remove
-  details: z.object({
-    add: z.array(SavePurchaseOrderDetailSchema).optional(),
-    update: z.array(UpdateSavePurchaseOrderDetailSchema).optional(),
-    remove: z.array(z.object({ id: z.string().uuid() })).optional(),
-  }).optional(),
+  stage_role: z.nativeEnum(stage_role),
+  // details: object (create role) or array (approve/purchase role)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  details: z.any(),
 });
 
 export class SavePurchaseOrderDto extends createZodDto(SavePurchaseOrderSchema) {}
@@ -179,61 +162,70 @@ export const EXAMPLE_APPROVE_PO = {
   ],
 };
 
-export const EXAMPLE_SAVE_PO = {
-  vendor_id: '00000000-0000-0000-0000-000000000100',
-  delivery_date: '2024-02-01T00:00:00Z',
+export const EXAMPLE_SAVE_PO_CREATE = {
+  stage_role: 'create',
   details: {
-    add: [
-      {
-        sequence: 2,
-        product_id: '00000000-0000-0000-0000-000000000002',
-        order_unit_id: '00000000-0000-0000-0000-000000000010',
-        order_qty: 50,
-        price: 30,
-        sub_total_price: 1500,
-        net_amount: 1500,
-        total_price: 1605,
-        tax_rate: 7,
-        tax_amount: 105,
-        pr_detail: [
-          {
-            pr_detail_id: '00000000-0000-0000-0000-000000000201',
-            order_qty: 50,
-            order_unit_id: '00000000-0000-0000-0000-000000000010',
-            order_base_qty: 50,
-          },
-        ],
-      },
-    ],
-    update: [
-      {
-        id: '00000000-0000-0000-0000-000000000001',
-        sequence: 1,
-        product_id: '00000000-0000-0000-0000-000000000001',
-        order_unit_id: '00000000-0000-0000-0000-000000000010',
-        order_qty: 100,
-        price: 50,
-        sub_total_price: 5000,
-        net_amount: 4750,
-        total_price: 5082.5,
-        tax_rate: 7,
-        tax_amount: 332.5,
-        discount_rate: 5,
-        discount_amount: 250,
-        pr_detail: [
-          {
-            pr_detail_id: '00000000-0000-0000-0000-000000000200',
-            order_qty: 100,
-            order_unit_id: '00000000-0000-0000-0000-000000000010',
-            order_base_qty: 100,
-          },
-        ],
-      },
-    ],
-    remove: [
-      { id: '00000000-0000-0000-0000-000000000003' },
-    ],
+    vendor_id: '00000000-0000-0000-0000-000000000100',
+    delivery_date: '2024-02-01T00:00:00Z',
+    purchase_order_detail: {
+      add: [
+        {
+          sequence: 2,
+          product_id: '00000000-0000-0000-0000-000000000002',
+          order_unit_id: '00000000-0000-0000-0000-000000000010',
+          order_qty: 50,
+          price: 30,
+          sub_total_price: 1500,
+          net_amount: 1500,
+          total_price: 1605,
+          tax_rate: 7,
+          tax_amount: 105,
+          pr_detail: [
+            {
+              pr_detail_id: '00000000-0000-0000-0000-000000000201',
+              order_qty: 50,
+              order_unit_id: '00000000-0000-0000-0000-000000000010',
+              order_base_qty: 50,
+            },
+          ],
+        },
+      ],
+      update: [
+        {
+          id: '00000000-0000-0000-0000-000000000001',
+          sequence: 1,
+          product_id: '00000000-0000-0000-0000-000000000001',
+          order_unit_id: '00000000-0000-0000-0000-000000000010',
+          order_qty: 100,
+          price: 50,
+          sub_total_price: 5000,
+          net_amount: 4750,
+          total_price: 5082.5,
+          tax_rate: 7,
+          tax_amount: 332.5,
+          discount_rate: 5,
+          discount_amount: 250,
+        },
+      ],
+      remove: [
+        { id: '00000000-0000-0000-0000-000000000003' },
+      ],
+    },
   },
+};
+
+export const EXAMPLE_SAVE_PO_APPROVE = {
+  stage_role: 'approve',
+  details: [
+    {
+      id: '00000000-0000-0000-0000-000000000001',
+      current_stage_status: 'approve',
+    },
+    {
+      id: '00000000-0000-0000-0000-000000000002',
+      current_stage_status: 'approve',
+    },
+  ],
 };
 
 export const EXAMPLE_REJECT_PO = {

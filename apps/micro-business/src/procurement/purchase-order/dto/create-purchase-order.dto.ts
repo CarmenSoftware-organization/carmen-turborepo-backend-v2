@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { enum_stage_role } from '@repo/prisma-shared-schema-tenant';
 import { stage_status } from '@/procurement/purchase-request/dto/purchase-request-detail.dto';
 
 // Location schema - for manual PO with location breakdown
@@ -71,8 +72,8 @@ export const CreatePurchaseOrderDetailOperationsSchema = z.object({
   add: z.array(PurchaseOrderDetailSchema).min(1),
 });
 
-// Create PO schema
-export const CreatePurchaseOrderSchema = z.object({
+// Inner PO data schema (inside details)
+export const CreatePurchaseOrderDataSchema = z.object({
   po_type: z.enum(['manual', 'purchase_request']).optional().default('manual'),
   vendor_id: z.string().uuid(),
   vendor_name: z.string().optional(),
@@ -93,10 +94,17 @@ export const CreatePurchaseOrderSchema = z.object({
   note: z.string().optional(),
   workflow_id: z.string().uuid(),
   // Details
-  details: CreatePurchaseOrderDetailOperationsSchema,
+  purchase_order_detail: CreatePurchaseOrderDetailOperationsSchema,
+});
+
+// Create PO schema - wrapper with stage_role + details
+export const CreatePurchaseOrderSchema = z.object({
+  stage_role: z.literal(enum_stage_role.create),
+  details: CreatePurchaseOrderDataSchema,
 });
 
 export type CreatePurchaseOrderDto = z.infer<typeof CreatePurchaseOrderSchema>;
+export type CreatePurchaseOrderDataDto = z.infer<typeof CreatePurchaseOrderDataSchema>;
 export type CreatePurchaseOrderDetailOperationsDto = z.infer<typeof CreatePurchaseOrderDetailOperationsSchema>;
 export type PurchaseOrderDetailDto = z.infer<typeof PurchaseOrderDetailSchema>;
 export type PurchaseOrderPrDetailDto = z.infer<typeof PurchaseOrderPrDetailSchema>;

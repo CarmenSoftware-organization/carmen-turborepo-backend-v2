@@ -12,8 +12,9 @@ import {
   RejectPurchaseOrderDto,
   ReviewPurchaseOrderDto,
   SavePurchaseOrderDto,
+  SavePurchaseOrderDataDto,
 } from './dto/approve-purchase-order.dto';
-import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
+import { CreatePurchaseOrderDto, CreatePurchaseOrderDataDto } from './dto/create-purchase-order.dto';
 import { ICreatePurchaseOrder } from './interface/purchase-order.interface';
 
 export interface UserActionProfile {
@@ -180,10 +181,11 @@ export class PurchaseOrderLogic {
   }
 
   async create(
-    data: CreatePurchaseOrderDto,
+    payload: CreatePurchaseOrderDto,
     user_id: string,
     tenant_id: string,
   ) {
+    const data = payload.details;
     this.purchaseOrderService.userId = user_id;
     this.purchaseOrderService.bu_code = tenant_id;
     await this.purchaseOrderService.initializePrismaService(tenant_id, user_id);
@@ -200,8 +202,8 @@ export class PurchaseOrderLogic {
     } as ICreatePurchaseOrder;
 
     // Enrich location data in details
-    if (enrichedData.details?.add) {
-      for (const detail of enrichedData.details.add) {
+    if (enrichedData.purchase_order_detail?.add) {
+      for (const detail of enrichedData.purchase_order_detail.add) {
         if (!detail.locations) continue;
         for (const loc of detail.locations) {
           if (loc.location_id) {
@@ -226,7 +228,7 @@ export class PurchaseOrderLogic {
 
   async save(
     id: string,
-    data: SavePurchaseOrderDto,
+    payload: SavePurchaseOrderDto,
     user_id: string,
     tenant_id: string,
   ) {
@@ -234,7 +236,7 @@ export class PurchaseOrderLogic {
     this.purchaseOrderService.bu_code = tenant_id;
     await this.purchaseOrderService.initializePrismaService(tenant_id, user_id);
 
-    const stage_role = data.stage_role || enum_stage_role.create;
+    const { stage_role, details: data } = payload;
 
     if (stage_role === enum_stage_role.create) {
       // Creator can edit everything: header + details (add/update/remove)
@@ -246,17 +248,17 @@ export class PurchaseOrderLogic {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const details: Record<string, any> = {};
-      if (data.details?.add) {
-        details.add = data.details.add.map((d) => this.enrichSaveDetail(d, foreignValue));
+      if (data.purchase_order_detail?.add) {
+        details.add = data.purchase_order_detail.add.map((d) => this.enrichSaveDetail(d, foreignValue));
       }
-      if (data.details?.update) {
-        details.update = data.details.update.map((d) => ({
+      if (data.purchase_order_detail?.update) {
+        details.update = data.purchase_order_detail.update.map((d) => ({
           ...this.enrichSaveDetail(d, foreignValue),
           id: (d as { id: string }).id,
         }));
       }
-      if (data.details?.remove) {
-        details.remove = data.details.remove;
+      if (data.purchase_order_detail?.remove) {
+        details.remove = data.purchase_order_detail.remove;
       }
 
       this.logger.debug(
@@ -266,14 +268,11 @@ export class PurchaseOrderLogic {
 
       return this.purchaseOrderService.save(id, header, details);
     } else {
-      // Non-creator roles (approve, purchase, etc.) can only update current_stage_status on existing details
-      const detailUpdates = [];
-      for (const detail of data.details?.update || []) {
-        detailUpdates.push({
-          id: (detail as { id: string }).id,
-          current_stage_status: detail.current_stage_status,
-        });
-      }
+      // Non-creator roles (approve, purchase, etc.) — details is a flat array like submit/reject
+      const detailUpdates = (data as { id: string; current_stage_status?: string }[]).map((d) => ({
+        id: d.id,
+        current_stage_status: d.current_stage_status,
+      }));
 
       this.logger.debug(
         { function: 'save', id, stage_role, detailUpdates, user_id, tenant_id },
@@ -586,12 +585,12 @@ export class PurchaseOrderLogic {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private populateCreateData(data: CreatePurchaseOrderDto): Record<string, any> {
+  private populateCreateData(data: CreatePurchaseOrderDataDto): Record<string, any> {
     const workflow_id = data.workflow_id;
     const location_ids: string[] = [];
     const delivery_point_ids: string[] = [];
 
-    const allDetails = data.details?.add || [];
+    const allDetails = data.purchase_order_detail?.add || [];
     for (const detail of allDetails) {
       for (const loc of detail.locations || []) {
         if (loc.location_id) location_ids.push(loc.location_id);
@@ -603,7 +602,7 @@ export class PurchaseOrderLogic {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private populateSaveData(data: SavePurchaseOrderDto): Record<string, any> {
+  private populateSaveData(data: SavePurchaseOrderDataDto): Record<string, any> {
     const unit_ids: string[] = [];
     const tax_profile_ids: string[] = [];
     const product_ids: string[] = [];
@@ -614,7 +613,7 @@ export class PurchaseOrderLogic {
     if (data.currency_id) currency_ids.push(data.currency_id);
 
     // Collect IDs from add and update details
-    const allDetails = [...(data.details?.add || []), ...(data.details?.update || [])];
+    const allDetails = [...(data.purchase_order_detail?.add || []), ...(data.purchase_order_detail?.update || [])];
     for (const detail of allDetails) {
       if (detail.product_id) product_ids.push(detail.product_id);
       if (detail.order_unit_id) unit_ids.push(detail.order_unit_id);
@@ -626,7 +625,7 @@ export class PurchaseOrderLogic {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private enrichSaveHeader(data: SavePurchaseOrderDto, foreignValue: Record<string, any>): Partial<SavePurchaseOrderDto> {
+  private enrichSaveHeader(data: SavePurchaseOrderDataDto, foreignValue: Record<string, any>): Partial<SavePurchaseOrderDataDto> {
     const header: Record<string, unknown> = {};
     if (data.vendor_id !== undefined) header.vendor_id = data.vendor_id;
     if (data.vendor_id) {

@@ -166,7 +166,7 @@ export interface ICreatePurchaseOrder {
   note?: string;
   workflow_id: string;
   workflow_name?: string;
-  details?: {
+  purchase_order_detail?: {
     add?: ICreatePurchaseOrderDetail[];
   };
 }

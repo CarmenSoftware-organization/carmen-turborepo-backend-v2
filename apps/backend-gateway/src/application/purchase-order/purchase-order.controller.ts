@@ -59,6 +59,7 @@ import {
 import {
   EXAMPLE_CREATE_PO,
   EXAMPLE_SAVE_PO,
+  EXAMPLE_SAVE_PO_APPROVE,
   EXAMPLE_APPROVE_PO,
   EXAMPLE_REJECT_PO,
   EXAMPLE_REVIEW_PO,
@@ -525,9 +526,13 @@ export class PurchaseOrderController extends BaseHttpController {
     type: SavePurchaseOrderSwaggerDto,
     description: 'Save purchase order with header changes and detail add/update/remove',
     examples: {
-      save: {
+      'save (create role)': {
         value: EXAMPLE_SAVE_PO,
-        summary: 'Save PO with add/update/remove details',
+        summary: 'Creator saves PO with header + detail add/update/remove',
+      },
+      'save (approve role)': {
+        value: EXAMPLE_SAVE_PO_APPROVE,
+        summary: 'Approver saves current_stage_status on details only',
       },
     },
   })
