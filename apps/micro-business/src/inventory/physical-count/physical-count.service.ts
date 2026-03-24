@@ -624,14 +624,17 @@ export class PhysicalCountService {
           continue;
         }
 
-        const countedQty = new Prisma.Decimal(detail.actual_qty);
-        const diffQty = countedQty.minus(existingDetail.on_hand_qty);
+        const countedQty = Number(detail.actual_qty);
+        const onHandQty = existingDetail.on_hand_qty != null ? Number(existingDetail.on_hand_qty) : 0;
+        const diffQty = countedQty - onHandQty;
 
         await tx.tb_physical_count_detail.update({
           where: { id: detail.id },
           data: {
             actual_qty: countedQty,
             diff_qty: diffQty,
+            counted_at: new Date().toISOString(),
+            counted_by_id: user_id,
             updated_by_id: user_id,
             updated_at: new Date().toISOString(),
           },

@@ -120,10 +120,11 @@ export class PhysicalCountController extends BaseMicroserviceController {
    * @param payload - Contains id, data, user_id, tenant_id / ประกอบด้วย id, data, user_id, tenant_id
    * @returns Saved physical count / การตรวจนับสินค้าที่บันทึกแล้ว
    */
-  @MessagePattern({ cmd: 'physical-count.save', service: 'physical-count' })
+  @MessagePattern({ cmd: 'physical-count.save-items', service: 'physical-count' })
   async save(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'save', payload }, PhysicalCountController.name);
-    const data: IPhysicalCountSave = { id: payload.id, ...payload.data };
+    const body = payload.data || {};
+    const data: IPhysicalCountSave = { id: payload.id, details: body.items || [] };
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
