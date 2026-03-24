@@ -293,7 +293,7 @@ export class PurchaseOrderService {
       total_tax: Number(purchaseOrder.total_tax),
       total_amount: Number(purchaseOrder.total_amount),
       exchange_rate: Number(purchaseOrder.exchange_rate),
-      details: purchaseOrder.tb_purchase_order_detail.map((detail) => ({
+      purchase_order_detail: purchaseOrder.tb_purchase_order_detail.map((detail) => ({
         ...detail,
         order_qty: Number(detail.order_qty),
         order_unit_conversion_factor: Number(detail.order_unit_conversion_factor),
@@ -351,9 +351,9 @@ export class PurchaseOrderService {
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private enrichLocationFromPrDetails(transformedData: Record<string, any>): void {
-    if (!transformedData.details) return;
+    if (!transformedData.purchase_order_detail) return;
 
-    for (const detail of transformedData.details) {
+    for (const detail of transformedData.purchase_order_detail) {
       if (!detail.pr_details || detail.pr_details.length === 0) {
         detail.locations = [];
         continue;
@@ -1046,9 +1046,9 @@ export class PurchaseOrderService {
         currency_code: data.currency_code,
         exchange_rate: data.exchange_rate,
         email: data.email,
-        buyer_id: data.buyer_id,
+        buyer_id: data.buyer_id || null,
         buyer_name: data.buyer_name,
-        credit_term_id: data.credit_term_id,
+        credit_term_id: data.credit_term_id || null,
         credit_term_name: data.credit_term_name,
         credit_term_value: data.credit_term_value,
         remarks: data.remarks,
@@ -3742,7 +3742,7 @@ export class PurchaseOrderService {
 
     return Result.ok({
       purchase_order: purchaseOrder,
-      details: results,
+      purchase_order_detail: results,
     });
   }
 

@@ -38,7 +38,6 @@ export class CreditNoteLogic implements IClassLogic {
       grn_date: populatedData.grn_id?.grn_date,
       cn_reason_name: populatedData.cn_reason_id?.name,
       cn_reason_description: populatedData.cn_reason_id?.description,
-      // workflow_obj: populatedData.workflow_id?.workflow_obj,
       currency_code: populatedData.currency_ids[0]?.code,
     };
 
@@ -108,7 +107,6 @@ export class CreditNoteLogic implements IClassLogic {
       grn_date: populatedData.grn_id?.grn_date,
       cn_reason_name: populatedData.cn_reason_id?.name,
       cn_reason_description: populatedData.cn_reason_id?.description,
-      // workflow_obj: populatedData.workflow_id?.workflow_obj,
     };
 
     if (updateCreditNote.credit_note_detail?.add?.length) {
@@ -245,7 +243,6 @@ export class CreditNoteLogic implements IClassLogic {
           unit_ids,
           location_ids,
           tax_profile_ids: taxProfile_ids,
-          // workflow_id: data.workflow_id,
         }),
       ),
       user_id,
@@ -288,19 +285,19 @@ export class CreditNoteLogic implements IClassLogic {
     }
   }
 
-  // ==================== Approve ====================
+  // ==================== Confirm ====================
 
   /**
-   * Approve a credit note. When reaching last stage (completed):
+   * Confirm a credit note (no workflow — direct confirm from draft):
    * - quantity_return → deduct stock from GRN lots (executeCreditNoteQty)
    * - amount_discount → adjust cost on GRN lots (executeCreditNoteAmount)
    */
-  async approve(
+  async confirm(
     id: string,
     user_id: string,
     tenant_id: string,
   ): Promise<Result<unknown>> {
-    this.logger.debug({ function: 'approve', id, user_id, tenant_id }, CreditNoteLogic.name);
+    this.logger.debug({ function: 'confirm', id, user_id, tenant_id }, CreditNoteLogic.name);
 
     await this.creditNoteService.initializePrismaService(tenant_id, user_id);
     const prisma = this.creditNoteService.prismaService;
@@ -317,9 +314,9 @@ export class CreditNoteLogic implements IClassLogic {
 
     if (!cn) return Result.error('Credit note not found', ErrorCode.NOT_FOUND);
 
-    if (cn.doc_status !== enum_credit_note_doc_status.in_progress) {
+    if (cn.doc_status !== enum_credit_note_doc_status.draft) {
       return Result.error(
-        `Cannot approve credit note with status '${cn.doc_status}'. Only in_progress can be approved.`,
+        `Cannot confirm credit note with status '${cn.doc_status}'. Only draft can be confirmed.`,
         ErrorCode.INVALID_ARGUMENT,
       );
     }
@@ -336,7 +333,7 @@ export class CreditNoteLogic implements IClassLogic {
 
     // Trigger inventory transaction based on credit_note_type
     if (!cn.grn_id || cn.tb_credit_note_detail.length === 0) {
-      return Result.ok({ id, message: 'Credit note approved (no inventory impact — missing GRN or details)' });
+      return Result.ok({ id, message: 'Credit note confirmed (no inventory impact — missing GRN or details)' });
     }
 
     const method = await this.inventoryTransactionService.getCalculationMethod(tenant_id);
@@ -374,6 +371,6 @@ export class CreditNoteLogic implements IClassLogic {
       }
     });
 
-    return Result.ok({ id, message: 'Credit note approved and inventory updated' });
+    return Result.ok({ id, message: 'Credit note confirmed and inventory updated' });
   }
 }

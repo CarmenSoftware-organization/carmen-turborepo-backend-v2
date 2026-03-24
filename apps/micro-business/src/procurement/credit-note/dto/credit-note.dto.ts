@@ -16,11 +16,6 @@ import {
 } from '@/common/validate/currency.validate';
 
 import {
-  validateWorkflowIdExists,
-  validateWorkflowIdsExist,
-} from '@/common/validate/workflow.validate';
-
-import {
   toISOString,
   toISOStringOrThrow,
   isValidDate,
@@ -34,8 +29,6 @@ export {
   validateVendorIdsExist,
   validateCurrencyIdExists,
   validateCurrencyIdsExist,
-  validateWorkflowIdExists,
-  validateWorkflowIdsExist,
   toISOString,
   toISOStringOrThrow,
   isValidDate,
@@ -98,16 +91,5 @@ export function createCreditNoteValidation(prisma: PrismaClient) {
       }
     }
 
-    // Validate workflow_id
-    // if (data.workflow_id) {
-    //   const workflow = await validateWorkflowIdExists(prisma, data.workflow_id);
-    //   if (!workflow) {
-    //     ctx.addIssue({
-    //       code: z.ZodIssueCode.custom,
-    //       message: 'Workflow not found',
-    //       path: ['workflow_id'],
-    //     });
-    //   }
-    // }
   });
 }

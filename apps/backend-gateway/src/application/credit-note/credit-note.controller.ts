@@ -281,28 +281,28 @@ export class CreditNoteController extends BaseHttpController {
   }
 
   /**
-   * Approve a credit note and trigger inventory transaction
-   * อนุมัติใบลดหนี้และสร้างรายการเคลื่อนไหวสินค้าคงคลัง
+   * Confirm a credit note and trigger inventory transaction
+   * ยืนยันใบลดหนี้และสร้างรายการเคลื่อนไหวสินค้าคงคลัง
    */
-  @Post(':id/approve')
-  @UseGuards(new AppIdGuard('creditNote.approve'))
+  @Post(':id/confirm')
+  @UseGuards(new AppIdGuard('creditNote.confirm'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Approve a credit note',
-    description: 'Approves a credit note and triggers inventory: quantity_return deducts stock from GRN lots, amount_discount adjusts cost without stock movement.',
-    operationId: 'approveCreditNote',
+    summary: 'Confirm a credit note',
+    description: 'Confirms a draft credit note and triggers inventory: quantity_return deducts stock from GRN lots, amount_discount adjusts cost without stock movement.',
+    operationId: 'confirmCreditNote',
     tags: ['Procurement', 'Credit Note'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Credit Note ID' },
     ],
     responses: {
-      200: { description: 'Credit note approved and inventory updated' },
-      400: { description: 'Credit note cannot be approved' },
+      200: { description: 'Credit note confirmed and inventory updated' },
+      400: { description: 'Credit note cannot be confirmed' },
       404: { description: 'Credit note not found' },
     },
   })
   @HttpCode(HttpStatus.OK)
-  async approve(
+  async confirm(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -310,12 +310,12 @@ export class CreditNoteController extends BaseHttpController {
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
-      { function: 'approve', id, version },
+      { function: 'confirm', id, version },
       CreditNoteController.name,
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.creditNoteService.approve(id, user_id, bu_code, version);
+    const result = await this.creditNoteService.confirm(id, user_id, bu_code, version);
     this.respond(res, result);
   }
 }

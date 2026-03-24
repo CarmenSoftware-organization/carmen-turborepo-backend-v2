@@ -249,19 +249,19 @@ export class CreditNoteService {
     return Result.ok(response.data);
   }
 
-  async approve(
+  async confirm(
     id: string,
     user_id: string,
     tenant_id: string,
     version: string,
   ): Promise<Result<unknown>> {
     this.logger.debug(
-      { function: 'approve', id, user_id, tenant_id, version },
+      { function: 'confirm', id, user_id, tenant_id, version },
       CreditNoteService.name,
     );
 
     const res: Observable<MicroserviceResponse> = this.procurementService.send(
-      { cmd: 'credit-note.approve', service: 'credit-note' },
+      { cmd: 'credit-note.confirm', service: 'credit-note' },
       { id, user_id, tenant_id, version },
     );
 
