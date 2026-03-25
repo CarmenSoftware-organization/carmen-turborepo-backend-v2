@@ -1,0 +1,30 @@
+meta {
+  name: 04 - Update Credit Note Reason
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{host}}/api/config/{{bu_code}}/credit-note-reason/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id:
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "Damaged goods",
+    "description": "Items received were damaged during transit"
+  }
+}

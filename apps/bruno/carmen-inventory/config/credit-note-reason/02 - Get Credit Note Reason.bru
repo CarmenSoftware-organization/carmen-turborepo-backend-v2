@@ -1,0 +1,23 @@
+meta {
+  name: 02 - Get Credit Note Reason
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/credit-note-reason/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id:
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

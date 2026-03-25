@@ -1,0 +1,26 @@
+meta {
+  name: 03 - Create Credit Note Reason
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/config/{{bu_code}}/credit-note-reason
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "Damaged goods",
+    "description": "Items received were damaged during transit"
+  }
+}

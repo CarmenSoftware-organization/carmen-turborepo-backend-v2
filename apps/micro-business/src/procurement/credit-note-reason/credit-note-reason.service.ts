@@ -178,4 +178,75 @@ export class CreditNoteReasonService {
 
     return Result.ok(serializedCreditNoteReason);
   }
+
+  @TryCatch
+  async update(id: string, data: { name?: string; description?: string; note?: string; info?: unknown; dimension?: unknown }): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'update', id, data, user_id: this.userId, tenant_id: this.bu_code }, CreditNoteReasonService.name);
+
+    const creditNoteReason = await this.prismaService.tb_credit_note_reason.findFirst({
+      where: { id: id },
+    });
+
+    if (!creditNoteReason) {
+      return Result.error('Credit note reason not found', ErrorCode.NOT_FOUND);
+    }
+
+    const updated = await this.prismaService.tb_credit_note_reason.update({
+      where: { id: id },
+      data: {
+        ...data,
+        updated_by_id: this.userId,
+        updated_at: new Date().toISOString(),
+      },
+    });
+
+    return Result.ok({ id: updated.id });
+  }
+
+  @TryCatch
+  async patch(id: string, data: { name?: string; description?: string; note?: string; info?: unknown; dimension?: unknown }): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'patch', id, data, user_id: this.userId, tenant_id: this.bu_code }, CreditNoteReasonService.name);
+
+    const creditNoteReason = await this.prismaService.tb_credit_note_reason.findFirst({
+      where: { id: id },
+    });
+
+    if (!creditNoteReason) {
+      return Result.error('Credit note reason not found', ErrorCode.NOT_FOUND);
+    }
+
+    const updated = await this.prismaService.tb_credit_note_reason.update({
+      where: { id: id },
+      data: {
+        ...data,
+        updated_by_id: this.userId,
+        updated_at: new Date().toISOString(),
+      },
+    });
+
+    return Result.ok({ id: updated.id });
+  }
+
+  @TryCatch
+  async delete(id: string): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code }, CreditNoteReasonService.name);
+
+    const creditNoteReason = await this.prismaService.tb_credit_note_reason.findFirst({
+      where: { id: id },
+    });
+
+    if (!creditNoteReason) {
+      return Result.error('Credit note reason not found', ErrorCode.NOT_FOUND);
+    }
+
+    await this.prismaService.tb_credit_note_reason.update({
+      where: { id: id },
+      data: {
+        deleted_by_id: this.userId,
+        deleted_at: new Date().toISOString(),
+      },
+    });
+
+    return Result.ok({ id });
+  }
 }

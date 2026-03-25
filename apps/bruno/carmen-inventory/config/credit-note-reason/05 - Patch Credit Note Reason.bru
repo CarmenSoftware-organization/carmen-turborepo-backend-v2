@@ -1,0 +1,29 @@
+meta {
+  name: 05 - Patch Credit Note Reason
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{host}}/api/config/{{bu_code}}/credit-note-reason/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id:
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "Short delivery"
+  }
+}

@@ -62,4 +62,62 @@ export class CreditNoteReasonController extends BaseMicroserviceController {
     const result = await runWithAuditContext(auditContext, () => this.creditNoteReasonService.create(data));
     return this.handleResult(result, HttpStatus.CREATED);
   }
+
+  @MessagePattern({
+    cmd: 'credit-note-reason.find-one',
+    service: 'credit-note-reason',
+  })
+  async findOne(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'findOne', payload }, CreditNoteReasonController.name);
+    await this.creditNoteReasonService.initializePrismaService(payload.tenant_id || payload.bu_code, payload.user_id);
+    this.creditNoteReasonService.bu_code = payload.tenant_id || payload.bu_code;
+    this.creditNoteReasonService.userId = payload.user_id;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () => this.creditNoteReasonService.findOne(payload.id));
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'credit-note-reason.update',
+    service: 'credit-note-reason',
+  })
+  async update(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'update', payload }, CreditNoteReasonController.name);
+    const data = payload.data;
+    await this.creditNoteReasonService.initializePrismaService(payload.tenant_id || payload.bu_code, payload.user_id);
+    this.creditNoteReasonService.bu_code = payload.tenant_id || payload.bu_code;
+    this.creditNoteReasonService.userId = payload.user_id;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () => this.creditNoteReasonService.update(data.id, data));
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'credit-note-reason.patch',
+    service: 'credit-note-reason',
+  })
+  async patch(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'patch', payload }, CreditNoteReasonController.name);
+    const data = payload.data;
+    await this.creditNoteReasonService.initializePrismaService(payload.tenant_id || payload.bu_code, payload.user_id);
+    this.creditNoteReasonService.bu_code = payload.tenant_id || payload.bu_code;
+    this.creditNoteReasonService.userId = payload.user_id;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () => this.creditNoteReasonService.patch(data.id, data));
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'credit-note-reason.delete',
+    service: 'credit-note-reason',
+  })
+  async delete(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'delete', payload }, CreditNoteReasonController.name);
+    await this.creditNoteReasonService.initializePrismaService(payload.tenant_id || payload.bu_code, payload.user_id);
+    this.creditNoteReasonService.bu_code = payload.tenant_id || payload.bu_code;
+    this.creditNoteReasonService.userId = payload.user_id;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () => this.creditNoteReasonService.delete(payload.id));
+    return this.handleResult(result);
+  }
 }
