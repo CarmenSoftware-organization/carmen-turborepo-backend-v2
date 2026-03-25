@@ -112,10 +112,12 @@ get_ports() {
 
 kill_port_holders() {
     for port in $1; do
-        pids=$(lsof -ti ":$port" 2>/dev/null || true)
+        pids=$(fuser "$port/tcp" 2>/dev/null || true)
         if [ -n "$pids" ]; then
             echo "    killing stale process on port $port (PIDs: $pids)"
-            echo "$pids" | xargs kill -9 2>/dev/null || true
+            for p in $pids; do
+                kill -9 "$p" 2>/dev/null || true
+            done
         fi
     done
 }
