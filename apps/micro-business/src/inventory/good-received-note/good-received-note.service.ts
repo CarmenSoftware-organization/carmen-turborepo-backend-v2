@@ -77,6 +77,7 @@ export class GoodReceivedNoteService {
     const goodReceivedNote = await prisma.tb_good_received_note.findFirst({
       where: {
         id: id,
+        deleted_at: null,
       },
     });
 
@@ -89,25 +90,54 @@ export class GoodReceivedNoteService {
         where: {
           good_received_note_id: id,
         },
+        orderBy: { sequence_no: 'asc' },
       });
+
+    // Fetch detail items for each detail row
+    const detailIds = goodReceivedNoteDetail.map((d: any) => d.id);
+    const detailItems = detailIds.length > 0
+      ? await prisma.tb_good_received_note_detail_item.findMany({
+          where: {
+            good_received_note_detail_id: { in: detailIds },
+            deleted_at: null,
+          },
+        })
+      : [];
+
+    // Group detail items by their parent detail id
+    const detailItemsByDetailId = new Map<string, any[]>();
+    for (const item of detailItems) {
+      const list = detailItemsByDetailId.get(item.good_received_note_detail_id) || [];
+      list.push(item);
+      detailItemsByDetailId.set(item.good_received_note_detail_id, list);
+    }
+
+    const goodReceivedNoteDetailWithItems = goodReceivedNoteDetail.map((detail: any) => ({
+      ...detail,
+      good_received_note_detail_item: detailItemsByDetailId.get(detail.id) || [],
+    }));
 
     const extraCost = await prisma.tb_extra_cost.findMany({
       where: {
         good_received_note_id: id,
+        deleted_at: null,
       },
     });
 
-    const extraCostDetail = await prisma.tb_extra_cost_detail.findMany({
-      where: {
-        extra_cost_id: {
-          in: extraCost.map((item) => item.id),
-        },
-      },
-    });
+    const extraCostDetail = extraCost.length > 0
+      ? await prisma.tb_extra_cost_detail.findMany({
+          where: {
+            extra_cost_id: {
+              in: extraCost.map((item: any) => item.id),
+            },
+            deleted_at: null,
+          },
+        })
+      : [];
 
     const responseData = {
       ...goodReceivedNote,
-      good_received_note_detail: goodReceivedNoteDetail,
+      good_received_note_detail: goodReceivedNoteDetailWithItems,
       extra_cost: extraCost,
       extra_cost_detail: extraCostDetail,
     };
@@ -135,7 +165,7 @@ export class GoodReceivedNoteService {
       { function: 'findAll', user_id, tenant_id, paginate },
       GoodReceivedNoteService.name,
     );
-    const defaultSearchFields = ['grn_no', 'name'];
+    const defaultSearchFields = ['grn_no', 'description', 'invoice_no', 'vendor_name'];
 
     const q = new QueryParams(
       paginate.page,
