@@ -222,39 +222,6 @@ export class CreditNoteResponseDto {
   @ApiPropertyOptional({ description: 'Description', example: 'Credit note for damaged goods' })
   description?: string;
 
-  @ApiPropertyOptional({ description: 'Workflow ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  workflow_id?: string;
-
-  @ApiPropertyOptional({ description: 'Workflow name', example: 'CN Approval Workflow' })
-  workflow_name?: string;
-
-  @ApiPropertyOptional({ description: 'Workflow history (JSON)', example: [] })
-  workflow_history?: unknown;
-
-  @ApiPropertyOptional({ description: 'Workflow current stage', example: 'draft' })
-  workflow_current_stage?: string;
-
-  @ApiPropertyOptional({ description: 'Workflow previous stage', example: null })
-  workflow_previous_stage?: string;
-
-  @ApiPropertyOptional({ description: 'Workflow next stage', example: 'approval' })
-  workflow_next_stage?: string;
-
-  @ApiPropertyOptional({ description: 'User action permissions (JSON)', example: {} })
-  user_action?: unknown;
-
-  @ApiPropertyOptional({ description: 'Last action performed', example: 'submitted' })
-  last_action?: string;
-
-  @ApiPropertyOptional({ description: 'Last action date', example: '2026-03-10T10:30:00.000Z' })
-  last_action_at_date?: string;
-
-  @ApiPropertyOptional({ description: 'Last action by user ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  last_action_by_id?: string;
-
-  @ApiPropertyOptional({ description: 'Last action by user name', example: 'John Doe' })
-  last_action_by_name?: string;
-
   @ApiPropertyOptional({ description: 'Additional info (JSON)', example: {} })
   info?: unknown;
 
@@ -277,7 +244,7 @@ export class CreditNoteResponseDto {
   updated_by_id?: string;
 
   @ApiPropertyOptional({ description: 'Credit note detail line items', type: [CreditNoteDetailResponseDto] })
-  details?: CreditNoteDetailResponseDto[];
+  credit_note_detail?: CreditNoteDetailResponseDto[];
 }
 
 export class CreditNoteListResponseDto {

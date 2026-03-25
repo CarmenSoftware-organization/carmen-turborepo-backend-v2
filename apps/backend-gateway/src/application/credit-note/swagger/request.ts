@@ -155,9 +155,6 @@ export class CreateCreditNoteRequestDto {
   @ApiPropertyOptional({ description: 'Credit note date (ISO 8601)', example: '2026-03-10T00:00:00.000Z' })
   cn_date?: string;
 
-  @ApiPropertyOptional({ description: 'Document status', enum: ['draft', 'in_progress', 'completed', 'cancelled', 'voided'], example: 'draft' })
-  doc_status?: string;
-
   @ApiPropertyOptional({ description: 'Description', example: 'Credit note for damaged goods' })
   description?: string;
 
@@ -201,9 +198,6 @@ export class UpdateCreditNoteRequestDto {
 
   @ApiPropertyOptional({ description: 'Credit note date (ISO 8601)', example: '2026-03-10T00:00:00.000Z' })
   cn_date?: string;
-
-  @ApiPropertyOptional({ description: 'Document status', enum: ['draft', 'in_progress', 'completed', 'cancelled', 'voided'], example: 'draft' })
-  doc_status?: string;
 
   @ApiPropertyOptional({ description: 'Description', example: 'Credit note for damaged goods' })
   description?: string;

@@ -43,6 +43,10 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { CreateCreditNoteDto, UpdateCreditNoteDto } from '@/common';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
+import {
+  EXAMPLE_CREATE_CREDIT_NOTE,
+  EXAMPLE_UPDATE_CREDIT_NOTE,
+} from './example/credit-note.example';
 
 @Controller('api/:bu_code/credit-note')
 @ApiTags('Procurement')
@@ -164,7 +168,15 @@ export class CreditNoteController extends BaseHttpController {
     operationId: 'createCreditNote',
     tags: ['Procurement', 'Credit Note'],
   })
-  @ApiBody({ type: CreateCreditNoteRequestDto })
+  @ApiBody({
+    type: CreateCreditNoteRequestDto,
+    examples: {
+      'Create Credit Note': {
+        summary: 'Create a quantity return credit note',
+        value: EXAMPLE_CREATE_CREDIT_NOTE,
+      },
+    },
+  })
   @HttpCode(HttpStatus.CREATED)
   async create(
     @Body() createDto: CreateCreditNoteDto,
@@ -211,7 +223,15 @@ export class CreditNoteController extends BaseHttpController {
     operationId: 'updateCreditNote',
     tags: ['Procurement', 'Credit Note'],
   })
-  @ApiBody({ type: UpdateCreditNoteRequestDto })
+  @ApiBody({
+    type: UpdateCreditNoteRequestDto,
+    examples: {
+      'Update Credit Note': {
+        summary: 'Update credit note with add/update/delete details',
+        value: EXAMPLE_UPDATE_CREDIT_NOTE,
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id') id: string,
