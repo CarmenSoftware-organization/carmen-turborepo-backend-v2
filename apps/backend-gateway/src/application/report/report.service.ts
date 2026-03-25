@@ -1,7 +1,8 @@
-import { Injectable, OnModuleInit, Inject } from '@nestjs/common';
+import { Injectable, OnModuleInit, Inject, HttpException } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
+import { envConfig } from 'src/libs/config.env';
 
 // gRPC service interface matching report.proto
 interface ReportServiceGrpc {
@@ -151,6 +152,7 @@ const FORMAT_MAP: Record<string, number> = {
 export class ReportService implements OnModuleInit {
   private readonly logger = new BackendLogger(ReportService.name);
   private reportServiceGrpc: ReportServiceGrpc;
+  private readonly reportHttpUrl = `http://${envConfig.REPORT_SERVICE_HOST}:${envConfig.REPORT_SERVICE_HTTP_PORT}`;
 
   constructor(
     @Inject('REPORT_SERVICE')
@@ -243,5 +245,51 @@ export class ReportService implements OnModuleInit {
         report_type,
       }),
     );
+  }
+
+  // --- HTTP proxy methods (no gRPC counterpart) ---
+
+  private async httpRequest(endpoint: string, options: RequestInit = {}) {
+    const url = `${this.reportHttpUrl}${endpoint}`;
+    this.logger.debug({ function: 'httpRequest', url }, ReportService.name);
+
+    const response = await fetch(url, {
+      headers: { 'Content-Type': 'application/json', ...(options.headers as Record<string, string>) },
+      ...options,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Request failed' }));
+      throw new HttpException(
+        error.error || error.message || 'Request failed',
+        response.status,
+      );
+    }
+
+    return response.json();
+  }
+
+  async viewReport(bu_code: string, template_id: string, filters?: any) {
+    this.logger.debug({ function: 'viewReport', bu_code, template_id }, ReportService.name);
+    return this.httpRequest(`/api/${bu_code}/report/viewer`, {
+      method: 'POST',
+      body: JSON.stringify({ template_id, filters: filters || {} }),
+    });
+  }
+
+  async reportData(bu_code: string, template_id: string, filters?: any) {
+    this.logger.debug({ function: 'reportData', bu_code, template_id }, ReportService.name);
+    return this.httpRequest(`/api/${bu_code}/report/data`, {
+      method: 'POST',
+      body: JSON.stringify({ template_id, filters: filters || {} }),
+    });
+  }
+
+  async lookups(bu_code: string, types?: string) {
+    this.logger.debug({ function: 'lookups', bu_code, types }, ReportService.name);
+    const query = types ? `?types=${encodeURIComponent(types)}` : '';
+    return this.httpRequest(`/api/${bu_code}/report/lookups${query}`, {
+      method: 'GET',
+    });
   }
 }

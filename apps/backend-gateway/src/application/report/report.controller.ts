@@ -19,8 +19,8 @@ import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
-import { GenerateReportRequestDto } from './swagger/request';
-import { ReportTypeResponseDto, ReportTemplateResponseDto } from './swagger/response';
+import { GenerateReportRequestDto, ViewerRequestDto, ReportDataRequestDto } from './swagger/request';
+import { ReportTypeResponseDto, ReportTemplateResponseDto, ViewerResponseDto } from './swagger/response';
 
 @Controller('api/:bu_code/report')
 @ApiTags('Report')
@@ -182,6 +182,108 @@ export class ReportController extends BaseHttpController {
     @Res() res: Response,
   ): Promise<void> {
     const result = await this.reportService.getTemplate(id);
+    this.respond(res, { data: result });
+  }
+
+  /**
+   * View report via external FastReport viewer
+   * ส่งข้อมูลไป external viewer แล้วได้ URL กลับมา
+   */
+  @Post('viewer')
+  @ApiOperation({
+    summary: 'View report in external viewer',
+    description: 'Sends template + data to external FastReport viewer and returns a viewer URL.',
+    operationId: 'viewReport',
+  })
+  @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BU001' })
+  @ApiBody({ type: ViewerRequestDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Viewer URL returned successfully',
+    type: ViewerResponseDto,
+  })
+  @HttpCode(HttpStatus.OK)
+  async viewReport(
+    @Param('bu_code') bu_code: string,
+    @Body() body: ViewerRequestDto,
+    @Res() res: Response,
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'viewReport', bu_code, template_id: body.template_id },
+      ReportController.name,
+    );
+
+    const result = await this.reportService.viewReport(
+      bu_code,
+      body.template_id,
+      body.filters,
+    );
+    this.respond(res, { data: result });
+  }
+
+  /**
+   * Get report data as JSON (no PDF render)
+   * ดึงข้อมูลรายงานเป็น JSON สำหรับ WebReport viewer
+   */
+  @Post('data')
+  @ApiOperation({
+    summary: 'Get report data',
+    description: 'Returns JSON data rows for a template without rendering PDF. Used by WebReport viewer.',
+    operationId: 'getReportData',
+  })
+  @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BU001' })
+  @ApiBody({ type: ReportDataRequestDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Report data returned successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  async reportData(
+    @Param('bu_code') bu_code: string,
+    @Body() body: ReportDataRequestDto,
+    @Res() res: Response,
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'reportData', bu_code, template_id: body.template_id },
+      ReportController.name,
+    );
+
+    const result = await this.reportService.reportData(
+      bu_code,
+      body.template_id,
+      body.filters,
+    );
+    this.respond(res, { data: result });
+  }
+
+  /**
+   * Get lookup data for report filters
+   * ดึงข้อมูล lookup สำหรับ filter (vendor, location, product, etc.)
+   */
+  @Get('lookups')
+  @ApiOperation({
+    summary: 'Get report lookups',
+    description: 'Returns lookup data (vendor, location, product, category, etc.) for populating report filter dropdowns.',
+    operationId: 'getReportLookups',
+  })
+  @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BU001' })
+  @ApiQuery({ name: 'types', required: false, description: 'Comma-separated lookup types', example: 'vendor,location,product,category' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lookup data returned successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  async lookups(
+    @Param('bu_code') bu_code: string,
+    @Query('types') types: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'lookups', bu_code, types },
+      ReportController.name,
+    );
+
+    const result = await this.reportService.lookups(bu_code, types);
     this.respond(res, { data: result });
   }
 }

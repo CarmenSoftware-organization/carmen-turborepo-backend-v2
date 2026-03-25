@@ -40,10 +40,8 @@ SERVICE_CRONJOB="cronjob|apps/micro-cronjob|bun dist/server.js|bun"
 # External services (outside monorepo)
 CARMEN_DEV_DIR="$HOME"
 SERVICE_REPORT="report|$CARMEN_DEV_DIR/micro-report|go run ./cmd/server|go"
-SERVICE_REPORT_RENDER="report-render|$CARMEN_DEV_DIR/report-render|dotnet run|dotnet"
-
 CORE_LIST="gateway business cluster keycloak"
-ALL_LIST="gateway business cluster keycloak file notification cronjob report report-render"
+ALL_LIST="gateway business cluster keycloak file notification cronjob report"
 
 # ───────────────────────────────────────────────────────────
 # Helpers
@@ -59,7 +57,6 @@ get_service_def() {
         notification)   echo "$SERVICE_NOTIFICATION" ;;
         cronjob)        echo "$SERVICE_CRONJOB" ;;
         report)         echo "$SERVICE_REPORT" ;;
-        report-render)  echo "$SERVICE_REPORT_RENDER" ;;
         *) echo "" ;;
     esac
 }
@@ -142,7 +139,6 @@ cmd_build() {
         case "$svc_type" in
             bun)    bun build src/server.ts --outdir=dist --target=bun ;;
             go)     go build -o bin/micro-report ./cmd/server ;;
-            dotnet) dotnet build ;;
             *)      npx nest build ;;
         esac
     done
@@ -293,7 +289,6 @@ cmd_status() {
             notification)   ports="5006, 6006" ;;
             cronjob)        ports="5012, 6012" ;;
             report)         ports="5015, 6015" ;;
-            report-render)  ports="8080" ;;
         esac
 
         printf "%-15s %-10s %-10s %s\n" "$name" "$status" "$pid" "$ports"
@@ -321,7 +316,6 @@ cmd_health() {
     check "Notification (6006)"   "http://localhost:6006/health"
     check "Cronjob (6012)"        "http://localhost:6012/health"
     check "Report (6015)"         "http://localhost:6015/health"
-    check "Report Render (8080)"  "http://localhost:8080/health"
 }
 
 cmd_clean_logs() {
@@ -348,8 +342,8 @@ cmd_help() {
     echo ""
     echo "Targets:"
     echo "  core           gateway, business, cluster, keycloak (default, 4 services)"
-    echo "  all            ทุก 9 services"
-    echo "  SERVICE name   gateway | business | cluster | keycloak | file | notification | cronjob | report | report-render"
+    echo "  all            ทุก 8 services"
+    echo "  SERVICE name   gateway | business | cluster | keycloak | file | notification | cronjob | report"
     echo ""
     echo "ตัวอย่าง:"
     echo "  ./carmen.sh install             # ครั้งแรก"
