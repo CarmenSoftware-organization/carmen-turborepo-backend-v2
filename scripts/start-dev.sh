@@ -112,7 +112,8 @@ get_ports() {
 
 kill_port_holders() {
     for port in $1; do
-        pids=$(fuser "$port/tcp" 2>/dev/null || true)
+        # ใช้ ss เพราะ lsof/fuser ไม่ทำงานบน Alpine
+        pids=$(ss -tlnp "sport = :$port" 2>/dev/null | sed -n 's/.*pid=\([0-9]*\).*/\1/p' | sort -u)
         if [ -n "$pids" ]; then
             echo "    killing stale process on port $port (PIDs: $pids)"
             for p in $pids; do
