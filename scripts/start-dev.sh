@@ -96,6 +96,30 @@ is_running() {
     return 1
 }
 
+get_ports() {
+    case "$1" in
+        gateway)        echo "4000 4001" ;;
+        business)       echo "5020 6020" ;;
+        cluster)        echo "5014 6014" ;;
+        keycloak)       echo "5013 6013" ;;
+        file)           echo "5007 6007" ;;
+        notification)   echo "5006 6006" ;;
+        cronjob)        echo "5012" ;;
+        report)         echo "5015 6015" ;;
+        *)              echo "" ;;
+    esac
+}
+
+kill_port_holders() {
+    for port in $1; do
+        pids=$(lsof -ti ":$port" 2>/dev/null || true)
+        if [ -n "$pids" ]; then
+            echo "    killing stale process on port $port (PIDs: $pids)"
+            echo "$pids" | xargs kill -9 2>/dev/null || true
+        fi
+    done
+}
+
 # ───────────────────────────────────────────────────────────
 # Commands
 # ───────────────────────────────────────────────────────────
@@ -216,7 +240,8 @@ cmd_stop() {
         if [ -f "$pid_file" ]; then
             pid=$(cat "$pid_file")
             if kill -0 "$pid" 2>/dev/null; then
-                kill "$pid" 2>/dev/null || true
+                # kill process tree (child processes ด้วย)
+                kill -- -"$pid" 2>/dev/null || kill "$pid" 2>/dev/null || true
                 # รอให้ process จบ (max 5 วินาที)
                 i=0
                 while kill -0 "$pid" 2>/dev/null && [ $i -lt 10 ]; do
@@ -225,7 +250,7 @@ cmd_stop() {
                 done
                 # ถ้ายังไม่จบ force kill
                 if kill -0 "$pid" 2>/dev/null; then
-                    kill -9 "$pid" 2>/dev/null || true
+                    kill -9 -- -"$pid" 2>/dev/null || kill -9 "$pid" 2>/dev/null || true
                 fi
                 echo "  $name: stopped (PID $pid)"
             else
@@ -234,6 +259,12 @@ cmd_stop() {
             rm -f "$pid_file"
         else
             echo "  $name: not running"
+        fi
+
+        # kill process ที่ยังค้างอยู่บน port
+        ports=$(get_ports "$name")
+        if [ -n "$ports" ]; then
+            kill_port_holders "$ports"
         fi
     done
 
@@ -244,6 +275,12 @@ cmd_stop() {
 cmd_restart() {
     services=$(resolve_services "$1")
     cmd_stop "$1"
+    echo ""
+    # clear logs ก่อน start ใหม่
+    for name in $services; do
+        rm -f "$LOG_DIR/$name.log"
+    done
+    echo "  logs cleared"
     echo ""
     cmd_start "$1"
 }
