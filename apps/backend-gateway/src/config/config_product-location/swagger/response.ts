@@ -42,6 +42,12 @@ export class ProductLocationResponseDto {
 
   @ApiPropertyOptional({ description: 'Note', example: 'Keep refrigerated' })
   note?: string;
+
+  @ApiPropertyOptional({ description: 'Additional info (JSON)', example: {} })
+  info?: unknown;
+
+  @ApiPropertyOptional({ description: 'Dimension data (JSON)', example: [] })
+  dimension?: unknown;
 }
 
 export class ProductLocationListResponseDto {

@@ -4,7 +4,9 @@ export const CreditNoteReasonDetailResponseSchema = z.object({
   id: z.string(),
   name: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
+  note: z.string().nullable().optional(),
   info: z.any().nullable().optional(),
+  dimension: z.any().nullable().optional(),
   created_at: z.coerce.date().nullable().optional(),
   created_by_id: z.string().nullable().optional(),
   updated_at: z.coerce.date().nullable().optional(),
@@ -15,7 +17,9 @@ export const CreditNoteReasonListItemResponseSchema = z.object({
   id: z.string(),
   name: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
+  note: z.string().nullable().optional(),
   info: z.any().nullable().optional(),
+  dimension: z.any().nullable().optional(),
   created_at: z.coerce.date().nullable().optional(),
 });
 

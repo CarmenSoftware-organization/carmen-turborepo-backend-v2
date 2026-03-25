@@ -4448,15 +4448,15 @@ model tb_pricelist_detail_comment {
 model tb_product_location {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
-  product_id         String  @db.Uuid
-  product_code       String? @db.VarChar
-  product_name       String? @db.VarChar
-  product_local_name String? @db.VarChar
-  product_sku        String? @db.VarChar
+  product_id String @db.Uuid
+  // product_code       String? @db.VarChar
+  // product_name       String? @db.VarChar
+  // product_local_name String? @db.VarChar
+  // product_sku        String? @db.VarChar
 
-  location_id   String? @db.Uuid
-  location_code String? @db.VarChar
-  location_name String? @db.VarChar
+  location_id String? @db.Uuid
+  // location_code String? @db.VarChar
+  // location_name String? @db.VarChar
 
   min_qty      Decimal? @default(0) @db.Decimal(20, 5)
   max_qty      Decimal? @default(0) @db.Decimal(20, 5)

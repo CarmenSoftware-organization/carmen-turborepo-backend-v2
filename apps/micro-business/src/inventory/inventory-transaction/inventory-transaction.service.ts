@@ -2383,12 +2383,11 @@ export class InventoryTransactionService {
       where: { deleted_at: null },
       select: {
         product_id: true,
-        product_name: true,
         tb_product: {
           select: { id: true, code: true, name: true },
         },
       },
-      orderBy: { product_name: 'asc' },
+      orderBy: { tb_product: { name: 'asc' } },
     });
 
     // Deduplicate by product_id
@@ -2400,7 +2399,7 @@ export class InventoryTransactionService {
       result.push({
         product_id: pl.product_id,
         product_code: pl.tb_product?.code ?? null,
-        product_name: pl.product_name ?? pl.tb_product?.name ?? null,
+        product_name: pl.tb_product?.name ?? null,
       });
     }
 
@@ -2425,24 +2424,24 @@ export class InventoryTransactionService {
       where: { location_id, deleted_at: null },
       select: {
         product_id: true,
-        product_name: true,
         location_id: true,
-        location_code: true,
-        location_name: true,
         tb_product: {
           select: { id: true, code: true, name: true },
         },
+        tb_location: {
+          select: { code: true, name: true },
+        },
       },
-      orderBy: { product_name: 'asc' },
+      orderBy: { tb_product: { name: 'asc' } },
     });
 
     const result = productLocations.map((pl) => ({
       product_id: pl.product_id,
       product_code: pl.tb_product?.code ?? null,
-      product_name: pl.product_name ?? pl.tb_product?.name ?? null,
+      product_name: pl.tb_product?.name ?? null,
       location_id: pl.location_id,
-      location_code: pl.location_code,
-      location_name: pl.location_name,
+      location_code: pl.tb_location?.code ?? null,
+      location_name: pl.tb_location?.name ?? null,
     }));
 
     return Result.ok(result);

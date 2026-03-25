@@ -369,22 +369,51 @@ export class ProductsService {
       select: {
         id: true,
         product_id: true,
-        product_code: true,
-        product_name: true,
-        product_local_name: true,
-        product_sku: true,
         location_id: true,
-        location_code: true,
-        location_name: true,
         min_qty: true,
         max_qty: true,
         re_order_qty: true,
         par_qty: true,
         note: true,
+        info: true,
+        dimension: true,
+        tb_product: {
+          select: {
+            code: true,
+            name: true,
+            local_name: true,
+            sku: true,
+          },
+        },
+        tb_location: {
+          select: {
+            code: true,
+            name: true,
+          },
+        },
       },
     });
 
-    return Result.ok(productLocations);
+    const result = productLocations.map((pl) => ({
+      id: pl.id,
+      product_id: pl.product_id,
+      product_code: pl.tb_product?.code ?? null,
+      product_name: pl.tb_product?.name ?? null,
+      product_local_name: pl.tb_product?.local_name ?? null,
+      product_sku: pl.tb_product?.sku ?? null,
+      location_id: pl.location_id,
+      location_code: pl.tb_location?.code ?? null,
+      location_name: pl.tb_location?.name ?? null,
+      min_qty: pl.min_qty,
+      max_qty: pl.max_qty,
+      re_order_qty: pl.re_order_qty,
+      par_qty: pl.par_qty,
+      note: pl.note,
+      info: pl.info,
+      dimension: pl.dimension,
+    }));
+
+    return Result.ok(result);
   }
 
   /**
@@ -409,22 +438,51 @@ export class ProductsService {
       select: {
         id: true,
         product_id: true,
-        product_code: true,
-        product_name: true,
-        product_local_name: true,
-        product_sku: true,
         location_id: true,
-        location_code: true,
-        location_name: true,
         min_qty: true,
         max_qty: true,
         re_order_qty: true,
         par_qty: true,
         note: true,
+        info: true,
+        dimension: true,
+        tb_product: {
+          select: {
+            code: true,
+            name: true,
+            local_name: true,
+            sku: true,
+          },
+        },
+        tb_location: {
+          select: {
+            code: true,
+            name: true,
+          },
+        },
       },
     });
 
-    return Result.ok(productLocations);
+    const result = productLocations.map((pl) => ({
+      id: pl.id,
+      product_id: pl.product_id,
+      product_code: pl.tb_product?.code ?? null,
+      product_name: pl.tb_product?.name ?? null,
+      product_local_name: pl.tb_product?.local_name ?? null,
+      product_sku: pl.tb_product?.sku ?? null,
+      location_id: pl.location_id,
+      location_code: pl.tb_location?.code ?? null,
+      location_name: pl.tb_location?.name ?? null,
+      min_qty: pl.min_qty,
+      max_qty: pl.max_qty,
+      re_order_qty: pl.re_order_qty,
+      par_qty: pl.par_qty,
+      note: pl.note,
+      info: pl.info,
+      dimension: pl.dimension,
+    }));
+
+    return Result.ok(result);
   }
 
   /**
@@ -445,12 +503,6 @@ export class ProductsService {
     const result = await this.prismaService.$executeRaw`
       UPDATE tb_product_location AS pl
       SET
-        product_code = p.code,
-        product_name = p.name,
-        product_local_name = p.local_name,
-        product_sku = p.sku,
-        location_code = l.code,
-        location_name = l.name,
         updated_at = ${now}::timestamptz,
         updated_by_id = ${this.userId}::uuid
       FROM tb_product p, tb_location l
@@ -1452,12 +1504,19 @@ export class ProductsService {
       where: plWhere,
       select: {
         location_id: true,
-        location_name: true,
         min_qty: true,
         max_qty: true,
+        tb_location: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
-    const plMap = new Map(productLocations.map((pl) => [pl.location_id, pl]));
+    const plMap = new Map(productLocations.map((pl) => [pl.location_id, {
+      ...pl,
+      location_name: pl.tb_location?.name ?? null,
+    }]));
 
     // Fetch cost layers
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
