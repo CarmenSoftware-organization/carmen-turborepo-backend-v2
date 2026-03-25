@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
-import { enum_allocate_extra_cost_type, enum_doc_status, enum_good_received_note_type, enum_tax_type } from '@repo/prisma-shared-schema-tenant';
+import { enum_allocate_extra_cost_type, enum_good_received_note_status, enum_good_received_note_type, enum_tax_type } from '@repo/prisma-shared-schema-tenant';
 import { EmbeddedCurrencySchema, EmbeddedDiscountSchema, EmbeddedLocationSchema, EmbeddedProductSchema, EmbeddedTaxSchema, EmbeddedVendorSchema, EmbeddedWorkflowSchema, FocSchema, InfoSchema, PriceSchema, ReceivedQuantityAndUnitSchema } from '../embedded.dto';
 
 export const GoodReceivedNoteSchema = z.object({
@@ -9,7 +9,7 @@ export const GoodReceivedNoteSchema = z.object({
   invoice_no: z.string().optional(),
   invoice_date: z.string().datetime().pipe(z.coerce.date()).optional(),
   description: z.string().optional().nullable(),
-  doc_status: z.enum(Object.values(enum_doc_status) as [string, ...string[]]).optional(),
+  doc_status: z.enum(Object.values(enum_good_received_note_status) as [string, ...string[]]).optional(),
   doc_type: z.enum(Object.values(enum_good_received_note_type) as [string, ...string[]]),
   is_consignment: z.boolean().optional(),
   is_cash: z.boolean().optional(),
@@ -150,7 +150,7 @@ export const GoodReceivedNoteUpdate = z.object({
   invoice_f: z.string().datetime().pipe(z.coerce.date()).optional(),
   description: z.string().optional(),
   doc_status: z
-    .enum(Object.values(enum_doc_status) as [string, ...string[]])
+    .enum(Object.values(enum_good_received_note_status) as [string, ...string[]])
     .optional(),
   doc_type: z
     .enum(Object.values(enum_good_received_note_type) as [string, ...string[]])

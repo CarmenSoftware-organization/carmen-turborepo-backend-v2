@@ -24,7 +24,47 @@ auth:bearer {
 
 body:json {
   {
-    "description": "",
-    "note": ""
+    "invoice_no": "INV-2026-002",
+    "invoice_date": "2026-03-25T00:00:00.000Z",
+    "description": "Updated GRN description",
+    "doc_status": "draft",
+    "doc_type": "purchase_order",
+    "vendor_id": "b0d9fdd5-5494-416c-94e5-ce44042ac8f8",
+    "currency_id": "93dabe25-1668-4c5b-bceb-3e0b83b78002",
+    "currency_rate": 1,
+    "is_consignment": false,
+    "is_cash": false,
+    "credit_term_id": "42a89581-5ce4-4fc1-8d1e-1825481ebd6c",
+    "payment_due_date": "2026-04-24T17:00:00.000Z",
+    "is_active": true,
+    "note": "Updated note",
+    "good_received_note_detail": {
+      "add": [
+        {
+          "product_id": "00b9bdf3-b6dd-4745-b486-c78bb707e7d1",
+          "location_id": "1874fa94-8c81-4d52-ab39-f072db637f3b",
+          "purchase_order_detail_id": null,
+          "received_qty": 5,
+          "received_unit_id": "ab5d4de6-95bd-4330-a263-b4578540c517",
+          "received_base_qty": 5,
+          "foc_qty": 0,
+          "foc_unit_id": null,
+          "tax_profile_id": null,
+          "tax_rate": 0,
+          "tax_amount": 0,
+          "discount_rate": 0,
+          "discount_amount": 0,
+          "is_discount_adjustment": false,
+          "net_amount": 500,
+          "total_price": 500
+        }
+      ],
+      "update": [],
+      "remove": []
+    },
+    "extra_cost": {
+      "allocate_extracost_type": "by_qty",
+      "extra_cost_detail": {}
+    }
   }
 }

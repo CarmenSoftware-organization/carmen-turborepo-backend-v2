@@ -20,7 +20,7 @@ export class CreateGoodReceivedNoteSwaggerDto {
   @ApiPropertyOptional({ description: 'Description', example: 'Goods received from ABC Supplies' })
   description?: string;
 
-  @ApiPropertyOptional({ description: 'Document status (enum)', example: 'draft' })
+  @ApiPropertyOptional({ description: 'Document status (enum: draft, saved, committed, voided)', example: 'draft', enum: ['draft', 'saved', 'committed', 'voided'] })
   doc_status?: string;
 
   @ApiPropertyOptional({ description: 'Vendor ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
@@ -223,10 +223,10 @@ export class UpdateGoodReceivedNoteSwaggerDto {
   @ApiPropertyOptional({ description: 'Description', example: 'Updated GRN description' })
   description?: string;
 
-  @ApiPropertyOptional({ description: 'Document status (enum)', example: 'draft' })
+  @ApiPropertyOptional({ description: 'Document status (enum: draft, saved, committed, voided)', example: 'draft', enum: ['draft', 'saved', 'committed', 'voided'] })
   doc_status?: string;
 
-  @ApiPropertyOptional({ description: 'Document type (enum)', example: 'purchase_order' })
+  @ApiPropertyOptional({ description: 'Document type (enum: purchase_order, manual, consignment)', example: 'purchase_order', enum: ['purchase_order', 'manual', 'consignment'] })
   doc_type?: string;
 
   @ApiPropertyOptional({ description: 'Vendor ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
