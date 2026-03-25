@@ -152,14 +152,14 @@ export const EmbeddedPriceListSchema = z.object({
 
 export const FocSchema = z.object({
   foc_qty: ValidateSchema.shape.quantity,
-  foc_unit_id: z.string().uuid().optional(),
+  foc_unit_id: z.string().uuid().optional().nullable(),
   foc_unit_conversion_rate: ValidateSchema.shape.price.optional(),
   foc_base_qty: ValidateSchema.shape.quantity.optional(),
 })
 
 export const ApproveQuantityAndUnitSchema = z.object({
   approved_qty: ValidateSchema.shape.quantity.optional(),
-  approved_unit_id: ValidateSchema.shape.uuid.optional(),
+  approved_unit_id: ValidateSchema.shape.uuid.optional().nullable(),
   approved_base_qty: ValidateSchema.shape.quantity.optional(),
   approved_unit_conversion_factor: ValidateSchema.shape.factor.optional()
 })

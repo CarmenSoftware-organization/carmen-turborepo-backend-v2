@@ -57,7 +57,7 @@ export const UnitAndQuantitySchema = z.object({
   inventory_unit_id: z.string().uuid().optional(),
   inventory_unit_name: z.string().optional(),
 
-  approved_unit_id: z.string().uuid().optional(),
+  approved_unit_id: z.string().uuid().optional().nullable(),
   approved_unit_name: z.string().optional(),
 
   approved_base_qty: z.number().optional(),
@@ -65,7 +65,7 @@ export const UnitAndQuantitySchema = z.object({
   approved_base_unit_name: z.string().optional(),
 
   foc_qty: z.number().optional(),
-  foc_unit_id: z.string().uuid().optional(),
+  foc_unit_id: z.string().uuid().optional().nullable(),
   foc_unit_name: z.string().optional(),
 })
 
