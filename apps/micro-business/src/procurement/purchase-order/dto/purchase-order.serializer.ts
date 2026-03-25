@@ -51,6 +51,8 @@ const PurchaseOrderDetailEmbeddedSchema = z.object({
   base_net_amount: decimalField,
   total_price: decimalField,
   base_total_price: decimalField,
+  current_stage_status: z.string().nullable().optional(),
+  stages_status: z.any().nullable().optional(),
   info: z.any().nullable().optional(),
   locations: z.array(LocationEmbeddedSchema).optional(),
 });

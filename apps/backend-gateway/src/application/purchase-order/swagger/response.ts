@@ -111,6 +111,12 @@ export class PurchaseOrderDetailItemResponseDto {
   @ApiPropertyOptional({ description: 'Base total price', example: 5350.0 })
   base_total_price?: number;
 
+  @ApiPropertyOptional({ description: 'Current stage status set by approver', example: 'approve', enum: ['submit', 'pending', 'approve', 'reject', 'review'] })
+  current_stage_status?: string;
+
+  @ApiPropertyOptional({ description: 'History of stage status changes (JSON array)', example: [{ seq: 1, stage: 'HOD', status: 'approve', by: { id: '...', name: 'User A' }, at: '2026-03-10T10:00:00Z' }] })
+  stages_status?: unknown;
+
   @ApiPropertyOptional({ description: 'Additional info (JSON)', example: {} })
   info?: unknown;
 }
