@@ -629,22 +629,62 @@ export class GoodReceivedNoteService {
       });
 
       if (data.good_received_note_detail?.add?.length > 0) {
-        const goodReceivedNoteDetailObj = data.good_received_note_detail.add.map(
-          (item, index) => ({
-            good_received_note_id: createGoodReceivedNote.id,
-            sequence_no: index + 1,
-            purchase_order_detail_id: item.purchase_order_detail_id,
-            location_id: item.location_id,
-            location_name: item.location_name,
-            product_id: item.product_id,
-            product_name: item.product_name,
-            product_local_name: item.product_local_name,
-          }),
-        );
+        for (let i = 0; i < data.good_received_note_detail.add.length; i++) {
+          const item = data.good_received_note_detail.add[i];
 
-        await prisma.tb_good_received_note_detail.createMany({
-          data: goodReceivedNoteDetailObj,
-        });
+          const detail = await prisma.tb_good_received_note_detail.create({
+            data: {
+              good_received_note_id: createGoodReceivedNote.id,
+              sequence_no: i + 1,
+              purchase_order_detail_id: item.purchase_order_detail_id || null,
+              location_id: item.location_id,
+              location_code: (item as any).location_code || null,
+              location_name: (item as any).location_name || null,
+              product_id: item.product_id,
+              product_code: item.product_code || null,
+              product_name: item.product_name || null,
+              product_local_name: item.product_local_name || null,
+              product_sku: item.product_sku || null,
+            },
+          });
+
+          // Create detail item with qty, cost, tax, discount, foc
+          await prisma.tb_good_received_note_detail_item.create({
+            data: {
+              good_received_note_detail_id: detail.id,
+              purchase_order_detail_purchase_request_detail_id: null,
+              received_qty: (item as any).received_qty || 0,
+              received_unit_id: (item as any).received_unit_id || null,
+              received_unit_name: (item as any).received_unit_name || null,
+              received_unit_conversion_factor: (item as any).received_unit_conversion_factor || 0,
+              received_base_qty: (item as any).received_base_qty || 0,
+              foc_qty: (item as any).foc_qty || 0,
+              foc_unit_id: (item as any).foc_unit_id || null,
+              foc_unit_name: (item as any).foc_unit_name || null,
+              foc_unit_conversion_factor: (item as any).foc_unit_conversion_factor || 0,
+              foc_base_qty: (item as any).foc_base_qty || 0,
+              tax_profile_id: item.tax_profile_id || null,
+              tax_profile_name: item.tax_profile_name || null,
+              tax_rate: item.tax_rate || 0,
+              tax_amount: item.tax_amount || 0,
+              base_tax_amount: (item as any).base_tax_amount || 0,
+              is_tax_adjustment: false,
+              discount_rate: (item as any).discount_rate || 0,
+              discount_amount: (item as any).discount_amount || 0,
+              base_discount_amount: (item as any).base_discount_amount || 0,
+              is_discount_adjustment: (item as any).is_discount_adjustment || false,
+              sub_total_price: (item as any).sub_total_price || 0,
+              net_amount: (item as any).net_amount || 0,
+              total_price: (item as any).total_price || 0,
+              base_price: (item as any).base_price || 0,
+              base_sub_total_price: (item as any).base_sub_total_price || 0,
+              base_net_amount: (item as any).base_net_amount || 0,
+              base_total_price: (item as any).base_total_price || 0,
+              note: (item as any).note || null,
+              created_by_id: user_id,
+            },
+          });
+        }
       }
 
       if (data.extra_cost) {
@@ -938,47 +978,136 @@ export class GoodReceivedNoteService {
       }
 
       if (data.good_received_note_detail) {
-        if (data.good_received_note_detail.add.length > 0) {
-          const goodReceivedNoteDetailCreateObj = await Promise.all(
-            data.good_received_note_detail.add.map(async (item) => {
-              return {
-                good_received_note_id: data.id,
-                // created_by_id: user_id,
-                ...item,
-              };
-            }),
-          );
-
-          await prisma.tb_good_received_note_detail.createMany({
-            data: goodReceivedNoteDetailCreateObj,
+        // ADD new details + detail items
+        if (data.good_received_note_detail.add?.length > 0) {
+          const maxSeq = await prisma.tb_good_received_note_detail.aggregate({
+            where: { good_received_note_id: data.id },
+            _max: { sequence_no: true },
           });
+          let seqNo = (maxSeq._max.sequence_no || 0) + 1;
+
+          for (const item of data.good_received_note_detail.add) {
+            const detail = await prisma.tb_good_received_note_detail.create({
+              data: {
+                good_received_note_id: data.id,
+                sequence_no: seqNo++,
+                purchase_order_detail_id: (item as any).purchase_order_detail_id || null,
+                location_id: (item as any).location_id,
+                location_code: (item as any).location_code || null,
+                location_name: (item as any).location_name || null,
+                product_id: (item as any).product_id,
+                product_code: (item as any).product_code || null,
+                product_name: (item as any).product_name || null,
+                product_local_name: (item as any).product_local_name || null,
+                product_sku: (item as any).product_sku || null,
+              },
+            });
+
+            await prisma.tb_good_received_note_detail_item.create({
+              data: {
+                good_received_note_detail_id: detail.id,
+                received_qty: (item as any).received_qty || 0,
+                received_unit_id: (item as any).received_unit_id || null,
+                received_unit_name: (item as any).received_unit_name || null,
+                received_unit_conversion_factor: (item as any).received_unit_conversion_factor || 0,
+                received_base_qty: (item as any).received_base_qty || 0,
+                foc_qty: (item as any).foc_qty || 0,
+                foc_unit_id: (item as any).foc_unit_id || null,
+                foc_unit_name: (item as any).foc_unit_name || null,
+                foc_unit_conversion_factor: (item as any).foc_unit_conversion_factor || 0,
+                foc_base_qty: (item as any).foc_base_qty || 0,
+                tax_profile_id: (item as any).tax_profile_id || null,
+                tax_profile_name: (item as any).tax_profile_name || null,
+                tax_rate: (item as any).tax_rate || 0,
+                tax_amount: (item as any).tax_amount || 0,
+                base_tax_amount: (item as any).base_tax_amount || 0,
+                discount_rate: (item as any).discount_rate || 0,
+                discount_amount: (item as any).discount_amount || 0,
+                base_discount_amount: (item as any).base_discount_amount || 0,
+                is_discount_adjustment: (item as any).is_discount_adjustment || false,
+                sub_total_price: (item as any).sub_total_price || 0,
+                net_amount: (item as any).net_amount || 0,
+                total_price: (item as any).total_price || 0,
+                base_price: (item as any).base_price || 0,
+                base_sub_total_price: (item as any).base_sub_total_price || 0,
+                base_net_amount: (item as any).base_net_amount || 0,
+                base_total_price: (item as any).base_total_price || 0,
+                note: (item as any).note || null,
+                created_by_id: user_id,
+              },
+            });
+          }
         }
 
-        // todo update good received note detail
-        // if (data.good_received_note_detail.update.length > 0) {
-        //   await Promise.all(
-        //     data.good_received_note_detail.update.map(async (item) => {
-        //       await prisma.tb_good_received_note_detail.update({
-        //         where: { id: item.id },
-        //         data: {
-        //           ...item,
-        //           updated_by_id: user_id,
-        //           updated_at: new Date().toISOString(),
-        //         },
-        //       });
-        //     }),
-        //   );
-        // }
+        // UPDATE existing details + detail items
+        if (data.good_received_note_detail.update?.length > 0) {
+          for (const item of data.good_received_note_detail.update) {
+            const { id: detailId, ...updateFields } = item as any;
 
-        if (data.good_received_note_detail.remove.length > 0) {
-          const goodReceivedNoteDetailId = await Promise.all(
-            data.good_received_note_detail.remove.map(async (item) => {
-              return item.id;
-            }),
-          );
+            // Update detail header (product, location)
+            const detailUpdate: Record<string, unknown> = { updated_by_id: user_id, updated_at: new Date().toISOString() };
+            if (updateFields.location_id) detailUpdate.location_id = updateFields.location_id;
+            if (updateFields.location_code !== undefined) detailUpdate.location_code = updateFields.location_code;
+            if (updateFields.location_name !== undefined) detailUpdate.location_name = updateFields.location_name;
+            if (updateFields.product_id) detailUpdate.product_id = updateFields.product_id;
+            if (updateFields.product_code !== undefined) detailUpdate.product_code = updateFields.product_code;
+            if (updateFields.product_name !== undefined) detailUpdate.product_name = updateFields.product_name;
+            if (updateFields.product_local_name !== undefined) detailUpdate.product_local_name = updateFields.product_local_name;
+            if (updateFields.product_sku !== undefined) detailUpdate.product_sku = updateFields.product_sku;
+
+            await prisma.tb_good_received_note_detail.update({
+              where: { id: detailId },
+              data: detailUpdate,
+            });
+
+            // Update or create detail item (qty, cost, tax, discount)
+            const existingItem = await prisma.tb_good_received_note_detail_item.findFirst({
+              where: { good_received_note_detail_id: detailId, deleted_at: null },
+            });
+
+            const itemData: Record<string, unknown> = {};
+            const itemFields = [
+              'received_qty', 'received_unit_id', 'received_unit_name', 'received_unit_conversion_factor', 'received_base_qty',
+              'foc_qty', 'foc_unit_id', 'foc_unit_name', 'foc_unit_conversion_factor', 'foc_base_qty',
+              'tax_profile_id', 'tax_profile_name', 'tax_rate', 'tax_amount', 'base_tax_amount',
+              'discount_rate', 'discount_amount', 'base_discount_amount', 'is_discount_adjustment',
+              'sub_total_price', 'net_amount', 'total_price', 'base_price',
+              'base_sub_total_price', 'base_net_amount', 'base_total_price', 'note',
+            ];
+            for (const field of itemFields) {
+              if (updateFields[field] !== undefined) itemData[field] = updateFields[field];
+            }
+
+            if (Object.keys(itemData).length > 0) {
+              if (existingItem) {
+                await prisma.tb_good_received_note_detail_item.update({
+                  where: { id: existingItem.id },
+                  data: { ...itemData, updated_by_id: user_id, updated_at: new Date().toISOString() },
+                });
+              } else {
+                await prisma.tb_good_received_note_detail_item.create({
+                  data: {
+                    good_received_note_detail_id: detailId,
+                    ...itemData,
+                    created_by_id: user_id,
+                  },
+                });
+              }
+            }
+          }
+        }
+
+        // REMOVE details + their items
+        if (data.good_received_note_detail.remove?.length > 0) {
+          const removeIds = data.good_received_note_detail.remove.map((item) => item.id);
+
+          // Delete detail items first (FK constraint)
+          await prisma.tb_good_received_note_detail_item.deleteMany({
+            where: { good_received_note_detail_id: { in: removeIds } },
+          });
 
           await prisma.tb_good_received_note_detail.deleteMany({
-            where: { id: { in: goodReceivedNoteDetailId } },
+            where: { id: { in: removeIds } },
           });
         }
       }
@@ -1145,6 +1274,29 @@ export class GoodReceivedNoteService {
       data: { deleted_at: now, deleted_by_id: user_id },
     });
 
+    return Result.ok({ id });
+  }
+
+  /**
+   * Void a good received note by ID
+   * ยกเลิกใบรับสินค้าตาม ID
+   */
+  @TryCatch
+  async voidGrnById(id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'voidGrnById', id, user_id, tenant_id }, GoodReceivedNoteService.name);
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    const grn = await prisma.tb_good_received_note.findFirst({ where: { id, deleted_at: null } });
+    if (!grn) return Result.error('Good received note not found', ErrorCode.NOT_FOUND);
+    if (grn.doc_status === enum_good_received_note_status.voided) {
+      return Result.error('Good received note is already voided', ErrorCode.INVALID_ARGUMENT);
+    }
+
+    await this.voidGrn(prisma, id, '', grn.note, user_id);
     return Result.ok({ id });
   }
 

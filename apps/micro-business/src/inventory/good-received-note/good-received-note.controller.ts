@@ -276,6 +276,26 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Void a good received note
+   * ยกเลิกใบรับสินค้า
+   */
+  @MessagePattern({
+    cmd: 'good-received-note.void',
+    service: 'good-received-note',
+  })
+  async voidGrn(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'voidGrn', payload }, GoodReceivedNoteController.name);
+    const id = payload.id;
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.goodReceivedNoteService.voidGrnById(id, user_id, tenant_id)
+    );
+    return this.handleResult(result);
+  }
+
   // ==================== Good Received Note Detail CRUD ====================
 
   /**

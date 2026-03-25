@@ -269,6 +269,38 @@ export class GoodReceivedNoteService {
   }
 
   /**
+   * Void a Good Received Note via microservice
+   * ยกเลิกใบรับสินค้าผ่านไมโครเซอร์วิส
+   */
+  async voidGrn(
+    id: string,
+    user_id: string,
+    tenant_id: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'voidGrn', id, user_id, tenant_id, version },
+      GoodReceivedNoteService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      { cmd: 'good-received-note.void', service: 'good-received-note' },
+      { id, user_id, tenant_id, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
+  /**
    * Export a Good Received Note to Excel via microservice
    * ส่งออกใบรับสินค้าเป็นไฟล์ Excel ผ่านไมโครเซอร์วิส
    * @param id - Good Received Note ID / รหัสใบรับสินค้า

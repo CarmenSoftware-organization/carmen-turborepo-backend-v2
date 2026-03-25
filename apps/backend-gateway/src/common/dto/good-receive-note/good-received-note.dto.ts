@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 import { enum_allocate_extra_cost_type, enum_doc_status, enum_good_received_note_type, enum_tax_type } from '@repo/prisma-shared-schema-tenant';
-import { EmbeddedCurrencySchema, EmbeddedDiscountSchema, EmbeddedLocationSchema, EmbeddedProductSchema, EmbeddedTaxSchema, EmbeddedVendorSchema, EmbeddedWorkflowSchema, FocSchema, InfoSchema, ReceivedQuantityAndUnitSchema } from '../embedded.dto';
+import { EmbeddedCurrencySchema, EmbeddedDiscountSchema, EmbeddedLocationSchema, EmbeddedProductSchema, EmbeddedTaxSchema, EmbeddedVendorSchema, EmbeddedWorkflowSchema, FocSchema, InfoSchema, PriceSchema, ReceivedQuantityAndUnitSchema } from '../embedded.dto';
 
 export const GoodReceivedNoteSchema = z.object({
   id: z.string().uuid(),
@@ -55,6 +55,10 @@ export const GoodReceivedNoteDetail_PO_Create = GoodReceivedNoteDetailSchema.omi
 }).extend({
   purchase_order_detail_id: z.string().uuid().nullable().optional(),
 })
+.merge(ReceivedQuantityAndUnitSchema)
+.merge(FocSchema)
+.merge(EmbeddedDiscountSchema)
+.merge(PriceSchema);
 
 export const GoodReceivedNoteDetail_Manual_Create = GoodReceivedNoteDetailSchema.omit({
   id: true,
@@ -65,7 +69,9 @@ export const GoodReceivedNoteDetail_Manual_Create = GoodReceivedNoteDetailSchema
   is_tax_adjustment: true,
 })
 .merge(ReceivedQuantityAndUnitSchema)
-.merge(FocSchema);
+.merge(FocSchema)
+.merge(EmbeddedDiscountSchema)
+.merge(PriceSchema);
 
 export const ExtraCostDetailCreate = z.object({
   extra_cost_type_id: z.string().uuid(),

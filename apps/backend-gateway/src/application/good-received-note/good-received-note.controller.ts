@@ -618,6 +618,61 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
+   * Void a Good Received Note
+   * ยกเลิกใบรับสินค้า
+   * @param id - Good Received Note ID / รหัสใบรับสินค้า
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Voided GRN / ใบรับสินค้าที่ยกเลิกแล้ว
+   */
+  @Delete(':bu_code/good-received-note/:id/void')
+  @UseGuards(new AppIdGuard('goodReceivedNote.delete'))
+  @Serialize(GoodReceivedNoteMutationResponseSchema)
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Void a Good Received Note',
+    description:
+      'Voids a goods receiving record, setting its status to voided. This prevents the GRN from being committed to inventory. Used when a delivery is rejected or the GRN was created with incorrect information.',
+    operationId: 'voidGoodReceivedNote',
+    tags: ['Procurement', 'Good Received Note'],
+    parameters: [
+      {
+        name: 'id',
+        in: 'path',
+        required: true,
+        description: 'Good Received Note ID',
+      },
+    ],
+    responses: {
+      200: { description: 'The Good Received Note was successfully voided' },
+      400: { description: 'The Good Received Note cannot be voided' },
+      404: { description: 'The Good Received Note was not found' },
+    },
+  })
+  async voidGrn(
+    @Param('id') id: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'voidGrn', id, version },
+      GoodReceivedNoteController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.goodReceivedNoteService.voidGrn(
+      id,
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
    * Export a Good Received Note to an Excel spreadsheet
    * ส่งออกใบรับสินค้าเป็นไฟล์ Excel
    * @param id - Good Received Note ID / รหัสใบรับสินค้า
@@ -1110,15 +1165,15 @@ export class GoodReceivedNoteController extends BaseHttpController {
    * @param version - API version / เวอร์ชัน API
    * @returns Confirmed Good Received Note / ใบรับสินค้าที่ยืนยันแล้ว
    */
-  @Patch(':bu_code/good-received-note/:id/confirm')
+  @Patch(':bu_code/good-received-note/:id/commit')
   @UseGuards(new AppIdGuard('goodReceivedNote.confirm'))
   @Serialize(GoodReceivedNoteMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Confirm a Good Received Note',
+    summary: 'Commit a Good Received Note',
     description:
-      'Confirms the goods receiving record from the mobile app, finalizing the delivery inspection. Used by receiving staff on-site to mark a delivery as fully checked and ready for inventory posting.',
-    operationId: 'confirmGoodReceivedNote',
+      'Commits the goods receiving record, finalizing the delivery inspection and posting to inventory. Used by receiving staff to mark a delivery as fully checked and ready for inventory posting.',
+    operationId: 'commitGoodReceivedNote',
     tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -1137,14 +1192,14 @@ export class GoodReceivedNoteController extends BaseHttpController {
       },
     ],
     responses: {
-      200: { description: 'GRN confirmed successfully' },
-      400: { description: 'GRN cannot be confirmed' },
+      200: { description: 'GRN committed successfully' },
+      400: { description: 'GRN cannot be committed' },
       404: { description: 'GRN not found' },
     },
   })
   @ApiBody({ type: ConfirmGoodReceivedNoteSwaggerDto })
   @HttpCode(HttpStatus.OK)
-  async confirm(
+  async commit(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
     @Body() data: Record<string, unknown>,
