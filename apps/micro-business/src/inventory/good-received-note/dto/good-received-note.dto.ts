@@ -84,7 +84,7 @@ export const GoodReceivedNoteSchema = z.object({
 
   received_by_id: z.string().uuid().optional().nullable(),
   received_by_name: z.string().optional(),
-  received_at: z.string().datetime().pipe(z.coerce.date()).optional().nullable(),
+  received_at: z.string().datetime().pipe(z.coerce.date()),
 
   credit_term_id: z.string().uuid().optional(),
   credit_term_name: z.string().optional(),

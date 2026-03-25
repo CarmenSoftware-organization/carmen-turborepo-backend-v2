@@ -2405,6 +2405,8 @@ export class PurchaseOrderService {
           select: {
             id: true,
             pr_no: true,
+            requestor_id: true,
+            requestor_name: true,
           },
         },
         tb_vendor: {
@@ -2478,6 +2480,8 @@ export class PurchaseOrderService {
           currency_id: prDetail.currency_id,
           currency_code: prDetail.currency_code || prDetail.tb_currency?.code,
           exchange_rate: Number(prDetail.exchange_rate) || 1,
+          requestor_id: prDetail.tb_purchase_request?.requestor_id || null,
+          requestor_name: prDetail.tb_purchase_request?.requestor_name || null,
           items: [],
           total_qty: 0,
           total_price: 0,
@@ -2629,9 +2633,11 @@ export class PurchaseOrderService {
             total_amount: group.total_amount,
             workflow_id: resolvedWorkflow?.id,
             workflow_name: resolvedWorkflow?.name,
+            buyer_id: group.requestor_id || this.userId,
+            buyer_name: group.requestor_name || null,
             is_active: true,
             doc_version: 1,
-            created_by_id: this.userId,
+            created_by_id: group.requestor_id || this.userId,
           },
         });
 

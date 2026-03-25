@@ -53,8 +53,8 @@ export class CreateGoodReceivedNoteSwaggerDto {
   @ApiPropertyOptional({ description: 'Received by name' })
   received_by_name?: string;
 
-  @ApiPropertyOptional({ description: 'Received at date (ISO 8601)', example: '2026-03-10T10:30:00.000Z' })
-  received_at?: string;
+  @ApiProperty({ description: 'Received at date (ISO 8601) — required, used for GRN number generation', example: '2026-03-25T10:30:00.000Z' })
+  received_at: string;
 
   @ApiPropertyOptional({ description: 'Credit term ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   credit_term_id?: string;

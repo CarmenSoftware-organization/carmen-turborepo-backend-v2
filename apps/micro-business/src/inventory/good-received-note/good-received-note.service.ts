@@ -460,6 +460,13 @@ export class GoodReceivedNoteService {
       delete goodReceivedNoteObject.is_discount_adjustment;
       delete goodReceivedNoteObject.base_discount_amount;
 
+      // Convert Date objects to ISO strings for Prisma Timestamptz fields
+      if (goodReceivedNoteObject.invoice_date instanceof Date) goodReceivedNoteObject.invoice_date = goodReceivedNoteObject.invoice_date.toISOString();
+      if (goodReceivedNoteObject.received_at instanceof Date) goodReceivedNoteObject.received_at = goodReceivedNoteObject.received_at.toISOString();
+      if (goodReceivedNoteObject.payment_due_date instanceof Date) goodReceivedNoteObject.payment_due_date = goodReceivedNoteObject.payment_due_date.toISOString();
+      if (goodReceivedNoteObject.grn_date instanceof Date) goodReceivedNoteObject.grn_date = goodReceivedNoteObject.grn_date.toISOString();
+      if (goodReceivedNoteObject.exchange_rate_date instanceof Date) goodReceivedNoteObject.exchange_rate_date = goodReceivedNoteObject.exchange_rate_date.toISOString();
+
       const createGoodReceivedNote = await prisma.tb_good_received_note.create({
         data: {
           ...goodReceivedNoteObject,
@@ -1745,7 +1752,7 @@ export class GoodReceivedNoteService {
       data: {
         doc_status: status,
         updated_by_id: user_id,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       },
     });
   }
@@ -1771,7 +1778,7 @@ export class GoodReceivedNoteService {
       data: {
         received_qty: { increment: qty },
         updated_by_id: user_id,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       },
     });
   }
@@ -1785,7 +1792,7 @@ export class GoodReceivedNoteService {
       data: {
         received_qty: { increment: qty },
         updated_by_id: user_id,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       },
     });
   }
@@ -1819,7 +1826,7 @@ export class GoodReceivedNoteService {
       data: {
         po_status: status,
         updated_by_id: user_id,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       },
     });
   }

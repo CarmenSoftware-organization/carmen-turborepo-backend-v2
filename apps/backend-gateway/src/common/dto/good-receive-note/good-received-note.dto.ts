@@ -17,7 +17,7 @@ export const GoodReceivedNoteSchema = z.object({
 
   received_by_id: z.string().uuid().optional().nullable(),
   received_by_name: z.string().optional(),
-  received_at: z.string().datetime().pipe(z.coerce.date()).optional().nullable(),
+  received_at: z.string().datetime().pipe(z.coerce.date()),
 
   credit_term_id: z.string().uuid().optional(),
   credit_term_name: z.string().optional(),
@@ -53,7 +53,7 @@ export const GoodReceivedNoteDetail_PO_Create = GoodReceivedNoteDetailSchema.omi
   sequence_no: true,
   is_tax_adjustment: true,
 }).extend({
-  purchase_order_detail_id: z.string().uuid().optional(),
+  purchase_order_detail_id: z.string().uuid().nullable().optional(),
 })
 
 export const GoodReceivedNoteDetail_Manual_Create = GoodReceivedNoteDetailSchema.omit({
