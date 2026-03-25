@@ -2320,8 +2320,8 @@ export class PurchaseOrderService {
       return Result.error('PR IDs are required', ErrorCode.INVALID_ARGUMENT);
     }
 
-    // Resolve workflow
-    let resolvedWorkflow: { id: string; name: string } | null = null;
+    // Resolve workflow (include data for auto-submit navigation)
+    let resolvedWorkflow: { id: string; name: string; data: any } | null = null;
     if (workflow_id) {
       const uuidResult = z.string().uuid().safeParse(workflow_id);
       if (!uuidResult.success) {
@@ -2329,7 +2329,7 @@ export class PurchaseOrderService {
       }
       const wf = await this.prismaService.tb_workflow.findFirst({
         where: { id: workflow_id, deleted_at: null },
-        select: { id: true, name: true },
+        select: { id: true, name: true, data: true },
       });
       if (!wf) {
         return Result.error('Workflow not found', ErrorCode.NOT_FOUND);
@@ -2338,7 +2338,7 @@ export class PurchaseOrderService {
     } else {
       const wf = await this.prismaService.tb_workflow.findFirst({
         where: { workflow_type: 'purchase_order_workflow', deleted_at: null },
-        select: { id: true, name: true },
+        select: { id: true, name: true, data: true },
       });
       if (!wf) {
         return Result.error('No purchase order workflow configured', ErrorCode.NOT_FOUND);
@@ -2613,7 +2613,7 @@ export class PurchaseOrderService {
         const po = await prismatx.tb_purchase_order.create({
           data: {
             po_no: poNo,
-            po_status: enum_purchase_order_doc_status.draft,
+            po_status: enum_purchase_order_doc_status.in_progress,
             po_type: 'purchase_request',
             description: `PO from PR confirmation`,
             order_date: orderDate.toISOString(),
@@ -2717,6 +2717,52 @@ export class PurchaseOrderService {
               },
             });
           }
+        }
+
+        // Auto-submit: initialize workflow so PO appears in approver's pending list
+        if (resolvedWorkflow?.data) {
+          const totalAmount = Number(group.total_amount ?? 0);
+          const firstStageRes = this.masterService.send(
+            { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
+            { workflowData: resolvedWorkflow.data, currentStatus: '', requestData: { amount: totalAmount } },
+          );
+          const firstStageNav = await firstValueFrom(firstStageRes);
+          const currentStage = firstStageNav.navigation_info?.current_stage_info?.name;
+
+          const navRes = this.masterService.send(
+            { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
+            { workflowData: resolvedWorkflow.data, currentStatus: currentStage, requestData: { amount: totalAmount } },
+          );
+          const workflowNav = await firstValueFrom(navRes);
+          const now = new Date();
+
+          // Build user_action from workflow stage
+          const stageInfo = workflowNav.navigation_info?.current_stage_info;
+          let userAction: Record<string, unknown> = {};
+          if (stageInfo) {
+            const executeUsers = stageInfo.approvers ?? stageInfo.execute ?? [];
+            userAction = { execute: executeUsers };
+          }
+
+          await prismatx.tb_purchase_order.update({
+            where: { id: po.id },
+            data: {
+              workflow_previous_stage: workflowNav.previous_stage,
+              workflow_current_stage: workflowNav.current_stage,
+              workflow_next_stage: workflowNav.navigation_info?.workflow_next_step,
+              user_action: userAction as any,
+              last_action: 'submitted',
+              last_action_at_date: now.toISOString(),
+              last_action_by_id: this.userId,
+              workflow_history: [{
+                action: 'submitted',
+                datetime: now.toISOString(),
+                user: { id: this.userId },
+                current_stage: currentStage,
+                next_stage: workflowNav.current_stage,
+              }] as any,
+            },
+          });
         }
 
         createdPOs.push({
