@@ -711,24 +711,32 @@ export class PurchaseRequestService {
 
         const standardQuery = q.findMany();
 
+        const userPermissionFilter = {
+          OR: [
+            {
+              user_action: {
+                path: ['execute'],
+                array_contains: [{ user_id: user_id }],
+              },
+            },
+            {
+              pr_status: enum_purchase_request_doc_status.draft,
+              requestor_id: user_id,
+            },
+          ],
+        };
+
+        const combinedWhere = {
+          AND: [
+            standardQuery.where,
+            userPermissionFilter,
+          ],
+        };
+
         const purchaseRequests = await prisma.tb_purchase_request
           .findMany({
             ...standardQuery,
-            where: {
-              ...standardQuery.where,
-              OR: [
-                {
-                  user_action: {
-                    path: ['execute'],
-                    array_contains: [{ user_id: user_id }],
-                  },
-                },
-                {
-                  pr_status: enum_purchase_request_doc_status.draft,
-                  requestor_id: user_id,
-                },
-              ],
-            },
+            where: combinedWhere,
             include: {
               tb_purchase_request_detail: true,
             },
@@ -769,21 +777,7 @@ export class PurchaseRequestService {
           });
 
         const total = await prisma.tb_purchase_request.count({
-          where: {
-            ...standardQuery.where,
-            OR: [
-              {
-                user_action: {
-                  path: ['execute'],
-                  array_contains: [{ user_id: user_id }],
-                },
-              },
-              {
-                pr_status: enum_purchase_request_doc_status.draft,
-                requestor_id: user_id,
-              },
-            ],
-          },
+          where: combinedWhere,
         });
 
         const serializedPurchaseRequests = purchaseRequests.map((item) =>

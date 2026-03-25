@@ -4321,24 +4321,32 @@ export class PurchaseOrderService {
 
         const standardQuery = q.findMany();
 
+        const userPermissionFilter = {
+          OR: [
+            {
+              user_action: {
+                path: ['execute'],
+                array_contains: [{ user_id: user_id }],
+              },
+            },
+            {
+              po_status: enum_purchase_order_doc_status.draft,
+              buyer_id: user_id,
+            },
+          ],
+        };
+
+        const combinedWhere = {
+          AND: [
+            standardQuery.where,
+            userPermissionFilter,
+          ],
+        };
+
         const purchaseOrders = await prisma.tb_purchase_order
           .findMany({
             ...standardQuery,
-            where: {
-              ...standardQuery.where,
-              OR: [
-                {
-                  user_action: {
-                    path: ['execute'],
-                    array_contains: [{ user_id: user_id }],
-                  },
-                },
-                {
-                  po_status: enum_purchase_order_doc_status.draft,
-                  buyer_id: user_id,
-                },
-              ],
-            },
+            where: combinedWhere,
             include: {
               tb_vendor: { select: { id: true, name: true, code: true } },
               tb_currency_tb_purchase_order_currency_idTotb_currency: { select: { id: true, name: true, code: true, symbol: true } },
@@ -4384,21 +4392,7 @@ export class PurchaseOrderService {
           });
 
         const total = await prisma.tb_purchase_order.count({
-          where: {
-            ...standardQuery.where,
-            OR: [
-              {
-                user_action: {
-                  path: ['execute'],
-                  array_contains: [{ user_id: user_id }],
-                },
-              },
-              {
-                po_status: enum_purchase_order_doc_status.draft,
-                buyer_id: user_id,
-              },
-            ],
-          },
+          where: combinedWhere,
         });
 
         const serializedPurchaseOrders = purchaseOrders.map((item) =>

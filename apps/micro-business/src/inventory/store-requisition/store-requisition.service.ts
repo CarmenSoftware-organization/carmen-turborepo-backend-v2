@@ -1303,24 +1303,32 @@ export class StoreRequisitionService {
 
         const standardQuery = q.findMany();
 
+        const userPermissionFilter = {
+          OR: [
+            {
+              user_action: {
+                path: ['execute'],
+                array_contains: user_id,
+              },
+            },
+            {
+              doc_status: enum_doc_status.draft,
+              requestor_id: user_id,
+            },
+          ],
+        };
+
+        const combinedWhere = {
+          AND: [
+            standardQuery.where,
+            userPermissionFilter,
+          ],
+        };
+
         const storeRequisitions = await prisma.tb_store_requisition
           .findMany({
             ...standardQuery,
-            where: {
-              ...standardQuery.where,
-              OR: [
-                {
-                  user_action: {
-                    path: ['execute'],
-                    array_contains: user_id,
-                  },
-                },
-                {
-                  doc_status: enum_doc_status.draft,
-                  requestor_id: user_id,
-                },
-              ],
-            },
+            where: combinedWhere,
             include: {
               tb_store_requisition_detail: true,
             },
@@ -1360,21 +1368,7 @@ export class StoreRequisitionService {
           });
 
         const total = await prisma.tb_store_requisition.count({
-          where: {
-            ...standardQuery.where,
-            OR: [
-              {
-                user_action: {
-                  path: ['execute'],
-                  array_contains: user_id,
-                },
-              },
-              {
-                doc_status: enum_doc_status.draft,
-                requestor_id: user_id,
-              },
-            ],
-          },
+          where: combinedWhere,
         });
 
         const serializedStoreRequisitions = storeRequisitions.map((item) =>
