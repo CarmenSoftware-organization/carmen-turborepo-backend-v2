@@ -327,7 +327,7 @@ cmd_status() {
             keycloak)       ports="5013, 6013" ;;
             file)           ports="5007, 6007" ;;
             notification)   ports="5006, 6006" ;;
-            cronjob)        ports="5012, 6012" ;;
+            cronjob)        ports="5012" ;;
             report)         ports="5015, 6015" ;;
         esac
 
@@ -354,7 +354,7 @@ cmd_health() {
     check "Keycloak API (6013)"   "http://localhost:6013/health"
     check "File (6007)"           "http://localhost:6007/health"
     check "Notification (6006)"   "http://localhost:6006/health"
-    check "Cronjob (6012)"        "http://localhost:6012/health"
+    check "Cronjob (5012)"        "http://localhost:5012/health"
     check "Report (6015)"         "http://localhost:6015/health"
 }
 
