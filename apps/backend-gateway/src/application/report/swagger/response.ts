@@ -48,3 +48,16 @@ export class ReportTemplateResponseDto {
   @ApiProperty({ description: 'Whether this template is active', example: true })
   is_active: boolean;
 }
+
+export class ViewerResponseDto {
+  @ApiProperty({ description: 'External report viewer URL', example: 'https://report.blueledgers.cloud/viewer/abc123' })
+  url: string;
+}
+
+export class LookupItemDto {
+  @ApiProperty({ description: 'Item code', example: 'V001' })
+  code: string;
+
+  @ApiProperty({ description: 'Item name', example: 'Vendor ABC' })
+  name: string;
+}

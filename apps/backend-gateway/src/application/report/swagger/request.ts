@@ -71,3 +71,19 @@ export class GenerateReportRequestDto {
   @ApiPropertyOptional({ description: 'Report template ID (UUID)', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   template_id?: string;
 }
+
+export class ViewerRequestDto {
+  @ApiProperty({ description: 'Report template ID (UUID)', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  template_id: string;
+
+  @ApiPropertyOptional({ description: 'Report filters', type: ReportFiltersDto })
+  filters?: ReportFiltersDto;
+}
+
+export class ReportDataRequestDto {
+  @ApiProperty({ description: 'Report template ID (UUID)', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  template_id: string;
+
+  @ApiPropertyOptional({ description: 'Report filters', type: ReportFiltersDto })
+  filters?: ReportFiltersDto;
+}
