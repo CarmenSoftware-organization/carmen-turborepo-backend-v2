@@ -70,7 +70,7 @@ const GoodReceivedNoteDetailEmbeddedSchema = z.object({
   updated_by_id: z.string().nullable().optional(),
   deleted_at: z.coerce.date().nullable().optional(),
   deleted_by_id: z.string().nullable().optional(),
-  good_received_note_detail_item: z.array(GoodReceivedNoteDetailItemSchema).optional(),
+  items: z.array(GoodReceivedNoteDetailItemSchema).optional(),
 }).passthrough();
 
 // Extra cost detail schema
