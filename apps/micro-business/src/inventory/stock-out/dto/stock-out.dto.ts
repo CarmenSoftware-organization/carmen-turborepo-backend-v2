@@ -55,6 +55,9 @@ export const StockOutDetailCreate = StockOutDetailBaseSchema.omit({
   stock_out_id: true,
   inventory_transaction_id: true,
   sequence_no: true,
+}).extend({
+  product_id: z.string().uuid(),
+  qty: z.number(),
 });
 
 export type IStockOutDetailCreate = z.infer<typeof StockOutDetailCreate>;
@@ -65,9 +68,11 @@ export const StockOutCreate = StockOutSchema.omit({
   so_no: true,
   doc_version: true,
 }).extend({
+  adjustment_type_id: z.string().uuid(),
+  location_id: z.string().uuid(),
   stock_out_detail: z.object({
-    add: z.array(StockOutDetailCreate).optional(),
-  }).optional(),
+    add: z.array(StockOutDetailCreate).min(1),
+  }),
 });
 
 export type IStockOutCreate = z.infer<typeof StockOutCreate>;
@@ -90,7 +95,9 @@ export const StockOutUpdate = z.object({
   adjustment_type_id: z.string().uuid().optional().nullable(),
   adjustment_type_code: z.string().optional().nullable(),
   doc_status: z.enum(Object.values(enum_doc_status) as [string, ...string[]]).optional(),
-  // workflow_id: z.string().uuid().optional().nullable(),
+  location_id: z.string().uuid().optional().nullable(),
+  location_code: z.string().optional().nullable(),
+  location_name: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
   info: z.any().optional(),
   dimension: z.any().optional(),

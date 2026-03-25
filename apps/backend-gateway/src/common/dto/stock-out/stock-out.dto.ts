@@ -42,13 +42,16 @@ export const StockOutDetailCreate = StockOutDetailBaseSchema.omit({
   stock_out_id: true,
   inventory_transaction_id: true,
   sequence_no: true,
+}).extend({
+  product_id: z.string().uuid(),
+  qty: z.number(),
 });
 
 export type IStockOutDetailCreate = z.infer<typeof StockOutDetailCreate>;
 
 // Detail object schema (reusable)
 const StockOutDetailObj = z.object({
-  add: z.array(StockOutDetailCreate).optional(),
+  add: z.array(StockOutDetailCreate).min(1),
 });
 
 // Stock Out Create Schema
@@ -57,7 +60,9 @@ export const StockOutCreate = StockOutSchema.omit({
   so_no: true,
   doc_version: true,
 }).extend({
-  stock_out_detail: StockOutDetailObj.optional(),
+  adjustment_type_id: z.string().uuid(),
+  location_id: z.string().uuid(),
+  stock_out_detail: StockOutDetailObj,
   details: StockOutDetailObj.optional(),
 }).transform((data) => {
   const { details, ...rest } = data;

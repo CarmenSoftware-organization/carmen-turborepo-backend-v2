@@ -57,6 +57,11 @@ export const StockInDetailCreate = StockInDetailBaseSchema.omit({
   stock_in_id: true,
   inventory_transaction_id: true,
   sequence_no: true,
+}).extend({
+  product_id: z.string().uuid(),
+  qty: z.number(),
+  cost_per_unit: z.number(),
+  total_cost: z.number(),
 });
 
 export type IStockInDetailCreate = z.infer<typeof StockInDetailCreate>;
@@ -67,9 +72,11 @@ export const StockInCreate = StockInSchema.omit({
   si_no: true,
   doc_version: true,
 }).extend({
+  adjustment_type_id: z.string().uuid(),
+  location_id: z.string().uuid(),
   stock_in_detail: z.object({
-    add: z.array(StockInDetailCreate).optional(),
-  }).optional(),
+    add: z.array(StockInDetailCreate).min(1),
+  }),
 });
 
 export type IStockInCreate = z.infer<typeof StockInCreate>;
@@ -92,7 +99,9 @@ export const StockInUpdate = z.object({
   adjustment_type_id: z.string().uuid().optional().nullable(),
   adjustment_type_code: z.string().optional().nullable(),
   doc_status: z.enum(Object.values(enum_doc_status) as [string, ...string[]]).optional(),
-  // workflow_id: z.string().uuid().optional().nullable(),
+  location_id: z.string().uuid().optional().nullable(),
+  location_code: z.string().optional().nullable(),
+  location_name: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
   info: z.any().optional(),
   dimension: z.any().optional(),

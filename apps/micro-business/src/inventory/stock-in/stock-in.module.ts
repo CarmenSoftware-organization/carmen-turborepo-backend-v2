@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { StockInService } from './stock-in.service';
+import { StockInLogic } from './stock-in.logic';
 import { StockInController } from './stock-in.controller';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
@@ -26,6 +27,7 @@ import { InventoryTransactionModule } from '@/inventory/inventory-transaction/in
   controllers: [StockInController],
   providers: [
     StockInService,
+    StockInLogic,
     {
       provide: 'PRISMA_SYSTEM',
       useValue: PrismaClient_SYSTEM,

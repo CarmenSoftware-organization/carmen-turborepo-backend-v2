@@ -44,13 +44,18 @@ export const StockInDetailCreate = StockInDetailBaseSchema.omit({
   stock_in_id: true,
   inventory_transaction_id: true,
   sequence_no: true,
+}).extend({
+  product_id: z.string().uuid(),
+  qty: z.number(),
+  cost_per_unit: z.number(),
+  total_cost: z.number(),
 });
 
 export type IStockInDetailCreate = z.infer<typeof StockInDetailCreate>;
 
 // Detail object schema (reusable)
 const StockInDetailObj = z.object({
-  add: z.array(StockInDetailCreate).optional(),
+  add: z.array(StockInDetailCreate).min(1),
 });
 
 // Stock In Create Schema
@@ -59,7 +64,9 @@ export const StockInCreate = StockInSchema.omit({
   si_no: true,
   doc_version: true,
 }).extend({
-  stock_in_detail: StockInDetailObj.optional(),
+  adjustment_type_id: z.string().uuid(),
+  location_id: z.string().uuid(),
+  stock_in_detail: StockInDetailObj,
   details: StockInDetailObj.optional(),
 }).transform((data) => {
   const { details, ...rest } = data;

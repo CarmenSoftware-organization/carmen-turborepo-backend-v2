@@ -18,6 +18,7 @@ import {
   TryCatch,
 } from '@/common';
 import { InventoryTransactionService } from '@/inventory/inventory-transaction/inventory-transaction.service';
+import { StockOutLogic } from './stock-out.logic';
 
 @Injectable()
 export class StockOutService {
@@ -32,6 +33,7 @@ export class StockOutService {
     private readonly masterService: ClientProxy,
     private readonly tenantService: TenantService,
     private readonly inventoryTransactionService: InventoryTransactionService,
+    private readonly stockOutLogic: StockOutLogic,
   ) { }
 
   /**
@@ -176,29 +178,13 @@ export class StockOutService {
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
-    // Validate products before entering transaction
-    const productNotFound: string[] = [];
-    await Promise.all(
-      data.stock_out_detail.add.map(async (item) => {
-        if (item.product_id) {
-          const product = await prisma.tb_product.findFirst({
-            where: { id: item.product_id },
-          });
-          if (!product) {
-            productNotFound.push(item.product_id);
-          } else {
-            item.product_name = product.name;
-            item.product_code = product.code;
-            item.product_sku = product.code;
-            item.product_local_name = product.local_name;
-          }
-        }
-      }),
-    );
+    // Validate and enrich header fields
+    const headerError = await this.stockOutLogic.validateAndEnrichHeader(prisma, data);
+    if (headerError) return Result.error(headerError, ErrorCode.NOT_FOUND);
 
-    if (productNotFound.length > 0) {
-      return Result.error(`Product not found: ${productNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-    }
+    // Validate and enrich detail items
+    const detailError = await this.stockOutLogic.validateAndEnrichDetailItems(prisma, data.stock_out_detail.add);
+    if (detailError) return Result.error(detailError, ErrorCode.NOT_FOUND);
 
     // Get calculation method before transaction
     const method = await this.inventoryTransactionService.getCalculationMethod(tenant_id);
@@ -229,8 +215,10 @@ export class StockOutService {
             created_by_id: user_id,
             sequence_no: sequenceNo++,
             product_id: item.product_id || '',
+            product_code: item.product_code || null,
             product_name: item.product_name || null,
             product_local_name: item.product_local_name || null,
+            product_sku: item.product_sku || null,
             description: item.description || null,
             qty: item.qty || 0,
             note: item.note || null,
@@ -296,47 +284,19 @@ export class StockOutService {
       return Result.error('Cannot update a completed Stock Out — inventory has already been adjusted', ErrorCode.INVALID_ARGUMENT);
     }
 
-    // Validate workflow if provided
-    // if (data.workflow_id) {
-    //   const workflow = await prisma.tb_workflow.findFirst({
-    //     where: { id: data.workflow_id },
-    //   });
-    //   if (!workflow) {
-    //     return Result.error('Workflow not found', ErrorCode.NOT_FOUND);
-    //   }
-    // }
+    // Validate and enrich header fields
+    const headerError = await this.stockOutLogic.validateAndEnrichHeader(prisma, data);
+    if (headerError) return Result.error(headerError, ErrorCode.NOT_FOUND);
 
-    // Validate detail items
+    // Validate and enrich detail items
     if (data.stock_out_detail) {
       if (data.stock_out_detail.add) {
-        const productNotFound: string[] = [];
-
-        await Promise.all(
-          data.stock_out_detail.add.map(async (item) => {
-            if (item.product_id) {
-              const product = await prisma.tb_product.findFirst({
-                where: { id: item.product_id },
-              });
-              if (!product) {
-                productNotFound.push(item.product_id);
-              } else {
-                item.product_name = product.name;
-              item.product_code = product.code;
-              item.product_sku = product.code;
-                item.product_local_name = product.local_name;
-              }
-            }
-          }),
-        );
-
-        if (productNotFound.length > 0) {
-          return Result.error(`Product not found: ${productNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
-        }
+        const addError = await this.stockOutLogic.validateAndEnrichDetailItems(prisma, data.stock_out_detail.add);
+        if (addError) return Result.error(addError, ErrorCode.NOT_FOUND);
       }
 
       if (data.stock_out_detail.update) {
         const detailNotFound: string[] = [];
-
         await Promise.all(
           data.stock_out_detail.update.map(async (item) => {
             const detail = await prisma.tb_stock_out_detail.findFirst({
@@ -347,10 +307,12 @@ export class StockOutService {
             }
           }),
         );
-
         if (detailNotFound.length > 0) {
           return Result.error(`Stock Out Detail not found: ${detailNotFound.join(', ')}`, ErrorCode.NOT_FOUND);
         }
+
+        const updateError = await this.stockOutLogic.validateAndEnrichDetailItems(prisma, data.stock_out_detail.update);
+        if (updateError) return Result.error(updateError, ErrorCode.NOT_FOUND);
       }
 
       if (data.stock_out_detail.remove) {
@@ -404,8 +366,10 @@ export class StockOutService {
             created_by_id: user_id,
             sequence_no: sequenceNo++,
             product_id: item.product_id || '',
+            product_code: item.product_code || null,
             product_name: item.product_name || null,
             product_local_name: item.product_local_name || null,
+            product_sku: item.product_sku || null,
             description: item.description || null,
             qty: item.qty || 0,
             note: item.note || null,
