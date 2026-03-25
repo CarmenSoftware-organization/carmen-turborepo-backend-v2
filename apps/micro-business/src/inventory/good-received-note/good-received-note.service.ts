@@ -246,6 +246,123 @@ export class GoodReceivedNoteService {
     });
   }
 
+  @TryCatch
+  async findByVendorId(
+    vendor_id: string,
+    user_id: string,
+    tenant_id: string,
+    paginate: IPaginate,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findByVendorId', vendor_id, user_id, tenant_id, paginate },
+      GoodReceivedNoteService.name,
+    );
+    const defaultSearchFields = ['grn_no', 'name'];
+
+    const q = new QueryParams(
+      paginate.page,
+      paginate.perpage,
+      paginate.search,
+      paginate.searchfields,
+      defaultSearchFields,
+      paginate.filter,
+      paginate.sort,
+      paginate.advance,
+    );
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) {
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+    }
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    const where = {
+      ...q.where(),
+      vendor_id,
+    };
+
+    const goodReceivedNotes = await prisma.tb_good_received_note
+      .findMany({
+        ...q.findMany(),
+        where,
+        select: {
+          id: true,
+          grn_no: true,
+          grn_date: true,
+          doc_type: true,
+          invoice_no: true,
+          description: true,
+          vendor_name: true,
+          currency_code: true,
+          created_at: true,
+          is_active: true,
+          tb_good_received_note_detail: {
+            select: {
+              tb_good_received_note_detail_item: {
+                select: {
+                  net_amount: true,
+                  base_net_amount: true,
+                  total_price: true,
+                  base_total_price: true,
+                },
+              },
+            },
+          },
+        },
+      })
+      .then((res) => {
+        return res.map((item) => {
+          let net_amount = 0;
+          let base_net_amount = 0;
+          let total_amount = 0;
+          let base_total_amount = 0;
+
+          for (const detail of item.tb_good_received_note_detail) {
+            for (const detailItem of detail.tb_good_received_note_detail_item) {
+              net_amount += Number(detailItem.net_amount ?? 0);
+              base_net_amount += Number(detailItem.base_net_amount ?? 0);
+              total_amount += Number(detailItem.total_price ?? 0);
+              base_total_amount += Number(detailItem.base_total_price ?? 0);
+            }
+          }
+
+          return {
+            id: item.id,
+            grn_no: item.grn_no,
+            grn_date: item.grn_date,
+            doc_type: item.doc_type,
+            invoice_no: item.invoice_no,
+            description: item.description,
+            vendor_name: item.vendor_name,
+            currency_code: item.currency_code,
+            net_amount,
+            base_net_amount,
+            total_amount,
+            base_total_amount,
+            created_at: item.created_at,
+            is_active: item.is_active,
+          };
+        });
+      });
+
+    const total = await prisma.tb_good_received_note.count({ where });
+
+    const serialized = goodReceivedNotes.map((item) =>
+      GoodReceivedNoteListItemResponseSchema.parse(item)
+    );
+
+    return Result.ok({
+      data: serialized,
+      paginate: {
+        total,
+        page: q.page,
+        perpage: q.perpage,
+        pages: total === 0 ? 1 : Math.ceil(total / q.perpage),
+      },
+    });
+  }
+
   /**
   // ==================== Shared Validation & Enrichment ====================
 

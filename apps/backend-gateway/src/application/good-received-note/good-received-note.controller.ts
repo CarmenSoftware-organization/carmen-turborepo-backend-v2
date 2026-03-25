@@ -227,6 +227,39 @@ export class GoodReceivedNoteController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  @Get(':bu_code/good-received-note/vendor/:vendor_id')
+  @UseGuards(new AppIdGuard('goodReceivedNote.findByVendorId'))
+  @Serialize(GoodReceivedNoteListItemResponseSchema)
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'Get Good Received Notes by vendor ID',
+    description:
+      'Lists all goods receiving records for a specific vendor with pagination and filtering.',
+    operationId: 'findGoodReceivedNotesByVendorId',
+    tags: ['Procurement', 'Good Received Note'],
+  })
+  @HttpCode(HttpStatus.OK)
+  async findByVendorId(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('bu_code') bu_code: string,
+    @Param('vendor_id') vendor_id: string,
+    @Query() query: IPaginateQuery,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
+    const result = await this.goodReceivedNoteService.findByVendorId(
+      vendor_id,
+      user_id,
+      bu_code,
+      paginate,
+      version,
+    );
+    this.respond(res, result);
+  }
+
   /**
    * Scan a PO QR code to start the goods receiving process
    * สแกน QR code ของใบสั่งซื้อเพื่อเริ่มกระบวนการรับสินค้า

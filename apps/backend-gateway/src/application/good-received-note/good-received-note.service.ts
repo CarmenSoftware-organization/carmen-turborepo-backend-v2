@@ -124,6 +124,30 @@ export class GoodReceivedNoteService {
    * @param version - API version / เวอร์ชัน API
    * @returns Created Good Received Note / ใบรับสินค้าที่สร้างแล้ว
    */
+  async findByVendorId(
+    vendor_id: string,
+    user_id: string,
+    tenant_id: string,
+    paginate: IPaginate,
+    version: string,
+  ): Promise<Result<unknown>> {
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      { cmd: 'good-received-note.findByVendorId', service: 'good-received-note' },
+      { vendor_id, user_id, tenant_id, paginate, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok({ data: response.data, paginate: response.paginate });
+  }
+
   async create(
     data: IGoodReceivedNoteCreate,
     user_id: string,

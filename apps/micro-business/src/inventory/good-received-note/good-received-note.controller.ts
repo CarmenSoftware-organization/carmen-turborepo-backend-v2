@@ -87,6 +87,23 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * @returns Created good received note / ใบรับสินค้าที่สร้างแล้ว
    */
   @MessagePattern({
+    cmd: 'good-received-note.findByVendorId',
+    service: 'good-received-note',
+  })
+  async findByVendorId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'findByVendorId', payload }, GoodReceivedNoteController.name);
+    const vendor_id = payload.vendor_id;
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const paginate = payload.paginate;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.goodReceivedNoteService.findByVendorId(vendor_id, user_id, tenant_id, paginate)
+    );
+    return this.handlePaginatedResult(result);
+  }
+
+  @MessagePattern({
     cmd: 'good-received-note.create',
     service: 'good-received-note',
   })
