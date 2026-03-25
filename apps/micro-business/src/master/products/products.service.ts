@@ -472,88 +472,30 @@ export class ProductsService {
       ];
     }
 
+    const MAX_PRODUCTS_PER_LOCATION = 10;
+
     // Count total locations matching filter
     const total = await this.prismaService.tb_location.count({ where: locationWhere });
 
+    // Step 1: Fetch locations (paginated) without products
     const locations = await this.prismaService.tb_location.findMany({
       where: locationWhere,
-      select: {
-        id: true,
-        code: true,
-        name: true,
-        tb_product_location: {
-          where: productLocationWhere,
-          select: {
-            id: true,
-            product_id: true,
-            min_qty: true,
-            max_qty: true,
-            re_order_qty: true,
-            par_qty: true,
-            note: true,
-            tb_product: {
-              select: {
-                code: true,
-                name: true,
-                local_name: true,
-                sku: true,
-                is_active: true,
-                product_item_group_id: true,
-                tb_product_item_group: {
-                  select: {
-                    id: true,
-                    name: true,
-                    tb_product_sub_category: {
-                      select: {
-                        id: true,
-                        name: true,
-                        tb_product_category: {
-                          select: {
-                            id: true,
-                            name: true,
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      select: { id: true, code: true, name: true },
       orderBy: { code: 'asc' },
       ...pagination,
     });
 
-    // Collect all product_id + location_id pairs for stock balance lookup
-    const productLocationPairs: { product_id: string; location_id: string }[] = [];
-    for (const loc of locations) {
-      for (const pl of loc.tb_product_location) {
-        if (loc.id && pl.product_id) {
-          productLocationPairs.push({ product_id: pl.product_id, location_id: loc.id });
-        }
-      }
-    }
+    const locationIds = locations.map((loc) => loc.id);
 
-    // Fetch current stock from cost layers in one query
+    // Step 2: Fetch stock per product+location from cost layers
     const stockMap = new Map<string, number>();
-    if (productLocationPairs.length > 0) {
-      const productIds = [...new Set(productLocationPairs.map((p) => p.product_id))];
-      const locationIds = [...new Set(productLocationPairs.map((p) => p.location_id))];
-
+    if (locationIds.length > 0) {
       const layers = await this.prismaService.tb_inventory_transaction_cost_layer.findMany({
         where: {
-          product_id: { in: productIds },
           location_id: { in: locationIds },
           deleted_at: null,
         },
-        select: {
-          product_id: true,
-          location_id: true,
-          in_qty: true,
-          out_qty: true,
-        },
+        select: { product_id: true, location_id: true, in_qty: true, out_qty: true },
       });
 
       for (const layer of layers) {
@@ -563,11 +505,87 @@ export class ProductsService {
       }
     }
 
-    const data = locations.map((loc) => ({
-      location_id: loc.id,
-      location_code: loc.code,
-      location_name: loc.name,
-      products: loc.tb_product_location.map((pl) => {
+    // Step 3: For each location, pick top products by stock + fill with recent
+    const data = await Promise.all(locations.map(async (loc) => {
+      // Get stock > 0 products for this location, sorted desc
+      const stockEntries = [...stockMap.entries()]
+        .filter(([key, qty]) => key.endsWith(`:${loc.id}`) && qty > 0)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, MAX_PRODUCTS_PER_LOCATION);
+
+      const topProductIds = stockEntries.map(([key]) => key.split(':')[0]);
+      const selectedProductIds = new Set(topProductIds);
+
+      // If < 10, fill with most recently added products at this location
+      if (selectedProductIds.size < MAX_PRODUCTS_PER_LOCATION) {
+        const remaining = MAX_PRODUCTS_PER_LOCATION - selectedProductIds.size;
+        const recentProducts = await this.prismaService.tb_product_location.findMany({
+          where: {
+            location_id: loc.id,
+            deleted_at: null,
+            ...(selectedProductIds.size > 0 ? { product_id: { notIn: [...selectedProductIds] } } : {}),
+            ...((searchTerm || category_id) ? { tb_product: productLocationWhere.tb_product } : {}),
+          },
+          select: { product_id: true },
+          orderBy: { created_at: 'desc' },
+          take: remaining,
+        });
+        for (const rp of recentProducts) {
+          selectedProductIds.add(rp.product_id);
+        }
+      }
+
+      // Count total products for this location
+      const totalProducts = await this.prismaService.tb_product_location.count({
+        where: { location_id: loc.id, deleted_at: null, ...((searchTerm || category_id) ? { tb_product: productLocationWhere.tb_product } : {}) },
+      });
+
+      // Fetch full product_location data for selected products
+      const productLocations = selectedProductIds.size > 0
+        ? await this.prismaService.tb_product_location.findMany({
+            where: {
+              location_id: loc.id,
+              product_id: { in: [...selectedProductIds] },
+              deleted_at: null,
+            },
+            select: {
+              id: true,
+              product_id: true,
+              min_qty: true,
+              max_qty: true,
+              re_order_qty: true,
+              par_qty: true,
+              note: true,
+              tb_product: {
+                select: {
+                  code: true,
+                  name: true,
+                  local_name: true,
+                  sku: true,
+                  is_active: true,
+                  product_item_group_id: true,
+                  tb_product_item_group: {
+                    select: {
+                      id: true,
+                      name: true,
+                      tb_product_sub_category: {
+                        select: {
+                          id: true,
+                          name: true,
+                          tb_product_category: {
+                            select: { id: true, name: true },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          })
+        : [];
+
+      const products = productLocations.map((pl) => {
         const itemGroup = pl.tb_product?.tb_product_item_group;
         const subCategory = itemGroup?.tb_product_sub_category;
         const category = subCategory?.tb_product_category;
@@ -575,7 +593,6 @@ export class ProductsService {
         const currentQty = stockMap.get(`${pl.product_id}:${loc.id}`) ?? 0;
         const needQty = Math.max(0, parQty - currentQty);
 
-        // Status based on current vs par: critical (≤25%), warning (≤50%), low (≤75%), normal (>75%)
         let status: 'normal' | 'low' | 'warning' | 'critical' = 'normal';
         if (parQty > 0) {
           const ratio = currentQty / parQty;
@@ -607,7 +624,18 @@ export class ProductsService {
           status,
           note: pl.note,
         };
-      }),
+      });
+
+      // Sort by stock descending
+      products.sort((a, b) => b.current_qty - a.current_qty);
+
+      return {
+        location_id: loc.id,
+        location_code: loc.code,
+        location_name: loc.name,
+        total_products: totalProducts,
+        products,
+      };
     }));
 
     return Result.ok({
