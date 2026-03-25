@@ -26,6 +26,8 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import { BaseHttpController } from 'src/common/http/base-http-controller';
+import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
+import { ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator';
 
 @Controller('api/config/:bu_code/location-product')
 @ApiTags('Configuration')
@@ -41,6 +43,47 @@ export class Config_LocationProductController extends BaseHttpController {
     private readonly config_locationProductService: Config_LocationProductService,
   ) {
     super();
+  }
+
+  /**
+   * ค้นหา location ทั้งหมดพร้อม products ในแต่ละ location
+   */
+  @Get()
+  @UseGuards(new AppIdGuard('locationProduct.getProductByLocationId'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'Get all locations with their products (paginated)',
+    description: 'Retrieves active locations with their assigned products, including category hierarchy, current stock, par level, need qty, and stock status. Paginated by location. Supports search by product name/code/sku and location name/code, and filter by category_id (item group).',
+    operationId: 'configLocationProduct_findAll',
+    tags: ['Configuration', 'Location Product'],
+  })
+  async findAllLocationsWithProducts(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('bu_code') bu_code: string,
+    @Query() query: IPaginateQuery,
+    @Query('version') version: string = 'latest',
+    @Query('search') search?: string,
+    @Query('category_id') category_id?: string,
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'findAllLocationsWithProducts', version, search, category_id, query },
+      Config_LocationProductController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
+    const result = await this.config_locationProductService.findAllLocationsWithProducts(
+      user_id,
+      bu_code,
+      paginate,
+      version,
+      search,
+      category_id,
+    );
+    this.respond(res, result);
   }
 
   /**

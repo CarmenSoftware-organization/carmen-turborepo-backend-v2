@@ -417,6 +417,211 @@ export class ProductsService {
   }
 
   /**
+   * ค้นหา location ทั้งหมดพร้อม product ที่อยู่ในแต่ละ location
+   * @returns รายการ location พร้อม products ในแต่ละ location
+   */
+  @TryCatch
+  async findAllLocationsWithProducts(
+    paginate: IPaginate,
+    search?: string,
+    category_id?: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findAllLocationsWithProducts', paginate, search, category_id, user_id: this.userId, tenant_id: this.bu_code },
+      ProductsService.name,
+    );
+
+    const searchTerm = search?.trim();
+    const q = new QueryParams(
+      paginate.page,
+      paginate.perpage,
+      paginate.search || searchTerm,
+      paginate.searchfields,
+      ['name', 'code'],
+      typeof paginate.filter === 'object' && !Array.isArray(paginate.filter) ? paginate.filter : {},
+      paginate.sort,
+      paginate.advance,
+    );
+    const pagination = getPaginationParams(q.page, q.perpage);
+
+    // Build product filter for nested relation
+    const productLocationWhere: Record<string, unknown> = { deleted_at: null };
+    if (searchTerm || category_id) {
+      const productWhere: Record<string, unknown> = {};
+      if (searchTerm) {
+        productWhere.OR = [
+          { name: { contains: searchTerm, mode: 'insensitive' } },
+          { local_name: { contains: searchTerm, mode: 'insensitive' } },
+          { code: { contains: searchTerm, mode: 'insensitive' } },
+          { sku: { contains: searchTerm, mode: 'insensitive' } },
+        ];
+      }
+      if (category_id) {
+        productWhere.product_item_group_id = category_id;
+      }
+      productLocationWhere.tb_product = productWhere;
+    }
+
+    // Build location filter
+    const locationWhere: Record<string, unknown> = { deleted_at: null, is_active: true };
+    if (searchTerm) {
+      locationWhere.OR = [
+        { code: { contains: searchTerm, mode: 'insensitive' } },
+        { name: { contains: searchTerm, mode: 'insensitive' } },
+        { tb_product_location: { some: productLocationWhere } },
+      ];
+    }
+
+    // Count total locations matching filter
+    const total = await this.prismaService.tb_location.count({ where: locationWhere });
+
+    const locations = await this.prismaService.tb_location.findMany({
+      where: locationWhere,
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        tb_product_location: {
+          where: productLocationWhere,
+          select: {
+            id: true,
+            product_id: true,
+            min_qty: true,
+            max_qty: true,
+            re_order_qty: true,
+            par_qty: true,
+            note: true,
+            tb_product: {
+              select: {
+                code: true,
+                name: true,
+                local_name: true,
+                sku: true,
+                is_active: true,
+                product_item_group_id: true,
+                tb_product_item_group: {
+                  select: {
+                    id: true,
+                    name: true,
+                    tb_product_sub_category: {
+                      select: {
+                        id: true,
+                        name: true,
+                        tb_product_category: {
+                          select: {
+                            id: true,
+                            name: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { code: 'asc' },
+      ...pagination,
+    });
+
+    // Collect all product_id + location_id pairs for stock balance lookup
+    const productLocationPairs: { product_id: string; location_id: string }[] = [];
+    for (const loc of locations) {
+      for (const pl of loc.tb_product_location) {
+        if (loc.id && pl.product_id) {
+          productLocationPairs.push({ product_id: pl.product_id, location_id: loc.id });
+        }
+      }
+    }
+
+    // Fetch current stock from cost layers in one query
+    const stockMap = new Map<string, number>();
+    if (productLocationPairs.length > 0) {
+      const productIds = [...new Set(productLocationPairs.map((p) => p.product_id))];
+      const locationIds = [...new Set(productLocationPairs.map((p) => p.location_id))];
+
+      const layers = await this.prismaService.tb_inventory_transaction_cost_layer.findMany({
+        where: {
+          product_id: { in: productIds },
+          location_id: { in: locationIds },
+          deleted_at: null,
+        },
+        select: {
+          product_id: true,
+          location_id: true,
+          in_qty: true,
+          out_qty: true,
+        },
+      });
+
+      for (const layer of layers) {
+        const key = `${layer.product_id}:${layer.location_id}`;
+        const existing = stockMap.get(key) ?? 0;
+        stockMap.set(key, existing + Number(layer.in_qty ?? 0) - Number(layer.out_qty ?? 0));
+      }
+    }
+
+    const data = locations.map((loc) => ({
+      location_id: loc.id,
+      location_code: loc.code,
+      location_name: loc.name,
+      products: loc.tb_product_location.map((pl) => {
+        const itemGroup = pl.tb_product?.tb_product_item_group;
+        const subCategory = itemGroup?.tb_product_sub_category;
+        const category = subCategory?.tb_product_category;
+        const parQty = Number(pl.par_qty ?? 0);
+        const currentQty = stockMap.get(`${pl.product_id}:${loc.id}`) ?? 0;
+        const needQty = Math.max(0, parQty - currentQty);
+
+        // Status based on current vs par: critical (≤25%), warning (≤50%), low (≤75%), normal (>75%)
+        let status: 'normal' | 'low' | 'warning' | 'critical' = 'normal';
+        if (parQty > 0) {
+          const ratio = currentQty / parQty;
+          if (ratio <= 0.25) status = 'critical';
+          else if (ratio <= 0.5) status = 'warning';
+          else if (ratio <= 0.75) status = 'low';
+        }
+
+        return {
+          id: pl.id,
+          product_id: pl.product_id,
+          product_code: pl.tb_product?.code ?? null,
+          product_name: pl.tb_product?.name ?? null,
+          product_local_name: pl.tb_product?.local_name ?? null,
+          product_sku: pl.tb_product?.sku ?? null,
+          is_active: pl.tb_product?.is_active ?? true,
+          category_id: category?.id ?? null,
+          category_name: category?.name ?? null,
+          sub_category_id: subCategory?.id ?? null,
+          sub_category_name: subCategory?.name ?? null,
+          item_group_id: itemGroup?.id ?? null,
+          item_group_name: itemGroup?.name ?? null,
+          current_qty: currentQty,
+          par_qty: parQty,
+          need_qty: needQty,
+          min_qty: Number(pl.min_qty ?? 0),
+          max_qty: Number(pl.max_qty ?? 0),
+          re_order_qty: Number(pl.re_order_qty ?? 0),
+          status,
+          note: pl.note,
+        };
+      }),
+    }));
+
+    return Result.ok({
+      paginate: {
+        total,
+        page: q.perpage < 0 ? 1 : q.page,
+        perpage: q.perpage < 0 ? total : q.perpage,
+        pages: total === 0 || q.perpage < 0 ? 1 : Math.ceil(total / q.perpage),
+      },
+      data,
+    });
+  }
+
+  /**
    * ค้นหา product_location ตาม location_id
    * @param location_id - Location ID / รหัสสถานที่
    * @returns รายการ product_location ที่ผูกกับสถานที่

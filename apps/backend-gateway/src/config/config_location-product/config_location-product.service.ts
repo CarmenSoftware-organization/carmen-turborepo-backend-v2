@@ -2,6 +2,7 @@ import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable, firstValueFrom } from 'rxjs';
 import { Result, MicroserviceResponse } from '@/common';
+import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
@@ -24,6 +25,39 @@ export class Config_LocationProductService {
    * @param version - API version / เวอร์ชัน API
    * @returns รายการ product_location ที่ผูกกับสถานที่
    */
+  /**
+   * ค้นหา location ทั้งหมดพร้อม products ในแต่ละ location ผ่านไมโครเซอร์วิส
+   */
+  async findAllLocationsWithProducts(
+    user_id: string,
+    bu_code: string,
+    paginate: IPaginate,
+    version: string,
+    search?: string,
+    category_id?: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findAllLocationsWithProducts', user_id, bu_code, paginate, version, search, category_id },
+      Config_LocationProductService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this._masterService.send(
+      { cmd: 'productLocation.findAllLocationsWithProducts', service: 'product-location' },
+      { user_id, bu_code, paginate, version, search, category_id },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok({ data: response.data, paginate: response.paginate });
+  }
+
   async getProductByLocationId(
     locationId: string,
     user_id: string,

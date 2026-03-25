@@ -204,6 +204,23 @@ export class ProductsController extends BaseMicroserviceController {
   }
 
   /**
+   * ค้นหา location ทั้งหมดพร้อม products ในแต่ละ location
+   */
+  @MessagePattern({ cmd: 'productLocation.findAllLocationsWithProducts', service: 'product-location' })
+  async findAllLocationsWithProducts(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'findAllLocationsWithProducts', payload }, ProductsController.name);
+    this.productsService.userId = payload.user_id;
+    this.productsService.bu_code = payload.bu_code;
+    await this.productsService.initializePrismaService(payload.bu_code, payload.user_id);
+
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.productsService.findAllLocationsWithProducts(payload.paginate, payload.search, payload.category_id),
+    );
+    return this.handlePaginatedResult(result);
+  }
+
+  /**
    * ค้นหา product_location ตาม location_id
    */
   @MessagePattern({ cmd: 'productLocation.findByLocationId', service: 'product-location' })
