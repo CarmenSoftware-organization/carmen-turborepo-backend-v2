@@ -103,6 +103,43 @@ export class PurchaseOrderService {
   }
 
   /**
+   * List distinct vendors from POs with sent/partial status for GRN
+   * แสดงรายการผู้ขายที่มีใบสั่งซื้อสถานะ sent หรือ partial สำหรับ GRN
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @param version - API version / เวอร์ชัน API
+   * @returns Distinct vendor list / รายการผู้ขายที่ไม่ซ้ำ
+   */
+  async findVendorsForGrn(
+    user_id: string,
+    bu_code: string,
+    paginate: IPaginate,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findVendorsForGrn', version },
+      PurchaseOrderService.name,
+    );
+
+    const response = await firstValueFrom(
+      this.procurementService.send(
+        { cmd: 'purchase-order.find-vendors-for-grn', service: 'purchase-order' },
+        { user_id, bu_code, paginate, version },
+      ),
+    );
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
+  /**
    * List purchase orders for GRN by vendor ID via microservice
    * ค้นหาใบสั่งซื้อสำหรับ GRN ตาม vendor ID ผ่านไมโครเซอร์วิส
    * @param vendor_id - Vendor ID / รหัสผู้ขาย

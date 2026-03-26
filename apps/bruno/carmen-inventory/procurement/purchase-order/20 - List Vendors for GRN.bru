@@ -1,0 +1,26 @@
+meta {
+  name: 20 - List Vendors for GRN
+  type: http
+  seq: 20
+}
+
+docs {
+  ## List Vendors for GRN
+  แสดงรายการผู้ขายที่มีใบสั่งซื้อสถานะส่งแล้วหรือรับบางส่วน สำหรับใช้ในการสร้างใบรับสินค้า
+
+  Lists distinct vendors that have purchase orders with sent or partial status, for GRN creation.
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-order/grn/vendor
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

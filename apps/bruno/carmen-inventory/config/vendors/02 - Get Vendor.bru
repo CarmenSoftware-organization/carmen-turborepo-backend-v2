@@ -4,13 +4,6 @@ meta {
   seq: 2
 }
 
-docs {
-  ## Get Vendor
-  ดึงข้อมูลผู้ขายรายการเดียวตาม ID
-
-  Retrieves a single vendor/supplier record by its unique identifier.
-}
-
 get {
   url: {{host}}/api/config/{{bu_code}}/vendors/:id
   body: none
@@ -18,7 +11,7 @@ get {
 }
 
 params:path {
-  id: 814611a7-2cf1-40e9-8e3d-346f0a7cb1aa
+  id: 0005206b-4cde-44ed-97f5-9b13d333b025
 }
 
 headers {
@@ -27,4 +20,11 @@ headers {
 
 auth:bearer {
   token: {{access_token}}
+}
+
+docs {
+  ## Get Vendor
+  ดึงข้อมูลผู้ขายรายการเดียวตาม ID
+  
+  Retrieves a single vendor/supplier record by its unique identifier.
 }

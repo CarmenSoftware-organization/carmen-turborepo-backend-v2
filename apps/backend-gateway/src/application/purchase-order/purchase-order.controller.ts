@@ -95,6 +95,48 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
+   * List distinct vendors from POs with sent/partial status for GRN creation.
+   * แสดงรายการผู้ขายที่มีใบสั่งซื้อสถานะ sent หรือ partial สำหรับ GRN
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param query - Pagination and filter parameters / พารามิเตอร์การแบ่งหน้าและตัวกรอง
+   * @param version - API version / เวอร์ชัน API
+   * @returns Distinct vendor list / รายการผู้ขายที่ไม่ซ้ำ
+   */
+  @Get('grn/vendor')
+  @UseGuards(new AppIdGuard('purchaseOrder.findAll'))
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'List vendors with POs for GRN',
+    description: 'Lists distinct vendors that have purchase orders with sent or partial status, for GRN creation.',
+    operationId: 'findVendorsForGrn',
+    tags: ['Procurement', 'Purchase Order', 'Good Received Note'],
+    responses: {
+      200: { description: 'Vendor list retrieved successfully' },
+    },
+    'x-description-th': 'แสดงรายการผู้ขายที่มีใบสั่งซื้อสถานะส่งแล้วหรือรับบางส่วน สำหรับใช้ในการสร้างใบรับสินค้า',
+  } as any)
+  @ApiResponse({ status: 200, description: 'Vendor list retrieved successfully' })
+  @HttpCode(HttpStatus.OK)
+  async findVendorsForGrn(
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query() query: IPaginateQuery,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'findVendorsForGrn', query, version },
+      PurchaseOrderController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
+    const result = await this.purchaseOrderService.findVendorsForGrn(user_id, bu_code, paginate, version);
+    this.respond(res, result);
+  }
+
+  /**
    * List purchase orders available for GRN creation, with location breakdown from PR details.
    * ค้นหาใบสั่งซื้อที่พร้อมสำหรับสร้างใบรับสินค้า พร้อมรายละเอียดตาม location จาก PR
    * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ

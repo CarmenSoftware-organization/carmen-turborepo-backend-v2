@@ -960,6 +960,10 @@ export class PurchaseOrderLogic {
     });
   }
 
+  async findVendorsForGrn(paginate: IPaginate): Promise<Result<unknown>> {
+    return this.purchaseOrderService.findVendorsForGrn(paginate);
+  }
+
   async findAllForGrnByVendorId(vendorId: string, paginate: IPaginate): Promise<Result<unknown>> {
     return this.purchaseOrderService.findAllForGrnByVendorId(vendorId, paginate);
   }

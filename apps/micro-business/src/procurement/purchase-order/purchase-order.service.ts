@@ -617,6 +617,94 @@ export class PurchaseOrderService {
    * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
    * @returns Paginated PO list filtered by vendor / รายการ PO ที่กรองตาม vendor
    */
+  async findVendorsForGrn(paginate: IPaginate): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findVendorsForGrn', user_id: this.userId, tenant_id: this.bu_code, paginate },
+      PurchaseOrderService.name,
+    );
+
+    const defaultSearchFields = ['vendor_name'];
+    const q = new QueryParams(
+      paginate.page,
+      paginate.perpage,
+      paginate.search,
+      paginate.searchfields,
+      defaultSearchFields,
+      paginate.filter,
+      paginate.sort,
+      paginate.advance,
+    );
+
+    const whereClause = {
+      ...q.where(),
+      deleted_at: null,
+      po_status: {
+        in: [
+          enum_purchase_order_doc_status.sent,
+          enum_purchase_order_doc_status.partial,
+        ],
+      },
+      vendor_id: { not: null },
+    };
+
+    const purchaseOrders = await this.prismaService.tb_purchase_order.findMany({
+      where: whereClause,
+      select: {
+        vendor_id: true,
+        vendor_name: true,
+        tb_vendor: {
+          select: { code: true },
+        },
+      },
+    });
+
+    const vendorMap = new Map<string, { vendor_id: string; vendor_code: string | null; vendor_name: string | null; po_count: number }>();
+    for (const po of purchaseOrders) {
+      if (!po.vendor_id) continue;
+      const existing = vendorMap.get(po.vendor_id);
+      if (existing) {
+        existing.po_count++;
+      } else {
+        vendorMap.set(po.vendor_id, {
+          vendor_id: po.vendor_id,
+          vendor_code: po.tb_vendor?.code ?? null,
+          vendor_name: po.vendor_name,
+          po_count: 1,
+        });
+      }
+    }
+
+    const allVendors = Array.from(vendorMap.values()).sort((a, b) => {
+      if (paginate.sort) return 0;
+      const codeCompare = (a.vendor_code ?? '').localeCompare(b.vendor_code ?? '');
+      if (codeCompare !== 0) return codeCompare;
+      return (a.vendor_name ?? '').localeCompare(b.vendor_name ?? '');
+    });
+
+    const total = allVendors.length;
+    const page = q.page;
+    const perpage = q.perpage;
+    const skip = perpage < 0 ? 0 : (page - 1) * perpage;
+    const paged = perpage < 0 ? allVendors : allVendors.slice(skip, skip + perpage);
+
+    const data = paged.map((v) => ({
+      vendor_id: v.vendor_id,
+      vendor_code: v.vendor_code,
+      vendor_name: v.vendor_name,
+      po_count: v.po_count,
+    }));
+
+    return Result.ok({
+      paginate: {
+        total,
+        page: perpage < 0 ? 1 : page,
+        perpage: perpage < 0 ? total : perpage,
+        pages: total === 0 || perpage < 0 ? 1 : Math.ceil(total / perpage),
+      },
+      data,
+    });
+  }
+
   async findAllForGrnByVendorId(vendorId: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'findAllForGrnByVendorId', user_id: this.userId, tenant_id: this.bu_code, vendorId, paginate },
