@@ -1,0 +1,33 @@
+meta {
+  name: 01 - List Adjustment Type Stock-out
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/adjustment-type?type=stock-out
+  body: none
+  auth: bearer
+}
+
+params:query {
+  type: stock-out
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+docs {
+  ## List Adjustment Types (Stock-Out)
+  แสดงรายการประเภทการปรับปรุงเฉพาะ Stock-Out พร้อมการแบ่งหน้าและค้นหา
+
+  Retrieves adjustment type categories filtered by stock-out type.
+
+  ### Query Parameters
+  - `type` — Filter by adjustment type: `stock-in` or `stock-out`
+}

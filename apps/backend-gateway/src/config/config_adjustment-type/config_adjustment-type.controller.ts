@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_AdjustmentTypeService } from './config_adjustment-type.service';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { BaseHttpController } from '@/common';
 import {
@@ -108,23 +108,37 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all adjustment types', description: 'Returns all configured inventory adjustment type categories. These types are used when recording inventory adjustments to classify the reason for stock discrepancies.', operationId: 'configAdjustmentType_findAll', tags: ['Configuration', 'Adjustment Type'], 'x-description-th': 'แสดงรายการประเภทการปรับปรุงทั้งหมดพร้อมการแบ่งหน้าและค้นหา' } as any)
   @ApiUserFilterQueries()
+  @ApiQuery({ name: 'type', required: false, enum: ['stock-in', 'stock-out'], description: 'Filter by adjustment type: stock-in or stock-out' })
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
     @Query() query?: IPaginateQuery,
+    @Query('type') type?: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
       {
         function: 'findAll',
         query,
+        type,
         version,
       },
       Config_AdjustmentTypeController.name,
     );
     const { user_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
+
+    // Map type query param: stock-in → STOCK_IN, stock-out → STOCK_OUT
+    if (type) {
+      const typeMap: Record<string, string> = {
+        'stock-in': 'STOCK_IN',
+        'stock-out': 'STOCK_OUT',
+      };
+      const mappedType = typeMap[type.toLowerCase()] || type;
+      paginate.filter = { ...paginate.filter, type: mappedType };
+    }
+
     const result = await this.config_adjustmentTypeService.findAll(
       user_id,
       bu_code,

@@ -2568,9 +2568,10 @@ model tb_adjustment_type {
 }
 
 model tb_stock_in {
-  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  si_no       String? @db.VarChar
-  description String? @db.VarChar
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  si_date     DateTime? @db.Timestamptz(6)
+  si_no       String?   @db.VarChar
+  description String?   @db.VarChar
 
   adjustment_type_id   String?             @db.Uuid
   adjustment_type_code String?             @db.VarChar
@@ -2729,9 +2730,10 @@ model tb_stock_in_detail_comment {
 }
 
 model tb_stock_out {
-  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  so_no       String? @db.VarChar
-  description String? @db.VarChar
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  so_date     DateTime? @db.Timestamptz(6)
+  so_no       String?   @db.VarChar
+  description String?   @db.VarChar
 
   adjustment_type_id   String?             @db.Uuid
   adjustment_type_code String?             @db.VarChar
