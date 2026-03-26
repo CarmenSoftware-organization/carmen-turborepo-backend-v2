@@ -13,6 +13,15 @@ docs {
   ### Path Parameters
   - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
   - `id` — Stock In ID / รหัสรายการรับสินค้าเข้าคลัง
+
+  ### Body Fields
+  - `si_date` — Stock In date (ISO 8601) / วันที่รับสินค้าเข้าคลัง
+  - `description` — Description / รายละเอียด
+  - `doc_status` — Document status / สถานะเอกสาร
+  - `note` — Note / หมายเหตุ
+  - `stock_in_detail.add[]` — Line items to add / รายการสินค้าที่จะเพิ่ม
+  - `stock_in_detail.update[]` — Line items to update / รายการสินค้าที่จะแก้ไข
+  - `stock_in_detail.remove[]` — Line items to remove / รายการสินค้าที่จะลบ
 }
 
 patch {
@@ -35,6 +44,7 @@ auth:bearer {
 
 body:json {
   {
+    "si_date": "2026-03-26T00:00:00.000Z",
     "description": "Stock In Updated",
     "doc_status": "draft",
     "note": "updated note",

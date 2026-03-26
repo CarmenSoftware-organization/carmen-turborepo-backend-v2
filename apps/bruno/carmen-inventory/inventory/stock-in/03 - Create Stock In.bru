@@ -12,6 +12,15 @@ docs {
 
   ### Path Parameters
   - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+
+  ### Body Fields
+  - `si_date` — Stock In date (ISO 8601) / วันที่รับสินค้าเข้าคลัง
+  - `description` — Description / รายละเอียด
+  - `doc_status` — Document status / สถานะเอกสาร
+  - `note` — Note / หมายเหตุ
+  - `adjustment_type_id` — Adjustment type ID / รหัสประเภทการปรับปรุง
+  - `location_id` — Location ID / รหัสสถานที่
+  - `details.add[]` — Line items to add / รายการสินค้าที่จะเพิ่ม
 }
 
 post {
@@ -30,12 +39,13 @@ auth:bearer {
 
 body:json {
   {
+    "si_date": "2026-03-26T00:00:00.000Z",
     "description": "SI มาแล้วจ๊ะ",
     "doc_status": "completed",
     "note": "test note SI",
     "adjustment_type_id": "bcce2834-9202-4ed4-a8d5-e5019596286b",
     "location_id": "0731acf1-e04d-4648-b64d-cfbd34fa5d08",
-    "details": {
+    "stock_in_detail": {
       "add": [
         {
           "product_id": "006def75-7289-4a60-b110-2e809303bbbc",
