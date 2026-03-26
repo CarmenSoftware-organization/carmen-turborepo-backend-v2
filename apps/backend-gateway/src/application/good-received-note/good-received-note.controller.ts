@@ -1173,13 +1173,61 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
-   * Confirm a Good Received Note from mobile, finalizing delivery inspection
-   * ยืนยันใบรับสินค้าจากแอปมือถือ เพื่อสรุปการตรวจรับสินค้า
-   * @param id - Good Received Note ID / รหัสใบรับสินค้า
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param data - Confirmation data / ข้อมูลการยืนยัน
-   * @param version - API version / เวอร์ชัน API
-   * @returns Confirmed Good Received Note / ใบรับสินค้าที่ยืนยันแล้ว
+   * Save a Good Received Note — creates inventory transactions and updates PO receiving
+   * บันทึกใบรับสินค้า — สร้าง inventory transactions และอัปเดตจำนวนรับใน PO
+   */
+  @Patch(':bu_code/good-received-note/:id/save')
+  @UseGuards(new AppIdGuard('goodReceivedNote.confirm'))
+  @Serialize(GoodReceivedNoteMutationResponseSchema)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Save a Good Received Note',
+    description:
+      'Saves the goods receiving record, creating inventory transactions (FIFO/Average cost layers) and updating PO received quantities. Changes status from draft to saved.',
+    operationId: 'saveGoodReceivedNote',
+    tags: ['Procurement', 'Good Received Note'],
+    deprecated: false,
+    security: [{ bearerAuth: [] }],
+    parameters: [
+      { name: 'id', in: 'path', required: true, description: 'Good Received Note ID' },
+      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+    ],
+    responses: {
+      200: { description: 'GRN saved successfully' },
+      400: { description: 'GRN cannot be saved' },
+      404: { description: 'GRN not found' },
+    },
+    'x-description-th': 'บันทึกใบรับสินค้า สร้าง inventory transactions และอัปเดตจำนวนรับใน PO เปลี่ยนสถานะจาก draft เป็น saved',
+  } as any)
+  @ApiBody({ type: ConfirmGoodReceivedNoteSwaggerDto })
+  @HttpCode(HttpStatus.OK)
+  async saveGrn(
+    @Param('id') id: string,
+    @Param('bu_code') bu_code: string,
+    @Body() data: Record<string, unknown>,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'save', id, data, version },
+      GoodReceivedNoteController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.goodReceivedNoteService.save(
+      id,
+      data,
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * Commit a Good Received Note — changes status from saved to committed
+   * ยืนยันใบรับสินค้า — เปลี่ยนสถานะจาก saved เป็น committed
    */
   @Patch(':bu_code/good-received-note/:id/commit')
   @UseGuards(new AppIdGuard('goodReceivedNote.confirm'))
@@ -1188,33 +1236,22 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiOperation({
     summary: 'Commit a Good Received Note',
     description:
-      'Commits the goods receiving record, finalizing the delivery inspection and posting to inventory. Used by receiving staff to mark a delivery as fully checked and ready for inventory posting.',
+      'Commits a saved goods receiving record, changing its status from saved to committed.',
     operationId: 'commitGoodReceivedNote',
     tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
-      {
-        name: 'id',
-        in: 'path',
-        required: true,
-        description: 'Good Received Note ID',
-      },
-      {
-        name: 'bu_code',
-        in: 'path',
-        required: true,
-        description: 'Business Unit Code',
-      },
+      { name: 'id', in: 'path', required: true, description: 'Good Received Note ID' },
+      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
     ],
     responses: {
       200: { description: 'GRN committed successfully' },
-      400: { description: 'GRN cannot be committed' },
+      400: { description: 'GRN cannot be committed (must be saved first)' },
       404: { description: 'GRN not found' },
     },
-    'x-description-th': 'ยืนยันใบรับสินค้าเพื่อสรุปการตรวจรับและบันทึกเข้าคลังสินค้า ใช้โดยเจ้าหน้าที่รับสินค้าเพื่อระบุว่าการส่งมอบได้รับการตรวจสอบครบถ้วน',
+    'x-description-th': 'ยืนยันใบรับสินค้า เปลี่ยนสถานะจาก saved เป็น committed',
   } as any)
-  @ApiBody({ type: ConfirmGoodReceivedNoteSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async commit(
     @Param('id') id: string,
@@ -1225,7 +1262,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
-      { function: 'confirm', id, data, version },
+      { function: 'commit', id, data, version },
       GoodReceivedNoteController.name,
     );
 

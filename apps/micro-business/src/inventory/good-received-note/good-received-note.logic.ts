@@ -15,13 +15,52 @@ export class GoodReceivedNoteLogic {
     private readonly notificationService: NotificationService,
   ) {}
 
+  // ==================== Save ====================
+
+  /**
+   * Save a GRN:
+   * 1. Set status to saved
+   * 2. Create inventory transactions (FIFO/Average cost layers)
+   * 3. (PO only) Distribute received qty to junction rows, update PO status
+   */
+  @TryCatch
+  async save(
+    id: string,
+    data: Record<string, unknown>,
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'save', id, user_id, tenant_id }, GoodReceivedNoteLogic.name);
+
+    const prisma = await this.grnService.getPrismaClient(user_id, tenant_id);
+    if (!prisma) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+
+    const grn = await this.grnService.findGrnWithDetails(prisma, id);
+    if (!grn) return Result.error('Good Received Note not found', ErrorCode.NOT_FOUND);
+
+    if (grn.doc_status !== enum_good_received_note_status.draft) {
+      return Result.error('Only draft GRN can be saved', ErrorCode.INVALID_ARGUMENT);
+    }
+
+    const isPurchaseOrder = grn.doc_type === enum_good_received_note_type.purchase_order;
+
+    await prisma.$transaction(async (tx: any) => {
+      await this.grnService.updateGrnStatus(tx, id, enum_good_received_note_status.saved, user_id);
+      await this.createInventoryTransactions(tx, grn, tenant_id, user_id);
+
+      if (isPurchaseOrder) {
+        await this.updatePurchaseOrderReceiving(tx, grn, user_id);
+      }
+    });
+
+    return Result.ok({ id });
+  }
+
   // ==================== Confirm ====================
 
   /**
-   * Confirm a GRN:
-   * 1. Set status to committed
-   * 2. Create inventory transactions (FIFO/Average cost layers)
-   * 3. (PO only) Distribute received qty to junction rows, update PO status
+   * Confirm/Commit a GRN:
+   * Change status from saved to committed
    */
   @TryCatch
   async confirm(
@@ -38,19 +77,12 @@ export class GoodReceivedNoteLogic {
     const grn = await this.grnService.findGrnWithDetails(prisma, id);
     if (!grn) return Result.error('Good Received Note not found', ErrorCode.NOT_FOUND);
 
-    if (grn.doc_status !== enum_good_received_note_status.draft) {
-      return Result.error('Only draft GRN can be confirmed', ErrorCode.INVALID_ARGUMENT);
+    if (grn.doc_status !== enum_good_received_note_status.saved) {
+      return Result.error('Only saved GRN can be committed', ErrorCode.INVALID_ARGUMENT);
     }
-
-    const isPurchaseOrder = grn.doc_type === enum_good_received_note_type.purchase_order;
 
     await prisma.$transaction(async (tx: any) => {
       await this.grnService.updateGrnStatus(tx, id, enum_good_received_note_status.committed, user_id);
-      await this.createInventoryTransactions(tx, grn, tenant_id, user_id);
-
-      if (isPurchaseOrder) {
-        await this.updatePurchaseOrderReceiving(tx, grn, user_id);
-      }
     });
 
     return Result.ok({ id });
@@ -59,7 +91,7 @@ export class GoodReceivedNoteLogic {
   // ==================== Approve ====================
 
   /**
-   * Approve a GRN from saved status — creates inventory transactions and commits.
+   * Approve a GRN from saved status — changes status to committed.
    */
   @TryCatch
   async approve(
@@ -83,7 +115,6 @@ export class GoodReceivedNoteLogic {
     }
 
     await prisma.$transaction(async (tx: any) => {
-      await this.createInventoryTransactions(tx, grn, tenant_id, user_id);
       await this.grnService.updateGrnStatus(tx, id, enum_good_received_note_status.committed, user_id);
     });
 
@@ -167,8 +198,8 @@ export class GoodReceivedNoteLogic {
   }
 
   /**
-   * For PO-based GRN: distribute received qty to junction rows (smallest remain first),
-   * update PO detail received_qty, and update PO status.
+   * For PO-based GRN: update received_qty on junction rows and PO details per item,
+   * then update PO status (partial/completed).
    */
   private async updatePurchaseOrderReceiving(
     tx: any,
@@ -178,57 +209,28 @@ export class GoodReceivedNoteLogic {
     const affectedPoDetailIds = new Set<string>();
 
     for (const grnDetail of grn.tb_good_received_note_detail) {
-      if (!grnDetail.purchase_order_detail_id) continue;
+      for (const item of grnDetail.tb_good_received_note_detail_item) {
+        const junctionId = item.purchase_order_detail_purchase_request_detail_id;
+        if (!junctionId) continue;
 
-      const totalReceivedQty = grnDetail.tb_good_received_note_detail_item
-        .reduce((sum: number, item: any) => sum + (Number(item.received_qty) || 0), 0);
+        const receivedQty = Number(item.received_qty) || 0;
+        if (receivedQty <= 0) continue;
 
-      if (totalReceivedQty <= 0) continue;
+        // Increment received_qty on the junction row directly
+        await this.grnService.incrementJunctionReceivedQty(tx, junctionId, receivedQty, user_id);
 
-      affectedPoDetailIds.add(grnDetail.purchase_order_detail_id);
-
-      await this.distributeReceivedQtyToJunctionRows(
-        tx, grnDetail.purchase_order_detail_id, totalReceivedQty, user_id,
-      );
-
-      await this.grnService.incrementPoDetailReceivedQty(
-        tx, grnDetail.purchase_order_detail_id, totalReceivedQty, user_id,
-      );
+        // Also increment received_qty on the PO detail
+        if (grnDetail.purchase_order_detail_id) {
+          affectedPoDetailIds.add(grnDetail.purchase_order_detail_id);
+          await this.grnService.incrementPoDetailReceivedQty(
+            tx, grnDetail.purchase_order_detail_id, receivedQty, user_id,
+          );
+        }
+      }
     }
 
     if (affectedPoDetailIds.size > 0) {
       await this.updatePoStatuses(tx, affectedPoDetailIds, user_id);
-    }
-  }
-
-  /**
-   * Fill junction rows with received qty, smallest remaining first.
-   */
-  private async distributeReceivedQtyToJunctionRows(
-    tx: any,
-    poDetailId: string,
-    receivedQty: number,
-    user_id: string,
-  ): Promise<void> {
-    const junctionRows = await this.grnService.lockJunctionRows(tx, poDetailId);
-
-    const sorted = junctionRows
-      .map((row: any) => ({
-        ...row,
-        remain: Number(row.pr_detail_qty) - Number(row.received_qty),
-      }))
-      .sort((a: any, b: any) => a.remain - b.remain);
-
-    let remaining = receivedQty;
-
-    for (const row of sorted) {
-      if (remaining <= 0) break;
-      if (row.remain <= 0) continue;
-
-      const fillQty = Math.min(remaining, row.remain);
-      remaining -= fillQty;
-
-      await this.grnService.incrementJunctionReceivedQty(tx, row.id, fillQty, user_id);
     }
   }
 

@@ -254,10 +254,29 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
   }
 
   /**
-   * Confirm a good received note — sets status to in_progress, updates PO received quantities
-   * ยืนยันใบรับสินค้า — เปลี่ยนสถานะเป็น in_progress, อัปเดตจำนวนรับใน PO
-   * @param payload - Contains id, data, user_id, tenant_id / ประกอบด้วย id, data, user_id, tenant_id
-   * @returns Confirmed good received note / ใบรับสินค้าที่ยืนยันแล้ว
+   * Save a good received note — sets status to saved, creates inventory transactions, updates PO received quantities
+   * บันทึกใบรับสินค้า — เปลี่ยนสถานะเป็น saved, สร้าง inventory transactions, อัปเดตจำนวนรับใน PO
+   */
+  @MessagePattern({
+    cmd: 'good-received-note.save',
+    service: 'good-received-note',
+  })
+  async save(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'save', payload }, GoodReceivedNoteController.name);
+    const id = payload.id;
+    const data = payload.data || {};
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.goodReceivedNoteLogic.save(id, data, user_id, tenant_id)
+    );
+    return this.handleResult(result);
+  }
+
+  /**
+   * Commit a good received note — changes status from saved to committed
+   * ยืนยันใบรับสินค้า — เปลี่ยนสถานะจาก saved เป็น committed
    */
   @MessagePattern({
     cmd: 'good-received-note.confirm',

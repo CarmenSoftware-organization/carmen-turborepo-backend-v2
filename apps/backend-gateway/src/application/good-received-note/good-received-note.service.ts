@@ -591,14 +591,41 @@ export class GoodReceivedNoteService {
   }
 
   /**
-   * Confirm a Good Received Note via microservice
-   * ยืนยันใบรับสินค้าผ่านไมโครเซอร์วิส
-   * @param id - Good Received Note ID / รหัสใบรับสินค้า
-   * @param data - Confirmation data / ข้อมูลการยืนยัน
-   * @param user_id - User ID / รหัสผู้ใช้
-   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
-   * @param version - API version / เวอร์ชัน API
-   * @returns Confirmed Good Received Note / ใบรับสินค้าที่ยืนยันแล้ว
+   * Save a Good Received Note via microservice — creates inventory transactions and updates PO
+   * บันทึกใบรับสินค้าผ่านไมโครเซอร์วิส — สร้าง inventory transactions และอัปเดต PO
+   */
+  async save(
+    id: string,
+    data: Record<string, unknown>,
+    user_id: string,
+    tenant_id: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'save', id, data, user_id, tenant_id, version },
+      GoodReceivedNoteService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      { cmd: 'good-received-note.save', service: 'good-received-note' },
+      { id, data, user_id, tenant_id, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
+  /**
+   * Commit a Good Received Note via microservice — changes status from saved to committed
+   * ยืนยันใบรับสินค้าผ่านไมโครเซอร์วิส — เปลี่ยนสถานะจาก saved เป็น committed
    */
   async confirm(
     id: string,
