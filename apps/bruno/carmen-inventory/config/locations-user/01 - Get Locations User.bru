@@ -4,13 +4,6 @@ meta {
   seq: 1
 }
 
-docs {
-  ## Get Locations User
-  ดึงข้อมูลสถานที่ทั้งหมดที่ผู้ใช้สามารถเข้าถึงได้ตาม User ID
-
-  Retrieves all locations accessible to a specific user by their user ID.
-}
-
 get {
   url: {{host}}/api/config/{{bu_code}}/locations/user/:userId
   body: none
@@ -18,7 +11,7 @@ get {
 }
 
 params:path {
-  userId: 
+  userId: 462a3bca-d0cd-4206-81de-db7b05f262d0
 }
 
 headers {
@@ -27,4 +20,11 @@ headers {
 
 auth:bearer {
   token: {{access_token}}
+}
+
+docs {
+  ## Get Locations User
+  ดึงข้อมูลสถานที่ทั้งหมดที่ผู้ใช้สามารถเข้าถึงได้ตาม User ID
+  
+  Retrieves all locations accessible to a specific user by their user ID.
 }

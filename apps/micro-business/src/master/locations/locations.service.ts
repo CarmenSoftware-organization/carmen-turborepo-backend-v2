@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, HttpException, Inject } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable, HttpException, Inject } from '@nestjs/common';
 import { TenantService } from '@/tenant/tenant.service';
 import { Prisma, PrismaClient } from '@repo/prisma-shared-schema-tenant';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
@@ -574,6 +574,19 @@ export class LocationsService {
       { function: 'updateUserLocations', targetUserId, locationIds, user_id: this.userId, tenant_id: this.bu_code },
       LocationsService.name,
     );
+
+    // Validate that all location_ids exist
+    if (locationIds.length > 0) {
+      const validLocations = await this.prismaService.tb_location.findMany({
+        where: { id: { in: locationIds }, deleted_at: null },
+        select: { id: true },
+      });
+      const validIds = new Set(validLocations.map((l) => l.id));
+      const invalidIds = locationIds.filter((id) => !validIds.has(id));
+      if (invalidIds.length > 0) {
+        throw new BadRequestException(`Location IDs not found: ${invalidIds.join(', ')}`);
+      }
+    }
 
     // Get current assignments
     const existing = await this.prismaService.tb_user_location.findMany({
