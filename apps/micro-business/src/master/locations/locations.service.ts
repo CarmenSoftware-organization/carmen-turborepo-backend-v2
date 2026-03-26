@@ -563,7 +563,18 @@ export class LocationsService {
     // Calculate on-hand from cost layers
     const layers = await this.prismaService.tb_inventory_transaction_cost_layer.findMany({
       where: { product_id, location_id, deleted_at: null },
-      select: { in_qty: true, out_qty: true },
+      select: {
+        id: true,
+        lot_no: true,
+        lot_index: true,
+        lot_at_date: true,
+        transaction_type: true,
+        in_qty: true,
+        out_qty: true,
+        cost_per_unit: true,
+        total_cost: true,
+        average_cost_per_unit: true,
+      },
     });
 
     let on_hand_qty = 0;
@@ -571,29 +582,116 @@ export class LocationsService {
       on_hand_qty += Number(layer.in_qty) - Number(layer.out_qty);
     }
 
-    // Calculate on-order from active PO details
+    // Calculate on-order from active PO details (sent/partial)
     const poDetails = await this.prismaService.tb_purchase_order_detail.findMany({
       where: {
         product_id,
         deleted_at: null,
         tb_purchase_order: {
-          po_status: { in: ['in_progress', 'sent', 'partial'] },
+          po_status: { in: ['sent', 'partial'] },
           deleted_at: null,
         },
       },
-      select: { order_qty: true, received_qty: true, cancelled_qty: true },
+      select: {
+        order_qty: true,
+        received_qty: true,
+        cancelled_qty: true,
+        order_unit_name: true,
+        price: true,
+        tb_purchase_order: {
+          select: {
+            id: true,
+            po_no: true,
+            po_status: true,
+            vendor_name: true,
+            delivery_date: true,
+          },
+        },
+      },
     });
 
-    let on_order_qty = 0;
-    for (const detail of poDetails) {
-      on_order_qty += Number(detail.order_qty) - Number(detail.received_qty) - Number(detail.cancelled_qty);
-    }
+    const on_order = poDetails.map((detail) => {
+      const orderQty = Number(detail.order_qty) || 0;
+      const receivedQty = Number(detail.received_qty) || 0;
+      const cancelledQty = Number(detail.cancelled_qty) || 0;
+      return {
+        po_id: detail.tb_purchase_order?.id,
+        po_no: detail.tb_purchase_order?.po_no,
+        po_status: detail.tb_purchase_order?.po_status,
+        vendor_name: detail.tb_purchase_order?.vendor_name,
+        delivery_date: detail.tb_purchase_order?.delivery_date,
+        order_qty: orderQty,
+        received_qty: receivedQty,
+        cancelled_qty: cancelledQty,
+        pending_qty: orderQty - receivedQty - cancelledQty,
+        unit_name: detail.order_unit_name,
+        price: Number(detail.price) || 0,
+      };
+    });
 
-    const productInventory: IProductInventoryInfo = {
+    const on_order_qty = on_order.reduce((sum, o) => sum + o.pending_qty, 0);
+
+    // Fetch inventory transactions for this product at this location
+    const transactionDetails = await this.prismaService.tb_inventory_transaction_detail.findMany({
+      where: { product_id, location_id },
+      select: {
+        id: true,
+        inventory_transaction_id: true,
+        location_id: true,
+        location_code: true,
+        product_id: true,
+        qty: true,
+        cost_per_unit: true,
+        total_cost: true,
+        current_lot_no: true,
+        created_at: true,
+        tb_inventory_transaction: {
+          select: {
+            inventory_doc_type: true,
+            inventory_doc_no: true,
+            created_at: true,
+          },
+        },
+      },
+      orderBy: { created_at: 'desc' },
+    });
+
+    const transactions = transactionDetails.map((td: any) => ({
+      id: td.id,
+      inventory_transaction_id: td.inventory_transaction_id,
+      doc_type: td.tb_inventory_transaction?.inventory_doc_type || null,
+      doc_id: td.tb_inventory_transaction?.inventory_doc_no || null,
+      location_id: td.location_id,
+      location_code: td.location_code,
+      qty: Number(td.qty),
+      cost_per_unit: Number(td.cost_per_unit),
+      total_cost: Number(td.total_cost),
+      lot_no: td.current_lot_no,
+      created_at: td.created_at || td.tb_inventory_transaction?.created_at,
+    }));
+
+    const cost_layers = layers.map((layer) => ({
+      id: layer.id,
+      lot_no: layer.lot_no,
+      lot_index: layer.lot_index,
+      lot_at_date: layer.lot_at_date,
+      transaction_type: layer.transaction_type,
+      in_qty: Number(layer.in_qty ?? 0),
+      out_qty: Number(layer.out_qty ?? 0),
+      balance_qty: Number(layer.in_qty ?? 0) - Number(layer.out_qty ?? 0),
+      cost_per_unit: Number(layer.cost_per_unit ?? 0),
+      total_cost: Number(layer.total_cost ?? 0),
+      average_cost_per_unit: Number(layer.average_cost_per_unit ?? 0),
+    }));
+
+    const productInventory = {
       on_hand_qty,
       on_order_qty,
       re_order_qty,
       re_stock_qty,
+      cost_layers,
+      on_order,
+      transactions,
     };
 
     return Result.ok(productInventory);
