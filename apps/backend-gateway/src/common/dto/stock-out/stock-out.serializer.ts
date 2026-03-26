@@ -19,6 +19,7 @@ const StockOutDetailEmbeddedSchema = z.object({
 // Stock Out detail response schema (for findOne)
 export const StockOutDetailResponseSchema = z.object({
   id: z.string(),
+  so_date: z.coerce.date().nullable().optional(),
   so_no: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   adjustment_type_id: z.string().nullable().optional(),
@@ -43,6 +44,7 @@ export type StockOutDetailResponse = z.infer<typeof StockOutDetailResponseSchema
 // Stock Out list item response schema (for findAll)
 export const StockOutListItemResponseSchema = z.object({
   id: z.string(),
+  so_date: z.coerce.date().nullable().optional(),
   so_no: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   adjustment_type_id: z.string().nullable().optional(),

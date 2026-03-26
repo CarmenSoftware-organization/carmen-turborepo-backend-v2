@@ -63,6 +63,9 @@ export class StockInResponseDto {
   @ApiProperty({ description: 'Stock In ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   id: string;
 
+  @ApiPropertyOptional({ description: 'Stock In date', example: '2026-03-26T00:00:00.000Z' })
+  si_date?: string;
+
   @ApiPropertyOptional({ description: 'Stock In number', example: 'SI-2026-0001' })
   si_no?: string;
 

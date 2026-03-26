@@ -75,6 +75,9 @@ export class StockOutDetailOperationsSwaggerDto {
 }
 
 export class CreateStockOutSwaggerDto {
+  @ApiPropertyOptional({ description: 'Stock Out date', example: '2026-03-26T00:00:00.000Z' })
+  so_date?: string;
+
   @ApiPropertyOptional({ description: 'Description', example: 'Stock adjustment - spoiled items' })
   description?: string;
 
@@ -113,6 +116,9 @@ export class CreateStockOutSwaggerDto {
 }
 
 export class UpdateStockOutSwaggerDto {
+  @ApiPropertyOptional({ description: 'Stock Out date', example: '2026-03-26T00:00:00.000Z' })
+  so_date?: string;
+
   @ApiPropertyOptional({ description: 'Description', example: 'Updated stock out adjustment' })
   description?: string;
 

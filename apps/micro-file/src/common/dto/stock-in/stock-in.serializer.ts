@@ -21,6 +21,7 @@ const StockInDetailEmbeddedSchema = z.object({
 // Stock In detail response schema (for findOne)
 export const StockInDetailResponseSchema = z.object({
   id: z.string(),
+  si_date: z.coerce.date().nullable().optional(),
   si_no: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   adjustment_type_id: z.string().nullable().optional(),
@@ -45,6 +46,7 @@ export type StockInDetailResponse = z.infer<typeof StockInDetailResponseSchema>;
 // Stock In list item response schema (for findAll)
 export const StockInListItemResponseSchema = z.object({
   id: z.string(),
+  si_date: z.coerce.date().nullable().optional(),
   si_no: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   adjustment_type_id: z.string().nullable().optional(),

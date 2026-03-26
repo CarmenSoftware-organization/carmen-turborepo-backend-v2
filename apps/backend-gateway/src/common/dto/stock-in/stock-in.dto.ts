@@ -24,6 +24,7 @@ const StockInDetailBaseSchema = z.object({
 // Stock In Schema
 export const StockInSchema = z.object({
   id: z.string().uuid(),
+  si_date: z.coerce.date().optional().nullable(),
   si_no: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   adjustment_type_id: z.string().uuid().optional().nullable(),
@@ -99,6 +100,7 @@ const StockInUpdateDetailObj = z.object({
 
 // Stock In Update Schema
 export const StockInUpdate = z.object({
+  si_date: z.coerce.date().optional().nullable(),
   description: z.string().optional().nullable(),
   adjustment_type_id: z.string().uuid().optional().nullable(),
   adjustment_type_code: z.string().optional().nullable(),

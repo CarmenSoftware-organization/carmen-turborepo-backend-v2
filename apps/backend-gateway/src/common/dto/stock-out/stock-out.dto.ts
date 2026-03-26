@@ -22,6 +22,7 @@ const StockOutDetailBaseSchema = z.object({
 // Stock Out Schema
 export const StockOutSchema = z.object({
   id: z.string().uuid(),
+  so_date: z.coerce.date().optional().nullable(),
   so_no: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   adjustment_type_id: z.string().uuid().optional().nullable(),
@@ -95,6 +96,7 @@ const StockOutUpdateDetailObj = z.object({
 
 // Stock Out Update Schema
 export const StockOutUpdate = z.object({
+  so_date: z.coerce.date().optional().nullable(),
   description: z.string().optional().nullable(),
   adjustment_type_id: z.string().uuid().optional().nullable(),
   adjustment_type_code: z.string().optional().nullable(),

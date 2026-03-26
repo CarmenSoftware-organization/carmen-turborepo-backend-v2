@@ -87,6 +87,9 @@ export class StockInDetailOperationsSwaggerDto {
 }
 
 export class CreateStockInSwaggerDto {
+  @ApiPropertyOptional({ description: 'Stock In date', example: '2026-03-26T00:00:00.000Z' })
+  si_date?: string;
+
   @ApiPropertyOptional({ description: 'Description', example: 'Stock adjustment - items found during count' })
   description?: string;
 
@@ -125,6 +128,9 @@ export class CreateStockInSwaggerDto {
 }
 
 export class UpdateStockInSwaggerDto {
+  @ApiPropertyOptional({ description: 'Stock In date', example: '2026-03-26T00:00:00.000Z' })
+  si_date?: string;
+
   @ApiPropertyOptional({ description: 'Description', example: 'Updated stock adjustment' })
   description?: string;
 

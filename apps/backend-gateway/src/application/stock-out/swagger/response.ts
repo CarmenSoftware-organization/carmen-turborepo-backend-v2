@@ -57,6 +57,9 @@ export class StockOutResponseDto {
   @ApiProperty({ description: 'Stock Out ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   id: string;
 
+  @ApiPropertyOptional({ description: 'Stock Out date', example: '2026-03-26T00:00:00.000Z' })
+  so_date?: string;
+
   @ApiPropertyOptional({ description: 'Stock Out number', example: 'SO-2026-0001' })
   so_no?: string;
 
