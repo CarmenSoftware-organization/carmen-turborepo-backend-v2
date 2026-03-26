@@ -20,6 +20,8 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -100,6 +102,41 @@ export class PurchaseOrderController extends BaseHttpController {
    * @param version - API version / เวอร์ชัน API
    * @returns Paginated PO list with location-level detail breakdown / รายการ PO พร้อมรายละเอียดแยกตาม location
    */
+  @Get('grn/vendor/:vendor_id')
+  @UseGuards(new AppIdGuard('purchaseOrder.findAll'))
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'List purchase orders for GRN by vendor',
+    description: 'Lists purchase orders (sent/partial status) filtered by vendor ID, with detail lines broken down by delivery location. Used by GRN creation to list POs for a specific vendor.',
+    operationId: 'findAllPurchaseOrdersForGrnByVendor',
+    tags: ['Procurement', 'Purchase Order', 'Good Received Note'],
+    responses: {
+      200: { description: 'PO list for vendor retrieved successfully' },
+    },
+  })
+  @ApiParam({ name: 'vendor_id', description: 'Vendor ID', type: 'string', format: 'uuid' })
+  @ApiResponse({ status: 200, description: 'PO list for vendor retrieved successfully', type: PurchaseOrderListResponseDto })
+  @HttpCode(HttpStatus.OK)
+  async findAllForGrnByVendor(
+    @Param('bu_code') bu_code: string,
+    @Param('vendor_id') vendor_id: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query() query: IPaginateQuery,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'findAllForGrnByVendor', vendor_id, query, version },
+      PurchaseOrderController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
+    const result = await this.purchaseOrderService.findAllForGrnByVendorId(vendor_id, user_id, bu_code, paginate, version);
+    this.respond(res, result);
+  }
+
   @Get('grn')
   @UseGuards(new AppIdGuard('purchaseOrder.findAll'))
   @ApiVersionMinRequest()
@@ -256,9 +293,10 @@ export class PurchaseOrderController extends BaseHttpController {
   @Serialize(PurchaseOrderListItemResponseSchema)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
+  @ApiQuery({ name: 'vendor_id', description: 'Filter by Vendor ID', type: 'string', required: false })
   @ApiOperation({
     summary: 'Get all purchase orders',
-    description: 'Lists all purchase orders for the business unit with pagination and search. Used by purchasers and managers to track outstanding orders, monitor delivery status, and manage vendor commitments.',
+    description: 'Lists all purchase orders for the business unit with pagination and search. Optionally filter by vendor_id. Used by purchasers and managers to track outstanding orders, monitor delivery status, and manage vendor commitments.',
     operationId: 'findAllPurchaseOrders',
     tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
@@ -290,12 +328,14 @@ export class PurchaseOrderController extends BaseHttpController {
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
     @Query() query: IPaginateQuery,
+    @Query('vendor_id') vendor_id?: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
       {
         function: 'findAll',
         query,
+        vendor_id,
         version,
       },
       PurchaseOrderController.name,
@@ -303,6 +343,11 @@ export class PurchaseOrderController extends BaseHttpController {
 
     const { user_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
+
+    if (vendor_id) {
+      paginate.filter['vendor_id'] = vendor_id;
+    }
+
     const result = await this.purchaseOrderService.findAll(
       user_id,
       bu_code,

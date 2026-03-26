@@ -10,6 +10,10 @@ get {
   auth: bearer
 }
 
+params:query {
+  ~vendor_id:
+}
+
 headers {
   x-app-id: {{x_app_id}}
 }

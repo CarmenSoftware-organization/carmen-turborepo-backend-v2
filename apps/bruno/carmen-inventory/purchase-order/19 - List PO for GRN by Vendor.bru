@@ -1,0 +1,23 @@
+meta {
+  name: 19 - List PO for GRN by Vendor
+  type: http
+  seq: 19
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-order/grn/vendor/:vendor_id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  vendor_id:
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

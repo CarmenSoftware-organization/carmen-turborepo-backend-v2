@@ -282,6 +282,9 @@ export class PurchaseOrderListItemResponseDto {
   @ApiPropertyOptional({ description: 'Expected delivery date', example: '2026-03-17T00:00:00.000Z' })
   delivery_date?: string;
 
+  @ApiPropertyOptional({ description: 'Vendor ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  vendor_id?: string;
+
   @ApiPropertyOptional({ description: 'Vendor name', example: 'ABC Supplies Co.' })
   vendor_name?: string;
 

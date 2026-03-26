@@ -610,6 +610,128 @@ export class PurchaseOrderService {
   }
 
   /**
+   * Find purchase orders for GRN by vendor ID (sent/partial status)
+   * ค้นหาใบสั่งซื้อสำหรับ GRN ตาม vendor ID (สถานะ sent หรือ partial)
+   * @param vendorId - Vendor ID / รหัสผู้ขาย
+   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
+   * @returns Paginated PO list filtered by vendor / รายการ PO ที่กรองตาม vendor
+   */
+  async findAllForGrnByVendorId(vendorId: string, paginate: IPaginate): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findAllForGrnByVendorId', user_id: this.userId, tenant_id: this.bu_code, vendorId, paginate },
+      PurchaseOrderService.name,
+    );
+
+    const defaultSearchFields = ['po_no'];
+    const q = new QueryParams(
+      paginate.page,
+      paginate.perpage,
+      paginate.search,
+      paginate.searchfields,
+      defaultSearchFields,
+      paginate.filter,
+      paginate.sort,
+      paginate.advance,
+    );
+
+    const whereClause = {
+      ...q.where(),
+      deleted_at: null,
+      vendor_id: vendorId,
+      po_status: {
+        in: [
+          enum_purchase_order_doc_status.sent,
+          enum_purchase_order_doc_status.partial,
+        ],
+      },
+    };
+
+    const purchaseOrders = await this.prismaService.tb_purchase_order.findMany({
+      ...q.findMany(),
+      where: whereClause,
+      select: {
+        id: true,
+        po_no: true,
+        po_status: true,
+        order_date: true,
+        delivery_date: true,
+        currency_id: true,
+        currency_code: true,
+        exchange_rate: true,
+        tb_purchase_order_detail: {
+          where: { deleted_at: null },
+          orderBy: { sequence_no: 'asc' },
+          select: {
+            id: true,
+            sequence_no: true,
+            product_id: true,
+            product_code: true,
+            product_name: true,
+            product_local_name: true,
+            order_qty: true,
+            order_unit_id: true,
+            order_unit_name: true,
+            order_unit_conversion_factor: true,
+            base_qty: true,
+            base_unit_id: true,
+            base_unit_name: true,
+            received_qty: true,
+            cancelled_qty: true,
+            price: true,
+            net_amount: true,
+            is_foc: true,
+          },
+        },
+      },
+    });
+
+    const total = await this.prismaService.tb_purchase_order.count({
+      where: whereClause,
+    });
+
+    const data = purchaseOrders.map((po) => ({
+      id: po.id,
+      po_no: po.po_no,
+      po_status: po.po_status,
+      order_date: po.order_date,
+      delivery_date: po.delivery_date,
+      currency_id: po.currency_id,
+      currency_code: po.currency_code,
+      exchange_rate: Number(po.exchange_rate),
+      po_detail: po.tb_purchase_order_detail.map((detail) => ({
+        id: detail.id,
+        sequence_no: detail.sequence_no,
+        product_id: detail.product_id,
+        product_code: detail.product_code,
+        product_name: detail.product_name,
+        product_local_name: detail.product_local_name,
+        order_qty: Number(detail.order_qty),
+        order_unit_id: detail.order_unit_id,
+        order_unit_name: detail.order_unit_name,
+        order_unit_conversion_factor: Number(detail.order_unit_conversion_factor),
+        base_qty: Number(detail.base_qty),
+        base_unit_id: detail.base_unit_id,
+        base_unit_name: detail.base_unit_name,
+        received_qty: Number(detail.received_qty),
+        cancelled_qty: Number(detail.cancelled_qty),
+        price: Number(detail.price),
+        net_amount: Number(detail.net_amount),
+        is_foc: detail.is_foc,
+      })),
+    }));
+
+    return Result.ok({
+      data,
+      paginate: {
+        total,
+        page: q.page,
+        perpage: q.perpage,
+        pages: total === 0 ? 1 : Math.ceil(total / q.perpage),
+      },
+    });
+  }
+
+  /**
    * Find all purchase orders with pagination, search, and filtering
    * ค้นหาใบสั่งซื้อทั้งหมดพร้อมการแบ่งหน้า การค้นหา และการกรอง
    * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
@@ -715,6 +837,7 @@ export class PurchaseOrderService {
         description: po.description,
         order_date: po.order_date,
         delivery_date: po.delivery_date,
+        vendor_id: po.vendor_id,
         vendor_name: po.tb_vendor?.name ?? po.vendor_name ?? null,
         currency_code: po.tb_currency_tb_purchase_order_currency_idTotb_currency?.code ?? po.currency_code ?? null,
         exchange_rate: Number(po.exchange_rate),

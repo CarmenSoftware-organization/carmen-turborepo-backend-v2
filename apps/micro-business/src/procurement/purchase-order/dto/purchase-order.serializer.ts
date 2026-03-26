@@ -129,6 +129,7 @@ export const PurchaseOrderListItemResponseSchema = z.object({
   description: z.string().nullable().optional(),
   order_date: z.coerce.date().nullable().optional(),
   delivery_date: z.coerce.date().nullable().optional(),
+  vendor_id: z.string().nullable().optional(),
   vendor_name: z.string().nullable().optional(),
   currency_code: z.string().nullable().optional(),
   exchange_rate: decimalField,

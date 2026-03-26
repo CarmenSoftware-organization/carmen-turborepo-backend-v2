@@ -960,6 +960,10 @@ export class PurchaseOrderLogic {
     });
   }
 
+  async findAllForGrnByVendorId(vendorId: string, paginate: IPaginate): Promise<Result<unknown>> {
+    return this.purchaseOrderService.findAllForGrnByVendorId(vendorId, paginate);
+  }
+
   /**
    * Enrich null/empty denormalized fields on PO details, PR details, and junction rows.
    * Batch-fetches from tb_product, tb_location, tb_unit then updates the DB rows.

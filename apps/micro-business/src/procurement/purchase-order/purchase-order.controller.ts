@@ -91,6 +91,35 @@ export class PurchaseOrderController extends BaseMicroserviceController {
   }
 
   /**
+   * List purchase orders for GRN by vendor ID (sent/partial status)
+   * ค้นหาใบสั่งซื้อสำหรับ GRN ตาม vendor ID (สถานะ sent หรือ partial)
+   * @param payload - Payload containing vendor_id and pagination parameters / payload ที่มี vendor_id และพารามิเตอร์การแบ่งหน้า
+   * @returns Paginated PO list filtered by vendor / รายการ PO ที่กรองตาม vendor
+   */
+  @MessagePattern({
+    cmd: 'purchase-order.find-all-for-grn-by-vendor',
+    service: 'purchase-order',
+  })
+  async getAllForGrnByVendor(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'getAllForGrnByVendor', payload },
+      PurchaseOrderController.name,
+    );
+    this.purchaseOrderService.userId = payload.user_id;
+    this.purchaseOrderService.bu_code = payload.tenant_id || payload.bu_code;
+    await this.purchaseOrderService.initializePrismaService(
+      payload.tenant_id || payload.bu_code,
+      payload.user_id,
+    );
+    const vendorId = payload.vendor_id;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.purchaseOrderLogic.findAllForGrnByVendorId(vendorId, payload.paginate),
+    );
+    return this.handleResult(result);
+  }
+
+  /**
    * Find all purchase orders with pagination
    * ค้นหาใบสั่งซื้อทั้งหมดพร้อมการแบ่งหน้า
    * @param payload - Payload containing pagination parameters / payload ที่มีพารามิเตอร์การแบ่งหน้า
