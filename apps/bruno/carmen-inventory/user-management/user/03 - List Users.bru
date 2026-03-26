@@ -4,17 +4,14 @@ meta {
   seq: 3
 }
 
-docs {
-  ## List Users
-  แสดงรายการผู้ใช้ทั้งหมดในหน่วยธุรกิจปัจจุบันพร้อมการแบ่งหน้าและค้นหา
-
-  Retrieve all users in the current business unit with pagination and search support.
-}
-
 get {
-  url: {{host}}/api/{{bu_code}}/users
+  url: {{host}}/api/{{bu_code}}/users?filter=department_id|string:280ac0fb-8eed-4bea-900d-59158a185718
   body: none
   auth: bearer
+}
+
+params:query {
+  filter: department_id|string:280ac0fb-8eed-4bea-900d-59158a185718
 }
 
 headers {
@@ -23,4 +20,11 @@ headers {
 
 auth:bearer {
   token: {{access_token}}
+}
+
+docs {
+  ## List Users
+  แสดงรายการผู้ใช้ทั้งหมดในหน่วยธุรกิจปัจจุบันพร้อมการแบ่งหน้าและค้นหา
+  
+  Retrieve all users in the current business unit with pagination and search support.
 }

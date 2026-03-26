@@ -2009,6 +2009,22 @@ export class AuthService {
       );
     }
 
+    // Apply filter parameters (e.g. department_id|string:uuid, supports multiple values comma-separated)
+    if (paginate?.filter && typeof paginate.filter === 'object') {
+      for (const [rawKey, rawValue] of Object.entries(paginate.filter)) {
+        if (!rawValue) continue;
+        const fieldName = rawKey.includes('|') ? rawKey.split('|')[0] : rawKey;
+        const values = String(rawValue).split(',').map((v) => v.trim());
+
+        filtered = filtered.filter((item: any) => {
+          if (fieldName === 'department_id') {
+            return values.includes(item.department?.id);
+          }
+          return values.includes(item[fieldName]);
+        });
+      }
+    }
+
     // Apply pagination
     const total = filtered.length;
     const skip = (page - 1) * perpage;
