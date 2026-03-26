@@ -91,6 +91,14 @@ export class GoodReceivedNoteService {
           good_received_note_id: id,
         },
         orderBy: { sequence_no: 'asc' },
+        include: {
+          tb_location: { select: { location_type: true } },
+          tb_purchase_order_detail: {
+            select: {
+              tb_purchase_order: { select: { po_no: true } },
+            },
+          },
+        },
       });
 
     // Fetch detail items for each detail row
@@ -112,10 +120,15 @@ export class GoodReceivedNoteService {
       detailItemsByDetailId.set(item.good_received_note_detail_id, list);
     }
 
-    const goodReceivedNoteDetailWithItems = goodReceivedNoteDetail.map((detail: any) => ({
-      ...detail,
-      items: detailItemsByDetailId.get(detail.id) || [],
-    }));
+    const goodReceivedNoteDetailWithItems = goodReceivedNoteDetail.map((detail: any) => {
+      const { tb_location, tb_purchase_order_detail, ...rest } = detail;
+      return {
+        ...rest,
+        location_type: tb_location?.location_type || null,
+        po_no: tb_purchase_order_detail?.tb_purchase_order?.po_no || null,
+        items: detailItemsByDetailId.get(detail.id) || [],
+      };
+    });
 
     const extraCost = await prisma.tb_extra_cost.findMany({
       where: {

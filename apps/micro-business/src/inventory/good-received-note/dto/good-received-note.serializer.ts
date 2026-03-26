@@ -58,6 +58,8 @@ const GoodReceivedNoteDetailEmbeddedSchema = z.object({
   location_id: z.string().nullable().optional(),
   location_code: z.string().nullable().optional(),
   location_name: z.string().nullable().optional(),
+  location_type: z.string().nullable().optional(),
+  po_no: z.string().nullable().optional(),
   product_id: z.string().nullable().optional(),
   product_code: z.string().nullable().optional(),
   product_name: z.string().nullable().optional(),
