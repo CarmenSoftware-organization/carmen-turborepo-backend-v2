@@ -4,6 +4,19 @@ meta {
   seq: 15
 }
 
+docs {
+  ## Print Purchase Order to PDF
+  พิมพ์ใบสั่งซื้อเป็นไฟล์ PDF สำหรับส่งให้ผู้ขาย ลงนามจริง หรือจัดเก็บเอกสาร
+
+  Generates a printable PDF of the purchase order for sending to the vendor, obtaining physical signatures, or filing. Includes vendor details, line items, totals, terms, and approval signatures.
+
+  ### Path Parameters
+  - `id` — Purchase order UUID
+
+  ### Response
+  - Content-Type: `application/pdf`
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-order/:id/print
   body: none

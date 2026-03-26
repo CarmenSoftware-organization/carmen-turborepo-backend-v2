@@ -4,6 +4,17 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Purchase Order
+  สร้างใบสั่งซื้อใหม่เพื่อยืนยันการจัดซื้อจากผู้ขาย โดยจัดกลุ่มรายการจากใบขอซื้อที่อนุมัติแล้วตามผู้ขาย วันส่งมอบ และสกุลเงิน
+
+  Creates a new purchase order to formalize procurement from a vendor. The PO groups approved PR line items by vendor, delivery date, and currency, establishing a binding order commitment that can be sent to the vendor.
+
+  ### Body
+  - `vendor_id`, `currency_id`, `delivery_date`, `workflow_id` — Required
+  - `details.add[]` — Line items with product, qty, pricing, and PR detail linkages
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/purchase-order
   body: json

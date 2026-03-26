@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Product Item Groups
+  แสดงรายการกลุ่มรายการสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Returns all product item groups configured for the business unit.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/products/item-group
   body: none

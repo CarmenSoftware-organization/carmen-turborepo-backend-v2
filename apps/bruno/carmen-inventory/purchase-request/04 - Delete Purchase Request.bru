@@ -4,6 +4,16 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Delete Purchase Request
+  ลบใบขอซื้อที่ไม่ต้องการแล้ว โดยทั่วไปใช้สำหรับใบขอซื้อฉบับร่างที่สร้างผิดพลาดหรือไม่จำเป็นอีกต่อไป
+
+  Removes a purchase request that is no longer needed. Typically used for draft PRs that were created in error or are no longer required by the department.
+
+  ### Path Parameters
+  - `id` — Purchase request ID
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/purchase-request/:id
   body: none

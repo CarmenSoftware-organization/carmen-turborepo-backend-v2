@@ -4,6 +4,16 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Purchase Order
+  ลบใบสั่งซื้อที่ไม่ต้องการแล้ว โดยทั่วไปใช้สำหรับใบสั่งซื้อฉบับร่างที่สร้างผิดพลาดก่อนส่งให้ผู้ขาย
+
+  Removes a purchase order that is no longer needed. Typically used for draft POs that were created in error before being sent to a vendor.
+
+  ### Path Parameters
+  - `id` — Purchase order UUID
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/purchase-order/:id
   body: none

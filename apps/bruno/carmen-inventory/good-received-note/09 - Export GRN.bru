@@ -4,6 +4,17 @@ meta {
   seq: 9
 }
 
+docs {
+  ## Export Good Received Note to Excel
+  ส่งออกใบรับสินค้าเป็นไฟล์ Excel พร้อมรายการสินค้าที่รับทั้งหมด จำนวน และรายละเอียดผู้ขาย ใช้สำหรับการเก็บเอกสาร แชร์กับแผนกบัญชีเพื่อจับคู่ใบแจ้งหนี้ หรือแก้ไขข้อพิพาทกับผู้ขาย
+
+  Exports a goods receiving record to Excel with all received items, quantities, and vendor details. Used for record-keeping, sharing with accounts payable for invoice matching, or vendor dispute resolution.
+
+  ### Path Parameters
+  - `id` — Good Received Note ID / รหัสใบรับสินค้า
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/good-received-note/:id/export
   body: none

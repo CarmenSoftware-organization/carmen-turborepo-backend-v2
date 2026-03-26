@@ -4,6 +4,19 @@ meta {
   seq: 3
 }
 
+docs {
+  ## List Inventory Adjustment - Stock Out
+  ดึงรายการปรับปรุงสินค้าคงคลังเฉพาะประเภทจ่ายออก (stock-out) แสดงรายการที่มีการหักจำนวนสินค้าออกจากระบบ
+
+  Lists inventory adjustments filtered to stock-out type only, showing records where quantities were deducted from the system inventory.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+
+  ### Query Parameters
+  - `type` — `stock-out` (กรองเฉพาะรายการจ่ายออก / filter stock-out adjustments only)
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/inventory-adjustment?type=stock-out
   body: none

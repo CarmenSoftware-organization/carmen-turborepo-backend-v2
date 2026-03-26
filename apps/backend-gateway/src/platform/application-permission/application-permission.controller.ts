@@ -62,6 +62,7 @@ export class ApplicationPermissionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all application permissions',
     description: 'Lists all granular feature permissions available in the ERP system, such as "can create purchase request" or "can approve purchase order". Used by platform administrators to review and manage the full permission catalog.',
+    'x-description-th': 'แสดงรายการสิทธิ์การใช้งานทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'platformPermission_findAll',
     tags: ['Platform Admin', 'Application Permission'],
     deprecated: false,
@@ -86,7 +87,7 @@ export class ApplicationPermissionController extends BaseHttpController {
         description: 'Unauthorized',
       },
     },
-  })
+  } as any)
   async findAll(
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -123,6 +124,7 @@ export class ApplicationPermissionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get application permission by ID',
     description: 'Retrieves the details of a specific feature permission by its ID, including its name, code, and scope. Useful for inspecting individual permission definitions before assigning them to roles.',
+    'x-description-th': 'ดึงข้อมูลสิทธิ์การใช้งานรายการเดียวตาม ID',
     operationId: 'platformPermission_findOne',
     tags: ['Platform Admin', 'Application Permission'],
     deprecated: false,
@@ -156,7 +158,7 @@ export class ApplicationPermissionController extends BaseHttpController {
         description: 'Application permission not found',
       },
     },
-  })
+  } as any)
   async findOne(
     @Res() res: Response,
     @Param('id') id: string,
@@ -194,6 +196,7 @@ export class ApplicationPermissionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create new application permission',
     description: 'Defines a new granular feature permission in the ERP platform, such as access to create, approve, or view specific procurement or inventory operations. Once created, this permission can be assigned to application roles.',
+    'x-description-th': 'สร้างสิทธิ์การใช้งานใหม่',
     operationId: 'platformPermission_create',
     tags: ['Platform Admin', 'Application Permission'],
     deprecated: false,
@@ -221,7 +224,7 @@ export class ApplicationPermissionController extends BaseHttpController {
         description: 'Unauthorized',
       },
     },
-  })
+  } as any)
   async create(
     @Res() res: Response,
     @Body() createApplicationPermissionDto: CreateApplicationPermissionDto,
@@ -268,6 +271,7 @@ export class ApplicationPermissionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update application permission',
     description: 'Modifies an existing feature permission definition, such as renaming it or changing its scope. Changes propagate to all roles that reference this permission across tenants.',
+    'x-description-th': 'อัปเดตข้อมูลสิทธิ์การใช้งานที่มีอยู่',
     operationId: 'platformPermission_update',
     tags: ['Platform Admin', 'Application Permission'],
     deprecated: false,
@@ -304,7 +308,7 @@ export class ApplicationPermissionController extends BaseHttpController {
         description: 'Application permission not found',
       },
     },
-  })
+  } as any)
   async update(
     @Res() res: Response,
     @Param('id') id: string,
@@ -349,6 +353,7 @@ export class ApplicationPermissionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete application permission',
     description: 'Removes a feature permission from the ERP platform. This should be done with caution as it will affect all roles that currently include this permission, potentially revoking user access to the associated feature.',
+    'x-description-th': 'ลบสิทธิ์การใช้งานตาม ID',
     operationId: 'platformPermission_delete',
     tags: ['Platform Admin', 'Application Permission'],
     deprecated: false,
@@ -382,7 +387,7 @@ export class ApplicationPermissionController extends BaseHttpController {
         description: 'Application permission not found',
       },
     },
-  })
+  } as any)
   async delete(
     @Res() res: Response,
     @Param('id') id: string,

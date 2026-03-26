@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Invite User
+  เชิญผู้ใช้ใหม่เข้าร่วมแพลตฟอร์ม Carmen โดยส่งลิงก์ลงทะเบียนไปยังอีเมลที่ระบุ ต้องมีการยืนยันตัวตนก่อน
+
+  Sends an invitation to a new user to join the Carmen ERP platform. The invited user receives a registration link via email. Requires authentication.
+}
+
 post {
   url: {{host}}/api/auth/invite-user
   body: json

@@ -4,6 +4,16 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Good Received Note
+  บันทึกการส่งมอบสินค้าใหม่จากผู้ขายตามใบสั่งซื้อ โดยบันทึกจำนวนที่รับ ผลการตรวจสอบคุณภาพ และความแตกต่างระหว่างสินค้าที่สั่งกับที่ส่งมา ขั้นตอนนี้เป็นจุดเริ่มต้นของการอัปเดตระดับสินค้าคงคลังจากการรับสินค้า
+
+  Records a new goods delivery from a vendor against a purchase order. Captures received quantities, quality inspection results, and any discrepancies between ordered and delivered items. This is the first step in updating inventory levels from vendor deliveries.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/good-received-note
   body: json

@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Recipe by ID
+  ดึงข้อมูลสูตรอาหารเดียวตาม ID พร้อมรายการส่วนผสม ปริมาณ และขั้นตอนการเตรียม
+
+  Retrieves a specific recipe with its full ingredient list, quantities, and preparation steps.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/recipe/:id
   body: none

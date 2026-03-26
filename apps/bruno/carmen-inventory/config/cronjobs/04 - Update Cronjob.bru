@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Cronjob
+  อัปเดตการกำหนดค่างานตั้งเวลาที่มีอยู่ เช่น ตารางเวลา พารามิเตอร์ หรือสถานะ
+
+  Modifies an existing scheduled task configuration, such as changing its cron schedule, task parameters, or enabling/disabling the job.
+}
+
 put {
   url: {{host}}/api/config/cronjobs/:id
   body: json

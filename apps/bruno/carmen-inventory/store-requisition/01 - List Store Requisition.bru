@@ -4,6 +4,20 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Store Requisitions
+  แสดงรายการใบเบิกสินค้าทั้งหมดพร้อมการแบ่งหน้าและตัวกรอง ใช้โดยเจ้าหน้าที่แผนกเพื่อติดตามคำขอเบิกสินค้าภายใน และโดยผู้จัดการคลังเพื่อดูคำขอที่รอดำเนินการ
+
+  Lists all store requisitions across business units with pagination and filtering. Used by department staff to track their internal stock requests and by store managers to view pending issuance requests.
+
+  ### Query Parameters
+  - `version` — API version (optional)
+  - `page` — Page number (optional)
+  - `perpage` — Items per page (optional)
+  - `search` — Search keyword (optional)
+  - `bu_code` — Business unit code filter (optional)
+}
+
 get {
   url: {{host}}/api/store-requisition
   body: none

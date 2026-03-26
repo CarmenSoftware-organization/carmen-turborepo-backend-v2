@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Pending PO Count
+  ดึงจำนวนใบสั่งซื้อที่รอดำเนินการของผู้ใช้ปัจจุบัน ใช้สำหรับแสดงป้ายแจ้งเตือนบนแดชบอร์ดและตัวบ่งชี้ภาระงาน
+
+  Returns the count of purchase orders currently awaiting the user's action in the approval pipeline, used for dashboard badge notifications and workload indicators.
+}
+
 get {
   url: {{host}}/api/my-pending/purchase-order/pending
   body: none

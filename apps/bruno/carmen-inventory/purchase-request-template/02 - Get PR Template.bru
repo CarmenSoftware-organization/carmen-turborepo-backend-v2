@@ -4,6 +4,16 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Get Purchase Request Template by ID
+  ดึงเทมเพลตใบขอซื้อเฉพาะพร้อมรายการสินค้าและจำนวนที่กำหนดไว้ล่วงหน้า ช่วยให้ผู้ใช้ตรวจสอบหรือใช้เทมเพลตสำหรับสร้างคำขอจัดซื้อใหม่
+
+  Retrieves a specific purchase request template with its predefined item list and quantities, allowing users to review or use the template for creating a new procurement request.
+
+  ### Path Parameters
+  - `id` — Template ID
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-request-template/:id
   body: none

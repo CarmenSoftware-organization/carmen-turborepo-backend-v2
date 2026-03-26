@@ -4,6 +4,16 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Credit Note Reason
+  ดึงข้อมูลเหตุผลใบลดหนี้รายการเดียวตาม ID
+
+  Retrieves a specific credit note reason configuration by its unique identifier.
+
+  ### Path Parameters
+  - `id` -- Credit note reason ID (UUID) / รหัสเหตุผลใบลดหนี้
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/credit-note-reason/:id
   body: none

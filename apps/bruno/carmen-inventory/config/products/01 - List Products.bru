@@ -4,6 +4,17 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Products
+  แสดงรายการสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Returns a paginated list of all products in the master catalog with optional search filtering.
+
+  ### Query Parameters
+  - `perpage` — Number of items per page (-1 for all)
+  - `search` — Optional search keyword
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/products?perpage=-1
   body: none

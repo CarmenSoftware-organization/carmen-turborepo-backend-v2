@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Department User
+  อัปเดตข้อมูลผู้ใช้ประจำแผนกที่มีอยู่
+
+  Updates an existing department-user assignment.
+}
+
 put {
   url: {{host}}/api/config/{{bu_code}}/department-user/:id
   body: json

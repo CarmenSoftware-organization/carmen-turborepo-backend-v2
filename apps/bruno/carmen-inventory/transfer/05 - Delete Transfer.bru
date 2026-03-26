@@ -4,6 +4,17 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Transfer
+  ลบรายการโอนย้ายสินค้าที่สร้างผิดพลาดหรือไม่ต้องการอีกต่อไป ใช้ได้เฉพาะรายการที่ยังเป็นร่างก่อนที่สินค้าจะถูกเคลื่อนย้ายจริง
+
+  Removes a transfer record that was created in error or is no longer needed. Only applicable to draft transfers before items have been physically moved.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Transfer ID / รหัสรายการโอนย้ายสินค้า
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/transfer/:id
   body: none

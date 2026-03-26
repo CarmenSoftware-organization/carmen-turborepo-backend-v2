@@ -84,7 +84,8 @@ export class Config_CreditTermController extends BaseHttpController {
       200: { description: 'Credit term retrieved successfully' },
       404: { description: 'Credit term not found' },
     },
-  })
+    'x-description-th': 'ดึงข้อมูลเงื่อนไขการชำระเงินรายการเดียวตาม ID',
+  } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -133,7 +134,8 @@ export class Config_CreditTermController extends BaseHttpController {
     operationId: 'configCreditTerm_findAll',
     tags: ['Configuration', 'Credit Term'],
     responses: { 200: { description: 'Credit terms retrieved successfully' } },
-  })
+    'x-description-th': 'แสดงรายการเงื่อนไขการชำระเงินทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -182,7 +184,8 @@ export class Config_CreditTermController extends BaseHttpController {
     operationId: 'configCreditTerm_create',
     tags: ['Configuration', 'Credit Term'],
     responses: { 201: { description: 'Credit term created successfully' } },
-  })
+    'x-description-th': 'สร้างเงื่อนไขการชำระเงินใหม่',
+  } as any)
   @ApiBody({ type: CreditTermCreateRequestDto })
   async create(
     @Req() req: Request,
@@ -235,7 +238,8 @@ export class Config_CreditTermController extends BaseHttpController {
       200: { description: 'Credit term updated successfully' },
       404: { description: 'Credit term not found' },
     },
-  })
+    'x-description-th': 'อัปเดตข้อมูลเงื่อนไขการชำระเงินที่มีอยู่',
+  } as any)
   @ApiBody({ type: CreditTermUpdateRequestDto })
   async update(
     @Req() req: Request,
@@ -293,7 +297,8 @@ export class Config_CreditTermController extends BaseHttpController {
       200: { description: 'Credit term deleted successfully' },
       404: { description: 'Credit term not found' },
     },
-  })
+    'x-description-th': 'ลบเงื่อนไขการชำระเงินตาม ID',
+  } as any)
   async delete(
     @Req() req: Request,
     @Res() res: Response,

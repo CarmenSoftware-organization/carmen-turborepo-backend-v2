@@ -4,6 +4,16 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Delete Exchange Rate
+  ลบอัตราแลกเปลี่ยนตาม ID
+
+  Removes an exchange rate record from the system.
+
+  ### Path Parameters
+  - `id` -- Exchange rate ID (UUID) / รหัสอัตราแลกเปลี่ยน
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/exchange-rate/:id
   body: none

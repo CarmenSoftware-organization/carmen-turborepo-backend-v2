@@ -4,6 +4,16 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Extra Cost Type
+  อัปเดตข้อมูลประเภทค่าใช้จ่ายเพิ่มเติมที่มีอยู่
+
+  Modifies an existing extra cost type definition.
+
+  ### Path Parameters
+  - `id` -- Extra cost type ID (UUID) / รหัสประเภทค่าใช้จ่ายเพิ่มเติม
+}
+
 patch {
   url: {{host}}/api/config/{{bu_code}}/extra-cost-type/:id
   body: json

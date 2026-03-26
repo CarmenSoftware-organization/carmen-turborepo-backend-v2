@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Department User
+  สร้างผู้ใช้ประจำแผนกใหม่
+
+  Creates a new department-user assignment.
+}
+
 post {
   url: {{host}}/api/config/{{bu_code}}/department-user
   body: json

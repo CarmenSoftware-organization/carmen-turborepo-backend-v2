@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Running Code by ID
+  ดึงข้อมูลรหัสเลขที่เอกสารอัตโนมัติเดียวตาม ID สำหรับสร้างรหัสเอกสาร (เช่น PR-001, PO-001)
+
+  Retrieves a specific auto-numbering rule configuration used to generate sequential document codes.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/running-code/:id
   body: none

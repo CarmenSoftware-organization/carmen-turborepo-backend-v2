@@ -4,6 +4,17 @@ meta {
   seq: 8
 }
 
+docs {
+  ## Approve Pending Purchase Request
+  อนุมัติใบขอซื้อในขั้นตอนเวิร์กโฟลว์ปัจจุบัน เลื่อนไปยังขั้นตอนอนุมัติถัดไป หรือทำเครื่องหมายว่าอนุมัติครบถ้วนเพื่อสร้างใบสั่งซื้อ
+
+  Approves a purchase request at the current user's workflow stage, advancing it to the next approval level or marking it as fully approved for purchase order generation.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `id` — Purchase request ID (UUID)
+}
+
 patch {
   url: {{host}}/api/my-pending/purchase-request/:bu_code/:id/approve
   body: json

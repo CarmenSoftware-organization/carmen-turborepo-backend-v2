@@ -72,7 +72,8 @@ export class TaxProfileController extends BaseHttpController {
       200: { description: 'Tax profile retrieved successfully' },
       404: { description: 'Tax profile not found' },
     },
-  })
+    'x-description-th': 'ดึงข้อมูลโปรไฟล์ภาษีรายการเดียวตาม ID',
+  } as any)
   async findOne(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -124,7 +125,8 @@ export class TaxProfileController extends BaseHttpController {
     responses: {
       200: { description: 'Tax profiles retrieved successfully' },
     },
-  })
+    'x-description-th': 'แสดงรายการโปรไฟล์ภาษีทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,

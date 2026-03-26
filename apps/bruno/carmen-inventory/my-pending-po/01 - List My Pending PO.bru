@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List My Pending Purchase Orders
+  แสดงรายการใบสั่งซื้อทั้งหมดที่รอการอนุมัติของผู้ใช้พร้อมการแบ่งหน้า ให้ผู้อนุมัติตรวจสอบและดำเนินการกับใบสั่งซื้อที่รออนุมัติ
+
+  Lists all purchase orders in the user's pending approval queue with pagination, allowing approvers to review and process vendor orders awaiting authorization before goods are procured.
+}
+
 get {
   url: {{host}}/api/my-pending/purchase-order
   body: none

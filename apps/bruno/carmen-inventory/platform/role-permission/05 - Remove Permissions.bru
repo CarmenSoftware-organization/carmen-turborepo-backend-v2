@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Remove Permissions
+  ถอนสิทธิ์ตามบทบาทหลายรายการจากบทบาทพร้อมกัน
+
+  Remove multiple permissions from a role in bulk.
+}
+
 delete {
   url: {{host}}/api-system/role-permission/remove-permissions
   body: json

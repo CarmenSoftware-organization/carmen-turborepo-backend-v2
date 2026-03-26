@@ -4,6 +4,16 @@ meta {
   seq: 7
 }
 
+docs {
+  ## Reject Purchase Request
+  ปฏิเสธใบขอซื้อในขั้นตอนการอนุมัติปัจจุบัน และส่งกลับไปยังผู้ขอพร้อมเหตุผล ใช้โดยผู้อนุมัติเมื่อคำขอไม่ตรงตามข้อกำหนดหรือข้อจำกัดงบประมาณ
+
+  Rejects a purchase request at the current approval stage, returning it to the requester with a reason. Used by approvers (HOD, Purchaser, FC, GM) when the request does not meet requirements or budget constraints.
+
+  ### Path Parameters
+  - `id` — Purchase request ID
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/purchase-request/:id/reject
   body: json

@@ -4,6 +4,17 @@ meta {
   seq: 18
 }
 
+docs {
+  ## List Good Received Notes by Vendor
+  แสดงรายการใบรับสินค้าทั้งหมดของผู้ขายรายหนึ่งพร้อมการแบ่งหน้าและตัวกรอง ใช้สำหรับตรวจสอบประวัติการส่งมอบของผู้ขายและติดตามผลการดำเนินงาน
+
+  Lists all goods receiving records for a specific vendor with pagination and filtering. Used to review a vendor's delivery history and track performance.
+
+  ### Path Parameters
+  - `vendor_id` — Vendor ID / รหัสผู้ขาย
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/good-received-note/vendor/:vendor_id
   body: none

@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Patch Delivery Point
+  อัปเดตบางฟิลด์ของจุดส่งมอบสินค้า
+
+  Partially updates specific fields of an existing delivery point.
+}
+
 patch {
   url: {{host}}/api/config/{{bu_code}}/delivery-point/:id
   body: json

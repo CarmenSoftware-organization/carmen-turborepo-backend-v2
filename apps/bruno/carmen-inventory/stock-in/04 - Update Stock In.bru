@@ -4,6 +4,17 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Stock In
+  แก้ไขรายการรับสินค้าเข้าคลังที่มีอยู่เพื่อปรับจำนวน ต้นทุน หรือรายละเอียดสินค้าก่อนที่รายการจะถูกยืนยัน ใช้เมื่อเจ้าหน้าที่ต้องแก้ไขรายการรับสินค้า
+
+  Modifies an existing stock-in record to correct quantities, costs, or item details before the transaction is finalized. Used when receiving staff need to amend an inventory addition.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Stock In ID / รหัสรายการรับสินค้าเข้าคลัง
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/stock-in/:id
   body: json

@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Location
+  ลบสถานที่/คลังสินค้าตาม ID
+
+  Deletes a location/warehouse by its unique identifier.
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/locations/:id
   body: none

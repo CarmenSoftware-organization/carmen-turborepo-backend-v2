@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Product Categories
+  แสดงรายการหมวดหมู่สินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Returns all product categories configured for the business unit.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/products/category
   body: none

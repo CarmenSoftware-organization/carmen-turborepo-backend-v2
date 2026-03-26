@@ -4,6 +4,16 @@ meta {
   seq: 16
 }
 
+docs {
+  ## List Purchase Order Details
+  แสดงรายการทั้งหมดของใบสั่งซื้อ รวมถึงรายละเอียดสินค้า จำนวนที่สั่ง ราคาต่อหน่วย และจำนวนที่รับแล้ว
+
+  Lists all line items on a purchase order including product details, ordered quantities, unit prices, and received quantities. Used to review what has been ordered and track partial deliveries.
+
+  ### Path Parameters
+  - `id` — Purchase order UUID
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-order/:id/details
   body: none

@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Price Lists (Config)
+  แสดงรายการราคาทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Returns all vendor price lists configured for the business unit with pagination and search support.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/price-list
   body: none

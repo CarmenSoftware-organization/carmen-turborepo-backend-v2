@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Register Confirm
+  ยืนยันการลงทะเบียนสำหรับผู้ใช้ที่ได้รับเชิญ โดยตรวจสอบโทเค็นการเชิญเพื่อเปิดใช้งานบัญชี
+
+  Completes the registration process for an invited user by verifying the invitation token and activating their account.
+}
+
 post {
   url: {{host}}/api/auth/register-confirm
   body: json

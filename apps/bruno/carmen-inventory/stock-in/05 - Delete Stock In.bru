@@ -4,6 +4,17 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Stock In
+  ลบรายการรับสินค้าเข้าคลังที่สร้างผิดพลาด ใช้ได้เฉพาะรายการที่ยังเป็นร่างและยังไม่ถูกยืนยันเข้าคลังสินค้า
+
+  Removes a stock-in record that was created in error. Only applicable to draft transactions that have not yet been committed to inventory.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Stock In ID / รหัสรายการรับสินค้าเข้าคลัง
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/stock-in/:id
   body: none

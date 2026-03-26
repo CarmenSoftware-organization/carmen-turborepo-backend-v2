@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Currency
+  สร้างสกุลเงินใหม่ในระบบ
+
+  Creates a new currency configuration for use in multi-currency procurement.
+}
+
 post {
   url: {{host}}/api/config/{{bu_code}}/currencies
   body: json

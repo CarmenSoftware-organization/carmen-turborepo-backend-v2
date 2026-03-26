@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Cronjobs
+  ดึงรายการงานตั้งเวลาทั้งหมดที่กำหนดค่าในระบบ เช่น การสร้างรายงานอัตโนมัติ
+
+  Returns all scheduled tasks configured in the system, such as automated report generation and periodic data synchronization.
+}
+
 get {
   url: {{host}}/api/config/cronjobs
   body: none

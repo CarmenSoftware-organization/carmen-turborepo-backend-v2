@@ -4,6 +4,16 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Purchase Request by ID
+  ดึงรายละเอียดทั้งหมดของใบขอซื้อตาม ID รวมถึงรายการสินค้า จำนวน ราคา และสถานะการอนุมัติปัจจุบัน ใช้สำหรับตรวจสอบเนื้อหาใบขอซื้อก่อนอนุมัติ ปฏิเสธ หรือแปลงเป็นใบสั่งซื้อ
+
+  Retrieves the full details of a specific purchase request including all line items, quantities, pricing, and current approval status. Used to review PR contents before approving, rejecting, or converting to a purchase order.
+
+  ### Path Parameters
+  - `id` — Purchase request ID
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-request/:id
   body: none

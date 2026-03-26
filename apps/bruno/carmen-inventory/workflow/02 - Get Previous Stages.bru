@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Previous Workflow Stages
+  ดึงขั้นตอนอนุมัติก่อนหน้าของขั้นตอนการทำงาน ใช้สำหรับตัวเลือกส่งกลับในห่วงโซ่การอนุมัติ
+
+  Retrieves the previous approval stages of a workflow relative to the current stage, used to determine revert/return-to options.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/workflow/:workflow_id/previous_stages
   body: none

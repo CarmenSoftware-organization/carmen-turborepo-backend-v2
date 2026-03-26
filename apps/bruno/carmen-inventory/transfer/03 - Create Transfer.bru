@@ -4,6 +4,16 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Transfer
+  สร้างรายการโอนย้ายสินค้าใหม่เพื่อย้ายสินค้าจากคลังต้นทางไปยังคลังปลายทาง (เช่น คลังหลักไปครัว หรือระหว่างสาขาโรงแรม) โดยระบุต้นทาง ปลายทาง และรายการสินค้าที่จะโอนย้าย
+
+  Initiates an inventory transfer to move items from one storage location to another (e.g., main warehouse to kitchen store, or between hotel properties). Specifies source, destination, and items to be transferred.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/transfer
   body: json

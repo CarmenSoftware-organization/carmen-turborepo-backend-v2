@@ -4,6 +4,17 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Store Requisition
+  อัปเดตใบเบิกสินค้าที่มีอยู่เพื่อปรับรายการสินค้า จำนวน หรือรายละเอียดอื่น ๆ ก่อนส่งเข้าสู่ขั้นตอนอนุมัติ
+
+  Modifies a store requisition to adjust requested items, quantities, or other details. Used by department staff to refine their internal stock request before submitting for approval.
+
+  ### Path Parameters
+  - `id` — Store requisition ID (UUID)
+  - `bu_code` — Business unit code
+}
+
 put {
   url: {{host}}/api/{{bu_code}}/store-requisition/:id
   body: json

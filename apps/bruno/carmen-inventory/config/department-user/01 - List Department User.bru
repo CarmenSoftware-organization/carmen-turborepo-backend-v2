@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Department Users
+  แสดงรายการผู้ใช้ประจำแผนกทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Retrieves all department-user assignments with pagination and search support.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/department-user
   body: none

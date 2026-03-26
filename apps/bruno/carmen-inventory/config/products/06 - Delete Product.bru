@@ -4,6 +4,16 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Delete Product
+  ลบสินค้าตาม ID (soft delete)
+
+  Soft-deletes a product from the master catalog. Historical records referencing it are preserved.
+
+  ### Path Parameters
+  - `id` — Product UUID (รหัสสินค้า)
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/products/:id
   body: none

@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Tax Profile
+  สร้างโปรไฟล์ภาษีใหม่
+
+  Creates a new tax rate configuration for use in procurement tax calculations.
+}
+
 post {
   url: {{host}}/api/config/{{bu_code}}/tax-profile
   body: json

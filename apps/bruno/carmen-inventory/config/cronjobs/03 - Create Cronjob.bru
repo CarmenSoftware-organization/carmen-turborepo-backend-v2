@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Cronjob
+  สร้างงานตั้งเวลาใหม่สำหรับการดำเนินการอัตโนมัติ เช่น สร้างรายงาน ล้างข้อมูล
+
+  Creates a new scheduled task with a cron schedule expression and task configuration for automating recurring operations.
+}
+
 post {
   url: {{host}}/api/config/cronjobs
   body: json

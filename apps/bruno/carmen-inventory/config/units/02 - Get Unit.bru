@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Unit
+  ดึงข้อมูลหน่วยนับรายการเดียวตาม ID
+
+  Retrieves a single unit of measurement by its unique identifier.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/units/:id
   body: none

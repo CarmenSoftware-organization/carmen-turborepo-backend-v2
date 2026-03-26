@@ -4,6 +4,16 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Submit Purchase Request
+  ส่งใบขอซื้อฉบับร่างเข้าสู่เวิร์กโฟลว์การอนุมัติ เมื่อส่งแล้วสถานะจะเปลี่ยนจากฉบับร่างเป็นรอดำเนินการ และไม่สามารถแก้ไขได้อย่างอิสระอีกต่อไป
+
+  Submits a draft purchase request into the approval workflow, making it available for review by the next approver (e.g., HOD). Once submitted, the PR moves from draft to pending status and can no longer be freely edited.
+
+  ### Path Parameters
+  - `id` — Purchase request ID
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/purchase-request/:id/submit
   body: json

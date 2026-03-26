@@ -4,6 +4,20 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Pending Store Requisitions
+  แสดงรายการใบเบิกสินค้าที่รอดำเนินการทั้งหมดของผู้ใช้ปัจจุบันพร้อมการแบ่งหน้า ช่วยให้เจ้าหน้าที่แผนกและผู้อนุมัติติดตามคำขอเบิกสินค้าผ่านขั้นตอนอนุมัติ
+
+  Lists all store requisitions in the user's pending queue with pagination, enabling department staff and approvers to track internal stock requests through the approval and fulfillment process.
+
+  ### Query Parameters
+  - `version` — API version (optional)
+  - `page` — Page number (optional)
+  - `perpage` — Items per page (optional)
+  - `search` — Search keyword (optional)
+  - `bu_code` — Business unit code filter (optional)
+}
+
 get {
   url: {{host}}/api/my-pending/store-requisition
   body: none

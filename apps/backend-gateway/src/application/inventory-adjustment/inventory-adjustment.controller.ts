@@ -65,12 +65,13 @@ export class InventoryAdjustmentController extends BaseHttpController {
     description: 'Lists all manual inventory corrections (stock-in additions and stock-out deductions) for the business unit, enabling managers to review adjustments made to resolve discrepancies from physical counts, spoilage, or other non-standard inventory movements.',
     operationId: 'findAllInventoryAdjustments',
     tags: ['Inventory', 'Inventory Adjustment'],
+    'x-description-th': 'ดึงรายการปรับปรุงสินค้าคงคลังทั้งหมด (ทั้งรับเข้าและจ่ายออก) ของหน่วยธุรกิจ ช่วยให้ผู้จัดการตรวจสอบการปรับปรุงที่ทำขึ้นเพื่อแก้ไขความคลาดเคลื่อนจากการตรวจนับ สินค้าเสียหาย หรือการเคลื่อนไหวสินค้าที่ไม่เป็นมาตรฐาน',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {
       200: { description: 'Inventory adjustments retrieved successfully' },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Req() req: Request,
@@ -112,6 +113,7 @@ export class InventoryAdjustmentController extends BaseHttpController {
     description: 'Retrieves the full details of a specific inventory adjustment (stock-in or stock-out), including affected products, quantities, and the reason for the correction, for audit review and verification.',
     operationId: 'findOneInventoryAdjustment',
     tags: ['Inventory', 'Inventory Adjustment'],
+    'x-description-th': 'ดึงรายละเอียดทั้งหมดของรายการปรับปรุงสินค้าคงคลังเฉพาะรายการ (รับเข้าหรือจ่ายออก) รวมถึงสินค้าที่ได้รับผลกระทบ จำนวน และสาเหตุของการแก้ไข สำหรับการตรวจสอบและยืนยัน',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -123,7 +125,7 @@ export class InventoryAdjustmentController extends BaseHttpController {
       400: { description: 'Type query parameter is required' },
       404: { description: 'Inventory adjustment not found' },
     },
-  })
+  } as any)
   async findOne(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,

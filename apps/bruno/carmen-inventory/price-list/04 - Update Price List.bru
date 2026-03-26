@@ -4,6 +4,16 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Price List
+  อัปเดตข้อมูลรายการราคาที่มีอยู่
+
+  Modifies an existing vendor price list such as adjusting product prices or validity dates.
+
+  ### Path Parameters
+  - `id` -- Price list ID (UUID) / รหัสรายการราคา
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/price-list/:id
   body: json

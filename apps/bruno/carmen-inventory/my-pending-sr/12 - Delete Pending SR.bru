@@ -4,6 +4,17 @@ meta {
   seq: 12
 }
 
+docs {
+  ## Delete Pending Store Requisition
+  ลบใบเบิกสินค้าที่ไม่ต้องการ โดยทั่วไปเป็นใบเบิกฉบับร่างหรือที่ถูกปฏิเสธ ที่แผนกตัดสินใจยกเลิกแทนที่จะส่งใหม่
+
+  Removes a store requisition that is no longer needed, typically a draft or rejected request that the department has decided to discard rather than resubmit.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `id` — Store requisition ID (UUID)
+}
+
 delete {
   url: {{host}}/api/my-pending/store-requisition/:bu_code/:id
   body: none

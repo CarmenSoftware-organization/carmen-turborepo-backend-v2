@@ -4,6 +4,20 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Get Inventory Adjustment
+  ดึงรายละเอียดทั้งหมดของรายการปรับปรุงสินค้าคงคลังเฉพาะรายการ (รับเข้าหรือจ่ายออก) รวมถึงสินค้าที่ได้รับผลกระทบ จำนวน และสาเหตุของการแก้ไข สำหรับการตรวจสอบและยืนยัน
+
+  Retrieves the full details of a specific inventory adjustment (stock-in or stock-out), including affected products, quantities, and the reason for the correction, for audit review and verification.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Inventory Adjustment ID / รหัสรายการปรับปรุงสินค้าคงคลัง
+
+  ### Query Parameters
+  - `type` — `stock-in` or `stock-out` (ประเภทการปรับปรุง / adjustment type, required)
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/inventory-adjustment/:id?type=stock-in
   body: none

@@ -4,6 +4,17 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Credit Note
+  ลบใบลดหนี้ที่สร้างผิดพลาด ข้อมูลใบลดหนี้ในอดีตจะถูกเก็บรักษาไว้สำหรับการตรวจสอบและรายงานทางการเงิน
+
+  Removes a credit note that was created in error. Historical credit note data is retained for audit and financial reporting purposes.
+
+  ### Path Parameters
+  - `id` — Credit note ID / รหัสใบลดหนี้
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/credit-note/:id
   body: none

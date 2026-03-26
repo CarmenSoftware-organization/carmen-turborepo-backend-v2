@@ -4,6 +4,19 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Spot Check (Current Period)
+  ดึงรายการตรวจสอบสินค้าเฉพาะจุดทั้งหมดในงวดปัจจุบัน จัดกลุ่มตามสถานที่จัดเก็บ ใช้สำหรับให้ผู้จัดการติดตามความถี่และผลลัพธ์ของการตรวจสอบสินค้าแบบสุ่ม
+
+  Lists all inventory spot checks for the current open period grouped by location, enabling managers to track the frequency and results of random stock verification activities.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+
+  ### Query Parameters
+  - `include_not_count` — รวมสถานที่ที่ไม่ตรวจนับ (default: false) / Include locations with physical_count_type=no
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/spot-check/current?include_not_count=false
   body: none

@@ -4,6 +4,17 @@ meta {
   seq: 17
 }
 
+docs {
+  ## Create GRN Comment
+  เพิ่มความคิดเห็นหรือบันทึกในใบรับสินค้า สำหรับบันทึกปัญหาการส่งมอบ ข้อสังเกตด้านคุณภาพ หรือการสื่อสารระหว่างเจ้าหน้าที่รับสินค้าและผู้จัดการ
+
+  Adds a comment or note to a goods receiving record for documenting delivery issues, quality observations, or communication between receiving staff and managers.
+
+  ### Path Parameters
+  - `id` — Good Received Note ID / รหัสใบรับสินค้า
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/good-received-note/:id/comments
   body: json

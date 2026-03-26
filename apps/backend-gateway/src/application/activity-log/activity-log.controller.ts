@@ -65,6 +65,7 @@ export class ActivityLogController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all activity logs',
     description: 'Lists all user activity records for the business unit with filtering by entity type, user, action, and date range. Used for audit trail review, compliance reporting, and investigating who performed what actions on procurement and inventory documents.',
+    'x-description-th': 'แสดงรายการบันทึกกิจกรรมทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'findAllActivityLogs',
     tags: ['Document & Log', 'Activity Log'],
     responses: {
@@ -130,12 +131,13 @@ export class ActivityLogController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get activity logs by entity type',
     description: 'Retrieves all activity records for a specific document type (e.g., purchase_request, purchase_order, good_received_note). Used to review the complete history of actions taken on a particular category of business documents.',
+    'x-description-th': 'ดึงรายการบันทึกกิจกรรมตามประเภทเอกสาร',
     operationId: 'findActivityLogsByEntity',
     tags: ['Document & Log', 'Activity Log'],
     responses: {
       200: { description: 'Activity logs retrieved successfully' },
     },
-  })
+  } as any)
   async findByEntity(
     @Param('entity_type') entity_type: string,
     @Param('bu_code') bu_code: string,
@@ -174,13 +176,14 @@ export class ActivityLogController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get an activity log by ID',
     description: 'Retrieves the full details of a single audit log entry including the user who performed the action, timestamp, affected entity, and the before/after data changes. Used for detailed investigation of specific user actions.',
+    'x-description-th': 'ดึงข้อมูลบันทึกกิจกรรมรายการเดียวตาม ID',
     operationId: 'findOneActivityLog',
     tags: ['Document & Log', 'Activity Log'],
     responses: {
       200: { description: 'Activity log retrieved successfully' },
       404: { description: 'Activity log not found' },
     },
-  })
+  } as any)
   async findOne(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -215,13 +218,14 @@ export class ActivityLogController extends BaseHttpController {
   @ApiOperation({
     summary: 'Soft delete an activity log',
     description: 'Marks an activity log entry as deleted without permanently removing it, preserving the audit trail for compliance. The entry can be restored if needed.',
+    'x-description-th': 'ลบบันทึกกิจกรรมตาม ID',
     operationId: 'deleteActivityLog',
     tags: ['Document & Log', 'Activity Log'],
     responses: {
       200: { description: 'Activity log deleted successfully' },
       404: { description: 'Activity log not found' },
     },
-  })
+  } as any)
   async delete(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -256,6 +260,7 @@ export class ActivityLogController extends BaseHttpController {
   @ApiOperation({
     summary: 'Batch soft delete activity logs',
     description: 'Marks multiple activity log entries as deleted in a single operation without permanently removing them. Used for bulk cleanup of audit records while preserving recoverability.',
+    'x-description-th': 'ลบบันทึกกิจกรรมหลายรายการพร้อมกัน',
     operationId: 'deleteManyActivityLogs',
     tags: ['Document & Log', 'Activity Log'],
     responses: {
@@ -297,13 +302,14 @@ export class ActivityLogController extends BaseHttpController {
   @ApiOperation({
     summary: 'Hard delete an activity log',
     description: 'Permanently and irreversibly removes an activity log entry from the database. Use with caution as this cannot be undone and may affect audit compliance.',
+    'x-description-th': 'ลบบันทึกกิจกรรมอย่างถาวรตาม ID',
     operationId: 'hardDeleteActivityLog',
     tags: ['Document & Log', 'Activity Log'],
     responses: {
       200: { description: 'Activity log permanently deleted' },
       404: { description: 'Activity log not found' },
     },
-  })
+  } as any)
   async hardDelete(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -338,6 +344,7 @@ export class ActivityLogController extends BaseHttpController {
   @ApiOperation({
     summary: 'Batch hard delete activity logs',
     description: 'Permanently and irreversibly removes multiple activity log entries from the database in a single operation. Use with caution as this cannot be undone and may affect audit compliance.',
+    'x-description-th': 'ลบบันทึกกิจกรรมหลายรายการอย่างถาวรพร้อมกัน',
     operationId: 'hardDeleteManyActivityLogs',
     tags: ['Document & Log', 'Activity Log'],
     responses: {

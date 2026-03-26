@@ -4,6 +4,16 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Get Workflow Stages for Store Requisition
+  ดึงขั้นตอนการอนุมัติที่กำหนดไว้สำหรับใบเบิกสินค้าในหน่วยธุรกิจ แสดงลำดับขั้นตอนอนุมัติที่คำขอเบิกสินค้าต้องผ่านก่อนดำเนินการ
+
+  Retrieves the approval workflow stages configured for store requisitions in the business unit, showing the sequence of approval steps that internal stock requests must pass through before fulfillment.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+}
+
 get {
   url: {{host}}/api/my-pending/store-requisition/:bu_code/workflow-stages
   body: none

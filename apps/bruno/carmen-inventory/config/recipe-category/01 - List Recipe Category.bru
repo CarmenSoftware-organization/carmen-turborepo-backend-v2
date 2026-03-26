@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Recipe Categories
+  ดึงรายการหมวดหมู่สูตรอาหารทั้งหมดสำหรับการจัดระเบียบเมนูและการดำเนินงานครัว
+
+  Returns all recipe categories configured for the business unit, used to organize recipes by meal type or course.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/recipe-category
   body: none

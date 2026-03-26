@@ -4,6 +4,16 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Patch Currency
+  อัปเดตข้อมูลสกุลเงินบางส่วน
+
+  Partially updates specific fields of a currency configuration.
+
+  ### Path Parameters
+  - `id` -- Currency ID (UUID) / รหัสสกุลเงิน
+}
+
 patch {
   url: {{host}}/api/config/{{bu_code}}/currencies/:id
   body: json

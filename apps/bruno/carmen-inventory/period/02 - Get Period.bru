@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Period
+  ดึงข้อมูลรอบบัญชีรายการเดียวตาม ID
+
+  Retrieve a single fiscal/accounting period by its ID.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/period/:id
   body: none

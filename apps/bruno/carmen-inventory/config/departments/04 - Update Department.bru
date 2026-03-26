@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Department
+  อัปเดตข้อมูลแผนกที่มีอยู่
+
+  Updates an existing department record.
+}
+
 patch {
   url: {{host}}/api/config/{{bu_code}}/departments/:id
   body: json

@@ -4,6 +4,16 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Price List
+  ดึงข้อมูลรายการราคารายการเดียวตาม ID
+
+  Retrieves the full details of a vendor price list including all product prices and validity dates.
+
+  ### Path Parameters
+  - `id` -- Price list ID (UUID) / รหัสรายการราคา
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/price-list/:id
   body: none

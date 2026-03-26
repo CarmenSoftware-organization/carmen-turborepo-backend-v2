@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Get Default Currency
+  ดึงข้อมูลสกุลเงินหลักเริ่มต้นของหน่วยธุรกิจ
+
+  Retrieves the default base currency for the business unit, used as the primary currency for inventory valuation and procurement cost calculations.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/currencies/default
   body: none

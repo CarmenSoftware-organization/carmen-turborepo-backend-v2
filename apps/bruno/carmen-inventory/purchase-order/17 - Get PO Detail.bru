@@ -4,6 +4,17 @@ meta {
   seq: 17
 }
 
+docs {
+  ## Get Purchase Order Detail by ID
+  ดึงรายการเดียวจากใบสั่งซื้อพร้อมรายละเอียดสินค้า ราคา และการจัดส่ง สำหรับตรวจสอบเมื่อสร้างใบรับสินค้า
+
+  Retrieves a single line item from a purchase order with full product, pricing, and delivery details. Used to inspect a specific item when creating a Good Received Note or resolving discrepancies.
+
+  ### Path Parameters
+  - `id` — Purchase order UUID
+  - `detail_id` — Detail line item UUID
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-order/:id/details/:detail_id
   body: none

@@ -4,6 +4,17 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Physical Count
+  ลบรายการตรวจนับสินค้าที่สร้างผิดพลาดหรือไม่จำเป็นแล้ว สามารถลบได้เฉพาะรายการที่อยู่ในสถานะร่างและยังไม่ได้ส่งเท่านั้น
+
+  Removes a physical count that was created in error or is no longer needed. Only draft counts that have not been submitted can be deleted.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Physical Count ID / รหัสการตรวจนับสินค้า
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/physical-count/:id
   body: none

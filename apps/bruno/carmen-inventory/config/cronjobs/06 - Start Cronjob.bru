@@ -4,6 +4,13 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Start Cronjob
+  เปิดใช้งานงานตั้งเวลาให้เริ่มทำงานตามช่วงเวลาที่กำหนด
+
+  Activates a scheduled task so it begins executing according to its cron schedule at the configured intervals.
+}
+
 post {
   url: {{host}}/api/config/cronjobs/:id/start
   body: none

@@ -4,6 +4,17 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Spot Check
+  ลบรายการตรวจสอบสินค้าเฉพาะจุดที่สร้างผิดพลาดหรือไม่จำเป็นสำหรับการควบคุมคุณภาพสินค้าคงคลังอีกต่อไป
+
+  Removes a spot check that was created in error or is no longer required for inventory quality control.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Spot Check ID / รหัสการตรวจสอบสินค้าเฉพาะจุด
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/spot-check/:id
   body: none

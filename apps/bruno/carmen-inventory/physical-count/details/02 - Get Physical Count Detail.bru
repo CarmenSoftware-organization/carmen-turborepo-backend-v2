@@ -4,6 +4,18 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Physical Count Detail
+  ดึงรายการสินค้าเฉพาะรายการหนึ่งจากการตรวจนับสินค้า รวมถึงจำนวนในระบบ จำนวนที่นับได้จริง และผลต่าง สำหรับการตรวจสอบรายละเอียด
+
+  Retrieves a specific product line item from a physical count, including its system quantity, actual counted quantity, and any variance for detailed investigation.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Physical Count ID / รหัสการตรวจนับสินค้า
+  - `detail_id` — Physical Count Detail ID / รหัสรายละเอียดการตรวจนับ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/physical-count/:id/details/:detail_id
   body: none

@@ -62,6 +62,7 @@ export class ApplicationRoleController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all application roles',
     description: 'Lists all named role bundles defined in the ERP platform, such as Admin, Purchaser, HOD, or General Manager. These roles group permissions together to simplify user access management across hotel properties.',
+    'x-description-th': 'แสดงรายการบทบาททั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'platformRole_findAll',
     tags: ['Platform Admin', 'Application Role'],
     deprecated: false,
@@ -86,7 +87,7 @@ export class ApplicationRoleController extends BaseHttpController {
         description: 'Unauthorized',
       },
     },
-  })
+  } as any)
   async findAll(
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -123,6 +124,7 @@ export class ApplicationRoleController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get application role by ID',
     description: 'Retrieves the details of a specific application role, including its name and associated metadata. Used to inspect role configuration before assigning it to users or modifying its permissions.',
+    'x-description-th': 'ดึงข้อมูลบทบาทรายการเดียวตาม ID',
     operationId: 'platformRole_findOne',
     tags: ['Platform Admin', 'Application Role'],
     deprecated: false,
@@ -156,7 +158,7 @@ export class ApplicationRoleController extends BaseHttpController {
         description: 'Application role not found',
       },
     },
-  })
+  } as any)
   async findOne(
     @Res() res: Response,
     @Param('id') id: string,
@@ -194,6 +196,7 @@ export class ApplicationRoleController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create new application role',
     description: 'Creates a new named role bundle in the ERP platform, such as a custom department head or property-specific role. After creation, permissions can be assigned to this role to define what actions users with this role can perform.',
+    'x-description-th': 'สร้างบทบาทใหม่',
     operationId: 'platformRole_create',
     tags: ['Platform Admin', 'Application Role'],
     deprecated: false,
@@ -221,7 +224,7 @@ export class ApplicationRoleController extends BaseHttpController {
         description: 'Unauthorized',
       },
     },
-  })
+  } as any)
   async create(
     @Res() res: Response,
     @Body() createApplicationRoleDto: CreateApplicationRoleDto,
@@ -268,6 +271,7 @@ export class ApplicationRoleController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update application role',
     description: 'Modifies an existing application role definition, such as renaming it or updating its metadata. This affects all users assigned to this role across the platform.',
+    'x-description-th': 'อัปเดตข้อมูลบทบาทที่มีอยู่',
     operationId: 'platformRole_update',
     tags: ['Platform Admin', 'Application Role'],
     deprecated: false,
@@ -304,7 +308,7 @@ export class ApplicationRoleController extends BaseHttpController {
         description: 'Application role not found',
       },
     },
-  })
+  } as any)
   async update(
     @Res() res: Response,
     @Param('id') id: string,
@@ -349,6 +353,7 @@ export class ApplicationRoleController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete application role',
     description: 'Removes an application role from the platform. Users previously assigned this role will lose the associated permissions, so ensure affected users are reassigned to appropriate roles beforehand.',
+    'x-description-th': 'ลบบทบาทตาม ID',
     operationId: 'platformRole_delete',
     tags: ['Platform Admin', 'Application Role'],
     deprecated: false,
@@ -382,7 +387,7 @@ export class ApplicationRoleController extends BaseHttpController {
         description: 'Application role not found',
       },
     },
-  })
+  } as any)
   async delete(
     @Res() res: Response,
     @Param('id') id: string,

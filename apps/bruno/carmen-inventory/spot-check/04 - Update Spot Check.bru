@@ -4,6 +4,17 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Spot Check
+  แก้ไขรายการตรวจสอบสินค้าเฉพาะจุดก่อนการส่ง เช่น อัปเดตสถานที่หรือปรับสินค้าที่ต้องการตรวจสอบ
+
+  Modifies a spot check record before submission, such as updating the location or adjusting which products are included in the verification.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Spot Check ID / รหัสการตรวจสอบสินค้าเฉพาะจุด
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/spot-check/:id
   body: json

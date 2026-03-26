@@ -4,6 +4,17 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Transfer by ID
+  ดึงรายละเอียดทั้งหมดของรายการโอนย้ายสินค้าตาม ID รวมถึงสถานที่ต้นทางและปลายทาง รายการสินค้าที่ถูกย้าย และจำนวน ใช้สำหรับตรวจสอบหรือยืนยันการโอนย้ายระหว่างคลัง
+
+  Retrieves the full details of an inventory transfer including source and destination locations, all items being moved, and their quantities. Used to review or verify a transfer between stores or departments.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Transfer ID / รหัสรายการโอนย้ายสินค้า
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/transfer/:id
   body: none

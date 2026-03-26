@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Adjustment Type
+  ดึงข้อมูลประเภทการปรับปรุงรายการเดียวตาม ID
+
+  Retrieves a single adjustment type by its unique identifier.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/adjustment-type/:id
   body: none

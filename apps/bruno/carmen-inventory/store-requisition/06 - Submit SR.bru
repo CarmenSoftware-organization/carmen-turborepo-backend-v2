@@ -4,6 +4,17 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Submit Store Requisition
+  ส่งใบเบิกสินค้าฉบับร่างเข้าสู่ขั้นตอนอนุมัติ เมื่อส่งแล้วสถานะจะเปลี่ยนจากร่างเป็นรออนุมัติ และเข้าสู่ลำดับการอนุมัติที่กำหนดไว้
+
+  Submits a draft store requisition into the approval workflow, making it visible to approvers. Once submitted, the SR moves from draft to pending status and enters the configured approval chain.
+
+  ### Path Parameters
+  - `id` — Store requisition ID (UUID)
+  - `bu_code` — Business unit code
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/store-requisition/:id/submit
   body: json

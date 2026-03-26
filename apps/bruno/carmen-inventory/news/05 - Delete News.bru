@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete News
+  ลบข่าวสารตาม ID
+
+  Delete a news article by its ID.
+}
+
 delete {
   url: {{host}}/api/news/:id
   body: none

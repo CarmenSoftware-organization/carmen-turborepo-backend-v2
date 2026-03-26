@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Delete User Application Role
+  ลบบทบาทของผู้ใช้ในระบบตาม ID
+
+  Removes an application role assignment from a user.
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/user-application-roles
   body: none

@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Vendor
+  ดึงข้อมูลผู้ขายรายการเดียวตาม ID
+
+  Retrieves a single vendor/supplier record by its unique identifier.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/vendors/:id
   body: none

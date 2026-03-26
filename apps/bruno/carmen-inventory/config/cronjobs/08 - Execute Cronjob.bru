@@ -4,6 +4,13 @@ meta {
   seq: 8
 }
 
+docs {
+  ## Execute Cronjob Immediately
+  เรียกใช้งานตั้งเวลาทันทีโดยข้ามตารางเวลา cron สำหรับการทดสอบหรือการดำเนินการเร่งด่วน
+
+  Manually triggers a scheduled task to run immediately, bypassing the cron schedule. Useful for testing or urgent operations.
+}
+
 post {
   url: {{host}}/api/config/cronjobs/:id/execute
   body: none

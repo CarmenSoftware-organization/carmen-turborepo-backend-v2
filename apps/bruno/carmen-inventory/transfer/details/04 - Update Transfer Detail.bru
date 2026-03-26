@@ -4,6 +4,18 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Transfer Detail
+  แก้ไขรายการย่อยของรายการโอนย้ายที่เป็นร่าง เพื่อปรับสินค้า จำนวน หรือรายละเอียดอื่นๆ ก่อนที่การเคลื่อนย้ายสินค้าคงคลังจะถูกดำเนินการ
+
+  Modifies an item line on a draft transfer to correct the product, quantity, or other details before the inventory movement is executed.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Transfer ID / รหัสรายการโอนย้ายสินค้า
+  - `detail_id` — Transfer Detail ID / รหัสรายการย่อยโอนย้ายสินค้า
+}
+
 put {
   url: {{host}}/api/{{bu_code}}/transfer/:id/details/:detail_id
   body: json

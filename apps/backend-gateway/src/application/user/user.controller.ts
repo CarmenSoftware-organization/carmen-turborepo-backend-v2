@@ -64,6 +64,7 @@ export class UserController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get user profile',
     description: 'Retrieves the authenticated user\'s profile information including name, contact details, assigned business units, and role within the hotel ERP system.',
+    'x-description-th': 'ดึงข้อมูลโปรไฟล์ของผู้ใช้ที่เข้าสู่ระบบ',
     operationId: 'getUserProfile',
     tags: ['User & Access', 'User'],
     deprecated: false,
@@ -84,7 +85,7 @@ export class UserController extends BaseHttpController {
         description: 'User profile retrieved successfully',
       },
     },
-  })
+  } as any)
   async profile(
     @Req() req: Request,
     @Res() res: Response,
@@ -118,6 +119,7 @@ export class UserController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get user permissions',
     description: 'Retrieves the authenticated user\'s permission set, defining which procurement modules, inventory operations, and approval actions the user is authorized to perform within the ERP system.',
+    'x-description-th': 'ดึงข้อมูลสิทธิ์การใช้งานของผู้ใช้ที่เข้าสู่ระบบ',
     operationId: 'getUserPermission',
     tags: ['User & Access', 'User'],
     deprecated: false,
@@ -137,7 +139,7 @@ export class UserController extends BaseHttpController {
         description: 'Unauthorized',
       },
     },
-  })
+  } as any)
   async getPermission(
     @Req() req: Request,
     @Res() res: Response,
@@ -181,6 +183,7 @@ export class UserController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all users in tenant',
     description: 'Lists all users assigned to the current business unit (tenant), used for administrative purposes such as managing staff access, assigning roles, and configuring approval workflows.',
+    'x-description-th': 'แสดงรายการผู้ใช้ทั้งหมดในหน่วยธุรกิจปัจจุบัน',
     operationId: 'getAllUserInTenant',
     tags: ['User & Access', 'User'],
     deprecated: false,
@@ -194,7 +197,7 @@ export class UserController extends BaseHttpController {
         description: 'Users list retrieved successfully',
       },
     },
-  })
+  } as any)
   async getAllUserInTenant(
     @Req() req: Request,
     @Res() res: Response,
@@ -241,6 +244,7 @@ export class UserController extends BaseHttpController {
     summary: 'Update user profile by ID',
     description:
       'Updates a user\'s profile information (name, contact details) in both the identity provider and the ERP database, ensuring consistent user data across the hotel procurement system.',
+    'x-description-th': 'อัปเดตข้อมูลผู้ใช้ที่มีอยู่',
     operationId: 'updateUserById',
     tags: ['User & Access', 'User'],
     deprecated: false,

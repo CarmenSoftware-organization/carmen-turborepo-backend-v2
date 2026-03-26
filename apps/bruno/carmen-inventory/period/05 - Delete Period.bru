@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Period
+  ลบรอบบัญชีตาม ID
+
+  Delete a fiscal/accounting period by its ID.
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/period/:id
   body: none

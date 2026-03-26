@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Unit Comment
+  ดึงข้อมูลหมายเหตุหน่วยนับรายการเดียวตาม ID
+
+  Retrieves a single unit comment template by its unique identifier.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/unit-comment/:id
   body: none

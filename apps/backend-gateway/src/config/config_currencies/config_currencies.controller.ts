@@ -102,7 +102,8 @@ export class Config_CurrenciesController extends BaseHttpController {
         description: 'Currency not found',
       },
     },
-  })
+    'x-description-th': 'ดึงข้อมูลสกุลเงินรายการเดียวตาม ID',
+  } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -170,7 +171,8 @@ export class Config_CurrenciesController extends BaseHttpController {
         description: 'Currencies not found',
       },
     },
-  })
+    'x-description-th': 'แสดงรายการสกุลเงินทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
@@ -237,7 +239,8 @@ export class Config_CurrenciesController extends BaseHttpController {
         description: 'Currency created successfully',
       },
     },
-  })
+    'x-description-th': 'สร้างสกุลเงินใหม่',
+  } as any)
   @ApiBody({ type: CurrencyCreateRequestDto })
   async create(
     @Req() req: Request,
@@ -312,7 +315,8 @@ export class Config_CurrenciesController extends BaseHttpController {
         description: 'Currency not found',
       },
     },
-  })
+    'x-description-th': 'อัปเดตข้อมูลสกุลเงินที่มีอยู่',
+  } as any)
   @ApiBody({ type: CurrencyUpdateRequestDto })
   async update(
     @Req() req: Request,
@@ -393,7 +397,8 @@ export class Config_CurrenciesController extends BaseHttpController {
         description: 'Currency not found',
       },
     },
-  })
+    'x-description-th': 'อัปเดตข้อมูลสกุลเงินบางส่วน',
+  } as any)
   @ApiBody({ type: CurrencyUpdateRequestDto })
   async patch(
     @Req() req: Request,
@@ -465,7 +470,8 @@ export class Config_CurrenciesController extends BaseHttpController {
         description: 'Currency deleted successfully',
       },
     },
-  })
+    'x-description-th': 'ลบสกุลเงินตาม ID',
+  } as any)
   async delete(
     @Req() req: Request,
     @Res() res: Response,

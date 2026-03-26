@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Create Product
+  สร้างสินค้าใหม่ในระบบพร้อมข้อมูลหน่วยสั่งซื้อ หน่วยส่วนผสม และสถานที่จัดเก็บ
+
+  Adds a new product to the master catalog with its SKU, description, category, order units, ingredient units, and location assignments.
+}
+
 post {
   url: {{host}}/api/config/{{bu_code}}/products
   body: json

@@ -4,6 +4,17 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Spot Check
+  ดึงรายละเอียดทั้งหมดของการตรวจสอบสินค้าเฉพาะจุด รวมถึงสถานที่เป้าหมาย สินค้าที่เลือก และจำนวนที่บันทึก สำหรับการตรวจสอบคุณภาพ
+
+  Retrieves the full details of a random inventory spot check, including the target location, selected products, and recorded quantities for quality-control review.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Spot Check ID / รหัสการตรวจสอบสินค้าเฉพาะจุด
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/spot-check/:id
   body: none

@@ -4,6 +4,17 @@ meta {
   seq: 7
 }
 
+docs {
+  ## Submit Pending Purchase Request
+  ส่งใบขอซื้อฉบับร่างเข้าสู่ขั้นตอนอนุมัติ สถานะจะเปลี่ยนจากร่างไปยังขั้นตอนอนุมัติแรกเพื่อให้ผู้อนุมัติที่กำหนดพิจารณาคำขอจัดซื้อ
+
+  Submits a draft purchase request into the approval workflow, moving it from draft status to the first approval stage where designated approvers will review the procurement request.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `id` — Purchase request ID (UUID)
+}
+
 patch {
   url: {{host}}/api/my-pending/purchase-request/:bu_code/:id/submit
   body: json

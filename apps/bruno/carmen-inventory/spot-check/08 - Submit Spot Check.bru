@@ -4,6 +4,17 @@ meta {
   seq: 8
 }
 
+docs {
+  ## Submit Spot Check
+  ส่งการตรวจสอบสินค้าเฉพาะจุดขั้นสุดท้าย บันทึกจำนวนที่ตรวจสอบแล้วเป็นผลลัพธ์อย่างเป็นทางการ ความคลาดเคลื่อนที่พบอาจนำไปสู่การตรวจสอบเพิ่มเติมหรือการปรับปรุงสินค้าคงคลัง
+
+  Finalizes a spot check by recording the verified quantities as the official result. Discrepancies found may trigger further investigation or inventory adjustments.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Spot Check ID / รหัสการตรวจสอบสินค้าเฉพาะจุด
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/spot-check/:id/submit
   body: none

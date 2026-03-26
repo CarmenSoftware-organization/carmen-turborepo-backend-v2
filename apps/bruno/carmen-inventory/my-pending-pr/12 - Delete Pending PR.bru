@@ -4,6 +4,17 @@ meta {
   seq: 12
 }
 
+docs {
+  ## Delete Pending Purchase Request
+  ลบใบขอซื้อที่ไม่ต้องการ โดยทั่วไปเป็นใบขอฉบับร่างหรือที่ถูกปฏิเสธ ที่ผู้ขอตัดสินใจยกเลิกแทนที่จะส่งใหม่
+
+  Removes a purchase request that is no longer needed, typically a draft or rejected request that the requestor has decided to discard rather than resubmit.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `id` — Purchase request ID (UUID)
+}
+
 delete {
   url: {{host}}/api/my-pending/purchase-request/:bu_code/:id
   body: none

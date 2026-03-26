@@ -4,6 +4,17 @@ meta {
   seq: 10
 }
 
+docs {
+  ## Reject Pending Store Requisition
+  ปฏิเสธใบเบิกสินค้าในขั้นตอนอนุมัติปัจจุบัน ส่งกลับไปยังแผนกที่ขอเพื่อแก้ไขหรือยกเลิก
+
+  Rejects a store requisition at the current approval stage, sending it back to the requesting department for revision or cancellation.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `id` — Store requisition ID (UUID)
+}
+
 patch {
   url: {{host}}/api/my-pending/store-requisition/:bu_code/:id/reject
   body: json

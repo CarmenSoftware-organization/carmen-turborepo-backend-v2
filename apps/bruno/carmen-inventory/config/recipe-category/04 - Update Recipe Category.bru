@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Recipe Category
+  อัปเดตหมวดหมู่สูตรอาหารทั้งหมด เช่น เปลี่ยนชื่อหมวดหมู่
+
+  Fully updates an existing recipe category. Changes affect how recipes are organized and filtered in the catalog.
+}
+
 put {
   url: {{host}}/api/config/{{bu_code}}/recipe-category/:id
   body: json

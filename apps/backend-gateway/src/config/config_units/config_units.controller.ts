@@ -74,7 +74,8 @@ export class Config_UnitsController extends BaseHttpController {
     operationId: 'configUnits_findOne',
     tags: ['Configuration', 'Units'],
     responses: { 200: { description: 'Unit retrieved successfully' } },
-  })
+    'x-description-th': 'ดึงข้อมูลหน่วยนับรายการเดียวตาม ID',
+  } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -117,7 +118,8 @@ export class Config_UnitsController extends BaseHttpController {
     operationId: 'configUnits_findAll',
     tags: ['Configuration', 'Units'],
     responses: { 200: { description: 'Units retrieved successfully' } },
-  })
+    'x-description-th': 'แสดงรายการหน่วยนับทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -165,7 +167,8 @@ export class Config_UnitsController extends BaseHttpController {
     operationId: 'configUnits_create',
     tags: ['Configuration', 'Units'],
     responses: { 201: { description: 'Unit created successfully' } },
-  })
+    'x-description-th': 'สร้างหน่วยนับใหม่',
+  } as any)
   @ApiBody({ type: UnitCreateRequestDto })
   async create(
     @Req() req: Request,
@@ -214,7 +217,8 @@ export class Config_UnitsController extends BaseHttpController {
     operationId: 'configUnits_update',
     tags: ['Configuration', 'Units'],
     responses: { 200: { description: 'Unit updated successfully' } },
-  })
+    'x-description-th': 'อัปเดตข้อมูลหน่วยนับที่มีอยู่',
+  } as any)
   @ApiBody({ type: UnitUpdateRequestDto })
   async update(
     @Req() req: Request,
@@ -263,7 +267,8 @@ export class Config_UnitsController extends BaseHttpController {
     operationId: 'configUnits_delete',
     tags: ['Configuration', 'Units'],
     responses: { 200: { description: 'Unit deleted successfully' } },
-  })
+    'x-description-th': 'ลบหน่วยนับตาม ID',
+  } as any)
   async delete(
     @Req() req: Request,
     @Res() res: Response,

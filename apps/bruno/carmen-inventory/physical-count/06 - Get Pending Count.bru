@@ -4,6 +4,13 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Get Pending Physical Count Count
+  ดึงจำนวนการตรวจนับสินค้าที่รอให้ผู้ใช้ปัจจุบันบันทึกจำนวนสินค้าจริง ใช้สำหรับแสดงการแจ้งเตือนบนแดชบอร์ดและจัดลำดับความสำคัญงาน
+
+  Returns the count of physical inventory counts awaiting the current user to record actual stock quantities, used to drive dashboard notifications and task prioritization.
+}
+
 get {
   url: {{host}}/api/physical-count/pending
   body: none

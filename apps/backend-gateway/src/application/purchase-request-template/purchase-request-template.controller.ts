@@ -67,7 +67,8 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
     responses: {
       200: { description: 'Templates retrieved successfully' },
     },
-  })
+    'x-description-th': 'แสดงรายการเทมเพลตใบขอซื้อที่ใช้ซ้ำได้ทั้งหมดในหน่วยธุรกิจ เช่น การสั่งซื้อวัตถุดิบครัวประจำสัปดาห์หรือการเติมสต็อกแม่บ้าน ช่วยให้สร้างคำขอจัดซื้อประจำได้รวดเร็ว',
+  } as any)
   async getPurchaseRequestTemplate(
     @Req() req: Request,
     @Res() res: Response,
@@ -116,7 +117,8 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
       200: { description: 'Template retrieved successfully' },
       404: { description: 'Template not found' },
     },
-  })
+    'x-description-th': 'ดึงเทมเพลตใบขอซื้อเฉพาะพร้อมรายการสินค้าและจำนวนที่กำหนดไว้ล่วงหน้า ช่วยให้ผู้ใช้ตรวจสอบหรือใช้เทมเพลตสำหรับสร้างคำขอจัดซื้อใหม่',
+  } as any)
   async getPurchaseRequestTemplateById(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -164,7 +166,8 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
       201: { description: 'Template created successfully' },
       400: { description: 'Bad request' },
     },
-  })
+    'x-description-th': 'สร้างเทมเพลตใบขอซื้อใหม่ที่ใช้ซ้ำได้พร้อมรายการสินค้าและจำนวนที่กำหนดไว้ล่วงหน้า ช่วยลดขั้นตอนการจัดซื้อซ้ำ เช่น การสั่งซื้อวัตถุดิบครัวประจำสัปดาห์',
+  } as any)
   @ApiBody({ type: CreatePurchaseRequestTemplateDto })
   async createPurchaseRequestTemplate(
     @Body() createPurchaseRequestTemplateDto: CreatePurchaseRequestTemplateDto,
@@ -213,7 +216,8 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
       200: { description: 'Template updated successfully' },
       404: { description: 'Template not found' },
     },
-  })
+    'x-description-th': 'แก้ไขเทมเพลตใบขอซื้อที่มีอยู่เพื่อปรับรายการสินค้า จำนวน หรือชื่อเทมเพลต ช่วยให้เทมเพลตการจัดซื้อที่ใช้ซ้ำสอดคล้องกับความต้องการสั่งซื้อปัจจุบัน',
+  } as any)
   @ApiBody({ type: UpdatePurchaseRequestTemplateDto })
   async updatePurchaseRequestTemplate(
     @Param('bu_code') bu_code: string,
@@ -263,7 +267,8 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
       200: { description: 'Template deleted successfully' },
       404: { description: 'Template not found' },
     },
-  })
+    'x-description-th': 'ลบเทมเพลตใบขอซื้อที่ไม่จำเป็นอีกต่อไป ป้องกันไม่ให้พนักงานใช้ชุดสินค้าที่ล้าสมัยหรือยกเลิกแล้วสำหรับคำขอจัดซื้อใหม่',
+  } as any)
   async deletePurchaseRequestTemplate(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,

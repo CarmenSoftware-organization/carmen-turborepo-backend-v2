@@ -4,6 +4,16 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Vendor Product
+  ดึงข้อมูลสินค้าของผู้ขายรายการเดียวตาม ID
+
+  Retrieves a specific vendor-product mapping including pricing and supply terms.
+
+  ### Path Parameters
+  - `id` — Vendor Product UUID (รหัสสินค้าของผู้ขาย)
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/vendor-product/:id
   body: none

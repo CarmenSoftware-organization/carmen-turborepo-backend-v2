@@ -4,6 +4,16 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Purchase Request Comments
+  แสดงกระทู้สนทนาทั้งหมดของใบขอซื้อ ช่วยให้ผู้ขอและผู้อนุมัติตรวจสอบบันทึกการทำงานร่วมกัน คำขอชี้แจง และข้อคิดเห็นเกี่ยวกับการอนุมัติ
+
+  Retrieves the full discussion thread on a purchase request, enabling requestors and approvers to review collaboration notes, clarification requests, and approval-related feedback.
+
+  ### Path Parameters
+  - `purchase_request_id` — Purchase request ID
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-request/:purchase_request_id/comment
   body: none

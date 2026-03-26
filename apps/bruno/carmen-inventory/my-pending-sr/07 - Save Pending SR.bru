@@ -4,6 +4,17 @@ meta {
   seq: 7
 }
 
+docs {
+  ## Save Pending Store Requisition
+  บันทึกการเปลี่ยนแปลงใบเบิกสินค้าฉบับร่าง ช่วยให้ผู้ขอสามารถแก้ไขรายการสินค้า จำนวน หรือรายละเอียดการจัดส่งก่อนส่งเข้าขั้นตอนอนุมัติ
+
+  Saves changes to a draft store requisition, allowing the requestor to modify requested items, quantities, or delivery details before submitting for approval.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `id` — Store requisition ID (UUID)
+}
+
 patch {
   url: {{host}}/api/my-pending/store-requisition/:bu_code/:id/save
   body: json

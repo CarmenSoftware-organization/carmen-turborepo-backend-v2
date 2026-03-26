@@ -4,6 +4,16 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Product Sub Category
+  ดึงข้อมูลหมวดหมู่ย่อยสินค้ารายการเดียวตาม ID
+
+  Retrieves a specific product sub-category by its ID.
+
+  ### Path Parameters
+  - `id` — Product Sub Category UUID (รหัสหมวดหมู่ย่อยสินค้า)
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/products/sub-category/:id
   body: none

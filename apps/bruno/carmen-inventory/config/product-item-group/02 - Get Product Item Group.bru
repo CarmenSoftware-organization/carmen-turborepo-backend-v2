@@ -4,6 +4,16 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Product Item Group
+  ดึงข้อมูลกลุ่มรายการสินค้ารายการเดียวตาม ID
+
+  Retrieves a specific product item group by its ID.
+
+  ### Path Parameters
+  - `id` — Product Item Group UUID (รหัสกลุ่มรายการสินค้า)
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/products/item-group/:id
   body: none

@@ -4,6 +4,16 @@ meta {
   seq: 1
 }
 
+docs {
+  ## Get Product Location
+  ดึงข้อมูลสินค้าตามสถานที่โดยใช้รหัสสินค้า แสดงสถานที่จัดเก็บทั้งหมดที่ผูกกับสินค้า
+
+  Retrieves all product-location mappings for a specific product, including location details and quantity settings.
+
+  ### Path Parameters
+  - `productId` — Product UUID (รหัสสินค้า)
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/product/location/:productId
   body: none

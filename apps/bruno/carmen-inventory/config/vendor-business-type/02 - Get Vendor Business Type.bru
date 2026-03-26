@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Vendor Business Type
+  ดึงข้อมูลประเภทธุรกิจผู้ขายรายการเดียวตาม ID
+
+  Retrieves a single vendor business type classification by its unique identifier.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/vendor-business-type/:id
   body: none

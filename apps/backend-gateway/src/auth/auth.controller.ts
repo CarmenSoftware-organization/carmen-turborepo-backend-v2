@@ -98,7 +98,8 @@ export class AuthController {
         description: 'Unauthorized',
       },
     },
-  })
+    'x-description-th': 'เข้าสู่ระบบ - ยืนยันตัวตนผู้ใช้ด้วยอีเมลหรือชื่อผู้ใช้และรหัสผ่านผ่าน Keycloak เพื่อรับโทเค็น JWT สำหรับเรียก API ทุกโมดูล ERP',
+  } as any)
   async login(
     @Body() loginDto: LoginDto,
     @Query('version') version: string = 'latest',
@@ -165,7 +166,8 @@ export class AuthController {
         description: 'Unauthorized',
       },
     },
-  })
+    'x-description-th': 'ออกจากระบบ - สิ้นสุดเซสชันผู้ใช้โดยยกเลิกโทเค็น Keycloak เพื่อป้องกันการเข้าถึงทรัพยากร ERP จนกว่าจะเข้าสู่ระบบอีกครั้ง',
+  } as any)
   async logout(
     @Query('version') version: string = 'latest',
     @Body() body: Record<string, unknown>,
@@ -247,7 +249,8 @@ export class AuthController {
         description: 'User already exists',
       },
     },
-  })
+    'x-description-th': 'ลงทะเบียน - สร้างบัญชีผู้ใช้ใหม่ใน Keycloak และแพลตฟอร์ม Carmen สำหรับเพิ่มพนักงานโรงแรมเข้าสู่ระบบ ERP',
+  } as any)
   async register(
     @Body() registerDto: RegisterDto,
     @Query('version') version: string = 'latest',
@@ -304,7 +307,8 @@ export class AuthController {
         description: 'Unauthorized',
       },
     },
-  })
+    'x-description-th': 'เชิญผู้ใช้ - ส่งคำเชิญไปยังผู้ใช้ใหม่เพื่อเข้าร่วมแพลตฟอร์ม Carmen ERP โดยผู้ใช้จะได้รับลิงก์ลงทะเบียนทางอีเมล',
+  } as any)
   async inviteUser(
     @Body() inviteUserDto: InviteUserDto,
     @Query('version') version: string = 'latest',
@@ -358,7 +362,8 @@ export class AuthController {
         description: 'Unauthorized',
       },
     },
-  })
+    'x-description-th': 'ยืนยันการลงทะเบียน - ดำเนินการลงทะเบียนให้เสร็จสมบูรณ์สำหรับผู้ใช้ที่ได้รับเชิญ โดยตรวจสอบโทเค็นการเชิญและเปิดใช้งานบัญชี',
+  } as any)
   async registerConfirm(
     @Body() registerConfirmDto: RegisterConfirmDto,
     @Query('version') version: string = 'latest',
@@ -430,7 +435,8 @@ export class AuthController {
         description: 'Unauthorized',
       },
     },
-  })
+    'x-description-th': 'รีเฟรชโทเค็น - แลกเปลี่ยน refresh token เพื่อรับ access token ใหม่ โดยไม่ต้องเข้าสู่ระบบอีกครั้ง',
+  } as any)
   async refreshToken(
     @Body() refreshTokenDto: Record<string, unknown>,
     @Query('version') version: string = 'latest',
@@ -491,7 +497,8 @@ export class AuthController {
         description: 'User not found',
       },
     },
-  })
+    'x-description-th': 'ลืมรหัสผ่าน - เริ่มกระบวนการกู้คืนรหัสผ่านโดยส่งอีเมลรีเซ็ตพร้อมโทเค็นที่ปลอดภัยไปยังอีเมลที่ลงทะเบียนไว้',
+  } as any)
   async forgotPassword(
     @Body() forgotPasswordDto: ForgotPasswordDto,
     @Query('version') version: string = 'latest',
@@ -555,7 +562,8 @@ export class AuthController {
         description: 'Token not found',
       },
     },
-  })
+    'x-description-th': 'รีเซ็ตรหัสผ่านด้วยโทเค็น - ตั้งรหัสผ่านใหม่โดยใช้โทเค็นแบบใช้ครั้งเดียวที่ได้รับทางอีเมล โทเค็นมีกำหนดเวลาใช้งาน',
+  } as any)
   async resetPasswordWithToken(
     @Body() resetPasswordWithTokenDto: ResetPasswordWithTokenDto,
     @Query('version') version: string = 'latest',
@@ -643,7 +651,8 @@ export class AuthController {
         description: 'User not found',
       },
     },
-  })
+    'x-description-th': 'รีเซ็ตรหัสผ่าน - ผู้ดูแลระบบสามารถรีเซ็ตรหัสผ่านของผู้ใช้รายอื่นโดยไม่ต้องใช้รหัสผ่านปัจจุบัน สำหรับกรณีที่พนักงานโรงแรมถูกล็อกบัญชี',
+  } as any)
   async resetPassword(
     @Body() resetPasswordDto: ResetPasswordDto,
     @Query('version') version: string = 'latest',
@@ -715,7 +724,8 @@ export class AuthController {
         description: 'Unauthorized',
       },
     },
-  })
+    'x-description-th': 'เปลี่ยนรหัสผ่าน - ผู้ใช้ที่เข้าสู่ระบบสามารถเปลี่ยนรหัสผ่านของตนเองโดยระบุรหัสผ่านปัจจุบันเพื่อยืนยัน',
+  } as any)
   async changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
     @Req() req: Request,
@@ -773,7 +783,8 @@ export class AuthController {
         description: 'Users retrieved successfully',
       },
     },
-  })
+    'x-description-th': 'ดึงข้อมูลผู้ใช้ทั้งหมด (ทดสอบ) - ดึงรายชื่อผู้ใช้ทั้งหมดในแพลตฟอร์มสำหรับทดสอบการแจ้งเตือน endpoint นี้สำหรับพัฒนา/ทดสอบเท่านั้น',
+  } as any)
   async getAllUsers(@Query('version') version: string = 'latest') {
     // get all user in tb_user
     return this.authService.getAllUsers(version);

@@ -4,6 +4,19 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get On Hand by Product
+  ดึงจำนวนสินค้าคงเหลือของสินค้าในทุกสถานที่หรือกรองตามสถานที่ที่ระบุ
+
+  Retrieves the on-hand inventory balance for a product across all locations, or filtered by a specific location.
+
+  ### Path Parameters
+  - `product_id` — Product UUID (รหัสสินค้า)
+
+  ### Query Parameters
+  - `location_id` — Optional Location UUID to filter (รหัสสถานที่สำหรับกรอง)
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/products/:product_id/on-hand
   body: none

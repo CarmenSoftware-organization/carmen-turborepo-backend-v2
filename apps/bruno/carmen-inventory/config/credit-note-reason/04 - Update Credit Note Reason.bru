@@ -4,6 +4,16 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Credit Note Reason
+  อัปเดตข้อมูลเหตุผลใบลดหนี้ที่มีอยู่ (แทนที่ทั้งหมด)
+
+  Fully replaces a credit note reason configuration.
+
+  ### Path Parameters
+  - `id` -- Credit note reason ID (UUID) / รหัสเหตุผลใบลดหนี้
+}
+
 put {
   url: {{host}}/api/config/{{bu_code}}/credit-note-reason/:id
   body: json

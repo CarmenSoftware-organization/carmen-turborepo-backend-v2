@@ -4,6 +4,16 @@ meta {
   seq: 16
 }
 
+docs {
+  ## Get Detail Dimensions
+  ดึงมิติการจัดสรรต้นทุน (เช่น แผนก ศูนย์ต้นทุน โครงการ) ที่เชื่อมโยงกับรายการใบขอซื้อเฉพาะ ใช้สำหรับรายงานทางการเงินและติดตามงบประมาณ
+
+  Retrieves cost allocation dimensions (e.g., department, cost center, project) associated with a specific PR line item. Used for financial reporting and budget tracking across organizational units.
+
+  ### Path Parameters
+  - `detail_id` — Purchase request detail ID
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-request/detail/:detail_id/dimension
   body: none

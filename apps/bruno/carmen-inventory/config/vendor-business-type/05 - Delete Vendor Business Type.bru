@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Vendor Business Type
+  ลบประเภทธุรกิจผู้ขายตาม ID
+
+  Deletes a vendor business type classification by its unique identifier.
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/vendor-business-type/:id
   body: none

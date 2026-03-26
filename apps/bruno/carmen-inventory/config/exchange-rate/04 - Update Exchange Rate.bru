@@ -4,6 +4,16 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Update Exchange Rate
+  อัปเดตข้อมูลอัตราแลกเปลี่ยนที่มีอยู่
+
+  Updates an existing exchange rate record such as the conversion factor or effective date.
+
+  ### Path Parameters
+  - `id` -- Exchange rate ID (UUID) / รหัสอัตราแลกเปลี่ยน
+}
+
 patch {
   url: {{host}}/api/config/{{bu_code}}/exchange-rate/:id
   body: json

@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Recipe Equipment
+  อัปเดตอุปกรณ์ทำอาหารทั้งหมด การเปลี่ยนแปลงส่งผลต่อสูตรอาหารที่อ้างอิงอุปกรณ์นี้
+
+  Fully updates an existing kitchen equipment type definition. Changes affect how recipes reference this equipment.
+}
+
 put {
   url: {{host}}/api/config/{{bu_code}}/recipe-equipment/:id
   body: json

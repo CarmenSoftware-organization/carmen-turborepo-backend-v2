@@ -89,7 +89,8 @@ export class Config_DepartmentUserController extends BaseHttpController {
         description: 'Department-user assignment retrieved successfully',
       },
     },
-  })
+    'x-description-th': 'ดึงข้อมูลผู้ใช้ประจำแผนกรายการเดียวตาม ID',
+  } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -154,7 +155,8 @@ export class Config_DepartmentUserController extends BaseHttpController {
         description: 'Department-user assignments retrieved successfully',
       },
     },
-  })
+    'x-description-th': 'แสดงรายการผู้ใช้ประจำแผนกทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -219,7 +221,8 @@ export class Config_DepartmentUserController extends BaseHttpController {
         description: 'Department-user assignment created successfully',
       },
     },
-  })
+    'x-description-th': 'สร้างผู้ใช้ประจำแผนกใหม่',
+  } as any)
   @ApiBody({ type: DepartmentUserCreateRequest })
   async create(
     @Req() req: Request,
@@ -285,7 +288,8 @@ export class Config_DepartmentUserController extends BaseHttpController {
         description: 'Department-user assignment updated successfully',
       },
     },
-  })
+    'x-description-th': 'อัปเดตข้อมูลผู้ใช้ประจำแผนกที่มีอยู่',
+  } as any)
   @ApiBody({ type: DepartmentUserUpdateRequest })
   async update(
     @Req() req: Request,
@@ -353,7 +357,8 @@ export class Config_DepartmentUserController extends BaseHttpController {
         description: 'Department-user assignment deleted successfully',
       },
     },
-  })
+    'x-description-th': 'ลบผู้ใช้ประจำแผนกตาม ID',
+  } as any)
   async remove(
     @Req() req: Request,
     @Res() res: Response,

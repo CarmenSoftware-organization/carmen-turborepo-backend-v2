@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete User Cluster
+  ลบคลัสเตอร์ของผู้ใช้ตาม ID
+
+  Delete a user-cluster mapping by its ID.
+}
+
 delete {
   url: {{host}}/api-system/user/cluster/:id
   body: none

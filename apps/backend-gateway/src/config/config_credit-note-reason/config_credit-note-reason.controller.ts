@@ -73,7 +73,8 @@ export class Config_CreditNoteReasonController extends BaseHttpController {
       'Retrieves a specific credit note reason configuration by its unique identifier.',
     operationId: 'configCreditNoteReason_findOne',
     tags: ['Configuration', 'Credit Note Reason'],
-  })
+    'x-description-th': 'ดึงข้อมูลเหตุผลใบลดหนี้รายการเดียวตาม ID',
+  } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -101,7 +102,8 @@ export class Config_CreditNoteReasonController extends BaseHttpController {
       'Lists all configurable reasons for issuing vendor credit notes (e.g., damaged goods, short delivery, quality issues).',
     operationId: 'configCreditNoteReason_findAll',
     tags: ['Configuration', 'Credit Note Reason'],
-  })
+    'x-description-th': 'แสดงรายการเหตุผลใบลดหนี้ทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
@@ -132,7 +134,8 @@ export class Config_CreditNoteReasonController extends BaseHttpController {
       'Creates a new reason that can be selected when issuing vendor credit notes.',
     operationId: 'configCreditNoteReason_create',
     tags: ['Configuration', 'Credit Note Reason'],
-  })
+    'x-description-th': 'สร้างเหตุผลใบลดหนี้ใหม่',
+  } as any)
   @ApiBody({ type: CreditNoteReasonCreateRequestDto })
   async create(
     @Req() req: Request,
@@ -162,7 +165,8 @@ export class Config_CreditNoteReasonController extends BaseHttpController {
       'Fully replaces a credit note reason configuration.',
     operationId: 'configCreditNoteReason_update',
     tags: ['Configuration', 'Credit Note Reason'],
-  })
+    'x-description-th': 'อัปเดตข้อมูลเหตุผลใบลดหนี้ที่มีอยู่',
+  } as any)
   @ApiBody({ type: CreditNoteReasonUpdateRequestDto })
   async update(
     @Req() req: Request,
@@ -197,7 +201,8 @@ export class Config_CreditNoteReasonController extends BaseHttpController {
       'Partially updates specific fields of a credit note reason configuration.',
     operationId: 'configCreditNoteReason_patch',
     tags: ['Configuration', 'Credit Note Reason'],
-  })
+    'x-description-th': 'อัปเดตข้อมูลเหตุผลใบลดหนี้บางส่วน',
+  } as any)
   @ApiBody({ type: CreditNoteReasonUpdateRequestDto })
   async patch(
     @Req() req: Request,
@@ -232,7 +237,8 @@ export class Config_CreditNoteReasonController extends BaseHttpController {
       'Soft-deletes a credit note reason. Historical records using this reason are preserved.',
     operationId: 'configCreditNoteReason_delete',
     tags: ['Configuration', 'Credit Note Reason'],
-  })
+    'x-description-th': 'ลบเหตุผลใบลดหนี้ตาม ID',
+  } as any)
   async delete(
     @Req() req: Request,
     @Res() res: Response,

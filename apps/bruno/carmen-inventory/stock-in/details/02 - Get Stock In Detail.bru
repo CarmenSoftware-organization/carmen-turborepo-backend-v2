@@ -4,6 +4,18 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Stock In Detail by ID
+  ดึงรายการย่อยเฉพาะรายการจากรายการรับสินค้าเข้าคลัง พร้อมรายละเอียดสินค้า จำนวน และต้นทุนทั้งหมด ใช้สำหรับตรวจสอบหรือยืนยันรายการรับสินค้าเฉพาะรายการ
+
+  Retrieves a specific item line from a stock-in transaction with full product, quantity, and cost details. Used to inspect or verify a particular inventory addition.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Stock In ID / รหัสรายการรับสินค้าเข้าคลัง
+  - `detail_id` — Stock In Detail ID / รหัสรายการย่อยรับสินค้าเข้าคลัง
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/stock-in/:id/details/:detail_id
   body: none

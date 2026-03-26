@@ -4,6 +4,17 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Credit Note by ID
+  ดึงรายละเอียดทั้งหมดของใบลดหนี้ รวมถึงรายการสินค้าที่ส่งคืน/เสียหายและจำนวนเงินเครดิต สำหรับตรวจสอบระหว่างกระบวนการกระทบยอดบัญชีเจ้าหนี้
+
+  Retrieves the full details of a vendor credit note, including the returned/damaged items and credited amounts, for review during accounts payable reconciliation.
+
+  ### Path Parameters
+  - `id` — Credit note ID / รหัสใบลดหนี้
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/credit-note/:id
   body: none

@@ -4,6 +4,17 @@ meta {
   seq: 11
 }
 
+docs {
+  ## Save Pending Purchase Request
+  บันทึกการเปลี่ยนแปลงใบขอซื้อฉบับร่าง ช่วยให้ผู้ขอสามารถแก้ไขรายการสินค้า จำนวน หรือเหตุผลก่อนส่งเข้าขั้นตอนอนุมัติ
+
+  Saves changes to a draft purchase request, allowing the requestor to modify items, quantities, or justification before submitting it for approval.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `id` — Purchase request ID (UUID)
+}
+
 patch {
   url: {{host}}/api/my-pending/purchase-request/:bu_code/:id/save
   body: json

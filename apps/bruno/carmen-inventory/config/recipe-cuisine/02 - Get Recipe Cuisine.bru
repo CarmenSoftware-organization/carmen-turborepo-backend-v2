@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Recipe Cuisine by ID
+  ดึงข้อมูลประเภทอาหารเดียวตาม ID สำหรับจำแนกสูตรอาหารตามต้นกำเนิดการทำอาหาร
+
+  Retrieves a specific cuisine type definition (e.g., Thai, Italian, Japanese) used to classify recipes by culinary origin.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/recipe-cuisine/:id
   body: none

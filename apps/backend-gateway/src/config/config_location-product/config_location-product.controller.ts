@@ -58,7 +58,8 @@ export class Config_LocationProductController extends BaseHttpController {
     description: 'Retrieves active locations with their assigned products, including category hierarchy, current stock, par level, need qty, and stock status. Paginated by location. Supports search by product name/code/sku and location name/code, and filter by category_id (item group).',
     operationId: 'configLocationProduct_findAll',
     tags: ['Configuration', 'Location Product'],
-  })
+    'x-description-th': 'แสดงรายการสถานที่ตามสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   async findAllLocationsWithProducts(
     @Req() req: Request,
     @Res() res: Response,
@@ -104,7 +105,8 @@ export class Config_LocationProductController extends BaseHttpController {
     description: 'Retrieves all product-location records for a specific location, including product_code, product_name, product_local_name, product_sku, location_code, location_name, and quantity settings (min/max/reorder/par).',
     operationId: 'configLocationProduct_findByLocationId',
     tags: ['Configuration', 'Location Product'],
-  })
+    'x-description-th': 'ดึงข้อมูลสถานที่ตามสินค้าโดยใช้รหัสสถานที่',
+  } as any)
   async getProductByLocationId(
     @Req() req: Request,
     @Res() res: Response,
@@ -144,7 +146,8 @@ export class Config_LocationProductController extends BaseHttpController {
     description: 'Regenerates location_code, location_name, product_name, product_code, product_local_name, product_sku in tb_product_location by looking up actual values from tb_product and tb_location using product_id and location_id.',
     operationId: 'configLocationProduct_refresh',
     tags: ['Configuration', 'Location Product'],
-  })
+    'x-description-th': 'รีเฟรชข้อมูล denormalized ของสถานที่ตามสินค้า',
+  } as any)
   async refreshProductLocations(
     @Req() req: Request,
     @Res() res: Response,

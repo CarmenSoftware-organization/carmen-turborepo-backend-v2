@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Recipe Equipment
+  สร้างอุปกรณ์ทำอาหารใหม่สำหรับเชื่อมโยงกับสูตรอาหาร
+
+  Defines a new kitchen equipment type that can be associated with recipes to track required tools and appliances.
+}
+
 post {
   url: {{host}}/api/config/{{bu_code}}/recipe-equipment
   body: json

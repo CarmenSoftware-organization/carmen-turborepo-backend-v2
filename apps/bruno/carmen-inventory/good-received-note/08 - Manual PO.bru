@@ -4,6 +4,17 @@ meta {
   seq: 8
 }
 
+docs {
+  ## Manual PO Lookup
+  ค้นหาใบสั่งซื้อตามเลขที่เอกสารเพื่อเริ่มกระบวนการรับสินค้า ใช้เมื่อเจ้าหน้าที่รับสินค้าต้องการกรอกเลขที่ใบสั่งซื้อด้วยตนเอง (แทนการสแกน QR code) เพื่อเริ่มบันทึกการส่งมอบ
+
+  Looks up a purchase order by its document number to start the goods receiving process. Used when receiving staff need to manually enter a PO number (instead of scanning a QR code) to begin recording a delivery.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `po_no` — Purchase order number / เลขที่ใบสั่งซื้อ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/good-received-note/manual-po/:po_no
   body: none

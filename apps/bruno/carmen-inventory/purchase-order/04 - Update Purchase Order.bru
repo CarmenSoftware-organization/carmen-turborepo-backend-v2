@@ -4,6 +4,16 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Purchase Order
+  อัปเดตข้อมูลส่วนหัวและรายการของใบสั่งซื้อ เช่น จำนวน ราคา วันส่งมอบ หรือเงื่อนไขผู้ขาย ใช้ได้เฉพาะใบสั่งซื้อที่ยังไม่ได้รับสินค้าครบหรือปิดแล้ว
+
+  Updates purchase order header and line item details such as quantities, pricing, delivery dates, or vendor terms. Only applicable to POs that have not yet been fully received or closed.
+
+  ### Path Parameters
+  - `id` — Purchase order UUID
+}
+
 put {
   url: {{host}}/api/{{bu_code}}/purchase-order/:id
   body: json

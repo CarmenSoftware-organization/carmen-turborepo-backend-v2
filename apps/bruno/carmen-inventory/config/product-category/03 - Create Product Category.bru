@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Product Category
+  สร้างหมวดหมู่สินค้าใหม่
+
+  Defines a new top-level product category for classifying items in the master catalog.
+}
+
 post {
   url: {{host}}/api/config/{{bu_code}}/products/category
   body: json

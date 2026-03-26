@@ -56,7 +56,8 @@ export class Config_ProductLocationController extends BaseHttpController {
     description: 'Retrieves all product-location records for a specific product, including location_code, location_name, product_code, product_name, product_local_name, product_sku, and quantity settings (min/max/reorder/par).',
     operationId: 'configProductLocation_findByProductId',
     tags: ['Configuration', 'Product Location'],
-  })
+    'x-description-th': 'ดึงข้อมูลสินค้าตามสถานที่โดยใช้รหัสสินค้า',
+  } as any)
   async getLocationsByProductId(
     @Param('productId') productId: string,
     @Param('bu_code') bu_code: string,

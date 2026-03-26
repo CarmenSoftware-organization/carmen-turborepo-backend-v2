@@ -4,6 +4,13 @@ meta {
   seq: 14
 }
 
+docs {
+  ## Get Workflow Stages
+  แสดงขั้นตอนเวิร์กโฟลว์การอนุมัติที่กำหนดค่าไว้ (เช่น HOD, ผู้จัดซื้อ, FC, GM) สำหรับใบขอซื้อในหน่วยธุรกิจนี้ ใช้เพื่อแสดงความคืบหน้าของเวิร์กโฟลว์
+
+  Returns the configured approval workflow stages (e.g., HOD, Purchaser, FC, GM) for purchase requests in this business unit. Used to display workflow progress and determine which approval steps a PR must pass through.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-request/workflow-stages
   body: none

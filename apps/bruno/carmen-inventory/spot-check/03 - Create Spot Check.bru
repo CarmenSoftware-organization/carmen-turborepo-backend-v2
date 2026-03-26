@@ -4,6 +4,16 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Spot Check
+  สร้างรายการตรวจสอบสินค้าเฉพาะจุดใหม่ที่สถานที่จัดเก็บเฉพาะ เลือกสินค้าแบบสุ่มหรือเลือกเองเพื่อตรวจสอบสินค้าจริงเทียบกับข้อมูลในระบบ
+
+  Initiates a random inventory spot check at a specific storage location, selecting products either randomly or manually to verify actual stock against system records for quality control.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/spot-check
   body: json

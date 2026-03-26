@@ -4,6 +4,16 @@ meta {
   seq: 1
 }
 
+docs {
+  ## Get Product Locations
+  ดึงรายการสินค้าทั้งหมดตามรหัสสถานที่
+
+  Retrieves all products assigned to a specific storage location or warehouse.
+
+  ### Path Parameters
+  - `id` — Location UUID (รหัสสถานที่)
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/products/locations/:id
   body: none

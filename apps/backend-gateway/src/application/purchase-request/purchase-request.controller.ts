@@ -96,7 +96,8 @@ export class PurchaseRequestController extends BaseHttpController {
     responses: {
       200: { description: 'Approved purchase requests retrieved successfully' },
     },
-  })
+    'x-description-th': 'แสดงรายการใบขอซื้อที่อนุมัติแล้วทั้งหมดที่พร้อมสำหรับสร้างใบสั่งซื้อ ใช้โดยผู้จัดซื้อเพื่อเลือกใบขอซื้อที่จะแปลงเป็นใบสั่งซื้อ',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findAllForPo(
     @Param('bu_code') bu_code: string,
@@ -177,7 +178,8 @@ export class PurchaseRequestController extends BaseHttpController {
         description: 'The purchase requests were not found',
       },
     },
-  })
+    'x-description-th': 'แสดงรายการใบขอซื้อทั้งหมดของผู้ใช้ปัจจุบัน พร้อมการแบ่งหน้า ค้นหา และกรองตามสถานะ ใช้สำหรับเจ้าหน้าที่แผนกและผู้อนุมัติในการดูและติดตามเอกสารใบขอซื้อ',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Req() req: Request,
@@ -267,7 +269,8 @@ export class PurchaseRequestController extends BaseHttpController {
         description: 'The workflow stages were not found',
       },
     },
-  })
+    'x-description-th': 'แสดงขั้นตอนเวิร์กโฟลว์การอนุมัติที่กำหนดค่าไว้ (เช่น HOD, ผู้จัดซื้อ, FC, GM) สำหรับใบขอซื้อในหน่วยธุรกิจนี้ ใช้เพื่อแสดงความคืบหน้าของเวิร์กโฟลว์',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findAllWorkflowStagesByPr(
     @Req() req: Request,
@@ -317,7 +320,8 @@ export class PurchaseRequestController extends BaseHttpController {
       200: { description: 'Previous stages retrieved successfully' },
       404: { description: 'Purchase request not found or no workflow assigned' },
     },
-  })
+    'x-description-th': 'ดึงขั้นตอนเวิร์กโฟลว์ทั้งหมดก่อนขั้นตอนปัจจุบันของใบขอซื้อ ใช้เพื่อกำหนดตัวเลือกการย้อนกลับ/ส่งคืนในสายการอนุมัติ',
+  } as any)
   async getPreviousStagesByPrId(
     @Param('pr_id') pr_id: string,
     @Param('bu_code') bu_code: string,
@@ -378,7 +382,8 @@ export class PurchaseRequestController extends BaseHttpController {
         description: 'The purchase request was not found',
       },
     },
-  })
+    'x-description-th': 'ดึงรายละเอียดทั้งหมดของใบขอซื้อตาม ID รวมถึงรายการสินค้า จำนวน ราคา และสถานะการอนุมัติปัจจุบัน',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findOne(
     @Param('bu_code') bu_code: string,
@@ -433,7 +438,8 @@ export class PurchaseRequestController extends BaseHttpController {
     description: 'Filters purchase requests by a specific workflow status (e.g., draft, pending, approved, rejected). Used by approvers and managers to view PRs at a particular stage of the approval workflow.',
     operationId: 'findAllPurchaseRequestsByStatus',
     tags: ['Procurement', 'Purchase Request'],
-  })
+    'x-description-th': 'กรองใบขอซื้อตามสถานะเวิร์กโฟลว์ที่กำหนด (เช่น draft, pending, approved, rejected) ใช้โดยผู้อนุมัติและผู้จัดการเพื่อดูใบขอซื้อในขั้นตอนเฉพาะ',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findAllByStatus(
     @Param('status') status: string,
@@ -501,7 +507,8 @@ export class PurchaseRequestController extends BaseHttpController {
         description: 'Unauthorized',
       },
     },
-  })
+    'x-description-th': 'สร้างใบขอซื้อใหม่สำหรับแผนกเพื่อขอสินค้าหรือบริการที่ต้องการ เริ่มต้นในสถานะฉบับร่างและสามารถส่งเข้าสู่เวิร์กโฟลว์การอนุมัติได้',
+  } as any)
   @ApiBody({
     type: CreatePurchaseRequestDto || String || Object,
     description: 'Purchase request data',
@@ -557,7 +564,8 @@ export class PurchaseRequestController extends BaseHttpController {
     description: 'Creates copies of one or more existing purchase requests, preserving their line items and details. Useful for recurring procurement needs where departments regularly order the same items.',
     operationId: 'duplicatePurchaseRequests',
     tags: ['Procurement', 'Purchase Request'],
-  })
+    'x-description-th': 'ทำสำเนาใบขอซื้อที่มีอยู่หนึ่งรายการขึ้นไป โดยคงรายการสินค้าและรายละเอียดไว้ เหมาะสำหรับการจัดซื้อซ้ำที่แผนกสั่งสินค้าเดิมเป็นประจำ',
+  } as any)
   @ApiBody({ type: DuplicatePurchaseRequestSwaggerDto })
   @HttpCode(HttpStatus.CREATED)
   async duplicatePr(
@@ -614,7 +622,8 @@ export class PurchaseRequestController extends BaseHttpController {
         description: 'The purchase request was not found',
       },
     },
-  })
+    'x-description-th': 'แยกรายการที่เลือกจากใบขอซื้อที่มีอยู่ออกเป็นใบขอซื้อใหม่ ใช้เมื่อผู้จัดซื้อต้องการแยกสินค้าสำหรับผู้ขายหรือกำหนดการส่งที่แตกต่างกัน',
+  } as any)
   @ApiBody({ type: SplitPurchaseRequestSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async splitPr(
@@ -658,7 +667,8 @@ export class PurchaseRequestController extends BaseHttpController {
     description: 'Submits a draft purchase request into the approval workflow, making it available for review by the next approver (e.g., HOD). Once submitted, the PR moves from draft to pending status and can no longer be freely edited.',
     operationId: 'submitPurchaseRequest',
     tags: ['Procurement', 'Purchase Request'],
-  })
+    'x-description-th': 'ส่งใบขอซื้อฉบับร่างเข้าสู่เวิร์กโฟลว์การอนุมัติ เมื่อส่งแล้วสถานะจะเปลี่ยนจากฉบับร่างเป็นรอดำเนินการ และไม่สามารถแก้ไขได้อย่างอิสระอีกต่อไป',
+  } as any)
   @ApiBody({ type: SubmitPurchaseRequestSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async submit(
@@ -701,7 +711,8 @@ export class PurchaseRequestController extends BaseHttpController {
     description: 'Advances a purchase request through the approval workflow at the current stage. Approval roles (HOD, FC, GM) confirm the request, while the purchase role adds vendor selection, price list, tax, and discount details to prepare the PR for conversion into a purchase order.',
     operationId: 'approvePurchaseRequest',
     tags: ['Procurement', 'Purchase Request'],
-  })
+    'x-description-th': 'อนุมัติใบขอซื้อในขั้นตอนปัจจุบันของเวิร์กโฟลว์ ผู้อนุมัติ (HOD, FC, GM) ยืนยันคำขอ ในขณะที่ผู้จัดซื้อเพิ่มข้อมูลผู้ขาย ราคา ภาษี และส่วนลด',
+  } as any)
   @ApiBody({
     description: 'Approve purchase request payload. Use stage_role to determine which role is approving.',
     examples: {
@@ -756,7 +767,8 @@ export class PurchaseRequestController extends BaseHttpController {
     description: 'Rejects a purchase request at the current approval stage, returning it to the requester with a reason. Used by approvers (HOD, Purchaser, FC, GM) when the request does not meet requirements or budget constraints.',
     operationId: 'rejectPurchaseRequest',
     tags: ['Procurement', 'Purchase Request'],
-  })
+    'x-description-th': 'ปฏิเสธใบขอซื้อในขั้นตอนการอนุมัติปัจจุบัน และส่งกลับไปยังผู้ขอพร้อมเหตุผล ใช้โดยผู้อนุมัติเมื่อคำขอไม่ตรงตามข้อกำหนดหรือข้อจำกัดงบประมาณ',
+  } as any)
   @ApiBody({ type: RejectPurchaseRequestSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async reject(
@@ -800,7 +812,8 @@ export class PurchaseRequestController extends BaseHttpController {
     description: 'Sends a purchase request back to a previous workflow stage for corrections or additional information. Used by approvers who need the requester or a prior approver to revise the PR before it can proceed.',
     operationId: 'reviewPurchaseRequest',
     tags: ['Procurement', 'Purchase Request'],
-  })
+    'x-description-th': 'ส่งใบขอซื้อกลับไปยังขั้นตอนก่อนหน้าของเวิร์กโฟลว์เพื่อแก้ไขหรือขอข้อมูลเพิ่มเติม ใช้โดยผู้อนุมัติที่ต้องการให้ผู้ขอปรับปรุงใบขอซื้อ',
+  } as any)
   @ApiBody({ type: ReviewPurchaseRequestSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async review(
@@ -864,7 +877,8 @@ export class PurchaseRequestController extends BaseHttpController {
         description: 'The purchase request was not found',
       },
     },
-  })
+    'x-description-th': 'บันทึกการเปลี่ยนแปลงใบขอซื้อรวมถึงข้อมูลส่วนหัวและการแก้ไขรายการสินค้า ใช้สำหรับปรับปรุงจำนวน เพิ่มหรือลบรายการ หรือแก้ไขรายละเอียดก่อนส่งเข้าอนุมัติ',
+  } as any)
   @ApiBody({ type: UpdatePurchaseRequestSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async update(
@@ -929,7 +943,8 @@ export class PurchaseRequestController extends BaseHttpController {
       },
       404: { description: 'The purchase request was not found' },
     },
-  })
+    'x-description-th': 'สร้างไฟล์ Excel ของใบขอซื้อพร้อมรายการสินค้า ราคา และรายละเอียดการอนุมัติทั้งหมด ใช้สำหรับตรวจสอบแบบออฟไลน์ แชร์กับผู้เกี่ยวข้อง หรือเก็บเป็นเอกสาร',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async exportToExcel(
     @Param('id') id: string,
@@ -991,7 +1006,8 @@ export class PurchaseRequestController extends BaseHttpController {
       },
       404: { description: 'The purchase request was not found' },
     },
-  })
+    'x-description-th': 'สร้างเอกสาร PDF สำหรับพิมพ์ใบขอซื้อ รวมถึงรายการสินค้า ยอดรวม และประวัติการอนุมัติ ใช้สำหรับลงนาม จัดเก็บเอกสาร หรือส่งให้ผู้ขาย',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async printToPdf(
     @Param('id') id: string,
@@ -1054,7 +1070,8 @@ export class PurchaseRequestController extends BaseHttpController {
         description: 'The purchase request was not found',
       },
     },
-  })
+    'x-description-th': 'ลบใบขอซื้อที่ไม่ต้องการแล้ว โดยทั่วไปใช้สำหรับใบขอซื้อฉบับร่างที่สร้างผิดพลาดหรือไม่จำเป็นอีกต่อไป',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async delete(
     @Param('id') id: string,
@@ -1093,7 +1110,8 @@ export class PurchaseRequestController extends BaseHttpController {
     description: 'Retrieves cost allocation dimensions (e.g., department, cost center, project) associated with a specific PR line item. Used for financial reporting and budget tracking across organizational units.',
     operationId: 'findDimensionsByPurchaseRequestDetailId',
     tags: ['Procurement', 'Purchase Request'],
-  })
+    'x-description-th': 'ดึงมิติการจัดสรรต้นทุน (เช่น แผนก ศูนย์ต้นทุน โครงการ) ที่เชื่อมโยงกับรายการใบขอซื้อเฉพาะ ใช้สำหรับรายงานทางการเงินและติดตามงบประมาณ',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findDimensionsByDetailId(
     @Param('detail_id') detail_id: string,
@@ -1136,7 +1154,8 @@ export class PurchaseRequestController extends BaseHttpController {
     description: 'Retrieves the change history and audit trail for a specific PR line item, including price changes, quantity adjustments, and approval actions taken at each workflow stage.',
     operationId: 'findHistoryByPurchaseRequestDetailId',
     tags: ['Procurement', 'Purchase Request'],
-  })
+    'x-description-th': 'ดึงประวัติการเปลี่ยนแปลงและบันทึกตรวจสอบของรายการใบขอซื้อเฉพาะ รวมถึงการเปลี่ยนแปลงราคา การปรับจำนวน และการดำเนินการอนุมัติ',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findHistoryByDetailId(
     @Param('detail_id') detail_id: string,
@@ -1180,7 +1199,8 @@ export class PurchaseRequestController extends BaseHttpController {
     description: 'Calculates the total cost breakdown for a PR line item including unit price, tax, discount, and net amount. Used by purchasers to evaluate pricing from different vendors and price lists before finalizing the request.',
     operationId: 'calculatePriceInfoByDetailId',
     tags: ['Procurement', 'Purchase Request'],
-  })
+    'x-description-th': 'คำนวณรายละเอียดต้นทุนทั้งหมดของรายการใบขอซื้อ รวมถึงราคาต่อหน่วย ภาษี ส่วนลด และยอดสุทธิ ใช้โดยผู้จัดซื้อเพื่อประเมินราคาจากผู้ขายต่างๆ',
+  } as any)
   @ApiBody({ type: CalculatePurchaseRequestDetailSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async getCalculatePriceInfoByDetailId(

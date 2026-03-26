@@ -4,6 +4,16 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Purchase Request Comment
+  ลบความคิดเห็นจากกระทู้สนทนาของใบขอซื้อ เฉพาะผู้เขียนความคิดเห็นเท่านั้นที่สามารถลบได้ เพื่อรักษาประวัติการทำงานร่วมกันที่ตรวจสอบได้
+
+  Removes a comment from a purchase request discussion thread. Only the comment author can delete their own remarks, maintaining an auditable collaboration history.
+
+  ### Path Parameters
+  - `id` — Comment ID
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/purchase-request-comment/:id
   body: none

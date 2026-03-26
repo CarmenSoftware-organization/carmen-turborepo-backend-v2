@@ -4,6 +4,17 @@ meta {
   seq: 13
 }
 
+docs {
+  ## List GRN Detail Items
+  แสดงรายการสินค้าที่รับทั้งหมดในใบรับสินค้า รวมถึงรายละเอียดสินค้า จำนวนที่สั่งเทียบกับจำนวนที่รับ และบันทึกการตรวจสอบ ใช้สำหรับตรวจสอบว่าสินค้าที่ส่งมาจริงตรงกับใบสั่งซื้อ
+
+  Lists all received items on a GRN including product details, ordered vs. received quantities, and inspection notes. Used to review what was actually delivered and compare against the purchase order.
+
+  ### Path Parameters
+  - `id` — Good Received Note ID / รหัสใบรับสินค้า
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/good-received-note/:id/details
   body: none

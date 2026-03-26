@@ -4,6 +4,17 @@ meta {
   seq: 8
 }
 
+docs {
+  ## Submit Pending Store Requisition
+  ส่งใบเบิกสินค้าฉบับร่างเข้าสู่ขั้นตอนอนุมัติ สถานะจะเปลี่ยนจากร่างไปยังขั้นตอนอนุมัติแรกเพื่อให้ผู้อนุมัติที่กำหนดพิจารณา
+
+  Submits a draft store requisition into the approval workflow, moving it from draft status to the first approval stage for designated approvers to review.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `id` — Store requisition ID (UUID)
+}
+
 patch {
   url: {{host}}/api/my-pending/store-requisition/:bu_code/:id/submit
   body: json

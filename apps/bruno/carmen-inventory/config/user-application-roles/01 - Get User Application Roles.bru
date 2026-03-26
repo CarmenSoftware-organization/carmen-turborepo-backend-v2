@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## Get User Application Roles
+  ดึงข้อมูลบทบาทของผู้ใช้ในระบบทั้งหมดตาม User ID
+
+  Retrieves all application roles assigned to a specific user.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/user-application-roles/:user_id
   body: none

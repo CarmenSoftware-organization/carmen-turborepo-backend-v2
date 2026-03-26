@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Unit Comment
+  ลบหมายเหตุหน่วยนับตาม ID
+
+  Deletes a unit comment template by its unique identifier.
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/unit-comment/:id
   body: none

@@ -98,7 +98,8 @@ export class Config_DepartmentsController extends BaseHttpController {
         description: 'Department retrieved successfully',
       },
     },
-  })
+    'x-description-th': 'ดึงข้อมูลแผนกรายการเดียวตาม ID',
+  } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -164,7 +165,8 @@ export class Config_DepartmentsController extends BaseHttpController {
         description: 'Departments retrieved successfully',
       },
     },
-  })
+    'x-description-th': 'แสดงรายการแผนกทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -230,7 +232,8 @@ export class Config_DepartmentsController extends BaseHttpController {
         description: 'Department created successfully',
       },
     },
-  })
+    'x-description-th': 'สร้างแผนกใหม่',
+  } as any)
   @ApiBody({ type: DepartmentCreateRequestDto })
   async create(
     @Req() req: Request,
@@ -297,7 +300,8 @@ export class Config_DepartmentsController extends BaseHttpController {
         description: 'Department updated successfully',
       },
     },
-  })
+    'x-description-th': 'อัปเดตข้อมูลแผนกที่มีอยู่',
+  } as any)
   @ApiBody({ type: DepartmentUpdateRequestDto })
   async update(
     @Req() req: Request,
@@ -369,7 +373,8 @@ export class Config_DepartmentsController extends BaseHttpController {
         description: 'Department deleted successfully',
       },
     },
-  })
+    'x-description-th': 'ลบแผนกตาม ID',
+  } as any)
   async delete(
     @Req() req: Request,
     @Res() res: Response,

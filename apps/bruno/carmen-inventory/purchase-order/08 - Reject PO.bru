@@ -4,6 +4,20 @@ meta {
   seq: 8
 }
 
+docs {
+  ## Reject Purchase Order
+  ปฏิเสธใบสั่งซื้อในขั้นตอนอนุมัติปัจจุบัน ปิดใบสั่งซื้อและป้องกันไม่ให้ส่งไปยังผู้ขาย
+
+  Rejects a purchase order at the current approval stage, closing it and preventing it from being sent to the vendor. Used when an approver determines the order should not proceed due to budget, pricing, or business reasons.
+
+  ### Path Parameters
+  - `id` — Purchase order UUID
+
+  ### Body
+  - `stage_role` — Role of the approver
+  - `details[]` — Line items with `id`, `stage_status`, and `stage_message`
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/purchase-order/:id/reject
   body: json

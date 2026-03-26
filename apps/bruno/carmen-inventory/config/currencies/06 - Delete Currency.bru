@@ -4,6 +4,16 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Delete Currency
+  ลบสกุลเงินตาม ID
+
+  Removes a currency from active use by its unique identifier.
+
+  ### Path Parameters
+  - `id` -- Currency ID (UUID) / รหัสสกุลเงิน
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/currencies/:id
   body: none

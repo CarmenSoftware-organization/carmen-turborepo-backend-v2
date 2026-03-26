@@ -4,6 +4,17 @@ meta {
   seq: 8
 }
 
+docs {
+  ## Review Physical Count Items
+  เปรียบเทียบจำนวนที่นับได้กับจำนวนในระบบ และคำนวณผลต่างของแต่ละรายการ ช่วยให้พนักงานคลังสินค้าตรวจสอบความคลาดเคลื่อนก่อนส่งขั้นสุดท้าย
+
+  Compares the counted quantities against system stock levels and calculates variances for each item, enabling warehouse staff to review discrepancies before final submission.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Physical Count ID / รหัสการตรวจนับสินค้า
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/physical-count/:id/review
   body: json

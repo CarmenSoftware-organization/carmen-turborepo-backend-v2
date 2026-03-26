@@ -4,6 +4,17 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Stock In Details
+  ดึงรายการย่อยทั้งหมดของรายการรับสินค้าเข้าคลังที่ระบุ รวมถึงรายละเอียดสินค้า จำนวน ต้นทุนต่อหน่วย และสถานที่จัดเก็บ
+
+  Lists all individual items being added to inventory in this stock-in transaction, including product details, quantities, unit costs, and storage locations.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Stock In ID / รหัสรายการรับสินค้าเข้าคลัง
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/stock-in/:id/details
   body: none

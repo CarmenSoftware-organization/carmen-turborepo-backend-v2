@@ -4,6 +4,16 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Delete Credit Note Reason
+  ลบเหตุผลใบลดหนี้ตาม ID
+
+  Soft-deletes a credit note reason. Historical records using this reason are preserved.
+
+  ### Path Parameters
+  - `id` -- Credit note reason ID (UUID) / รหัสเหตุผลใบลดหนี้
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/credit-note-reason/:id
   body: none

@@ -4,6 +4,16 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Stock Out
+  สร้างรายการเบิกสินค้าออกจากคลังใหม่เพื่อลดจำนวนสินค้าคงคลัง ใช้สำหรับการเบิกจ่ายสินค้าไปยังครัวหรือแผนก บันทึกของเสียและของหมดอายุ หรือแก้ไขความคลาดเคลื่อนจากการนับสต็อก
+
+  Records an inventory removal to decrease stock levels. Used for issuing items to kitchens or departments, recording waste and spoilage, or correcting inventory discrepancies found during physical counts.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/stock-out
   body: json

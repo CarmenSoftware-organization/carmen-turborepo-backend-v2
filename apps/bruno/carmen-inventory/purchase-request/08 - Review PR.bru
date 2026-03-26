@@ -4,6 +4,16 @@ meta {
   seq: 8
 }
 
+docs {
+  ## Review Purchase Request
+  ส่งใบขอซื้อกลับไปยังขั้นตอนก่อนหน้าของเวิร์กโฟลว์เพื่อแก้ไขหรือขอข้อมูลเพิ่มเติม ใช้โดยผู้อนุมัติที่ต้องการให้ผู้ขอหรือผู้อนุมัติก่อนหน้าปรับปรุงใบขอซื้อ
+
+  Sends a purchase request back to a previous workflow stage for corrections or additional information. Used by approvers who need the requester or a prior approver to revise the PR before it can proceed.
+
+  ### Path Parameters
+  - `id` — Purchase request ID
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/purchase-request/:id/review
   body: json

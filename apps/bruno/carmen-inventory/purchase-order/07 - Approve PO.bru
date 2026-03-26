@@ -4,6 +4,20 @@ meta {
   seq: 7
 }
 
+docs {
+  ## Approve Purchase Order
+  อนุมัติใบสั่งซื้อในขั้นตอนปัจจุบันของเวิร์กโฟลว์ ผู้มีอำนาจอนุมัติแต่ละคน (เช่น FC, GM) ลงนามเพื่ออนุมัติการสั่งซื้อ
+
+  Advances a purchase order through its approval workflow at the current stage. Each authorized approver (e.g., FC, GM) signs off to authorize the vendor commitment and expenditure.
+
+  ### Path Parameters
+  - `id` — Purchase order UUID
+
+  ### Body
+  - `stage_role` — Role of the approver (e.g., "approve")
+  - `details[]` — Line items with `id` and `stage_status`
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/purchase-order/:id/approve
   body: json

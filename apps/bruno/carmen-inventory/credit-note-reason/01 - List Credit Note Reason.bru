@@ -4,6 +4,16 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List All Credit Note Reasons
+  แสดงรายการเหตุผลทั้งหมดสำหรับการออกใบลดหนี้ให้ผู้ขาย (เช่น สินค้าเสียหาย ส่งไม่ครบ ปัญหาด้านคุณภาพ) ใช้สำหรับแสดงตัวเลือกเหตุผลในดรอปดาวน์เมื่อสร้างใบลดหนี้
+
+  Lists all configurable reasons for issuing vendor credit notes (e.g., damaged goods, short delivery, quality issues), used to populate reason dropdowns when creating credit notes.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/credit-note-reason
   body: none

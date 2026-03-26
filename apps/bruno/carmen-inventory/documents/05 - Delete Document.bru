@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Document
+  ลบเอกสารตาม file token
+
+  Delete a document by its file token.
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/documents/:filetoken
   body: none

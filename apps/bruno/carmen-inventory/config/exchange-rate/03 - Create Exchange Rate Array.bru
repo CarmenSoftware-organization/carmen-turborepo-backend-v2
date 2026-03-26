@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Create Exchange Rate (Bulk)
+  สร้างอัตราแลกเปลี่ยนใหม่หลายรายการพร้อมกัน
+
+  Creates multiple exchange rate records in a single request for efficient bulk updates.
+}
+
 post {
   url: {{host}}/api/config/{{bu_code}}/exchange-rate
   body: json

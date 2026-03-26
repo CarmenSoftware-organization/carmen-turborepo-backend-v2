@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Delete Activity Log
+  ลบบันทึกกิจกรรมตาม ID
+
+  Delete an activity log entry by its ID.
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/activity-log/:id
   body: none

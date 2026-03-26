@@ -4,6 +4,18 @@ meta {
   seq: 15
 }
 
+docs {
+  ## Delete GRN Detail
+  ลบรายการสินค้าจากใบรับสินค้าฉบับร่าง ใช้เมื่อรายการถูกบันทึกผิดพลาดหรือไม่ได้เป็นส่วนหนึ่งของการส่งมอบจริง ใช้ได้เฉพาะก่อนการอนุมัติใบรับสินค้าเท่านั้น
+
+  Removes a line item from a draft GRN when an item was recorded in error or was not actually part of the delivery. Only applicable before the GRN is approved.
+
+  ### Path Parameters
+  - `id` — Good Received Note ID / รหัสใบรับสินค้า
+  - `detail_id` — GRN Detail ID / รหัสรายละเอียดใบรับสินค้า
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/good-received-note/:id/details/:detail_id
   body: none

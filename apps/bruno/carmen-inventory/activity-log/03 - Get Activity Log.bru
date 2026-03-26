@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Get Activity Log
+  ดึงข้อมูลบันทึกกิจกรรมรายการเดียวตาม ID
+
+  Retrieve a single activity log entry by its ID.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/activity-log/:id
   body: none

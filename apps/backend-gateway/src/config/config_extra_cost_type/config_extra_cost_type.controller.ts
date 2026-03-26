@@ -74,7 +74,7 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
   @Serialize(ExtraCostTypeDetailResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get an extra cost type by ID', description: 'Retrieves a specific extra cost type definition (e.g., shipping, insurance, customs duty) used to categorize additional charges on procurement documents beyond product prices.', operationId: 'configExtraCostType_findOne', tags: ['Configuration', 'Extra Cost Type'] })
+  @ApiOperation({ summary: 'Get an extra cost type by ID', description: 'Retrieves a specific extra cost type definition (e.g., shipping, insurance, customs duty) used to categorize additional charges on procurement documents beyond product prices.', operationId: 'configExtraCostType_findOne', tags: ['Configuration', 'Extra Cost Type'], 'x-description-th': 'ดึงข้อมูลประเภทค่าใช้จ่ายเพิ่มเติมรายการเดียวตาม ID' } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -116,7 +116,7 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all extra cost types', description: 'Returns all configured extra cost categories for procurement. These types are used when adding supplementary charges (e.g., freight, handling, insurance) to purchase orders and goods received notes.', operationId: 'configExtraCostType_findAll', tags: ['Configuration', 'Extra Cost Type'] })
+  @ApiOperation({ summary: 'Get all extra cost types', description: 'Returns all configured extra cost categories for procurement. These types are used when adding supplementary charges (e.g., freight, handling, insurance) to purchase orders and goods received notes.', operationId: 'configExtraCostType_findAll', tags: ['Configuration', 'Extra Cost Type'], 'x-description-th': 'แสดงรายการประเภทค่าใช้จ่ายเพิ่มเติมทั้งหมดพร้อมการแบ่งหน้าและค้นหา' } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -158,7 +158,7 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
   @Serialize(ExtraCostTypeMutationResponseSchema)
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new extra cost type', description: 'Defines a new category for additional procurement costs (e.g., shipping, customs, handling fees). Once created, it can be used to add supplementary charges to purchase orders.', operationId: 'configExtraCostType_create', tags: ['Configuration', 'Extra Cost Type'] })
+  @ApiOperation({ summary: 'Create a new extra cost type', description: 'Defines a new category for additional procurement costs (e.g., shipping, customs, handling fees). Once created, it can be used to add supplementary charges to purchase orders.', operationId: 'configExtraCostType_create', tags: ['Configuration', 'Extra Cost Type'], 'x-description-th': 'สร้างประเภทค่าใช้จ่ายเพิ่มเติมใหม่' } as any)
   @ApiBody({ type: ExtraCostTypeCreateRequest })
   async create(
     @Req() req: Request,
@@ -201,7 +201,7 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
   @Serialize(ExtraCostTypeMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update an extra cost type', description: 'Modifies an existing extra cost type definition, such as renaming or reclassifying the cost category. Changes apply to future procurement documents.', operationId: 'configExtraCostType_update', tags: ['Configuration', 'Extra Cost Type'] })
+  @ApiOperation({ summary: 'Update an extra cost type', description: 'Modifies an existing extra cost type definition, such as renaming or reclassifying the cost category. Changes apply to future procurement documents.', operationId: 'configExtraCostType_update', tags: ['Configuration', 'Extra Cost Type'], 'x-description-th': 'อัปเดตข้อมูลประเภทค่าใช้จ่ายเพิ่มเติมที่มีอยู่' } as any)
   @ApiBody({ type: ExtraCostTypeUpdateRequest })
   async update(
     @Req() req: Request,
@@ -249,7 +249,7 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
   @Serialize(ExtraCostTypeMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete an extra cost type', description: 'Removes an extra cost type from active use. It will no longer appear as an option for adding charges to procurement documents, but historical records are preserved.', operationId: 'configExtraCostType_delete', tags: ['Configuration', 'Extra Cost Type'] })
+  @ApiOperation({ summary: 'Delete an extra cost type', description: 'Removes an extra cost type from active use. It will no longer appear as an option for adding charges to procurement documents, but historical records are preserved.', operationId: 'configExtraCostType_delete', tags: ['Configuration', 'Extra Cost Type'], 'x-description-th': 'ลบประเภทค่าใช้จ่ายเพิ่มเติมตาม ID' } as any)
   async delete(
     @Req() req: Request,
     @Res() res: Response,

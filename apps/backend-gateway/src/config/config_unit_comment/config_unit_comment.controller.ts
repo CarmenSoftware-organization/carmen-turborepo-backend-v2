@@ -59,7 +59,7 @@ export class Config_UnitCommentController extends BaseHttpController {
   @UseGuards(new AppIdGuard('unitComment.findOne'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a unit comment by ID', description: 'Retrieves a specific predefined comment/note template associated with unit operations. These standardized comments streamline data entry for inventory and procurement transactions.', operationId: 'configUnitComment_findOne', tags: ['Configuration', 'Unit Comment'] })
+  @ApiOperation({ summary: 'Get a unit comment by ID', description: 'Retrieves a specific predefined comment/note template associated with unit operations. These standardized comments streamline data entry for inventory and procurement transactions.', operationId: 'configUnitComment_findOne', tags: ['Configuration', 'Unit Comment'], 'x-description-th': 'ดึงข้อมูลหมายเหตุหน่วยนับรายการเดียวตาม ID' } as any)
   async findOne(
     @Param('bu_code') bu_code: string,
     @Param('id') id: string,
@@ -100,7 +100,7 @@ export class Config_UnitCommentController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all unit comments', description: 'Returns all predefined comment templates for unit-related operations. These reusable notes help standardize remarks on procurement and inventory documents.', operationId: 'configUnitComment_findAll', tags: ['Configuration', 'Unit Comment'] })
+  @ApiOperation({ summary: 'Get all unit comments', description: 'Returns all predefined comment templates for unit-related operations. These reusable notes help standardize remarks on procurement and inventory documents.', operationId: 'configUnitComment_findAll', tags: ['Configuration', 'Unit Comment'], 'x-description-th': 'แสดงรายการหมายเหตุหน่วยนับทั้งหมดพร้อมการแบ่งหน้าและค้นหา' } as any)
   async findAll(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -141,7 +141,7 @@ export class Config_UnitCommentController extends BaseHttpController {
   @UseGuards(new AppIdGuard('unitComment.create'))
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new unit comment', description: 'Defines a new predefined comment template for unit-related operations. Users can quickly select these standardized notes when processing inventory or procurement transactions.', operationId: 'configUnitComment_create', tags: ['Configuration', 'Unit Comment'] })
+  @ApiOperation({ summary: 'Create a new unit comment', description: 'Defines a new predefined comment template for unit-related operations. Users can quickly select these standardized notes when processing inventory or procurement transactions.', operationId: 'configUnitComment_create', tags: ['Configuration', 'Unit Comment'], 'x-description-th': 'สร้างหมายเหตุหน่วยนับใหม่' } as any)
   @ApiBody({ type: UnitCommentCreateRequest })
   async create(
     @Param('bu_code') bu_code: string,
@@ -183,7 +183,7 @@ export class Config_UnitCommentController extends BaseHttpController {
   @UseGuards(new AppIdGuard('unitComment.update'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a unit comment', description: 'Modifies an existing predefined comment template. Changes are reflected in the comment options available for future transactions.', operationId: 'configUnitComment_update', tags: ['Configuration', 'Unit Comment'] })
+  @ApiOperation({ summary: 'Update a unit comment', description: 'Modifies an existing predefined comment template. Changes are reflected in the comment options available for future transactions.', operationId: 'configUnitComment_update', tags: ['Configuration', 'Unit Comment'], 'x-description-th': 'อัปเดตข้อมูลหมายเหตุหน่วยนับที่มีอยู่' } as any)
   @ApiBody({ type: UnitCommentUpdateRequest })
   async update(
     @Param('bu_code') bu_code: string,
@@ -227,7 +227,7 @@ export class Config_UnitCommentController extends BaseHttpController {
   @UseGuards(new AppIdGuard('unitComment.delete'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a unit comment', description: 'Removes a predefined comment template from the available options. Historical transactions that used this comment are not affected.', operationId: 'configUnitComment_delete', tags: ['Configuration', 'Unit Comment'] })
+  @ApiOperation({ summary: 'Delete a unit comment', description: 'Removes a predefined comment template from the available options. Historical transactions that used this comment are not affected.', operationId: 'configUnitComment_delete', tags: ['Configuration', 'Unit Comment'], 'x-description-th': 'ลบหมายเหตุหน่วยนับตาม ID' } as any)
   async remove(
     @Param('bu_code') bu_code: string,
     @Param('id') id: string,

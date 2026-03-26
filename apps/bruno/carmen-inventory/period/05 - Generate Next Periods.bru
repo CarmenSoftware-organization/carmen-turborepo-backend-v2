@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Generate Next Periods
+  สร้างรอบบัญชีถัดไปจำนวน N รอบแบบอัตโนมัติ
+
+  Bulk-generate the next N fiscal/accounting periods automatically.
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/period/next
   body: json

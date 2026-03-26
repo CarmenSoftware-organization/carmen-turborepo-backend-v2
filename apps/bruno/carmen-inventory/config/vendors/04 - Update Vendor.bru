@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Vendor
+  อัปเดตข้อมูลผู้ขายที่มีอยู่
+
+  Updates an existing vendor/supplier record.
+}
+
 put {
   url: {{host}}/api/config/{{bu_code}}/vendors/:id
   body: json

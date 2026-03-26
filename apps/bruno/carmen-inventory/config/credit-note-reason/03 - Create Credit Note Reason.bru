@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Credit Note Reason
+  สร้างเหตุผลใบลดหนี้ใหม่
+
+  Creates a new reason that can be selected when issuing vendor credit notes.
+}
+
 post {
   url: {{host}}/api/config/{{bu_code}}/credit-note-reason
   body: json

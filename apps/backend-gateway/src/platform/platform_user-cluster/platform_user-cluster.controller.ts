@@ -64,6 +64,7 @@ export class Platform_UserClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get user-cluster mapping by ID',
     description: 'Retrieves the details of a specific user-to-organization membership, showing which user belongs to which hotel chain or company and their role within it.',
+    'x-description-th': 'ดึงข้อมูลคลัสเตอร์ของผู้ใช้รายการเดียวตาม ID',
     operationId: 'platformUserCluster_findOne',
     tags: ['Platform Admin', 'User Cluster'],
     deprecated: false,
@@ -73,7 +74,7 @@ export class Platform_UserClusterController extends BaseHttpController {
       401: { description: 'Unauthorized' },
       404: { description: 'Mapping not found' },
     },
-  })
+  } as any)
   async getUserCluster(
     @Req() req: Request,
     @Res() res: Response,
@@ -115,6 +116,7 @@ export class Platform_UserClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get all user-cluster mappings',
     description: 'Lists all user-to-organization memberships across the platform, showing which users belong to which hotel chains or companies. Used to manage and audit organizational-level access control.',
+    'x-description-th': 'แสดงรายการคลัสเตอร์ของผู้ใช้ทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'platformUserCluster_findAll',
     tags: ['Platform Admin', 'User Cluster'],
     deprecated: false,
@@ -123,7 +125,7 @@ export class Platform_UserClusterController extends BaseHttpController {
       200: { description: 'User-cluster mappings retrieved successfully' },
       401: { description: 'Unauthorized' },
     },
-  })
+  } as any)
   async getUserClusterAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -166,6 +168,7 @@ export class Platform_UserClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a user-cluster mapping',
     description: 'Adds a user to a hotel chain or company organization, granting them membership at the cluster level. This is typically the first step before assigning the user to individual business units (properties) within that cluster.',
+    'x-description-th': 'สร้างคลัสเตอร์ของผู้ใช้ใหม่',
     operationId: 'platformUserCluster_create',
     tags: ['Platform Admin', 'User Cluster'],
     deprecated: false,
@@ -175,7 +178,7 @@ export class Platform_UserClusterController extends BaseHttpController {
       400: { description: 'Bad request' },
       401: { description: 'Unauthorized' },
     },
-  })
+  } as any)
   async CreateUserCluster(
     @Req() req: Request,
     @Res() res: Response,
@@ -219,6 +222,7 @@ export class Platform_UserClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a user-cluster mapping',
     description: 'Modifies an existing user-to-organization membership, such as changing the user\'s role or access level within a hotel chain or company.',
+    'x-description-th': 'อัปเดตข้อมูลคลัสเตอร์ของผู้ใช้ที่มีอยู่',
     operationId: 'platformUserCluster_update',
     tags: ['Platform Admin', 'User Cluster'],
     deprecated: false,
@@ -229,7 +233,7 @@ export class Platform_UserClusterController extends BaseHttpController {
       401: { description: 'Unauthorized' },
       404: { description: 'Mapping not found' },
     },
-  })
+  } as any)
   async UpdateUserCluster(
     @Req() req: Request,
     @Res() res: Response,
@@ -277,6 +281,7 @@ export class Platform_UserClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a user-cluster mapping',
     description: 'Removes a user\'s membership from a hotel chain or company organization. This revokes their organizational-level access and may cascade to remove their business unit assignments within that cluster.',
+    'x-description-th': 'ลบคลัสเตอร์ของผู้ใช้ตาม ID',
     operationId: 'platformUserCluster_delete',
     tags: ['Platform Admin', 'User Cluster'],
     deprecated: false,
@@ -286,7 +291,7 @@ export class Platform_UserClusterController extends BaseHttpController {
       401: { description: 'Unauthorized' },
       404: { description: 'Mapping not found' },
     },
-  })
+  } as any)
   async DeleteUserCluster(
     @Req() req: Request,
     @Res() res: Response,

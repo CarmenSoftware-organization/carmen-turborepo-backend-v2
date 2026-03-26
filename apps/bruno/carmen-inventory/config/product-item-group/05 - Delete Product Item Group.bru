@@ -4,6 +4,16 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Product Item Group
+  ลบกลุ่มรายการสินค้าตาม ID
+
+  Removes a product item group from the system.
+
+  ### Path Parameters
+  - `id` — Product Item Group UUID (รหัสกลุ่มรายการสินค้า)
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/products/item-group/:id
   body: none

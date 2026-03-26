@@ -77,7 +77,8 @@ export class Config_ProductsController extends BaseHttpController {
     operationId: 'configProducts_findOne',
     tags: ['Configuration', 'Products'],
     responses: { 200: { description: 'Product retrieved successfully' } },
-  })
+    'x-description-th': 'ดึงข้อมูลสินค้ารายการเดียวตาม ID',
+  } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -121,7 +122,8 @@ export class Config_ProductsController extends BaseHttpController {
     operationId: 'configProducts_findAll',
     tags: ['Configuration', 'Products'],
     responses: { 200: { description: 'Products retrieved successfully' } },
-  })
+    'x-description-th': 'แสดงรายการสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -171,7 +173,8 @@ export class Config_ProductsController extends BaseHttpController {
     operationId: 'configProducts_findItemGroup',
     tags: ['Configuration', 'Products'],
     responses: { 200: { description: 'Product item group retrieved successfully' } },
-  })
+    'x-description-th': 'ดึงข้อมูลกลุ่มรายการสินค้าตาม ID',
+  } as any)
   async findItemGroup(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -246,7 +249,8 @@ export class Config_ProductsController extends BaseHttpController {
     operationId: 'configProducts_create',
     tags: ['Configuration', 'Products'],
     responses: { 201: { description: 'Product created successfully' } },
-  })
+    'x-description-th': 'สร้างสินค้าใหม่',
+  } as any)
   @ApiBody({ type: ProductCreateRequestDto })
   async create(
     @Req() req: Request,
@@ -296,7 +300,8 @@ export class Config_ProductsController extends BaseHttpController {
     operationId: 'configProducts_update',
     tags: ['Configuration', 'Products'],
     responses: { 200: { description: 'Product updated successfully' } },
-  })
+    'x-description-th': 'อัปเดตข้อมูลสินค้าที่มีอยู่',
+  } as any)
   @ApiBody({ type: ProductUpdateRequestDto })
   async update(
     @Req() req: Request,
@@ -351,7 +356,8 @@ export class Config_ProductsController extends BaseHttpController {
     operationId: 'configProducts_delete',
     tags: ['Configuration', 'Products'],
     responses: { 200: { description: 'Product deleted successfully' } },
-  })
+    'x-description-th': 'ลบสินค้าตาม ID',
+  } as any)
   async delete(
     @Req() req: Request,
     @Res() res: Response,

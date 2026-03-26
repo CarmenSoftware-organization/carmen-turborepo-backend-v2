@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Activity Log By Entity
+  ดึงรายการบันทึกกิจกรรมตามประเภทเอกสาร
+
+  Retrieve activity logs filtered by entity type.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/activity-log/entity/:entity_type
   body: none

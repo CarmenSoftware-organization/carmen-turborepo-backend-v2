@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Location
+  อัปเดตข้อมูลสถานที่/คลังสินค้าที่มีอยู่
+
+  Updates an existing location/warehouse record.
+}
+
 patch {
   url: {{host}}/api/config/{{bu_code}}/locations/:id
   body: json

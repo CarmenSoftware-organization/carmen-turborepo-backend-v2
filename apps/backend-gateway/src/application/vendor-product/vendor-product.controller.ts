@@ -84,7 +84,8 @@ export class VendorProductController extends BaseHttpController {
         description: 'Vendor product not found',
       },
     },
-  })
+    'x-description-th': 'ดึงข้อมูลสินค้าของผู้ขายรายการเดียวตาม ID',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findOne(
     @Param('id') id: string,
@@ -145,7 +146,8 @@ export class VendorProductController extends BaseHttpController {
         description: 'Vendor products not found',
       },
     },
-  })
+    'x-description-th': 'แสดงรายการสินค้าของผู้ขายทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Req() req: Request,
@@ -204,7 +206,8 @@ export class VendorProductController extends BaseHttpController {
         description: 'Vendor product not found',
       },
     },
-  })
+    'x-description-th': 'สร้างสินค้าของผู้ขายใหม่',
+  } as any)
   @HttpCode(HttpStatus.CREATED)
   async create(
     @Req() req: Request,
@@ -264,7 +267,8 @@ export class VendorProductController extends BaseHttpController {
         description: 'Vendor product not found',
       },
     },
-  })
+    'x-description-th': 'อัปเดตข้อมูลสินค้าของผู้ขายที่มีอยู่',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id') id: string,
@@ -326,7 +330,8 @@ export class VendorProductController extends BaseHttpController {
         description: 'Vendor product not found',
       },
     },
-  })
+    'x-description-th': 'ลบสินค้าของผู้ขายตาม ID',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async delete(
     @Param('id') id: string,

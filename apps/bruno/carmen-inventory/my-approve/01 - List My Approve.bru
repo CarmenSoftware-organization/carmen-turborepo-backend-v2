@@ -4,6 +4,20 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List My Approvals
+  แสดงรายการเอกสารจัดซื้อทั้งหมดที่รอการอนุมัติของผู้ใช้ปัจจุบัน จัดกลุ่มตามประเภทเอกสาร (ใบเบิกสินค้า ใบขอซื้อ ใบสั่งซื้อ) ทำหน้าที่เป็นคิวงานหลักของผู้อนุมัติ
+
+  Retrieves the full list of procurement documents pending the current user's approval, grouped by document type (store requisitions, purchase requests, purchase orders), serving as the approver's central task queue.
+
+  ### Query Parameters
+  - `version` — API version (optional)
+  - `page` — Page number (optional)
+  - `perpage` — Items per page (optional)
+  - `search` — Search keyword (optional)
+  - `bu_code` — Business unit code filter (optional)
+}
+
 get {
   url: {{host}}/api/my-approve
   body: none

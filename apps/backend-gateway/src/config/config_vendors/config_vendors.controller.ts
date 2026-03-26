@@ -74,7 +74,8 @@ export class Config_VendorsController extends BaseHttpController {
     operationId: 'configVendors_findOne',
     tags: ['Configuration', 'Vendors'],
     responses: { 200: { description: 'Vendor retrieved successfully' } },
-  })
+    'x-description-th': 'ดึงข้อมูลผู้ขายรายการเดียวตาม ID',
+  } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -117,7 +118,8 @@ export class Config_VendorsController extends BaseHttpController {
     operationId: 'configVendors_findAll',
     tags: ['Configuration', 'Vendors'],
     responses: { 200: { description: 'Vendors retrieved successfully' } },
-  })
+    'x-description-th': 'แสดงรายการผู้ขายทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -165,7 +167,8 @@ export class Config_VendorsController extends BaseHttpController {
     operationId: 'configVendors_create',
     tags: ['Configuration', 'Vendors'],
     responses: { 201: { description: 'Vendor created successfully' } },
-  })
+    'x-description-th': 'สร้างผู้ขายใหม่',
+  } as any)
   @ApiBody({ type: VendorCreateRequestDto })
   async create(
     @Req() req: Request,
@@ -214,7 +217,8 @@ export class Config_VendorsController extends BaseHttpController {
     operationId: 'configVendors_update',
     tags: ['Configuration', 'Vendors'],
     responses: { 200: { description: 'Vendor updated successfully' } },
-  })
+    'x-description-th': 'อัปเดตข้อมูลผู้ขายที่มีอยู่',
+  } as any)
   @ApiBody({ type: VendorUpdateRequestDto })
   async update(
     @Req() req: Request,
@@ -263,7 +267,8 @@ export class Config_VendorsController extends BaseHttpController {
     operationId: 'configVendors_delete',
     tags: ['Configuration', 'Vendors'],
     responses: { 200: { description: 'Vendor deleted successfully' } },
-  })
+    'x-description-th': 'ลบผู้ขายตาม ID',
+  } as any)
   async delete(
     @Req() req: Request,
     @Res() res: Response,

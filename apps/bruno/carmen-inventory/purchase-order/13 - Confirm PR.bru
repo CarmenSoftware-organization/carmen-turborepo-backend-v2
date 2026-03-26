@@ -4,6 +4,17 @@ meta {
   seq: 13
 }
 
+docs {
+  ## Confirm PR and Create PO(s)
+  แปลงใบขอซื้อที่อนุมัติแล้วเป็นใบสั่งซื้อ โดยจัดกลุ่มรายการตามผู้ขาย วันส่งมอบ และสกุลเงิน
+
+  Converts approved purchase requests into purchase orders by grouping PR line items by vendor, delivery date, and currency. Optionally accepts a `workflow_id`; if omitted, auto-resolves the default purchase_order_workflow. Created POs are linked to the resolved workflow.
+
+  ### Body
+  - `pr_ids` — Array of purchase request UUIDs
+  - `workflow_id` (optional) — Workflow UUID
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/purchase-order/confirm-pr
   body: json

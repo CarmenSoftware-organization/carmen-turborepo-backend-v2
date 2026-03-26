@@ -4,6 +4,13 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Delete Recipe Category
+  ลบหมวดหมู่สูตรอาหารออกจากระบบ ควรย้ายสูตรอาหารไปหมวดหมู่อื่นก่อนลบ
+
+  Removes a recipe category from the system. Recipes assigned to this category should be reassigned before deletion.
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/recipe-category/:id
   body: none

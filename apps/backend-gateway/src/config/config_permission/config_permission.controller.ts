@@ -39,7 +39,7 @@ export class ConfigPermissionController extends BaseHttpController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all permissions', description: 'Returns all granular permission definitions available in the system. Permissions control access to specific features and actions, and are assigned to application roles for role-based access control.', operationId: 'configPermission_findAll', tags: ['Configuration', 'Permission'] })
+  @ApiOperation({ summary: 'Get all permissions', description: 'Returns all granular permission definitions available in the system. Permissions control access to specific features and actions, and are assigned to application roles for role-based access control.', operationId: 'configPermission_findAll', tags: ['Configuration', 'Permission'], 'x-description-th': 'แสดงรายการสิทธิ์การใช้งานทั้งหมดพร้อมการแบ่งหน้าและค้นหา' } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,

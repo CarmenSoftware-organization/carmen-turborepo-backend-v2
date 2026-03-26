@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Locations
+  แสดงรายการสถานที่/คลังสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Retrieves all locations/warehouses configured in the business unit with pagination and search support.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/locations
   body: none

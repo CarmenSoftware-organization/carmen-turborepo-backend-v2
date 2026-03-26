@@ -90,7 +90,8 @@ export class PriceListController extends BaseHttpController {
         description: 'Price comparison was successfully retrieved',
       },
     },
-  })
+    'x-description-th': 'เปรียบเทียบราคาสินค้าจากผู้ขายข้ามรายการราคาที่ใช้งานอยู่',
+  } as any)
   async priceCompare(
     @Req() req: Request,
     @Res() res: Response,
@@ -170,7 +171,8 @@ export class PriceListController extends BaseHttpController {
         description: 'Price list was not found',
       },
     },
-  })
+    'x-description-th': 'ดึงข้อมูลรายการราคารายการเดียวตาม ID',
+  } as any)
   async findOne(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -229,7 +231,8 @@ export class PriceListController extends BaseHttpController {
         description: 'Price lists were successfully retrieved',
       },
     },
-  })
+    'x-description-th': 'แสดงรายการราคาทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -286,7 +289,8 @@ export class PriceListController extends BaseHttpController {
         description: 'Bad request',
       },
     },
-  })
+    'x-description-th': 'สร้างรายการราคาใหม่',
+  } as any)
   @ApiBody({ type: PriceListCreateRequestDto })
   async create(
     @Body() data: PriceListCreateDto,
@@ -351,7 +355,8 @@ export class PriceListController extends BaseHttpController {
         description: 'Price list was not found',
       },
     },
-  })
+    'x-description-th': 'อัปเดตข้อมูลรายการราคาที่มีอยู่',
+  } as any)
   @ApiBody({ type: PriceListUpdateRequestDto })
   async update(
     @Param('id') id: string,
@@ -417,7 +422,8 @@ export class PriceListController extends BaseHttpController {
         description: 'Price list was not found',
       },
     },
-  })
+    'x-description-th': 'ลบรายการราคาตาม ID',
+  } as any)
   async remove(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,

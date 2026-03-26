@@ -4,6 +4,16 @@ meta {
   seq: 7
 }
 
+docs {
+  ## Update Price List Template Status
+  อัปเดตสถานะของแม่แบบรายการราคา
+
+  Changes the lifecycle status of a price list template (active/inactive).
+
+  ### Path Parameters
+  - `id` -- Price list template ID (UUID) / รหัสแม่แบบรายการราคา
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/price-list-template/:id/status
   body: json

@@ -4,6 +4,16 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Vendor Product
+  ลบสินค้าของผู้ขายตาม ID
+
+  Removes a vendor-product mapping when a vendor no longer supplies a particular product.
+
+  ### Path Parameters
+  - `id` — Vendor Product UUID (รหัสสินค้าของผู้ขาย)
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/vendor-product/:id
   body: none

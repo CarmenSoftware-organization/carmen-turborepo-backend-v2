@@ -4,6 +4,17 @@ meta {
   seq: 10
 }
 
+docs {
+  ## Submit Physical Count
+  ส่งการตรวจนับสินค้าขั้นสุดท้าย และสร้างรายการปรับปรุงสินค้าคงคลังอัตโนมัติเพื่อปรับจำนวนในระบบให้ตรงกับจำนวนที่นับได้จริง
+
+  Finalizes a physical count and automatically generates inventory adjustment records to reconcile system stock levels with the actual counted quantities.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Physical Count ID / รหัสการตรวจนับสินค้า
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/physical-count/:id/submit
   body: none

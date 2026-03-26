@@ -4,6 +4,16 @@ meta {
   seq: 12
 }
 
+docs {
+  ## Export Purchase Request to Excel
+  สร้างไฟล์ Excel ของใบขอซื้อพร้อมรายการสินค้า ราคา และรายละเอียดการอนุมัติทั้งหมด ใช้สำหรับตรวจสอบแบบออฟไลน์ แชร์กับผู้เกี่ยวข้อง หรือเก็บเป็นเอกสาร
+
+  Generates an Excel spreadsheet of the purchase request with all line items, pricing, and approval details. Used for offline review, sharing with stakeholders, or archival purposes.
+
+  ### Path Parameters
+  - `id` — Purchase request ID
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-request/:id/export
   body: none

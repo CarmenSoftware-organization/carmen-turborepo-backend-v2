@@ -4,6 +4,22 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Purchase Orders
+  แสดงรายการใบสั่งซื้อทั้งหมดของหน่วยธุรกิจพร้อมการแบ่งหน้าและค้นหา สามารถกรองตาม vendor_id ได้
+
+  Lists all purchase orders for the business unit with pagination and search.
+  Optionally filter by `vendor_id`.
+
+  Used by purchasers and managers to track outstanding orders, monitor delivery status, and manage vendor commitments.
+
+  ### Query Parameters
+  - `vendor_id` (optional) — Filter by vendor UUID
+  - `page`, `perpage` — Pagination
+  - `search` — Search by PO number, description, vendor name
+  - `filter`, `sort` — Advanced filtering and sorting
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-order
   body: none

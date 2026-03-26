@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Location
+  สร้างสถานที่/คลังสินค้าใหม่
+
+  Creates a new location/warehouse in the business unit.
+}
+
 post {
   url: {{host}}/api/config/{{bu_code}}/locations
   body: json

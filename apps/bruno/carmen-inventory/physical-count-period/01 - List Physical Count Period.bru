@@ -4,6 +4,16 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Physical Count Periods
+  ดึงรายการรอบการตรวจนับสินค้าทั้งหมดของหน่วยธุรกิจ ช่วยให้ผู้จัดการคลังสินค้าวางแผนและกำหนดตารางการตรวจสอบสินค้าคงคลังเป็นรอบ
+
+  Lists all defined physical count periods for the business unit, allowing inventory managers to plan and schedule recurring stock verification cycles.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/physical-count-period
   body: none

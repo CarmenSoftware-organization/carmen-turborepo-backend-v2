@@ -4,6 +4,17 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Get Pending Store Requisitions by Status
+  ค้นหารายการใบเบิกสินค้าตามสถานะ (เช่น ร่าง รออนุมัติ อนุมัติแล้ว ปฏิเสธ) ช่วยให้ผู้ใช้ดูคำขอเบิกสินค้าในขั้นตอนเฉพาะของเวิร์กโฟลว์
+
+  Filters store requisitions by their current status (e.g., draft, pending, approved, rejected), allowing users to view internal stock requests at a specific stage in the approval workflow.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `status` — Requisition status (e.g., pending, approved, rejected)
+}
+
 get {
   url: {{host}}/api/my-pending/store-requisition/:bu_code/status/:status
   body: none

@@ -4,6 +4,13 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Get Pending Good Received Notes Count
+  แสดงจำนวนใบรับสินค้าที่รอดำเนินการของผู้ใช้ปัจจุบัน ใช้บนแดชบอร์ดเพื่อแจ้งเตือนเจ้าหน้าที่รับสินค้าเกี่ยวกับการส่งมอบจากผู้ขายที่รอการตรวจรับและบันทึก
+
+  Returns the number of goods deliveries awaiting receiving action by the current user. Used on dashboards to alert receiving staff about pending vendor deliveries that need to be inspected and recorded.
+}
+
 get {
   url: {{host}}/api/good-received-note/pending
   body: none

@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Create Purchase Request Template
+  สร้างเทมเพลตใบขอซื้อใหม่ที่ใช้ซ้ำได้พร้อมรายการสินค้าและจำนวนที่กำหนดไว้ล่วงหน้า ช่วยลดขั้นตอนการจัดซื้อซ้ำ เช่น การสั่งซื้อวัตถุดิบครัวประจำสัปดาห์
+
+  Creates a new reusable purchase request template with a predefined set of items and quantities, streamlining repetitive procurement tasks such as weekly kitchen supply orders or periodic maintenance material requests.
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/purchase-request-template
   body: json

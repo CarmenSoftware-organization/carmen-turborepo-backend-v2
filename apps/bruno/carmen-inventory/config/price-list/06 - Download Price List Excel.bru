@@ -4,6 +4,16 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Download Price List Excel
+  ดาวน์โหลดรายการราคาเป็นไฟล์ Excel
+
+  Exports a vendor price list to Excel format for offline review and cost analysis.
+
+  ### Path Parameters
+  - `id` -- Price list ID (UUID) / รหัสรายการราคา
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/price-list/:id/download-excel
   body: none

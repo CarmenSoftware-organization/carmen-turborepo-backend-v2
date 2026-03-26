@@ -57,13 +57,14 @@ export class Platform_ReportTemplateController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get list of report templates',
     description: 'Lists all report templates with pagination. Each template contains dialog (XML) for parameter configuration and content (XML converted from .frx) for report layout.',
+    'x-description-th': 'แสดงรายการแม่แบบรายงานทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'platformReportTemplate_findAll',
     tags: ['Platform Admin', 'Report Template'],
     responses: {
       200: { description: 'Report templates retrieved successfully' },
       401: { description: 'Unauthorized' },
     },
-  })
+  } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -97,6 +98,7 @@ export class Platform_ReportTemplateController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get report template by ID',
     description: 'Retrieves a specific report template including its dialog (XML) and content (XML from .frx file).',
+    'x-description-th': 'ดึงข้อมูลแม่แบบรายงานรายการเดียวตาม ID',
     operationId: 'platformReportTemplate_findOne',
     tags: ['Platform Admin', 'Report Template'],
     responses: {
@@ -104,7 +106,7 @@ export class Platform_ReportTemplateController extends BaseHttpController {
       401: { description: 'Unauthorized' },
       404: { description: 'Report template not found' },
     },
-  })
+  } as any)
   async findOne(
     @Param('id') id: string,
     @Req() req: Request,
@@ -137,6 +139,7 @@ export class Platform_ReportTemplateController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a new report template',
     description: 'Creates a new report template. The dialog field stores XML for parameter dialog configuration. The content field stores XML converted from .frx report layout file.',
+    'x-description-th': 'สร้างแม่แบบรายงานใหม่',
     operationId: 'platformReportTemplate_create',
     tags: ['Platform Admin', 'Report Template'],
     responses: {
@@ -144,7 +147,7 @@ export class Platform_ReportTemplateController extends BaseHttpController {
       400: { description: 'Bad request' },
       401: { description: 'Unauthorized' },
     },
-  })
+  } as any)
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -178,6 +181,7 @@ export class Platform_ReportTemplateController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a report template',
     description: 'Updates an existing report template. Can update dialog (XML), content (XML from .frx), and other metadata.',
+    'x-description-th': 'อัปเดตข้อมูลแม่แบบรายงานที่มีอยู่',
     operationId: 'platformReportTemplate_update',
     tags: ['Platform Admin', 'Report Template'],
     responses: {
@@ -186,7 +190,7 @@ export class Platform_ReportTemplateController extends BaseHttpController {
       401: { description: 'Unauthorized' },
       404: { description: 'Report template not found' },
     },
-  })
+  } as any)
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -221,6 +225,7 @@ export class Platform_ReportTemplateController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a report template',
     description: 'Soft-deletes a report template by setting deleted_at timestamp.',
+    'x-description-th': 'ลบแม่แบบรายงานตาม ID',
     operationId: 'platformReportTemplate_delete',
     tags: ['Platform Admin', 'Report Template'],
     responses: {
@@ -228,7 +233,7 @@ export class Platform_ReportTemplateController extends BaseHttpController {
       401: { description: 'Unauthorized' },
       404: { description: 'Report template not found' },
     },
-  })
+  } as any)
   async delete(
     @Req() req: Request,
     @Res() res: Response,

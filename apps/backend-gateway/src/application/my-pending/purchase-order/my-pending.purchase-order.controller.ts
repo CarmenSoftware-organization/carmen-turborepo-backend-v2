@@ -97,7 +97,8 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
         },
       },
     },
-  })
+    'x-description-th': 'ดึงจำนวนใบสั่งซื้อที่รอดำเนินการของผู้ใช้ปัจจุบันในสายการอนุมัติ ใช้สำหรับแสดงป้ายแจ้งเตือนบนแดชบอร์ดและตัวบ่งชี้ภาระงาน',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findAllPendingPurchaseOrdersCount(
     @Req() req: Request,
@@ -161,7 +162,8 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
         description: 'The purchase order was not found',
       },
     },
-  })
+    'x-description-th': 'ดึงรายละเอียดทั้งหมดของใบสั่งซื้อที่รออนุมัติตาม ID รวมถึงข้อมูลผู้ขาย รายการสินค้า จำนวน ราคา และขั้นตอนอนุมัติปัจจุบัน',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findById(
     @Req() req: Request,
@@ -245,7 +247,8 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
         description: 'The purchase orders were not found',
       },
     },
-  })
+    'x-description-th': 'แสดงรายการใบสั่งซื้อทั้งหมดที่รอการอนุมัติของผู้ใช้พร้อมการแบ่งหน้า ให้ผู้อนุมัติตรวจสอบและดำเนินการกับใบสั่งซื้อที่รออนุมัติ',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Req() req: Request,

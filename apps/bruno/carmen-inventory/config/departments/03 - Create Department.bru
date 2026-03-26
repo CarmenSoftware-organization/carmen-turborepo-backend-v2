@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Department
+  สร้างแผนกใหม่
+
+  Creates a new department in the business unit.
+}
+
 post {
   url: {{host}}/api/config/{{bu_code}}/departments
   body: json

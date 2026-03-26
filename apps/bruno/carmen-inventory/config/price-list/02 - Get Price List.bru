@@ -4,6 +4,16 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Price List (Config)
+  ดึงข้อมูลรายการราคารายการเดียวตาม ID
+
+  Retrieves a specific vendor price list with all its line-item pricing details.
+
+  ### Path Parameters
+  - `id` -- Price list ID (UUID) / รหัสรายการราคา
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/price-list/:id
   body: none

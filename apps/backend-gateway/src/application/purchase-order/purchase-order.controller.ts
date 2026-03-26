@@ -114,7 +114,8 @@ export class PurchaseOrderController extends BaseHttpController {
     responses: {
       200: { description: 'PO list for vendor retrieved successfully' },
     },
-  })
+    'x-description-th': 'แสดงรายการใบสั่งซื้อ (สถานะส่งแล้ว/รับบางส่วน) กรองตามผู้ขาย พร้อมรายละเอียดแยกตาม location สำหรับใช้ในการสร้างใบรับสินค้า',
+  } as any)
   @ApiParam({ name: 'vendor_id', description: 'Vendor ID', type: 'string', format: 'uuid' })
   @ApiResponse({ status: 200, description: 'PO list for vendor retrieved successfully', type: PurchaseOrderListResponseDto })
   @HttpCode(HttpStatus.OK)
@@ -149,7 +150,8 @@ export class PurchaseOrderController extends BaseHttpController {
     responses: {
       200: { description: 'PO list with location breakdown retrieved successfully' },
     },
-  })
+    'x-description-th': 'แสดงรายการใบสั่งซื้อ (สถานะส่งแล้ว/รับบางส่วน) พร้อมรายละเอียดแยกตาม location จากใบขอซื้อ สำหรับใช้ในขั้นตอนการสร้างใบรับสินค้า',
+  } as any)
   @ApiResponse({ status: 200, description: 'PO list with location breakdown retrieved successfully', type: PurchaseOrderListResponseDto })
   @HttpCode(HttpStatus.OK)
   async findAllForGrn(
@@ -192,7 +194,8 @@ export class PurchaseOrderController extends BaseHttpController {
       200: { description: 'Previous stages retrieved successfully' },
       404: { description: 'Purchase order not found or no workflow assigned' },
     },
-  })
+    'x-description-th': 'ดึงขั้นตอนการทำงานก่อนหน้าขั้นตอนปัจจุบันของใบสั่งซื้อ ใช้สำหรับกำหนดตัวเลือกในการส่งกลับตรวจสอบ',
+  } as any)
   @ApiResponse({ status: 200, description: 'Previous stages retrieved successfully', type: PurchaseOrderPreviousStagesResponseDto })
   @ApiResponse({ status: 404, description: 'Purchase order not found or no workflow assigned' })
   async getPreviousStagesByPoId(
@@ -255,7 +258,8 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'The purchase order was not found',
       },
     },
-  })
+    'x-description-th': 'ดึงรายละเอียดทั้งหมดของใบสั่งซื้อตาม ID รวมถึงข้อมูลผู้ขาย รายการสินค้า ราคา วันส่งมอบ สถานะขั้นตอนการทำงาน และบทบาทของผู้ใช้ที่เข้าสู่ระบบ',
+  } as any)
   @ApiResponse({ status: 200, description: 'The purchase order was successfully retrieved', type: PurchaseOrderDetailResponseDto })
   @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
@@ -320,7 +324,8 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'The purchase orders were not found',
       },
     },
-  })
+    'x-description-th': 'แสดงรายการใบสั่งซื้อทั้งหมดของหน่วยธุรกิจพร้อมการแบ่งหน้าและค้นหา สามารถกรองตาม vendor_id ได้',
+  } as any)
   @ApiResponse({ status: 200, description: 'The purchase orders were successfully retrieved', type: PurchaseOrderListResponseDto })
   @HttpCode(HttpStatus.OK)
   async findAll(
@@ -396,7 +401,8 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'Invalid request body',
       },
     },
-  })
+    'x-description-th': 'สร้างใบสั่งซื้อใหม่เพื่อยืนยันการจัดซื้อจากผู้ขาย โดยจัดกลุ่มรายการจากใบขอซื้อที่อนุมัติแล้วตามผู้ขาย วันส่งมอบ และสกุลเงิน',
+  } as any)
   @ApiBody({
     type: CreatePurchaseOrderSwaggerDto,
     examples: {
@@ -474,7 +480,8 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'The purchase order was not found',
       },
     },
-  })
+    'x-description-th': 'อัปเดตข้อมูลส่วนหัวและรายการของใบสั่งซื้อ เช่น จำนวน ราคา วันส่งมอบ หรือเงื่อนไขผู้ขาย ใช้ได้เฉพาะใบสั่งซื้อที่ยังไม่ได้รับสินค้าครบหรือปิดแล้ว',
+  } as any)
   @ApiBody({ type: UpdatePurchaseOrderSwaggerDto })
   @ApiResponse({ status: 200, description: 'The purchase order was successfully updated', type: PurchaseOrderMutationResponseDto })
   @ApiResponse({ status: 404, description: 'The purchase order was not found' })
@@ -546,7 +553,8 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'The purchase order was not found',
       },
     },
-  })
+    'x-description-th': 'ลบใบสั่งซื้อที่ไม่ต้องการแล้ว โดยทั่วไปใช้สำหรับใบสั่งซื้อฉบับร่างที่สร้างผิดพลาดก่อนส่งให้ผู้ขาย',
+  } as any)
   @ApiResponse({ status: 200, description: 'The purchase order was successfully deleted', type: PurchaseOrderMutationResponseDto })
   @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
@@ -614,7 +622,8 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'The purchase order was not found or not in progress',
       },
     },
-  })
+    'x-description-th': 'บันทึกการเปลี่ยนแปลงใบสั่งซื้อที่กำลังจัดเตรียม รวมถึงเพิ่มรายการใหม่ แก้ไขจำนวนหรือราคา และลบรายการ ใช้โดยผู้จัดซื้อเพื่อสรุปรายละเอียดก่อนส่งเข้าสู่ขั้นตอนอนุมัติ',
+  } as any)
   @ApiBody({
     type: SavePurchaseOrderSwaggerDto,
     description: 'Save purchase order with header changes and detail add/update/remove',
@@ -674,7 +683,8 @@ export class PurchaseOrderController extends BaseHttpController {
     description: 'Submits a draft purchase order into the approval workflow. Once submitted, the PO moves from draft to in_progress status and enters the configured approval chain.',
     operationId: 'submitPurchaseOrder',
     tags: ['Procurement', 'Purchase Order'],
-  })
+    'x-description-th': 'ส่งใบสั่งซื้อฉบับร่างเข้าสู่ขั้นตอนอนุมัติ เมื่อส่งแล้วสถานะจะเปลี่ยนจากร่างเป็นอยู่ระหว่างดำเนินการและเข้าสู่สายการอนุมัติที่กำหนดไว้',
+  } as any)
   @ApiBody({ type: SubmitPurchaseOrderSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async submit(
@@ -738,7 +748,8 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'The purchase order was not found',
       },
     },
-  })
+    'x-description-th': 'อนุมัติใบสั่งซื้อในขั้นตอนปัจจุบันของเวิร์กโฟลว์ ผู้มีอำนาจอนุมัติแต่ละคน (เช่น FC, GM) ลงนามเพื่ออนุมัติการสั่งซื้อและค่าใช้จ่าย',
+  } as any)
   @ApiBody({
     type: ApprovePurchaseOrderSwaggerDto,
     description: 'Approve purchase order payload',
@@ -824,7 +835,8 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'The purchase order was not found',
       },
     },
-  })
+    'x-description-th': 'ปฏิเสธใบสั่งซื้อในขั้นตอนอนุมัติปัจจุบัน ปิดใบสั่งซื้อและป้องกันไม่ให้ส่งไปยังผู้ขาย ใช้เมื่อผู้อนุมัติพิจารณาว่าไม่ควรดำเนินการต่อ',
+  } as any)
   @ApiBody({
     type: RejectPurchaseOrderSwaggerDto,
     description: 'Reject purchase order payload',
@@ -910,7 +922,8 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'The purchase order was not found',
       },
     },
-  })
+    'x-description-th': 'ส่งใบสั่งซื้อกลับไปยังขั้นตอนก่อนหน้าเพื่อแก้ไข เช่น ปรับเงื่อนไขผู้ขาย จำนวน หรือราคา ให้ผู้อนุมัติร้องขอการแก้ไขก่อนอนุมัติขั้นสุดท้าย',
+  } as any)
   @ApiBody({
     type: ReviewPurchaseOrderSwaggerDto,
     description: 'Review purchase order payload',
@@ -995,7 +1008,8 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'The purchase order was not found',
       },
     },
-  })
+    'x-description-th': 'ยกเลิกใบสั่งซื้อที่ยังไม่ได้รับสินค้าครบถ้วน ถอนการสั่งซื้อจากผู้ขาย เฉพาะใบสั่งซื้อสถานะร่าง อยู่ระหว่างดำเนินการ หรือส่งแล้วเท่านั้นที่ยกเลิกได้',
+  } as any)
   @ApiResponse({ status: 200, description: 'The purchase order was successfully cancelled', type: PurchaseOrderMutationResponseDto })
   @ApiResponse({ status: 400, description: 'The purchase order cannot be cancelled due to invalid status' })
   @ApiResponse({ status: 404, description: 'The purchase order was not found' })
@@ -1063,7 +1077,8 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'The purchase order was not found',
       },
     },
-  })
+    'x-description-th': 'ปิดใบสั่งซื้อหลังจากได้รับสินค้าครบถ้วนหรือไม่คาดว่าจะมีการส่งมอบเพิ่มเติม แจ้งผู้ซื้อและส่งอีเมลไปยังผู้ขาย จำนวนที่ยังไม่ได้รับจะถูกบันทึกเป็นยกเลิก',
+  } as any)
   @ApiResponse({ status: 200, description: 'The purchase order was successfully closed', type: PurchaseOrderMutationResponseDto })
   @ApiResponse({ status: 400, description: 'The purchase order cannot be closed due to invalid status' })
   @ApiResponse({ status: 404, description: 'The purchase order was not found' })
@@ -1130,7 +1145,8 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'Workflow not found',
       },
     },
-  })
+    'x-description-th': 'แสดงตัวอย่างการจัดกลุ่มรายการใบขอซื้อที่อนุมัติแล้วเป็นใบสั่งซื้อตามผู้ขาย วันส่งมอบ และสกุลเงิน ใช้โดยผู้จัดซื้อเพื่อตรวจสอบโครงสร้างใบสั่งซื้อก่อนยืนยัน',
+  } as any)
   @ApiBody({
     type: GroupPrForPoSwaggerDto,
     examples: {
@@ -1213,7 +1229,8 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'Workflow not found',
       },
     },
-  })
+    'x-description-th': 'แปลงใบขอซื้อที่อนุมัติแล้วเป็นใบสั่งซื้อ โดยจัดกลุ่มรายการตามผู้ขาย วันส่งมอบ และสกุลเงิน ใบสั่งซื้อที่สร้างจะเชื่อมโยงกับขั้นตอนการทำงานที่กำหนด',
+  } as any)
   @ApiBody({
     type: ConfirmPrToPoSwaggerDto,
     examples: {
@@ -1301,7 +1318,8 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'The purchase order was not found',
       },
     },
-  })
+    'x-description-th': 'ส่งออกใบสั่งซื้อเป็นไฟล์ Excel พร้อมข้อมูลผู้ขาย รายการสินค้าทั้งหมด ราคา และข้อมูลการจัดส่ง สำหรับเก็บบันทึก แชร์กับฝ่ายการเงิน หรือส่งให้ผู้ขาย',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async exportToExcel(
     @Param('id') id: string,
@@ -1381,7 +1399,8 @@ export class PurchaseOrderController extends BaseHttpController {
         description: 'The purchase order was not found',
       },
     },
-  })
+    'x-description-th': 'พิมพ์ใบสั่งซื้อเป็นไฟล์ PDF สำหรับส่งให้ผู้ขาย ลงนามจริง หรือจัดเก็บเอกสาร รวมถึงข้อมูลผู้ขาย รายการสินค้า ยอดรวม เงื่อนไข และลายเซ็นอนุมัติ',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async printToPdf(
     @Param('id') id: string,
@@ -1442,7 +1461,8 @@ export class PurchaseOrderController extends BaseHttpController {
       200: { description: 'The purchase order details were successfully retrieved' },
       404: { description: 'The purchase order was not found' },
     },
-  })
+    'x-description-th': 'แสดงรายการทั้งหมดของใบสั่งซื้อ รวมถึงรายละเอียดสินค้า จำนวนที่สั่ง ราคาต่อหน่วย และจำนวนที่รับแล้ว สำหรับตรวจสอบการสั่งซื้อและติดตามการรับสินค้า',
+  } as any)
   @ApiResponse({ status: 200, description: 'The purchase order details were successfully retrieved', type: [PurchaseOrderDetailItemResponseDto] })
   @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
@@ -1490,7 +1510,8 @@ export class PurchaseOrderController extends BaseHttpController {
       200: { description: 'The purchase order detail was successfully retrieved' },
       404: { description: 'The purchase order detail was not found' },
     },
-  })
+    'x-description-th': 'ดึงรายการเดียวจากใบสั่งซื้อพร้อมรายละเอียดสินค้า ราคา และการจัดส่ง ใช้สำหรับตรวจสอบรายการเฉพาะเมื่อสร้างใบรับสินค้าหรือแก้ไขความคลาดเคลื่อน',
+  } as any)
   @ApiResponse({ status: 200, description: 'The purchase order detail was successfully retrieved', type: PurchaseOrderDetailItemResponseDto })
   @ApiResponse({ status: 404, description: 'The purchase order detail was not found' })
   @HttpCode(HttpStatus.OK)
@@ -1541,7 +1562,8 @@ export class PurchaseOrderController extends BaseHttpController {
       400: { description: 'Purchase order is not in draft status' },
       404: { description: 'The purchase order detail was not found' },
     },
-  })
+    'x-description-th': 'ลบรายการจากใบสั่งซื้อฉบับร่างก่อนส่งให้ผู้ขาย ใช้เมื่อรายการไม่จำเป็นแล้วหรือเพิ่มผิดพลาด',
+  } as any)
   @ApiResponse({ status: 200, description: 'The purchase order detail was successfully deleted', type: PurchaseOrderMutationResponseDto })
   @ApiResponse({ status: 400, description: 'Purchase order is not in draft status' })
   @ApiResponse({ status: 404, description: 'The purchase order detail was not found' })

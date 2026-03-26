@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Credit Term
+  สร้างเงื่อนไขการชำระเงินใหม่
+
+  Creates a new payment term definition (e.g., Net 30, Net 60, COD) for vendor agreements.
+}
+
 post {
   url: {{host}}/api/config/{{bu_code}}/credit-term
   body: json

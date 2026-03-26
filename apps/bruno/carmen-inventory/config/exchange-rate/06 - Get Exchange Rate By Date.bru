@@ -4,6 +4,17 @@ meta {
   seq: 7
 }
 
+docs {
+  ## Get Exchange Rate By Date
+  ดึงข้อมูลอัตราแลกเปลี่ยนตามวันที่และรหัสสกุลเงิน
+
+  Retrieves the exchange rate for a specific date and currency code.
+
+  ### Path Parameters
+  - `date` -- Exchange rate date (yyyy-MM-dd) / วันที่อัตราแลกเปลี่ยน
+  - `currency_code` -- Currency code (ISO 4217, e.g. USD) / รหัสสกุลเงิน
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/exchange-rate/by-date/:date/:currency_code
   body: none

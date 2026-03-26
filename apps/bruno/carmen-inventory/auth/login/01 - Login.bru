@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## Login
+  เข้าสู่ระบบด้วยอีเมลและรหัสผ่านผ่าน Keycloak เพื่อรับ access_token และ refresh_token สำหรับเรียก API
+
+  Authenticates a user against Keycloak using email and password credentials, returning JWT access and refresh tokens for subsequent API requests.
+}
+
 post {
   url: {{host}}/api/auth/login
   body: json

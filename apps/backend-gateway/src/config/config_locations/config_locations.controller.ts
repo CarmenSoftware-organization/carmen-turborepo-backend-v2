@@ -100,7 +100,8 @@ export class Config_LocationsController extends BaseHttpController {
         description: 'Location retrieved successfully',
       },
     },
-  })
+    'x-description-th': 'ดึงข้อมูลสถานที่/คลังสินค้ารายการเดียวตาม ID',
+  } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -172,7 +173,8 @@ export class Config_LocationsController extends BaseHttpController {
         description: 'Locations retrieved successfully',
       },
     },
-  })
+    'x-description-th': 'แสดงรายการสถานที่/คลังสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -253,7 +255,8 @@ export class Config_LocationsController extends BaseHttpController {
         description: 'Location created successfully',
       },
     },
-  })
+    'x-description-th': 'สร้างสถานที่/คลังสินค้าใหม่',
+  } as any)
   @ApiBody({ type: LocationCreateRequestDto })
   async create(
     @Req() req: Request,
@@ -320,7 +323,8 @@ export class Config_LocationsController extends BaseHttpController {
         description: 'Location updated successfully',
       },
     },
-  })
+    'x-description-th': 'อัปเดตข้อมูลสถานที่/คลังสินค้าที่มีอยู่',
+  } as any)
   @ApiBody({ type: LocationUpdateRequestDto })
   async update(
     @Req() req: Request,
@@ -392,7 +396,8 @@ export class Config_LocationsController extends BaseHttpController {
         description: 'Location deleted successfully',
       },
     },
-  })
+    'x-description-th': 'ลบสถานที่/คลังสินค้าตาม ID',
+  } as any)
   async delete(
     @Req() req: Request,
     @Res() res: Response,

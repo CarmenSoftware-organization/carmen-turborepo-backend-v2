@@ -4,6 +4,13 @@ meta {
   seq: 19
 }
 
+docs {
+  ## List Approved Purchase Requests for PO Creation
+  แสดงรายการใบขอซื้อที่อนุมัติแล้วทั้งหมดที่พร้อมสำหรับสร้างใบสั่งซื้อ ใช้โดยผู้จัดซื้อเพื่อเลือกใบขอซื้อที่อนุมัติแล้วเพื่อแปลงเป็นใบสั่งซื้อ
+
+  Lists all purchase requests with approved status that are available for creating purchase orders. Used by purchasers to select which approved PRs to convert into POs.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-request/for-po
   body: none

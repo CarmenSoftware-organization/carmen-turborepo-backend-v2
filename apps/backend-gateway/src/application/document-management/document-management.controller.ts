@@ -69,6 +69,7 @@ export class DocumentManagementController extends BaseHttpController {
   @ApiOperation({
     summary: 'Upload a document',
     description: 'Uploads a procurement-related document (e.g., vendor invoices, contracts, delivery receipts) to secure storage for attachment to purchase orders, GRNs, or other transaction records.',
+    'x-description-th': 'อัปโหลดเอกสารใหม่',
     operationId: 'uploadDocument',
     tags: ['Document & Log', 'Document Management'],
   })
@@ -83,7 +84,7 @@ export class DocumentManagementController extends BaseHttpController {
         },
       },
     },
-  })
+  } as any)
   async uploadDocument(
     @UploadedFile() file: Express.Multer.File,
     @Param('bu_code') bu_code: string,
@@ -131,6 +132,7 @@ export class DocumentManagementController extends BaseHttpController {
   @ApiOperation({
     summary: 'List documents',
     description: 'Lists all uploaded procurement documents for the business unit with pagination, enabling staff to search and browse stored invoices, contracts, and delivery receipts.',
+    'x-description-th': 'แสดงรายการเอกสารทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'listDocuments',
     tags: ['Document & Log', 'Document Management'],
   })
@@ -175,9 +177,10 @@ export class DocumentManagementController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get document by token',
     description: 'Downloads a specific procurement document by its unique file token, used to view attached invoices, contracts, or delivery receipts linked to transaction records.',
+    'x-description-th': 'ดึงข้อมูลเอกสารรายการเดียวตาม file token',
     operationId: 'getDocument',
     tags: ['Document & Log', 'Document Management'],
-  })
+  } as any)
   async getDocument(
     @Param('filetoken') fileToken: string,
     @Param('bu_code') bu_code: string,
@@ -213,9 +216,10 @@ export class DocumentManagementController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get document info',
     description: 'Retrieves metadata (file name, type, size, upload date) for a procurement document without downloading the file content, useful for display in document listing views.',
+    'x-description-th': 'ดึงข้อมูลเมตาของเอกสารโดยไม่ดาวน์โหลดเนื้อหา',
     operationId: 'getDocumentInfo',
     tags: ['Document & Log', 'Document Management'],
-  })
+  } as any)
   async getDocumentInfo(
     @Param('filetoken') fileToken: string,
     @Param('bu_code') bu_code: string,
@@ -256,6 +260,7 @@ export class DocumentManagementController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get presigned URL',
     description: 'Generates a time-limited presigned URL for secure, direct access to a procurement document, enabling browser-based viewing or sharing without exposing permanent storage credentials.',
+    'x-description-th': 'สร้าง presigned URL สำหรับเข้าถึงเอกสารอย่างปลอดภัย',
     operationId: 'getPresignedUrl',
     tags: ['Document & Log', 'Document Management'],
   })
@@ -303,9 +308,10 @@ export class DocumentManagementController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete document',
     description: 'Permanently removes a procurement document from storage, used when files were uploaded in error or are no longer relevant to the associated transaction.',
+    'x-description-th': 'ลบเอกสารตาม file token',
     operationId: 'deleteDocument',
     tags: ['Document & Log', 'Document Management'],
-  })
+  } as any)
   async deleteDocument(
     @Param('filetoken') fileToken: string,
     @Param('bu_code') bu_code: string,

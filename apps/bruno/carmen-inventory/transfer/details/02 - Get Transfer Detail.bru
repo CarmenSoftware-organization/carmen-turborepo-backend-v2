@@ -4,6 +4,18 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Transfer Detail by ID
+  ดึงรายการย่อยเฉพาะรายการจากรายการโอนย้ายสินค้า พร้อมรายละเอียดสินค้า จำนวน และสถานที่ทั้งหมด ใช้สำหรับตรวจสอบรายการสินค้าเฉพาะรายการที่ถูกย้ายระหว่างคลัง
+
+  Retrieves a specific item line from a transfer with full product, quantity, and location details. Used to inspect a particular item being moved between locations.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Transfer ID / รหัสรายการโอนย้ายสินค้า
+  - `detail_id` — Transfer Detail ID / รหัสรายการย่อยโอนย้ายสินค้า
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/transfer/:id/details/:detail_id
   body: none

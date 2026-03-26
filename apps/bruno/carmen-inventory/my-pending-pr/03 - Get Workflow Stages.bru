@@ -4,6 +4,16 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Get Workflow Stages for Purchase Request
+  ดึงขั้นตอนการอนุมัติที่กำหนดไว้สำหรับใบขอซื้อในหน่วยธุรกิจ แสดงลำดับขั้นตอนอนุมัติ (เช่น หัวหน้าแผนก ผู้ควบคุมการเงิน GM) ที่ใบขอซื้อต้องผ่าน
+
+  Retrieves the approval workflow stages configured for purchase requests in the business unit, showing the sequence of approval steps (e.g., HOD, Finance Controller, GM) that a purchase request must pass through.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+}
+
 get {
   url: {{host}}/api/my-pending/purchase-request/:bu_code/workflow-stages
   body: none

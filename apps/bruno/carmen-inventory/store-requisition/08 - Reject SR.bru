@@ -4,6 +4,17 @@ meta {
   seq: 8
 }
 
+docs {
+  ## Reject Store Requisition
+  ปฏิเสธใบเบิกสินค้าในขั้นตอนอนุมัติปัจจุบัน ใช้เมื่อคำขอเกินงบประมาณ สินค้าไม่พร้อมใช้งาน หรือคำขอไม่มีเหตุผลเพียงพอ
+
+  Rejects a store requisition at the current approval stage, preventing items from being issued. Used when the request exceeds budget, items are unavailable, or the request is not justified.
+
+  ### Path Parameters
+  - `id` — Store requisition ID (UUID)
+  - `bu_code` — Business unit code
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/store-requisition/:id/reject
   body: json

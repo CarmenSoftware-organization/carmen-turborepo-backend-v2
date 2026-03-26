@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Get Location
+  ดึงข้อมูลสถานที่/คลังสินค้ารายการเดียวตาม ID
+
+  Retrieves a single location/warehouse record by its unique identifier.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/locations/:id
   body: none

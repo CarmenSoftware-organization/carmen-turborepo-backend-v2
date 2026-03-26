@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete User Business Unit
+  ลบหน่วยธุรกิจของผู้ใช้ตาม ID
+
+  Delete a user-business unit mapping by its ID.
+}
+
 delete {
   url: {{host}}/api-system/user/business-unit/:id
   body: none

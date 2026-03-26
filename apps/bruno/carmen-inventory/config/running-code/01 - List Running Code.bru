@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Running Codes
+  ดึงรายการรหัสเลขที่เอกสารอัตโนมัติทั้งหมดสำหรับหน่วยธุรกิจ
+
+  Returns all auto-numbering rule configurations for the business unit, defining format patterns and counters for each document type.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/running-code
   body: none

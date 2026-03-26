@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Cronjob by ID
+  ดึงข้อมูลงานตั้งเวลาเดียวตาม ID รวมถึงตารางเวลา สถานะ และข้อมูลการรันล่าสุด
+
+  Retrieves the configuration details of a specific scheduled task, including its cron schedule, execution status, and last run information.
+}
+
 get {
   url: {{host}}/api/config/cronjobs/:id
   body: none

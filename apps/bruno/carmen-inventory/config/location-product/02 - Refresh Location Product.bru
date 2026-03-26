@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Refresh Location Product
+  รีเฟรชข้อมูล denormalized ใน tb_product_location อัปเดตชื่อสินค้าและสถานที่ให้ตรงกับข้อมูลจริง
+
+  Regenerates denormalized fields (location_code, location_name, product_name, product_code, etc.) in tb_product_location by looking up actual values from source tables.
+}
+
 post {
   url: {{host}}/api/config/{{bu_code}}/location-product/refresh
   body: none

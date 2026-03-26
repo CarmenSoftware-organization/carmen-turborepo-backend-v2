@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Recipe
+  อัปเดตสูตรอาหารทั้งหมดรวมถึงรายการส่วนผสม ปริมาณ และคำแนะนำการเตรียม
+
+  Fully updates a recipe including its ingredient list, quantities, and preparation instructions.
+}
+
 put {
   url: {{host}}/api/config/{{bu_code}}/recipe/:id
   body: json

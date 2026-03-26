@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Credit Note Reasons
+  แสดงรายการเหตุผลใบลดหนี้ทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Returns all configurable reasons for issuing vendor credit notes with pagination and search support.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/credit-note-reason
   body: none

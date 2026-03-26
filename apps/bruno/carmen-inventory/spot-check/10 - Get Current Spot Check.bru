@@ -4,6 +4,19 @@ meta {
   seq: 10
 }
 
+docs {
+  ## Get Current Spot Check (Include All Locations)
+  ดึงรายการตรวจสอบสินค้าเฉพาะจุดในงวดปัจจุบัน รวมถึงสถานที่ที่ไม่ต้องตรวจนับ จัดกลุ่มตามสถานที่จัดเก็บ
+
+  Lists all inventory locations with their spot check status for the current open period, including locations with physical_count_type=no.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+
+  ### Query Parameters
+  - `include_not_count` — รวมสถานที่ที่ไม่ตรวจนับ (true) / Include locations with physical_count_type=no
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/spot-check/current?include_not_count=true
   body: none

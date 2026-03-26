@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Delivery Points
+  แสดงรายการจุดส่งมอบสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Retrieves all delivery points configured in the business unit with pagination and search support.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/delivery-point
   body: none

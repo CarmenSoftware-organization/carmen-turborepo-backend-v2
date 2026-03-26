@@ -4,6 +4,16 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Delete Price List Template
+  ลบแม่แบบรายการราคาตาม ID
+
+  Removes a price list template that is no longer needed.
+
+  ### Path Parameters
+  - `id` -- Price list template ID (UUID) / รหัสแม่แบบรายการราคา
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/price-list-template/:id
   body: none

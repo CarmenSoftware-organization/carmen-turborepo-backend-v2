@@ -4,6 +4,16 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Currency
+  ดึงข้อมูลสกุลเงินรายการเดียวตาม ID
+
+  Retrieves the details of a specific currency including its code, symbol, and exchange rate configuration.
+
+  ### Path Parameters
+  - `id` -- Currency ID (UUID) / รหัสสกุลเงิน
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/currencies/:id
   body: none

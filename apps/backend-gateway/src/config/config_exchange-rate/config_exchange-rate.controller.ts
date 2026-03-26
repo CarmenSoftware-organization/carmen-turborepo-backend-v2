@@ -87,7 +87,8 @@ export class Config_ExchangeRateController extends BaseHttpController {
     description: 'Retrieves a specific currency exchange rate record with its effective date and conversion factor. Exchange rates are used to convert foreign currency amounts in procurement documents to the base currency.',
     operationId: 'configExchangeRate_findOne',
     tags: ['Configuration', 'Exchange Rate'],
-  })
+    'x-description-th': 'ดึงข้อมูลอัตราแลกเปลี่ยนรายการเดียวตาม ID',
+  } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })
   @ApiParam({ name: 'id', description: 'Exchange rate ID (UUID)', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   @ApiResponse({ status: 200, description: 'Exchange rate retrieved successfully', type: ExchangeRateResponseDto })
@@ -137,7 +138,8 @@ export class Config_ExchangeRateController extends BaseHttpController {
     description: 'Returns all configured currency exchange rates with their effective dates. Used by the procurement system to convert multi-currency purchase orders and invoices to the base currency.',
     operationId: 'configExchangeRate_findAll',
     tags: ['Configuration', 'Exchange Rate'],
-  })
+    'x-description-th': 'แสดงรายการอัตราแลกเปลี่ยนทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })
   @ApiResponse({ status: 200, description: 'Exchange rates retrieved successfully', type: ExchangeRateListResponseDto })
   async findAll(
@@ -186,7 +188,8 @@ export class Config_ExchangeRateController extends BaseHttpController {
     description: 'Retrieves the exchange rate for a specific date and currency code. If the currency code matches the business unit default currency, returns exchange_rate = 1 without querying the exchange rate table.',
     operationId: 'configExchangeRate_findByDateAndCurrency',
     tags: ['Configuration', 'Exchange Rate'],
-  })
+    'x-description-th': 'ดึงข้อมูลอัตราแลกเปลี่ยนตามวันที่และรหัสสกุลเงิน',
+  } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })
   @ApiParam({ name: 'date', description: 'Exchange rate date (yyyy-MM-dd)', example: '2026-03-19' })
   @ApiParam({ name: 'currency_code', description: 'Currency code (ISO 4217)', example: 'USD' })
@@ -240,7 +243,8 @@ export class Config_ExchangeRateController extends BaseHttpController {
     description: 'Records a new currency exchange rate with its effective date. Supports single or bulk creation. currency_code and currency_name are automatically populated from the currency_id.',
     operationId: 'configExchangeRate_create',
     tags: ['Configuration', 'Exchange Rate'],
-  })
+    'x-description-th': 'สร้างอัตราแลกเปลี่ยนใหม่',
+  } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })
   @ApiResponse({ status: 201, description: 'Exchange rate created successfully', type: ExchangeRateMutationResponseDto })
   @ApiBody({ type: ExchangeRateCreateRequest })
@@ -290,7 +294,8 @@ export class Config_ExchangeRateController extends BaseHttpController {
     description: 'Modifies an existing exchange rate record, such as correcting the conversion factor or adjusting the effective date. Changes affect future currency conversions in procurement documents.',
     operationId: 'configExchangeRate_update',
     tags: ['Configuration', 'Exchange Rate'],
-  })
+    'x-description-th': 'อัปเดตข้อมูลอัตราแลกเปลี่ยนที่มีอยู่',
+  } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })
   @ApiParam({ name: 'id', description: 'Exchange rate ID (UUID)', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   @ApiResponse({ status: 200, description: 'Exchange rate updated successfully', type: ExchangeRateMutationResponseDto })
@@ -346,7 +351,8 @@ export class Config_ExchangeRateController extends BaseHttpController {
     description: 'Removes an exchange rate record from the system (soft delete). Historical procurement documents that used this rate are unaffected, but it will no longer be available for future currency conversions.',
     operationId: 'configExchangeRate_delete',
     tags: ['Configuration', 'Exchange Rate'],
-  })
+    'x-description-th': 'ลบอัตราแลกเปลี่ยนตาม ID',
+  } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })
   @ApiParam({ name: 'id', description: 'Exchange rate ID (UUID)', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   @ApiResponse({ status: 200, description: 'Exchange rate deleted successfully', type: ExchangeRateMutationResponseDto })

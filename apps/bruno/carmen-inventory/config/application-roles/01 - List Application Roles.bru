@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Application Roles
+  แสดงรายการบทบาทในระบบทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Retrieves all application roles with pagination and search support.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/application-roles
   body: none

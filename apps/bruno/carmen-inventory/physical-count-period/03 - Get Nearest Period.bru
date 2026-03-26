@@ -4,6 +4,16 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Get Nearest Period
+  ค้นหารอบการตรวจนับสินค้าที่ใกล้ที่สุด ช่วยให้พนักงานคลังสินค้าระบุรอบการตรวจนับที่ต้องทำงานได้อย่างรวดเร็ว
+
+  Finds the current/nearest physical count period, helping warehouse staff quickly identify the current inventory verification window they should be working on.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/physical-count-period/current
   body: none

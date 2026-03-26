@@ -62,6 +62,7 @@ export class UserBusinessUnitController extends BaseHttpController {
   @ApiOperation({
     summary: 'Set default tenant',
     description: 'Sets the user\'s default business unit (tenant), determining which hotel property\'s data and procurement operations are loaded upon login.',
+    'x-description-th': 'ตั้งค่าหน่วยธุรกิจเริ่มต้นของผู้ใช้',
     operationId: 'setDefaultTenant',
     tags: ['User & Access', 'User Business Unit'],
     deprecated: false,
@@ -85,7 +86,7 @@ export class UserBusinessUnitController extends BaseHttpController {
         description: 'Default tenant not found',
       },
     },
-  })
+  } as any)
   @ApiBody({ type: SetDefaultTenantRequestDto })
   async setDefaultTenant(
     @Req() req: Request,

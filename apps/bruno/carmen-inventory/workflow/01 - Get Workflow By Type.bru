@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## Get Workflow by Document Type
+  ดึงข้อมูลขั้นตอนการทำงานตามประเภทเอกสาร (เช่น ใบขอซื้อ ใบสั่งซื้อ) รวมถึงขั้นตอนอนุมัติและบทบาท
+
+  Retrieves the configurable approval workflow for a given document type (e.g., purchase_request), including approval stages and assigned roles.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/workflow/type/:type
   body: none

@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Patch Recipe Category
+  อัปเดตบางฟิลด์ของหมวดหมู่สูตรอาหาร เช่น สถานะการใช้งาน โดยไม่แทนที่ข้อมูลทั้งหมด
+
+  Partially updates specific fields of a recipe category without replacing the entire record.
+}
+
 patch {
   url: {{host}}/api/config/{{bu_code}}/recipe-category/:id
   body: json

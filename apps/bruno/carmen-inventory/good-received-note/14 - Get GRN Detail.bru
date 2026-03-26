@@ -4,6 +4,18 @@ meta {
   seq: 14
 }
 
+docs {
+  ## Get GRN Detail by ID
+  ดึงรายละเอียดรายการสินค้าที่รับรายการเดียวจากใบรับสินค้า พร้อมข้อมูลจำนวน ราคา และคุณภาพ ใช้สำหรับตรวจสอบรายการสินค้าเฉพาะเมื่อแก้ไขข้อผิดพลาดด้านจำนวนหรือคุณภาพ
+
+  Retrieves a single received item line from a GRN with full quantity, pricing, and quality details. Used to inspect a specific delivery item when resolving quantity or quality discrepancies.
+
+  ### Path Parameters
+  - `id` — Good Received Note ID / รหัสใบรับสินค้า
+  - `detail_id` — GRN Detail ID / รหัสรายละเอียดใบรับสินค้า
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/good-received-note/:id/details/:detail_id
   body: none

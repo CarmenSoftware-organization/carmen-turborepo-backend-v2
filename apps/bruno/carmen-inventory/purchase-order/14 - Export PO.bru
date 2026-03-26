@@ -4,6 +4,19 @@ meta {
   seq: 14
 }
 
+docs {
+  ## Export Purchase Order to Excel
+  ส่งออกใบสั่งซื้อเป็นไฟล์ Excel พร้อมข้อมูลผู้ขาย รายการสินค้าทั้งหมด ราคา และข้อมูลการจัดส่ง
+
+  Generates an Excel spreadsheet of the purchase order with vendor details, all line items, pricing, and delivery information. Used for record-keeping, sharing with finance, or sending to vendors who require spreadsheet formats.
+
+  ### Path Parameters
+  - `id` — Purchase order UUID
+
+  ### Response
+  - Content-Type: `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-order/:id/export
   body: none

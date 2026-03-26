@@ -4,6 +4,18 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Stock Out Detail
+  แก้ไขรายการย่อยของรายการเบิกสินค้าออกจากคลังที่เป็นร่าง เพื่อปรับสินค้า จำนวน หรือรายละเอียดอื่นๆ ก่อนที่การหักสินค้าคงคลังจะถูกยืนยัน
+
+  Modifies an item line on a draft stock-out transaction to correct the product, quantity, or other details before the inventory deduction is committed.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Stock Out ID / รหัสรายการเบิกสินค้าออกจากคลัง
+  - `detail_id` — Stock Out Detail ID / รหัสรายการย่อยเบิกสินค้าออกจากคลัง
+}
+
 put {
   url: {{host}}/api/{{bu_code}}/stock-out/:id/details/:detail_id
   body: json

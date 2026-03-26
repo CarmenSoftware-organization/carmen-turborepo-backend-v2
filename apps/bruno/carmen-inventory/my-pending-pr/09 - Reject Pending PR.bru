@@ -4,6 +4,17 @@ meta {
   seq: 9
 }
 
+docs {
+  ## Reject Pending Purchase Request
+  ปฏิเสธใบขอซื้อในขั้นตอนอนุมัติปัจจุบัน ส่งกลับไปยังผู้ขอเพื่อแก้ไขหรือยกเลิกพร้อมเหตุผลการปฏิเสธ
+
+  Rejects a purchase request at the current approval stage, sending it back to the requestor for revision or cancellation with the reason for rejection.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `id` — Purchase request ID (UUID)
+}
+
 patch {
   url: {{host}}/api/my-pending/purchase-request/:bu_code/:id/reject
   body: json

@@ -4,6 +4,16 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Get Price List Template
+  ดึงข้อมูลแม่แบบรายการราคารายการเดียวตาม ID
+
+  Retrieves the full details of a reusable price list template including its product lineup.
+
+  ### Path Parameters
+  - `id` -- Price list template ID (UUID) / รหัสแม่แบบรายการราคา
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/price-list-template/:id
   body: none

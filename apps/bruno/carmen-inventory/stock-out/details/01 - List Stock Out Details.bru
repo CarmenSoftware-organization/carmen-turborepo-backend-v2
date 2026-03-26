@@ -4,6 +4,17 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Stock Out Details
+  ดึงรายการย่อยทั้งหมดของรายการเบิกสินค้าออกจากคลังที่ระบุ รวมถึงรายละเอียดสินค้า จำนวน และแผนกหรือวัตถุประสงค์ที่รับสินค้า
+
+  Lists all individual items being removed from inventory in this stock-out transaction, including product details, quantities, and the department or purpose receiving the items.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Stock Out ID / รหัสรายการเบิกสินค้าออกจากคลัง
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/stock-out/:id/details
   body: none

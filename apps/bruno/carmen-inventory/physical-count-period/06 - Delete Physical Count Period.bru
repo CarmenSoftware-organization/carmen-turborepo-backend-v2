@@ -4,6 +4,17 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Delete Physical Count Period
+  ลบรอบการตรวจนับสินค้าที่สร้างผิดพลาดหรือไม่จำเป็นแล้ว รอบที่มีการตรวจนับสินค้าที่เชื่อมโยงอยู่จะไม่สามารถลบได้
+
+  Removes a physical count period that was created in error or is no longer needed. Periods with associated physical counts cannot be deleted.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Physical Count Period ID / รหัสรอบการตรวจนับสินค้า
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/physical-count-period/:id
   body: none

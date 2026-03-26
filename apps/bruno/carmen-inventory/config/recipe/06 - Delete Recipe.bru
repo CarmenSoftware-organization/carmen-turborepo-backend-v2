@@ -4,6 +4,13 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Delete Recipe
+  ลบสูตรอาหารออกจากแค็ตตาล็อก ข้อมูลต้นทุนในอดีตยังคงอยู่
+
+  Removes a recipe from the active catalog. Historical cost data is preserved.
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/recipe/:id
   body: none

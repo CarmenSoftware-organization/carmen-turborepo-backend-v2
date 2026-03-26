@@ -4,6 +4,13 @@ meta {
   seq: 7
 }
 
+docs {
+  ## Initialize Default Running Codes
+  สร้างการตั้งค่ารหัสเลขที่เอกสารอัตโนมัติเริ่มต้นทั้งหมด (PL, PR, SI, SO, PO, GRN, CN) สำหรับหน่วยธุรกิจ
+
+  Creates all default auto-numbering rule configurations for the business unit. Skips types that already exist.
+}
+
 post {
   url: {{host}}/api/config/{{bu_code}}/running-code/init
   body: none

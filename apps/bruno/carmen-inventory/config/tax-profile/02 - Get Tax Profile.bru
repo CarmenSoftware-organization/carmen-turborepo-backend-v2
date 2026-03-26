@@ -4,6 +4,16 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Tax Profile
+  ดึงข้อมูลโปรไฟล์ภาษีรายการเดียวตาม ID
+
+  Retrieves a specific tax rate configuration by its unique identifier.
+
+  ### Path Parameters
+  - `id` -- Tax profile ID (UUID) / รหัสโปรไฟล์ภาษี
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/tax-profile/:id
   body: none

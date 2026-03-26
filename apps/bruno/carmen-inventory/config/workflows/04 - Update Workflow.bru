@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Workflow
+  อัปเดตขั้นตอนการทำงานที่มีอยู่ เช่น เพิ่ม/ลบขั้นตอนหรือเปลี่ยนบทบาทผู้อนุมัติ
+
+  Modifies an existing approval workflow template, such as adding/removing approval stages or changing approver role assignments.
+}
+
 put {
   url: {{host}}/api/config/{{bu_code}}/workflows/:id
   body: json

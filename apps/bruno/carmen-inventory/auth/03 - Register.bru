@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Register
+  ลงทะเบียนบัญชีผู้ใช้ใหม่ในระบบ Keycloak และแพลตฟอร์ม Carmen โดยระบุชื่อผู้ใช้ อีเมล และรหัสผ่าน
+
+  Creates a new user account in both Keycloak and the Carmen platform. Requires username, email, and password.
+}
+
 post {
   url: {{host}}/api/auth/register
   body: json

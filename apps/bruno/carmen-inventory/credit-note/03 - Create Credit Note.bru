@@ -4,6 +4,16 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Credit Note
+  ออกใบลดหนี้ใหม่สำหรับผู้ขายกรณีสินค้าส่งคืน เสียหาย หรือไม่ถูกต้อง เพื่อปรับยอดบัญชีเจ้าหนี้และสร้างรายการปรับปรุงสินค้าคงคลัง
+
+  Issues a new credit note against a vendor for returned, damaged, or incorrect goods received, adjusting the payable balance and triggering inventory corrections.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/credit-note
   body: json

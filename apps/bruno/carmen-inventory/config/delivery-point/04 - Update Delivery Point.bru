@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Delivery Point
+  อัปเดตข้อมูลจุดส่งมอบสินค้าที่มีอยู่
+
+  Updates an existing delivery point record.
+}
+
 put {
   url: {{host}}/api/config/{{bu_code}}/delivery-point/:id
   body: json

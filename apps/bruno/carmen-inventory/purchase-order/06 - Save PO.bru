@@ -4,6 +4,21 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Save Purchase Order Changes
+  บันทึกการเปลี่ยนแปลงใบสั่งซื้อที่กำลังจัดเตรียม รวมถึงเพิ่มรายการใหม่ แก้ไขจำนวนหรือราคา และลบรายการ
+
+  Saves incremental changes to a purchase order that is still being prepared, including adding new items, modifying quantities or pricing, and removing line items. Used by purchasers to finalize PO details before submitting for approval.
+
+  ### Path Parameters
+  - `id` — Purchase order UUID
+
+  ### Body
+  - `details.add[]` — New line items to add
+  - `details.update[]` — Existing line items to modify
+  - `details.remove[]` — Line items to remove
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/purchase-order/:id/save
   body: json

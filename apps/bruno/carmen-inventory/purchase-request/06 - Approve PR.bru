@@ -4,6 +4,16 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Approve Purchase Request
+  อนุมัติใบขอซื้อในขั้นตอนปัจจุบันของเวิร์กโฟลว์ ผู้อนุมัติ (HOD, FC, GM) ยืนยันคำขอ ในขณะที่ผู้จัดซื้อเพิ่มข้อมูลผู้ขาย ราคา ภาษี และส่วนลด
+
+  Advances a purchase request through the approval workflow at the current stage. Approval roles (HOD, FC, GM) confirm the request, while the purchase role adds vendor selection, price list, tax, and discount details to prepare the PR for conversion into a purchase order.
+
+  ### Path Parameters
+  - `id` — Purchase request ID
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/purchase-request/:id/approve
   body: json

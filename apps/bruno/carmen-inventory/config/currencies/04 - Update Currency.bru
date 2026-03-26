@@ -4,6 +4,16 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Currency
+  อัปเดตข้อมูลสกุลเงินที่มีอยู่ (แทนที่ทั้งหมด)
+
+  Fully replaces an existing currency configuration.
+
+  ### Path Parameters
+  - `id` -- Currency ID (UUID) / รหัสสกุลเงิน
+}
+
 put {
   url: {{host}}/api/config/{{bu_code}}/currencies/:id
   body: json

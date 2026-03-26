@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Roles By Permission
+  ดึงรายการบทบาททั้งหมดที่มีสิทธิ์การใช้งานที่ระบุ
+
+  Retrieve all roles that have a specific permission.
+}
+
 get {
   url: {{host}}/api-system/role-permission/permission/:permissionId/roles
   body: none

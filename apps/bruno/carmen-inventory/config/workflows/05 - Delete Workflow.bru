@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Workflow
+  ลบขั้นตอนการทำงานออกจากการใช้งาน เอกสารที่กำลังดำเนินการไม่ได้รับผลกระทบ
+
+  Removes an approval workflow template from active use. Documents currently in progress are not affected.
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/workflows/:id
   body: none

@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## List Locations
+  แสดงรายการสถานที่/คลังสินค้าทั้งหมดที่ผู้ใช้เข้าถึงได้
+
+  Retrieves all locations/warehouses accessible to the current user.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/locations
   body: none

@@ -4,6 +4,16 @@ meta {
   seq: 2
 }
 
+docs {
+  ## List Purchase Request Templates (with filter)
+  แสดงรายการเทมเพลตใบขอซื้อที่ใช้ซ้ำได้พร้อมการค้นหาและกรอง ใช้เพื่อค้นหาเทมเพลตเฉพาะตามชื่อหรือคำอธิบาย
+
+  Lists reusable purchase request templates with search filtering. Used to find specific templates by name or description.
+
+  ### Query Parameters
+  - `search` — Search term to filter templates
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-request-template?search=sss
   body: none

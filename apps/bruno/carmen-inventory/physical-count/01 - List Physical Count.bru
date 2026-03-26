@@ -4,6 +4,16 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Physical Count
+  ดึงรายการตรวจนับสินค้าทั้งหมดของหน่วยธุรกิจ พร้อมการแบ่งหน้า ใช้สำหรับให้ผู้จัดการคลังสินค้าติดตามกิจกรรมการตรวจนับสินค้าที่กำลังดำเนินการและที่เสร็จสิ้นแล้ว
+
+  Lists all physical inventory count sessions for a business unit with pagination, allowing inventory managers to monitor ongoing and completed stock verification activities.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/physical-count
   body: none

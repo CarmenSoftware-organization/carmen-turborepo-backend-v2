@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Get Available Units
+  ดึงการแปลงหน่วยทั้งหมดที่ใช้ได้สำหรับสินค้าตาม Product ID
+
+  Retrieves all configured unit conversions available for a specific product.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/unit/available/product/:productId
   body: none

@@ -4,6 +4,16 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Exchange Rate
+  ดึงข้อมูลอัตราแลกเปลี่ยนรายการเดียวตาม ID
+
+  Retrieves a single exchange rate record by its unique identifier.
+
+  ### Path Parameters
+  - `id` -- Exchange rate ID (UUID) / รหัสอัตราแลกเปลี่ยน
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/exchange-rate/:id
   body: none

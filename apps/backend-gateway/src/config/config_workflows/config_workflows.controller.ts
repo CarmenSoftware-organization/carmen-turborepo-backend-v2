@@ -74,7 +74,8 @@ export class Config_WorkflowsController extends BaseHttpController {
     operationId: 'configWorkflows_findOne',
     tags: ['Configuration', 'Workflows'],
     responses: { 200: { description: 'Workflow retrieved successfully' } },
-  })
+    'x-description-th': 'ดึงข้อมูลขั้นตอนการทำงานเดียวตาม ID รวมถึงขั้นตอนการอนุมัติและบทบาทผู้อนุมัติ',
+  } as any)
   async findOne(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -121,7 +122,8 @@ export class Config_WorkflowsController extends BaseHttpController {
     operationId: 'configWorkflows_findAll',
     tags: ['Configuration', 'Workflows'],
     responses: { 200: { description: 'Workflows retrieved successfully' } },
-  })
+    'x-description-th': 'ดึงรายการขั้นตอนการทำงานทั้งหมดสำหรับการจัดการห่วงโซ่การอนุมัติเอกสาร',
+  } as any)
   async findAll(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -168,7 +170,8 @@ export class Config_WorkflowsController extends BaseHttpController {
     operationId: 'configWorkflows_create',
     tags: ['Configuration', 'Workflows'],
     responses: { 201: { description: 'Workflow created successfully' } },
-  })
+    'x-description-th': 'สร้างขั้นตอนการทำงานใหม่สำหรับการอนุมัติเอกสารจัดซื้อ',
+  } as any)
   @ApiBody({ type: WorkflowCreateRequestDto })
   async create(
     @Param('bu_code') bu_code: string,
@@ -216,7 +219,8 @@ export class Config_WorkflowsController extends BaseHttpController {
     operationId: 'configWorkflows_update',
     tags: ['Configuration', 'Workflows'],
     responses: { 200: { description: 'Workflow updated successfully' } },
-  })
+    'x-description-th': 'อัปเดตขั้นตอนการทำงานที่มีอยู่ เช่น เพิ่ม/ลบขั้นตอนหรือเปลี่ยนบทบาทผู้อนุมัติ',
+  } as any)
   @ApiBody({ type: WorkflowUpdateRequestDto })
   async update(
     @Param('bu_code') bu_code: string,
@@ -269,7 +273,8 @@ export class Config_WorkflowsController extends BaseHttpController {
     operationId: 'configWorkflows_delete',
     tags: ['Configuration', 'Workflows'],
     responses: { 200: { description: 'Workflow deleted successfully' } },
-  })
+    'x-description-th': 'ลบขั้นตอนการทำงานออกจากการใช้งาน เอกสารที่กำลังดำเนินการไม่ได้รับผลกระทบ',
+  } as any)
   async delete(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,

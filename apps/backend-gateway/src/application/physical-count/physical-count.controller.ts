@@ -79,10 +79,11 @@ export class PhysicalCountController extends BaseHttpController {
     description: 'Returns the count of physical inventory counts awaiting the current user to record actual stock quantities, used to drive dashboard notifications and task prioritization.',
     operationId: 'findAllPendingPhysicalCountCount',
     tags: ['Pending Count', 'Inventory', 'Physical Count'],
+    'x-description-th': 'ดึงจำนวนการตรวจนับสินค้าที่รอให้ผู้ใช้ปัจจุบันบันทึกจำนวนสินค้าจริง ใช้สำหรับแสดงการแจ้งเตือนบนแดชบอร์ดและจัดลำดับความสำคัญงาน',
     responses: {
       200: { description: 'Pending physical count count retrieved successfully' },
     },
-  })
+  } as any)
   async findAllPendingPhysicalCountCount(
     @Req() req: Request,
     @Res() res: Response,
@@ -121,6 +122,7 @@ export class PhysicalCountController extends BaseHttpController {
     description: 'Retrieves the full details of a physical inventory count session, including the location, period, status, and counted items, for review or continuation of the stock verification process.',
     operationId: 'findOnePhysicalCount',
     tags: ['Inventory', 'Physical Count'],
+    'x-description-th': 'ดึงรายละเอียดทั้งหมดของการตรวจนับสินค้าตาม ID รวมถึงสถานที่ รอบการตรวจนับ สถานะ และรายการสินค้าที่ตรวจนับ สำหรับการตรวจสอบหรือดำเนินการตรวจนับต่อ',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Physical Count ID' },
       { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
@@ -129,7 +131,7 @@ export class PhysicalCountController extends BaseHttpController {
       200: { description: 'Physical count retrieved successfully' },
       404: { description: 'Physical count not found' },
     },
-  })
+  } as any)
   async findOne(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -174,13 +176,14 @@ export class PhysicalCountController extends BaseHttpController {
     description: 'Lists all physical inventory count sessions for a business unit with pagination, allowing inventory managers to monitor ongoing and completed stock verification activities.',
     operationId: 'findAllPhysicalCounts',
     tags: ['Inventory', 'Physical Count'],
+    'x-description-th': 'ดึงรายการตรวจนับสินค้าทั้งหมดของหน่วยธุรกิจพร้อมการแบ่งหน้า ช่วยให้ผู้จัดการคลังสินค้าติดตามกิจกรรมการตรวจนับที่กำลังดำเนินการและที่เสร็จสิ้นแล้ว',
     parameters: [
       { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
     ],
     responses: {
       200: { description: 'Physical counts retrieved successfully' },
     },
-  })
+  } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -225,6 +228,7 @@ export class PhysicalCountController extends BaseHttpController {
     description: 'Initiates a new periodic physical inventory count for a specific storage location and count period, generating the list of products to be verified against system stock levels.',
     operationId: 'createPhysicalCount',
     tags: ['Inventory', 'Physical Count'],
+    'x-description-th': 'สร้างรายการตรวจนับสินค้าใหม่สำหรับสถานที่จัดเก็บและรอบการตรวจนับที่กำหนด ระบบจะสร้างรายการสินค้าที่ต้องตรวจสอบเทียบกับจำนวนในระบบโดยอัตโนมัติ',
     parameters: [
       { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
     ],
@@ -232,7 +236,7 @@ export class PhysicalCountController extends BaseHttpController {
       201: { description: 'Physical count created successfully' },
       400: { description: 'Invalid request body' },
     },
-  })
+  } as any)
   @ApiBody({ type: PhysicalCountCreateRequestDto })
   async create(
     @Body() createDto: PhysicalCountCreateDto,
@@ -278,6 +282,7 @@ export class PhysicalCountController extends BaseHttpController {
     description: 'Modifies a physical count record, such as changing the assigned location or adjusting metadata, before the count is finalized and submitted.',
     operationId: 'updatePhysicalCount',
     tags: ['Inventory', 'Physical Count'],
+    'x-description-th': 'แก้ไขรายการตรวจนับสินค้า เช่น เปลี่ยนสถานที่หรือปรับข้อมูลเมตา ก่อนที่การตรวจนับจะถูกส่งขั้นสุดท้าย',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Physical Count ID' },
       { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
@@ -286,7 +291,7 @@ export class PhysicalCountController extends BaseHttpController {
       200: { description: 'Physical count updated successfully' },
       404: { description: 'Physical count not found' },
     },
-  })
+  } as any)
   @ApiBody({ type: PhysicalCountUpdateRequestDto })
   async update(
     @Param('id') id: string,
@@ -334,6 +339,7 @@ export class PhysicalCountController extends BaseHttpController {
     description: 'Removes a physical count that was created in error or is no longer needed. Only draft counts that have not been submitted can be deleted.',
     operationId: 'deletePhysicalCount',
     tags: ['Inventory', 'Physical Count'],
+    'x-description-th': 'ลบรายการตรวจนับสินค้าที่สร้างผิดพลาดหรือไม่จำเป็นแล้ว สามารถลบได้เฉพาะรายการที่อยู่ในสถานะร่างและยังไม่ได้ส่งเท่านั้น',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Physical Count ID' },
       { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
@@ -342,7 +348,7 @@ export class PhysicalCountController extends BaseHttpController {
       200: { description: 'Physical count deleted successfully' },
       404: { description: 'Physical count not found' },
     },
-  })
+  } as any)
   async delete(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -381,11 +387,12 @@ export class PhysicalCountController extends BaseHttpController {
     description: 'Re-fetches the product list from the location (product_location + inventory transactions) and adds any new products that are not yet in the physical count detail list. Existing counted items are preserved.',
     operationId: 'refreshPhysicalCount',
     tags: ['Inventory', 'Physical Count'],
+    'x-description-th': 'รีเฟรชรายการสินค้าจากสถานที่จัดเก็บ (product_location + inventory transactions) และเพิ่มสินค้าใหม่ที่ยังไม่อยู่ในรายการตรวจนับ รายการที่นับแล้วจะถูกเก็บรักษาไว้',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Physical Count ID' },
       { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
     ],
-  })
+  } as any)
   @ApiResponse({ status: 200, description: 'Physical count product list refreshed successfully', type: PhysicalCountResponseDto })
   @ApiResponse({ status: 400, description: 'Physical count is already completed' })
   @ApiResponse({ status: 404, description: 'Physical count not found' })
@@ -424,6 +431,7 @@ export class PhysicalCountController extends BaseHttpController {
     description: 'Returns all product line items included in a physical count, showing system quantities alongside any recorded actual quantities for inventory reconciliation.',
     operationId: 'findAllPhysicalCountDetails',
     tags: ['Inventory', 'Physical Count'],
+    'x-description-th': 'ดึงรายการสินค้าทั้งหมดในการตรวจนับสินค้า แสดงจำนวนในระบบเทียบกับจำนวนที่นับได้จริง สำหรับการกระทบยอดสินค้าคงคลัง',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -433,7 +441,7 @@ export class PhysicalCountController extends BaseHttpController {
       200: { description: 'Physical Count details retrieved successfully' },
       404: { description: 'Physical Count not found' },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findDetailsByPhysicalCountId(
     @Param('id') id: string,
@@ -469,6 +477,7 @@ export class PhysicalCountController extends BaseHttpController {
     description: 'Retrieves a specific product line item from a physical count, including its system quantity, actual counted quantity, and any variance for detailed investigation.',
     operationId: 'findPhysicalCountDetailById',
     tags: ['Inventory', 'Physical Count'],
+    'x-description-th': 'ดึงรายการสินค้าเฉพาะรายการหนึ่งจากการตรวจนับสินค้า รวมถึงจำนวนในระบบ จำนวนที่นับได้จริง และผลต่าง สำหรับการตรวจสอบรายละเอียด',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -479,7 +488,7 @@ export class PhysicalCountController extends BaseHttpController {
       200: { description: 'Physical Count detail retrieved successfully' },
       404: { description: 'Physical Count detail not found' },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findDetailById(
     @Param('id') id: string,
@@ -516,6 +525,7 @@ export class PhysicalCountController extends BaseHttpController {
     description: 'Removes a product line item from a draft physical count, used when items were added in error or are no longer relevant to the current count session.',
     operationId: 'deletePhysicalCountDetail',
     tags: ['Inventory', 'Physical Count'],
+    'x-description-th': 'ลบรายการสินค้าจากการตรวจนับสินค้าสถานะร่าง ใช้เมื่อรายการถูกเพิ่มผิดพลาดหรือไม่เกี่ยวข้องกับการตรวจนับในปัจจุบัน',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -527,7 +537,7 @@ export class PhysicalCountController extends BaseHttpController {
       400: { description: 'Cannot delete detail of non-draft Physical Count' },
       404: { description: 'Physical Count detail not found' },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async deleteDetail(
     @Param('id') id: string,
@@ -566,6 +576,7 @@ export class PhysicalCountController extends BaseHttpController {
     description: 'Persists the counted quantities entered by warehouse staff on a mobile device as a draft, allowing them to pause and resume the physical count without finalizing it.',
     operationId: 'savePhysicalCountItems',
     tags: ['Inventory', 'Physical Count'],
+    'x-description-th': 'บันทึกจำนวนที่นับได้จากอุปกรณ์มือถือเป็นร่าง ช่วยให้พนักงานคลังสินค้าหยุดพักและดำเนินการตรวจนับต่อได้โดยไม่ต้องส่งขั้นสุดท้าย',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -577,7 +588,7 @@ export class PhysicalCountController extends BaseHttpController {
       400: { description: 'Invalid request body' },
       404: { description: 'Physical Count not found' },
     },
-  })
+  } as any)
   @ApiBody({ type: PhysicalCountSaveItemsRequestDto })
   @HttpCode(HttpStatus.OK)
   async saveItems(
@@ -615,6 +626,7 @@ export class PhysicalCountController extends BaseHttpController {
     description: 'Compares the counted quantities against system stock levels and calculates variances for each item, enabling warehouse staff to review discrepancies before final submission.',
     operationId: 'reviewPhysicalCountItems',
     tags: ['Inventory', 'Physical Count'],
+    'x-description-th': 'เปรียบเทียบจำนวนที่นับได้กับจำนวนในระบบ และคำนวณผลต่างของแต่ละรายการ ช่วยให้พนักงานคลังสินค้าตรวจสอบความคลาดเคลื่อนก่อนส่งขั้นสุดท้าย',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -626,7 +638,7 @@ export class PhysicalCountController extends BaseHttpController {
       400: { description: 'Invalid request body' },
       404: { description: 'Physical Count not found' },
     },
-  })
+  } as any)
   @ApiBody({ type: PhysicalCountSaveItemsRequestDto })
   @HttpCode(HttpStatus.OK)
   async reviewItems(
@@ -663,6 +675,7 @@ export class PhysicalCountController extends BaseHttpController {
     description: 'Retrieves the previously calculated variance report for a physical count, showing the differences between system and actual quantities so managers can approve or investigate discrepancies.',
     operationId: 'getPhysicalCountReview',
     tags: ['Inventory', 'Physical Count'],
+    'x-description-th': 'ดึงรายงานผลต่างที่คำนวณไว้ก่อนหน้าของการตรวจนับสินค้า แสดงความแตกต่างระหว่างจำนวนในระบบกับจำนวนจริง เพื่อให้ผู้จัดการอนุมัติหรือตรวจสอบความคลาดเคลื่อน',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -673,7 +686,7 @@ export class PhysicalCountController extends BaseHttpController {
       200: { description: 'Physical Count review result retrieved successfully' },
       404: { description: 'Physical Count not found' },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async getReview(
     @Param('id') id: string,
@@ -708,6 +721,7 @@ export class PhysicalCountController extends BaseHttpController {
     description: 'Finalizes a physical count and automatically generates inventory adjustment records to reconcile system stock levels with the actual counted quantities.',
     operationId: 'submitPhysicalCount',
     tags: ['Inventory', 'Physical Count'],
+    'x-description-th': 'ส่งการตรวจนับสินค้าขั้นสุดท้าย และสร้างรายการปรับปรุงสินค้าคงคลังอัตโนมัติเพื่อปรับจำนวนในระบบให้ตรงกับจำนวนที่นับได้จริง',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -719,7 +733,7 @@ export class PhysicalCountController extends BaseHttpController {
       400: { description: 'Physical Count cannot be submitted' },
       404: { description: 'Physical Count not found' },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async submit(
     @Param('id') id: string,
@@ -756,6 +770,7 @@ export class PhysicalCountController extends BaseHttpController {
     description: 'Records an explanatory note on a specific counted item, such as reasons for variances (e.g., spoilage, breakage, or misplacement) to support audit trails.',
     operationId: 'createPhysicalCountDetailComment',
     tags: ['Inventory', 'Physical Count'],
+    'x-description-th': 'เพิ่มหมายเหตุอธิบายในรายการสินค้าที่ตรวจนับ เช่น สาเหตุของผลต่าง (เสียหาย แตกหัก หรือวางผิดที่) เพื่อสนับสนุนเส้นทางการตรวจสอบ',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -768,7 +783,7 @@ export class PhysicalCountController extends BaseHttpController {
       400: { description: 'Invalid request body' },
       404: { description: 'Physical Count detail not found' },
     },
-  })
+  } as any)
   @ApiBody({ type: PhysicalCountDetailCommentRequestDto })
   @HttpCode(HttpStatus.CREATED)
   async createComment(

@@ -4,6 +4,17 @@ meta {
   seq: 18
 }
 
+docs {
+  ## Delete Purchase Order Detail
+  ลบรายการจากใบสั่งซื้อ ใช้เมื่อรายการเพิ่มผิดพลาดหรือไม่จำเป็นแล้วก่อนส่งให้ผู้ขาย
+
+  Removes a line item from a purchase order. Used when an item was added in error or is no longer needed before the PO is sent to the vendor.
+
+  ### Path Parameters
+  - `id` — Purchase order UUID
+  - `detail_id` — Detail line item UUID
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/purchase-order/:id/details/:detail_id
   body: none

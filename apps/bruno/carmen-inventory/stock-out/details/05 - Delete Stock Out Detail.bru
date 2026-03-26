@@ -4,6 +4,18 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Stock Out Detail
+  ลบรายการย่อยจากรายการเบิกสินค้าออกจากคลังที่เป็นร่าง เมื่อรายการถูกเพิ่มผิดพลาดหรือไม่ต้องการอีกต่อไป
+
+  Removes an item line from a draft stock-out transaction when the item was added in error or is no longer needed in this inventory removal.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Stock Out ID / รหัสรายการเบิกสินค้าออกจากคลัง
+  - `detail_id` — Stock Out Detail ID / รหัสรายการย่อยเบิกสินค้าออกจากคลัง
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/stock-out/:id/details/:detail_id
   body: none

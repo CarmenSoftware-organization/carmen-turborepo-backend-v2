@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Extra Cost Type
+  สร้างประเภทค่าใช้จ่ายเพิ่มเติมใหม่
+
+  Defines a new category for additional procurement costs (e.g., shipping, customs, handling).
+}
+
 post {
   url: {{host}}/api/config/{{bu_code}}/extra-cost-type
   body: json

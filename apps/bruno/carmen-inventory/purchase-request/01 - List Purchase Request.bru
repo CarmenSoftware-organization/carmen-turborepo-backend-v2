@@ -4,6 +4,19 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Purchase Requests
+  แสดงรายการใบขอซื้อทั้งหมดของผู้ใช้ปัจจุบัน พร้อมการแบ่งหน้า ค้นหา และกรองตามสถานะ ใช้สำหรับเจ้าหน้าที่แผนกและผู้อนุมัติในการดูและติดตามเอกสารใบขอซื้อ
+
+  Lists all purchase requests for the current user across business units, filtered by status, search term, and pagination. Used by department staff and approvers to view and track PR documents in the procurement workflow.
+
+  ### Query Parameters
+  - `bu_code` — Business unit code (required)
+  - `search` — Search term
+  - `page` — Page number
+  - `perpage` — Items per page
+}
+
 get {
   url: {{host}}/api/purchase-request?bu_code={{bu_code}}
   body: none

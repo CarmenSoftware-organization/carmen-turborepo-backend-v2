@@ -4,6 +4,17 @@ meta {
   seq: 10
 }
 
+docs {
+  ## Get Workflow Permission
+  ตรวจสอบสิทธิ์การดำเนินการเวิร์กโฟลว์ (อนุมัติ ปฏิเสธ ส่งกลับตรวจสอบ) ที่ผู้ใช้ปัจจุบันสามารถทำได้กับใบเบิกสินค้านี้ ตามบทบาทและขั้นตอนปัจจุบัน
+
+  Checks what workflow actions (approve, reject, review) the current user is authorized to perform on a specific store requisition based on their role and the SR current stage.
+
+  ### Path Parameters
+  - `id` — Store requisition ID (UUID)
+  - `bu_code` — Business unit code
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/store-requisition/:id/workflow-permission
   body: none

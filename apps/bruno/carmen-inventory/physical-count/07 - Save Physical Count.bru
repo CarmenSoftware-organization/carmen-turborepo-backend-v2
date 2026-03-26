@@ -4,6 +4,17 @@ meta {
   seq: 7
 }
 
+docs {
+  ## Save Physical Count Items
+  บันทึกจำนวนที่นับได้จากอุปกรณ์มือถือเป็นร่าง ช่วยให้พนักงานคลังสินค้าหยุดพักและดำเนินการตรวจนับต่อได้โดยไม่ต้องส่งขั้นสุดท้าย
+
+  Persists the counted quantities entered by warehouse staff on a mobile device as a draft, allowing them to pause and resume the physical count without finalizing it.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Physical Count ID / รหัสการตรวจนับสินค้า
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/physical-count/:id/save
   body: json

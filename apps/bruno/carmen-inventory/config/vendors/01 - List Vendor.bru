@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Vendors
+  แสดงรายการผู้ขายทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Retrieves all vendors/suppliers configured in the business unit with pagination and search support.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/vendors
   body: none

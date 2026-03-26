@@ -4,6 +4,16 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Transfer Records
+  ดึงรายการโอนย้ายสินค้าระหว่างคลังทั้งหมดของหน่วยธุรกิจ พร้อมการแบ่งหน้าและตัวกรอง ใช้สำหรับผู้จัดการคลังสินค้าในการติดตามการเคลื่อนย้ายสินค้าระหว่างสถานที่ต่างๆ
+
+  Lists all inventory transfer records for the business unit with pagination and filtering. Used by store managers to track item movements between locations such as main store to kitchen, or between hotel properties.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/transfer
   body: none

@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Application Role
+  ดึงข้อมูลบทบาทในระบบรายการเดียวตาม ID
+
+  Retrieves a single application role by its unique identifier.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/application-roles/:id
   body: none

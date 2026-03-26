@@ -75,7 +75,8 @@ export class Config_PriceListController extends BaseHttpController {
     operationId: 'configPriceList_uploadExcel',
     tags: ['Configuration', 'Price List'],
     responses: { 201: { description: 'Price list uploaded successfully' } },
-  })
+    'x-description-th': 'อัปโหลดรายการราคาจากไฟล์ Excel',
+  } as any)
   @ApiBody({ type: PriceListCreateRequestDto })
   async uploadExcel(
     @Body() createConfigPriceListDto: PriceListCreateDto,
@@ -124,7 +125,8 @@ export class Config_PriceListController extends BaseHttpController {
     operationId: 'configPriceList_downloadExcel',
     tags: ['Configuration', 'Price List'],
     responses: { 200: { description: 'Price list Excel downloaded successfully' } },
-  })
+    'x-description-th': 'ดาวน์โหลดรายการราคาเป็นไฟล์ Excel',
+  } as any)
   async downloadExcel(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -172,7 +174,8 @@ export class Config_PriceListController extends BaseHttpController {
     operationId: 'configPriceList_create',
     tags: ['Configuration', 'Price List'],
     responses: { 201: { description: 'Price list created successfully' } },
-  })
+    'x-description-th': 'สร้างรายการราคาใหม่',
+  } as any)
   @ApiBody({ type: PriceListCreateRequestDto })
   async create(
     @Body() createConfigPriceListDto: PriceListCreateDto,
@@ -219,7 +222,8 @@ export class Config_PriceListController extends BaseHttpController {
     operationId: 'configPriceList_findAll',
     tags: ['Configuration', 'Price List'],
     responses: { 200: { description: 'Price lists retrieved successfully' } },
-  })
+    'x-description-th': 'แสดงรายการราคาทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   async findAll(
     @Query() query: IPaginateQuery,
     @Param('bu_code') bu_code: string,
@@ -268,7 +272,8 @@ export class Config_PriceListController extends BaseHttpController {
     operationId: 'configPriceList_findOne',
     tags: ['Configuration', 'Price List'],
     responses: { 200: { description: 'Price list retrieved successfully' } },
-  })
+    'x-description-th': 'ดึงข้อมูลรายการราคารายการเดียวตาม ID',
+  } as any)
   async findOne(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -312,7 +317,8 @@ export class Config_PriceListController extends BaseHttpController {
     operationId: 'configPriceList_update',
     tags: ['Configuration', 'Price List'],
     responses: { 200: { description: 'Price list updated successfully' } },
-  })
+    'x-description-th': 'อัปเดตข้อมูลรายการราคาที่มีอยู่',
+  } as any)
   @ApiBody({ type: PriceListUpdateRequestDto })
   async update(
     @Param('id') id: string,
@@ -364,7 +370,8 @@ export class Config_PriceListController extends BaseHttpController {
     operationId: 'configPriceList_delete',
     tags: ['Configuration', 'Price List'],
     responses: { 200: { description: 'Price list deleted successfully' } },
-  })
+    'x-description-th': 'ลบรายการราคาตาม ID',
+  } as any)
   async remove(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -408,7 +415,8 @@ export class Config_PriceListController extends BaseHttpController {
     operationId: 'configPriceList_importCsv',
     tags: ['Configuration', 'Price List'],
     responses: { 201: { description: 'Price list CSV imported successfully' } },
-  })
+    'x-description-th': 'นำเข้ารายการราคาจากไฟล์ CSV',
+  } as any)
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {

@@ -4,6 +4,17 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Credit Term by ID
+  ดึงรายละเอียดของเงื่อนไขการชำระเงินเฉพาะ รวมถึงรหัส ชื่อ และจำนวนวัน ใช้เมื่อตรวจสอบหรือกำหนดเงื่อนไขการชำระเงินให้ผู้ขาย
+
+  Retrieves the details of a specific payment term including its code, name, and number of days, used when reviewing or assigning vendor payment conditions.
+
+  ### Path Parameters
+  - `id` — Credit term ID / รหัสเงื่อนไขการชำระเงิน
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/credit-term/:id
   body: none

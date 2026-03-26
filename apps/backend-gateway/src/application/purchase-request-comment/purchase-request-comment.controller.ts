@@ -69,7 +69,8 @@ export class PurchaseRequestCommentController {
         description: 'Purchase request not found',
       },
     },
-  })
+    'x-description-th': 'แสดงกระทู้สนทนาทั้งหมดของใบขอซื้อ ช่วยให้ผู้ขอและผู้อนุมัติตรวจสอบบันทึกการทำงานร่วมกัน คำขอชี้แจง และข้อคิดเห็นเกี่ยวกับการอนุมัติ',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findAllByPurchaseRequestId(
     @Param('bu_code') bu_code: string,
@@ -124,7 +125,8 @@ export class PurchaseRequestCommentController {
         description: 'Comment not found',
       },
     },
-  })
+    'x-description-th': 'ดึงความคิดเห็นเฉพาะจากกระทู้สนทนาของใบขอซื้อ รวมถึงเนื้อหา ผู้เขียน เวลา และเอกสารแนบ',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findById(
     @Param('bu_code') bu_code: string,
@@ -175,7 +177,8 @@ export class PurchaseRequestCommentController {
         description: 'Purchase request not found',
       },
     },
-  })
+    'x-description-th': 'โพสต์ความคิดเห็นใหม่ในกระทู้สนทนาของใบขอซื้อ ช่วยให้ผู้ขอและผู้อนุมัติทำงานร่วมกันโดยถามคำถาม ให้เหตุผล หรือขอการแก้ไข',
+  } as any)
   @ApiBody({
     type: CreatePurchaseRequestCommentDto,
     description: 'Comment data with optional attachments',
@@ -234,7 +237,8 @@ export class PurchaseRequestCommentController {
         description: 'Forbidden - can only update own comments',
       },
     },
-  })
+    'x-description-th': 'แก้ไขความคิดเห็นที่มีอยู่ในกระทู้สนทนาของใบขอซื้อ เฉพาะผู้เขียนความคิดเห็นเท่านั้นที่สามารถแก้ไขได้ เพื่อรักษาความรับผิดชอบในกระบวนการจัดซื้อ',
+  } as any)
   @ApiBody({
     type: UpdatePurchaseRequestCommentDto,
     description: 'Updated comment data',
@@ -295,7 +299,8 @@ export class PurchaseRequestCommentController {
         description: 'Forbidden - can only delete own comments',
       },
     },
-  })
+    'x-description-th': 'ลบความคิดเห็นจากกระทู้สนทนาของใบขอซื้อ เฉพาะผู้เขียนความคิดเห็นเท่านั้นที่สามารถลบได้ เพื่อรักษาประวัติการทำงานร่วมกันที่ตรวจสอบได้',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async delete(
     @Param('bu_code') bu_code: string,
@@ -351,7 +356,8 @@ export class PurchaseRequestCommentController {
         description: 'Forbidden - can only modify own comments',
       },
     },
-  })
+    'x-description-th': 'แนบเอกสารสนับสนุน (เช่น ใบเสนอราคา สเปค หรือรูปภาพ) ในความคิดเห็นของใบขอซื้อ ช่วยให้ผู้เกี่ยวข้องแชร์หลักฐานและเอกสารระหว่างกระบวนการตรวจสอบการจัดซื้อ',
+  } as any)
   @ApiBody({
     type: AddAttachmentDto,
     description: 'Attachment data from file service',
@@ -414,7 +420,8 @@ export class PurchaseRequestCommentController {
         description: 'Forbidden - can only modify own comments',
       },
     },
-  })
+    'x-description-th': 'ลบเอกสารแนบที่เคยแนบไว้จากความคิดเห็นของใบขอซื้อ ช่วยให้ผู้เขียนความคิดเห็นจัดการไฟล์แนบที่ล้าสมัยหรือไม่ถูกต้อง',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async removeAttachment(
     @Param('bu_code') bu_code: string,

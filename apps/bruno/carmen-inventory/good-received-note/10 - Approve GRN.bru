@@ -4,6 +4,17 @@ meta {
   seq: 10
 }
 
+docs {
+  ## Approve Good Received Note
+  อนุมัติใบรับสินค้าและบันทึกจำนวนที่รับเข้าคลังสินค้า ขั้นตอนนี้จะสร้างรายการเคลื่อนไหวสินค้าคงคลังและกำหนดต้นทุนแบบ FIFO สำหรับสินค้าที่รับ อัปเดตระดับสินค้าคงคลังและเปิดให้แผนกต่าง ๆ สามารถเบิกใช้ได้
+
+  Approves a goods receiving record, committing the received quantities into inventory. This creates inventory transactions and establishes FIFO cost layers for the received items, updating stock levels and enabling the items for use by departments.
+
+  ### Path Parameters
+  - `id` — Good Received Note ID / รหัสใบรับสินค้า
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/good-received-note/:id/approve
   body: json

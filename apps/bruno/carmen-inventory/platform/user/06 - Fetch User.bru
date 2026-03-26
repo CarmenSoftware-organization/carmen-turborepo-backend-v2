@@ -4,6 +4,13 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Fetch User
+  ซิงค์ข้อมูลผู้ใช้จาก Keycloak เข้าสู่ระบบแพลตฟอร์ม
+
+  Synchronize users from Keycloak into the platform database.
+}
+
 post {
   url: {{host}}/api-system/user/fetch-user
   body: none

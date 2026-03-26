@@ -4,6 +4,16 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Get On Order by Product
+  ดึงจำนวนสินค้าที่สั่งซื้อแล้วแต่ยังไม่ได้รับครบจากใบสั่งซื้อที่ยังดำเนินการอยู่
+
+  Retrieves the on-order quantity for a product from active purchase orders (in_progress, sent, partial).
+
+  ### Path Parameters
+  - `product_id` — Product UUID (รหัสสินค้า)
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/products/:product_id/on-order
   body: none

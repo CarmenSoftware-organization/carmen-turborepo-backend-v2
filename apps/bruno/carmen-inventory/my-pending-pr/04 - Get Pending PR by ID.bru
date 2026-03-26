@@ -4,6 +4,17 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Get Pending Purchase Request by ID
+  ค้นหาใบขอซื้อที่รอดำเนินการรายการเดียวตาม ID พร้อมรายละเอียดทั้งหมด รวมถึงรายการสินค้า จำนวน ราคาประมาณ และสถานะการอนุมัติปัจจุบัน
+
+  Retrieves the full details of a specific purchase request pending in the approval pipeline, including requested items, quantities, estimated costs, and current approval status.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `id` — Purchase request ID (UUID)
+}
+
 get {
   url: {{host}}/api/my-pending/purchase-request/:bu_code/:id
   body: none

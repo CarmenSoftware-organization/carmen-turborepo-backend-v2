@@ -4,6 +4,17 @@ meta {
   seq: 9
 }
 
+docs {
+  ## Get Physical Count Review Result
+  ดึงรายงานผลต่างที่คำนวณไว้ก่อนหน้าของการตรวจนับสินค้า แสดงความแตกต่างระหว่างจำนวนในระบบกับจำนวนจริง เพื่อให้ผู้จัดการอนุมัติหรือตรวจสอบความคลาดเคลื่อน
+
+  Retrieves the previously calculated variance report for a physical count, showing the differences between system and actual quantities so managers can approve or investigate discrepancies.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Physical Count ID / รหัสการตรวจนับสินค้า
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/physical-count/:id/review
   body: none

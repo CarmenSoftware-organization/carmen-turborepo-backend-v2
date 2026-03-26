@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Purchase Request Templates
+  แสดงรายการเทมเพลตใบขอซื้อที่ใช้ซ้ำได้ทั้งหมดในหน่วยธุรกิจ เช่น การสั่งซื้อวัตถุดิบครัวประจำสัปดาห์หรือการเติมสต็อกแม่บ้าน ช่วยให้สร้างคำขอจัดซื้อประจำได้รวดเร็ว
+
+  Lists all reusable purchase request templates available in the business unit, such as recurring weekly kitchen supply orders or standard housekeeping stock replenishments, enabling quick creation of routine procurement requests.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-request-template
   body: none

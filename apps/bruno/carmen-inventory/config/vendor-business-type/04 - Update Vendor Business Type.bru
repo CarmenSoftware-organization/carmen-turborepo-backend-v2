@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Vendor Business Type
+  อัปเดตข้อมูลประเภทธุรกิจผู้ขายที่มีอยู่
+
+  Updates an existing vendor business type classification.
+}
+
 patch {
   url: {{host}}/api/config/{{bu_code}}/vendor-business-type/:id
   body: json

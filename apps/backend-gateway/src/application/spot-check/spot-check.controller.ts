@@ -76,10 +76,11 @@ export class SpotCheckController extends BaseHttpController {
     description: 'Returns the count of random inventory spot checks awaiting the current user, used to drive dashboard alerts for quality-control verification tasks.',
     operationId: 'findAllPendingSpotCheckCount',
     tags: ['Pending Count', 'Inventory', 'Spot Check'],
+    'x-description-th': 'ดึงจำนวนการตรวจสอบสินค้าเฉพาะจุดที่รอดำเนินการของผู้ใช้ปัจจุบัน ใช้สำหรับแสดงการแจ้งเตือนบนแดชบอร์ดสำหรับงานตรวจสอบคุณภาพ',
     responses: {
       200: { description: 'Pending spot check count retrieved successfully' },
     },
-  })
+  } as any)
   async findAllPendingSpotCheckCount(
     @Req() req: Request,
     @Res() res: Response,
@@ -119,6 +120,7 @@ export class SpotCheckController extends BaseHttpController {
       'Lists all inventory locations with their spot check status for the current open period. Similar to the physical count current endpoint. Use include_not_count=true to include locations with physical_count_type=no.',
     operationId: 'findCurrentSpotCheckByLocation',
     tags: ['Inventory', 'Spot Check'],
+    'x-description-th': 'ดึงรายการสถานที่จัดเก็บทั้งหมดพร้อมสถานะการตรวจสอบสินค้าเฉพาะจุดสำหรับงวดปัจจุบันที่เปิดอยู่ ใช้ include_not_count=true เพื่อรวมสถานที่ที่ไม่ต้องตรวจนับ',
     parameters: [
       {
         name: 'bu_code',
@@ -137,7 +139,7 @@ export class SpotCheckController extends BaseHttpController {
       200: { description: 'Spot checks by location retrieved successfully' },
       404: { description: 'No active period found' },
     },
-  })
+  } as any)
   @ApiResponse({ status: 200, description: 'Spot checks by location retrieved successfully', type: SpotCheckCurrentResponseDto })
   @ApiResponse({ status: 404, description: 'No active period found' })
   async findCurrentByLocation(
@@ -179,6 +181,7 @@ export class SpotCheckController extends BaseHttpController {
     description: 'Retrieves the full details of a random inventory spot check, including the target location, selected products, and recorded quantities for quality-control review.',
     operationId: 'findOneSpotCheck',
     tags: ['Inventory', 'Spot Check'],
+    'x-description-th': 'ดึงรายละเอียดทั้งหมดของการตรวจสอบสินค้าเฉพาะจุด รวมถึงสถานที่เป้าหมาย สินค้าที่เลือก และจำนวนที่บันทึก สำหรับการตรวจสอบคุณภาพ',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Spot Check ID' },
       { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
@@ -187,7 +190,7 @@ export class SpotCheckController extends BaseHttpController {
       200: { description: 'Spot check retrieved successfully' },
       404: { description: 'Spot check not found' },
     },
-  })
+  } as any)
   async findOne(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -232,13 +235,14 @@ export class SpotCheckController extends BaseHttpController {
     description: 'Lists all inventory spot checks for a business unit with pagination, enabling managers to track the frequency and results of random stock verification activities.',
     operationId: 'findAllSpotChecks',
     tags: ['Inventory', 'Spot Check'],
+    'x-description-th': 'ดึงรายการตรวจสอบสินค้าเฉพาะจุดทั้งหมดของหน่วยธุรกิจพร้อมการแบ่งหน้า ช่วยให้ผู้จัดการติดตามความถี่และผลลัพธ์ของการตรวจสอบสินค้าแบบสุ่ม',
     parameters: [
       { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
     ],
     responses: {
       200: { description: 'Spot checks retrieved successfully' },
     },
-  })
+  } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -283,6 +287,7 @@ export class SpotCheckController extends BaseHttpController {
     description: 'Initiates a random inventory spot check at a specific storage location, selecting products either randomly or manually to verify actual stock against system records for quality control.',
     operationId: 'createSpotCheck',
     tags: ['Inventory', 'Spot Check'],
+    'x-description-th': 'สร้างรายการตรวจสอบสินค้าเฉพาะจุดใหม่ที่สถานที่จัดเก็บเฉพาะ เลือกสินค้าแบบสุ่มหรือเลือกเองเพื่อตรวจสอบสินค้าจริงเทียบกับข้อมูลในระบบ',
     parameters: [
       { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
     ],
@@ -290,7 +295,7 @@ export class SpotCheckController extends BaseHttpController {
       201: { description: 'Spot check created successfully' },
       400: { description: 'Invalid request body' },
     },
-  })
+  } as any)
   @ApiBody({ type: SpotCheckCreateRequestDto })
   async create(
     @Body() createDto: SpotCheckCreateDto,
@@ -336,6 +341,7 @@ export class SpotCheckController extends BaseHttpController {
     description: 'Modifies a spot check record before submission, such as updating the location or adjusting which products are included in the verification.',
     operationId: 'updateSpotCheck',
     tags: ['Inventory', 'Spot Check'],
+    'x-description-th': 'แก้ไขรายการตรวจสอบสินค้าเฉพาะจุดก่อนการส่ง เช่น อัปเดตสถานที่หรือปรับสินค้าที่ต้องการตรวจสอบ',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Spot Check ID' },
       { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
@@ -344,7 +350,7 @@ export class SpotCheckController extends BaseHttpController {
       200: { description: 'Spot check updated successfully' },
       404: { description: 'Spot check not found' },
     },
-  })
+  } as any)
   @ApiBody({ type: SpotCheckUpdateRequestDto })
   async update(
     @Param('id') id: string,
@@ -392,6 +398,7 @@ export class SpotCheckController extends BaseHttpController {
     description: 'Removes a spot check that was created in error or is no longer required for inventory quality control.',
     operationId: 'deleteSpotCheck',
     tags: ['Inventory', 'Spot Check'],
+    'x-description-th': 'ลบรายการตรวจสอบสินค้าเฉพาะจุดที่สร้างผิดพลาดหรือไม่จำเป็นสำหรับการควบคุมคุณภาพสินค้าคงคลังอีกต่อไป',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Spot Check ID' },
       { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
@@ -400,7 +407,7 @@ export class SpotCheckController extends BaseHttpController {
       200: { description: 'Spot check deleted successfully' },
       404: { description: 'Spot check not found' },
     },
-  })
+  } as any)
   async delete(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -440,6 +447,7 @@ export class SpotCheckController extends BaseHttpController {
     description: 'Returns all product line items selected for a spot check, showing system quantities and any recorded actual quantities for variance analysis.',
     operationId: 'findAllSpotCheckDetails',
     tags: ['Inventory', 'Spot Check'],
+    'x-description-th': 'ดึงรายการสินค้าทั้งหมดที่เลือกสำหรับการตรวจสอบสินค้าเฉพาะจุด แสดงจำนวนในระบบและจำนวนที่นับได้จริง สำหรับการวิเคราะห์ผลต่าง',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -449,7 +457,7 @@ export class SpotCheckController extends BaseHttpController {
       200: { description: 'Spot Check details retrieved successfully' },
       404: { description: 'Spot Check not found' },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findDetailsBySpotCheckId(
     @Param('id') id: string,
@@ -485,6 +493,7 @@ export class SpotCheckController extends BaseHttpController {
     description: 'Retrieves a specific product line item from a spot check, including its system quantity, actual counted quantity, and variance for detailed investigation.',
     operationId: 'findSpotCheckDetailById',
     tags: ['Inventory', 'Spot Check'],
+    'x-description-th': 'ดึงรายการสินค้าเฉพาะรายการจากการตรวจสอบสินค้าเฉพาะจุด รวมถึงจำนวนในระบบ จำนวนที่นับได้จริง และผลต่าง สำหรับการตรวจสอบรายละเอียด',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -495,7 +504,7 @@ export class SpotCheckController extends BaseHttpController {
       200: { description: 'Spot Check detail retrieved successfully' },
       404: { description: 'Spot Check detail not found' },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findDetailById(
     @Param('id') id: string,
@@ -532,6 +541,7 @@ export class SpotCheckController extends BaseHttpController {
     description: 'Removes a product from a draft spot check, used when a product was incorrectly selected for the random verification.',
     operationId: 'deleteSpotCheckDetail',
     tags: ['Inventory', 'Spot Check'],
+    'x-description-th': 'ลบสินค้าจากการตรวจสอบสินค้าเฉพาะจุดสถานะร่าง ใช้เมื่อสินค้าถูกเลือกผิดพลาดสำหรับการตรวจสอบแบบสุ่ม',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -543,7 +553,7 @@ export class SpotCheckController extends BaseHttpController {
       400: { description: 'Cannot delete detail of non-draft Spot Check' },
       404: { description: 'Spot Check detail not found' },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async deleteDetail(
     @Param('id') id: string,
@@ -582,6 +592,7 @@ export class SpotCheckController extends BaseHttpController {
     description: 'Persists the counted quantities entered by staff on a mobile device as a draft, allowing them to pause and resume the spot check without finalizing results.',
     operationId: 'saveSpotCheckItems',
     tags: ['Inventory', 'Spot Check'],
+    'x-description-th': 'บันทึกจำนวนที่นับได้จากอุปกรณ์มือถือเป็นร่าง ช่วยให้พนักงานหยุดพักและดำเนินการตรวจสอบต่อได้โดยไม่ต้องสรุปผลลัพธ์',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -593,7 +604,7 @@ export class SpotCheckController extends BaseHttpController {
       400: { description: 'Invalid request body' },
       404: { description: 'Spot Check not found' },
     },
-  })
+  } as any)
   @ApiBody({ type: SpotCheckSaveItemsRequestDto })
   @HttpCode(HttpStatus.OK)
   async saveItems(
@@ -631,6 +642,7 @@ export class SpotCheckController extends BaseHttpController {
     description: 'Compares the counted quantities against system stock levels and calculates variances for each spot-checked item, enabling staff to review discrepancies before submission.',
     operationId: 'reviewSpotCheckItems',
     tags: ['Inventory', 'Spot Check'],
+    'x-description-th': 'เปรียบเทียบจำนวนที่นับได้กับจำนวนในระบบ และคำนวณผลต่างของแต่ละรายการ ช่วยให้พนักงานตรวจสอบความคลาดเคลื่อนก่อนส่ง',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -642,7 +654,7 @@ export class SpotCheckController extends BaseHttpController {
       400: { description: 'Invalid request body' },
       404: { description: 'Spot Check not found' },
     },
-  })
+  } as any)
   @ApiBody({ type: SpotCheckSaveItemsRequestDto })
   @HttpCode(HttpStatus.OK)
   async reviewItems(
@@ -679,6 +691,7 @@ export class SpotCheckController extends BaseHttpController {
     description: 'Retrieves the previously calculated variance report for a spot check, showing differences between system and actual quantities for management review.',
     operationId: 'getSpotCheckReview',
     tags: ['Inventory', 'Spot Check'],
+    'x-description-th': 'ดึงรายงานผลต่างที่คำนวณไว้ก่อนหน้าของการตรวจสอบสินค้าเฉพาะจุด แสดงความแตกต่างระหว่างจำนวนในระบบกับจำนวนจริง สำหรับการตรวจสอบโดยผู้จัดการ',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -689,7 +702,7 @@ export class SpotCheckController extends BaseHttpController {
       200: { description: 'Spot Check review result retrieved successfully' },
       404: { description: 'Spot Check not found' },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async getReview(
     @Param('id') id: string,
@@ -724,6 +737,7 @@ export class SpotCheckController extends BaseHttpController {
     description: 'Finalizes a spot check by recording the verified quantities as the official result. Discrepancies found may trigger further investigation or inventory adjustments.',
     operationId: 'submitSpotCheck',
     tags: ['Inventory', 'Spot Check'],
+    'x-description-th': 'ส่งการตรวจสอบสินค้าเฉพาะจุดขั้นสุดท้าย บันทึกจำนวนที่ตรวจสอบแล้วเป็นผลลัพธ์อย่างเป็นทางการ ความคลาดเคลื่อนที่พบอาจนำไปสู่การตรวจสอบเพิ่มเติมหรือการปรับปรุงสินค้าคงคลัง',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -735,7 +749,7 @@ export class SpotCheckController extends BaseHttpController {
       400: { description: 'Spot Check cannot be submitted' },
       404: { description: 'Spot Check not found' },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async submit(
     @Param('id') id: string,
@@ -770,6 +784,7 @@ export class SpotCheckController extends BaseHttpController {
     description: 'Clears all recorded actual quantities and resets the spot check to draft state, allowing staff to restart the verification process from scratch if counts were inaccurate.',
     operationId: 'resetSpotCheck',
     tags: ['Inventory', 'Spot Check'],
+    'x-description-th': 'ล้างจำนวนที่บันทึกทั้งหมดและรีเซ็ตการตรวจสอบสินค้าเฉพาะจุดกลับเป็นสถานะร่าง ช่วยให้พนักงานเริ่มกระบวนการตรวจสอบใหม่ตั้งแต่ต้น',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -781,7 +796,7 @@ export class SpotCheckController extends BaseHttpController {
       400: { description: 'Spot Check cannot be reset' },
       404: { description: 'Spot Check not found' },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async reset(
     @Param('id') id: string,
@@ -816,6 +831,7 @@ export class SpotCheckController extends BaseHttpController {
     description: 'Retrieves the list of products stocked at a specific storage location, enabling staff to select items for a new spot check or verify location inventory assignments.',
     operationId: 'getProductsByLocationId',
     tags: ['Inventory', 'Spot Check'],
+    'x-description-th': 'ดึงรายการสินค้าที่จัดเก็บในสถานที่เฉพาะ ช่วยให้พนักงานเลือกรายการสำหรับการตรวจสอบสินค้าเฉพาะจุดใหม่หรือตรวจสอบการกำหนดสินค้าของสถานที่',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -826,7 +842,7 @@ export class SpotCheckController extends BaseHttpController {
       200: { description: 'Products retrieved successfully' },
       404: { description: 'Location not found' },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async getProductsByLocationId(
     @Param('location_id') locationId: string,

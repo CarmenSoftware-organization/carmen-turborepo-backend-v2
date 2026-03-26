@@ -4,6 +4,16 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Price List
+  ลบรายการราคาตาม ID
+
+  Removes a vendor price list from active use.
+
+  ### Path Parameters
+  - `id` -- Price list ID (UUID) / รหัสรายการราคา
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/price-list/:id
   body: none

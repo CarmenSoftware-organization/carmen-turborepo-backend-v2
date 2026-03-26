@@ -4,6 +4,16 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Extra Cost Type
+  ดึงข้อมูลประเภทค่าใช้จ่ายเพิ่มเติมรายการเดียวตาม ID
+
+  Retrieves a specific extra cost type definition by its unique identifier.
+
+  ### Path Parameters
+  - `id` -- Extra cost type ID (UUID) / รหัสประเภทค่าใช้จ่ายเพิ่มเติม
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/extra-cost-type/:id
   body: none

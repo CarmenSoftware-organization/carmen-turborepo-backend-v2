@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Cronjob
+  ลบงานตั้งเวลาอย่างถาวรและหยุดการทำงาน
+
+  Permanently removes a scheduled task from the system and stops it from executing.
+}
+
 delete {
   url: {{host}}/api/config/cronjobs/:id
   body: none

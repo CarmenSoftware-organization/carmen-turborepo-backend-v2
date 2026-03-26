@@ -4,6 +4,18 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Stock Out Detail by ID
+  ดึงรายการย่อยเฉพาะรายการจากรายการเบิกสินค้าออกจากคลัง พร้อมรายละเอียดสินค้า จำนวน และต้นทุนทั้งหมด ใช้สำหรับตรวจสอบหรือยืนยันรายการเบิกสินค้าเฉพาะรายการ
+
+  Retrieves a specific item line from a stock-out transaction with full product, quantity, and cost details. Used to inspect or verify a particular inventory removal.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Stock Out ID / รหัสรายการเบิกสินค้าออกจากคลัง
+  - `detail_id` — Stock Out Detail ID / รหัสรายการย่อยเบิกสินค้าออกจากคลัง
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/stock-out/:id/details/:detail_id
   body: none

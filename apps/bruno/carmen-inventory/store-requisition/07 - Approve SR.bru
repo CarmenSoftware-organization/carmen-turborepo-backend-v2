@@ -4,6 +4,17 @@ meta {
   seq: 7
 }
 
+docs {
+  ## Approve Store Requisition
+  อนุมัติใบเบิกสินค้าในขั้นตอนปัจจุบันของเวิร์กโฟลว์ เมื่ออนุมัติครบทุกขั้นตอนแล้ว สินค้าจะถูกเบิกจากคลังให้แผนกที่ขอ และหักยอดสินค้าคงคลัง
+
+  Advances a store requisition through its approval workflow at the current stage. Once fully approved, items can be issued from the store to the requesting department, triggering inventory deductions.
+
+  ### Path Parameters
+  - `id` — Store requisition ID (UUID)
+  - `bu_code` — Business unit code
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/store-requisition/:id/approve
   body: json

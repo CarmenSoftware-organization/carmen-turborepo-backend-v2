@@ -81,6 +81,7 @@ export class TransferController extends BaseHttpController {
     description: 'Retrieves the full details of an inventory transfer including source and destination locations, all items being moved, and their quantities. Used to review or verify a transfer between stores or departments.',
     operationId: 'findOneTransfer',
     tags: ['Inventory', 'Transfer'],
+    'x-description-th': 'ดึงรายละเอียดทั้งหมดของรายการโอนย้ายสินค้าระหว่างคลังตาม ID รวมถึงสถานที่ต้นทางและปลายทาง รายการสินค้าที่ถูกย้าย และจำนวน',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Transfer ID' },
     ],
@@ -88,7 +89,7 @@ export class TransferController extends BaseHttpController {
       200: { description: 'The Transfer was successfully retrieved' },
       404: { description: 'The Transfer was not found' },
     },
-  })
+  } as any)
   async findOne(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -121,11 +122,12 @@ export class TransferController extends BaseHttpController {
     description: 'Lists all inventory transfer records for the business unit with pagination and filtering. Used by store managers to track item movements between locations such as main store to kitchen, or between hotel properties.',
     operationId: 'findAllTransfers',
     tags: ['Inventory', 'Transfer'],
+    'x-description-th': 'ดึงรายการโอนย้ายสินค้าระหว่างคลังทั้งหมดของหน่วยธุรกิจ พร้อมการแบ่งหน้าและตัวกรอง ใช้สำหรับติดตามการเคลื่อนย้ายสินค้าระหว่างสถานที่ต่างๆ',
     responses: {
       200: { description: 'Transfer records retrieved successfully' },
       404: { description: 'No Transfer records found' },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Req() req: Request,
@@ -160,11 +162,12 @@ export class TransferController extends BaseHttpController {
     description: 'Initiates an inventory transfer to move items from one storage location to another (e.g., main warehouse to kitchen store, or between hotel properties). Specifies source, destination, and items to be transferred.',
     operationId: 'createTransfer',
     tags: ['Inventory', 'Transfer'],
+    'x-description-th': 'สร้างรายการโอนย้ายสินค้าใหม่เพื่อย้ายสินค้าจากคลังต้นทางไปยังคลังปลายทาง โดยระบุต้นทาง ปลายทาง และรายการสินค้าที่จะโอนย้าย',
     responses: {
       201: { description: 'The Transfer was successfully created' },
       400: { description: 'Invalid request body' },
     },
-  })
+  } as any)
   @ApiBody({ type: CreateTransferSwaggerDto })
   async create(
     @Body() createDto: TransferCreateDto,
@@ -199,6 +202,7 @@ export class TransferController extends BaseHttpController {
     description: 'Modifies a transfer record to adjust items, quantities, or locations before the transfer is finalized. Used when store staff need to correct a transfer before items are physically moved.',
     operationId: 'updateTransfer',
     tags: ['Inventory', 'Transfer'],
+    'x-description-th': 'แก้ไขรายการโอนย้ายสินค้าเพื่อปรับรายการสินค้า จำนวน หรือสถานที่ก่อนที่การโอนย้ายจะถูกยืนยัน',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Transfer ID' },
     ],
@@ -206,7 +210,7 @@ export class TransferController extends BaseHttpController {
       200: { description: 'The Transfer was successfully updated' },
       404: { description: 'The Transfer was not found' },
     },
-  })
+  } as any)
   @ApiBody({ type: UpdateTransferSwaggerDto })
   async update(
     @Param('id') id: string,
@@ -242,6 +246,7 @@ export class TransferController extends BaseHttpController {
     description: 'Removes a transfer record that was created in error or is no longer needed. Only applicable to draft transfers before items have been physically moved.',
     operationId: 'deleteTransfer',
     tags: ['Inventory', 'Transfer'],
+    'x-description-th': 'ลบรายการโอนย้ายสินค้าที่สร้างผิดพลาดหรือไม่ต้องการอีกต่อไป ใช้ได้เฉพาะรายการที่ยังเป็นร่างก่อนที่สินค้าจะถูกเคลื่อนย้ายจริง',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Transfer ID' },
     ],
@@ -249,7 +254,7 @@ export class TransferController extends BaseHttpController {
       200: { description: 'The Transfer was successfully deleted' },
       404: { description: 'The Transfer was not found' },
     },
-  })
+  } as any)
   async delete(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -282,6 +287,7 @@ export class TransferController extends BaseHttpController {
     description: 'Lists all items included in this transfer with their product details, quantities, and unit information. Used to verify the contents of a transfer before or after physical movement of goods.',
     operationId: 'findAllTransferDetails',
     tags: ['Inventory', 'Transfer'],
+    'x-description-th': 'ดึงรายการย่อยทั้งหมดของรายการโอนย้ายสินค้า รวมถึงรายละเอียดสินค้า จำนวน และข้อมูลหน่วย',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -291,7 +297,7 @@ export class TransferController extends BaseHttpController {
       200: { description: 'Transfer details retrieved successfully' },
       404: { description: 'Transfer not found' },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findDetailsByTransferId(
     @Param('id') id: string,
@@ -324,6 +330,7 @@ export class TransferController extends BaseHttpController {
     description: 'Retrieves a specific item line from a transfer with full product, quantity, and location details. Used to inspect a particular item being moved between locations.',
     operationId: 'findTransferDetailById',
     tags: ['Inventory', 'Transfer'],
+    'x-description-th': 'ดึงรายการย่อยเฉพาะรายการจากรายการโอนย้ายสินค้า พร้อมรายละเอียดสินค้า จำนวน และสถานที่ทั้งหมด',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -334,7 +341,7 @@ export class TransferController extends BaseHttpController {
       200: { description: 'Transfer detail retrieved successfully' },
       404: { description: 'Transfer detail not found' },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findDetailById(
     @Param('id') id: string,
@@ -369,6 +376,7 @@ export class TransferController extends BaseHttpController {
     description: 'Adds a new item to a draft transfer, specifying the product and quantity to be moved between storage locations.',
     operationId: 'createTransferDetail',
     tags: ['Inventory', 'Transfer'],
+    'x-description-th': 'เพิ่มรายการสินค้าใหม่ในรายการโอนย้ายที่เป็นร่าง โดยระบุสินค้าและจำนวนที่จะย้ายระหว่างคลังสินค้า',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -379,7 +387,7 @@ export class TransferController extends BaseHttpController {
       400: { description: 'Cannot add detail to non-draft Transfer' },
       404: { description: 'Transfer not found' },
     },
-  })
+  } as any)
   @ApiBody({ type: CreateTransferDetailSwaggerDto })
   @HttpCode(HttpStatus.CREATED)
   async createDetail(
@@ -416,6 +424,7 @@ export class TransferController extends BaseHttpController {
     description: 'Modifies an item line on a draft transfer to correct the product, quantity, or other details before the inventory movement is executed.',
     operationId: 'updateTransferDetail',
     tags: ['Inventory', 'Transfer'],
+    'x-description-th': 'แก้ไขรายการย่อยของรายการโอนย้ายที่เป็นร่าง เพื่อปรับสินค้า จำนวน หรือรายละเอียดอื่นๆ ก่อนที่การเคลื่อนย้ายสินค้าคงคลังจะถูกดำเนินการ',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -427,7 +436,7 @@ export class TransferController extends BaseHttpController {
       400: { description: 'Cannot update detail of non-draft Transfer' },
       404: { description: 'Transfer detail not found' },
     },
-  })
+  } as any)
   @ApiBody({ type: UpdateTransferDetailSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async updateDetail(
@@ -464,6 +473,7 @@ export class TransferController extends BaseHttpController {
     description: 'Removes an item from a draft transfer when it was added in error or is no longer needed in this inventory movement.',
     operationId: 'deleteTransferDetail',
     tags: ['Inventory', 'Transfer'],
+    'x-description-th': 'ลบรายการย่อยจากรายการโอนย้ายที่เป็นร่าง เมื่อรายการถูกเพิ่มผิดพลาดหรือไม่ต้องการอีกต่อไป',
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -475,7 +485,7 @@ export class TransferController extends BaseHttpController {
       400: { description: 'Cannot delete detail of non-draft Transfer' },
       404: { description: 'Transfer detail not found' },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async deleteDetail(
     @Param('id') id: string,

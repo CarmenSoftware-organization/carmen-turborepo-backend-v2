@@ -4,6 +4,17 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Transfer Detail
+  เพิ่มรายการสินค้าใหม่ในรายการโอนย้ายที่เป็นร่าง โดยระบุสินค้าและจำนวนที่จะย้ายระหว่างคลังสินค้า
+
+  Adds a new item to a draft transfer, specifying the product and quantity to be moved between storage locations.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Transfer ID / รหัสรายการโอนย้ายสินค้า
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/transfer/:id/details
   body: json

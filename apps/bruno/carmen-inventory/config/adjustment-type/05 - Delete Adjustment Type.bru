@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Adjustment Type
+  ลบประเภทการปรับปรุงตาม ID
+
+  Deletes an adjustment type category by its unique identifier.
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/adjustment-type/:id
   body: none

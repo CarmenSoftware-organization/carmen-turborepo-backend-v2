@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## Get Product Inventory by Location
+  ดึงข้อมูลระดับสินค้าคงคลังของสินค้าที่สถานที่เฉพาะ
+
+  Retrieves real-time inventory levels for a specific product at a given storage location.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/locations/:location_id/product/:product_id/inventory
   body: none

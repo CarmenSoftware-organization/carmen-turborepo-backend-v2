@@ -4,6 +4,13 @@ meta {
   seq: 7
 }
 
+docs {
+  ## Get Current Period
+  ดึงข้อมูลรอบบัญชีปัจจุบัน (สถานะเปิดหรือล็อค)
+
+  Retrieve the current fiscal/accounting period (status open or locked).
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/period/current
   body: none

@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Request For Pricing
+  ดึงข้อมูลใบขอราคารายการเดียวตาม ID
+
+  Retrieve a single request for pricing by its ID.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/request-for-pricing/:id
   body: none

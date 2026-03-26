@@ -4,6 +4,18 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Delete Physical Count Detail
+  ลบรายการสินค้าจากการตรวจนับสินค้าสถานะร่าง ใช้เมื่อรายการถูกเพิ่มผิดพลาดหรือไม่เกี่ยวข้องกับการตรวจนับในปัจจุบัน
+
+  Removes a product line item from a draft physical count, used when items were added in error or are no longer relevant to the current count session.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Physical Count ID / รหัสการตรวจนับสินค้า
+  - `detail_id` — Physical Count Detail ID / รหัสรายละเอียดการตรวจนับ
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/physical-count/:id/details/:detail_id
   body: none

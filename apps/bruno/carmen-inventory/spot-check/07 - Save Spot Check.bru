@@ -4,6 +4,17 @@ meta {
   seq: 7
 }
 
+docs {
+  ## Save Spot Check Items
+  บันทึกจำนวนที่นับได้จากอุปกรณ์มือถือเป็นร่าง ช่วยให้พนักงานหยุดพักและดำเนินการตรวจสอบต่อได้โดยไม่ต้องสรุปผลลัพธ์
+
+  Persists the counted quantities entered by staff on a mobile device as a draft, allowing them to pause and resume the spot check without finalizing results.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Spot Check ID / รหัสการตรวจสอบสินค้าเฉพาะจุด
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/spot-check/:id/save
   body: json

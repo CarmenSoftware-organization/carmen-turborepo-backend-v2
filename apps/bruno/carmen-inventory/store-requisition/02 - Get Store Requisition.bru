@@ -4,6 +4,17 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Store Requisition by ID
+  ค้นหาใบเบิกสินค้าตาม ID พร้อมรายละเอียดทั้งหมด รวมถึงรายการสินค้าที่ขอเบิก จำนวน แผนกที่ขอ และสถานะการอนุมัติปัจจุบัน
+
+  Retrieves the full details of a store requisition including requested items, quantities, requesting department, and current approval status. Used to review an internal stock request before approving or issuing items from the store.
+
+  ### Path Parameters
+  - `id` — Store requisition ID (UUID)
+  - `bu_code` — Business unit code
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/store-requisition/:id
   body: none

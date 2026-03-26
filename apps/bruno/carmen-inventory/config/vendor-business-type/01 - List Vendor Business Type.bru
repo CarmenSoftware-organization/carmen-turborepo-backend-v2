@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Vendor Business Types
+  แสดงรายการประเภทธุรกิจผู้ขายทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Retrieves all vendor business type classifications with pagination and search support.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/vendor-business-type
   body: none

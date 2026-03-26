@@ -4,6 +4,13 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Delete Recipe Equipment
+  ลบอุปกรณ์ทำอาหารออกจากระบบ ควรอัปเดตสูตรอาหารที่อ้างอิงอุปกรณ์นี้ก่อนลบ
+
+  Removes a kitchen equipment type from the system. Recipes referencing this equipment should be updated before deletion.
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/recipe-equipment/:id
   body: none

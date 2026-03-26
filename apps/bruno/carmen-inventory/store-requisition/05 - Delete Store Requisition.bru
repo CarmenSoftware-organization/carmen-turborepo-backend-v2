@@ -4,6 +4,17 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Store Requisition
+  ลบใบเบิกสินค้าที่ไม่ต้องการ โดยทั่วไปใช้สำหรับใบเบิกฉบับร่างที่สร้างผิดพลาด หรือเมื่อแผนกไม่ต้องการสินค้าที่ขอเบิกอีกต่อไป
+
+  Removes a store requisition that is no longer needed. Typically used for draft SRs that were created in error or when the department no longer requires the requested items.
+
+  ### Path Parameters
+  - `id` — Store requisition ID (UUID)
+  - `bu_code` — Business unit code
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/store-requisition/:id
   body: none

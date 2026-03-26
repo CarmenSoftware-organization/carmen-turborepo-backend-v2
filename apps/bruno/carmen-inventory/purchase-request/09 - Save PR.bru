@@ -4,6 +4,16 @@ meta {
   seq: 9
 }
 
+docs {
+  ## Save (Update) Purchase Request
+  บันทึกการเปลี่ยนแปลงใบขอซื้อรวมถึงข้อมูลส่วนหัวและการแก้ไขรายการสินค้า ใช้สำหรับปรับปรุงจำนวน เพิ่มหรือลบรายการ หรือแก้ไขรายละเอียดก่อนส่งเข้าอนุมัติ
+
+  Saves changes to a purchase request including header information and line item modifications. Used to update quantities, add or remove items, or adjust details before submitting the PR for approval.
+
+  ### Path Parameters
+  - `id` — Purchase request ID
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/purchase-request/:id/save
   body: json

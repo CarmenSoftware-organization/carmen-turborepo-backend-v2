@@ -4,6 +4,16 @@ meta {
   seq: 11
 }
 
+docs {
+  ## Split Purchase Request
+  แยกรายการที่เลือกจากใบขอซื้อที่มีอยู่ออกเป็นใบขอซื้อใหม่ ใช้เมื่อผู้จัดซื้อต้องการแยกสินค้าสำหรับผู้ขายหรือกำหนดการส่งที่แตกต่างกัน
+
+  Moves selected line items from an existing purchase request into a new separate PR, preserving the original workflow status. Used when a purchaser needs to separate items for different vendors or delivery timelines.
+
+  ### Path Parameters
+  - `id` — Original purchase request ID
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/purchase-request/:id/split
   body: json

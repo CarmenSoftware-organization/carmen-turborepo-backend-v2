@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## Get Order Units
+  ดึงหน่วยสั่งซื้อที่ใช้ได้สำหรับสินค้าตาม Product ID
+
+  Retrieves available ordering units for a specific product.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/unit/order/product/:productId
   body: none

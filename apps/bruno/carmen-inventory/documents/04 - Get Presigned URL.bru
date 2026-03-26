@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Get Presigned URL
+  สร้าง presigned URL สำหรับเข้าถึงเอกสารอย่างปลอดภัย
+
+  Generate a time-limited presigned URL for secure document access.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/documents/:filetoken/presigned-url
   body: none

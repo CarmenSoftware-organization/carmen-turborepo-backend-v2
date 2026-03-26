@@ -4,6 +4,13 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Delete Recipe Cuisine
+  ลบประเภทอาหารออกจากระบบ ควรย้ายสูตรอาหารไปประเภทอื่นก่อนลบ
+
+  Removes a cuisine type from the system. Recipes tagged with this cuisine should be reassigned before deletion.
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/recipe-cuisine/:id
   body: none

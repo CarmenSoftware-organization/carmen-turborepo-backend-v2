@@ -4,6 +4,17 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Physical Count Period
+  ดึงรายละเอียดของรอบการตรวจนับสินค้าเฉพาะรอบ รวมถึงช่วงวันที่และสถานะ เพื่อตรวจสอบว่าต้องทำการตรวจนับให้เสร็จเมื่อใด
+
+  Retrieves the details of a specific physical count time window, including its date range and status, to determine when inventory verification must be completed.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Physical Count Period ID / รหัสรอบการตรวจนับสินค้า
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/physical-count-period/:id
   body: none

@@ -4,6 +4,16 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Product Sub Category
+  อัปเดตข้อมูลหมวดหมู่ย่อยสินค้าที่มีอยู่
+
+  Modifies an existing product sub-category, such as renaming it or reassigning its parent category.
+
+  ### Path Parameters
+  - `id` — Product Sub Category UUID (รหัสหมวดหมู่ย่อยสินค้า)
+}
+
 put {
   url: {{host}}/api/config/{{bu_code}}/products/sub-category/:id
   body: json

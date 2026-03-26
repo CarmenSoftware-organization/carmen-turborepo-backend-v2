@@ -4,6 +4,17 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Transfer
+  แก้ไขรายการโอนย้ายสินค้าเพื่อปรับรายการสินค้า จำนวน หรือสถานที่ก่อนที่การโอนย้ายจะถูกยืนยัน ใช้เมื่อเจ้าหน้าที่ต้องแก้ไขรายการโอนย้ายก่อนที่สินค้าจะถูกเคลื่อนย้ายจริง
+
+  Modifies a transfer record to adjust items, quantities, or locations before the transfer is finalized. Used when store staff need to correct a transfer before items are physically moved.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Transfer ID / รหัสรายการโอนย้ายสินค้า
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/transfer/:id
   body: json

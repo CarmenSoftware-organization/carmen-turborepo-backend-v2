@@ -103,7 +103,8 @@ export class Config_DeliveryPointController extends BaseHttpController {
         description: 'Delivery point not found',
       },
     },
-  })
+    'x-description-th': 'ดึงข้อมูลจุดส่งมอบสินค้ารายการเดียวตาม ID',
+  } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -170,7 +171,8 @@ export class Config_DeliveryPointController extends BaseHttpController {
         description: 'Delivery points not found',
       },
     },
-  })
+    'x-description-th': 'แสดงรายการจุดส่งมอบสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   @ApiUserFilterQueries()
   async findAll(
     @Req() req: Request,
@@ -236,7 +238,8 @@ export class Config_DeliveryPointController extends BaseHttpController {
         description: 'Delivery point created successfully',
       },
     },
-  })
+    'x-description-th': 'สร้างจุดส่งมอบสินค้าใหม่',
+  } as any)
   @ApiBody({ type: DeliveryPointCreateRequest })
   async create(
     @Req() req: Request,
@@ -310,7 +313,8 @@ export class Config_DeliveryPointController extends BaseHttpController {
         description: 'Delivery point not found',
       },
     },
-  })
+    'x-description-th': 'อัปเดตข้อมูลจุดส่งมอบสินค้าที่มีอยู่',
+  } as any)
   @ApiBody({ type: DeliveryPointUpdateRequest })
   async update(
     @Req() req: Request,
@@ -390,7 +394,8 @@ export class Config_DeliveryPointController extends BaseHttpController {
         description: 'Delivery point not found',
       },
     },
-  })
+    'x-description-th': 'อัปเดตบางฟิลด์ของจุดส่งมอบสินค้า',
+  } as any)
   @ApiBody({ type: DeliveryPointUpdateRequest })
   async patch(
     @Req() req: Request,
@@ -461,7 +466,8 @@ export class Config_DeliveryPointController extends BaseHttpController {
         description: 'Delivery point deleted successfully',
       },
     },
-  })
+    'x-description-th': 'ลบจุดส่งมอบสินค้าตาม ID',
+  } as any)
   async delete(
     @Req() req: Request,
     @Res() res: Response,

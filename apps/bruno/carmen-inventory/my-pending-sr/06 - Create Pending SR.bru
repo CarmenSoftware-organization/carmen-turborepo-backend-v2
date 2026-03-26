@@ -4,6 +4,16 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Create Pending Store Requisition
+  สร้างใบเบิกสินค้าใหม่สำหรับแผนกในโรงแรมเพื่อขอเบิกสินค้าจากคลังภายใน เริ่มต้นขั้นตอนอนุมัติก่อนที่คลังจะดำเนินการจ่ายสินค้า
+
+  Creates a new store requisition for a hotel department to request items from internal storage, initiating the approval workflow before the storeroom fulfills the request.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+}
+
 post {
   url: {{host}}/api/my-pending/store-requisition/:bu_code
   body: json

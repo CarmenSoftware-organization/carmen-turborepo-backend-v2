@@ -4,6 +4,21 @@ meta {
   seq: 9
 }
 
+docs {
+  ## Review Purchase Order
+  ส่งใบสั่งซื้อกลับไปยังขั้นตอนก่อนหน้าเพื่อแก้ไข เช่น ปรับเงื่อนไขผู้ขาย จำนวน หรือราคา
+
+  Returns a purchase order to a previous workflow stage for corrections, such as adjusting vendor terms, quantities, or pricing. Allows approvers to request changes before giving final authorization.
+
+  ### Path Parameters
+  - `id` — Purchase order UUID
+
+  ### Body
+  - `stage_role` — Role of the reviewer
+  - `des_stage` — Target stage to return to (e.g., "purchase")
+  - `details[]` — Line items with `id`, `stage_status`, and `stage_message`
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/purchase-order/:id/review
   body: json

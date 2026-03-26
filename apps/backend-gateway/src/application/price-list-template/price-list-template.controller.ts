@@ -99,7 +99,8 @@ export class PriceListTemplateController extends BaseHttpController {
         description: 'Price list template was not found',
       },
     },
-  })
+    'x-description-th': 'ดึงข้อมูลแม่แบบรายการราคารายการเดียวตาม ID',
+  } as any)
   async findOne(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -157,7 +158,8 @@ export class PriceListTemplateController extends BaseHttpController {
         description: 'Price list templates were successfully retrieved',
       },
     },
-  })
+    'x-description-th': 'แสดงรายการแม่แบบรายการราคาทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -219,7 +221,8 @@ export class PriceListTemplateController extends BaseHttpController {
         description: 'Bad request',
       },
     },
-  })
+    'x-description-th': 'สร้างแม่แบบรายการราคาใหม่',
+  } as any)
   @ApiBody({ type: PriceListTemplateCreateRequestDto })
   async create(
     @Body() data: PriceListTemplateCreateDto,
@@ -284,7 +287,8 @@ export class PriceListTemplateController extends BaseHttpController {
         description: 'Price list template was not found',
       },
     },
-  })
+    'x-description-th': 'อัปเดตข้อมูลแม่แบบรายการราคาที่มีอยู่',
+  } as any)
   @ApiBody({ type: PriceListTemplateUpdateRequestDto })
   async update(
     @Param('id') id: string,
@@ -355,7 +359,8 @@ export class PriceListTemplateController extends BaseHttpController {
         description: 'Price list template was not found',
       },
     },
-  })
+    'x-description-th': 'ลบแม่แบบรายการราคาตาม ID',
+  } as any)
   async remove(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -419,7 +424,8 @@ export class PriceListTemplateController extends BaseHttpController {
         description: 'Price list template was not found',
       },
     },
-  })
+    'x-description-th': 'อัปเดตสถานะของแม่แบบรายการราคา',
+  } as any)
   @ApiBody({ type: PriceListTemplateUpdateStatusRequestDto })
   async updateStatus(
     @Param('id') id: string,

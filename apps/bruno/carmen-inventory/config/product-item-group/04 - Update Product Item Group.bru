@@ -4,6 +4,16 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Product Item Group
+  อัปเดตข้อมูลกลุ่มรายการสินค้าที่มีอยู่
+
+  Modifies an existing product item group, such as renaming it or adjusting its classification.
+
+  ### Path Parameters
+  - `id` — Product Item Group UUID (รหัสกลุ่มรายการสินค้า)
+}
+
 put {
   url: {{host}}/api/config/{{bu_code}}/products/item-group/:id
   body: json

@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Cluster
+  ลบคลัสเตอร์ตาม ID
+
+  Delete a cluster by its ID.
+}
+
 delete {
   url: {{host}}/api-system/cluster/:id
   body: none

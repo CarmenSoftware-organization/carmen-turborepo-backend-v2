@@ -4,6 +4,17 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Good Received Note
+  ลบใบรับสินค้าที่สร้างผิดพลาดหรือไม่ถูกต้อง ใช้ได้เฉพาะกับใบรับสินค้าที่ยังไม่ได้อนุมัติ เนื่องจากใบรับสินค้าที่อนุมัติแล้วจะมีผลต่อระดับสินค้าคงคลัง
+
+  Removes a goods receiving record that was created in error or is no longer valid. Only applicable to GRNs that have not been approved, as approved GRNs have already updated inventory levels.
+
+  ### Path Parameters
+  - `id` — Good Received Note ID / รหัสใบรับสินค้า
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/good-received-note/:id
   body: none

@@ -4,6 +4,16 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Tax Profile
+  อัปเดตข้อมูลโปรไฟล์ภาษีที่มีอยู่
+
+  Updates an existing tax rate configuration.
+
+  ### Path Parameters
+  - `id` -- Tax profile ID (UUID) / รหัสโปรไฟล์ภาษี
+}
+
 patch {
   url: {{host}}/api/config/{{bu_code}}/tax-profile/:id
   body: json

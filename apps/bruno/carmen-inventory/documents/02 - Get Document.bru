@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Document
+  ดึงข้อมูลเอกสารรายการเดียวตาม file token
+
+  Download a specific document by its file token.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/documents/:filetoken
   body: none

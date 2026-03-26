@@ -4,6 +4,17 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Stock Out
+  ลบรายการเบิกสินค้าออกจากคลังที่สร้างผิดพลาด ใช้ได้เฉพาะรายการที่ยังเป็นร่างและยังไม่ถูกยืนยันหักจากคลังสินค้า
+
+  Removes a stock-out record that was created in error. Only applicable to draft transactions that have not yet been committed to inventory.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Stock Out ID / รหัสรายการเบิกสินค้าออกจากคลัง
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/stock-out/:id
   body: none

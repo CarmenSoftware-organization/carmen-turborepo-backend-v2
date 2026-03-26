@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Application Role
+  ลบบทบาทในระบบตาม ID
+
+  Deletes an application role by its unique identifier.
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/application-roles/:id
   body: none

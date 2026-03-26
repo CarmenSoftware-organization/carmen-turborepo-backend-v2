@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Recipe Equipment
+  ดึงรายการอุปกรณ์ทำอาหารทั้งหมดสำหรับการวางแผนกำลังการผลิตครัวและการประเมินความเป็นไปได้
+
+  Returns all kitchen equipment types configured for the business unit for capacity planning and recipe feasibility assessment.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/recipe-equipment
   body: none

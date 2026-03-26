@@ -58,7 +58,8 @@ export class WorkflowController extends BaseHttpController {
       200: { description: 'Workflow retrieved successfully' },
       404: { description: 'Workflow not found for the specified type' },
     },
-  })
+    'x-description-th': 'ดึงข้อมูลขั้นตอนการทำงานตามประเภทเอกสาร รวมถึงขั้นตอนอนุมัติและบทบาท',
+  } as any)
   async findByType(
     @Req() req: Request,
     @Res() res: Response,
@@ -111,7 +112,8 @@ export class WorkflowController extends BaseHttpController {
       200: { description: 'Previous workflow stages retrieved successfully' },
       404: { description: 'Workflow not found' },
     },
-  })
+    'x-description-th': 'ดึงขั้นตอนอนุมัติก่อนหน้าของขั้นตอนการทำงาน ใช้สำหรับตัวเลือกส่งกลับ',
+  } as any)
   async getPreviousStages(
     @Req() req: Request,
     @Res() res: Response,
@@ -159,7 +161,8 @@ export class WorkflowController extends BaseHttpController {
       400: { description: 'Invalid doc_type' },
       404: { description: 'Document not found' },
     },
-  })
+    'x-description-th': 'แก้ไข user_action บนเอกสารเพื่อแก้ไขการมอบหมายขั้นตอนการทำงาน',
+  } as any)
   async patchUserAction(
     @Req() req: Request,
     @Res() res: Response,

@@ -76,6 +76,7 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
     summary: 'Get user-business unit mapping by ID',
     description:
       'Retrieves the details of a specific user-to-property access assignment, showing which user has access to which hotel property and with what role.',
+    'x-description-th': 'ดึงข้อมูลหน่วยธุรกิจของผู้ใช้รายการเดียวตาม ID',
     operationId: 'platformUserBusinessUnit_findOne',
     tags: ['Platform Admin', 'User Business Unit'],
     deprecated: false,
@@ -85,7 +86,7 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
       401: { description: 'Unauthorized' },
       404: { description: 'Mapping not found' },
     },
-  })
+  } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -127,6 +128,7 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
     summary: 'Get all user-business unit mappings',
     description:
       'Lists all user-to-property access assignments across the platform, showing which users have been granted access to which hotel properties. Used for multi-tenant access management and auditing.',
+    'x-description-th': 'แสดงรายการหน่วยธุรกิจของผู้ใช้ทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'platformUserBusinessUnit_findAll',
     tags: ['Platform Admin', 'User Business Unit'],
     deprecated: false,
@@ -137,7 +139,7 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
       },
       401: { description: 'Unauthorized' },
     },
-  })
+  } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -183,6 +185,7 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
     summary: 'Create a user-business unit mapping',
     description:
       "Grants a user access to a specific hotel property or operational unit, enabling them to perform procurement, inventory, and other ERP operations within that business unit's tenant context.",
+    'x-description-th': 'สร้างหน่วยธุรกิจของผู้ใช้ใหม่',
     operationId: 'platformUserBusinessUnit_create',
     tags: ['Platform Admin', 'User Business Unit'],
     deprecated: false,
@@ -192,7 +195,7 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
       400: { description: 'Bad request' },
       401: { description: 'Unauthorized' },
     },
-  })
+  } as any)
   async create(
     @Req() req: Request,
     @Res() res: Response,
@@ -243,6 +246,7 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
     summary: 'Update a user-business unit mapping',
     description:
       "Modifies an existing user-to-property access assignment, such as changing the user's role or permissions within a specific hotel property.",
+    'x-description-th': 'อัปเดตข้อมูลหน่วยธุรกิจของผู้ใช้ที่มีอยู่',
     operationId: 'platformUserBusinessUnit_update',
     tags: ['Platform Admin', 'User Business Unit'],
     deprecated: false,
@@ -253,7 +257,7 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
       401: { description: 'Unauthorized' },
       404: { description: 'Mapping not found' },
     },
-  })
+  } as any)
   async update(
     @Req() req: Request,
     @Res() res: Response,
@@ -305,6 +309,7 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
     summary: 'Delete a user-business unit mapping',
     description:
       "Revokes a user's access to a specific hotel property or operational unit. The user will no longer be able to perform any ERP operations within that business unit's tenant context.",
+    'x-description-th': 'ลบหน่วยธุรกิจของผู้ใช้ตาม ID',
     operationId: 'platformUserBusinessUnit_delete',
     tags: ['Platform Admin', 'User Business Unit'],
     deprecated: false,
@@ -314,7 +319,7 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
       401: { description: 'Unauthorized' },
       404: { description: 'Mapping not found' },
     },
-  })
+  } as any)
   async delete(
     @Req() req: Request,
     @Res() res: Response,

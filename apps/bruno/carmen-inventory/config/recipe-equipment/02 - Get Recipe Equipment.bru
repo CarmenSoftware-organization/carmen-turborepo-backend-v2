@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Recipe Equipment by ID
+  ดึงข้อมูลอุปกรณ์ทำอาหารเดียวตาม ID สำหรับติดตามอุปกรณ์ที่จำเป็นในการเตรียมสูตรอาหาร
+
+  Retrieves a specific kitchen equipment definition (e.g., oven, mixer, blender) that can be associated with recipes.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/recipe-equipment/:id
   body: none

@@ -4,6 +4,17 @@ meta {
   seq: 11
 }
 
+docs {
+  ## Review Pending Store Requisition
+  ส่งใบเบิกสินค้ากลับตรวจสอบ ช่วยให้ผู้อนุมัติสามารถให้ข้อเสนอแนะหรือขอแก้ไขก่อนตัดสินใจอนุมัติหรือปฏิเสธคำขอเบิกสินค้า
+
+  Allows an approver to review a store requisition and provide feedback or modifications before making a final approve/reject decision on the internal stock request.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `id` — Store requisition ID (UUID)
+}
+
 patch {
   url: {{host}}/api/my-pending/store-requisition/:bu_code/:id/review
   body: json

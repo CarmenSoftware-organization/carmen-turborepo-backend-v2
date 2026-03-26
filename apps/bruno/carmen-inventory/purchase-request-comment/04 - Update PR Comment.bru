@@ -4,6 +4,16 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Purchase Request Comment
+  แก้ไขความคิดเห็นที่มีอยู่ในกระทู้สนทนาของใบขอซื้อ เฉพาะผู้เขียนความคิดเห็นเท่านั้นที่สามารถแก้ไขได้ เพื่อรักษาความรับผิดชอบในกระบวนการจัดซื้อ
+
+  Edits an existing comment in a purchase request discussion thread. Only the comment author can modify their own remarks, preserving accountability in the procurement collaboration process.
+
+  ### Path Parameters
+  - `id` — Comment ID
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/purchase-request-comment/:id
   body: json

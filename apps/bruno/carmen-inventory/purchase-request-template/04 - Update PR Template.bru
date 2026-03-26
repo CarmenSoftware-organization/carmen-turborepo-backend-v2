@@ -4,6 +4,16 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Update Purchase Request Template
+  แก้ไขเทมเพลตใบขอซื้อที่มีอยู่เพื่อปรับรายการสินค้า จำนวน หรือชื่อเทมเพลต ช่วยให้เทมเพลตการจัดซื้อที่ใช้ซ้ำสอดคล้องกับความต้องการสั่งซื้อปัจจุบัน
+
+  Modifies an existing purchase request template to adjust the predefined item list, quantities, or template name, keeping reusable procurement templates aligned with current ordering needs.
+
+  ### Path Parameters
+  - `id` — Template ID
+}
+
 put {
   url: {{host}}/api/{{bu_code}}/purchase-request-template/:id
   body: json

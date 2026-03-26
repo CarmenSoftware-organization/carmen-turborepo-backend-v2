@@ -4,6 +4,16 @@ meta {
   seq: 20
 }
 
+docs {
+  ## Get Previous Workflow Stages
+  ดึงขั้นตอนเวิร์กโฟลว์ทั้งหมดก่อนขั้นตอนปัจจุบันของใบขอซื้อ ใช้เพื่อกำหนดตัวเลือกการย้อนกลับ/ส่งคืนในสายการอนุมัติ
+
+  Retrieves all workflow stages before the current stage of a purchase request. Used to determine revert/return-to options in the approval chain.
+
+  ### Path Parameters
+  - `pr_id` — Purchase request ID
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-request/:pr_id/previous-stages
   body: none

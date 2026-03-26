@@ -4,6 +4,17 @@ meta {
   seq: 11
 }
 
+docs {
+  ## Refresh Physical Count
+  รีเฟรชรายการสินค้าจากสถานที่จัดเก็บ (product_location + inventory transactions) และเพิ่มสินค้าใหม่ที่ยังไม่อยู่ในรายการตรวจนับ รายการที่นับแล้วจะถูกเก็บรักษาไว้
+
+  Re-fetches the product list from the location (product_location + inventory transactions) and adds any new products that are not yet in the physical count detail list. Existing counted items are preserved.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Physical Count ID / รหัสการตรวจนับสินค้า
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/physical-count/:id/refresh
   body: none

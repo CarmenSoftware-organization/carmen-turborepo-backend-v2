@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Vendor Product
+  สร้างสินค้าของผู้ขายใหม่ ลงทะเบียนว่าผู้ขายรายนี้จำหน่ายสินค้าชิ้นนี้
+
+  Creates a new vendor-product mapping, registering that a specific vendor supplies a particular product.
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/vendor-product
   body: json

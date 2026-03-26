@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Purchase Request
+  สร้างใบขอซื้อใหม่สำหรับแผนกเพื่อขอสินค้าหรือบริการที่ต้องการ ใบขอซื้อจะเริ่มต้นในสถานะฉบับร่าง และสามารถส่งเข้าสู่เวิร์กโฟลว์การอนุมัติได้
+
+  Creates a new purchase request for a department to request items or services they need. The PR starts in draft status and includes line items with product details, quantities, and estimated costs. Once created, it can be submitted for approval through the configured workflow.
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/purchase-request
   body: json

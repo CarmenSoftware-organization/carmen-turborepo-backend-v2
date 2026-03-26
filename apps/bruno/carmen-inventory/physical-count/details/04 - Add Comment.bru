@@ -4,6 +4,18 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Add Comment to Physical Count Detail
+  เพิ่มหมายเหตุอธิบายในรายการสินค้าที่ตรวจนับ เช่น สาเหตุของผลต่าง (เสียหาย แตกหัก หรือวางผิดที่) เพื่อสนับสนุนเส้นทางการตรวจสอบ
+
+  Records an explanatory note on a specific counted item, such as reasons for variances (e.g., spoilage, breakage, or misplacement) to support audit trails.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Physical Count ID / รหัสการตรวจนับสินค้า
+  - `detail_id` — Physical Count Detail ID / รหัสรายละเอียดการตรวจนับ
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/physical-count/:id/details/:detail_id/comment
   body: json

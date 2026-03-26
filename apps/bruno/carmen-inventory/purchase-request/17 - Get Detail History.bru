@@ -4,6 +4,16 @@ meta {
   seq: 17
 }
 
+docs {
+  ## Get Detail History
+  ดึงประวัติการเปลี่ยนแปลงและบันทึกตรวจสอบของรายการใบขอซื้อเฉพาะ รวมถึงการเปลี่ยนแปลงราคา การปรับจำนวน และการดำเนินการอนุมัติ
+
+  Retrieves the change history and audit trail for a specific PR line item, including price changes, quantity adjustments, and approval actions taken at each workflow stage.
+
+  ### Path Parameters
+  - `detail_id` — Purchase request detail ID
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-request/detail/:detail_id/history
   body: none

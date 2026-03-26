@@ -49,6 +49,7 @@ export class MyApproveController extends BaseHttpController {
     summary: 'Get combined count of all pending approvals (SR + PR + PO)',
     description:
       'Provides a dashboard summary count of all documents awaiting the current user\'s approval across store requisitions, purchase requests, and purchase orders, helping approvers prioritize their workload.',
+    'x-description-th': 'ดึงจำนวนรวมของเอกสารที่รออนุมัติทั้งหมด (ใบเบิกสินค้า + ใบขอซื้อ + ใบสั่งซื้อ) ช่วยให้ผู้อนุมัติจัดลำดับความสำคัญของงาน',
     operationId: 'findAllPendingApprovalsCount',
     tags: ['Pending Count', 'Workflow & Approval', 'My Approve'],
     deprecated: false,
@@ -82,7 +83,7 @@ export class MyApproveController extends BaseHttpController {
         },
       },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findAllPendingCount(
     @Req() req: Request,
@@ -123,6 +124,7 @@ export class MyApproveController extends BaseHttpController {
     summary: 'Get all pending approvals (SR + PR + PO) grouped by type',
     description:
       'Retrieves the full list of procurement documents pending the current user\'s approval, grouped by document type (store requisitions, purchase requests, purchase orders), serving as the approver\'s central task queue.',
+    'x-description-th': 'แสดงรายการเอกสารจัดซื้อทั้งหมดที่รออนุมัติ จัดกลุ่มตามประเภท (ใบเบิกสินค้า ใบขอซื้อ ใบสั่งซื้อ) เป็นคิวงานหลักของผู้อนุมัติ',
     operationId: 'findAllPendingApprovals',
     tags: ['Workflow & Approval', 'My Approve'],
     deprecated: false,
@@ -175,7 +177,7 @@ export class MyApproveController extends BaseHttpController {
         },
       },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Req() req: Request,

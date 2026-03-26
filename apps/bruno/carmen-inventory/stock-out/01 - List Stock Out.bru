@@ -4,6 +4,16 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Stock Out Records
+  ดึงรายการเบิกสินค้าออกจากคลังทั้งหมดของหน่วยธุรกิจ พร้อมการแบ่งหน้าและตัวกรอง ใช้สำหรับผู้จัดการคลังสินค้าในการติดตามการเบิกจ่ายสินค้าไปยังครัวและแผนกต่างๆ
+
+  Lists all inventory removal records for the business unit with pagination and filtering. Used by inventory managers to track consumption by kitchens and departments, monitor waste levels, and analyze usage patterns.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/stock-out
   body: none

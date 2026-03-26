@@ -4,6 +4,16 @@ meta {
   seq: 10
 }
 
+docs {
+  ## Cancel Purchase Order
+  ยกเลิกใบสั่งซื้อที่ยังไม่ได้รับสินค้าครบถ้วน ถอนการสั่งซื้อจากผู้ขาย เฉพาะสถานะร่าง อยู่ระหว่างดำเนินการ หรือส่งแล้วเท่านั้น
+
+  Cancels a purchase order that has not been fully received, withdrawing the commitment to the vendor. Only draft, in-progress, or sent POs can be cancelled. Cancelled quantities are tracked on line items for reporting.
+
+  ### Path Parameters
+  - `id` — Purchase order UUID
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/purchase-order/:id/cancel
   body: json

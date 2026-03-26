@@ -4,6 +4,16 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List All Credit Notes
+  แสดงรายการใบลดหนี้ของผู้ขายทั้งหมดของหน่วยธุรกิจ ช่วยให้เจ้าหน้าที่จัดซื้อและการเงินติดตามเครดิตที่ได้รับจากสินค้าที่ส่งคืนหรือเสียหาย
+
+  Lists all vendor credit notes for the business unit, enabling procurement and finance staff to track credits received for returned or damaged goods.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/credit-note
   body: none

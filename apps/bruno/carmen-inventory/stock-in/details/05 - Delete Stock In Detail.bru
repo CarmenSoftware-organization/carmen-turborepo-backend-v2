@@ -4,6 +4,18 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Stock In Detail
+  ลบรายการย่อยจากรายการรับสินค้าเข้าคลังที่เป็นร่าง เมื่อรายการถูกเพิ่มผิดพลาดหรือไม่ต้องการอีกต่อไป
+
+  Removes an item line from a draft stock-in transaction when the item was added in error or is no longer needed in this inventory addition.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Stock In ID / รหัสรายการรับสินค้าเข้าคลัง
+  - `detail_id` — Stock In Detail ID / รหัสรายการย่อยรับสินค้าเข้าคลัง
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/stock-in/:id/details/:detail_id
   body: none

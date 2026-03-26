@@ -51,7 +51,8 @@ export class UnitConversionController extends BaseHttpController {
       200: { description: 'Order units retrieved successfully' },
       404: { description: 'Product not found' },
     },
-  })
+    'x-description-th': 'ดึงหน่วยสั่งซื้อที่ใช้ได้สำหรับสินค้าตาม Product ID',
+  } as any)
   async getOrderUnitProduct(
     @Param('productId') productId: string,
     @Param('bu_code') bu_code: string,
@@ -99,7 +100,8 @@ export class UnitConversionController extends BaseHttpController {
       200: { description: 'Ingredient units retrieved successfully' },
       404: { description: 'Product not found' },
     },
-  })
+    'x-description-th': 'ดึงหน่วยส่วนผสมที่ใช้ได้สำหรับสินค้าตาม Product ID',
+  } as any)
   async getIngredientUnitProduct(
     @Param('productId') productId: string,
     @Param('bu_code') bu_code: string,
@@ -147,7 +149,8 @@ export class UnitConversionController extends BaseHttpController {
       200: { description: 'Available units retrieved successfully' },
       404: { description: 'Product not found' },
     },
-  })
+    'x-description-th': 'ดึงการแปลงหน่วยทั้งหมดที่ใช้ได้สำหรับสินค้าตาม Product ID',
+  } as any)
   async getAvailableUnitProduct(
     @Param('productId') productId: string,
     @Param('bu_code') bu_code: string,

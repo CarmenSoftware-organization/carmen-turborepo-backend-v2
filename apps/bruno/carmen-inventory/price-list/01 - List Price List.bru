@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Price Lists
+  แสดงรายการราคาทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Lists all active vendor price lists for the business unit with pagination and search support.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/price-list
   body: none

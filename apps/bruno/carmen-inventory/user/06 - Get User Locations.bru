@@ -4,6 +4,13 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Get User Locations
+  ดึงรายการสถานที่ของผู้ใช้ทั้งหมดที่ผู้ใช้ปัจจุบันเข้าถึงได้
+
+  Retrieve all locations accessible by the current user.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/user-location
   body: none

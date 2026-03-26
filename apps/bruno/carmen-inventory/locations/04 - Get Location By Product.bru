@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Get Location By Product
+  ดึงรายการสถานที่ทั้งหมดที่มอบหมายให้สินค้าที่ระบุ
+
+  Retrieves all locations assigned to a specific product.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/locations/product/:product_id
   body: none

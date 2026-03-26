@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Currencies
+  แสดงรายการสกุลเงินทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Returns all currencies configured for the business unit with pagination and search support.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/currencies
   body: none

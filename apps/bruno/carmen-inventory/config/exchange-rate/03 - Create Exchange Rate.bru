@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Exchange Rate
+  สร้างอัตราแลกเปลี่ยนใหม่ (รายการเดียว)
+
+  Creates a new single exchange rate record with effective date and conversion factor.
+}
+
 post {
   url: {{host}}/api/config/{{bu_code}}/exchange-rate
   body: json

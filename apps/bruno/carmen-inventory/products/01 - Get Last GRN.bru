@@ -4,6 +4,17 @@ meta {
   seq: 1
 }
 
+docs {
+  ## Get Last Purchase by Product
+  ดึงข้อมูลการซื้อล่าสุดของสินค้าตามวันที่ที่กำหนด
+
+  Retrieves the last committed good received note detail for a product on or before the specified date.
+
+  ### Path Parameters
+  - `product_id` — Product UUID (รหัสสินค้า)
+  - `date` — Receiving date in YYYY-MM-DD format (วันที่รับสินค้า)
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/products/:product_id/last-purchase/:date
   body: none

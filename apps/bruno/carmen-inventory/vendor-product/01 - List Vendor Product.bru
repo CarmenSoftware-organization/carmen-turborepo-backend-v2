@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Vendor Products
+  แสดงรายการสินค้าของผู้ขายทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Lists all vendor-product mappings within the business unit, showing which products each vendor supplies.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/vendor-product
   body: none

@@ -4,6 +4,17 @@ meta {
   seq: 15
 }
 
+docs {
+  ## Get Purchase Requests by Status
+  กรองใบขอซื้อตามสถานะเวิร์กโฟลว์ที่กำหนด (เช่น draft, pending, approved, rejected) ใช้โดยผู้อนุมัติและผู้จัดการเพื่อดูใบขอซื้อในขั้นตอนเฉพาะของเวิร์กโฟลว์
+
+  Filters purchase requests by a specific workflow status (e.g., draft, pending, approved, rejected). Used by approvers and managers to view PRs at a particular stage of the approval workflow.
+
+  ### Path Parameters
+  - `id` — Purchase request ID
+  - `status` — Workflow status (e.g., draft, pending, approved, rejected)
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-request/:id/status/:status
   body: none

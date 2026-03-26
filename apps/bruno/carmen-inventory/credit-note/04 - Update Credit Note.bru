@@ -4,6 +4,17 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Credit Note
+  แก้ไขใบลดหนี้ก่อนการดำเนินการขั้นสุดท้าย เช่น แก้ไขจำนวนสินค้า จำนวนเงิน หรือเหตุผลในการออกใบลดหนี้ให้ผู้ขาย
+
+  Modifies a credit note before it is finalized, such as correcting item quantities, amounts, or the reason for the credit against the vendor.
+
+  ### Path Parameters
+  - `id` — Credit note ID / รหัสใบลดหนี้
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/credit-note/:id
   body: json

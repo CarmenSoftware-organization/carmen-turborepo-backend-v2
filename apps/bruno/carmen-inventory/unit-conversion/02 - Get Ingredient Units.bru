@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Ingredient Units
+  ดึงหน่วยส่วนผสมที่ใช้ได้สำหรับสินค้าตาม Product ID
+
+  Retrieves available ingredient-level units for a specific product.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/unit/ingredient/product/:productId
   body: none

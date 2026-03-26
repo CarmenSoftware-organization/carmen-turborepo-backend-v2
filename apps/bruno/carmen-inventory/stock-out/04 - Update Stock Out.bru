@@ -4,6 +4,17 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Stock Out
+  แก้ไขรายการเบิกสินค้าออกจากคลังที่มีอยู่เพื่อปรับจำนวน รายการสินค้า หรือเหตุผลในการเบิกก่อนที่รายการจะถูกยืนยัน ใช้เมื่อเจ้าหน้าที่ต้องแก้ไขรายการหักสินค้าคงคลัง
+
+  Modifies an existing stock-out record to correct quantities, items, or removal reasons before the transaction is finalized. Used when staff need to amend an inventory deduction.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Stock Out ID / รหัสรายการเบิกสินค้าออกจากคลัง
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/stock-out/:id
   body: json

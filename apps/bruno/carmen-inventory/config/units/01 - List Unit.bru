@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Units
+  แสดงรายการหน่วยนับทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Retrieves all units of measurement configured in the business unit with pagination and search support.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/units
   body: none

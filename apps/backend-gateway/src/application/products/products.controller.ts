@@ -81,7 +81,8 @@ export class ProductsController extends BaseHttpController {
       200: { description: 'Last purchase retrieved successfully' },
       404: { description: 'No purchase found for this product' },
     },
-  })
+    'x-description-th': 'ดึงข้อมูลการซื้อล่าสุดของสินค้าตามวันที่ที่กำหนด',
+  } as any)
   @ApiResponse({
     status: 200,
     description: 'Last purchase retrieved successfully',
@@ -146,7 +147,8 @@ export class ProductsController extends BaseHttpController {
     responses: {
       200: { description: 'On-hand balance retrieved successfully' },
     },
-  })
+    'x-description-th': 'ดึงจำนวนสินค้าคงเหลือของสินค้า',
+  } as any)
   @ApiResponse({
     status: 200,
     description: 'On-hand balance retrieved successfully',
@@ -196,7 +198,8 @@ export class ProductsController extends BaseHttpController {
       200: { description: 'On-order balance retrieved successfully' },
       404: { description: 'Product not found' },
     },
-  })
+    'x-description-th': 'ดึงจำนวนสินค้าที่สั่งซื้อแล้วแต่ยังไม่ได้รับครบ',
+  } as any)
   @ApiResponse({ status: 200, description: 'On-order balance retrieved successfully', type: OnOrderResponseDto })
   @ApiResponse({ status: 404, description: 'Product not found' })
   async getOnOrder(
@@ -265,7 +268,8 @@ export class ProductsController extends BaseHttpController {
         description: 'The products were not found',
       },
     },
-  })
+    'x-description-th': 'ดึงรายการสินค้าทั้งหมดตามรหัสสถานที่',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async GetByLocation(
     @Req() req: Request,

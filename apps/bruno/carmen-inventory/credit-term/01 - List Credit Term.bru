@@ -4,6 +4,16 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List All Credit Terms
+  แสดงรายการเงื่อนไขการชำระเงินทั้งหมดที่ใช้งานได้ (เช่น Net 30, Net 60, COD) ใช้เมื่อตั้งค่าสัญญาผู้ขายและคำนวณวันครบกำหนดชำระเงินในใบสั่งซื้อ
+
+  Lists all available vendor payment terms (e.g., Net 30, Net 60, COD), used when setting up vendor agreements and calculating payment due dates on purchase orders.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/credit-term
   body: none

@@ -4,6 +4,17 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Get Pending Store Requisition by ID
+  ค้นหาใบเบิกสินค้าที่รอดำเนินการรายการเดียวตาม ID พร้อมรายละเอียดทั้งหมด รวมถึงรายการสินค้า จำนวน แผนกที่ขอ และสถานะการอนุมัติปัจจุบัน
+
+  Retrieves the full details of a specific store requisition pending in the approval pipeline, including requested items, quantities, requesting department, and current approval status.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `id` — Store requisition ID (UUID)
+}
+
 get {
   url: {{host}}/api/my-pending/store-requisition/:bu_code/:id
   body: none

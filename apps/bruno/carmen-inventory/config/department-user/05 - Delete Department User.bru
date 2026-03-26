@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Department User
+  ลบผู้ใช้ประจำแผนกตาม ID
+
+  Deletes a department-user assignment by its unique identifier.
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/department-user/:id
   body: none

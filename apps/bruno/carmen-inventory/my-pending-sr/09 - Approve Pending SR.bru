@@ -4,6 +4,17 @@ meta {
   seq: 9
 }
 
+docs {
+  ## Approve Pending Store Requisition
+  อนุมัติใบเบิกสินค้าในขั้นตอนเวิร์กโฟลว์ปัจจุบัน เลื่อนไปยังขั้นตอนอนุมัติถัดไป หรือทำเครื่องหมายว่าอนุมัติครบถ้วนเพื่อให้คลังดำเนินการจ่ายสินค้า
+
+  Approves a store requisition at the current user's workflow stage, advancing it to the next approval level or marking it as fully approved for storeroom fulfillment.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `id` — Store requisition ID (UUID)
+}
+
 patch {
   url: {{host}}/api/my-pending/store-requisition/:bu_code/:id/approve
   body: json

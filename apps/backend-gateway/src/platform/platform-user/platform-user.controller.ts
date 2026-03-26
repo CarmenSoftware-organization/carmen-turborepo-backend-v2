@@ -68,6 +68,7 @@ export class PlatformUserController extends BaseHttpController {
   @ApiOperation({
     summary: 'Fetch users from Keycloak realm',
     description: 'Synchronizes user accounts from the Keycloak identity provider into the Carmen platform database. This ensures that all hotel staff and administrators provisioned in Keycloak are available for assignment to clusters, business units, and roles within the ERP system.',
+    'x-description-th': 'ซิงค์ข้อมูลผู้ใช้จาก Keycloak เข้าสู่ระบบแพลตฟอร์ม',
     operationId: 'platformUser_fetchFromKeycloak',
     tags: ['Platform Admin', 'Platform User'],
     deprecated: false,
@@ -98,7 +99,7 @@ export class PlatformUserController extends BaseHttpController {
         description: 'Internal server error',
       },
     },
-  })
+  } as any)
   async fetchUsers(
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -132,6 +133,7 @@ export class PlatformUserController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get list of platform users',
     description: 'Lists all system-wide user accounts across all tenants with pagination support. Used by platform administrators to manage hotel staff, procurement officers, and other ERP users across the entire organization.',
+    'x-description-th': 'แสดงรายการผู้ใช้ทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'platformUser_findAll',
     tags: ['Platform Admin', 'Platform User'],
     deprecated: false,
@@ -140,7 +142,7 @@ export class PlatformUserController extends BaseHttpController {
       200: { description: 'Users retrieved successfully' },
       401: { description: 'Unauthorized' },
     },
-  })
+  } as any)
   async getUserList(
     @Req() req: Request,
     @Res() res: Response,
@@ -183,6 +185,7 @@ export class PlatformUserController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get platform user by ID',
     description: 'Retrieves detailed information about a specific platform user, including their profile, role assignments, and associated business units. Used to review or audit individual user access across the ERP system.',
+    'x-description-th': 'ดึงข้อมูลผู้ใช้รายการเดียวตาม ID',
     operationId: 'platformUser_findOne',
     tags: ['Platform Admin', 'Platform User'],
     deprecated: false,
@@ -192,7 +195,7 @@ export class PlatformUserController extends BaseHttpController {
       401: { description: 'Unauthorized' },
       404: { description: 'User not found' },
     },
-  })
+  } as any)
   async getUser(
     @Req() req: Request,
     @Res() res: Response,
@@ -234,6 +237,7 @@ export class PlatformUserController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a new platform user',
     description: 'Provisions a new system-wide user account in the Carmen ERP platform. The user can subsequently be assigned to clusters and business units to grant them access to specific hotel properties and procurement workflows.',
+    'x-description-th': 'สร้างผู้ใช้ใหม่',
     operationId: 'platformUser_create',
     tags: ['Platform Admin', 'Platform User'],
     deprecated: false,
@@ -243,7 +247,7 @@ export class PlatformUserController extends BaseHttpController {
       400: { description: 'Bad request' },
       401: { description: 'Unauthorized' },
     },
-  })
+  } as any)
   async createUser(
     @Req() req: Request,
     @Res() res: Response,
@@ -287,6 +291,7 @@ export class PlatformUserController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a platform user',
     description: 'Updates the profile or account details of an existing platform user, such as name, contact information, or status. Used by administrators to maintain accurate user records across the hotel management system.',
+    'x-description-th': 'อัปเดตข้อมูลผู้ใช้ที่มีอยู่',
     operationId: 'platformUser_update',
     tags: ['Platform Admin', 'Platform User'],
     deprecated: false,
@@ -297,7 +302,7 @@ export class PlatformUserController extends BaseHttpController {
       401: { description: 'Unauthorized' },
       404: { description: 'User not found' },
     },
-  })
+  } as any)
   async updateUser(
     @Req() req: Request,
     @Res() res: Response,
@@ -342,6 +347,7 @@ export class PlatformUserController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a platform user',
     description: 'Deactivates or removes a user account from the Carmen platform. This revokes the user\'s access to all business units and clusters, effectively removing them from all hotel properties and procurement workflows.',
+    'x-description-th': 'ลบผู้ใช้ตาม ID',
     operationId: 'platformUser_delete',
     tags: ['Platform Admin', 'Platform User'],
     deprecated: false,
@@ -351,7 +357,7 @@ export class PlatformUserController extends BaseHttpController {
       401: { description: 'Unauthorized' },
       404: { description: 'User not found' },
     },
-  })
+  } as any)
   async deleteUser(
     @Req() req: Request,
     @Res() res: Response,
@@ -393,6 +399,7 @@ export class PlatformUserController extends BaseHttpController {
   @ApiOperation({
     summary: 'Hard delete a platform user',
     description: 'Permanently removes a user from tb_user, tb_user_profile, and Keycloak. This action cannot be undone.',
+    'x-description-th': 'ลบผู้ใช้อย่างถาวร (ลบออกจากฐานข้อมูลและ Keycloak)',
     operationId: 'platformUser_hardDelete',
     tags: ['Platform Admin', 'Platform User'],
     security: [{ bearerAuth: [] }],
@@ -401,7 +408,7 @@ export class PlatformUserController extends BaseHttpController {
       401: { description: 'Unauthorized' },
       404: { description: 'User not found' },
     },
-  })
+  } as any)
   async hardDeleteUser(
     @Req() req: Request,
     @Res() res: Response,

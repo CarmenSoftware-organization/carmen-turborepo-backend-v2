@@ -4,6 +4,17 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Stock In by ID
+  ดึงรายละเอียดทั้งหมดของรายการรับสินค้าเข้าคลังตาม ID รวมถึงรายการสินค้า จำนวน ต้นทุน และเหตุผลในการรับสินค้า
+
+  Retrieves the full details of a stock-in transaction including all items added to inventory, their quantities, costs, and the reason for the addition (e.g., GRN receipt, return, or manual adjustment).
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Stock In ID / รหัสรายการรับสินค้าเข้าคลัง
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/stock-in/:id
   body: none

@@ -4,6 +4,16 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Delete Purchase Request Template
+  ลบเทมเพลตใบขอซื้อที่ไม่จำเป็นอีกต่อไป ป้องกันไม่ให้พนักงานใช้ชุดสินค้าที่ล้าสมัยหรือยกเลิกแล้วสำหรับคำขอจัดซื้อใหม่
+
+  Removes a reusable purchase request template that is no longer needed, preventing staff from using outdated or discontinued item sets for new procurement requests.
+
+  ### Path Parameters
+  - `id` — Template ID
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/purchase-request-template/:id
   body: none

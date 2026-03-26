@@ -64,7 +64,8 @@ export class CurrenciesController extends BaseHttpController {
     description: 'Lists all currencies enabled for the business unit, used to populate currency selectors in purchase orders, price lists, and other multi-currency procurement documents.',
     operationId: 'findAllActiveCurrencies',
     tags: ['Master Data', 'Currencies'],
-  })
+    'x-description-th': 'แสดงรายการสกุลเงินที่ใช้งานอยู่ทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
+  } as any)
   async findAllActive(
     @Req() req: Request,
     @Res() res: Response,
@@ -112,7 +113,8 @@ export class CurrenciesController extends BaseHttpController {
     description: 'Lists all ISO 4217 standard currencies available in the system, used when configuring which currencies a business unit should support for international procurement.',
     operationId: 'findAllISOCurrencies',
     tags: ['Master Data', 'Currencies'],
-  })
+    'x-description-th': 'แสดงรายการสกุลเงินมาตรฐาน ISO 4217 ทั้งหมด',
+  } as any)
   async findAllISO(
     @Req() req: Request,
     @Res() res: Response,
@@ -153,7 +155,8 @@ export class CurrenciesController extends BaseHttpController {
     description: 'Retrieves the default base currency for the business unit, which is used as the primary currency for inventory valuation and procurement cost calculations.',
     operationId: 'getDefaultCurrency',
     tags: ['Master Data', 'Currencies'],
-  })
+    'x-description-th': 'ดึงข้อมูลสกุลเงินหลักเริ่มต้นของหน่วยธุรกิจ',
+  } as any)
   async currency_default(
     @Req() req: Request,
     @Res() res: Response,
@@ -193,7 +196,8 @@ export class CurrenciesController extends BaseHttpController {
     description: 'Retrieves the details of a specific currency including its code, symbol, and exchange rate configuration, used when reviewing currency settings for procurement documents.',
     operationId: 'findOneCurrency',
     tags: ['Master Data', 'Currencies'],
-  })
+    'x-description-th': 'ดึงข้อมูลสกุลเงินรายการเดียวตาม ID',
+  } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,

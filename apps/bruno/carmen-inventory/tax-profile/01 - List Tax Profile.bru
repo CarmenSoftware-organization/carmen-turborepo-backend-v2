@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Tax Profiles
+  แสดงรายการโปรไฟล์ภาษีทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Lists all tax configuration profiles available in the business unit with pagination and search support.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/tax-profile
   body: none

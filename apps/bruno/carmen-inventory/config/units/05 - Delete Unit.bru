@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Unit
+  ลบหน่วยนับตาม ID
+
+  Deletes a unit of measurement by its unique identifier.
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/units/:id
   body: none

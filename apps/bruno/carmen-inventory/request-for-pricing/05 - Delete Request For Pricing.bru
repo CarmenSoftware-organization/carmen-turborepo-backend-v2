@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Request For Pricing
+  ลบใบขอราคาตาม ID
+
+  Delete a request for pricing by its ID.
+}
+
 delete {
   url: {{host}}/api/{{bu_code}}/request-for-pricing/:id
   body: none

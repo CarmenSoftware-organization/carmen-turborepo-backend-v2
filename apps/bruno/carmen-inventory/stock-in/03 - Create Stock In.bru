@@ -4,6 +4,16 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Stock In
+  สร้างรายการรับสินค้าเข้าคลังใหม่เพื่อเพิ่มจำนวนสินค้าคงคลัง ใช้สำหรับการปรับปรุงด้วยตนเอง เช่น บันทึกสินค้าคืน แก้ไขความคลาดเคลื่อนจากการนับสต็อก หรือเพิ่มยอดเปิดต้น
+
+  Records an inventory addition to increase stock levels. Used for manual adjustments such as recording returned items, correcting inventory discrepancies found during physical counts, or adding opening stock balances.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/stock-in
   body: json

@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Unit
+  อัปเดตข้อมูลหน่วยนับที่มีอยู่
+
+  Updates an existing unit of measurement.
+}
+
 put {
   url: {{host}}/api/config/{{bu_code}}/units/:id
   body: json

@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Recipe Category by ID
+  ดึงข้อมูลหมวดหมู่สูตรอาหารเดียวตาม ID สำหรับจำแนกประเภทสูตรอาหาร
+
+  Retrieves a specific recipe category used to classify recipes (e.g., Appetizers, Main Course, Desserts).
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/recipe-category/:id
   body: none

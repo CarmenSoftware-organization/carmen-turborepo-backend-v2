@@ -4,6 +4,18 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Price Compare
+  เปรียบเทียบราคาสินค้าจากผู้ขายข้ามรายการราคาที่ใช้งานอยู่
+
+  Compares vendor prices for a specific product across all active price lists to identify the best-value supplier.
+
+  ### Query Parameters
+  - `product_id` -- Product ID (UUID) / รหัสสินค้า
+  - `at_date` -- Date for price lookup (yyyy-MM-dd) / วันที่สำหรับค้นหาราคา
+  - `currency_id` -- Currency ID (UUID) / รหัสสกุลเงิน
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/price-list/price-compare?product_id=bb96415b-dff0-40ec-aa2f-2b4099418314&at_date=2026-03-16&currency_id=93dabe25-1668-4c5b-bceb-3e0b83b78002
   body: none

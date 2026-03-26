@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Logout
+  ออกจากระบบโดยยกเลิกโทเค็นผู้ใช้ผ่าน Keycloak ต้องส่ง refresh_token ในเนื้อหาคำขอเพื่อสิ้นสุดเซสชัน
+
+  Terminates the user's authenticated session by invalidating their Keycloak tokens. Requires the refresh_token in the request body to revoke the session.
+}
+
 post {
   url: {{host}}/api/auth/logout
   body: json

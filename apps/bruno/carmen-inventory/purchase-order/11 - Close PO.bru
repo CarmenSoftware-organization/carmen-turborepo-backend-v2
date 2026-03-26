@@ -4,6 +4,16 @@ meta {
   seq: 11
 }
 
+docs {
+  ## Close Purchase Order
+  ปิดใบสั่งซื้อหลังจากได้รับสินค้าครบถ้วนหรือไม่คาดว่าจะมีการส่งมอบเพิ่มเติม จำนวนที่ยังไม่ได้รับจะถูกบันทึกเป็นยกเลิก
+
+  Finalizes a purchase order after all expected goods have been received or when no further deliveries are expected. Notifies the buyer and sends an email to the vendor. Unreceived quantities are recorded as cancelled for inventory and financial reconciliation.
+
+  ### Path Parameters
+  - `id` — Purchase order UUID
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/purchase-order/:id/close
   body: json

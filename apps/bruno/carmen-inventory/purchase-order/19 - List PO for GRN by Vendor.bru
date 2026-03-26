@@ -4,6 +4,16 @@ meta {
   seq: 19
 }
 
+docs {
+  ## List PO for GRN by Vendor
+  แสดงรายการใบสั่งซื้อ (สถานะส่งแล้ว/รับบางส่วน) กรองตามผู้ขาย พร้อมรายละเอียดแยกตาม location สำหรับใช้ในการสร้างใบรับสินค้า
+
+  Lists purchase orders (sent/partial status) filtered by vendor ID, with detail lines broken down by delivery location. Used by GRN creation to list POs for a specific vendor.
+
+  ### Path Parameters
+  - `vendor_id` — Vendor UUID
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-order/grn/vendor/:vendor_id
   body: none
@@ -11,7 +21,7 @@ get {
 }
 
 params:path {
-  vendor_id:
+  vendor_id: 008d219a-3cad-4a70-bfbe-dc70f95a6433
 }
 
 headers {

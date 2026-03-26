@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Get Document Info
+  ดึงข้อมูลเมตาของเอกสารโดยไม่ดาวน์โหลดเนื้อหา
+
+  Retrieve document metadata without downloading the file content.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/documents/:filetoken/info
   body: none

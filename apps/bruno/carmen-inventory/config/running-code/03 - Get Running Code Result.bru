@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Get Running Code Result by Type
+  ดึงผลลัพธ์รหัสเลขที่เอกสารอัตโนมัติตามประเภทเอกสาร คืนตัวนับปัจจุบันและรูปแบบ
+
+  Retrieves the running code configuration for a specific document type, returning the current counter and format pattern.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/running-code/result/:type
   body: none

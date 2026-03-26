@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Vendor
+  ลบผู้ขายตาม ID
+
+  Deletes a vendor/supplier by its unique identifier.
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/vendors/:id
   body: none

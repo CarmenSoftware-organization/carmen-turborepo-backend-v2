@@ -60,6 +60,7 @@ export class Platform_ClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get list of clusters',
     description: 'Lists all top-level organizations (hotel chains or companies) registered in the platform with pagination. Each cluster groups multiple business units (hotel properties) under a single corporate entity.',
+    'x-description-th': 'แสดงรายการคลัสเตอร์ทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'platformCluster_findAll',
     tags: ['Platform Admin', 'Cluster'],
     deprecated: false,
@@ -68,7 +69,7 @@ export class Platform_ClusterController extends BaseHttpController {
       200: { description: 'Clusters retrieved successfully' },
       401: { description: 'Unauthorized' },
     },
-  })
+  } as any)
   async getListCluster(
     @Req() req: Request,
     @Res() res: Response,
@@ -111,6 +112,7 @@ export class Platform_ClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get cluster by ID',
     description: 'Retrieves the details of a specific hotel chain or company, including its name, configuration, and the business units (properties) it contains.',
+    'x-description-th': 'ดึงข้อมูลคลัสเตอร์รายการเดียวตาม ID',
     operationId: 'platformCluster_findOne',
     tags: ['Platform Admin', 'Cluster'],
     deprecated: false,
@@ -120,7 +122,7 @@ export class Platform_ClusterController extends BaseHttpController {
       401: { description: 'Unauthorized' },
       404: { description: 'Cluster not found' },
     },
-  })
+  } as any)
   async getClusterById(
     @Param('id') id: string,
     @Req() req: Request,
@@ -157,6 +159,7 @@ export class Platform_ClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Create a new cluster',
     description: 'Onboards a new hotel chain or company into the Carmen ERP platform. The cluster serves as the top-level organizational grouping under which individual hotel properties (business units) will be created.',
+    'x-description-th': 'สร้างคลัสเตอร์ใหม่',
     operationId: 'platformCluster_create',
     tags: ['Platform Admin', 'Cluster'],
     deprecated: false,
@@ -166,7 +169,7 @@ export class Platform_ClusterController extends BaseHttpController {
       400: { description: 'Bad request' },
       401: { description: 'Unauthorized' },
     },
-  })
+  } as any)
   async createCluster(
     @Req() req: Request,
     @Res() res: Response,
@@ -210,6 +213,7 @@ export class Platform_ClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Update a cluster',
     description: 'Modifies the details of an existing hotel chain or company, such as its name, contact information, or subscription settings.',
+    'x-description-th': 'อัปเดตข้อมูลคลัสเตอร์ที่มีอยู่',
     operationId: 'platformCluster_update',
     tags: ['Platform Admin', 'Cluster'],
     deprecated: false,
@@ -220,7 +224,7 @@ export class Platform_ClusterController extends BaseHttpController {
       401: { description: 'Unauthorized' },
       404: { description: 'Cluster not found' },
     },
-  })
+  } as any)
   async updateCluster(
     @Req() req: Request,
     @Res() res: Response,
@@ -265,6 +269,7 @@ export class Platform_ClusterController extends BaseHttpController {
   @ApiOperation({
     summary: 'Delete a cluster',
     description: 'Removes a hotel chain or company from the platform. This is a significant operation as it affects all business units and user assignments under this cluster.',
+    'x-description-th': 'ลบคลัสเตอร์ตาม ID',
     operationId: 'platformCluster_delete',
     tags: ['Platform Admin', 'Cluster'],
     deprecated: false,
@@ -274,7 +279,7 @@ export class Platform_ClusterController extends BaseHttpController {
       401: { description: 'Unauthorized' },
       404: { description: 'Cluster not found' },
     },
-  })
+  } as any)
   async deleteCluster(
     @Req() req: Request,
     @Res() res: Response,

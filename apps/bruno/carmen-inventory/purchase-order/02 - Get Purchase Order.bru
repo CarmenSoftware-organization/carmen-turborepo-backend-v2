@@ -4,6 +4,16 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Purchase Order by ID
+  ดึงรายละเอียดทั้งหมดของใบสั่งซื้อตาม ID รวมถึงข้อมูลผู้ขาย รายการสินค้า ราคา วันส่งมอบ สถานะขั้นตอนการทำงาน และบทบาทของผู้ใช้
+
+  Retrieves the full details of a specific purchase order including vendor information, line items, pricing, delivery dates, workflow status, and the authenticated user's role (create, approve, purchase, view_only, issue) for this PO.
+
+  ### Path Parameters
+  - `id` — Purchase order UUID
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-order/:id
   body: none

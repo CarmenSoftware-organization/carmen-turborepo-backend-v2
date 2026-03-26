@@ -4,6 +4,17 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Update Physical Count Period
+  แก้ไขช่วงวันที่หรือสถานะของรอบการตรวจนับสินค้า เช่น ขยายกำหนดเวลาเมื่อพนักงานคลังสินค้าต้องการเวลาเพิ่มเติมในการตรวจนับ
+
+  Modifies the date range or status of a physical count period, such as extending the deadline when warehouse staff need additional time to complete stock verification.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Physical Count Period ID / รหัสรอบการตรวจนับสินค้า
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/physical-count-period/:id
   body: json

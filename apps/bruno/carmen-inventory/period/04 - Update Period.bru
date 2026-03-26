@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Period
+  อัปเดตข้อมูลรอบบัญชีที่มีอยู่
+
+  Update an existing fiscal/accounting period.
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/period/:id
   body: json

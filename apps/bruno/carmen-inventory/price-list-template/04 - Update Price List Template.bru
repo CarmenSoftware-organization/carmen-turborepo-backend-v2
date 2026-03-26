@@ -4,6 +4,16 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Update Price List Template
+  อัปเดตข้อมูลแม่แบบรายการราคาที่มีอยู่
+
+  Modifies a price list template to add or remove products or update its configuration.
+
+  ### Path Parameters
+  - `id` -- Price list template ID (UUID) / รหัสแม่แบบรายการราคา
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/price-list-template/:id
   body: json

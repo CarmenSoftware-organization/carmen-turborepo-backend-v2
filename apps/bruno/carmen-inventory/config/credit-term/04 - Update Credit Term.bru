@@ -4,6 +4,16 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Credit Term
+  อัปเดตข้อมูลเงื่อนไขการชำระเงินที่มีอยู่
+
+  Updates an existing payment term definition.
+
+  ### Path Parameters
+  - `id` -- Credit term ID (UUID) / รหัสเงื่อนไขการชำระเงิน
+}
+
 patch {
   url: {{host}}/api/config/{{bu_code}}/credit-term/:id
   body: json

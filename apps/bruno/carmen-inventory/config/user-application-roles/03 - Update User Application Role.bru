@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Update User Application Role
+  อัปเดตข้อมูลบทบาทของผู้ใช้ในระบบที่มีอยู่
+
+  Updates an existing user application role assignment.
+}
+
 patch {
   url: {{host}}/api/config/{{bu_code}}/user-application-roles
   body: json

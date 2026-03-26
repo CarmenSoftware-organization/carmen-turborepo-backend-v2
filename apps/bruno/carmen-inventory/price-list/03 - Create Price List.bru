@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Price List
+  สร้างรายการราคาใหม่
+
+  Records a new vendor price list with product prices and validity dates for procurement.
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/price-list
   body: json

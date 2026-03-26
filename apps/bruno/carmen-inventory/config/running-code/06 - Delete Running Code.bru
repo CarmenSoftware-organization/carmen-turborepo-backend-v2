@@ -4,6 +4,13 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Delete Running Code
+  ลบกฎการกำหนดเลขอัตโนมัติออกจากระบบ ประเภทเอกสารจะไม่มีการสร้างรหัสอัตโนมัติ
+
+  Removes an auto-numbering rule from the system. The associated document type will no longer have automatic code generation.
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/running-code/:id
   body: none

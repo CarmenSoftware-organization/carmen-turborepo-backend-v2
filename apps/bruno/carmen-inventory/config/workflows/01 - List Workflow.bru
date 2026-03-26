@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Workflows
+  ดึงรายการขั้นตอนการทำงานทั้งหมดสำหรับการจัดการห่วงโซ่การอนุมัติเอกสาร
+
+  Returns all configured approval workflow templates for the business unit, used to manage document approval chains.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/workflows
   body: none

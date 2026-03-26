@@ -4,6 +4,17 @@ meta {
   seq: 11
 }
 
+docs {
+  ## Get Workflow Previous Step List
+  ดึงรายการขั้นตอนเวิร์กโฟลว์ก่อนหน้าที่สามารถส่งใบเบิกสินค้ากลับไปตรวจสอบได้ ใช้เพื่อเลือกขั้นตอนเป้าหมายเมื่อผู้อนุมัติต้องการส่งกลับแก้ไข
+
+  Returns the list of earlier workflow stages that a store requisition can be sent back to for review. Used to populate the review target selection when an approver needs to return the SR for corrections.
+
+  ### Path Parameters
+  - `id` — Store requisition ID (UUID)
+  - `bu_code` — Business unit code
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/store-requisition/:id/workflow-previous-step-list
   body: none

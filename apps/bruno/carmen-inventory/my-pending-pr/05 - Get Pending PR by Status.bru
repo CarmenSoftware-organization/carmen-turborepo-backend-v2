@@ -4,6 +4,17 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Get Pending Purchase Requests by Status
+  ค้นหารายการใบขอซื้อตามสถานะการอนุมัติ (เช่น ร่าง รออนุมัติ อนุมัติแล้ว ปฏิเสธ) ช่วยให้ผู้ใช้ดูคำขอในขั้นตอนเฉพาะของเวิร์กโฟลว์จัดซื้อ
+
+  Filters purchase requests by their current approval status (e.g., draft, pending, approved, rejected), allowing users to view requests at a specific stage in the procurement workflow.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `status` — Request status (e.g., pending, approved, rejected)
+}
+
 get {
   url: {{host}}/api/my-pending/purchase-request/:bu_code/status/:status
   body: none

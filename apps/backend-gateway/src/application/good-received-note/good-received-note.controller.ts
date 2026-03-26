@@ -87,7 +87,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
     responses: {
       200: { description: 'Pending GRN count retrieved successfully' },
     },
-  })
+    'x-description-th': 'แสดงจำนวนใบรับสินค้าที่รอดำเนินการของผู้ใช้ปัจจุบัน ใช้บนแดชบอร์ดเพื่อแจ้งเตือนเจ้าหน้าที่รับสินค้าเกี่ยวกับการส่งมอบจากผู้ขายที่รอการตรวจรับ',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findAllPendingGoodReceivedNoteCount(
     @Req() req: Request,
@@ -148,7 +149,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
       200: { description: 'The Good Received Note was successfully retrieved' },
       404: { description: 'The Good Received Note was not found' },
     },
-  })
+    'x-description-th': 'ดึงรายละเอียดทั้งหมดของใบรับสินค้า รวมถึงรายการสินค้าที่รับ จำนวน บันทึกคุณภาพ และใบสั่งซื้อที่เกี่ยวข้อง ใช้สำหรับตรวจสอบว่าสินค้าที่ส่งมาตรงกับที่สั่งซื้อหรือไม่',
+  } as any)
   async findOne(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -198,7 +200,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
       200: { description: 'Good Received Notes retrieved successfully' },
       404: { description: 'No Good Received Notes found' },
     },
-  })
+    'x-description-th': 'แสดงรายการใบรับสินค้าทั้งหมดของหน่วยธุรกิจพร้อมการแบ่งหน้าและตัวกรอง ใช้สำหรับเจ้าหน้าที่รับสินค้าและผู้จัดการคลังสินค้าในการติดตามการส่งมอบจากผู้ขาย',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Req() req: Request,
@@ -238,7 +241,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
       'Lists all goods receiving records for a specific vendor with pagination and filtering.',
     operationId: 'findGoodReceivedNotesByVendorId',
     tags: ['Procurement', 'Good Received Note'],
-  })
+    'x-description-th': 'แสดงรายการใบรับสินค้าทั้งหมดของผู้ขายรายหนึ่งพร้อมการแบ่งหน้าและตัวกรอง',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findByVendorId(
     @Req() req: Request,
@@ -293,7 +297,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
         description: 'The good received note was not found',
       },
     },
-  })
+    'x-description-th': 'สแกน QR code ของใบสั่งซื้อเพื่อเริ่มกระบวนการรับสินค้า ใช้โดยเจ้าหน้าที่รับสินค้าที่จุดรับสินค้าเพื่อดึงรายละเอียดใบสั่งซื้ออย่างรวดเร็ว',
+  } as any)
   async scanPO(
     @Req() req: Request,
     @Res() res: Response,
@@ -351,7 +356,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
       201: { description: 'The Good Received Note was successfully created' },
       400: { description: 'Invalid request body' },
     },
-  })
+    'x-description-th': 'บันทึกการส่งมอบสินค้าใหม่จากผู้ขายตามใบสั่งซื้อ โดยบันทึกจำนวนที่รับ ผลการตรวจสอบคุณภาพ และความแตกต่างระหว่างสินค้าที่สั่งกับที่ส่งมา',
+  } as any)
   @ApiBody({
     type: CreateGoodReceivedNoteSwaggerDto,
     examples: {
@@ -475,7 +481,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
       200: { description: 'The Good Received Note was successfully updated' },
       404: { description: 'The Good Received Note was not found' },
     },
-  })
+    'x-description-th': 'แก้ไขใบรับสินค้าเพื่อปรับจำนวน อัปเดตบันทึกคุณภาพ หรือแก้ไขรายการสินค้าก่อนการอนุมัติ',
+  } as any)
   @ApiBody({
     type: UpdateGoodReceivedNoteSwaggerDto,
     examples: {
@@ -590,7 +597,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
       200: { description: 'The Good Received Note was successfully deleted' },
       404: { description: 'The Good Received Note was not found' },
     },
-  })
+    'x-description-th': 'ลบใบรับสินค้าที่สร้างผิดพลาดหรือไม่ถูกต้อง ใช้ได้เฉพาะกับใบรับสินค้าที่ยังไม่ได้อนุมัติ',
+  } as any)
   async delete(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -649,7 +657,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
       400: { description: 'The Good Received Note cannot be voided' },
       404: { description: 'The Good Received Note was not found' },
     },
-  })
+    'x-description-th': 'ยกเลิกใบรับสินค้าโดยเปลี่ยนสถานะเป็นยกเลิก ป้องกันไม่ให้บันทึกเข้าคลังสินค้า ใช้เมื่อการส่งมอบถูกปฏิเสธหรือบันทึกผิดพลาด',
+  } as any)
   async voidGrn(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -719,7 +728,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
         description: 'The Good Received Note was not found',
       },
     },
-  })
+    'x-description-th': 'ส่งออกใบรับสินค้าเป็นไฟล์ Excel พร้อมรายการสินค้าที่รับทั้งหมด จำนวน และรายละเอียดผู้ขาย',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async exportToExcel(
     @Param('id') id: string,
@@ -805,7 +815,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
         description: 'The Good Received Note was not found',
       },
     },
-  })
+    'x-description-th': 'ปฏิเสธใบรับสินค้าเมื่อการส่งมอบไม่ผ่านมาตรฐานคุณภาพหรือสินค้าที่ได้รับไม่ถูกต้อง ใบรับสินค้าจะถูกยกเลิกและไม่มีผลต่อสินค้าคงคลัง',
+  } as any)
   @ApiBody({ type: RejectGoodReceivedNoteSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async reject(
@@ -880,7 +891,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
         description: 'The Good Received Note was not found',
       },
     },
-  })
+    'x-description-th': 'อนุมัติใบรับสินค้าและบันทึกจำนวนที่รับเข้าคลังสินค้า สร้างรายการเคลื่อนไหวสินค้าคงคลังและกำหนดต้นทุนแบบ FIFO',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async approve(
     @Param('id') id: string,
@@ -941,7 +953,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
       200: { description: 'GRN details retrieved successfully' },
       404: { description: 'Good Received Note not found' },
     },
-  })
+    'x-description-th': 'แสดงรายการสินค้าที่รับทั้งหมดในใบรับสินค้า รวมถึงรายละเอียดสินค้า จำนวนที่สั่งเทียบกับจำนวนที่รับ และบันทึกการตรวจสอบ',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findDetailsByGrnId(
     @Param('id') id: string,
@@ -1003,7 +1016,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
       200: { description: 'GRN detail retrieved successfully' },
       404: { description: 'GRN detail not found' },
     },
-  })
+    'x-description-th': 'ดึงรายละเอียดรายการสินค้าที่รับรายการเดียวจากใบรับสินค้า พร้อมข้อมูลจำนวน ราคา และคุณภาพ',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async findDetailById(
     @Param('id') id: string,
@@ -1068,7 +1082,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
       400: { description: 'Cannot delete detail of non-draft GRN' },
       404: { description: 'GRN detail not found' },
     },
-  })
+    'x-description-th': 'ลบรายการสินค้าจากใบรับสินค้าฉบับร่าง ใช้เมื่อรายการถูกบันทึกผิดพลาดหรือไม่ได้เป็นส่วนหนึ่งของการส่งมอบจริง',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async deleteDetail(
     @Param('id') id: string,
@@ -1132,7 +1147,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
       200: { description: 'GRN retrieved successfully' },
       404: { description: 'Purchase Order not found' },
     },
-  })
+    'x-description-th': 'ค้นหาใบสั่งซื้อตามเลขที่เอกสารเพื่อเริ่มกระบวนการรับสินค้า ใช้เมื่อเจ้าหน้าที่กรอกเลขที่ใบสั่งซื้อด้วยตนเองแทนการสแกน QR code',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async manualCheckPO(
     @Param('bu_code') bu_code: string,
@@ -1196,7 +1212,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
       400: { description: 'GRN cannot be committed' },
       404: { description: 'GRN not found' },
     },
-  })
+    'x-description-th': 'ยืนยันใบรับสินค้าเพื่อสรุปการตรวจรับและบันทึกเข้าคลังสินค้า ใช้โดยเจ้าหน้าที่รับสินค้าเพื่อระบุว่าการส่งมอบได้รับการตรวจสอบครบถ้วน',
+  } as any)
   @ApiBody({ type: ConfirmGoodReceivedNoteSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async commit(
@@ -1260,7 +1277,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
       200: { description: 'Comments retrieved successfully' },
       404: { description: 'GRN not found' },
     },
-  })
+    'x-description-th': 'ดึงรายการความคิดเห็นและบันทึกทั้งหมดที่แนบกับใบรับสินค้า ใช้สำหรับตรวจสอบการสื่อสารเกี่ยวกับปัญหาการส่งมอบและคุณภาพ',
+  } as any)
   @HttpCode(HttpStatus.OK)
   async getComments(
     @Param('id') id: string,
@@ -1323,7 +1341,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
       400: { description: 'Invalid request body' },
       404: { description: 'GRN not found' },
     },
-  })
+    'x-description-th': 'เพิ่มความคิดเห็นหรือบันทึกในใบรับสินค้า สำหรับบันทึกปัญหาการส่งมอบ ข้อสังเกตด้านคุณภาพ หรือการสื่อสารระหว่างเจ้าหน้าที่',
+  } as any)
   @ApiBody({ type: CreateGrnCommentSwaggerDto })
   @HttpCode(HttpStatus.CREATED)
   async createComment(

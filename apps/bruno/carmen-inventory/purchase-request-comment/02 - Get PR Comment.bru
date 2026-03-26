@@ -4,6 +4,16 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Purchase Request Comment by ID
+  ดึงความคิดเห็นเฉพาะจากกระทู้สนทนาของใบขอซื้อ รวมถึงเนื้อหา ผู้เขียน เวลา และเอกสารแนบ
+
+  Retrieves a specific comment from a purchase request discussion thread, including its content, author, timestamp, and any attached supporting documents.
+
+  ### Path Parameters
+  - `id` — Comment ID
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-request-comment/:id
   body: none

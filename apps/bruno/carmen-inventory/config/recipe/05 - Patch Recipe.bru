@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Patch Recipe
+  อัปเดตบางฟิลด์ของสูตรอาหาร เช่น ปริมาณส่วนผสมหรือสถานะการใช้งาน โดยไม่แทนที่ข้อมูลทั้งหมด
+
+  Partially updates specific fields of a recipe without replacing the entire record, such as adjusting ingredient quantities or toggling active status.
+}
+
 patch {
   url: {{host}}/api/config/{{bu_code}}/recipe/:id
   body: json

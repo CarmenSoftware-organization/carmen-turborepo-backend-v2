@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Credit Terms
+  แสดงรายการเงื่อนไขการชำระเงินทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Returns all payment term definitions configured for the business unit with pagination and search support.
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/credit-term
   body: none

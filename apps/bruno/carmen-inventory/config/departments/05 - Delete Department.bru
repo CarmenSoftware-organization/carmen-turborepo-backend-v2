@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Department
+  ลบแผนกตาม ID
+
+  Deletes a department by its unique identifier.
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/departments/:id
   body: none

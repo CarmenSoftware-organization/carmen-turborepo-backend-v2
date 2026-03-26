@@ -4,6 +4,16 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Create Pending Purchase Request
+  สร้างใบขอซื้อใหม่สำหรับสินค้าที่แผนกในโรงแรมต้องการ เริ่มต้นขั้นตอนอนุมัติการจัดซื้อโดยส่งไปยังผู้อนุมัติที่กำหนด (หัวหน้าแผนก, FC, GM)
+
+  Creates a new purchase request for items needed by a hotel department, initiating the procurement approval workflow where the request will be routed to designated approvers (HOD, FC, GM).
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+}
+
 post {
   url: {{host}}/api/my-pending/purchase-request/:bu_code
   body: json

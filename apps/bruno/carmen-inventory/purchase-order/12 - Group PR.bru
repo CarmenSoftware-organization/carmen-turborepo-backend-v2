@@ -4,6 +4,19 @@ meta {
   seq: 12
 }
 
+docs {
+  ## Group PR Details for PO Creation
+  แสดงตัวอย่างการจัดกลุ่มรายการใบขอซื้อที่อนุมัติแล้วเป็นใบสั่งซื้อตามผู้ขาย วันส่งมอบ และสกุลเงิน
+
+  Previews how approved purchase request line items will be grouped into purchase orders by vendor, delivery date, and currency. Optionally accepts a `workflow_id`; if omitted, auto-resolves the default purchase_order_workflow.
+
+  Used by purchasers to review the PO structure before confirming the conversion from PRs to POs.
+
+  ### Body
+  - `pr_ids` — Array of purchase request UUIDs
+  - `workflow_id` (optional) — Workflow UUID
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/purchase-order/group-pr
   body: json

@@ -4,6 +4,16 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Product Sub Category
+  ลบหมวดหมู่ย่อยสินค้าตาม ID
+
+  Removes a product sub-category from the classification hierarchy.
+
+  ### Path Parameters
+  - `id` — Product Sub Category UUID (รหัสหมวดหมู่ย่อยสินค้า)
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/products/sub-category/:id
   body: none

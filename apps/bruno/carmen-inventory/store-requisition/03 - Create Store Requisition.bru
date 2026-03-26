@@ -4,6 +4,16 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Store Requisition
+  สร้างใบเบิกสินค้าใหม่ในสถานะร่าง สำหรับแผนกที่ต้องการขอเบิกสินค้าจากคลัง เช่น วัสดุครัว วัสดุทำความสะอาด อุปกรณ์สำนักงาน ใบเบิกจะต้องถูกส่งเพื่อขออนุมัติก่อนจึงจะเบิกสินค้าได้
+
+  Creates a new internal store requisition for a department to request items from inventory (e.g., kitchen supplies, cleaning materials, office supplies). The SR starts in draft status and must be submitted for approval before items can be issued.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/store-requisition
   body: json

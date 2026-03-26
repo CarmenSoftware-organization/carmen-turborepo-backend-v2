@@ -4,6 +4,17 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Stock In Detail
+  เพิ่มรายการสินค้าใหม่ในรายการรับสินค้าเข้าคลังที่เป็นร่าง โดยระบุสินค้า จำนวน และต้นทุนที่จะเพิ่มเข้าคลังสินค้า
+
+  Adds a new item line to a draft stock-in transaction, specifying the product, quantity, and cost to be added to inventory.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Stock In ID / รหัสรายการรับสินค้าเข้าคลัง
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/stock-in/:id/details
   body: json

@@ -4,6 +4,16 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Tax Profile
+  ลบโปรไฟล์ภาษีตาม ID
+
+  Removes a tax rate configuration from active use.
+
+  ### Path Parameters
+  - `id` -- Tax profile ID (UUID) / รหัสโปรไฟล์ภาษี
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/tax-profile/:id
   body: none

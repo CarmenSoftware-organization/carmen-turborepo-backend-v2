@@ -4,6 +4,16 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Physical Count
+  สร้างรายการตรวจนับสินค้าใหม่สำหรับสถานที่จัดเก็บและรอบการตรวจนับที่กำหนด ระบบจะสร้างรายการสินค้าที่ต้องตรวจสอบเทียบกับจำนวนในระบบโดยอัตโนมัติ
+
+  Initiates a new periodic physical inventory count for a specific storage location and count period, generating the list of products to be verified against system stock levels.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/physical-count
   body: json

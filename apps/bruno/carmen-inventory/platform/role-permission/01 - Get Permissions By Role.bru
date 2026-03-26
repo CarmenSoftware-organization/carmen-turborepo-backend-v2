@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## Get Permissions By Role
+  ดึงรายการสิทธิ์การใช้งานทั้งหมดที่กำหนดให้บทบาทที่ระบุ
+
+  Retrieve all permissions assigned to a specific role.
+}
+
 get {
   url: {{host}}/api-system/role-permission/role/:roleId/permissions
   body: none

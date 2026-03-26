@@ -4,6 +4,13 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Update Running Code
+  อัปเดตกฎการกำหนดเลขอัตโนมัติที่มีอยู่ เช่น เปลี่ยนรูปแบบหรือรีเซ็ตตัวนับ
+
+  Modifies an existing auto-numbering rule, such as changing the format pattern, prefix, or resetting the counter.
+}
+
 put {
   url: {{host}}/api/config/{{bu_code}}/running-code/:id
   body: json

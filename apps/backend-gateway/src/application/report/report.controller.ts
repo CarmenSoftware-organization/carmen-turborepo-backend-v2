@@ -43,8 +43,9 @@ export class ReportController extends BaseHttpController {
     summary: 'Generate report',
     description:
       'Generates a report synchronously. Returns file bytes for PDF/Excel/CSV or JSON data.',
+    'x-description-th': 'สร้างรายงาน',
     operationId: 'generateReport',
-  })
+  } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BU001' })
   @ApiBody({ type: GenerateReportRequestDto, description: 'Report generation parameters' })
   @ApiResponse({
@@ -62,7 +63,7 @@ export class ReportController extends BaseHttpController {
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': { schema: { type: 'string', format: 'binary' } },
       'text/csv': { schema: { type: 'string', format: 'binary' } },
     },
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async generate(
     @Param('bu_code') bu_code: string,
@@ -112,15 +113,16 @@ export class ReportController extends BaseHttpController {
   @ApiOperation({
     summary: 'List report types',
     description: 'Returns all available report types with metadata including supported formats and category.',
+    'x-description-th': 'แสดงรายการประเภทรายงานที่มีทั้งหมด',
     operationId: 'listReportTypes',
-  })
+  } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BU001' })
   @ApiQuery({ name: 'category', required: false, description: 'Filter by report category', example: 'inventory' })
   @ApiResponse({
     status: 200,
     description: 'Report types retrieved successfully',
     type: [ReportTypeResponseDto],
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async listTypes(
     @Query('category') category: string,
@@ -138,15 +140,16 @@ export class ReportController extends BaseHttpController {
   @ApiOperation({
     summary: 'List report templates',
     description: 'Returns all active report templates, optionally filtered by report_group.',
+    'x-description-th': 'แสดงรายการแม่แบบรายงานทั้งหมด',
     operationId: 'listReportTemplates',
-  })
+  } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BU001' })
   @ApiQuery({ name: 'report_group', required: false, description: 'Filter by report group', example: 'inventory' })
   @ApiResponse({
     status: 200,
     description: 'Report templates retrieved successfully',
     type: [ReportTemplateResponseDto],
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async listTemplates(
     @Query('report_group') report_group: string,
@@ -166,15 +169,16 @@ export class ReportController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get report template',
     description: 'Returns a single report template by ID with full configuration including dialog and content.',
+    'x-description-th': 'ดึงข้อมูลแม่แบบรายงานรายการเดียวตาม ID',
     operationId: 'getReportTemplate',
-  })
+  } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BU001' })
   @ApiParam({ name: 'id', description: 'Report template ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   @ApiResponse({
     status: 200,
     description: 'Report template retrieved successfully',
     type: ReportTemplateResponseDto,
-  })
+  } as any)
   @ApiResponse({ status: 404, description: 'Report template not found' })
   @HttpCode(HttpStatus.OK)
   async getTemplate(
@@ -193,15 +197,16 @@ export class ReportController extends BaseHttpController {
   @ApiOperation({
     summary: 'View report in external viewer',
     description: 'Sends template + data to external FastReport viewer and returns a viewer URL.',
+    'x-description-th': 'ดูรายงานผ่าน external viewer',
     operationId: 'viewReport',
-  })
+  } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BU001' })
   @ApiBody({ type: ViewerRequestDto })
   @ApiResponse({
     status: 200,
     description: 'Viewer URL returned successfully',
     type: ViewerResponseDto,
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async viewReport(
     @Param('bu_code') bu_code: string,
@@ -229,14 +234,15 @@ export class ReportController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get report data',
     description: 'Returns JSON data rows for a template without rendering PDF. Used by WebReport viewer.',
+    'x-description-th': 'ดึงข้อมูลรายงานเป็น JSON',
     operationId: 'getReportData',
-  })
+  } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BU001' })
   @ApiBody({ type: ReportDataRequestDto })
   @ApiResponse({
     status: 200,
     description: 'Report data returned successfully',
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async reportData(
     @Param('bu_code') bu_code: string,
@@ -264,14 +270,15 @@ export class ReportController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get report lookups',
     description: 'Returns lookup data (vendor, location, product, category, etc.) for populating report filter dropdowns.',
+    'x-description-th': 'ดึงข้อมูล lookup สำหรับตัวกรองรายงาน',
     operationId: 'getReportLookups',
-  })
+  } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BU001' })
   @ApiQuery({ name: 'types', required: false, description: 'Comma-separated lookup types', example: 'vendor,location,product,category' })
   @ApiResponse({
     status: 200,
     description: 'Lookup data returned successfully',
-  })
+  } as any)
   @HttpCode(HttpStatus.OK)
   async lookups(
     @Param('bu_code') bu_code: string,

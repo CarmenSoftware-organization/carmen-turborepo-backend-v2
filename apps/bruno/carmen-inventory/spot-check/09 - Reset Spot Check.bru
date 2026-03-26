@@ -4,6 +4,17 @@ meta {
   seq: 9
 }
 
+docs {
+  ## Reset Spot Check
+  ล้างจำนวนที่บันทึกทั้งหมดและรีเซ็ตการตรวจสอบสินค้าเฉพาะจุดกลับเป็นสถานะร่าง ช่วยให้พนักงานเริ่มกระบวนการตรวจสอบใหม่ตั้งแต่ต้นหากจำนวนที่นับไม่ถูกต้อง
+
+  Clears all recorded actual quantities and resets the spot check to draft state, allowing staff to restart the verification process from scratch if counts were inaccurate.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Spot Check ID / รหัสการตรวจสอบสินค้าเฉพาะจุด
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/spot-check/:id/reset
   body: none

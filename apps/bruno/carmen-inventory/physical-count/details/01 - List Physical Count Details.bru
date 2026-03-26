@@ -4,6 +4,17 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Physical Count Details
+  ดึงรายการสินค้าทั้งหมดในการตรวจนับสินค้า แสดงจำนวนในระบบเทียบกับจำนวนที่นับได้จริง สำหรับการกระทบยอดสินค้าคงคลัง
+
+  Returns all product line items included in a physical count, showing system quantities alongside any recorded actual quantities for inventory reconciliation.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Physical Count ID / รหัสการตรวจนับสินค้า
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/physical-count/:id/details
   body: none

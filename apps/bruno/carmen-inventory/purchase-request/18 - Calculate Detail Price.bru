@@ -4,6 +4,16 @@ meta {
   seq: 18
 }
 
+docs {
+  ## Calculate Detail Price
+  คำนวณรายละเอียดต้นทุนทั้งหมดของรายการใบขอซื้อ รวมถึงราคาต่อหน่วย ภาษี ส่วนลด และยอดสุทธิ ใช้โดยผู้จัดซื้อเพื่อประเมินราคาจากผู้ขายและรายการราคาต่างๆ
+
+  Calculates the total cost breakdown for a PR line item including unit price, tax, discount, and net amount. Used by purchasers to evaluate pricing from different vendors and price lists before finalizing the request.
+
+  ### Path Parameters
+  - `detail_id` — Purchase request detail ID
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-request/detail/:detail_id/calculate
   body: none

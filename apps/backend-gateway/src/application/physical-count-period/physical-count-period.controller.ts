@@ -69,6 +69,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
       'Finds the current physical count period, helping warehouse staff quickly identify the current inventory verification window they should be working on.',
     operationId: 'findCurrentPhysicalCountPeriod',
     tags: ['Inventory', 'Physical Count Period'],
+    'x-description-th': 'ดึงรอบการตรวจนับสินค้าที่กำลังดำเนินอยู่ในปัจจุบัน ช่วยให้พนักงานคลังสินค้าระบุรอบการตรวจนับที่ต้องทำงานได้อย่างรวดเร็ว',
     parameters: [
       {
         name: 'bu_code',
@@ -83,7 +84,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
       },
       404: { description: 'No current physical count period found' },
     },
-  })
+  } as any)
   async findCurrent(
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -124,6 +125,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
       'Retrieves the details of a specific physical count time window, including its date range and status, to determine when inventory verification must be completed.',
     operationId: 'findOnePhysicalCountPeriod',
     tags: ['Inventory', 'Physical Count Period'],
+    'x-description-th': 'ดึงรายละเอียดของรอบการตรวจนับสินค้าเฉพาะรอบ รวมถึงช่วงวันที่และสถานะ เพื่อตรวจสอบว่าต้องทำการตรวจนับให้เสร็จเมื่อใด',
     parameters: [
       {
         name: 'id',
@@ -142,7 +144,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
       200: { description: 'Physical count period retrieved successfully' },
       404: { description: 'Physical count period not found' },
     },
-  })
+  } as any)
   async findOne(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,
@@ -184,6 +186,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
       'Lists all defined physical count periods for the business unit, allowing inventory managers to plan and schedule recurring stock verification cycles.',
     operationId: 'findAllPhysicalCountPeriods',
     tags: ['Inventory', 'Physical Count Period'],
+    'x-description-th': 'ดึงรายการรอบการตรวจนับสินค้าทั้งหมดของหน่วยธุรกิจ ช่วยให้ผู้จัดการคลังสินค้าวางแผนและกำหนดตารางการตรวจสอบสินค้าคงคลังเป็นรอบ',
     parameters: [
       {
         name: 'bu_code',
@@ -195,7 +198,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
     responses: {
       200: { description: 'Physical count periods retrieved successfully' },
     },
-  })
+  } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -237,6 +240,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
       'Defines a new time window during which physical inventory counts must be completed, establishing the schedule for periodic stock verification across storage locations.',
     operationId: 'createPhysicalCountPeriod',
     tags: ['Inventory', 'Physical Count Period'],
+    'x-description-th': 'สร้างรอบการตรวจนับสินค้าใหม่ กำหนดช่วงเวลาที่ต้องทำการตรวจนับสินค้าคงคลังให้เสร็จสิ้น เพื่อวางตารางการตรวจสอบสินค้าเป็นรอบ',
     parameters: [
       {
         name: 'bu_code',
@@ -252,7 +256,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
         description: 'Physical count period with same dates already exists',
       },
     },
-  })
+  } as any)
   @ApiBody({ type: PhysicalCountPeriodCreateRequestDto })
   async create(
     @Body() createDto: PhysicalCountPeriodCreateDto,
@@ -295,6 +299,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
       'Modifies the date range or status of a physical count period, such as extending the deadline when warehouse staff need additional time to complete stock verification.',
     operationId: 'updatePhysicalCountPeriod',
     tags: ['Inventory', 'Physical Count Period'],
+    'x-description-th': 'แก้ไขช่วงวันที่หรือสถานะของรอบการตรวจนับสินค้า เช่น ขยายกำหนดเวลาเมื่อพนักงานคลังสินค้าต้องการเวลาเพิ่มเติมในการตรวจนับ',
     parameters: [
       {
         name: 'id',
@@ -313,7 +318,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
       200: { description: 'Physical count period updated successfully' },
       404: { description: 'Physical count period not found' },
     },
-  })
+  } as any)
   @ApiBody({ type: PhysicalCountPeriodUpdateRequestDto })
   async update(
     @Param('id') id: string,
@@ -357,6 +362,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
       'Removes a physical count period that was created in error or is no longer needed. Periods with associated physical counts cannot be deleted.',
     operationId: 'deletePhysicalCountPeriod',
     tags: ['Inventory', 'Physical Count Period'],
+    'x-description-th': 'ลบรอบการตรวจนับสินค้าที่สร้างผิดพลาดหรือไม่จำเป็นแล้ว รอบที่มีการตรวจนับสินค้าที่เชื่อมโยงอยู่จะไม่สามารถลบได้',
     parameters: [
       {
         name: 'id',
@@ -375,7 +381,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
       200: { description: 'Physical count period deleted successfully' },
       404: { description: 'Physical count period not found' },
     },
-  })
+  } as any)
   async delete(
     @Param('id') id: string,
     @Param('bu_code') bu_code: string,

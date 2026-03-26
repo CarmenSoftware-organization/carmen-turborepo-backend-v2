@@ -103,7 +103,8 @@ export class LocationsController extends BaseHttpController {
         },
       },
     },
-  })
+    'x-description-th': 'แสดงรายการสถานที่/คลังสินค้าทั้งหมดที่ผู้ใช้เข้าถึงได้',
+  } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -202,7 +203,8 @@ export class LocationsController extends BaseHttpController {
       401: { description: 'Unauthorized — invalid or missing bearer token' },
       404: { description: 'Product not found' },
     },
-  })
+    'x-description-th': 'ดึงรายการสถานที่ทั้งหมดที่มอบหมายให้สินค้าที่ระบุ',
+  } as any)
   async findByProductId(
     @Req() req: Request,
     @Res() res: Response,
@@ -269,7 +271,8 @@ export class LocationsController extends BaseHttpController {
     description: 'Retrieves the full details of a storage location including its assigned users and stocked products, used for managing warehouse configuration and inventory assignments.',
     operationId: 'findOneLocation',
     tags: ['Master Data', 'Location'],
-  })
+    'x-description-th': 'ดึงข้อมูลสถานที่/คลังสินค้ารายการเดียวตาม ID',
+  } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -350,7 +353,8 @@ export class LocationsController extends BaseHttpController {
     responses: {
       200: { description: 'Product inventory was successfully retrieved' },
     },
-  })
+    'x-description-th': 'ดึงข้อมูลระดับสินค้าคงคลังของสินค้าที่สถานที่เฉพาะ',
+  } as any)
   @ApiResponse({ status: 200, description: 'Product inventory was successfully retrieved', type: ProductInventoryInfoResponseDto })
   async getProductInventory(
     @Req() req: Request,

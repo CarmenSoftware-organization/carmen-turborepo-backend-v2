@@ -4,6 +4,16 @@ meta {
   seq: 2
 }
 
+docs {
+  ## List Price List Templates (with filter)
+  แสดงรายการแม่แบบรายการราคาพร้อมตัวกรองค้นหา
+
+  Lists price list templates filtered by a search keyword.
+
+  ### Query Parameters
+  - `search` -- Search keyword / คำค้นหา
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/price-list-template?search=sss
   body: none

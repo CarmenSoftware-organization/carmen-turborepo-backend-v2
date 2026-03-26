@@ -4,6 +4,13 @@ meta {
   seq: 3
 }
 
+docs {
+  ## List Users
+  แสดงรายการผู้ใช้ทั้งหมดในหน่วยธุรกิจปัจจุบันพร้อมการแบ่งหน้าและค้นหา
+
+  Retrieve all users in the current business unit with pagination and search support.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/users
   body: none

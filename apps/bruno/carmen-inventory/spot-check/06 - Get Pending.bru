@@ -4,6 +4,13 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Get Pending Spot Check Count
+  ดึงจำนวนการตรวจสอบสินค้าเฉพาะจุดที่รอดำเนินการของผู้ใช้ปัจจุบัน ใช้สำหรับแสดงการแจ้งเตือนบนแดชบอร์ดสำหรับงานตรวจสอบคุณภาพ
+
+  Returns the count of random inventory spot checks awaiting the current user, used to drive dashboard alerts for quality-control verification tasks.
+}
+
 get {
   url: {{host}}/api/spot-check/pending
   body: none

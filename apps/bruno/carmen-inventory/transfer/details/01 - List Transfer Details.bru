@@ -4,6 +4,17 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Transfer Details
+  ดึงรายการย่อยทั้งหมดของรายการโอนย้ายสินค้าที่ระบุ รวมถึงรายละเอียดสินค้า จำนวน และข้อมูลหน่วย ใช้สำหรับตรวจสอบเนื้อหาของการโอนย้ายก่อนหรือหลังการเคลื่อนย้ายสินค้าจริง
+
+  Lists all items included in this transfer with their product details, quantities, and unit information. Used to verify the contents of a transfer before or after physical movement of goods.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Transfer ID / รหัสรายการโอนย้ายสินค้า
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/transfer/:id/details
   body: none

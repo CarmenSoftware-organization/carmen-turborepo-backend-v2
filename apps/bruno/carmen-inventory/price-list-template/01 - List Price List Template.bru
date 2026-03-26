@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Price List Templates
+  แสดงรายการแม่แบบรายการราคาทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Lists all available price list templates for the business unit with pagination and search support.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/price-list-template
   body: none

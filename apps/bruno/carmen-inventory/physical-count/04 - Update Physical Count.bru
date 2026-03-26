@@ -4,6 +4,17 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Physical Count
+  แก้ไขรายการตรวจนับสินค้า เช่น เปลี่ยนสถานที่หรือปรับข้อมูลเมตา ก่อนที่การตรวจนับจะถูกส่งขั้นสุดท้าย
+
+  Modifies a physical count record, such as changing the assigned location or adjusting metadata, before the count is finalized and submitted.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Physical Count ID / รหัสการตรวจนับสินค้า
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/physical-count/:id
   body: json

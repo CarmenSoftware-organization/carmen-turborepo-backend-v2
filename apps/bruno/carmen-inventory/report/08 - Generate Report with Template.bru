@@ -4,6 +4,13 @@ meta {
   seq: 8
 }
 
+docs {
+  ## Generate Report with Template
+  สร้างรายงานโดยใช้แม่แบบรายงานที่ระบุ
+
+  Generate a report using a specific report template.
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/report/generate
   body: json

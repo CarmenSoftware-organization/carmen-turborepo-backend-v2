@@ -4,6 +4,13 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Unit Comment
+  อัปเดตข้อมูลหมายเหตุหน่วยนับที่มีอยู่
+
+  Updates an existing unit comment template.
+}
+
 put {
   url: {{host}}/api/config/{{bu_code}}/unit-comment/:id
   body: json

@@ -4,6 +4,17 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Physical Count
+  ดึงรายละเอียดทั้งหมดของการตรวจนับสินค้าตาม ID รวมถึงสถานที่ รอบการตรวจนับ สถานะ และรายการสินค้าที่ตรวจนับ สำหรับการตรวจสอบหรือดำเนินการตรวจนับต่อ
+
+  Retrieves the full details of a physical inventory count session, including the location, period, status, and counted items, for review or continuation of the stock verification process.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  - `id` — Physical Count ID / รหัสการตรวจนับสินค้า
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/physical-count/:id
   body: none

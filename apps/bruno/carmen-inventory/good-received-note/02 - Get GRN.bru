@@ -4,6 +4,17 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Good Received Note by ID
+  ดึงรายละเอียดทั้งหมดของใบรับสินค้า รวมถึงรายการสินค้าที่รับ จำนวน บันทึกคุณภาพ และใบสั่งซื้อที่เกี่ยวข้อง ใช้สำหรับตรวจสอบว่าสินค้าที่ส่งมาตรงกับที่สั่งซื้อหรือไม่
+
+  Retrieves the full details of a goods receiving record including received items, quantities, quality notes, and the associated purchase order. Used to verify what was delivered against what was ordered.
+
+  ### Path Parameters
+  - `id` — Good Received Note ID / รหัสใบรับสินค้า
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/good-received-note/:id
   body: none

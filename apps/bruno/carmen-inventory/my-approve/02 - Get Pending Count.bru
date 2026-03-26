@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Combined Pending Approval Count
+  ดึงจำนวนรวมของเอกสารที่รออนุมัติทั้งหมด (ใบเบิกสินค้า + ใบขอซื้อ + ใบสั่งซื้อ) ช่วยให้ผู้อนุมัติจัดลำดับความสำคัญของงาน
+
+  Provides a dashboard summary count of all documents awaiting the current user's approval across store requisitions, purchase requests, and purchase orders, helping approvers prioritize their workload.
+}
+
 get {
   url: {{host}}/api/my-approve/pending
   body: none

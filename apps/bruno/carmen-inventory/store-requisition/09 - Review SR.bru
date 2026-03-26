@@ -4,6 +4,17 @@ meta {
   seq: 9
 }
 
+docs {
+  ## Review Store Requisition
+  ส่งใบเบิกสินค้ากลับไปยังขั้นตอนก่อนหน้าเพื่อแก้ไข เช่น ปรับจำนวนหรือเปลี่ยนสินค้าที่ไม่พร้อมใช้งาน ช่วยให้ผู้อนุมัติสามารถขอแก้ไขก่อนอนุมัติขั้นสุดท้าย
+
+  Returns a store requisition to a previous workflow stage for corrections, such as adjusting quantities or replacing unavailable items. Allows approvers to request changes before granting final authorization.
+
+  ### Path Parameters
+  - `id` — Store requisition ID (UUID)
+  - `bu_code` — Business unit code
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/store-requisition/:id/review
   body: json

@@ -4,6 +4,16 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Delete Extra Cost Type
+  ลบประเภทค่าใช้จ่ายเพิ่มเติมตาม ID
+
+  Removes an extra cost type from active use.
+
+  ### Path Parameters
+  - `id` -- Extra cost type ID (UUID) / รหัสประเภทค่าใช้จ่ายเพิ่มเติม
+}
+
 delete {
   url: {{host}}/api/config/{{bu_code}}/extra-cost-type/:id
   body: none

@@ -4,6 +4,13 @@ meta {
   seq: 6
 }
 
+docs {
+  ## Refresh Token
+  รีเฟรชโทเค็นโดยใช้ refresh_token เพื่อรับ access_token ใหม่ โดยไม่ต้องเข้าสู่ระบบอีกครั้ง
+
+  Exchanges an expired or expiring access token for a new one using the refresh token, maintaining the user's session without re-login.
+}
+
 post {
   url: {{host}}/api/auth/refresh-token
   body: json

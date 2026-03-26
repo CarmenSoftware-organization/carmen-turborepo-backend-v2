@@ -4,6 +4,16 @@ meta {
   seq: 13
 }
 
+docs {
+  ## Print Purchase Request to PDF
+  สร้างเอกสาร PDF สำหรับพิมพ์ใบขอซื้อ รวมถึงรายการสินค้า ยอดรวม และประวัติการอนุมัติ ใช้สำหรับลงนาม จัดเก็บเอกสาร หรือส่งให้ผู้ขาย
+
+  Generates a printable PDF document of the purchase request for physical signatures, filing, or sending to vendors. Includes all line items, totals, and approval history.
+
+  ### Path Parameters
+  - `id` — Purchase request ID
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/purchase-request/:id/print
   body: none

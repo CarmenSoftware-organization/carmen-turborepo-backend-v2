@@ -4,6 +4,13 @@ meta {
   seq: 7
 }
 
+docs {
+  ## Stop Cronjob
+  หยุดงานตั้งเวลาชั่วคราวโดยไม่ลบ สามารถเริ่มใหม่ได้ภายหลัง
+
+  Pauses a running scheduled task without deleting it. The task can be restarted later without losing its settings.
+}
+
 post {
   url: {{host}}/api/config/cronjobs/:id/stop
   body: none

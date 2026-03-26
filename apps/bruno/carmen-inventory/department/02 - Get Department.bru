@@ -4,6 +4,13 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Department
+  ดึงข้อมูลแผนกรายการเดียวตาม ID
+
+  Retrieves a single department record by its unique identifier.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/department/:id
   body: none

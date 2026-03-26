@@ -4,6 +4,16 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Stock In Records
+  ดึงรายการรับสินค้าเข้าคลังทั้งหมดของหน่วยธุรกิจ พร้อมการแบ่งหน้าและตัวกรอง ใช้สำหรับผู้จัดการคลังสินค้าในการติดตามการรับสินค้าเข้าคลังทั้งหมด
+
+  Lists all inventory addition records for the business unit with pagination and filtering. Used by inventory managers to track all stock additions from goods receiving, returns, and manual adjustments.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/stock-in
   body: none

@@ -75,7 +75,8 @@ export class CheckPriceListController extends BaseHttpController {
         description: 'URL token not found',
       },
     },
-  })
+    'x-description-th': 'ตรวจสอบรายการราคาผ่านโทเค็น URL',
+  } as any)
   async checkPriceList(
     @Param('url_token') urlToken: string,
     @Query('version') version: string = 'latest',

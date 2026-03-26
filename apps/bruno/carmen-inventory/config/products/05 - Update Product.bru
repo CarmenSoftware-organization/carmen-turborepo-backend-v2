@@ -4,6 +4,16 @@ meta {
   seq: 5
 }
 
+docs {
+  ## Update Product
+  อัปเดตข้อมูลสินค้าที่มีอยู่ รวมถึงสถานที่จัดเก็บ หน่วยสั่งซื้อ และหน่วยส่วนผสม
+
+  Modifies an existing product including its locations, order units, and ingredient units. Supports add, update, and remove operations for nested resources.
+
+  ### Path Parameters
+  - `id` — Product UUID (รหัสสินค้า)
+}
+
 patch {
   url: {{host}}/api/config/{{bu_code}}/products/:id
   body: json

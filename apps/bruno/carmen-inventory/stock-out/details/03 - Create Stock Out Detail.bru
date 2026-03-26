@@ -4,6 +4,17 @@ meta {
   seq: 3
 }
 
+docs {
+  ## Create Stock Out Detail
+  เพิ่มรายการสินค้าใหม่ในรายการเบิกสินค้าออกจากคลังที่เป็นร่าง โดยระบุสินค้าและจำนวนที่จะเบิกออกจากคลังเพื่อใช้ในแผนก ครัว หรือบันทึกของเสีย
+
+  Adds a new item line to a draft stock-out transaction, specifying the product and quantity to be removed from inventory for department use, kitchen consumption, or waste recording.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Stock Out ID / รหัสรายการเบิกสินค้าออกจากคลัง
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/stock-out/:id/details
   body: json

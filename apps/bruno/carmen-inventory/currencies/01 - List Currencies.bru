@@ -4,6 +4,13 @@ meta {
   seq: 1
 }
 
+docs {
+  ## List Active Currencies
+  แสดงรายการสกุลเงินที่ใช้งานอยู่ทั้งหมดของหน่วยธุรกิจ
+
+  Lists all currencies enabled for the business unit, used to populate currency selectors in procurement documents.
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/currencies
   body: none

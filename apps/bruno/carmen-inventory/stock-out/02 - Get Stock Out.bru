@@ -4,6 +4,17 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Stock Out by ID
+  ดึงรายละเอียดทั้งหมดของรายการเบิกสินค้าออกจากคลังตาม ID รวมถึงรายการสินค้า จำนวน และเหตุผลในการเบิกจ่าย (เช่น การใช้ในครัว แผนก ของเสีย หรือของหมดอายุ)
+
+  Retrieves the full details of a stock-out transaction including all items removed from inventory, their quantities, and the reason for removal (e.g., kitchen consumption, department usage, waste, or spoilage).
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Stock Out ID / รหัสรายการเบิกสินค้าออกจากคลัง
+}
+
 get {
   url: {{host}}/api/{{bu_code}}/stock-out/:id
   body: none

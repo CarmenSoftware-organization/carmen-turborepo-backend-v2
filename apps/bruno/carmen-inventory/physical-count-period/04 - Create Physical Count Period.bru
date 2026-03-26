@@ -4,6 +4,16 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Create Physical Count Period
+  สร้างรอบการตรวจนับสินค้าใหม่ กำหนดช่วงเวลาที่ต้องทำการตรวจนับสินค้าคงคลังให้เสร็จสิ้น เพื่อวางตารางการตรวจสอบสินค้าเป็นรอบ
+
+  Defines a new time window during which physical inventory counts must be completed, establishing the schedule for periodic stock verification across storage locations.
+
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+}
+
 post {
   url: {{host}}/api/{{bu_code}}/physical-count-period
   body: json

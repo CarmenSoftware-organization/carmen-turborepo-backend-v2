@@ -4,6 +4,16 @@ meta {
   seq: 2
 }
 
+docs {
+  ## Get Product
+  ดึงข้อมูลสินค้ารายการเดียวตาม ID
+
+  Retrieves the complete details of a single product by its ID.
+
+  ### Path Parameters
+  - `id` — Product UUID (รหัสสินค้า)
+}
+
 get {
   url: {{host}}/api/config/{{bu_code}}/products/:id
   body: none

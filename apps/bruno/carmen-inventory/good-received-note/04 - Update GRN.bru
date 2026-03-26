@@ -4,6 +4,17 @@ meta {
   seq: 4
 }
 
+docs {
+  ## Update Good Received Note
+  แก้ไขใบรับสินค้าเพื่อปรับจำนวน อัปเดตบันทึกคุณภาพ หรือแก้ไขรายการสินค้าก่อนการอนุมัติ ใช้เมื่อเจ้าหน้าที่รับสินค้าต้องการแก้ไขรายละเอียดหลังจากบันทึกครั้งแรก
+
+  Modifies a goods receiving record to correct quantities, update quality notes, or adjust line items before the GRN is approved. Used when receiving staff need to amend details after the initial entry.
+
+  ### Path Parameters
+  - `id` — Good Received Note ID / รหัสใบรับสินค้า
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+}
+
 patch {
   url: {{host}}/api/{{bu_code}}/good-received-note/:id
   body: json

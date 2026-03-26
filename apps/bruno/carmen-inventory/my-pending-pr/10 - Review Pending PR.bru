@@ -4,6 +4,17 @@ meta {
   seq: 10
 }
 
+docs {
+  ## Review Pending Purchase Request
+  ส่งใบขอซื้อกลับตรวจสอบ ช่วยให้ผู้อนุมัติสามารถให้ข้อเสนอแนะหรือขอแก้ไขก่อนตัดสินใจอนุมัติหรือปฏิเสธ รองรับการตรวจสอบจัดซื้อแบบร่วมกัน
+
+  Allows an approver to review a purchase request and provide feedback or modifications before making a final approve/reject decision, supporting collaborative procurement review.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `id` — Purchase request ID (UUID)
+}
+
 patch {
   url: {{host}}/api/my-pending/purchase-request/:bu_code/:id/review
   body: json
