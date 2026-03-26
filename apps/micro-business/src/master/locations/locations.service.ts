@@ -540,6 +540,75 @@ export class LocationsService {
    * @returns Product inventory info (on-hand, on-order, reorder, restock) / ข้อมูลสินค้าคงคลัง
    */
   @TryCatch
+  async getLocationsByUserId(targetUserId: string): Promise<any> {
+    this.logger.debug(
+      { function: 'getLocationsByUserId', targetUserId, user_id: this.userId, tenant_id: this.bu_code },
+      LocationsService.name,
+    );
+
+    const userLocations = await this.prismaService.tb_user_location.findMany({
+      where: { user_id: targetUserId, deleted_at: null },
+      select: {
+        id: true,
+        location_id: true,
+        tb_location: {
+          select: { id: true, code: true, name: true, is_active: true },
+        },
+      },
+    });
+
+    const data = userLocations.map((ul) => ({
+      id: ul.id,
+      location_id: ul.location_id,
+      location_code: ul.tb_location?.code ?? null,
+      location_name: ul.tb_location?.name ?? null,
+      is_active: ul.tb_location?.is_active ?? null,
+    }));
+
+    return Result.ok(data);
+  }
+
+  @TryCatch
+  async updateUserLocations(targetUserId: string, locationIds: string[]): Promise<any> {
+    this.logger.debug(
+      { function: 'updateUserLocations', targetUserId, locationIds, user_id: this.userId, tenant_id: this.bu_code },
+      LocationsService.name,
+    );
+
+    // Get current assignments
+    const existing = await this.prismaService.tb_user_location.findMany({
+      where: { user_id: targetUserId, deleted_at: null },
+      select: { id: true, location_id: true },
+    });
+
+    const existingLocationIds = new Set(existing.map((e) => e.location_id));
+    const newLocationIds = new Set(locationIds);
+
+    // Hard-delete ones not in the new list
+    const toDelete = existing.filter((e) => !newLocationIds.has(e.location_id));
+    if (toDelete.length > 0) {
+      await this.prismaService.tb_user_location.deleteMany({
+        where: { id: { in: toDelete.map((e) => e.id) } },
+      });
+    }
+
+    // Create ones that don't already exist
+    const toCreate = locationIds.filter((id) => !existingLocationIds.has(id));
+    if (toCreate.length > 0) {
+      await this.prismaService.tb_user_location.createMany({
+        data: toCreate.map((location_id) => ({
+          user_id: targetUserId,
+          location_id,
+          created_by_id: this.userId,
+        })),
+      });
+    }
+
+    // Return updated list
+    return this.getLocationsByUserId(targetUserId);
+  }
+
+  @TryCatch
   async getProductInventory(location_id: string, product_id: string, version: string = 'latest'): Promise<any> {
     this.logger.debug(
       { function: 'getProductInventory', location_id, product_id, user_id: this.userId, tenant_id: this.bu_code, version },

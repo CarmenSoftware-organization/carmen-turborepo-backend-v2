@@ -1,5 +1,8 @@
-import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
+import { Result, MicroserviceResponse } from '@/common';
+import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
 @Injectable()
@@ -10,60 +13,65 @@ export class Config_LocationsUserService {
 
   constructor(
     @Inject('BUSINESS_SERVICE')
-    private readonly _masterService: ClientProxy,
+    private readonly masterService: ClientProxy,
   ) {}
 
-  /**
-   * Get all locations accessible to a user via microservice
-   * ค้นหารายการสถานที่ทั้งหมดที่ผู้ใช้สามารถเข้าถึงได้ผ่านไมโครเซอร์วิส
-   * @param userId - Target user ID / รหัสผู้ใช้เป้าหมาย
-   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param version - API version / เวอร์ชัน API
-   * @returns List of locations for the user / รายการสถานที่ของผู้ใช้
-   */
   async getLocationByUserId(
     userId: string,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<unknown> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
-      {
-        function: 'getLocationByUserId',
-        userId,
-        version,
-      },
+      { function: 'getLocationByUserId', userId, version },
       Config_LocationsUserService.name,
     );
-    throw new NotImplementedException('Not implemented');
+
+    const response = await firstValueFrom(
+      this.masterService.send(
+        { cmd: 'locations.getLocationsByUserId', service: 'locations' },
+        { target_user_id: userId, user_id, bu_code, version },
+      ),
+    );
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
   }
 
-  /**
-   * Update location-user assignments via microservice
-   * อัปเดตการกำหนดสถานที่-ผู้ใช้ผ่านไมโครเซอร์วิส
-   * @param userId - Target user ID / รหัสผู้ใช้เป้าหมาย
-   * @param updateDto - Location-user assignment update data / ข้อมูลสำหรับอัปเดตการกำหนดสถานที่-ผู้ใช้
-   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param version - API version / เวอร์ชัน API
-   * @returns Updated assignment result / ผลลัพธ์การอัปเดตการกำหนด
-   */
   async managerLocationUser(
     userId: string,
     updateDto: Record<string, unknown>,
     user_id: string,
     bu_code: string,
     version: string,
-  ): Promise<unknown> {
+  ): Promise<Result<unknown>> {
     this.logger.debug(
-      {
-        function: 'managerLocationUser',
-        userId,
-        version,
-      },
+      { function: 'managerLocationUser', userId, version },
       Config_LocationsUserService.name,
     );
-    throw new NotImplementedException('Not implemented');
+
+    const locationIds = (updateDto.location_ids || []) as string[];
+
+    const response = await firstValueFrom(
+      this.masterService.send(
+        { cmd: 'locations.updateUserLocations', service: 'locations' },
+        { target_user_id: userId, location_ids: locationIds, user_id, bu_code, version },
+      ),
+    );
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
   }
 }

@@ -6,11 +6,16 @@ import {
   Body,
   UseGuards,
   Req,
+  Res,
   Query,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { Config_LocationsUserService } from './config_locations-user.service';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
+import { BaseHttpController } from '@/common';
 import {
   ApiVersionMinRequest,
 } from 'src/common/decorator/userfilter.decorator';
@@ -25,90 +30,60 @@ import { LocationUserUpdateRequest } from './swagger/request';
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
-export class Config_LocationsUserController {
+export class Config_LocationsUserController extends BaseHttpController {
   private readonly logger: BackendLogger = new BackendLogger(
     Config_LocationsUserController.name,
   );
 
   constructor(
     private readonly config_locationsUserService: Config_LocationsUserService,
-  ) {}
+  ) {
+    super();
+  }
 
-  /**
-   * Retrieve all locations accessible to a user
-   * ค้นหารายการสถานที่ทั้งหมดที่ผู้ใช้สามารถเข้าถึงได้
-   * @param userId - Target user ID / รหัสผู้ใช้เป้าหมาย
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param req - HTTP request / คำขอ HTTP
-   * @param version - API version / เวอร์ชัน API
-   * @returns List of locations for the user / รายการสถานที่ของผู้ใช้
-   */
   @Get(':userId')
   @UseGuards(new AppIdGuard('locationUser.getLocationByUserId'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get locations by user ID', description: 'Retrieves all storage locations accessible to a specific user. This controls which warehouses and stores a user can perform inventory operations in (stock-in, stock-out, transfers).', operationId: 'configLocationUser_findByUserId', tags: ['Configuration', 'Location User'], 'x-description-th': 'ดึงข้อมูลสถานที่ทั้งหมดที่ผู้ใช้สามารถเข้าถึงได้ตาม User ID' } as any)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get locations by user ID', description: 'Retrieves all storage locations accessible to a specific user.', operationId: 'configLocationUser_findByUserId', tags: ['Configuration', 'Location User'], 'x-description-th': 'ดึงข้อมูลสถานที่ทั้งหมดที่ผู้ใช้สามารถเข้าถึงได้ตาม User ID' } as any)
   async getLocationByUserId(
     @Param('userId') userId: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
+    @Res() res: Response,
     @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
+  ): Promise<void> {
     this.logger.debug(
-      {
-        function: 'getLocationByUserId',
-        userId,
-        version,
-      },
+      { function: 'getLocationByUserId', userId, version },
       Config_LocationsUserController.name,
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    return this.config_locationsUserService.getLocationByUserId(
-      userId,
-      user_id,
-      bu_code,
-      version,
-    );
+    const result = await this.config_locationsUserService.getLocationByUserId(userId, user_id, bu_code, version);
+    this.respond(res, result);
   }
 
-  /**
-   * Update location assignments for a user
-   * อัปเดตการกำหนดสถานที่ให้กับผู้ใช้
-   * @param userId - Target user ID / รหัสผู้ใช้เป้าหมาย
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param updateDto - Location-user assignment update data / ข้อมูลสำหรับอัปเดตการกำหนดสถานที่-ผู้ใช้
-   * @param req - HTTP request / คำขอ HTTP
-   * @param version - API version / เวอร์ชัน API
-   * @returns Updated assignment result / ผลลัพธ์การอัปเดตการกำหนด
-   */
   @Put(':userId')
   @UseGuards(new AppIdGuard('locationUser.managerLocationUser'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Manage location-user assignments', description: 'Updates the set of storage locations a user has access to. Controls which warehouses and stores the user can perform inventory operations in, such as stock-in, stock-out, and transfers.', operationId: 'configLocationUser_manageAssignments', tags: ['Configuration', 'Location User'], 'x-description-th': 'อัปเดตการกำหนดสถานที่ให้กับผู้ใช้' } as any)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Manage location-user assignments', description: 'Updates the set of storage locations a user has access to.', operationId: 'configLocationUser_manageAssignments', tags: ['Configuration', 'Location User'], 'x-description-th': 'อัปเดตการกำหนดสถานที่ให้กับผู้ใช้' } as any)
   @ApiBody({ type: LocationUserUpdateRequest })
   async managerLocationUser(
     @Param('userId') userId: string,
     @Param('bu_code') bu_code: string,
     @Body() updateDto: Record<string, unknown>,
     @Req() req: Request,
+    @Res() res: Response,
     @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
+  ): Promise<void> {
     this.logger.debug(
-      {
-        function: 'managerLocationUser',
-        userId,
-        version,
-      },
+      { function: 'managerLocationUser', userId, version },
       Config_LocationsUserController.name,
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    return this.config_locationsUserService.managerLocationUser(
-      userId,
-      updateDto,
-      user_id,
-      bu_code,
-      version,
-    );
+    const result = await this.config_locationsUserService.managerLocationUser(userId, updateDto, user_id, bu_code, version);
+    this.respond(res, result);
   }
 }

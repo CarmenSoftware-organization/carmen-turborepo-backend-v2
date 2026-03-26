@@ -210,6 +210,32 @@ export class LocationsController extends BaseMicroserviceController {
    * @param payload - Microservice payload containing location ID / ข้อมูล payload ที่มี ID ของสถานที่
    * @returns Deleted location ID / ID ของสถานที่ที่ลบ
    */
+  @MessagePattern({ cmd: 'locations.getLocationsByUserId', service: 'locations' })
+  async getLocationsByUserId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'getLocationsByUserId', payload }, LocationsController.name);
+    this.locationsService.userId = payload.user_id;
+    this.locationsService.bu_code = payload.bu_code;
+    await this.locationsService.initializePrismaService(payload.bu_code, payload.user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.locationsService.getLocationsByUserId(payload.target_user_id),
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({ cmd: 'locations.updateUserLocations', service: 'locations' })
+  async updateUserLocations(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'updateUserLocations', payload }, LocationsController.name);
+    this.locationsService.userId = payload.user_id;
+    this.locationsService.bu_code = payload.bu_code;
+    await this.locationsService.initializePrismaService(payload.bu_code, payload.user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.locationsService.updateUserLocations(payload.target_user_id, payload.location_ids),
+    );
+    return this.handleResult(result);
+  }
+
   @MessagePattern({ cmd: 'locations.delete', service: 'locations' })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'delete', payload }, LocationsController.name);
