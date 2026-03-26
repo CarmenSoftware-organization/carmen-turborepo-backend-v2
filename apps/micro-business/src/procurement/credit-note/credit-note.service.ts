@@ -215,21 +215,19 @@ export class CreditNoteService {
         if (!res) return null;
         return JSON.parse(JSON.stringify({
           ...res,
-          credit_note_detail: {
-            data: res?.tb_credit_note_detail?.map(detail => ({
-              ...detail,
-              return_qty: Number(detail?.return_qty ?? 0),
-              return_base_qty: Number(detail?.return_base_qty ?? 0),
-              return_conversion_factor: Number(detail?.return_conversion_factor ?? 0),
-              price: Number(detail?.price ?? 0),
-              total_price: Number(detail?.total_price ?? 0),
-              tax_amount: Number(detail?.tax_amount ?? 0),
-              extra_cost_amount: Number(detail?.extra_cost_amount ?? 0),
-              base_tax_amount: Number(detail?.base_tax_amount ?? 0),
-              base_discount_amount: Number(detail?.base_discount_amount ?? 0),
-              base_extra_cost_amount: Number(detail?.base_extra_cost_amount ?? 0),
-            }))
-          },
+          credit_note_detail: res?.tb_credit_note_detail?.map(detail => ({
+            ...detail,
+            return_qty: Number(detail?.return_qty ?? 0),
+            return_base_qty: Number(detail?.return_base_qty ?? 0),
+            return_conversion_factor: Number(detail?.return_conversion_factor ?? 0),
+            price: Number(detail?.price ?? 0),
+            total_price: Number(detail?.total_price ?? 0),
+            tax_amount: Number(detail?.tax_amount ?? 0),
+            extra_cost_amount: Number(detail?.extra_cost_amount ?? 0),
+            base_tax_amount: Number(detail?.base_tax_amount ?? 0),
+            base_discount_amount: Number(detail?.base_discount_amount ?? 0),
+            base_extra_cost_amount: Number(detail?.base_extra_cost_amount ?? 0),
+          })),
           tb_credit_note_detail: undefined,
         }));
       })
