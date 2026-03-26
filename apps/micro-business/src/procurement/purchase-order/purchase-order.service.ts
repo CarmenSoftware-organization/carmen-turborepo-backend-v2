@@ -686,8 +686,11 @@ export class PurchaseOrderService {
               select: {
                 id: true,
                 location_id: true,
+                location_code: true,
                 location_name: true,
                 pr_detail_qty: true,
+                received_qty: true,
+                foc_qty: true,
                 tb_location: {
                   select: { location_type: true },
                 },
@@ -732,18 +735,28 @@ export class PurchaseOrderService {
         net_amount: Number(detail.net_amount),
         is_foc: detail.is_foc,
         locations: (() => {
-          const locationMap = new Map<string, { location_id: string; location_name: string; location_type: string | null; order_qty: number }>();
+          const locationMap = new Map<string, any>();
           for (const j of detail.tb_purchase_order_detail_tb_purchase_request_detail || []) {
             const key = j.location_id;
             const existing = locationMap.get(key);
             if (existing) {
               existing.order_qty += Number(j.pr_detail_qty);
+              existing.received_qty += Number(j.received_qty);
+              existing.foc_qty += Number(j.foc_qty);
+              existing.remain_qty = existing.order_qty - existing.received_qty;
             } else {
+              const orderQty = Number(j.pr_detail_qty);
+              const receivedQty = Number(j.received_qty);
+              const focQty = Number(j.foc_qty);
               locationMap.set(key, {
                 location_id: j.location_id,
+                location_code: j.location_code,
                 location_name: j.location_name,
                 location_type: j.tb_location?.location_type || null,
-                order_qty: Number(j.pr_detail_qty),
+                order_qty: orderQty,
+                received_qty: receivedQty,
+                foc_qty: focQty,
+                remain_qty: orderQty - receivedQty,
               });
             }
           }
