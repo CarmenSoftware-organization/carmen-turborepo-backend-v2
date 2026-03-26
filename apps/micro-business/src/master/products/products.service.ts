@@ -1833,6 +1833,48 @@ export class ProductsService {
 
     const total_on_hand = locations.reduce((sum, loc) => sum + loc.on_hand_qty, 0);
 
+    // Fetch inventory transactions for this product
+    const txDetailWhere: any = { product_id, deleted_at: null };
+    if (location_id) txDetailWhere.location_id = location_id;
+
+    const transactionDetails = await this.prismaService.tb_inventory_transaction_detail.findMany({
+      where: txDetailWhere,
+      select: {
+        id: true,
+        inventory_transaction_id: true,
+        location_id: true,
+        location_code: true,
+        product_id: true,
+        qty: true,
+        cost_per_unit: true,
+        total_cost: true,
+        current_lot_no: true,
+        created_at: true,
+        tb_inventory_transaction: {
+          select: {
+            inventory_doc_type: true,
+            inventory_doc_no: true,
+            created_at: true,
+          },
+        },
+      },
+      orderBy: { created_at: 'desc' },
+    });
+
+    const transactions = transactionDetails.map((td: any) => ({
+      id: td.id,
+      inventory_transaction_id: td.inventory_transaction_id,
+      doc_type: td.tb_inventory_transaction?.inventory_doc_type || null,
+      doc_id: td.tb_inventory_transaction?.inventory_doc_no || null,
+      location_id: td.location_id,
+      location_code: td.location_code,
+      qty: Number(td.qty),
+      cost_per_unit: Number(td.cost_per_unit),
+      total_cost: Number(td.total_cost),
+      lot_no: td.current_lot_no,
+      created_at: td.created_at || td.tb_inventory_transaction?.created_at,
+    }));
+
     return Result.ok({
       product_id: product.id,
       product_code: product.code,
@@ -1843,6 +1885,7 @@ export class ProductsService {
       sku: product.sku,
       total_on_hand,
       locations,
+      transactions,
     });
   }
 
@@ -1884,7 +1927,7 @@ export class ProductsService {
         product_id,
         deleted_at: null,
         tb_purchase_order: {
-          po_status: { in: ['in_progress', 'sent', 'partial'] },
+          po_status: { in: ['sent', 'partial'] },
           deleted_at: null,
         },
       },
