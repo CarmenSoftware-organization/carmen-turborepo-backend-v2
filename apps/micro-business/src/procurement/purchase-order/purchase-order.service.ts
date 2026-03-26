@@ -887,6 +887,22 @@ export class PurchaseOrderService {
       PurchaseOrderService.name,
     );
 
+    // Sanitize empty strings to undefined for optional UUID fields
+    if (data.credit_term_id !== undefined && !data.credit_term_id) data.credit_term_id = undefined;
+    if (data.buyer_id !== undefined && !data.buyer_id) data.buyer_id = undefined;
+
+    // Validate required UUID fields
+    const uuidErrors: string[] = [];
+    if (!isUUID(data.vendor_id)) uuidErrors.push('vendor_id must be a valid UUID');
+    if (!isUUID(data.currency_id)) uuidErrors.push('currency_id must be a valid UUID');
+    if (!isUUID(data.workflow_id)) uuidErrors.push('workflow_id must be a valid UUID');
+    if (data.credit_term_id && !isUUID(data.credit_term_id)) uuidErrors.push('credit_term_id must be a valid UUID');
+    if (data.buyer_id && !isUUID(data.buyer_id)) uuidErrors.push('buyer_id must be a valid UUID');
+
+    if (uuidErrors.length > 0) {
+      return Result.error(uuidErrors.join(', '), ErrorCode.INVALID_ARGUMENT);
+    }
+
     // Validate vendor
     const vendor = await this.prismaService.tb_vendor.findUnique({
       where: { id: data.vendor_id },
