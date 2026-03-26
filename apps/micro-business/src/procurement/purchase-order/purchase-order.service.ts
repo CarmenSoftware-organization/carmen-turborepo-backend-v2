@@ -1060,10 +1060,7 @@ export class PurchaseOrderService {
       });
     }
 
-    // Generate PO number - ensure order_date is a valid Date
     const orderDate = data.order_date ? new Date(String(data.order_date)) : new Date();
-    const poNo = await this.generatePONo(orderDate.toISOString());
-
     const details = data.purchase_order_detail?.add || [];
 
     // Calculate totals from details
@@ -1081,6 +1078,9 @@ export class PurchaseOrderService {
 
     // Create Purchase Order with transaction
     const purchaseOrder = await this.prismaService.$transaction(async (prismatx) => {
+      // Generate PO number inside transaction (FOR UPDATE lock prevents duplicates)
+      const poNo = await this.generatePONo(orderDate.toISOString(), prismatx);
+
       // Create PO header
       const po = await prismatx.tb_purchase_order.create({
         data: {
@@ -1843,11 +1843,12 @@ export class PurchaseOrderService {
       return Result.error('Purchase order not found or not in draft status', ErrorCode.NOT_FOUND);
     }
 
-    const newPoNo = await this.generatePONo(
-      new Date(purchaseOrder.order_date || new Date()).toISOString(),
-    );
-
     await this.prismaService.$transaction(async (tx) => {
+      const newPoNo = await this.generatePONo(
+        new Date(purchaseOrder.order_date || new Date()).toISOString(),
+        tx,
+      );
+
       // Update PO header with workflow info and status
       await tx.tb_purchase_order.update({
         where: { id },
@@ -2309,11 +2310,12 @@ export class PurchaseOrderService {
    * @param orderDate - Order date for pattern generation / วันที่สั่งซื้อสำหรับสร้างรูปแบบ
    * @returns Generated PO number / เลขที่ใบสั่งซื้อที่สร้างแล้ว
    */
-  private async generatePONo(orderDate: string): Promise<string> {
+  private async generatePONo(orderDate: string, tx?: any): Promise<string> {
     this.logger.debug(
       { function: 'generatePONo', orderDate, tenant_id: this.bu_code, user_id: this.userId },
       PurchaseOrderService.name,
     );
+    const db = tx || this.prismaService;
 
     const pattern = await this.commonLogic.getRunningPattern(
       'PO',
@@ -2340,16 +2342,16 @@ export class PurchaseOrderService {
     const getDate = new Date(orderDate);
     const datePatternValue = format(getDate, datePattern.pattern);
 
-    const latestPO = await this.prismaService.tb_purchase_order.findFirst({
-      where: {
-        po_no: {
-          contains: `PO${datePatternValue}`,
-        },
-      },
-      orderBy: {
-        po_no: 'desc',
-      },
-    });
+    // Use FOR UPDATE to lock the latest row and prevent concurrent duplicates
+    const latestPORows: any[] = await db.$queryRawUnsafe(
+      `SELECT po_no FROM tb_purchase_order
+       WHERE po_no LIKE $1
+       ORDER BY po_no DESC
+       LIMIT 1
+       FOR UPDATE`,
+      `PO${datePatternValue}%`,
+    );
+    const latestPO = latestPORows.length > 0 ? latestPORows[0] : null;
 
     const latestPONumber = latestPO
       ? Number(latestPO.po_no.slice(-Number(runningPattern.pattern)))
@@ -2861,11 +2863,11 @@ export class PurchaseOrderService {
     // Create POs from grouped data
     const createdPOs: Record<string, unknown>[] = [];
 
-    // Generate first PO number outside transaction, then increment for subsequent POs
     const orderDate = new Date();
-    const firstPoNo = await this.generatePONo(orderDate.toISOString());
 
     await this.prismaService.$transaction(async (prismatx) => {
+      // Generate first PO number inside transaction (FOR UPDATE lock prevents duplicates)
+      const firstPoNo = await this.generatePONo(orderDate.toISOString(), prismatx);
       let poNoCounter = 0;
       for (const group of groups) {
         // Derive PO number: first one uses generated number, subsequent ones increment
