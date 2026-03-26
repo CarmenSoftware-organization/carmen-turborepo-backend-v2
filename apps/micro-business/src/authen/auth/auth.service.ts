@@ -1918,6 +1918,7 @@ export class AuthService {
             department_id: true,
             tb_department: {
               select: {
+                code: true,
                 name: true,
               },
             },
@@ -1938,6 +1939,7 @@ export class AuthService {
               department_id: true,
               tb_department: {
                 select: {
+                  code: true,
                   name: true,
                 },
               },
@@ -1949,6 +1951,7 @@ export class AuthService {
               return {
                 user_id: item.user_id,
                 department_id: item.department_id,
+                department_code: item.tb_department.code,
                 department_name: item.tb_department.name,
                 is_hod: item.is_hod,
               };
@@ -1973,6 +1976,7 @@ export class AuthService {
           ).map((dept) => {
             return {
               id: dept.department_id,
+              code: dept.department_code,
               name: dept.department_name,
             };
           });
@@ -1987,6 +1991,7 @@ export class AuthService {
             )?.alias_name,
             department: {
               id: d?.department_id,
+              code: d?.tb_department?.code,
               name: d?.tb_department?.name,
             },
             hod_department: dh,

@@ -17,11 +17,13 @@ export type UserResponse = z.infer<typeof UserResponseSchema>;
 
 const UserDepartmentSchema = z.object({
   id: z.string().nullable().optional(),
+  code: z.string().nullable().optional(),
   name: z.string().nullable().optional(),
 });
 
 const UserHodDepartmentSchema = z.object({
   id: z.string().nullable().optional(),
+  code: z.string().nullable().optional(),
   name: z.string().nullable().optional(),
 });
 
