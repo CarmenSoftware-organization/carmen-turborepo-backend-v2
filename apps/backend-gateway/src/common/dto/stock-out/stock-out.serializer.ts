@@ -56,6 +56,8 @@ export const StockOutListItemResponseSchema = z.object({
   location_name: z.string().nullable().optional(),
   // workflow_name: z.string().nullable().optional(),
   // workflow_current_stage: z.string().nullable().optional(),
+  item_count: z.number().optional().default(0),
+  base_total_cost: z.number().optional().default(0),
   created_at: z.coerce.date().optional(),
   updated_at: z.coerce.date().optional(),
 });

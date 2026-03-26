@@ -15,10 +15,16 @@ export interface InventoryAdjustmentItem {
   type: AdjustmentType;
   document_no: string;
   date: string;
-  location_id?: string;
-  location_name?: string;
-  status: string;
   description?: string;
+  doc_status?: string;
+  adjustment_type_id?: string;
+  adjustment_type_code?: string;
+  adjustment_type_name?: string;
+  location_id?: string;
+  location_code?: string;
+  location_name?: string;
+  item_count?: number;
+  base_total_cost?: number;
   created_at: string;
   updated_at: string;
   [key: string]: unknown;
@@ -74,6 +80,7 @@ export class InventoryAdjustmentService {
           ...item,
           type: 'stock-in' as AdjustmentType,
           document_no: item.si_no || item.document_no,
+          date: item.si_date || item.date,
         })) as InventoryAdjustmentItem[];
         results.push(...stockInItems);
         totalStockIn = stockInResponse.paginate?.total || stockInItems.length;
@@ -95,6 +102,7 @@ export class InventoryAdjustmentService {
           ...item,
           type: 'stock-out' as AdjustmentType,
           document_no: item.so_no || item.document_no,
+          date: item.so_date || item.date,
         })) as InventoryAdjustmentItem[];
         results.push(...stockOutItems);
         totalStockOut = stockOutResponse.paginate?.total || stockOutItems.length;

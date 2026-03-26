@@ -133,6 +133,21 @@ export class StockInService {
         // workflow_current_stage: true,
         created_at: true,
         updated_at: true,
+        _count: {
+          select: { tb_stock_in_detail: { where: { deleted_at: null } } },
+        },
+        tb_stock_in_detail: {
+          where: { deleted_at: null, inventory_transaction_id: { not: null } },
+          select: {
+            tb_inventory_transaction: {
+              select: {
+                tb_inventory_transaction_detail: {
+                  select: { total_cost: true },
+                },
+              },
+            },
+          },
+        },
       },
     });
 
@@ -143,12 +158,18 @@ export class StockInService {
       },
     });
 
-    const serializedStockInList = stockInList.map((item) =>
-      StockInListItemResponseSchema.parse({
+    const serializedStockInList = stockInList.map((item) => {
+      const baseTotalCost = item.tb_stock_in_detail.reduce((sum, d) => {
+        const txDetails = d.tb_inventory_transaction?.tb_inventory_transaction_detail ?? [];
+        return sum + txDetails.reduce((s, td) => s + Number(td.total_cost ?? 0), 0);
+      }, 0);
+      return StockInListItemResponseSchema.parse({
         ...item,
         adjustment_type_name: item.adjustment_type?.name ?? null,
-      })
-    );
+        item_count: item._count.tb_stock_in_detail,
+        base_total_cost: baseTotalCost,
+      });
+    });
 
     return Result.ok({
       data: serializedStockInList,
