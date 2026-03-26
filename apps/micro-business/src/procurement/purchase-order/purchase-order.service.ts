@@ -514,7 +514,7 @@ export class PurchaseOrderService {
     const data = purchaseOrders.map((po) => ({
       id: po.id,
       po_no: po.po_no,
-      po_status: po.po_status,
+      po_status: po.po_status === enum_purchase_order_doc_status.sent ? 'open' : po.po_status,
       vendor_id: po.vendor_id,
       vendor_name: po.vendor_name,
       order_date: po.order_date,
@@ -692,7 +692,7 @@ export class PurchaseOrderService {
     const data = purchaseOrders.map((po) => ({
       id: po.id,
       po_no: po.po_no,
-      po_status: po.po_status,
+      po_status: po.po_status === enum_purchase_order_doc_status.sent ? 'open' : po.po_status,
       order_date: po.order_date,
       delivery_date: po.delivery_date,
       currency_id: po.currency_id,
