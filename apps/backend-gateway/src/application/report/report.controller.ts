@@ -430,6 +430,8 @@ export class ReportController extends BaseHttpController {
       body.filters as any,
       body.options as any,
       body.recipients,
+      body.report_template_id,
+      body.schedule_config as any,
     );
     this.respond(res, { data: result });
   }

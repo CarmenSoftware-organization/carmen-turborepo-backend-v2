@@ -88,6 +88,20 @@ export class ReportDataRequestDto {
   filters?: ReportFiltersDto;
 }
 
+export class ScheduleConfigDto {
+  @ApiProperty({ description: 'Frequency', enum: ['daily', 'weekly', 'monthly'], example: 'weekly' })
+  frequency: string;
+
+  @ApiProperty({ description: 'Time of day (HH:mm)', example: '08:00' })
+  time: string;
+
+  @ApiPropertyOptional({ description: 'Days of week (0=Sun..6=Sat)', type: [Number], example: [1, 3, 5] })
+  days_of_week?: number[];
+
+  @ApiPropertyOptional({ description: 'Days of month (1-31)', type: [Number], example: [1, 15] })
+  days_of_month?: number[];
+}
+
 export class CreateScheduleRequestDto {
   @ApiProperty({ description: 'Schedule name', example: 'Daily Inventory Report' })
   name: string;
@@ -95,11 +109,17 @@ export class CreateScheduleRequestDto {
   @ApiProperty({ description: 'Report type identifier', example: 'inventory_summary' })
   report_type: string;
 
+  @ApiPropertyOptional({ description: 'Report template ID (UUID)' })
+  report_template_id?: string;
+
   @ApiPropertyOptional({ description: 'Output format', enum: ['json', 'pdf', 'excel', 'csv'], example: 'pdf', default: 'pdf' })
   format?: string;
 
-  @ApiProperty({ description: 'Cron expression (5-field)', example: '0 8 * * *' })
-  cron_expression: string;
+  @ApiPropertyOptional({ description: 'Cron expression (5-field)', example: '0 8 * * *' })
+  cron_expression?: string;
+
+  @ApiPropertyOptional({ description: 'User-friendly schedule config (alternative to cron_expression)', type: ScheduleConfigDto })
+  schedule_config?: ScheduleConfigDto;
 
   @ApiPropertyOptional({ description: 'Report filters', type: ReportFiltersDto })
   filters?: ReportFiltersDto;

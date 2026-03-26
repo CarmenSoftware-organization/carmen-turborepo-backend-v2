@@ -144,12 +144,21 @@ interface ReportTemplateResponse {
 }
 
 // Schedule interfaces
+interface ScheduleConfig {
+  frequency: string;
+  time: string;
+  days_of_week?: number[];
+  days_of_month?: number[];
+}
+
 interface CreateScheduleRequest {
   context: TenantContext;
   name: string;
   report_type: string;
+  report_template_id?: string;
   format: number;
-  cron_expression: string;
+  cron_expression?: string;
+  schedule_config?: ScheduleConfig;
   filters?: ReportFilters;
   options?: ReportOptions;
   recipients?: string[];
@@ -159,8 +168,10 @@ interface ScheduleResponse {
   id: string;
   name: string;
   report_type: string;
+  report_template_id?: string;
   format: number;
   cron_expression: string;
+  schedule_config?: ScheduleConfig;
   is_active: boolean;
   last_run_at?: string;
   next_run_at?: string;
@@ -329,10 +340,12 @@ export class ReportService implements OnModuleInit {
     name: string,
     report_type: string,
     format: string,
-    cron_expression: string,
+    cron_expression?: string,
     filters?: ReportFilters,
     options?: ReportOptions,
     recipients?: string[],
+    report_template_id?: string,
+    schedule_config?: ScheduleConfig,
   ): Promise<ScheduleResponse> {
     this.logger.debug({ function: 'createSchedule', name, report_type, bu_code }, ReportService.name);
     return firstValueFrom(
@@ -340,8 +353,10 @@ export class ReportService implements OnModuleInit {
         context: { user_id, bu_codes: [bu_code] },
         name,
         report_type,
+        report_template_id,
         format: FORMAT_MAP[format] || 4,
-        cron_expression,
+        cron_expression: cron_expression || '',
+        schedule_config,
         filters,
         options,
         recipients,

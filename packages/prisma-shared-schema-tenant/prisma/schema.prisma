@@ -5767,9 +5767,11 @@ model tb_report_job {
 model tb_report_schedule {
   id              String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name            String             @db.VarChar(255)
-  report_type     String             @db.VarChar(100)
-  format          enum_report_format
-  cron_expression String             @db.VarChar(100)
+  report_type        String             @db.VarChar(100)
+  report_template_id String?            @db.Uuid
+  format             enum_report_format
+  cron_expression    String             @db.VarChar(100)
+  schedule_config    Json?              @db.JsonB
   filters         Json?              @default("{}") @db.JsonB
   options         Json?              @default("{}") @db.JsonB
   recipients      Json?              @default("[]") @db.JsonB
