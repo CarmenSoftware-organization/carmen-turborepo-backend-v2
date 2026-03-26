@@ -1843,8 +1843,9 @@ export class PurchaseOrderService {
       return Result.error('Purchase order not found or not in draft status', ErrorCode.NOT_FOUND);
     }
 
+    let newPoNo: string = '';
     await this.prismaService.$transaction(async (tx) => {
-      const newPoNo = await this.generatePONo(
+      newPoNo = await this.generatePONo(
         new Date(purchaseOrder.order_date || new Date()).toISOString(),
         tx,
       );
