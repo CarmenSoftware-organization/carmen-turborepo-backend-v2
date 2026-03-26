@@ -62,6 +62,7 @@ export class UserApplicationRoleService {
     const formattedData = {
       user_id: user.id,
       username: user.username,
+      email: user.email,
       firstname: userProfile?.firstname,
       middlename: userProfile?.middlename,
       lastname: userProfile?.lastname,
