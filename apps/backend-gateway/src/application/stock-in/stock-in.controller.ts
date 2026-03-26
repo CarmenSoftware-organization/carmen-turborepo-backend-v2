@@ -269,6 +269,41 @@ export class StockInController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  @Delete(':id/void')
+  @UseGuards(new AppIdGuard('stockIn.delete'))
+  @Serialize(StockInMutationResponseSchema)
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Void a Stock In',
+    description: 'Voids a completed stock-in record by creating a reverse adjustment-out transaction. Checks that sufficient on-hand quantity exists before voiding.',
+    operationId: 'voidStockIn',
+    tags: ['Inventory', 'Stock In'],
+    'x-description-th': 'ยกเลิกรายการรับสินค้าเข้าคลัง โดยสร้างรายการปรับลดออก ตรวจสอบว่ามีสินค้าคงเหลือเพียงพอก่อนยกเลิก',
+    parameters: [
+      { name: 'id', in: 'path', required: true, description: 'Stock In ID' },
+    ],
+    responses: {
+      200: { description: 'Stock In voided successfully' },
+      400: { description: 'Cannot void — insufficient on-hand quantity' },
+      404: { description: 'Stock In not found' },
+    },
+  } as any)
+  async voidStockIn(
+    @Param('id') id: string,
+    @Param('bu_code') bu_code: string,
+    @Body() data: Record<string, unknown>,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug({ function: 'voidStockIn', id, version }, StockInController.name);
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.stockInService.voidStockIn(id, data, user_id, bu_code, version);
+    this.respond(res, result);
+  }
+
   // ==================== Stock In Detail CRUD ====================
 
   /**

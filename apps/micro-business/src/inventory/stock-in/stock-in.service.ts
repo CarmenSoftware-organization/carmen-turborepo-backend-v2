@@ -1026,4 +1026,104 @@ export class StockInService {
 
     return Result.ok(detail);
   }
+
+  /**
+   * Void a stock in — reverse inventory by creating adjustment_out, then mark as voided
+   * ยกเลิกใบรับสินค้าเข้า — กลับรายการ inventory โดยสร้าง adjustment_out แล้วเปลี่ยนสถานะเป็น voided
+   */
+  @TryCatch
+  async voidStockIn(id: string, voidReason: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'voidStockIn', id, voidReason, user_id, tenant_id }, StockInService.name);
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) {
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+    }
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    const stockIn = await prisma.tb_stock_in.findFirst({
+      where: { id, deleted_at: null },
+      include: {
+        tb_stock_in_detail: {
+          where: { deleted_at: null },
+          select: {
+            id: true,
+            product_id: true,
+            product_code: true,
+            qty: true,
+            cost_per_unit: true,
+          },
+        },
+      },
+    });
+
+    if (!stockIn) {
+      return Result.error('Stock in not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (stockIn.doc_status === enum_doc_status.voided) {
+      return Result.error('Stock in is already voided', ErrorCode.INVALID_ARGUMENT);
+    }
+
+    // Check that each product+location has enough on-hand to reverse
+    for (const detail of stockIn.tb_stock_in_detail) {
+      const layers = await prisma.tb_inventory_transaction_cost_layer.findMany({
+        where: {
+          product_id: detail.product_id,
+          location_id: stockIn.location_id,
+          deleted_at: null,
+        },
+        select: { in_qty: true, out_qty: true },
+      });
+
+      const onHand = layers.reduce(
+        (sum: number, l: any) => sum + (Number(l.in_qty) - Number(l.out_qty)),
+        0,
+      );
+
+      const qtyToReverse = Number(detail.qty) || 0;
+      if (onHand < qtyToReverse) {
+        return Result.error(
+          `Cannot void: product ${detail.product_code || detail.product_id} has insufficient on-hand qty (${onHand}) at this location to reverse ${qtyToReverse}`,
+          ErrorCode.INVALID_ARGUMENT,
+        );
+      }
+    }
+
+    const method = await this.inventoryTransactionService.getCalculationMethod(tenant_id);
+
+    await prisma.$transaction(async (tx: any) => {
+      // Create reverse adjustment_out for each detail
+      for (const detail of stockIn.tb_stock_in_detail) {
+        await this.inventoryTransactionService.executeAdjustmentOut(
+          tx,
+          {
+            product_id: detail.product_id,
+            location_id: stockIn.location_id!,
+            location_code: stockIn.location_code || null,
+            qty: Number(detail.qty) || 0,
+            user_id,
+          },
+          method,
+        );
+      }
+
+      // Mark stock in as voided
+      const nowIso = new Date().toISOString();
+      await tx.tb_stock_in.update({
+        where: { id },
+        data: {
+          doc_status: enum_doc_status.voided,
+          deleted_at: nowIso,
+          deleted_by_id: user_id,
+          info: { ...(stockIn.info as any || {}), void_reason: voidReason },
+          updated_by_id: user_id,
+          updated_at: nowIso,
+        },
+      });
+    });
+
+    return Result.ok({ id });
+  }
 }

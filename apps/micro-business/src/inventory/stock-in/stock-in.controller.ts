@@ -125,6 +125,20 @@ export class StockInController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  @MessagePattern({ cmd: 'stock-in.void', service: 'stock-in' })
+  async voidStockIn(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'voidStockIn', payload }, StockInController.name);
+    const id = payload.id;
+    const voidReason = payload.data?.info?.void_reason || '';
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.stockInService.voidStockIn(id, voidReason, user_id, tenant_id)
+    );
+    return this.handleResult(result);
+  }
+
   // ==================== Stock In Detail CRUD ====================
 
   /**

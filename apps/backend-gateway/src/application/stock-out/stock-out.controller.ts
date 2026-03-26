@@ -269,6 +269,40 @@ export class StockOutController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  @Delete(':id/void')
+  @UseGuards(new AppIdGuard('stockOut.delete'))
+  @Serialize(StockOutMutationResponseSchema)
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Void a Stock Out',
+    description: 'Voids a completed stock-out record by creating a reverse adjustment-in transaction to restore inventory.',
+    operationId: 'voidStockOut',
+    tags: ['Inventory', 'Stock Out'],
+    'x-description-th': 'ยกเลิกรายการเบิกสินค้าออกจากคลัง โดยสร้างรายการปรับเพิ่มเข้าเพื่อคืนสินค้าคงเหลือ',
+    parameters: [
+      { name: 'id', in: 'path', required: true, description: 'Stock Out ID' },
+    ],
+    responses: {
+      200: { description: 'Stock Out voided successfully' },
+      404: { description: 'Stock Out not found' },
+    },
+  } as any)
+  async voidStockOut(
+    @Param('id') id: string,
+    @Param('bu_code') bu_code: string,
+    @Body() data: Record<string, unknown>,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug({ function: 'voidStockOut', id, version }, StockOutController.name);
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.stockOutService.voidStockOut(id, data, user_id, bu_code, version);
+    this.respond(res, result);
+  }
+
   // ==================== Stock Out Detail CRUD ====================
 
   /**

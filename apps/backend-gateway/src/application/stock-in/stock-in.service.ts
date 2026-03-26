@@ -233,6 +233,35 @@ export class StockInService {
     return Result.ok(response.data);
   }
 
+  async voidStockIn(
+    id: string,
+    data: Record<string, unknown>,
+    user_id: string,
+    tenant_id: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'voidStockIn', id, user_id, tenant_id, version },
+      StockInService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      { cmd: 'stock-in.void', service: 'stock-in' },
+      { id, data, user_id, tenant_id, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
   // ==================== Stock In Detail CRUD ====================
 
   /**

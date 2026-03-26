@@ -1008,4 +1008,100 @@ export class StockOutService {
 
     return Result.ok(detail);
   }
+
+  /**
+   * Void a stock out — reverse inventory by creating adjustment_in, then mark as voided
+   * ยกเลิกใบเบิกสินค้า — กลับรายการ inventory โดยสร้าง adjustment_in แล้วเปลี่ยนสถานะเป็น voided
+   */
+  @TryCatch
+  async voidStockOut(id: string, voidReason: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'voidStockOut', id, voidReason, user_id, tenant_id }, StockOutService.name);
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) {
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+    }
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    const stockOut = await prisma.tb_stock_out.findFirst({
+      where: { id, deleted_at: null },
+      include: {
+        tb_stock_out_detail: {
+          where: { deleted_at: null },
+          select: {
+            id: true,
+            product_id: true,
+            product_code: true,
+            qty: true,
+            inventory_transaction_id: true,
+          },
+        },
+      },
+    });
+
+    if (!stockOut) {
+      return Result.error('Stock out not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (stockOut.doc_status === enum_doc_status.voided) {
+      return Result.error('Stock out is already voided', ErrorCode.INVALID_ARGUMENT);
+    }
+
+    // Get cost_per_unit from the original inventory transaction details
+    const txIds = stockOut.tb_stock_out_detail
+      .map((d: any) => d.inventory_transaction_id)
+      .filter(Boolean);
+
+    const txDetailMap = new Map<string, number>();
+    if (txIds.length > 0) {
+      const txDetails = await prisma.tb_inventory_transaction_detail.findMany({
+        where: { inventory_transaction_id: { in: txIds } },
+        select: { inventory_transaction_id: true, cost_per_unit: true },
+      });
+      for (const td of txDetails) {
+        txDetailMap.set(td.inventory_transaction_id, Number(td.cost_per_unit) || 0);
+      }
+    }
+
+    const method = await this.inventoryTransactionService.getCalculationMethod(tenant_id);
+
+    await prisma.$transaction(async (tx: any) => {
+      // Create reverse adjustment_in for each detail
+      for (const detail of stockOut.tb_stock_out_detail) {
+        const costPerUnit = detail.inventory_transaction_id
+          ? (txDetailMap.get(detail.inventory_transaction_id) || 0)
+          : 0;
+
+        await this.inventoryTransactionService.executeAdjustmentIn(
+          tx,
+          {
+            product_id: detail.product_id,
+            location_id: stockOut.location_id!,
+            location_code: stockOut.location_code || null,
+            qty: Number(detail.qty) || 0,
+            cost_per_unit: costPerUnit,
+            user_id,
+          },
+          method,
+        );
+      }
+
+      // Mark stock out as voided
+      const nowIso = new Date().toISOString();
+      await tx.tb_stock_out.update({
+        where: { id },
+        data: {
+          doc_status: enum_doc_status.voided,
+          deleted_at: nowIso,
+          deleted_by_id: user_id,
+          info: { ...(stockOut.info as any || {}), void_reason: voidReason },
+          updated_by_id: user_id,
+          updated_at: nowIso,
+        },
+      });
+    });
+
+    return Result.ok({ id });
+  }
 }
