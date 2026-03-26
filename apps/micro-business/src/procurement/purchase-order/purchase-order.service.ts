@@ -688,6 +688,9 @@ export class PurchaseOrderService {
                 location_id: true,
                 location_name: true,
                 pr_detail_qty: true,
+                tb_location: {
+                  select: { location_type: true },
+                },
               },
             },
           },
@@ -729,7 +732,7 @@ export class PurchaseOrderService {
         net_amount: Number(detail.net_amount),
         is_foc: detail.is_foc,
         locations: (() => {
-          const locationMap = new Map<string, { location_id: string; location_name: string; order_qty: number }>();
+          const locationMap = new Map<string, { location_id: string; location_name: string; location_type: string | null; order_qty: number }>();
           for (const j of detail.tb_purchase_order_detail_tb_purchase_request_detail || []) {
             const key = j.location_id;
             const existing = locationMap.get(key);
@@ -739,6 +742,7 @@ export class PurchaseOrderService {
               locationMap.set(key, {
                 location_id: j.location_id,
                 location_name: j.location_name,
+                location_type: j.tb_location?.location_type || null,
                 order_qty: Number(j.pr_detail_qty),
               });
             }
