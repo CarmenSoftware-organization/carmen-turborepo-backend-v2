@@ -681,6 +681,15 @@ export class PurchaseOrderService {
             price: true,
             net_amount: true,
             is_foc: true,
+            tb_purchase_order_detail_tb_purchase_request_detail: {
+              where: { deleted_at: null },
+              select: {
+                id: true,
+                location_id: true,
+                location_name: true,
+                pr_detail_qty: true,
+              },
+            },
           },
         },
       },
@@ -700,7 +709,7 @@ export class PurchaseOrderService {
       currency_id: po.currency_id,
       currency_code: po.currency_code,
       exchange_rate: Number(po.exchange_rate),
-      po_detail: po.tb_purchase_order_detail.map((detail) => ({
+      po_detail: po.tb_purchase_order_detail.map((detail: any) => ({
         id: detail.id,
         sequence_no: detail.sequence_no,
         product_id: detail.product_id,
@@ -719,6 +728,23 @@ export class PurchaseOrderService {
         price: Number(detail.price),
         net_amount: Number(detail.net_amount),
         is_foc: detail.is_foc,
+        locations: (() => {
+          const locationMap = new Map<string, { location_id: string; location_name: string; order_qty: number }>();
+          for (const j of detail.tb_purchase_order_detail_tb_purchase_request_detail || []) {
+            const key = j.location_id;
+            const existing = locationMap.get(key);
+            if (existing) {
+              existing.order_qty += Number(j.pr_detail_qty);
+            } else {
+              locationMap.set(key, {
+                location_id: j.location_id,
+                location_name: j.location_name,
+                order_qty: Number(j.pr_detail_qty),
+              });
+            }
+          }
+          return Array.from(locationMap.values());
+        })(),
       })),
     }));
 
