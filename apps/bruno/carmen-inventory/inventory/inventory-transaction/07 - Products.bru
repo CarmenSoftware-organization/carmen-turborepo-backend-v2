@@ -1,0 +1,26 @@
+meta {
+  name: 07 - Products
+  type: http
+  seq: 7
+}
+
+docs {
+  ## List All Products
+  ดึงรายการสินค้าทั้งหมดของหน่วยธุรกิจ
+
+  List all products for the business unit.
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/inventory-transaction/products
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

@@ -1,0 +1,33 @@
+meta {
+  name: 08 - Products by Location
+  type: http
+  seq: 8
+}
+
+docs {
+  ## List Products at a Location
+  ดึงรายการสินค้าที่จัดเก็บในสถานที่/คลังสินค้าที่กำหนด
+
+  List products stored at a specific location/warehouse.
+
+  ### Path Parameters
+  - `location_id` — Location UUID
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/inventory-transaction/locations/:location_id/products
+  body: none
+  auth: bearer
+}
+
+params:path {
+  location_id: 0731acf1-e04d-4648-b64d-cfbd34fa5d08
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

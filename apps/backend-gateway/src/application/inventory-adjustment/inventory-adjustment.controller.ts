@@ -85,7 +85,19 @@ export class InventoryAdjustmentController extends BaseHttpController {
 
     const { user_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
-    const result = await this.inventoryAdjustmentService.findAll(user_id, bu_code, paginate, version, type);
+
+    // Support type from filter param (e.g. filter=type|string:stock-in)
+    let resolvedType = type;
+    if (!resolvedType && paginate.filter) {
+      const filterType = paginate.filter['type'] || paginate.filter['type|string'];
+      if (filterType === 'stock-in' || filterType === 'stock-out') {
+        resolvedType = filterType as AdjustmentType;
+      }
+      delete paginate.filter['type'];
+      delete paginate.filter['type|string'];
+    }
+
+    const result = await this.inventoryAdjustmentService.findAll(user_id, bu_code, paginate, version, resolvedType);
     this.respond(res, result);
   }
 

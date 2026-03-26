@@ -1,0 +1,30 @@
+meta {
+  name: 04 - Cost Layers
+  type: http
+  seq: 4
+}
+
+docs {
+  ## View Cost Layers
+  ดูชั้นต้นทุนของสินค้า แสดงรายการต้นทุนแต่ละชั้นตามสถานที่และสินค้าที่กำหนด
+
+  View cost layers for a product, showing cost breakdown by location and product.
+
+  ### Query Parameters
+  - `product_id` — Product UUID (optional)
+  - `location_id` — Location UUID (optional)
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/inventory-transaction/cost-layers
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

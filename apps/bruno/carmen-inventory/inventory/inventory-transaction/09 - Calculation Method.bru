@@ -1,0 +1,26 @@
+meta {
+  name: 09 - Calculation Method
+  type: http
+  seq: 9
+}
+
+docs {
+  ## Get Calculation Method
+  ดึงวิธีการคำนวณต้นทุนสินค้า (FIFO/ค่าเฉลี่ย) ที่ตั้งค่าไว้สำหรับหน่วยธุรกิจ
+
+  Get the cost calculation method (FIFO or Average) configured for this business unit.
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/inventory-transaction/calculation-method
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

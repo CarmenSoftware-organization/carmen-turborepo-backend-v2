@@ -1,0 +1,30 @@
+meta {
+  name: 03 - List Inventory Transaction (Stock-Out)
+  type: http
+  seq: 3
+}
+
+docs {
+  ## List Inventory Transactions (Stock-Out only)
+  ดึงรายการเคลื่อนไหวสินค้าคงคลังเฉพาะประเภท Stock-Out
+
+  Lists inventory transactions filtered by stock_out doc type.
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/inventory-transaction?filter=inventory_doc_type:stock_out
+  body: none
+  auth: bearer
+}
+
+params:query {
+  filter: inventory_doc_type:stock_out
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

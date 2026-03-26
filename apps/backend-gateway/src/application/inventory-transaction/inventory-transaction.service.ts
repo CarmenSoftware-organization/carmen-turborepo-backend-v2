@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
+import { IPaginate } from 'src/shared-dto/paginate.dto';
 
 @Injectable()
 export class InventoryTransactionService {
@@ -36,6 +37,16 @@ export class InventoryTransactionService {
   }
 
   // ==================== Query Endpoints ====================
+
+  async findAll(
+    user_id: string,
+    bu_code: string,
+    paginate: IPaginate,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'findAll', user_id, bu_code, version }, InventoryTransactionService.name);
+    return this.sendCommand('inventory-transaction.findAll', { user_id, tenant_id: bu_code, paginate, version });
+  }
 
   async getCostLayers(product_id: string | undefined, location_id: string | undefined, user_id: string, tenant_id: string): Promise<Result<unknown>> {
     this.logger.debug({ function: 'getCostLayers', user_id, tenant_id }, InventoryTransactionService.name);

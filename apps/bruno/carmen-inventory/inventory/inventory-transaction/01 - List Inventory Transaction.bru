@@ -1,0 +1,35 @@
+meta {
+  name: 01 - List Inventory Transaction
+  type: http
+  seq: 1
+}
+
+docs {
+  ## List Inventory Transactions
+  ดึงรายการเคลื่อนไหวสินค้าคงคลังทั้งหมดพร้อมประเภท สถานที่ สินค้า จำนวน และต้นทุน
+
+  Lists all inventory transactions with type, location, product, qty, and cost details. Supports pagination, search, and filtering.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+
+  ### Query Parameters
+  - `page` — Page number (default: 1)
+  - `perpage` — Items per page (default: 10)
+  - `search` — Search keyword
+  - `filter` — Filter (e.g. `inventory_doc_type:stock_in`)
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/inventory-transaction
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

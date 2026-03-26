@@ -6,6 +6,8 @@ import {
   UseGuards,
   Req,
   Res,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { InventoryTransactionService } from './inventory-transaction.service';
@@ -22,6 +24,8 @@ import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
+import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
+import { ApiUserFilterQueries, ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator';
 
 @Controller('api/:bu_code/inventory-transaction')
 @ApiTags('Inventory')
@@ -40,6 +44,36 @@ export class InventoryTransactionController extends BaseHttpController {
   }
 
   // ==================== Query Endpoints ====================
+
+  /**
+   * GET /api/:bu_code/inventory-transaction
+   * List all inventory transactions with pagination.
+   * ดึงรายการเคลื่อนไหวสินค้าคงคลังทั้งหมดพร้อมการแบ่งหน้า
+   */
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'List all inventory transactions',
+    description: 'Lists all inventory transactions with type, location, product, qty, cost details.',
+    operationId: 'findAllInventoryTransactions',
+    tags: ['Inventory', 'Inventory Transaction'],
+    'x-description-th': 'ดึงรายการเคลื่อนไหวสินค้าคงคลังทั้งหมดพร้อมประเภท สถานที่ สินค้า จำนวน และต้นทุน',
+  } as any)
+  async findAll(
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query() query: IPaginateQuery,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug({ function: 'findAll', query, version }, InventoryTransactionController.name);
+    const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
+    const result = await this.inventoryTransactionService.findAll(user_id, bu_code, paginate, version);
+    this.respond(res, result);
+  }
 
   /**
    * GET /api/:bu_code/inventory-transaction/cost-layers?product_id=xxx&location_id=xxx

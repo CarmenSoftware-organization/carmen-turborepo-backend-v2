@@ -1,0 +1,26 @@
+meta {
+  name: 06 - Locations
+  type: http
+  seq: 6
+}
+
+docs {
+  ## List Active Locations
+  ดึงรายการสถานที่/คลังสินค้าที่ใช้งานอยู่ทั้งหมด
+
+  List all active locations/warehouses for the business unit.
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/inventory-transaction/locations
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

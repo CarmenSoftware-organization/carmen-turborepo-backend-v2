@@ -1,4 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
+import QueryParams from '@/libs/paginate.query';
+import { IPaginate } from '@/common/shared-interface/paginate.interface';
 import { TenantService } from '@/tenant/tenant.service';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import { PrismaClient_TENANT, enum_inventory_doc_type, enum_transaction_type } from '@repo/prisma-shared-schema-tenant';
@@ -251,6 +253,181 @@ export class InventoryTransactionService {
     });
 
     return businessUnit?.calculation_method || 'fifo';
+  }
+
+  /**
+   * Find all inventory transactions with pagination
+   * ค้นหารายการเคลื่อนไหวสินค้าคงคลังทั้งหมดพร้อมการแบ่งหน้า
+   */
+  @TryCatch
+  async findAll(
+    user_id: string,
+    tenant_id: string,
+    paginate: IPaginate,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findAll', user_id, tenant_id, paginate },
+      InventoryTransactionService.name,
+    );
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) {
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+    }
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    const defaultSearchFields = ['inventory_doc_type'];
+    const q = new QueryParams(
+      paginate.page,
+      paginate.perpage,
+      paginate.search,
+      paginate.searchfields,
+      defaultSearchFields,
+      paginate.filter,
+      paginate.sort,
+      paginate.advance,
+    );
+
+    const baseWhere = {
+      ...q.where(),
+      deleted_at: null,
+    };
+
+    const transactions = await prisma.tb_inventory_transaction.findMany({
+      ...q.findMany(),
+      where: baseWhere,
+      orderBy: { created_at: 'desc' },
+      select: {
+        id: true,
+        inventory_doc_type: true,
+        inventory_doc_no: true,
+        created_at: true,
+        tb_inventory_transaction_detail: {
+          select: {
+            id: true,
+            location_id: true,
+            location_code: true,
+            product_id: true,
+            qty: true,
+            cost_per_unit: true,
+            total_cost: true,
+          },
+        },
+      },
+    });
+
+    const total = await prisma.tb_inventory_transaction.count({ where: baseWhere });
+
+    // Collect unique product IDs to fetch names
+    const productIds = new Set<string>();
+    const locationIds = new Set<string>();
+    for (const tx of transactions) {
+      for (const d of tx.tb_inventory_transaction_detail) {
+        if (d.product_id) productIds.add(d.product_id);
+        if (d.location_id) locationIds.add(d.location_id);
+      }
+    }
+
+    const products = productIds.size > 0
+      ? await prisma.tb_product.findMany({
+          where: { id: { in: Array.from(productIds) } },
+          select: { id: true, code: true, name: true, local_name: true },
+        })
+      : [];
+    const productMap = new Map(products.map((p) => [p.id, p]));
+
+    const locations = locationIds.size > 0
+      ? await prisma.tb_location.findMany({
+          where: { id: { in: Array.from(locationIds) } },
+          select: { id: true, code: true, name: true },
+        })
+      : [];
+    const locationMap = new Map(locations.map((l) => [l.id, l]));
+
+    // Batch fetch document numbers by type
+    const docIdsByType = new Map<string, Set<string>>();
+    for (const tx of transactions) {
+      const type = tx.inventory_doc_type;
+      if (!docIdsByType.has(type)) docIdsByType.set(type, new Set());
+      docIdsByType.get(type)!.add(tx.inventory_doc_no);
+    }
+
+    const docNoMap = new Map<string, string>();
+
+    const fetchDocNos = async (type: string, ids: string[]) => {
+      if (ids.length === 0) return;
+      switch (type) {
+        case enum_inventory_doc_type.good_received_note: {
+          const docs = await prisma.tb_good_received_note.findMany({ where: { id: { in: ids } }, select: { id: true, grn_no: true } });
+          docs.forEach((d) => docNoMap.set(d.id, d.grn_no ?? ''));
+          break;
+        }
+        case enum_inventory_doc_type.stock_in: {
+          const docs = await prisma.tb_stock_in.findMany({ where: { id: { in: ids } }, select: { id: true, si_no: true } });
+          docs.forEach((d) => docNoMap.set(d.id, d.si_no ?? ''));
+          break;
+        }
+        case enum_inventory_doc_type.stock_out: {
+          const docs = await prisma.tb_stock_out.findMany({ where: { id: { in: ids } }, select: { id: true, so_no: true } });
+          docs.forEach((d) => docNoMap.set(d.id, d.so_no ?? ''));
+          break;
+        }
+        case enum_inventory_doc_type.store_requisition: {
+          const docs = await prisma.tb_store_requisition.findMany({ where: { id: { in: ids } }, select: { id: true, sr_no: true } });
+          docs.forEach((d) => docNoMap.set(d.id, d.sr_no ?? ''));
+          break;
+        }
+        case enum_inventory_doc_type.credit_note: {
+          const docs = await prisma.tb_credit_note.findMany({ where: { id: { in: ids } }, select: { id: true, cn_no: true } });
+          docs.forEach((d) => docNoMap.set(d.id, d.cn_no ?? ''));
+          break;
+        }
+      }
+    };
+
+    await Promise.all(
+      Array.from(docIdsByType.entries()).map(([type, ids]) => fetchDocNos(type, Array.from(ids))),
+    );
+
+    const data = transactions.map((tx) => ({
+      id: tx.id,
+      inventory_doc_type: tx.inventory_doc_type,
+      parent_document_id: tx.inventory_doc_no,
+      parent_document_no: docNoMap.get(tx.inventory_doc_no) ?? null,
+      created_at: tx.created_at,
+      details: tx.tb_inventory_transaction_detail.map((d) => {
+        const product = d.product_id ? productMap.get(d.product_id) : null;
+        const location = d.location_id ? locationMap.get(d.location_id) : null;
+        const qty = Number(d.qty ?? 0);
+        const isIn = tx.inventory_doc_type === enum_inventory_doc_type.good_received_note
+          || tx.inventory_doc_type === enum_inventory_doc_type.stock_in;
+        return {
+          id: d.id,
+          location_id: d.location_id,
+          location_code: d.location_code ?? location?.code ?? null,
+          location_name: location?.name ?? null,
+          product_id: d.product_id,
+          product_code: product?.code ?? null,
+          product_name: product?.name ?? null,
+          product_local_name: product?.local_name ?? null,
+          qty_in: isIn ? qty : 0,
+          qty_out: isIn ? 0 : qty,
+          cost_per_unit: Number(d.cost_per_unit ?? 0),
+          total_cost: Number(d.total_cost ?? 0),
+        };
+      }),
+    }));
+
+    return Result.ok({
+      paginate: {
+        total,
+        page: q.perpage < 0 ? 1 : q.page,
+        perpage: q.perpage < 0 ? total : q.perpage,
+        pages: total === 0 || q.perpage < 0 ? 1 : Math.ceil(total / q.perpage),
+      },
+      data,
+    });
   }
 
   /**

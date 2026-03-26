@@ -29,6 +29,21 @@ export class InventoryTransactionController extends BaseMicroserviceController {
   // ==================== Query Handlers ====================
 
   @MessagePattern({
+    cmd: 'inventory-transaction.findAll',
+    service: 'inventory-transaction',
+  })
+  async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'findAll', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.findAll(user_id, tenant_id, payload.paginate),
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
     cmd: 'inventory-transaction.find-all-by-ids',
     service: 'inventory-transaction',
   })

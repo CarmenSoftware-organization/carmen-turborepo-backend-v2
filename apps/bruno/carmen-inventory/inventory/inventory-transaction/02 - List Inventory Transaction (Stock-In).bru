@@ -1,0 +1,30 @@
+meta {
+  name: 02 - List Inventory Transaction (Stock-In)
+  type: http
+  seq: 2
+}
+
+docs {
+  ## List Inventory Transactions (Stock-In only)
+  ดึงรายการเคลื่อนไหวสินค้าคงคลังเฉพาะประเภท Stock-In
+
+  Lists inventory transactions filtered by stock_in doc type.
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/inventory-transaction?filter=inventory_doc_type:stock_in
+  body: none
+  auth: bearer
+}
+
+params:query {
+  filter: inventory_doc_type:stock_in
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
