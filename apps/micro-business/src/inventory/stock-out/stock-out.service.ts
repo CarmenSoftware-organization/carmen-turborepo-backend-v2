@@ -117,9 +117,18 @@ export class StockOutService {
       },
       select: {
         id: true,
+        so_date: true,
         so_no: true,
         description: true,
         doc_status: true,
+        adjustment_type_id: true,
+        adjustment_type_code: true,
+        adjustment_type: {
+          select: { name: true },
+        },
+        location_id: true,
+        location_code: true,
+        location_name: true,
         // workflow_name: true,
         // workflow_current_stage: true,
         created_at: true,
@@ -135,7 +144,10 @@ export class StockOutService {
     });
 
     const serializedStockOutList = stockOutList.map((item) =>
-      StockOutListItemResponseSchema.parse(item)
+      StockOutListItemResponseSchema.parse({
+        ...item,
+        adjustment_type_name: item.adjustment_type?.name ?? null,
+      })
     );
 
     return Result.ok({
