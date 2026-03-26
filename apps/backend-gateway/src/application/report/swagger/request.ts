@@ -87,3 +87,26 @@ export class ReportDataRequestDto {
   @ApiPropertyOptional({ description: 'Report filters', type: ReportFiltersDto })
   filters?: ReportFiltersDto;
 }
+
+export class CreateScheduleRequestDto {
+  @ApiProperty({ description: 'Schedule name', example: 'Daily Inventory Report' })
+  name: string;
+
+  @ApiProperty({ description: 'Report type identifier', example: 'inventory_summary' })
+  report_type: string;
+
+  @ApiPropertyOptional({ description: 'Output format', enum: ['json', 'pdf', 'excel', 'csv'], example: 'pdf', default: 'pdf' })
+  format?: string;
+
+  @ApiProperty({ description: 'Cron expression (5-field)', example: '0 8 * * *' })
+  cron_expression: string;
+
+  @ApiPropertyOptional({ description: 'Report filters', type: ReportFiltersDto })
+  filters?: ReportFiltersDto;
+
+  @ApiPropertyOptional({ description: 'Report options', type: ReportOptionsDto })
+  options?: ReportOptionsDto;
+
+  @ApiPropertyOptional({ description: 'Recipient user IDs', type: [String], example: ['uuid1', 'uuid2'] })
+  recipients?: string[];
+}

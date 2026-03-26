@@ -61,3 +61,63 @@ export class LookupItemDto {
   @ApiProperty({ description: 'Item name', example: 'Vendor ABC' })
   name: string;
 }
+
+export class AsyncResponseDto {
+  @ApiProperty({ description: 'Job ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  job_id: string;
+
+  @ApiProperty({ description: 'Status message', example: 'Report job queued successfully' })
+  message: string;
+}
+
+export class JobStatusResponseDto {
+  @ApiProperty({ description: 'Job ID' })
+  job_id: string;
+
+  @ApiProperty({ description: 'Report type' })
+  report_type: string;
+
+  @ApiProperty({ description: 'Format (numeric)' })
+  format: number;
+
+  @ApiProperty({ description: 'Job status (1=queued, 2=processing, 3=completed, 4=failed, 5=cancelled)' })
+  status: number;
+
+  @ApiPropertyOptional({ description: 'File URL when completed' })
+  file_url?: string;
+
+  @ApiPropertyOptional({ description: 'File size in bytes' })
+  file_size?: number;
+
+  @ApiPropertyOptional({ description: 'Row count' })
+  row_count?: number;
+
+  @ApiPropertyOptional({ description: 'Error message if failed' })
+  error_message?: string;
+}
+
+export class ScheduleResponseDto {
+  @ApiProperty({ description: 'Schedule ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+
+  @ApiProperty({ description: 'Schedule name', example: 'Daily Inventory Report' })
+  name: string;
+
+  @ApiProperty({ description: 'Report type', example: 'inventory_summary' })
+  report_type: string;
+
+  @ApiProperty({ description: 'Format (numeric)' })
+  format: number;
+
+  @ApiProperty({ description: 'Cron expression', example: '0 8 * * *' })
+  cron_expression: string;
+
+  @ApiProperty({ description: 'Whether schedule is active', example: true })
+  is_active: boolean;
+
+  @ApiPropertyOptional({ description: 'Last run timestamp' })
+  last_run_at?: string;
+
+  @ApiPropertyOptional({ description: 'Next run timestamp' })
+  next_run_at?: string;
+}

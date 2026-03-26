@@ -13,6 +13,9 @@ interface ReportServiceGrpc {
   GetReportHistory(request: HistoryRequest): Observable<HistoryResponse>;
   ListReportTemplates(request: ListReportTemplatesRequest): Observable<ListReportTemplatesResponse>;
   GetReportTemplate(request: GetReportTemplateRequest): Observable<ReportTemplateResponse>;
+  CreateSchedule(request: CreateScheduleRequest): Observable<ScheduleResponse>;
+  ListSchedules(request: ListSchedulesRequest): Observable<ListSchedulesResponse>;
+  DeleteSchedule(request: DeleteScheduleRequest): Observable<DeleteScheduleResponse>;
 }
 
 // Request/Response types
@@ -140,6 +143,47 @@ interface ReportTemplateResponse {
   is_active: boolean;
 }
 
+// Schedule interfaces
+interface CreateScheduleRequest {
+  context: TenantContext;
+  name: string;
+  report_type: string;
+  format: number;
+  cron_expression: string;
+  filters?: ReportFilters;
+  options?: ReportOptions;
+  recipients?: string[];
+}
+
+interface ScheduleResponse {
+  id: string;
+  name: string;
+  report_type: string;
+  format: number;
+  cron_expression: string;
+  is_active: boolean;
+  last_run_at?: string;
+  next_run_at?: string;
+}
+
+interface ListSchedulesRequest {
+  context: TenantContext;
+}
+
+interface ListSchedulesResponse {
+  schedules: ScheduleResponse[];
+}
+
+interface DeleteScheduleRequest {
+  context: TenantContext;
+  id: string;
+}
+
+interface DeleteScheduleResponse {
+  success: boolean;
+  message: string;
+}
+
 // Format enum mapping
 const FORMAT_MAP: Record<string, number> = {
   pdf: 1,
@@ -215,6 +259,36 @@ export class ReportService implements OnModuleInit {
     );
   }
 
+  // --- Async job methods ---
+
+  async generateAsync(
+    user_id: string,
+    bu_code: string,
+    report_type: string,
+    format: string,
+    filters?: ReportFilters,
+    options?: ReportOptions,
+  ): Promise<AsyncResponse> {
+    this.logger.debug({ function: 'generateAsync', report_type, format, bu_code }, ReportService.name);
+
+    const request: GenerateRequest = {
+      context: { user_id, bu_codes: [bu_code] },
+      report_type,
+      format: FORMAT_MAP[format] || 4,
+      filters,
+      options: {
+        locale: 'th-TH',
+        timezone: 'Asia/Bangkok',
+        page_size: 'A4',
+        orientation: 'portrait',
+        include_summary: true,
+        ...options,
+      },
+    };
+
+    return firstValueFrom(this.reportServiceGrpc.GenerateAsync(request));
+  }
+
   async getJobStatus(
     user_id: string,
     bu_code: string,
@@ -243,6 +317,60 @@ export class ReportService implements OnModuleInit {
         page,
         per_page,
         report_type,
+      }),
+    );
+  }
+
+  // --- Schedule methods ---
+
+  async createSchedule(
+    user_id: string,
+    bu_code: string,
+    name: string,
+    report_type: string,
+    format: string,
+    cron_expression: string,
+    filters?: ReportFilters,
+    options?: ReportOptions,
+    recipients?: string[],
+  ): Promise<ScheduleResponse> {
+    this.logger.debug({ function: 'createSchedule', name, report_type, bu_code }, ReportService.name);
+    return firstValueFrom(
+      this.reportServiceGrpc.CreateSchedule({
+        context: { user_id, bu_codes: [bu_code] },
+        name,
+        report_type,
+        format: FORMAT_MAP[format] || 4,
+        cron_expression,
+        filters,
+        options,
+        recipients,
+      }),
+    );
+  }
+
+  async listSchedules(
+    user_id: string,
+    bu_code: string,
+  ): Promise<ListSchedulesResponse> {
+    this.logger.debug({ function: 'listSchedules', bu_code }, ReportService.name);
+    return firstValueFrom(
+      this.reportServiceGrpc.ListSchedules({
+        context: { user_id, bu_codes: [bu_code] },
+      }),
+    );
+  }
+
+  async deleteSchedule(
+    user_id: string,
+    bu_code: string,
+    id: string,
+  ): Promise<DeleteScheduleResponse> {
+    this.logger.debug({ function: 'deleteSchedule', id, bu_code }, ReportService.name);
+    return firstValueFrom(
+      this.reportServiceGrpc.DeleteSchedule({
+        context: { user_id, bu_codes: [bu_code] },
+        id,
       }),
     );
   }
