@@ -121,8 +121,8 @@ export class CreateScheduleRequestDto {
   @ApiPropertyOptional({ description: 'User-friendly schedule config (alternative to cron_expression)', type: ScheduleConfigDto })
   schedule_config?: ScheduleConfigDto;
 
-  @ApiPropertyOptional({ description: 'Report filters', type: ReportFiltersDto })
-  filters?: ReportFiltersDto;
+  @ApiPropertyOptional({ description: 'Report filters (dynamic, from template dialog)' })
+  filters?: Record<string, any>;
 
   @ApiPropertyOptional({ description: 'Report options', type: ReportOptionsDto })
   options?: ReportOptionsDto;

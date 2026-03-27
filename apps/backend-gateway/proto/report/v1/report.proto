@@ -165,6 +165,7 @@ message JobStatusResponse {
   optional google.protobuf.Timestamp started_at   = 9;
   optional google.protobuf.Timestamp completed_at = 10;
   optional int32 duration_ms = 11;
+  optional string file_name = 12;
 }
 
 message CancelJobRequest {
@@ -299,26 +300,44 @@ message ReportTemplateResponse {
 // Schedule
 // ============================================================
 
+// ScheduleConfig provides a user-friendly way to define schedule timing.
+// The backend converts this to a cron expression for storage.
+message ScheduleConfig {
+  // "daily", "weekly", "monthly"
+  string frequency              = 1;
+  // Time of day in HH:mm format (e.g. "08:00")
+  string time                   = 2;
+  // Days of week: 0=Sun, 1=Mon, ..., 6=Sat (used when frequency="weekly")
+  repeated int32 days_of_week   = 3;
+  // Days of month: 1-31 (used when frequency="monthly")
+  repeated int32 days_of_month  = 4;
+}
+
 message CreateScheduleRequest {
-  TenantContext  context         = 1;
-  string         name            = 2;
-  string         report_type     = 3;
-  ReportFormat   format          = 4;
-  string         cron_expression = 5;
-  ReportFilters  filters         = 6;
-  ReportOptions  options         = 7;
-  repeated string recipients     = 8;
+  TenantContext  context             = 1;
+  string         name                = 2;
+  string         report_type         = 3;
+  ReportFormat   format              = 4;
+  string         cron_expression     = 5;  // advanced: raw cron (optional if schedule_config is set)
+  ReportFilters  filters             = 6;
+  ReportOptions  options             = 7;
+  repeated string recipients         = 8;
+  optional string report_template_id = 9;
+  optional ScheduleConfig schedule_config = 10;  // user-friendly alternative to cron_expression
+  map<string, string> raw_filters = 11;         // dynamic filters from template dialog (key=field name, value=selected value)
 }
 
 message ScheduleResponse {
-  string       id              = 1;
-  string       name            = 2;
-  string       report_type     = 3;
-  ReportFormat format          = 4;
-  string       cron_expression = 5;
-  bool         is_active       = 6;
+  string       id                  = 1;
+  string       name                = 2;
+  string       report_type         = 3;
+  ReportFormat format              = 4;
+  string       cron_expression     = 5;
+  bool         is_active           = 6;
   optional google.protobuf.Timestamp last_run_at = 7;
   optional google.protobuf.Timestamp next_run_at = 8;
+  optional string report_template_id = 9;
+  optional ScheduleConfig schedule_config = 10;
 }
 
 message ListSchedulesRequest {

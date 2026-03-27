@@ -100,6 +100,7 @@ interface JobStatusResponse {
   file_size?: number;
   row_count?: number;
   error_message?: string;
+  file_name?: string;
 }
 
 interface HistoryRequest {
@@ -357,7 +358,9 @@ export class ReportService implements OnModuleInit {
         format: FORMAT_MAP[format] || 4,
         cron_expression: cron_expression || '',
         schedule_config,
-        filters,
+        raw_filters: filters ? Object.fromEntries(
+          Object.entries(filters).map(([k, v]) => [k, String(v ?? '')])
+        ) : {},
         options,
         recipients,
       }),
