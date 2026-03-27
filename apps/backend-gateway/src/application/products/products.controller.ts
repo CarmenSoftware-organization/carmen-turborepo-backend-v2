@@ -1,9 +1,11 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  Post,
   Query,
   Req,
   Res,
@@ -14,12 +16,14 @@ import { ProductsService } from './products.service';
 import { PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { IPaginateQuery } from 'src/shared-dto/paginate.dto';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   LastPurchaseResponseDto,
   OnHandResponseDto,
   OnOrderResponseDto,
 } from 'src/config/config_products/swagger/response';
+import { ProductCostResponseDto } from './swagger/response';
+import { ProductCostRequestSwaggerDto } from './swagger/request';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -33,6 +37,7 @@ import {
   BaseHttpController,
   Serialize,
   ProductLocationListItemResponseSchema,
+  ProductCostRequestDto,
 } from '@/common';
 
 @Controller('api')
@@ -217,6 +222,53 @@ export class ProductsController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.productService.getOnOrder(
       product_id,
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * Get product cost by location
+   * ดึงต้นทุนสินค้าตามสถานที่
+   */
+  @Post(':bu_code/products/cost')
+  @UseGuards(new AppIdGuard('product.cost'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get product cost by location',
+    description:
+      'Retrieves the cost breakdown for a product at a specific location based on inventory transaction cost layers (FIFO). Returns total cost, cost per unit per lot, and lot numbers.',
+    operationId: 'getProductCost',
+    tags: ['Master Data', 'Products'],
+    responses: {
+      200: { description: 'Product cost retrieved successfully' },
+      404: { description: 'Product or location not found' },
+    },
+    'x-description-th': 'ดึงต้นทุนสินค้าตามสถานที่จากธุรกรรมสต็อก',
+  } as any)
+  @ApiBody({ type: ProductCostRequestSwaggerDto })
+  @ApiResponse({ status: 200, description: 'Product cost retrieved successfully', type: ProductCostResponseDto })
+  @ApiResponse({ status: 404, description: 'Product or location not found' })
+  async getProductCost(
+    @Param('bu_code') bu_code: string,
+    @Body() body: ProductCostRequestDto,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'getProductCost', body, version },
+      ProductsController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.productService.getProductCost(
+      body.product_id,
+      body.location_id,
+      body.quantity,
       user_id,
       bu_code,
       version,

@@ -214,3 +214,12 @@ export const ProductUpdate = z.object({
 
 export type IUpdateProduct = z.infer<typeof ProductUpdate> & { id: string };
 export class ProductUpdateDto extends createZodDto(ProductUpdate) { }
+
+export const ProductCostRequest = z.object({
+  product_id: z.string().uuid(),
+  location_id: z.string().uuid(),
+  quantity: z.number().positive(),
+});
+
+export type IProductCostRequest = z.infer<typeof ProductCostRequest>;
+export class ProductCostRequestDto extends createZodDto(ProductCostRequest) { }

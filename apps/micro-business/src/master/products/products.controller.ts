@@ -310,6 +310,25 @@ export class ProductsController extends BaseMicroserviceController {
     return this.handleResult(result);
   }
 
+  /**
+   * Get product cost by location
+   * ดึงต้นทุนสินค้าตามสถานที่
+   */
+  @MessagePattern({ cmd: 'product.get-cost', service: 'product' })
+  async getProductCost(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'getProductCost', payload }, ProductsController.name);
+    const bu_code = payload.bu_code;
+    const user_id = payload.user_id;
+    this.productsService.userId = user_id;
+    this.productsService.bu_code = bu_code;
+    await this.productsService.initializePrismaService(bu_code, user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.productsService.getProductCost(payload.product_id, payload.location_id, payload.quantity),
+    );
+    return this.handleResult(result);
+  }
+
   @MessagePattern({ cmd: 'product.get-on-order', service: 'product' })
   async getOnOrder(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'getOnOrder', payload }, ProductsController.name);

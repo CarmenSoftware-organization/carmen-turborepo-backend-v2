@@ -2007,6 +2007,129 @@ export class ProductsService {
   }
 
   /**
+   * Get product cost from inventory transactions by location and product
+   * ดึงต้นทุนสินค้าจากธุรกรรมสต็อกตามสถานที่และสินค้า
+   * @param product_id - Product ID / รหัสสินค้า
+   * @param location_id - Location ID / รหัสสถานที่
+   * @param quantity - Requested quantity / จำนวนที่ต้องการ
+   * @returns Cost breakdown with lot details / รายละเอียดต้นทุนพร้อมข้อมูล lot
+   */
+  @TryCatch
+  async getProductCost(
+    product_id: string,
+    location_id: string,
+    quantity: number,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'getProductCost', product_id, location_id, quantity, user_id: this.userId, tenant_id: this.bu_code },
+      ProductsService.name,
+    );
+
+    const product = await this.prismaService.tb_product.findFirst({
+      where: { id: product_id, deleted_at: null },
+      select: { id: true, name: true },
+    });
+
+    if (!product) {
+      return Result.error('Product not found', ErrorCode.NOT_FOUND);
+    }
+
+    const location = await this.prismaService.tb_location.findFirst({
+      where: { id: location_id, deleted_at: null },
+      select: { id: true, name: true },
+    });
+
+    if (!location) {
+      return Result.error('Location not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Fetch inventory transaction details (signed qty: positive = in, negative = out)
+    const transactions = await this.prismaService.tb_inventory_transaction_detail.findMany({
+      where: {
+        product_id,
+        location_id,
+      },
+      select: {
+        current_lot_no: true,
+        qty: true,
+        cost_per_unit: true,
+        created_at: true,
+      },
+      orderBy: { created_at: 'asc' },
+    });
+
+    // Separate inbound lots (qty > 0) and total outbound (qty < 0)
+    const inboundLots: { lot_no: string; qty: number; cost_per_unit: number }[] = [];
+    let totalOutbound = 0;
+
+    for (const tx of transactions) {
+      const qty = Number(tx.qty) || 0;
+      if (qty > 0) {
+        inboundLots.push({
+          lot_no: tx.current_lot_no || 'NO_LOT',
+          qty,
+          cost_per_unit: Number(tx.cost_per_unit) || 0,
+        });
+      } else {
+        totalOutbound += Math.abs(qty);
+      }
+    }
+
+    // Consume outbound from inbound lots in FIFO order to get remaining per lot
+    let outRemaining = totalOutbound;
+    for (const lot of inboundLots) {
+      if (outRemaining <= 0) break;
+      const consumed = Math.min(outRemaining, lot.qty);
+      lot.qty -= consumed;
+      outRemaining -= consumed;
+    }
+
+    // Calculate total available stock
+    const totalAvailable = inboundLots.reduce((sum, lot) => sum + lot.qty, 0);
+
+    if (totalAvailable <= 0) {
+      return Result.error(
+        'No available stock for this product at this location',
+        ErrorCode.VALIDATION_FAILURE,
+      );
+    }
+
+    if (quantity > totalAvailable) {
+      return Result.error(
+        `Insufficient stock: requested ${quantity} but only ${totalAvailable} available`,
+        ErrorCode.VALIDATION_FAILURE,
+      );
+    }
+
+    // Allocate requested quantity across remaining lots (FIFO)
+    let remainingQty = quantity;
+    let totalCost = 0;
+    const costPerUnitList: number[] = [];
+    const lotNoList: string[] = [];
+
+    for (const lot of inboundLots) {
+      if (remainingQty <= 0) break;
+      if (lot.qty <= 0) continue;
+
+      const allocateQty = Math.min(remainingQty, lot.qty);
+      totalCost += allocateQty * lot.cost_per_unit;
+      costPerUnitList.push(lot.cost_per_unit);
+      lotNoList.push(lot.lot_no);
+      remainingQty -= allocateQty;
+    }
+
+    return Result.ok({
+      total_cost: totalCost,
+      cost_per_unit: costPerUnitList,
+      lot_no: lotNoList,
+      location_id: location.id,
+      location_name: location.name,
+      product_id: product.id,
+      product_name: product.name,
+    });
+  }
+
+  /**
    * Get on-order quantity for a product (ordered but not fully received)
    * ดึงจำนวนสินค้าที่สั่งซื้อแล้วแต่ยังไม่ได้รับครบ
    * @param product_id - Product ID / รหัสสินค้า

@@ -887,12 +887,14 @@ export class InventoryTransactionService {
     const costPerUnit = calculateConsumptionCostPerUnit(consumptions, params.qty);
 
     // Transaction detail (negative qty for outgoing)
+    const fromLotNos = consumptions.map(c => c.lotNo).join(',');
     const txnDetail = await tx.tb_inventory_transaction_detail.create({
       data: {
         inventory_transaction_id: transactionId,
         product_id: params.product_id,
         location_id: params.location_id,
         location_code: params.location_code,
+        from_lot_no: fromLotNos,
         current_lot_no: outLotNo,
         qty: -params.qty,
         cost_per_unit: costPerUnit,
@@ -976,12 +978,15 @@ export class InventoryTransactionService {
     const totalCost = Math.round(params.qty * avgCost * 100) / 100;
 
     // Transaction detail (negative qty)
+    const availableLots = await this.getAvailableFifoLots(tx, params.product_id, params.location_id);
+    const fromLotNos = availableLots.filter(l => l.available > 0).map(l => l.lotNo).join(',') || null;
     const txnDetail = await tx.tb_inventory_transaction_detail.create({
       data: {
         inventory_transaction_id: transactionId,
         product_id: params.product_id,
         location_id: params.location_id,
         location_code: params.location_code,
+        from_lot_no: fromLotNos,
         current_lot_no: outLotNo,
         qty: -params.qty,
         cost_per_unit: avgCost,
@@ -1665,24 +1670,6 @@ export class InventoryTransactionService {
       const lotSeqNo = await this.getNextLotSeqNo(tx, atPeriod);
       const cnLotNo = `CNQ-${year}-${month}-${lotSeqNo.toString().padStart(4, '0')}`;
 
-      // Transaction detail (negative qty for outgoing)
-      const txnDetail = await tx.tb_inventory_transaction_detail.create({
-        data: {
-          inventory_transaction_id: inventoryTransaction.id,
-          product_id: item.product_id,
-          location_id: item.location_id,
-          location_code: item.location_code,
-          current_lot_no: cnLotNo,
-          qty: -cnQty,
-          cost_per_unit: cnCost,
-          total_cost: cnTotalCost,
-          created_by_id: payload.user_id,
-          created_at: nowIso,
-          updated_by_id: payload.user_id,
-          updated_at: nowIso,
-        },
-      });
-
       // Get all available FIFO lots for this product+location
       const allAvailableLots = await this.getAvailableFifoLots(tx, item.product_id, item.location_id);
 
@@ -1702,6 +1689,27 @@ export class InventoryTransactionService {
         consumptions.push({ lotNo: lot.lotNo, qty: consume, costPerUnit: lot.costPerUnit });
         remaining -= consume;
       }
+
+      const fromLotNos = consumptions.map(c => c.lotNo).join(',') || null;
+
+      // Transaction detail (negative qty for outgoing)
+      const txnDetail = await tx.tb_inventory_transaction_detail.create({
+        data: {
+          inventory_transaction_id: inventoryTransaction.id,
+          product_id: item.product_id,
+          location_id: item.location_id,
+          location_code: item.location_code,
+          from_lot_no: fromLotNos,
+          current_lot_no: cnLotNo,
+          qty: -cnQty,
+          cost_per_unit: cnCost,
+          total_cost: cnTotalCost,
+          created_by_id: payload.user_id,
+          created_at: nowIso,
+          updated_by_id: payload.user_id,
+          updated_at: nowIso,
+        },
+      });
 
       // Create cost layers for each consumed lot
       let layerIndex = 1;
@@ -1850,24 +1858,6 @@ export class InventoryTransactionService {
       const { totalInQty, totalInCost } = sumReceivingTotals(receivingLayers);
       const newAvgCost = calculateAverageCostAfterCreditNoteQty(totalInQty, totalInCost, cnQty, cnCost);
 
-      // Transaction detail (negative qty for outgoing)
-      const txnDetail = await tx.tb_inventory_transaction_detail.create({
-        data: {
-          inventory_transaction_id: inventoryTransaction.id,
-          product_id: item.product_id,
-          location_id: item.location_id,
-          location_code: item.location_code,
-          current_lot_no: cnLotNo,
-          qty: -cnQty,
-          cost_per_unit: cnCost,
-          total_cost: cnTotalCost,
-          created_by_id: payload.user_id,
-          created_at: nowIso,
-          updated_by_id: payload.user_id,
-          updated_at: nowIso,
-        },
-      });
-
       // Get all available FIFO lots for this product+location
       const allAvailableLots = await this.getAvailableFifoLots(tx, item.product_id, item.location_id);
 
@@ -1887,6 +1877,27 @@ export class InventoryTransactionService {
         consumptions.push({ lotNo: lot.lotNo, qty: consume, costPerUnit: lot.costPerUnit });
         remaining -= consume;
       }
+
+      const fromLotNos = consumptions.map(c => c.lotNo).join(',') || null;
+
+      // Transaction detail (negative qty for outgoing)
+      const txnDetail = await tx.tb_inventory_transaction_detail.create({
+        data: {
+          inventory_transaction_id: inventoryTransaction.id,
+          product_id: item.product_id,
+          location_id: item.location_id,
+          location_code: item.location_code,
+          from_lot_no: fromLotNos,
+          current_lot_no: cnLotNo,
+          qty: -cnQty,
+          cost_per_unit: cnCost,
+          total_cost: cnTotalCost,
+          created_by_id: payload.user_id,
+          created_at: nowIso,
+          updated_by_id: payload.user_id,
+          updated_at: nowIso,
+        },
+      });
 
       // Create cost layers for each consumed lot (diff_amount = 0 when stock is enough)
       let layerIndex = 1;
@@ -2054,6 +2065,7 @@ export class InventoryTransactionService {
           product_id: item.product_id,
           location_id: item.location_id,
           location_code: item.location_code,
+          from_lot_no: grnLotNo,
           current_lot_no: outLotNo,
           qty: -remainingQty,
           cost_per_unit: originalCostPerUnit,
@@ -2261,6 +2273,7 @@ export class InventoryTransactionService {
           product_id: item.product_id,
           location_id: item.location_id,
           location_code: item.location_code,
+          from_lot_no: grnLotNo,
           current_lot_no: outLotNo,
           qty: -remainingQty,
           cost_per_unit: avgCostBefore,
