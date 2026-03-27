@@ -352,8 +352,9 @@ export class PeriodService {
 
     let year = startYear;
     let month = startMonth;
+    const maxIterations = periodsToCreate + 120; // safety limit to prevent infinite loop
 
-    for (let i = 0; i < periodsToCreate; i++) {
+    for (let i = 0; createdPeriods.length < periodsToCreate && i < maxIterations; i++) {
       const periodCode = year.toString().slice(-2) + month.toString().padStart(2, "0");
 
       // Check if period already exists

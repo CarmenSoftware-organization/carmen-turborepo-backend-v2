@@ -4,23 +4,14 @@ meta {
   seq: 2
 }
 
-docs {
-  ## List Inventory Adjustment - Stock In
-  ดึงรายการปรับปรุงสินค้าคงคลังเฉพาะประเภทรับเข้า (stock-in) แสดงรายการที่มีการเพิ่มจำนวนสินค้าเข้าระบบ
-
-  Lists inventory adjustments filtered to stock-in type only, showing records where quantities were added to the system inventory.
-
-  ### Path Parameters
-  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
-
-  ### Query Parameters
-  - `type` — `stock-in` (กรองเฉพาะรายการรับเข้า / filter stock-in adjustments only)
-}
-
 get {
-  url: {{host}}/api/{{bu_code}}/inventory-adjustment?type=stock-in
+  url: {{host}}/api/{{bu_code}}/inventory-adjustment?filter=
   body: none
   auth: bearer
+}
+
+params:query {
+  filter: 
 }
 
 headers {
@@ -29,4 +20,17 @@ headers {
 
 auth:bearer {
   token: {{access_token}}
+}
+
+docs {
+  ## List Inventory Adjustment - Stock In
+  ดึงรายการปรับปรุงสินค้าคงคลังเฉพาะประเภทรับเข้า (stock-in) แสดงรายการที่มีการเพิ่มจำนวนสินค้าเข้าระบบ
+  
+  Lists inventory adjustments filtered to stock-in type only, showing records where quantities were added to the system inventory.
+  
+  ### Path Parameters
+  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  
+  ### Query Parameters
+  - `type` — `stock-in` (กรองเฉพาะรายการรับเข้า / filter stock-in adjustments only)
 }
