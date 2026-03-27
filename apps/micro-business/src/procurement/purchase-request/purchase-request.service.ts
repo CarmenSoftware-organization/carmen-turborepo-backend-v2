@@ -1443,18 +1443,29 @@ export class PurchaseRequestService {
 
     const purchaseRequest =
       await this.prismaService.tb_purchase_request.findFirst({
-        where: { id },
+        where: { id, deleted_at: null },
       });
     if (!purchaseRequest) {
-      throw new Error('Purchase request not found');
+      return Result.error('Purchase request not found', ErrorCode.NOT_FOUND);
     }
 
+    if (purchaseRequest.pr_status !== enum_purchase_request_doc_status.draft) {
+      return Result.error(
+        'Only draft purchase requests can be deleted',
+        ErrorCode.VALIDATION_FAILURE,
+      );
+    }
+
+    const now = new Date().toISOString();
+
     const tx = await this.prismaService.$transaction(async (prisma) => {
-      await prisma.tb_purchase_request_detail.deleteMany({
-        where: { purchase_request_id: id },
+      await prisma.tb_purchase_request_detail.updateMany({
+        where: { purchase_request_id: id, deleted_at: null },
+        data: { deleted_at: now, updated_by_id: this.userId },
       });
-      await prisma.tb_purchase_request.delete({
+      await prisma.tb_purchase_request.update({
         where: { id },
+        data: { deleted_at: now, updated_by_id: this.userId },
       });
 
       return { id };
