@@ -1,17 +1,9 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
-
-// Attachment schema for files
-// After uploading to MinIO via files.service, store the fileToken and fileUrl
-export const AttachmentSchema = z.object({
-  fileName: z.string(), // Original file name
-  fileToken: z.string(), // Token from files.service (format: bu_code/uuid)
-  fileUrl: z.string().optional(), // Presigned URL from files.service
-  contentType: z.string(),
-  size: z.number().optional(),
-});
-
-export type Attachment = z.infer<typeof AttachmentSchema>;
+import {
+  AttachmentSchema,
+  Attachment,
+} from '../../../common/dto/attachment.schema';
 
 // Create comment schema
 export const CreatePurchaseRequestCommentSchema = z.object({
