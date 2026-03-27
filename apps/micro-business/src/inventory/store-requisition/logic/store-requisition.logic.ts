@@ -174,11 +174,30 @@ export class StoreRequisitionLogic {
 
     const workflowData = populateData?.workflow_id?.data;
 
+    // Determine current stage - if empty (old data), get first stage then navigate to stage 2
+    let currentStageForNavigation = storeRequisitionData?.workflow_current_stage;
+    let previousStage = storeRequisitionData?.workflow_current_stage;
+
+    if (!currentStageForNavigation) {
+      // Get first stage (draft) then use it to navigate to stage 2
+      const firstStageRes = this.masterService.send(
+        { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
+        {
+          workflowData,
+          currentStatus: '',
+          requestData: {},
+        },
+      );
+      const firstStageNav: NavigateForwardResult = await firstValueFrom(firstStageRes);
+      currentStageForNavigation = firstStageNav.navigation_info.current_stage_info?.name;
+      previousStage = currentStageForNavigation;
+    }
+
     const res = this.masterService.send(
       { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
       {
         workflowData,
-        currentStatus: '',
+        currentStatus: currentStageForNavigation,
         requestData: {},
       },
     );
@@ -193,7 +212,7 @@ export class StoreRequisitionLogic {
         id: user_id,
         name: populateData?.user_id?.name
       },
-      current_stage: workflowHeader.previous_stage,
+      current_stage: previousStage,
       next_stage: workflowHeader.current_stage
     });
 
@@ -294,16 +313,16 @@ export class StoreRequisitionLogic {
     if (!workflowHeader.navigation_info.workflow_next_step) {
       workflow_history.push({
         action: enum_last_action.approved,
-        datetime: lastActionAtDate,
+        datetime: lastActionAtDate.toISOString(),
         user: {
           id: user_id,
           name: populateData?.user_id?.name
         },
-        current_stage: workflowHeader.current_stage,
+        current_stage: workflowHeader.previous_stage,
         next_stage: '-'
       });
       workflow = {
-        workflow_previous_stage: storeRequisitionData.workflow_current_stage,
+        workflow_previous_stage: workflowHeader.previous_stage,
         workflow_current_stage: workflowHeader.current_stage,
         workflow_next_stage: '-',
         user_action: [],
@@ -316,13 +335,13 @@ export class StoreRequisitionLogic {
     } else {
       workflow_history.push({
         action: enum_last_action.approved,
-        datetime: lastActionAtDate,
+        datetime: lastActionAtDate.toISOString(),
         user: {
           id: user_id,
           name: populateData?.user_id?.name
         },
-        current_stage: storeRequisitionData?.workflow_current_stage,
-        next_stage: workflowHeader.navigation_info.workflow_next_step
+        current_stage: workflowHeader.previous_stage,
+        next_stage: workflowHeader.current_stage
       });
       const userAction = await this.buildUserAction(
         workflowHeader.navigation_info.current_stage_info,

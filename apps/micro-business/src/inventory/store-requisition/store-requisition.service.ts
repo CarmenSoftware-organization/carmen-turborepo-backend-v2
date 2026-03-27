@@ -161,10 +161,14 @@ export class StoreRequisitionService {
 
     let buildQuery = {};
 
-    if (permission.includes('view_department')) {
+    // Check permissions from most permissive to least permissive
+    if (permission.includes('view_all')) {
+      // No filter - user can see all SRs
+    } else if (permission.includes('view_department')) {
       const department = await this.prismaService.tb_department_user.findFirst({
         where: {
           user_id: this.userId,
+          deleted_at: null,
         },
         select: {
           department_id: true,
@@ -208,25 +212,38 @@ export class StoreRequisitionService {
         const store_requisition_detail = res['tb_store_requisition_detail'];
         delete res['tb_store_requisition_detail'];
 
-        const workflowCallReq = this.masterService.send(
-          { cmd: 'workflows.get-workflow-stage-detail', service: 'workflows' },
-          {
-            workflow_id: res.workflow_id,
-            stage: res.workflow_current_stage,
-            user_id: this.userId,
-            bu_code: this.bu_code,
-          },
-        );
-        const CallCurrentWorkflowDetail: GlobalApiReturn<Stage> =
-          await firstValueFrom(workflowCallReq);
-        const currentWorkflowDetail = CallCurrentWorkflowDetail.data;
+        // Special case: draft SR owned by requestor should have "create" role
+        let returningRole: enum_stage_role;
 
-        const userList: string[] =
-          (res.user_action as { execute: string[] })?.execute || [];
+        if (
+          res.doc_status === enum_doc_status.draft &&
+          res.requestor_id === this.userId
+        ) {
+          returningRole = enum_stage_role.create;
+        } else {
+          const workflowCallReq = this.masterService.send(
+            { cmd: 'workflows.get-workflow-stage-detail', service: 'workflows' },
+            {
+              workflow_id: res.workflow_id,
+              stage: res.workflow_current_stage,
+              user_id: this.userId,
+              bu_code: this.bu_code,
+            },
+          );
+          const CallCurrentWorkflowDetail: GlobalApiReturn<Stage> =
+            await firstValueFrom(workflowCallReq);
+          const currentWorkflowDetail = CallCurrentWorkflowDetail.data;
 
-        const returningRole = userList.includes(this.userId)
-          ? currentWorkflowDetail.role
-          : enum_stage_role.view_only;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const userActionExecute = (res.user_action as { execute: any[] })?.execute || [];
+          const userIds: string[] = userActionExecute.map((u) =>
+            typeof u === 'string' ? u : u?.user_id
+          ).filter(Boolean);
+
+          returningRole = userIds.includes(this.userId)
+            ? (currentWorkflowDetail.role as enum_stage_role)
+            : enum_stage_role.view_only;
+        }
 
         return {
           ...res,
@@ -320,11 +337,14 @@ export class StoreRequisitionService {
 
       let permissionQuery = {};
 
-      if (permission.includes('view_department')) {
+      // Check permissions from most permissive to least permissive
+      if (permission.includes('view_all')) {
+        // No filter - user can see all SRs
+      } else if (permission.includes('view_department')) {
         const department = await prisma.tb_department_user.findFirst({
           where: {
             user_id: user_id,
-            deleted_at: undefined,
+            deleted_at: null,
           },
           select: {
             department_id: true,
@@ -679,11 +699,11 @@ export class StoreRequisitionService {
               sequence_no: 'desc',
             },
           });
-        const sequenceNo = lastSequenceNo?.sequence_no || 1;
+        let sequenceNo = lastSequenceNo?.sequence_no || 0;
         const createStoreRequisitionDetailObject =
           updateSRDetail.store_requisition_detail.add.map((item) => ({
             ...item,
-            sequence_no: sequenceNo + 1,
+            sequence_no: ++sequenceNo,
             store_requisition_id: id,
             created_by_id: this.userId,
           }));
@@ -1038,23 +1058,45 @@ export class StoreRequisitionService {
     await this.prismaService.$transaction(async (txp) => {
       for (const detail of storeRequisitionDetail) {
         const findSR = payload.details.find((d) => d.id === detail.id);
-        const stages_status = detail.stages_status as unknown as StageStatus[];
+        if (findSR.stage_status === stage_status.approve) {
+          continue;
+        }
 
-        stages_status.push({
-          seq: stages_status.length + 1,
-          status: findSR.stage_status,
-          name: storeRequisition.workflow_current_stage,
-          message: findSR.stage_message,
+        const stagesStatus: StageStatus[] = detail.stages_status as unknown as StageStatus[];
+        const history: Record<string, unknown>[] = (detail.history as unknown as Record<string, unknown>[]) || [];
+
+        history.push({
+          seq: history.length + 1,
+          status: stage_status.review,
+          name: workflow.workflow_previous_stage,
+          message: findSR.stage_message || '',
+          user: {
+            id: this.userId,
+          },
         });
+
+        // Trim stages_status back to destination stage (matching PR pattern)
+        for (let index = stagesStatus.length - 1; index > 0; index--) {
+          if (stagesStatus[index].name === payload.des_stage) {
+            stagesStatus[index] = {
+              ...stagesStatus[index],
+              status: stage_status.pending,
+            };
+            break;
+          } else {
+            stagesStatus.splice(index + 1, stagesStatus.length - index - 1);
+          }
+        }
 
         await txp.tb_store_requisition_detail.update({
           where: {
             id: detail.id,
           },
           data: {
-            stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            stages_status: stagesStatus as unknown as Prisma.InputJsonValue,
+            history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
-            current_stage_status: findSR.stage_status,
+            current_stage_status: '',
           },
         });
       }
@@ -1065,6 +1107,8 @@ export class StoreRequisitionService {
         },
         data: {
           ...workflow,
+          workflow_history: workflow.workflow_history as unknown as Prisma.InputJsonValue,
+          user_action: workflow.user_action as unknown as Prisma.InputJsonValue,
           updated_by_id: this.userId,
         },
       });
