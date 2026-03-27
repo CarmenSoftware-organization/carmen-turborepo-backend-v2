@@ -92,13 +92,13 @@ export const ValidatePRBeforeSubmitSchema = z.object({
   pr_status: z.string(),
   requestor_id: z.string().uuid(),
   department_id: z.string().uuid(),
-  workflow_id: z.string().uuid().optional().nullable(),
+  workflow_id: z.string().uuid({ message: 'Workflow is required before submitting PR' }),
   purchase_request_detail: z.array(z.object({
     id: z.string().uuid().optional(),
     product_id: z.string().uuid(),
     requested_qty: z.number().positive(),
     requested_unit_id: z.string().uuid(),
-  })).optional(),
+  })).min(1, { message: 'PR must have at least one detail line' }),
 }).passthrough();
 
 // ============================================================================

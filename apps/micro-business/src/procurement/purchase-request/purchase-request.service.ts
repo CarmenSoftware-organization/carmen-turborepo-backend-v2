@@ -41,12 +41,8 @@ import {
   Result,
   ErrorCode,
 } from '@/common';
-import { stat } from 'fs';
 import { StageStatus, WorkflowHeader } from './interface/workflow.interface';
-import { find, firstValueFrom, last } from 'rxjs';
-import { de } from 'zod/v4/locales';
-import { equal } from 'assert';
-import { request } from 'http';
+import { firstValueFrom } from 'rxjs';
 import getPaginationParams from '@/common/helpers/pagination.params';
 import * as ExcelJS from 'exceljs';
 import type {
@@ -56,7 +52,6 @@ import type {
 } from 'pdfmake/interfaces';
 import { CalculatePurchaseRequestDetail } from './interface/CalculatePurchaseRequestDetail.dto';
 import { getCalculatePriceInfo } from './logic/calculate.priceinfo.logic';
-import { boolean } from 'zod';
 
 const ERROR_MISSING_BU_CODE = 'Missing bu_code';
 const ERROR_MISSING_USER_ID = 'Missing user_id';
@@ -932,6 +927,7 @@ export class PurchaseRequestService {
 
       for (const detail of PRdetail) {
         const findDetails = payload.details.find((d) => d.id === detail.id);
+        if (!findDetails) continue;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const stages_status: any[] = Array.isArray(detail.stages_status)
           ? (detail.stages_status as unknown as StageStatus[])

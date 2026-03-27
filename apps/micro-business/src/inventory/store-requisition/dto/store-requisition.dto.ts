@@ -65,12 +65,12 @@ export const ValidateSRBeforeSubmitSchema = z.object({
   doc_status: z.string(),
   requestor_id: z.string().uuid(),
   department_id: z.string().uuid(),
-  workflow_id: z.string().uuid().optional().nullable(),
+  workflow_id: z.string().uuid({ message: 'Workflow is required before submitting SR' }),
   from_location_id: z.string().uuid().optional().nullable(),
   to_location_id: z.string().uuid().optional().nullable(),
   store_requisition_detail: z.array(z.object({
     id: z.string().uuid().optional(),
     product_id: z.string().uuid(),
     requested_qty: z.number().positive(),
-  })).optional(),
+  })).min(1, { message: 'SR must have at least one detail line' }),
 }).passthrough();

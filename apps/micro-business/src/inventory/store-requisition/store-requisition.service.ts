@@ -606,6 +606,7 @@ export class StoreRequisitionService {
 
       for (const detail of SRdetail) {
         const findDetails = payload.details.find((d) => d.id === detail.id);
+        if (!findDetails) continue;
         const stages_status = Array.isArray(detail.stages_status)
           ? (detail.stages_status as unknown as StageStatus[])
           : [];
@@ -1051,6 +1052,7 @@ export class StoreRequisitionService {
     await this.prismaService.$transaction(async (txp) => {
       for (const detail of storeRequisitionDetail) {
         const findSR = payload.details.find((d) => d.id === detail.id);
+        if (!findSR) continue;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let stages_status: any[] = detail.stages_status as unknown as any[];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1160,6 +1162,7 @@ export class StoreRequisitionService {
     await this.prismaService.$transaction(async (txp) => {
       for (const detail of storeRequisitionDetail) {
         const findSR = payload.details.find((d) => d.id === detail.id);
+        if (!findSR) continue;
         if (findSR.stage_status === stage_status.approve) {
           continue;
         }

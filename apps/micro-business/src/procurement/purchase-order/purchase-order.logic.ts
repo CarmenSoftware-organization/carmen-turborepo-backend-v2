@@ -95,6 +95,10 @@ export class PurchaseOrderLogic {
       throw new Error('Cannot submit PO: workflow not found. Please set workflow_id on the purchase order before submitting.');
     }
 
+    if (!poData?.tb_purchase_order_detail?.length) {
+      throw new Error('Cannot submit PO: PO must have at least one detail line.');
+    }
+
     const total_amount = poData?.tb_purchase_order_detail?.reduce(
       (curr, acc) => curr + Number(acc.total_price || 0),
       0,
