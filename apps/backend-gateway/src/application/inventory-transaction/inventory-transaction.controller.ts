@@ -79,6 +79,8 @@ export class InventoryTransactionController extends BaseHttpController {
    * GET /api/:bu_code/inventory-transaction/cost-layers?product_id=xxx&location_id=xxx
    */
   @Get('cost-layers')
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'View cost layers for a product',
     operationId: 'getCostLayers',
@@ -93,9 +95,11 @@ export class InventoryTransactionController extends BaseHttpController {
     @Query('location_id') location_id: string | undefined,
     @Req() req: Request,
     @Res() res: Response,
+    @Query() query: IPaginateQuery,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.inventoryTransactionService.getCostLayers(product_id, location_id, user_id, bu_code);
+    const paginate = PaginateQuery(query);
+    const result = await this.inventoryTransactionService.getCostLayers(product_id, location_id, user_id, bu_code, paginate);
     this.respond(res, result);
   }
 
@@ -103,6 +107,8 @@ export class InventoryTransactionController extends BaseHttpController {
    * GET /api/:bu_code/inventory-transaction/stock-balance?product_id=xxx
    */
   @Get('stock-balance')
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'View aggregated stock balance per product/location',
     operationId: 'getStockBalance',
@@ -115,9 +121,11 @@ export class InventoryTransactionController extends BaseHttpController {
     @Query('product_id') product_id: string | undefined,
     @Req() req: Request,
     @Res() res: Response,
+    @Query() query: IPaginateQuery,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.inventoryTransactionService.getStockBalance(product_id, user_id, bu_code);
+    const paginate = PaginateQuery(query);
+    const result = await this.inventoryTransactionService.getStockBalance(product_id, user_id, bu_code, paginate);
     this.respond(res, result);
   }
 
@@ -125,6 +133,8 @@ export class InventoryTransactionController extends BaseHttpController {
    * GET /api/:bu_code/inventory-transaction/locations
    */
   @Get('locations')
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'List active locations',
     operationId: 'getLocations',
@@ -135,9 +145,11 @@ export class InventoryTransactionController extends BaseHttpController {
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
+    @Query() query: IPaginateQuery,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.inventoryTransactionService.getLocations(user_id, bu_code);
+    const paginate = PaginateQuery(query);
+    const result = await this.inventoryTransactionService.getLocations(user_id, bu_code, paginate);
     this.respond(res, result);
   }
 
@@ -145,6 +157,8 @@ export class InventoryTransactionController extends BaseHttpController {
    * GET /api/:bu_code/inventory-transaction/products
    */
   @Get('products')
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'List all products',
     operationId: 'getProducts',
@@ -155,9 +169,11 @@ export class InventoryTransactionController extends BaseHttpController {
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
+    @Query() query: IPaginateQuery,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.inventoryTransactionService.getProducts(user_id, bu_code);
+    const paginate = PaginateQuery(query);
+    const result = await this.inventoryTransactionService.getProducts(user_id, bu_code, paginate);
     this.respond(res, result);
   }
 
@@ -165,6 +181,8 @@ export class InventoryTransactionController extends BaseHttpController {
    * GET /api/:bu_code/inventory-transaction/locations/:location_id/products
    */
   @Get('locations/:location_id/products')
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'List products at a location',
     operationId: 'getProductsByLocation',
@@ -176,9 +194,11 @@ export class InventoryTransactionController extends BaseHttpController {
     @Param('location_id') location_id: string,
     @Req() req: Request,
     @Res() res: Response,
+    @Query() query: IPaginateQuery,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.inventoryTransactionService.getProductsByLocation(location_id, user_id, bu_code);
+    const paginate = PaginateQuery(query);
+    const result = await this.inventoryTransactionService.getProductsByLocation(location_id, user_id, bu_code, paginate);
     this.respond(res, result);
   }
 

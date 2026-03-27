@@ -2370,8 +2370,9 @@ export class InventoryTransactionService {
     query: ICostLayerQuery,
     user_id: string,
     tenant_id: string,
+    paginate?: IPaginate,
   ): Promise<Result<unknown>> {
-    this.logger.debug({ function: 'getCostLayers', query }, InventoryTransactionService.name);
+    this.logger.debug({ function: 'getCostLayers', query, paginate }, InventoryTransactionService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
@@ -2383,27 +2384,37 @@ export class InventoryTransactionService {
     if (query.product_id) where.product_id = query.product_id;
     if (query.location_id) where.location_id = query.location_id;
 
-    const layers = await prisma.tb_inventory_transaction_cost_layer.findMany({
-      where,
-      include: {
-        tb_inventory_transaction_detail: {
-          select: {
-            tb_inventory_transaction: {
-              select: { inventory_doc_no: true },
+    const page = paginate?.page ?? 1;
+    const perpage = paginate?.perpage ?? 10;
+
+    const orderBy = [
+      { product_id: 'asc' as const },
+      { lot_at_date: 'asc' as const },
+      { lot_seq_no: 'asc' as const },
+      { lot_index: 'asc' as const },
+      { created_at: 'asc' as const },
+    ];
+
+    const [layers, total] = await Promise.all([
+      prisma.tb_inventory_transaction_cost_layer.findMany({
+        where,
+        include: {
+          tb_inventory_transaction_detail: {
+            select: {
+              tb_inventory_transaction: {
+                select: { inventory_doc_no: true },
+              },
             },
           },
         },
-      },
-      orderBy: [
-        { product_id: 'asc' },
-        { lot_at_date: 'asc' },
-        { lot_seq_no: 'asc' },
-        { lot_index: 'asc' },
-        { created_at: 'asc' },
-      ],
-    });
+        orderBy,
+        skip: (page - 1) * perpage,
+        take: perpage,
+      }),
+      prisma.tb_inventory_transaction_cost_layer.count({ where }),
+    ]);
 
-    const result = layers.map((layer: any) => ({
+    const data = layers.map((layer: any) => ({
       id: layer.id,
       lot_no: layer.lot_no,
       lot_index: layer.lot_index,
@@ -2426,7 +2437,15 @@ export class InventoryTransactionService {
       inventory_doc_no: layer.tb_inventory_transaction_detail?.tb_inventory_transaction?.inventory_doc_no ?? null,
     }));
 
-    return Result.ok(result);
+    return Result.ok({
+      paginate: {
+        total,
+        page,
+        perpage,
+        pages: total === 0 ? 1 : Math.ceil(total / perpage),
+      },
+      data,
+    });
   }
 
   @TryCatch
@@ -2434,8 +2453,9 @@ export class InventoryTransactionService {
     query: IStockBalanceQuery,
     user_id: string,
     tenant_id: string,
+    paginate?: IPaginate,
   ): Promise<Result<unknown>> {
-    this.logger.debug({ function: 'getStockBalance', query }, InventoryTransactionService.name);
+    this.logger.debug({ function: 'getStockBalance', query, paginate }, InventoryTransactionService.name);
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
@@ -2488,7 +2508,7 @@ export class InventoryTransactionService {
       }
     }
 
-    const result = [...balanceMap.values()].map((item) => ({
+    const allItems = [...balanceMap.values()].map((item) => ({
       product_id: item.product_id,
       location_id: item.location_id,
       location_code: item.location_code,
@@ -2499,7 +2519,20 @@ export class InventoryTransactionService {
       total_value: Math.round((item.total_in - item.total_out) * item.latest_avg_cost * 100) / 100,
     }));
 
-    return Result.ok(result);
+    const page = paginate?.page ?? 1;
+    const perpage = paginate?.perpage ?? 10;
+    const total = allItems.length;
+    const data = allItems.slice((page - 1) * perpage, page * perpage);
+
+    return Result.ok({
+      paginate: {
+        total,
+        page,
+        perpage,
+        pages: total === 0 ? 1 : Math.ceil(total / perpage),
+      },
+      data,
+    });
   }
 
   // ──────────────────────────────────────────────────────────────────────
@@ -2514,6 +2547,7 @@ export class InventoryTransactionService {
   async getLocations(
     user_id: string,
     tenant_id: string,
+    paginate?: IPaginate,
   ): Promise<Result<unknown>> {
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
@@ -2531,7 +2565,7 @@ export class InventoryTransactionService {
       orderBy: { code: 'asc' },
     });
 
-    const result = locations
+    const allItems = locations
       .map((l) => ({
         id: l.id,
         code: l.code,
@@ -2540,7 +2574,20 @@ export class InventoryTransactionService {
       }))
       .sort((a, b) => b.product_count - a.product_count);
 
-    return Result.ok(result);
+    const page = paginate?.page ?? 1;
+    const perpage = paginate?.perpage ?? 10;
+    const total = allItems.length;
+    const data = allItems.slice((page - 1) * perpage, page * perpage);
+
+    return Result.ok({
+      paginate: {
+        total,
+        page,
+        perpage,
+        pages: total === 0 ? 1 : Math.ceil(total / perpage),
+      },
+      data,
+    });
   }
 
   /**
@@ -2550,6 +2597,7 @@ export class InventoryTransactionService {
   async getProducts(
     user_id: string,
     tenant_id: string,
+    paginate?: IPaginate,
   ): Promise<Result<unknown>> {
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
@@ -2569,18 +2617,31 @@ export class InventoryTransactionService {
 
     // Deduplicate by product_id
     const seen = new Set<string>();
-    const result: { product_id: string; product_code: string | null; product_name: string | null }[] = [];
+    const allItems: { product_id: string; product_code: string | null; product_name: string | null }[] = [];
     for (const pl of productLocations) {
       if (seen.has(pl.product_id)) continue;
       seen.add(pl.product_id);
-      result.push({
+      allItems.push({
         product_id: pl.product_id,
         product_code: pl.tb_product?.code ?? null,
         product_name: pl.tb_product?.name ?? null,
       });
     }
 
-    return Result.ok(result);
+    const page = paginate?.page ?? 1;
+    const perpage = paginate?.perpage ?? 10;
+    const total = allItems.length;
+    const data = allItems.slice((page - 1) * perpage, page * perpage);
+
+    return Result.ok({
+      paginate: {
+        total,
+        page,
+        perpage,
+        pages: total === 0 ? 1 : Math.ceil(total / perpage),
+      },
+      data,
+    });
   }
 
   /**
@@ -2591,28 +2652,38 @@ export class InventoryTransactionService {
     location_id: string,
     user_id: string,
     tenant_id: string,
+    paginate?: IPaginate,
   ): Promise<Result<unknown>> {
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
-    const productLocations = await prisma.tb_product_location.findMany({
-      where: { location_id, deleted_at: null },
-      select: {
-        product_id: true,
-        location_id: true,
-        tb_product: {
-          select: { id: true, code: true, name: true },
-        },
-        tb_location: {
-          select: { code: true, name: true },
-        },
-      },
-      orderBy: { tb_product: { name: 'asc' } },
-    });
+    const where = { location_id, deleted_at: null };
+    const page = paginate?.page ?? 1;
+    const perpage = paginate?.perpage ?? 10;
 
-    const result = productLocations.map((pl) => ({
+    const [productLocations, total] = await Promise.all([
+      prisma.tb_product_location.findMany({
+        where,
+        select: {
+          product_id: true,
+          location_id: true,
+          tb_product: {
+            select: { id: true, code: true, name: true },
+          },
+          tb_location: {
+            select: { code: true, name: true },
+          },
+        },
+        orderBy: { tb_product: { name: 'asc' } },
+        skip: (page - 1) * perpage,
+        take: perpage,
+      }),
+      prisma.tb_product_location.count({ where }),
+    ]);
+
+    const data = productLocations.map((pl) => ({
       product_id: pl.product_id,
       product_code: pl.tb_product?.code ?? null,
       product_name: pl.tb_product?.name ?? null,
@@ -2621,7 +2692,15 @@ export class InventoryTransactionService {
       location_name: pl.tb_location?.name ?? null,
     }));
 
-    return Result.ok(result);
+    return Result.ok({
+      paginate: {
+        total,
+        page,
+        perpage,
+        pages: total === 0 ? 1 : Math.ceil(total / perpage),
+      },
+      data,
+    });
   }
 
   // ⚠️ TEMPORARY — Remove when the frontend uses proper master-data endpoints.

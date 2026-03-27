@@ -48,29 +48,29 @@ export class InventoryTransactionService {
     return this.sendCommand('inventory-transaction.findAll', { user_id, tenant_id: bu_code, paginate, version });
   }
 
-  async getCostLayers(product_id: string | undefined, location_id: string | undefined, user_id: string, tenant_id: string): Promise<Result<unknown>> {
+  async getCostLayers(product_id: string | undefined, location_id: string | undefined, user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'getCostLayers', user_id, tenant_id }, InventoryTransactionService.name);
-    return this.sendCommand('inventory-transaction.get-cost-layers', { product_id, location_id, user_id, tenant_id });
+    return this.sendCommand('inventory-transaction.get-cost-layers', { product_id, location_id, user_id, tenant_id, paginate });
   }
 
-  async getStockBalance(product_id: string | undefined, user_id: string, tenant_id: string): Promise<Result<unknown>> {
+  async getStockBalance(product_id: string | undefined, user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'getStockBalance', user_id, tenant_id }, InventoryTransactionService.name);
-    return this.sendCommand('inventory-transaction.get-stock-balance', { product_id, user_id, tenant_id });
+    return this.sendCommand('inventory-transaction.get-stock-balance', { product_id, user_id, tenant_id, paginate });
   }
 
-  async getLocations(user_id: string, tenant_id: string): Promise<Result<unknown>> {
+  async getLocations(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'getLocations', user_id, tenant_id }, InventoryTransactionService.name);
-    return this.sendCommand('inventory-transaction.get-locations', { user_id, tenant_id });
+    return this.sendCommand('inventory-transaction.get-locations', { user_id, tenant_id, paginate });
   }
 
-  async getProducts(user_id: string, tenant_id: string): Promise<Result<unknown>> {
+  async getProducts(user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'getProducts', user_id, tenant_id }, InventoryTransactionService.name);
-    return this.sendCommand('inventory-transaction.get-products', { user_id, tenant_id });
+    return this.sendCommand('inventory-transaction.get-products', { user_id, tenant_id, paginate });
   }
 
-  async getProductsByLocation(location_id: string, user_id: string, tenant_id: string): Promise<Result<unknown>> {
+  async getProductsByLocation(location_id: string, user_id: string, tenant_id: string, paginate: IPaginate): Promise<Result<unknown>> {
     this.logger.debug({ function: 'getProductsByLocation', user_id, tenant_id }, InventoryTransactionService.name);
-    return this.sendCommand('inventory-transaction.get-products-by-location', { location_id, user_id, tenant_id });
+    return this.sendCommand('inventory-transaction.get-products-by-location', { location_id, user_id, tenant_id, paginate });
   }
 
   async getCalculationMethod(user_id: string, tenant_id: string): Promise<Result<unknown>> {

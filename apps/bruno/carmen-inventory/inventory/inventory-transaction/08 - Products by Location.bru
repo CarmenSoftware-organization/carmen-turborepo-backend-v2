@@ -13,6 +13,10 @@ docs {
   ### Path Parameters
   - `location_id` — Location UUID
 
+  ### Query Parameters
+  - `page` — Page number (default: 1)
+  - `perpage` — Items per page (default: 10)
+  - `search` — Search keyword (optional)
 
   ### Sample Response
   ```json
@@ -41,9 +45,15 @@ docs {
 }
 
 get {
-  url: {{host}}/api/{{bu_code}}/inventory-transaction/locations/:location_id/products
+  url: {{host}}/api/{{bu_code}}/inventory-transaction/locations/:location_id/products?page=1&perpage=10
   body: none
   auth: bearer
+}
+
+params:query {
+  page: 1
+  perpage: 10
+  ~search:
 }
 
 params:path {

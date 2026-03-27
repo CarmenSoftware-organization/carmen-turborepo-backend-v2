@@ -10,6 +10,10 @@ docs {
 
   List all products for the business unit.
 
+  ### Query Parameters
+  - `page` — Page number (default: 1)
+  - `perpage` — Items per page (default: 10)
+  - `search` — Search keyword (optional)
 
   ### Sample Response
   ```json
@@ -43,9 +47,15 @@ docs {
 }
 
 get {
-  url: {{host}}/api/{{bu_code}}/inventory-transaction/products
+  url: {{host}}/api/{{bu_code}}/inventory-transaction/products?page=1&perpage=10
   body: none
   auth: bearer
+}
+
+params:query {
+  page: 1
+  perpage: 10
+  ~search:
 }
 
 headers {

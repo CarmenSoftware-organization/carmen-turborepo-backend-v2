@@ -74,6 +74,7 @@ export class InventoryTransactionController extends BaseMicroserviceController {
         { bu_code: tenant_id, product_id: payload.product_id, location_id: payload.location_id },
         user_id,
         tenant_id,
+        payload.paginate,
       )
     );
     return this.handleResult(result);
@@ -93,6 +94,7 @@ export class InventoryTransactionController extends BaseMicroserviceController {
         { bu_code: tenant_id, product_id: payload.product_id },
         user_id,
         tenant_id,
+        payload.paginate,
       )
     );
     return this.handleResult(result);
@@ -108,7 +110,7 @@ export class InventoryTransactionController extends BaseMicroserviceController {
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.inventoryTransactionService.getLocations(user_id, tenant_id)
+      this.inventoryTransactionService.getLocations(user_id, tenant_id, payload.paginate)
     );
     return this.handleResult(result);
   }
@@ -123,7 +125,7 @@ export class InventoryTransactionController extends BaseMicroserviceController {
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.inventoryTransactionService.getProducts(user_id, tenant_id)
+      this.inventoryTransactionService.getProducts(user_id, tenant_id, payload.paginate)
     );
     return this.handleResult(result);
   }
@@ -142,6 +144,7 @@ export class InventoryTransactionController extends BaseMicroserviceController {
         payload.location_id,
         user_id,
         tenant_id,
+        payload.paginate,
       )
     );
     return this.handleResult(result);

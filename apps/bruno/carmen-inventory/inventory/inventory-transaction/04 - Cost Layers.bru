@@ -11,8 +11,11 @@ docs {
   View cost layers for a product, showing cost breakdown by location and product.
 
   ### Query Parameters
+  - `page` — Page number (default: 1)
+  - `perpage` — Items per page (default: 10)
   - `product_id` — Product UUID (optional)
   - `location_id` — Location UUID (optional)
+  - `search` — Search keyword (optional)
 
 
   ### Sample Response
@@ -47,9 +50,17 @@ docs {
 }
 
 get {
-  url: {{host}}/api/{{bu_code}}/inventory-transaction/cost-layers
+  url: {{host}}/api/{{bu_code}}/inventory-transaction/cost-layers?page=1&perpage=10
   body: none
   auth: bearer
+}
+
+params:query {
+  page: 1
+  perpage: 10
+  ~product_id:
+  ~location_id:
+  ~search:
 }
 
 headers {

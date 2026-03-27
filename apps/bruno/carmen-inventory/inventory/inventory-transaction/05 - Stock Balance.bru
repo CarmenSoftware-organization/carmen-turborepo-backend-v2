@@ -11,7 +11,10 @@ docs {
   View aggregated stock balance per product/location.
 
   ### Query Parameters
+  - `page` — Page number (default: 1)
+  - `perpage` — Items per page (default: 10)
   - `product_id` — Product UUID (optional)
+  - `search` — Search keyword (optional)
 
 
   ### Sample Response
@@ -46,9 +49,16 @@ docs {
 }
 
 get {
-  url: {{host}}/api/{{bu_code}}/inventory-transaction/stock-balance
+  url: {{host}}/api/{{bu_code}}/inventory-transaction/stock-balance?page=1&perpage=10
   body: none
   auth: bearer
+}
+
+params:query {
+  page: 1
+  perpage: 10
+  ~product_id:
+  ~search:
 }
 
 headers {
