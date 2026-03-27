@@ -530,6 +530,52 @@ export class StoreRequisitionService {
       return Result.error('Store requisition not found', ErrorCode.NOT_FOUND);
     }
 
+    // ตรวจสอบว่าสินค้าทั้งหมดสามารถอยู่ในสถานที่ปลายทางได้
+    if (storeRequisition.to_location_id) {
+      const srDetails =
+        await this.prismaService.tb_store_requisition_detail.findMany({
+          where: {
+            store_requisition_id: id,
+            deleted_at: null,
+          },
+          select: {
+            product_id: true,
+            product_name: true,
+          },
+        });
+
+      const productIds = srDetails.map((d) => d.product_id);
+
+      const allowedProducts =
+        await this.prismaService.tb_product_location.findMany({
+          where: {
+            location_id: storeRequisition.to_location_id,
+            product_id: { in: productIds },
+            deleted_at: null,
+          },
+          select: {
+            product_id: true,
+          },
+        });
+
+      const allowedProductIds = new Set(
+        allowedProducts.map((p) => p.product_id),
+      );
+      const notAllowedProducts = srDetails.filter(
+        (d) => !allowedProductIds.has(d.product_id),
+      );
+
+      if (notAllowedProducts.length > 0) {
+        const names = notAllowedProducts
+          .map((p) => p.product_name)
+          .join(', ');
+        return Result.error(
+          `The following products are not allowed in the destination location: ${names}`,
+          ErrorCode.VALIDATION_FAILURE,
+        );
+      }
+    }
+
     const newSrNo = await this.generateSRNo(
       new Date(storeRequisition.sr_date).toISOString(),
     );
