@@ -1,0 +1,55 @@
+meta {
+  name: 03 - Create Count Stock Detail Comment
+  type: http
+  seq: 3
+}
+
+docs {
+  ## Create Count Stock Detail Comment
+  สร้างความคิดเห็นใหม่สำหรับรายละเอียดการนับสต็อก
+
+  Posts a new comment on a count-stock-detail.
+
+  ### Sample Body
+  ```json
+  {
+    "count_stock_detail_id": "{{test_id}}",
+    "message": ""
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/count-stock-detail-comment
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "count_stock_detail_id": "{{test_id}}",
+    "message": ""
+  }
+}

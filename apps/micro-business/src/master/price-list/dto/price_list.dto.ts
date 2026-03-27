@@ -98,6 +98,7 @@ export const PriceListDetailItemSchema = z.object({
   tax_profile_id: z.string().uuid().optional(),
   tax_rate: z.number().optional(),
   moq_qty: z.number().optional(),
+  comment: z.string().optional().nullable(),
 })
 
 export const PriceListDetailActionSchema = z.object({

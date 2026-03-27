@@ -106,6 +106,7 @@ const GoodReceivedNoteDetailSchema = z.object({
   good_received_note_id: z.string().uuid(),
   purchase_order_detail_id: z.string().uuid(),
   sequence_no: z.number().optional(),
+  comment: z.string().optional().nullable(),
 })
 .merge(EmbeddedProductSchema)
 .merge(EmbeddedLocationSchema)
@@ -157,6 +158,7 @@ export const GoodReceivedNoteDetail_Manual_Create = GoodReceivedNoteDetailSchema
 export const ExtraCostDetailCreate = z.object({
   extra_cost_type_id: z.string().uuid(),
   amount: z.number().optional(),
+  comment: z.string().optional().nullable(),
 })
 .merge(EmbeddedTaxSchema.omit({ is_tax_adjustment: true }).extend({
   tax_type: z

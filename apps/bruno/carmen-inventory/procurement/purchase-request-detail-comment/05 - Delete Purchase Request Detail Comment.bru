@@ -1,0 +1,48 @@
+meta {
+  name: 05 - Delete Purchase Request Detail Comment
+  type: http
+  seq: 5
+}
+
+docs {
+  ## Delete Purchase Request Detail Comment
+  ลบความคิดเห็นของรายละเอียดใบขอซื้อ
+
+  Deletes a purchase-request-detail comment. Only the author can delete.
+
+  ### Path Parameters
+  - `id` — Comment ID
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/purchase-request-detail-comment/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{test_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

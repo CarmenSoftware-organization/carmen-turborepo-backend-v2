@@ -65,6 +65,7 @@ export const PriceListTemplateDetailSchema = z.object({
     unit_name: z.string()
   })).optional().default([]),
   doc_version: z.number().optional().default(0),
+  comment: z.string().optional().nullable(),
 })
 .merge(EmbeddedProductSchema)
 .merge(InfoSchema);

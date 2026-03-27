@@ -1,0 +1,48 @@
+meta {
+  name: 05 - Delete Exchange Rate Comment
+  type: http
+  seq: 5
+}
+
+docs {
+  ## Delete Exchange Rate Comment
+  ลบความคิดเห็นของอัตราแลกเปลี่ยน
+
+  Deletes a exchange-rate comment. Only the author can delete.
+
+  ### Path Parameters
+  - `id` — Comment ID
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/exchange-rate-comment/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{test_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

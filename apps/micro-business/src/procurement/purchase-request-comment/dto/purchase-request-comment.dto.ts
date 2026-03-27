@@ -5,6 +5,8 @@ import {
   Attachment,
 } from '../../../common/dto/attachment.schema';
 
+export { AttachmentSchema, Attachment };
+
 // Create comment schema
 export const CreatePurchaseRequestCommentSchema = z.object({
   purchase_request_id: z.string().uuid(),

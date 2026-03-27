@@ -1,0 +1,55 @@
+meta {
+  name: 03 - Create Tax Profile Comment
+  type: http
+  seq: 3
+}
+
+docs {
+  ## Create Tax Profile Comment
+  สร้างความคิดเห็นใหม่สำหรับโปรไฟล์ภาษี
+
+  Posts a new comment on a tax-profile.
+
+  ### Sample Body
+  ```json
+  {
+    "tax_profile_id": "{{test_id}}",
+    "message": ""
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/tax-profile-comment
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "tax_profile_id": "{{test_id}}",
+    "message": ""
+  }
+}

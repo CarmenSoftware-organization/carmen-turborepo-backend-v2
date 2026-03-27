@@ -1,0 +1,56 @@
+meta {
+  name: 01 - List Stock Out Comments
+  type: http
+  seq: 1
+}
+
+docs {
+  ## List Stock Out Comments
+  แสดงความคิดเห็นทั้งหมดของการเบิกสินค้าออกคลัง
+
+  Retrieves all comments for a stock-out.
+
+  ### Path Parameters
+  - `stock_out_id` — Stock Out ID
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "message": "comment text"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/stock-out/:stock_out_id/comment
+  body: none
+  auth: bearer
+}
+
+params:path {
+  stock_out_id: {{test_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

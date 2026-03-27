@@ -1,0 +1,60 @@
+meta {
+  name: 04 - Update Spot Check Comment
+  type: http
+  seq: 4
+}
+
+docs {
+  ## Update Spot Check Comment
+  แก้ไขความคิดเห็นของการตรวจสอบสุ่ม
+
+  Updates an existing spot-check comment. Only the author can update.
+
+  ### Path Parameters
+  - `id` — Comment ID
+
+  ### Sample Body
+  ```json
+  {
+    "message": ""
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/spot-check-comment/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{test_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "message": ""
+  }
+}

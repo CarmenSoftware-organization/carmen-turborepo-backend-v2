@@ -1,0 +1,56 @@
+meta {
+  name: 01 - List Config Running Code Comments
+  type: http
+  seq: 1
+}
+
+docs {
+  ## List Config Running Code Comments
+  แสดงความคิดเห็นทั้งหมดของการตั้งค่าเลขรันนิ่ง
+
+  Retrieves all comments for a config-running-code.
+
+  ### Path Parameters
+  - `config_running_code_id` — Config Running Code ID
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "message": "comment text"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/config-running-code/:config_running_code_id/comment
+  body: none
+  auth: bearer
+}
+
+params:path {
+  config_running_code_id: {{test_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

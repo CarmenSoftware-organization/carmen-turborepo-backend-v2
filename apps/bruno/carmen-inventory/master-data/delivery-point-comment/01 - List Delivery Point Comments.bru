@@ -1,0 +1,56 @@
+meta {
+  name: 01 - List Delivery Point Comments
+  type: http
+  seq: 1
+}
+
+docs {
+  ## List Delivery Point Comments
+  แสดงความคิดเห็นทั้งหมดของจุดส่งสินค้า
+
+  Retrieves all comments for a delivery-point.
+
+  ### Path Parameters
+  - `delivery_point_id` — Delivery Point ID
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "message": "comment text"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/delivery-point/:delivery_point_id/comment
+  body: none
+  auth: bearer
+}
+
+params:path {
+  delivery_point_id: {{test_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

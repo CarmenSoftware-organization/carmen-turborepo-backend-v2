@@ -1,0 +1,56 @@
+meta {
+  name: 01 - List Period Comments
+  type: http
+  seq: 1
+}
+
+docs {
+  ## List Period Comments
+  แสดงความคิดเห็นทั้งหมดของงวดบัญชี
+
+  Retrieves all comments for a period.
+
+  ### Path Parameters
+  - `period_id` — Period ID
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "message": "comment text"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/period/:period_id/comment
+  body: none
+  auth: bearer
+}
+
+params:path {
+  period_id: {{test_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

@@ -30,6 +30,55 @@ import { ActivityLogModule } from './activity-log/activity-log.module';
 import { DocumentManagementModule } from './document-management/document-management.module';
 import { NewsModule } from './news/news.module';
 import { PurchaseRequestCommentModule } from './purchase-request-comment/purchase-request-comment.module';
+import { CreditNoteCommentModule } from './credit-note-comment/credit-note-comment.module';
+import { CreditNoteDetailCommentModule } from './credit-note-detail-comment/credit-note-detail-comment.module';
+import { ExtraCostCommentModule } from './extra-cost-comment/extra-cost-comment.module';
+import { ExtraCostDetailCommentModule } from './extra-cost-detail-comment/extra-cost-detail-comment.module';
+import { GoodReceivedNoteCommentModule } from './good-received-note-comment/good-received-note-comment.module';
+import { GoodReceivedNoteDetailCommentModule } from './good-received-note-detail-comment/good-received-note-detail-comment.module';
+import { PurchaseOrderCommentModule } from './purchase-order-comment/purchase-order-comment.module';
+import { PurchaseOrderDetailCommentModule } from './purchase-order-detail-comment/purchase-order-detail-comment.module';
+import { PurchaseRequestDetailCommentModule } from './purchase-request-detail-comment/purchase-request-detail-comment.module';
+import { PurchaseRequestTemplateCommentModule } from './purchase-request-template-comment/purchase-request-template-comment.module';
+import { RequestForPricingCommentModule } from './request-for-pricing-comment/request-for-pricing-comment.module';
+import { RequestForPricingDetailCommentModule } from './request-for-pricing-detail-comment/request-for-pricing-detail-comment.module';
+import { CountStockCommentModule } from './count-stock-comment/count-stock-comment.module';
+import { CountStockDetailCommentModule } from './count-stock-detail-comment/count-stock-detail-comment.module';
+import { PhysicalCountCommentModule } from './physical-count-comment/physical-count-comment.module';
+import { PhysicalCountDetailCommentModule } from './physical-count-detail-comment/physical-count-detail-comment.module';
+import { PhysicalCountPeriodCommentModule } from './physical-count-period-comment/physical-count-period-comment.module';
+import { SpotCheckCommentModule } from './spot-check-comment/spot-check-comment.module';
+import { SpotCheckDetailCommentModule } from './spot-check-detail-comment/spot-check-detail-comment.module';
+import { StockInCommentModule } from './stock-in-comment/stock-in-comment.module';
+import { StockInDetailCommentModule } from './stock-in-detail-comment/stock-in-detail-comment.module';
+import { StockOutCommentModule } from './stock-out-comment/stock-out-comment.module';
+import { StockOutDetailCommentModule } from './stock-out-detail-comment/stock-out-detail-comment.module';
+import { StoreRequisitionCommentModule } from './store-requisition-comment/store-requisition-comment.module';
+import { StoreRequisitionDetailCommentModule } from './store-requisition-detail-comment/store-requisition-detail-comment.module';
+import { TransferCommentModule } from './transfer-comment/transfer-comment.module';
+import { TransferDetailCommentModule } from './transfer-detail-comment/transfer-detail-comment.module';
+import { ConfigRunningCodeCommentModule } from './config-running-code-comment/config-running-code-comment.module';
+import { CreditTermCommentModule } from './credit-term-comment/credit-term-comment.module';
+import { CurrencyCommentModule } from './currency-comment/currency-comment.module';
+import { DeliveryPointCommentModule } from './delivery-point-comment/delivery-point-comment.module';
+import { DepartmentCommentModule } from './department-comment/department-comment.module';
+import { DimensionCommentModule } from './dimension-comment/dimension-comment.module';
+import { ExchangeRateCommentModule } from './exchange-rate-comment/exchange-rate-comment.module';
+import { LocationCommentModule } from './location-comment/location-comment.module';
+import { PeriodCommentModule } from './period-comment/period-comment.module';
+import { PricelistCommentModule } from './pricelist-comment/pricelist-comment.module';
+import { PricelistDetailCommentModule } from './pricelist-detail-comment/pricelist-detail-comment.module';
+import { PricelistTemplateCommentModule } from './pricelist-template-comment/pricelist-template-comment.module';
+import { PricelistTemplateDetailCommentModule } from './pricelist-template-detail-comment/pricelist-template-detail-comment.module';
+import { ProductCommentModule } from './product-comment/product-comment.module';
+import { ProductCategoryCommentModule } from './product-category-comment/product-category-comment.module';
+import { ProductItemGroupCommentModule } from './product-item-group-comment/product-item-group-comment.module';
+import { ProductSubCategoryCommentModule } from './product-sub-category-comment/product-sub-category-comment.module';
+import { TaxProfileCommentModule } from './tax-profile-comment/tax-profile-comment.module';
+import { UnitCommentModule } from './unit-comment/unit-comment.module';
+import { VendorCommentModule } from './vendor-comment/vendor-comment.module';
+import { VendorBusinessTypeCommentModule } from './vendor-business-type-comment/vendor-business-type-comment.module';
+import { WorkflowCommentModule } from './workflow-comment/workflow-comment.module';
 import { PhysicalCountModule } from './physical-count/physical-count.module';
 import { SpotCheckModule } from './spot-check/spot-check.module';
 import { StockInModule } from './stock-in/stock-in.module';
@@ -77,6 +126,55 @@ import { ReportModule } from './report/report.module';
     DocumentManagementModule,
     NewsModule,
     PurchaseRequestCommentModule,
+    CreditNoteCommentModule,
+    CreditNoteDetailCommentModule,
+    ExtraCostCommentModule,
+    ExtraCostDetailCommentModule,
+    GoodReceivedNoteCommentModule,
+    GoodReceivedNoteDetailCommentModule,
+    PurchaseOrderCommentModule,
+    PurchaseOrderDetailCommentModule,
+    PurchaseRequestDetailCommentModule,
+    PurchaseRequestTemplateCommentModule,
+    RequestForPricingCommentModule,
+    RequestForPricingDetailCommentModule,
+    CountStockCommentModule,
+    CountStockDetailCommentModule,
+    PhysicalCountCommentModule,
+    PhysicalCountDetailCommentModule,
+    PhysicalCountPeriodCommentModule,
+    SpotCheckCommentModule,
+    SpotCheckDetailCommentModule,
+    StockInCommentModule,
+    StockInDetailCommentModule,
+    StockOutCommentModule,
+    StockOutDetailCommentModule,
+    StoreRequisitionCommentModule,
+    StoreRequisitionDetailCommentModule,
+    TransferCommentModule,
+    TransferDetailCommentModule,
+    ConfigRunningCodeCommentModule,
+    CreditTermCommentModule,
+    CurrencyCommentModule,
+    DeliveryPointCommentModule,
+    DepartmentCommentModule,
+    DimensionCommentModule,
+    ExchangeRateCommentModule,
+    LocationCommentModule,
+    PeriodCommentModule,
+    PricelistCommentModule,
+    PricelistDetailCommentModule,
+    PricelistTemplateCommentModule,
+    PricelistTemplateDetailCommentModule,
+    ProductCommentModule,
+    ProductCategoryCommentModule,
+    ProductItemGroupCommentModule,
+    ProductSubCategoryCommentModule,
+    TaxProfileCommentModule,
+    UnitCommentModule,
+    VendorCommentModule,
+    VendorBusinessTypeCommentModule,
+    WorkflowCommentModule,
     PhysicalCountModule,
     SpotCheckModule,
     StockInModule,

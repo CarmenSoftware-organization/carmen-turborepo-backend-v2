@@ -1,0 +1,55 @@
+meta {
+  name: 03 - Create Unit Comment
+  type: http
+  seq: 3
+}
+
+docs {
+  ## Create Unit Comment
+  สร้างความคิดเห็นใหม่สำหรับหน่วยนับ
+
+  Posts a new comment on a unit.
+
+  ### Sample Body
+  ```json
+  {
+    "unit_id": "{{test_id}}",
+    "message": ""
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/unit-comment
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "unit_id": "{{test_id}}",
+    "message": ""
+  }
+}

@@ -1,0 +1,56 @@
+meta {
+  name: 01 - List Credit Note Comments
+  type: http
+  seq: 1
+}
+
+docs {
+  ## List Credit Note Comments
+  แสดงความคิดเห็นทั้งหมดของใบลดหนี้
+
+  Retrieves all comments for a credit-note.
+
+  ### Path Parameters
+  - `credit_note_id` — Credit Note ID
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "message": "comment text"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/credit-note/:credit_note_id/comment
+  body: none
+  auth: bearer
+}
+
+params:path {
+  credit_note_id: {{test_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

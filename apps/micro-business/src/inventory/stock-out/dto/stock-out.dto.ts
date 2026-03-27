@@ -25,6 +25,7 @@ const StockOutDetailBaseSchema = z.object({
   description: z.string().optional().nullable(),
   qty: z.number().optional().default(0),
   note: z.string().optional().nullable(),
+  comment: z.string().optional().nullable(),
   // Denormalized product fields (populated by service)
   product_name: z.string().optional().nullable(),
   product_local_name: z.string().optional().nullable(),

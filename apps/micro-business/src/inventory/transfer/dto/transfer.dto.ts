@@ -31,6 +31,7 @@ export const TransferCreateSchema = z.object({
     cost_per_unit: z.number().optional().nullable(),
     total_cost: z.number().optional().nullable(),
     note: z.string().optional().nullable(),
+    comment: z.string().optional().nullable(),
     info: z.any().optional().nullable(),
     dimension: z.any().optional().nullable(),
   })).optional().nullable(),
@@ -86,6 +87,7 @@ export const TransferDetailCreateSchema = z.object({
   cost_per_unit: z.number().optional().nullable(),
   total_cost: z.number().optional().nullable(),
   note: z.string().optional().nullable(),
+  comment: z.string().optional().nullable(),
   info: z.any().optional().nullable(),
   dimension: z.any().optional().nullable(),
 });
@@ -106,6 +108,7 @@ export const TransferDetailUpdateSchema = z.object({
   cost_per_unit: z.number().optional().nullable(),
   total_cost: z.number().optional().nullable(),
   note: z.string().optional().nullable(),
+  comment: z.string().optional().nullable(),
   info: z.any().optional().nullable(),
   dimension: z.any().optional().nullable(),
 });

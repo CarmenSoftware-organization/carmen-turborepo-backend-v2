@@ -1,0 +1,56 @@
+meta {
+  name: 01 - List Count Stock Detail Comments
+  type: http
+  seq: 1
+}
+
+docs {
+  ## List Count Stock Detail Comments
+  แสดงความคิดเห็นทั้งหมดของรายละเอียดการนับสต็อก
+
+  Retrieves all comments for a count-stock-detail.
+
+  ### Path Parameters
+  - `count_stock_detail_id` — Count Stock Detail ID
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "message": "comment text"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/count-stock-detail/:count_stock_detail_id/comment
+  body: none
+  auth: bearer
+}
+
+params:path {
+  count_stock_detail_id: {{test_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

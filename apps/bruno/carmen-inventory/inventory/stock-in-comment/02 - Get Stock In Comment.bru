@@ -1,0 +1,49 @@
+meta {
+  name: 02 - Get Stock In Comment
+  type: http
+  seq: 2
+}
+
+docs {
+  ## Get Stock In Comment
+  ดึงความคิดเห็นเดี่ยวของการรับสินค้าเข้าคลัง
+
+  Retrieves a specific stock-in comment by ID.
+
+  ### Path Parameters
+  - `id` — Comment ID
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "message": "comment text"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/stock-in-comment/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: {{test_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

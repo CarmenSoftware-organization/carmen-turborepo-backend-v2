@@ -65,6 +65,7 @@ export const PurchaseOrderDetailSchema = z.object({
   // Optional fields
   description: z.string().optional(),
   note: z.string().optional(),
+  comment: z.string().optional().nullable(),
 });
 
 // Create PO Detail Operations schema (add only)
