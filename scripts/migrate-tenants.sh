@@ -52,47 +52,34 @@ echo ""
 
 # ─────────────────────────────────────────────────
 # 2. Query unique tenant schemas from tb_business_unit
+#    Uses node + @repo/prisma-shared-schema-platform (no psql needed)
 # ─────────────────────────────────────────────────
-
-# Build psql connection from DATABASE_URL
-# Format: postgresql://user:pass@host:port/database?params
-parse_db_url() {
-  local url="$1"
-  # Remove protocol prefix
-  url="${url#postgresql://}"
-  url="${url#postgres://}"
-
-  # Extract user:pass
-  local userpass="${url%%@*}"
-  DB_USER="${userpass%%:*}"
-  DB_PASS="${userpass#*:}"
-  # URL-decode password
-  DB_PASS=$(printf '%b' "${DB_PASS//%/\\x}")
-
-  # Extract host:port/database
-  local hostpart="${url#*@}"
-  local hostport="${hostpart%%/*}"
-  DB_HOST="${hostport%%:*}"
-  DB_PORT="${hostport#*:}"
-  # Remove query string from port if no database in path
-  DB_PORT="${DB_PORT%%\?*}"
-
-  # Extract database (between / and ?)
-  local dbpart="${hostpart#*/}"
-  DB_NAME="${dbpart%%\?*}"
-  if [ -z "$DB_NAME" ] || [ "$DB_NAME" = "$hostpart" ]; then
-    DB_NAME="postgres"
-  fi
-}
-
-parse_db_url "$SYSTEM_DATABASE_URL"
 
 echo "--- Querying tenant schemas from \"$SYSTEM_SCHEMA_NAME\".tb_business_unit ---"
 echo ""
 
-QUERY="SELECT DISTINCT db_connection->>'schema' AS schema_name FROM \"$SYSTEM_SCHEMA_NAME\".tb_business_unit WHERE deleted_at IS NULL AND db_connection IS NOT NULL AND db_connection->>'schema' IS NOT NULL ORDER BY schema_name;"
-
-SCHEMAS=$(PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -t -A -c "$QUERY" 2>&1)
+SCHEMAS=$(SYSTEM_DATABASE_URL="$SYSTEM_DATABASE_URL" node -e "
+const { PrismaClient } = require('$ROOT_DIR/packages/prisma-shared-schema-platform/generated/client');
+const prisma = new PrismaClient({ datasources: { db: { url: process.env.SYSTEM_DATABASE_URL } } });
+(async () => {
+  try {
+    const rows = await prisma.tb_business_unit.findMany({
+      where: { deleted_at: null, db_connection: { not: null } },
+      select: { db_connection: true },
+      distinct: ['db_connection'],
+    });
+    const schemas = [...new Set(
+      rows.map(r => r.db_connection?.schema).filter(Boolean)
+    )].sort();
+    console.log(schemas.join('\n'));
+  } catch (e) {
+    console.error('ERROR: ' + e.message);
+    process.exit(1);
+  } finally {
+    await prisma.\$disconnect();
+  }
+})();
+" 2>&1)
 
 if [ $? -ne 0 ]; then
   echo "ERROR: Failed to query schemas"
