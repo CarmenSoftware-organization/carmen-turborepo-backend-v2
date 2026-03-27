@@ -389,6 +389,11 @@ export class StoreRequisitionService {
               workflow_name: sr.workflow_name,
               created_at: sr.created_at,
               store_requisition_detail: store_requisition_detail.map((d) => ({
+                product_id: d.product_id,
+                product_name: d.product_name,
+                product_code: d.product_code,
+                product_local_name: d.product_local_name,
+                product_sku: d.product_sku,
                 requested_qty: Number(d.requested_qty),
                 approved_qty: Number(d.approved_qty),
               })),
@@ -596,7 +601,9 @@ export class StoreRequisitionService {
           message: findDetails.stage_message,
           user: {
             id: this.userId,
+            name: workflowHeader.last_action_by_name,
           },
+          datetime: new Date().toISOString(),
         });
 
         await prismatx.tb_store_requisition_detail.update({
@@ -607,6 +614,7 @@ export class StoreRequisitionService {
             updated_by_id: this.userId,
             approved_qty: Number(detail.requested_qty),
             current_stage_status: '',
+            last_action: enum_last_action.submitted,
           },
         });
       }
@@ -891,6 +899,8 @@ export class StoreRequisitionService {
           });
         }
 
+        const now = new Date().toISOString();
+
         history.push({
           seq: history.length + 1,
           status: detail.stage_status || '',
@@ -898,9 +908,12 @@ export class StoreRequisitionService {
           message: detail.stage_message || '',
           user: {
             id: this.userId,
+            name: workflow.last_action_by_name,
           },
+          datetime: now,
         });
 
+        const approvedMessage = detail.stage_message || '';
         delete detail.stage_message;
         delete detail.stage_status;
         delete detail.store_requisition_id;
@@ -923,6 +936,11 @@ export class StoreRequisitionService {
             history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: '',
+            last_action: enum_last_action.approved,
+            approved_by_id: this.userId,
+            approved_by_name: workflow.last_action_by_name,
+            approved_date_at: now,
+            approved_message: approvedMessage,
           },
         });
       }
@@ -971,11 +989,16 @@ export class StoreRequisitionService {
         },
       });
 
+    const now = new Date().toISOString();
+
     await this.prismaService.$transaction(async (txp) => {
       for (const detail of storeRequisitionDetail) {
         const findSR = payload.details.find((d) => d.id === detail.id);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let stages_status: any[] = detail.stages_status as unknown as any[];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const history: any[] = (detail.history as unknown as any[]) || [];
+
         stages_status = stages_status.map((stage) => {
           return {
             ...stage,
@@ -990,14 +1013,32 @@ export class StoreRequisitionService {
           message: findSR.stage_message,
         });
 
+        history.push({
+          seq: history.length + 1,
+          status: stage_status.reject,
+          name: storeRequisition.workflow_current_stage,
+          message: findSR.stage_message || '',
+          user: {
+            id: this.userId,
+            name: workflow.last_action_by_name,
+          },
+          datetime: now,
+        });
+
         await txp.tb_store_requisition_detail.update({
           where: {
             id: detail.id,
           },
           data: {
             stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: '',
+            last_action: enum_last_action.rejected,
+            reject_by_id: this.userId,
+            reject_by_name: workflow.last_action_by_name,
+            reject_date_at: now,
+            reject_message: findSR.stage_message || '',
           },
         });
       }
@@ -1007,6 +1048,8 @@ export class StoreRequisitionService {
         },
         data: {
           ...workflow,
+          workflow_history: workflow.workflow_history as unknown as Prisma.InputJsonValue,
+          user_action: workflow.user_action as unknown as Prisma.InputJsonValue,
           doc_status: enum_doc_status.voided,
           updated_by_id: this.userId,
         },
@@ -1055,6 +1098,8 @@ export class StoreRequisitionService {
         },
       });
 
+    const now = new Date().toISOString();
+
     await this.prismaService.$transaction(async (txp) => {
       for (const detail of storeRequisitionDetail) {
         const findSR = payload.details.find((d) => d.id === detail.id);
@@ -1072,7 +1117,9 @@ export class StoreRequisitionService {
           message: findSR.stage_message || '',
           user: {
             id: this.userId,
+            name: workflow.last_action_by_name,
           },
+          datetime: now,
         });
 
         // Trim stages_status back to destination stage (matching PR pattern)
@@ -1097,6 +1144,11 @@ export class StoreRequisitionService {
             history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: '',
+            last_action: enum_last_action.reviewed,
+            review_by_id: this.userId,
+            review_by_name: workflow.last_action_by_name,
+            review_date_at: now,
+            review_message: findSR.stage_message || '',
           },
         });
       }

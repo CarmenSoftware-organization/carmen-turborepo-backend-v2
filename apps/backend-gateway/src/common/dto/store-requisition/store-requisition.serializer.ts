@@ -100,6 +100,11 @@ export const StoreRequisitionListItemResponseSchema = z.object({
   last_action: z.string().nullable().optional(),
   created_at: z.coerce.date().nullable().optional(),
   store_requisition_detail: z.array(z.object({
+    product_id: z.string().nullable().optional(),
+    product_name: z.string().nullable().optional(),
+    product_code: z.string().nullable().optional(),
+    product_local_name: z.string().nullable().optional(),
+    product_sku: z.string().nullable().optional(),
     requested_qty: z.number().nullable().optional(),
     approved_qty: z.number().nullable().optional(),
   })).optional(),
