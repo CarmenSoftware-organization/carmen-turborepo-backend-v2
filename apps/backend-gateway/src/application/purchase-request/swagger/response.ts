@@ -19,6 +19,9 @@ export class PurchaseRequestDetailResponseDto {
   @ApiPropertyOptional({ description: 'Location name', example: 'Main Warehouse' })
   location_name?: string;
 
+  @ApiPropertyOptional({ description: 'Location type', example: 'inventory' })
+  location_type?: string;
+
   @ApiPropertyOptional({ description: 'Delivery point ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   delivery_point_id?: string;
 

@@ -84,6 +84,9 @@ export class StockOutResponseDto {
   @ApiPropertyOptional({ description: 'Location name', example: 'Main Store' })
   location_name?: string;
 
+  @ApiPropertyOptional({ description: 'Location type', example: 'inventory' })
+  location_type?: string;
+
   @ApiPropertyOptional({ description: 'Workflow ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   workflow_id?: string;
 

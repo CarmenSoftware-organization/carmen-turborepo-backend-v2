@@ -389,6 +389,7 @@ export class ProductsService {
           select: {
             code: true,
             name: true,
+            location_type: true,
           },
         },
       },
@@ -404,6 +405,7 @@ export class ProductsService {
       location_id: pl.location_id,
       location_code: pl.tb_location?.code ?? null,
       location_name: pl.tb_location?.name ?? null,
+      location_type: pl.tb_location?.location_type ?? null,
       min_qty: pl.min_qty,
       max_qty: pl.max_qty,
       re_order_qty: pl.re_order_qty,
@@ -480,7 +482,7 @@ export class ProductsService {
     // Step 1: Fetch locations (paginated) without products
     const locations = await this.prismaService.tb_location.findMany({
       where: locationWhere,
-      select: { id: true, code: true, name: true },
+      select: { id: true, code: true, name: true, location_type: true },
       orderBy: { code: 'asc' },
       ...pagination,
     });
@@ -633,6 +635,7 @@ export class ProductsService {
         location_id: loc.id,
         location_code: loc.code,
         location_name: loc.name,
+        location_type: loc.location_type,
         total_products: totalProducts,
         products,
       };
@@ -1732,6 +1735,7 @@ export class ProductsService {
         product_name: true,
         product_local_name: true,
         location_id: true,
+        location_code: true,
         location_name: true,
         tb_good_received_note: {
           select: {
@@ -1796,6 +1800,7 @@ export class ProductsService {
       product_name: grnDetail.product_name,
       product_local_name: grnDetail.product_local_name,
       location_id: grnDetail.location_id,
+      location_code: grnDetail.location_code,
       location_name: grnDetail.location_name,
       items,
     });
@@ -1847,14 +1852,18 @@ export class ProductsService {
         max_qty: true,
         tb_location: {
           select: {
+            code: true,
             name: true,
+            location_type: true,
           },
         },
       },
     });
     const plMap = new Map(productLocations.map((pl) => [pl.location_id, {
       ...pl,
+      location_code: pl.tb_location?.code ?? null,
       location_name: pl.tb_location?.name ?? null,
+      location_type: pl.tb_location?.location_type ?? null,
     }]));
 
     // Fetch cost layers
@@ -1929,7 +1938,9 @@ export class ProductsService {
       const pl = item.location_id ? plMap.get(item.location_id) : undefined;
       return {
         location_id: item.location_id,
+        location_code: pl?.location_code || null,
         location_name: pl?.location_name || null,
+        location_type: pl?.location_type || null,
         on_hand_qty: balance,
         max_qty: pl ? Number(pl.max_qty) : 0,
         min_qty: pl ? Number(pl.min_qty) : 0,

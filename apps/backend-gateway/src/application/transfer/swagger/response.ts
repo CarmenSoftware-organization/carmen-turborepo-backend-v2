@@ -84,6 +84,9 @@ export class TransferResponseDto {
   @ApiPropertyOptional({ description: 'From location name', example: 'Main Store' })
   from_location_name?: string;
 
+  @ApiPropertyOptional({ description: 'From location type', example: 'inventory' })
+  from_location_type?: string;
+
   @ApiPropertyOptional({ description: 'To location ID', example: 'b2c3d4e5-f6a7-8901-bcde-f12345678901' })
   to_location_id?: string;
 
@@ -92,6 +95,9 @@ export class TransferResponseDto {
 
   @ApiPropertyOptional({ description: 'To location name', example: 'Kitchen Store' })
   to_location_name?: string;
+
+  @ApiPropertyOptional({ description: 'To location type', example: 'inventory' })
+  to_location_type?: string;
 
   @ApiPropertyOptional({ description: 'Workflow ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   workflow_id?: string;

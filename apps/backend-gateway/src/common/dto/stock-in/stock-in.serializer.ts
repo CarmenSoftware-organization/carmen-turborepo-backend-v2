@@ -56,6 +56,7 @@ export const StockInListItemResponseSchema = z.object({
   location_id: z.string().nullable().optional(),
   location_code: z.string().nullable().optional(),
   location_name: z.string().nullable().optional(),
+  location_type: z.string().nullable().optional(),
   // workflow_name: z.string().nullable().optional(),
   // workflow_current_stage: z.string().nullable().optional(),
   item_count: z.number().optional().default(0),

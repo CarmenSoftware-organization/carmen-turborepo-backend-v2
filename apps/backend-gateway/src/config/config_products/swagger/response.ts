@@ -199,6 +199,12 @@ export class LastPurchaseResponseDto {
   @ApiPropertyOptional({ description: 'Location name', example: 'Main Kitchen' })
   location_name?: string;
 
+  @ApiPropertyOptional({ description: 'Location code', example: 'LOC-001' })
+  location_code?: string;
+
+  @ApiPropertyOptional({ description: 'Location type', example: 'inventory' })
+  location_type?: string;
+
   @ApiProperty({ description: 'Purchase detail items', type: [LastPurchaseItemDto] })
   items: LastPurchaseItemDto[];
 }
@@ -211,6 +217,12 @@ export class OnHandLocationDto {
 
   @ApiPropertyOptional({ description: 'Location name', example: 'Main Kitchen' })
   location_name?: string;
+
+  @ApiPropertyOptional({ description: 'Location code', example: 'LOC-001' })
+  location_code?: string;
+
+  @ApiPropertyOptional({ description: 'Location type', example: 'inventory' })
+  location_type?: string;
 
   @ApiProperty({ description: 'On-hand quantity', example: 47 })
   on_hand_qty: number;

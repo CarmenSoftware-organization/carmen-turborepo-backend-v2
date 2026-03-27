@@ -46,6 +46,7 @@ export const StockInSchema = z.object({
   location_id: z.string().uuid().optional().nullable(),
   location_code: z.string().optional().nullable(),
   location_name: z.string().optional().nullable(),
+  location_type: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
   doc_version: z.number().int().optional().default(0),
 })
@@ -104,6 +105,7 @@ export const StockInUpdate = z.object({
   location_id: z.string().uuid().optional().nullable(),
   location_code: z.string().optional().nullable(),
   location_name: z.string().optional().nullable(),
+  location_type: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
   info: z.any().optional(),
   dimension: z.any().optional(),

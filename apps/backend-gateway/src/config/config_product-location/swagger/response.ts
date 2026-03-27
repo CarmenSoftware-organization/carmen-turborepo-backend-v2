@@ -28,6 +28,9 @@ export class ProductLocationResponseDto {
   @ApiPropertyOptional({ description: 'Location name', example: 'Main Kitchen' })
   location_name?: string;
 
+  @ApiPropertyOptional({ description: 'Location type', example: 'inventory' })
+  location_type?: string;
+
   @ApiPropertyOptional({ description: 'Minimum quantity', example: 10 })
   min_qty?: number;
 

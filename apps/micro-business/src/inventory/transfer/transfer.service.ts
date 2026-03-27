@@ -141,6 +141,10 @@ export class TransferService {
 
     const transfer = await prisma.tb_transfer.findFirst({
       where: { id, deleted_at: null },
+      include: {
+        tb_location_from: { select: { location_type: true } },
+        tb_location_to: { select: { location_type: true } },
+      },
     });
 
     if (!transfer) {
@@ -154,6 +158,8 @@ export class TransferService {
 
     const responseData = {
       ...transfer,
+      from_location_type: transfer.tb_location_from?.location_type ?? null,
+      to_location_type: transfer.tb_location_to?.location_type ?? null,
       tb_transfer_detail: transferDetail,
     };
 
@@ -208,9 +214,15 @@ export class TransferService {
         from_location_id: true,
         from_location_code: true,
         from_location_name: true,
+        tb_location_from: {
+          select: { location_type: true },
+        },
         to_location_id: true,
         to_location_code: true,
         to_location_name: true,
+        tb_location_to: {
+          select: { location_type: true },
+        },
         // workflow_name: true,
         // workflow_current_stage: true,
         // last_action: true,
@@ -231,7 +243,11 @@ export class TransferService {
     });
 
     const serializedTransferList = transferList.map((item) =>
-      TransferListItemResponseSchema.parse(item)
+      TransferListItemResponseSchema.parse({
+        ...item,
+        from_location_type: item.tb_location_from?.location_type ?? null,
+        to_location_type: item.tb_location_to?.location_type ?? null,
+      })
     );
 
     return Result.ok({

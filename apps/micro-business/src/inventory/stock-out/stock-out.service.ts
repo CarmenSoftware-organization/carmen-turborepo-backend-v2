@@ -57,6 +57,9 @@ export class StockOutService {
 
     const stockOut = await prisma.tb_stock_out.findFirst({
       where: { id, deleted_at: null },
+      include: {
+        tb_location: { select: { location_type: true } },
+      },
     });
 
     if (!stockOut) {
@@ -70,6 +73,7 @@ export class StockOutService {
 
     const responseData = {
       ...stockOut,
+      location_type: stockOut.tb_location?.location_type ?? null,
       stock_out_detail: stockOutDetail,
     };
 
@@ -129,6 +133,9 @@ export class StockOutService {
         location_id: true,
         location_code: true,
         location_name: true,
+        tb_location: {
+          select: { location_type: true },
+        },
         // workflow_name: true,
         // workflow_current_stage: true,
         created_at: true,
@@ -166,6 +173,7 @@ export class StockOutService {
       return StockOutListItemResponseSchema.parse({
         ...item,
         adjustment_type_name: item.adjustment_type?.name ?? null,
+        location_type: item.tb_location?.location_type ?? null,
         item_count: item._count.tb_stock_out_detail,
         base_total_cost: baseTotalCost,
       });

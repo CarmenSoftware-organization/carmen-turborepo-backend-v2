@@ -552,7 +552,7 @@ export class LocationsService {
         id: true,
         location_id: true,
         tb_location: {
-          select: { id: true, code: true, name: true, is_active: true },
+          select: { id: true, code: true, name: true, location_type: true, is_active: true },
         },
       },
     });
@@ -562,6 +562,7 @@ export class LocationsService {
       location_id: ul.location_id,
       location_code: ul.tb_location?.code ?? null,
       location_name: ul.tb_location?.name ?? null,
+      location_type: ul.tb_location?.location_type ?? null,
       is_active: ul.tb_location?.is_active ?? null,
     }));
 

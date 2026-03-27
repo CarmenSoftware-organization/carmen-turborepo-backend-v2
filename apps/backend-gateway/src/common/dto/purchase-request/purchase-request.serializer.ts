@@ -10,6 +10,7 @@ const PurchaseRequestDetailEmbeddedSchema = z.object({
   location_id: z.string().nullable().optional(),
   location_code: z.string().nullable().optional(),
   location_name: z.string().nullable().optional(),
+  location_type: z.string().nullable().optional(),
   delivery_point_id: z.string().nullable().optional(),
   delivery_point_name: z.string().nullable().optional(),
   delivery_date: z.coerce.date().nullable().optional(),
