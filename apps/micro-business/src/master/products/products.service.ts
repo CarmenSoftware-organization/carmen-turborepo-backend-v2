@@ -719,6 +719,94 @@ export class ProductsService {
   }
 
   /**
+   * เปรียบเทียบสินค้าระหว่าง 2 สถานที่ แสดงเฉพาะสินค้าที่อยู่ในทั้ง 2 สถานที่
+   * @param location_id_1 - Location ID 1 / รหัสสถานที่ 1
+   * @param location_id_2 - Location ID 2 / รหัสสถานที่ 2
+   * @returns รายการสินค้าที่อยู่ในทั้ง 2 สถานที่ พร้อมข้อมูลปริมาณจากแต่ละสถานที่
+   */
+  @TryCatch
+  async compareProductLocations(
+    location_id_1: string,
+    location_id_2: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'compareProductLocations', location_id_1, location_id_2, user_id: this.userId, tenant_id: this.bu_code },
+      ProductsService.name,
+    );
+
+    const selectFields = {
+      product_id: true,
+      location_id: true,
+      min_qty: true,
+      max_qty: true,
+      re_order_qty: true,
+      par_qty: true,
+      tb_product: {
+        select: {
+          code: true,
+          name: true,
+          local_name: true,
+          sku: true,
+        },
+      },
+      tb_location: {
+        select: {
+          code: true,
+          name: true,
+        },
+      },
+    };
+
+    const [productsAtLocation1, productsAtLocation2] = await Promise.all([
+      this.prismaService.tb_product_location.findMany({
+        where: { location_id: location_id_1, deleted_at: null },
+        select: selectFields,
+      }),
+      this.prismaService.tb_product_location.findMany({
+        where: { location_id: location_id_2, deleted_at: null },
+        select: selectFields,
+      }),
+    ]);
+
+    const location2Map = new Map(
+      productsAtLocation2.map((pl) => [pl.product_id, pl]),
+    );
+
+    const result = productsAtLocation1
+      .filter((pl1) => location2Map.has(pl1.product_id))
+      .map((pl1) => {
+        const pl2 = location2Map.get(pl1.product_id)!;
+        return {
+          product_id: pl1.product_id,
+          product_code: pl1.tb_product?.code ?? null,
+          product_name: pl1.tb_product?.name ?? null,
+          product_local_name: pl1.tb_product?.local_name ?? null,
+          product_sku: pl1.tb_product?.sku ?? null,
+          location_1: {
+            location_id: pl1.location_id,
+            location_code: pl1.tb_location?.code ?? null,
+            location_name: pl1.tb_location?.name ?? null,
+            min_qty: pl1.min_qty,
+            max_qty: pl1.max_qty,
+            re_order_qty: pl1.re_order_qty,
+            par_qty: pl1.par_qty,
+          },
+          location_2: {
+            location_id: pl2.location_id,
+            location_code: pl2.tb_location?.code ?? null,
+            location_name: pl2.tb_location?.name ?? null,
+            min_qty: pl2.min_qty,
+            max_qty: pl2.max_qty,
+            re_order_qty: pl2.re_order_qty,
+            par_qty: pl2.par_qty,
+          },
+        };
+      });
+
+    return Result.ok(result);
+  }
+
+  /**
    * Refresh denormalized fields in tb_product_location
    * อัปเดตฟิลด์ denormalized (product_code, product_name, product_local_name, product_sku, location_code, location_name)
    * โดยดึงค่าจริงจาก tb_product และ tb_location

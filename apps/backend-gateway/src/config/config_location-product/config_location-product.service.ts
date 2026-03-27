@@ -98,6 +98,38 @@ export class Config_LocationProductService {
   }
 
   /**
+   * เปรียบเทียบสินค้าระหว่าง 2 สถานที่ ผ่านไมโครเซอร์วิส
+   */
+  async compareLocations(
+    location_id_1: string,
+    location_id_2: string,
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'compareLocations', location_id_1, location_id_2, user_id, bu_code, version },
+      Config_LocationProductService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this._masterService.send(
+      { cmd: 'productLocation.compare', service: 'product-location' },
+      { location_id_1, location_id_2, user_id, bu_code, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
+  /**
    * Refresh denormalized fields ใน tb_product_location ผ่านไมโครเซอร์วิส
    * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
    * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ

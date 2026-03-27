@@ -238,6 +238,23 @@ export class ProductsController extends BaseMicroserviceController {
   }
 
   /**
+   * เปรียบเทียบสินค้าระหว่าง 2 สถานที่
+   */
+  @MessagePattern({ cmd: 'productLocation.compare', service: 'product-location' })
+  async compareProductLocations(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'compareProductLocations', payload }, ProductsController.name);
+    this.productsService.userId = payload.user_id;
+    this.productsService.bu_code = payload.bu_code;
+    await this.productsService.initializePrismaService(payload.bu_code, payload.user_id);
+
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.productsService.compareProductLocations(payload.location_id_1, payload.location_id_2),
+    );
+    return this.handleResult(result);
+  }
+
+  /**
    * Refresh denormalized fields in tb_product_location
    * อัปเดตฟิลด์ denormalized จาก tb_product และ tb_location
    */

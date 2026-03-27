@@ -15,6 +15,7 @@ import { Config_LocationProductService } from './config_location-product.service
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
@@ -126,6 +127,46 @@ export class Config_LocationProductController extends BaseHttpController {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.config_locationProductService.getProductByLocationId(
       locationId,
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * เปรียบเทียบ 2 สถานที่ แสดงสินค้าที่อยู่ในทั้ง 2 สถานที่
+   */
+  @Get('products/:location_1/:location_2')
+  @UseGuards(new AppIdGuard('locationProduct.compare'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Compare products between two locations',
+    description: 'Returns products that exist in both locations (intersection), with quantity settings from each location side-by-side.',
+    operationId: 'configLocationProduct_compareProducts',
+    tags: ['Configuration', 'Location Product'],
+    'x-description-th': 'เปรียบเทียบสินค้าระหว่าง 2 สถานที่ แสดงเฉพาะสินค้าที่อยู่ในทั้ง 2 สถานที่',
+  } as any)
+  @ApiParam({ name: 'location_1', description: 'First location UUID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  @ApiParam({ name: 'location_2', description: 'Second location UUID', example: 'b2c3d4e5-f6a7-8901-bcde-f12345678901' })
+  async compareLocations(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('location_1') location_1: string,
+    @Param('location_2') location_2: string,
+    @Param('bu_code') bu_code: string,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'compareLocations', location_1, location_2, version },
+      Config_LocationProductController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.config_locationProductService.compareLocations(
+      location_1,
+      location_2,
       user_id,
       bu_code,
       version,
