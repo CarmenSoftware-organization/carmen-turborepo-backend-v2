@@ -474,6 +474,13 @@ export class TransferService {
       return Result.error('Transfer not found', ErrorCode.NOT_FOUND);
     }
 
+    if (existing.doc_status !== enum_doc_status.draft) {
+      return Result.error(
+        'Only draft transfers can be deleted',
+        ErrorCode.VALIDATION_FAILURE,
+      );
+    }
+
     const now = new Date();
 
     // Soft delete details

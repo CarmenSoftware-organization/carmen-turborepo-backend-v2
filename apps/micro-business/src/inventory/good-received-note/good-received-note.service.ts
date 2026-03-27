@@ -1323,11 +1323,19 @@ export class GoodReceivedNoteService {
     const goodReceivedNote = await prisma.tb_good_received_note.findFirst({
       where: {
         id: id,
+        deleted_at: null,
       },
     });
 
     if (!goodReceivedNote) {
       return Result.error('Good received note not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (goodReceivedNote.doc_status !== enum_good_received_note_status.draft) {
+      return Result.error(
+        'Only draft good received notes can be deleted',
+        ErrorCode.VALIDATION_FAILURE,
+      );
     }
 
     const now = new Date().toISOString();

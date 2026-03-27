@@ -833,18 +833,29 @@ export class StoreRequisitionService {
 
     const storeRequisition =
       await this.prismaService.tb_store_requisition.findFirst({
-        where: { id },
+        where: { id, deleted_at: null },
       });
     if (!storeRequisition) {
-      throw new Error('Store requisition not found');
+      return Result.error('Store requisition not found', ErrorCode.NOT_FOUND);
     }
 
+    if (storeRequisition.doc_status !== enum_doc_status.draft) {
+      return Result.error(
+        'Only draft store requisitions can be deleted',
+        ErrorCode.VALIDATION_FAILURE,
+      );
+    }
+
+    const now = new Date().toISOString();
+
     const tx = await this.prismaService.$transaction(async (prisma) => {
-      await prisma.tb_store_requisition_detail.deleteMany({
-        where: { store_requisition_id: id },
+      await prisma.tb_store_requisition_detail.updateMany({
+        where: { store_requisition_id: id, deleted_at: null },
+        data: { deleted_at: now, updated_by_id: this.userId },
       });
-      await prisma.tb_store_requisition.delete({
+      await prisma.tb_store_requisition.update({
         where: { id },
+        data: { deleted_at: now, updated_by_id: this.userId },
       });
 
       return { id };

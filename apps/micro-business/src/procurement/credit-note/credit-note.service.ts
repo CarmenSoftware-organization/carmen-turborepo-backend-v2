@@ -1,6 +1,6 @@
 import { HttpStatus, HttpException, Injectable } from '@nestjs/common';
 import { isUUID } from 'class-validator';
-import { PrismaClient } from '@repo/prisma-shared-schema-tenant';
+import { PrismaClient, enum_credit_note_doc_status } from '@repo/prisma-shared-schema-tenant';
 import { TenantService } from '@/tenant/tenant.service';
 import { IPaginate } from '@/common/shared-interface/paginate.interface';
 import QueryParams from '@/libs/paginate.query';
@@ -380,19 +380,36 @@ export class CreditNoteService {
       CreditNoteService.name,
     );
 
-    const tx = await this.prismaService.$transaction(async (tx) => {
-      await tx.tb_credit_note_detail.deleteMany({
-        where: { credit_note_id: id },
-      });
-
-      await tx.tb_credit_note.delete({
-        where: { id },
-      });
-
-      return id;
+    const creditNote = await this.prismaService.tb_credit_note.findFirst({
+      where: { id, deleted_at: null },
     });
 
-    return Result.ok({ id: tx });
+    if (!creditNote) {
+      return Result.error('Credit note not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (creditNote.doc_status !== enum_credit_note_doc_status.draft) {
+      return Result.error(
+        'Only draft credit notes can be deleted',
+        ErrorCode.VALIDATION_FAILURE,
+      );
+    }
+
+    const now = new Date().toISOString();
+
+    await this.prismaService.$transaction(async (tx) => {
+      await tx.tb_credit_note_detail.updateMany({
+        where: { credit_note_id: id, deleted_at: null },
+        data: { deleted_at: now, updated_by_id: this.userId },
+      });
+
+      await tx.tb_credit_note.update({
+        where: { id },
+        data: { deleted_at: now, updated_by_id: this.userId },
+      });
+    });
+
+    return Result.ok({ id });
   }
 
   /**

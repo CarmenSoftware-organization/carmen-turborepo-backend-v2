@@ -1503,25 +1503,35 @@ export class PurchaseOrderService {
       PurchaseOrderService.name,
     );
 
-    const purchaseOrder = await this.prismaService.tb_purchase_order.findUnique({
-      where: { id: id },
+    const purchaseOrder = await this.prismaService.tb_purchase_order.findFirst({
+      where: { id, deleted_at: null },
     });
 
     if (!purchaseOrder) {
       return Result.error('Purchase order not found', ErrorCode.NOT_FOUND);
     }
 
-    // Soft delete - update status and set deleted_at
-    const deletedPO = await this.prismaService.tb_purchase_order.update({
-      where: { id: id },
-      data: {
-        is_active: false,
-        deleted_at: new Date(),
-        deleted_by_id: this.userId,
-      },
+    if (purchaseOrder.po_status !== enum_purchase_order_doc_status.draft) {
+      return Result.error(
+        'Only draft purchase orders can be deleted',
+        ErrorCode.VALIDATION_FAILURE,
+      );
+    }
+
+    const now = new Date().toISOString();
+
+    await this.prismaService.$transaction(async (prisma) => {
+      await prisma.tb_purchase_order_detail.updateMany({
+        where: { purchase_order_id: id, deleted_at: null },
+        data: { deleted_at: now, updated_by_id: this.userId },
+      });
+      await prisma.tb_purchase_order.update({
+        where: { id },
+        data: { deleted_at: now, updated_by_id: this.userId },
+      });
     });
 
-    return Result.ok({ id: deletedPO.id });
+    return Result.ok({ id: purchaseOrder.id });
   }
 
   /**
