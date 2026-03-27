@@ -101,9 +101,10 @@ export class Config_LocationProductController extends BaseHttpController {
   @UseGuards(new AppIdGuard('locationProduct.getProductByLocationId'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get product-location mappings by location ID',
-    description: 'Retrieves all product-location records for a specific location, including product_code, product_name, product_local_name, product_sku, location_code, location_name, and quantity settings (min/max/reorder/par).',
+    description: 'Retrieves paginated product-location records for a specific location, including product_code, product_name, product_local_name, product_sku, inventory_unit_id, inventory_unit_name.',
     operationId: 'configLocationProduct_findByLocationId',
     tags: ['Configuration', 'Location Product'],
     'x-description-th': 'ดึงข้อมูลสถานที่ตามสินค้าโดยใช้รหัสสถานที่',
@@ -113,6 +114,7 @@ export class Config_LocationProductController extends BaseHttpController {
     @Res() res: Response,
     @Param('locationId') locationId: string,
     @Param('bu_code') bu_code: string,
+    @Query() query: IPaginateQuery,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
@@ -120,15 +122,18 @@ export class Config_LocationProductController extends BaseHttpController {
         function: 'getProductByLocationId',
         locationId,
         version,
+        query,
       },
       Config_LocationProductController.name,
     );
 
     const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
     const result = await this.config_locationProductService.getProductByLocationId(
       locationId,
       user_id,
       bu_code,
+      paginate,
       version,
     );
     this.respond(res, result);
@@ -141,9 +146,10 @@ export class Config_LocationProductController extends BaseHttpController {
   @UseGuards(new AppIdGuard('locationProduct.compare'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Compare products between two locations',
-    description: 'Returns products that exist in both locations (intersection), with quantity settings from each location side-by-side.',
+    description: 'Returns paginated products that exist in both locations (intersection).',
     operationId: 'configLocationProduct_compareProducts',
     tags: ['Configuration', 'Location Product'],
     'x-description-th': 'เปรียบเทียบสินค้าระหว่าง 2 สถานที่ แสดงเฉพาะสินค้าที่อยู่ในทั้ง 2 สถานที่',
@@ -156,19 +162,22 @@ export class Config_LocationProductController extends BaseHttpController {
     @Param('location_1') location_1: string,
     @Param('location_2') location_2: string,
     @Param('bu_code') bu_code: string,
+    @Query() query: IPaginateQuery,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
-      { function: 'compareLocations', location_1, location_2, version },
+      { function: 'compareLocations', location_1, location_2, version, query },
       Config_LocationProductController.name,
     );
 
     const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
     const result = await this.config_locationProductService.compareLocations(
       location_1,
       location_2,
       user_id,
       bu_code,
+      paginate,
       version,
     );
     this.respond(res, result);

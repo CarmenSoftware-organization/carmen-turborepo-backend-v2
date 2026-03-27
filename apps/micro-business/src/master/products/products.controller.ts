@@ -232,9 +232,9 @@ export class ProductsController extends BaseMicroserviceController {
 
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.productsService.findProductLocationsByLocationId(payload.location_id),
+      this.productsService.findProductLocationsByLocationId(payload.location_id, payload.paginate),
     );
-    return this.handleResult(result);
+    return this.handlePaginatedResult(result);
   }
 
   /**
@@ -249,9 +249,9 @@ export class ProductsController extends BaseMicroserviceController {
 
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.productsService.compareProductLocations(payload.location_id_1, payload.location_id_2),
+      this.productsService.compareProductLocations(payload.location_id_1, payload.location_id_2, payload.paginate),
     );
-    return this.handleResult(result);
+    return this.handlePaginatedResult(result);
   }
 
   /**

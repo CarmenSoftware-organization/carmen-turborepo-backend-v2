@@ -657,44 +657,60 @@ export class ProductsService {
   @TryCatch
   async findProductLocationsByLocationId(
     location_id: string,
+    paginate: IPaginate,
   ): Promise<Result<unknown>> {
     this.logger.debug(
-      { function: 'findProductLocationsByLocationId', location_id, user_id: this.userId, tenant_id: this.bu_code },
+      { function: 'findProductLocationsByLocationId', location_id, paginate, user_id: this.userId, tenant_id: this.bu_code },
       ProductsService.name,
     );
 
-    const productLocations = await this.prismaService.tb_product_location.findMany({
-      where: {
-        location_id,
-        deleted_at: null,
-      },
-      select: {
-        id: true,
-        product_id: true,
-        location_id: true,
-        min_qty: true,
-        max_qty: true,
-        re_order_qty: true,
-        par_qty: true,
-        note: true,
-        info: true,
-        dimension: true,
-        tb_product: {
-          select: {
-            code: true,
-            name: true,
-            local_name: true,
-            sku: true,
+    const q = new QueryParams(
+      paginate.page,
+      paginate.perpage,
+      paginate.search,
+      paginate.searchfields,
+      ['tb_product.code', 'tb_product.name', 'tb_product.local_name', 'tb_product.sku'],
+      typeof paginate.filter === 'object' && !Array.isArray(paginate.filter) ? paginate.filter : {},
+      paginate.sort,
+      paginate.advance,
+    );
+
+    const pagination = getPaginationParams(q.page, q.perpage);
+
+    const whereClause = {
+      location_id,
+      deleted_at: null,
+    };
+
+    const selectFields = {
+      id: true,
+      product_id: true,
+      tb_product: {
+        select: {
+          code: true,
+          name: true,
+          local_name: true,
+          sku: true,
+          inventory_unit_id: true,
+          tb_unit: {
+            select: {
+              name: true,
+            },
           },
         },
-        tb_location: {
-          select: {
-            code: true,
-            name: true,
-          },
-        },
       },
-    });
+    };
+
+    const [productLocations, total] = await Promise.all([
+      this.prismaService.tb_product_location.findMany({
+        where: whereClause,
+        select: selectFields,
+        ...pagination,
+      }),
+      this.prismaService.tb_product_location.count({
+        where: whereClause,
+      }),
+    ]);
 
     const result = productLocations.map((pl) => ({
       id: pl.id,
@@ -703,19 +719,19 @@ export class ProductsService {
       product_name: pl.tb_product?.name ?? null,
       product_local_name: pl.tb_product?.local_name ?? null,
       product_sku: pl.tb_product?.sku ?? null,
-      location_id: pl.location_id,
-      location_code: pl.tb_location?.code ?? null,
-      location_name: pl.tb_location?.name ?? null,
-      min_qty: pl.min_qty,
-      max_qty: pl.max_qty,
-      re_order_qty: pl.re_order_qty,
-      par_qty: pl.par_qty,
-      note: pl.note,
-      info: pl.info,
-      dimension: pl.dimension,
+      inventory_unit_id: pl.tb_product?.inventory_unit_id ?? null,
+      inventory_unit_name: pl.tb_product?.tb_unit?.name ?? null,
     }));
 
-    return Result.ok(result);
+    return Result.ok({
+      paginate: {
+        total,
+        page: q.perpage < 0 ? 1 : q.page,
+        perpage: q.perpage < 0 ? 1 : q.perpage,
+        pages: total === 0 || q.perpage < 0 ? 1 : Math.ceil(total / q.perpage),
+      },
+      data: result,
+    });
   }
 
   /**
@@ -728,31 +744,38 @@ export class ProductsService {
   async compareProductLocations(
     location_id_1: string,
     location_id_2: string,
+    paginate: IPaginate,
   ): Promise<Result<unknown>> {
     this.logger.debug(
-      { function: 'compareProductLocations', location_id_1, location_id_2, user_id: this.userId, tenant_id: this.bu_code },
+      { function: 'compareProductLocations', location_id_1, location_id_2, paginate, user_id: this.userId, tenant_id: this.bu_code },
       ProductsService.name,
+    );
+
+    const q = new QueryParams(
+      paginate.page,
+      paginate.perpage,
+      paginate.search,
+      paginate.searchfields,
+      [],
+      typeof paginate.filter === 'object' && !Array.isArray(paginate.filter) ? paginate.filter : {},
+      paginate.sort,
+      paginate.advance,
     );
 
     const selectFields = {
       product_id: true,
-      location_id: true,
-      min_qty: true,
-      max_qty: true,
-      re_order_qty: true,
-      par_qty: true,
       tb_product: {
         select: {
           code: true,
           name: true,
           local_name: true,
           sku: true,
-        },
-      },
-      tb_location: {
-        select: {
-          code: true,
-          name: true,
+          inventory_unit_id: true,
+          tb_unit: {
+            select: {
+              name: true,
+            },
+          },
         },
       },
     };
@@ -772,38 +795,33 @@ export class ProductsService {
       productsAtLocation2.map((pl) => [pl.product_id, pl]),
     );
 
-    const result = productsAtLocation1
+    const allMatched = productsAtLocation1
       .filter((pl1) => location2Map.has(pl1.product_id))
-      .map((pl1) => {
-        const pl2 = location2Map.get(pl1.product_id)!;
-        return {
-          product_id: pl1.product_id,
-          product_code: pl1.tb_product?.code ?? null,
-          product_name: pl1.tb_product?.name ?? null,
-          product_local_name: pl1.tb_product?.local_name ?? null,
-          product_sku: pl1.tb_product?.sku ?? null,
-          location_1: {
-            location_id: pl1.location_id,
-            location_code: pl1.tb_location?.code ?? null,
-            location_name: pl1.tb_location?.name ?? null,
-            min_qty: pl1.min_qty,
-            max_qty: pl1.max_qty,
-            re_order_qty: pl1.re_order_qty,
-            par_qty: pl1.par_qty,
-          },
-          location_2: {
-            location_id: pl2.location_id,
-            location_code: pl2.tb_location?.code ?? null,
-            location_name: pl2.tb_location?.name ?? null,
-            min_qty: pl2.min_qty,
-            max_qty: pl2.max_qty,
-            re_order_qty: pl2.re_order_qty,
-            par_qty: pl2.par_qty,
-          },
-        };
-      });
+      .map((pl1) => ({
+        product_id: pl1.product_id,
+        product_code: pl1.tb_product?.code ?? null,
+        product_name: pl1.tb_product?.name ?? null,
+        product_local_name: pl1.tb_product?.local_name ?? null,
+        product_sku: pl1.tb_product?.sku ?? null,
+        inventory_unit_id: pl1.tb_product?.inventory_unit_id ?? null,
+        inventory_unit_name: pl1.tb_product?.tb_unit?.name ?? null,
+      }));
 
-    return Result.ok(result);
+    const total = allMatched.length;
+    const page = q.perpage < 0 ? 1 : q.page;
+    const perpage = q.perpage < 0 ? total : q.perpage;
+    const skip = (page - 1) * perpage;
+    const data = allMatched.slice(skip, skip + perpage);
+
+    return Result.ok({
+      paginate: {
+        total,
+        page,
+        perpage,
+        pages: total === 0 || perpage <= 0 ? 1 : Math.ceil(total / perpage),
+      },
+      data,
+    });
   }
 
   /**

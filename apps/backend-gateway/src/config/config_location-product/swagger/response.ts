@@ -19,57 +19,16 @@ export class LocationProductResponseDto {
   @ApiPropertyOptional({ description: 'Product SKU', example: 'SKU-001' })
   product_sku?: string;
 
-  @ApiPropertyOptional({ description: 'Location ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  location_id?: string;
+  @ApiPropertyOptional({ description: 'Inventory unit ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  inventory_unit_id?: string;
 
-  @ApiPropertyOptional({ description: 'Location code', example: 'LOC-001' })
-  location_code?: string;
-
-  @ApiPropertyOptional({ description: 'Location name', example: 'Main Kitchen' })
-  location_name?: string;
-
-  @ApiPropertyOptional({ description: 'Minimum quantity', example: 10 })
-  min_qty?: number;
-
-  @ApiPropertyOptional({ description: 'Maximum quantity', example: 100 })
-  max_qty?: number;
-
-  @ApiPropertyOptional({ description: 'Re-order quantity', example: 20 })
-  re_order_qty?: number;
-
-  @ApiPropertyOptional({ description: 'Par quantity', example: 50 })
-  par_qty?: number;
-
-  @ApiPropertyOptional({ description: 'Note', example: 'Keep refrigerated' })
-  note?: string;
+  @ApiPropertyOptional({ description: 'Inventory unit name', example: 'kg' })
+  inventory_unit_name?: string;
 }
 
 export class LocationProductListResponseDto {
   @ApiProperty({ description: 'List of Location Product records', type: [LocationProductResponseDto] })
   data: LocationProductResponseDto[];
-}
-
-export class LocationProductCompareLocationDto {
-  @ApiProperty({ description: 'Location ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
-  location_id: string;
-
-  @ApiPropertyOptional({ description: 'Location code', example: 'LOC-001' })
-  location_code?: string;
-
-  @ApiPropertyOptional({ description: 'Location name', example: 'Main Kitchen' })
-  location_name?: string;
-
-  @ApiPropertyOptional({ description: 'Minimum quantity', example: 10 })
-  min_qty?: number;
-
-  @ApiPropertyOptional({ description: 'Maximum quantity', example: 100 })
-  max_qty?: number;
-
-  @ApiPropertyOptional({ description: 'Re-order quantity', example: 20 })
-  re_order_qty?: number;
-
-  @ApiPropertyOptional({ description: 'Par quantity', example: 50 })
-  par_qty?: number;
 }
 
 export class LocationProductCompareItemDto {
@@ -88,11 +47,11 @@ export class LocationProductCompareItemDto {
   @ApiPropertyOptional({ description: 'Product SKU', example: 'SKU-001' })
   product_sku?: string;
 
-  @ApiProperty({ description: 'Location 1 settings', type: LocationProductCompareLocationDto })
-  location_1: LocationProductCompareLocationDto;
+  @ApiPropertyOptional({ description: 'Inventory unit ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  inventory_unit_id?: string;
 
-  @ApiProperty({ description: 'Location 2 settings', type: LocationProductCompareLocationDto })
-  location_2: LocationProductCompareLocationDto;
+  @ApiPropertyOptional({ description: 'Inventory unit name', example: 'kg' })
+  inventory_unit_name?: string;
 }
 
 export class LocationProductCompareResponseDto {

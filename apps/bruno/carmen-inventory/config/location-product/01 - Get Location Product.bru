@@ -4,16 +4,6 @@ meta {
   seq: 1
 }
 
-docs {
-  ## Get Location Product
-  ดึงข้อมูลสถานที่ตามสินค้าโดยใช้รหัสสถานที่ แสดงสินค้าทั้งหมดที่ผูกกับสถานที่
-
-  Retrieves all product-location mappings for a specific location, including product details and quantity settings.
-
-  ### Path Parameters
-  - `locationId` — Location UUID (รหัสสถานที่)
-}
-
 get {
   url: {{host}}/api/config/{{bu_code}}/location-product/:locationId
   body: none
@@ -21,7 +11,7 @@ get {
 }
 
 params:path {
-  locationId: 
+  locationId: 3ad9d3e6-ca78-44de-9812-1f62adf26600
 }
 
 headers {
@@ -30,4 +20,14 @@ headers {
 
 auth:bearer {
   token: {{access_token}}
+}
+
+docs {
+  ## Get Location Product
+  ดึงข้อมูลสถานที่ตามสินค้าโดยใช้รหัสสถานที่ แสดงสินค้าทั้งหมดที่ผูกกับสถานที่
+  
+  Retrieves all product-location mappings for a specific location, including product details and quantity settings.
+  
+  ### Path Parameters
+  - `locationId` — Location UUID (รหัสสถานที่)
 }

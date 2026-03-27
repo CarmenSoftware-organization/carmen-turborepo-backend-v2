@@ -62,6 +62,7 @@ export class Config_LocationProductService {
     locationId: string,
     user_id: string,
     bu_code: string,
+    paginate: IPaginate,
     version: string,
   ): Promise<Result<unknown>> {
     this.logger.debug(
@@ -70,6 +71,7 @@ export class Config_LocationProductService {
         locationId,
         user_id,
         bu_code,
+        paginate,
         version,
       },
       Config_LocationProductService.name,
@@ -81,6 +83,7 @@ export class Config_LocationProductService {
         location_id: locationId,
         user_id: user_id,
         bu_code: bu_code,
+        paginate: paginate,
         version: version,
       },
     );
@@ -94,7 +97,7 @@ export class Config_LocationProductService {
       );
     }
 
-    return Result.ok(response.data);
+    return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
   /**
@@ -105,16 +108,17 @@ export class Config_LocationProductService {
     location_id_2: string,
     user_id: string,
     bu_code: string,
+    paginate: IPaginate,
     version: string,
   ): Promise<Result<unknown>> {
     this.logger.debug(
-      { function: 'compareLocations', location_id_1, location_id_2, user_id, bu_code, version },
+      { function: 'compareLocations', location_id_1, location_id_2, user_id, bu_code, paginate, version },
       Config_LocationProductService.name,
     );
 
     const res: Observable<MicroserviceResponse> = this._masterService.send(
       { cmd: 'productLocation.compare', service: 'product-location' },
-      { location_id_1, location_id_2, user_id, bu_code, version },
+      { location_id_1, location_id_2, user_id, bu_code, paginate, version },
     );
 
     const response = await firstValueFrom(res);
@@ -126,7 +130,7 @@ export class Config_LocationProductService {
       );
     }
 
-    return Result.ok(response.data);
+    return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
   /**

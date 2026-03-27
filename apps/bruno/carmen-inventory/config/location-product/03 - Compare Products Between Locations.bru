@@ -4,17 +4,6 @@ meta {
   seq: 3
 }
 
-docs {
-  ## Compare Products Between Locations
-  เปรียบเทียบสินค้าระหว่าง 2 สถานที่ แสดงเฉพาะสินค้าที่อยู่ในทั้ง 2 สถานที่
-
-  Returns products that exist in both locations (intersection), with quantity settings from each location side-by-side.
-
-  ### Path Parameters
-  - `location_1` — First location UUID (รหัสสถานที่ 1)
-  - `location_2` — Second location UUID (รหัสสถานที่ 2)
-}
-
 get {
   url: {{host}}/api/config/{{bu_code}}/location-product/products/:location_1/:location_2
   body: none
@@ -22,8 +11,8 @@ get {
 }
 
 params:path {
-  location_1:
-  location_2:
+  location_1: 3ad9d3e6-ca78-44de-9812-1f62adf26600
+  location_2: 4298bb2a-a412-4eb0-a13f-8f46643509c1
 }
 
 headers {
@@ -32,4 +21,15 @@ headers {
 
 auth:bearer {
   token: {{access_token}}
+}
+
+docs {
+  ## Compare Products Between Locations
+  เปรียบเทียบสินค้าระหว่าง 2 สถานที่ แสดงเฉพาะสินค้าที่อยู่ในทั้ง 2 สถานที่
+  
+  Returns products that exist in both locations (intersection), with quantity settings from each location side-by-side.
+  
+  ### Path Parameters
+  - `location_1` — First location UUID (รหัสสถานที่ 1)
+  - `location_2` — Second location UUID (รหัสสถานที่ 2)
 }
