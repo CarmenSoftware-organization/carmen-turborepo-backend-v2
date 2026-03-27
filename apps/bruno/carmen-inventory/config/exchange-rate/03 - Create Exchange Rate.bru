@@ -9,6 +9,31 @@ docs {
   สร้างอัตราแลกเปลี่ยนใหม่ (รายการเดียว)
 
   Creates a new single exchange rate record with effective date and conversion factor.
+
+
+  ### Sample Body
+  ```json
+  {
+    "currency_id": "93dabe25-1668-4c5b-bceb-3e0b83b78002",
+    "at_date": "2026-03-18T00:00:00.000Z",
+    "exchange_rate": 34.5
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "message": "Success"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

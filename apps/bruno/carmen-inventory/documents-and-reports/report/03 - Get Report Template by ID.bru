@@ -9,6 +9,26 @@ docs {
   ดึงข้อมูลแม่แบบรายงานรายการเดียวตาม ID
 
   Retrieve a single report template by its ID.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "name": "Stock Report",
+      "report_group": "inventory",
+      "description": "...",
+      "is_active": true,
+      "content": {}
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

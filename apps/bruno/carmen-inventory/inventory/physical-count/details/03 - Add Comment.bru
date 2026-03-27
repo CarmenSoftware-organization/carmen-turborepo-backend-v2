@@ -14,6 +14,30 @@ docs {
   - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
   - `id` — Physical Count ID / รหัสการตรวจนับสินค้า
   - `detail_id` — Physical Count Detail ID / รหัสรายละเอียดการตรวจนับ
+
+
+  ### Sample Body
+  ```json
+  {
+    "message": "Test comment",
+    "attachments": []
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "status": "counting"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

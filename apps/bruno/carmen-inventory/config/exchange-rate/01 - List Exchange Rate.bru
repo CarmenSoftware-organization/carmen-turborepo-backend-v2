@@ -9,6 +9,34 @@ docs {
   แสดงรายการอัตราแลกเปลี่ยนทั้งหมดพร้อมการแบ่งหน้าและค้นหา
 
   Returns all exchange rates configured for the business unit with pagination and search support.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "at_date": "2026-03-27",
+        "currency_id": "uuid",
+        "currency_code": "USD",
+        "currency_name": "US Dollar",
+        "exchange_rate": 34.5,
+        "created_at": "2026-03-27T00:00:00.000Z"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

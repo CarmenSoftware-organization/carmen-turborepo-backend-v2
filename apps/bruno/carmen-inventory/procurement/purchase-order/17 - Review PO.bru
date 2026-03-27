@@ -17,6 +17,36 @@ docs {
   - `stage_role` — Role of the reviewer
   - `des_stage` — Target stage to return to (e.g., "purchase")
   - `details[]` — Line items with `id`, `stage_status`, and `stage_message`
+
+
+  ### Sample Body
+  ```json
+  {
+    "stage_role": "approve",
+    "des_stage": "purchase",
+    "details": [
+      {
+        "id": "<po_detail_uuid>",
+        "stage_status": "review",
+        "stage_message": "Please verify the delivery date with vendor"
+      }
+    ]
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 patch {

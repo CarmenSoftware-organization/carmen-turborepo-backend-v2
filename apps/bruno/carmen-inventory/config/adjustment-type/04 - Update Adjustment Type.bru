@@ -9,6 +9,33 @@ docs {
   อัปเดตข้อมูลประเภทการปรับปรุงที่มีอยู่
 
   Updates an existing adjustment type category.
+
+
+  ### Sample Body
+  ```json
+  {
+    "code": "ADJ-001",
+    "name": "Adjustment Type Updated",
+    "type": "STOCK_IN",
+    "description": "Updated adjustment type",
+    "is_active": true,
+    "note": "updated"
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 put {

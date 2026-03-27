@@ -9,6 +9,77 @@ docs {
   สร้างผู้ขายใหม่
 
   Creates a new vendor/supplier in the business unit.
+
+
+  ### Sample Body
+  ```json
+  {
+    "name": "บริษัท เดี่ยว จำกัด 7",
+    "code": "VND-2024-0047",
+    "description": "ผู้จำหน่ายวัตถุดิบสดและผักผลไม้ออร์แก...",
+    "info": [
+      {
+        "label": "เลขประจำตัวผู้เสียภาษี",
+        "value": "0105562034871",
+        "data_type": "string"
+      }
+    ],
+    "vendor_address": {
+      "add": [
+        {
+          "address_type": "mailing_address",
+          "address_line1": "88/12 หมู่ 4 ถนนพหลโยธิน",
+          "address_line2": "ตำบลคลองหนึ่ง",
+          "district": "คลองหลวง",
+          "province": "ปทุมธานี",
+          "city": "ปทุมธานี",
+          "postal_code": "12120",
+          "country": "Thailand"
+        },
+        {
+          "address_type": "register_address",
+          "address_line1": "222 อาคารสยามทาวเวอร์ ชั้น 8 ถนนพระราม 1",
+          "address_line2": "แขวงปทุมวัน",
+          "district": "ปทุมวัน",
+          "province": "กรุงเทพมหานคร",
+          "city": "กรุงเทพมหานคร",
+          "postal_code": "10330",
+          "country": "Thailand"
+        }
+      ]
+    },
+    "vendor_contact": {
+      "add": [
+        {
+          "name": "คุณวรรณภา ศรีสุวรรณ",
+          "email": "wannapa.s@siamfresh.co.th",
+          "phone": "0812345678",
+          "is_primary": true
+        },
+        {
+          "name": "คุณอนุชา มีทรัพย์",
+          "email": "anucha.m@siamfresh.co.th",
+          "phone": "0898765432",
+          "is_primary": false
+        }
+      ]
+    }
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

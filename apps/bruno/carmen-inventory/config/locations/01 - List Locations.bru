@@ -9,6 +9,34 @@ docs {
   แสดงรายการสถานที่/คลังสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา
 
   Retrieves all locations/warehouses configured in the business unit with pagination and search support.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "code": "LOC-001",
+        "name": "Main Store",
+        "location_type": "store",
+        "physical_count_type": "daily",
+        "description": "...",
+        "is_active": true
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

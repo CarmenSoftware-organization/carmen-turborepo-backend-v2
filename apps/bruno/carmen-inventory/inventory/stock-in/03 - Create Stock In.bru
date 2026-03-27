@@ -21,6 +21,35 @@ docs {
   - `adjustment_type_id` — Adjustment type ID / รหัสประเภทการปรับปรุง
   - `location_id` — Location ID / รหัสสถานที่
   - `details.add[]` — Line items to add / รายการสินค้าที่จะเพิ่ม
+
+
+  ### Sample Body
+  ```json
+  {
+    "si_date": "2026-03-26T00:00:00.000Z",
+    "description": "SI มาแล้วจ๊ะ",
+    "doc_status": "completed",
+    "note": "test note SI",
+    "adjustment_type_id": "bcce2834-9202-4ed4-a8d5-e5019596286b",
+    "location_id": "0731acf1-e04d-4648-b64d-cfbd34fa5d08",
+    "...": "..."
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "si_no": "SI-2026-0001"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

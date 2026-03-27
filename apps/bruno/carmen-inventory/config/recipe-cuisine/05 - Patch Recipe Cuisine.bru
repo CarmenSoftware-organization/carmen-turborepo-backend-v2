@@ -9,6 +9,29 @@ docs {
   อัปเดตบางฟิลด์ของประเภทอาหารโดยไม่แทนที่ข้อมูลทั้งหมด
 
   Partially updates specific fields of a cuisine type definition without replacing the entire record.
+
+
+  ### Sample Body
+  ```json
+  {
+    "name": "",
+    "is_active": true
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 patch {

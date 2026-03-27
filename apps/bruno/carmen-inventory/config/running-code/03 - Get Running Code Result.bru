@@ -9,6 +9,25 @@ docs {
   ดึงผลลัพธ์รหัสเลขที่เอกสารอัตโนมัติตามประเภทเอกสาร คืนตัวนับปัจจุบันและรูปแบบ
 
   Retrieves the running code configuration for a specific document type, returning the current counter and format pattern.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "type": "purchase_request",
+      "config": {},
+      "created_at": "2026-03-27T00:00:00.000Z",
+      "updated_at": "2026-03-27T00:00:00.000Z"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

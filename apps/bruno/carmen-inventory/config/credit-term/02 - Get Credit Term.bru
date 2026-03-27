@@ -12,6 +12,28 @@ docs {
 
   ### Path Parameters
   - `id` -- Credit term ID (UUID) / รหัสเงื่อนไขการชำระเงิน
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "name": "Net 30",
+      "value": 30,
+      "description": "Payment due in 30 days",
+      "is_active": true,
+      "info": [],
+      "created_at": "2026-03-27T00:00:00.000Z",
+      "updated_at": "2026-03-27T00:00:00.000Z"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

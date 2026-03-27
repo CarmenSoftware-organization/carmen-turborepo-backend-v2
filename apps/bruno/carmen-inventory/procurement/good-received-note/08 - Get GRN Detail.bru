@@ -14,6 +14,32 @@ docs {
   - `id` — Good Received Note ID / รหัสใบรับสินค้า
   - `detail_id` — GRN Detail ID / รหัสรายละเอียดใบรับสินค้า
   - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "grn_no": "GRN-2026-0001",
+      "grn_date": "2026-03-27T00:00:00.000Z",
+      "doc_status": "draft",
+      "invoice_no": "INV-001",
+      "vendor_id": "uuid",
+      "vendor_name": "Vendor Name",
+      "currency_id": "uuid",
+      "currency_code": "THB",
+      "good_received_note_detail": [],
+      "created_at": "2026-03-27T00:00:00.000Z",
+      "updated_at": "2026-03-27T00:00:00.000Z"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

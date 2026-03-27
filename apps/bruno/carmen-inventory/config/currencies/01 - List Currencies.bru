@@ -9,6 +9,35 @@ docs {
   แสดงรายการสกุลเงินทั้งหมดพร้อมการแบ่งหน้าและค้นหา
 
   Returns all currencies configured for the business unit with pagination and search support.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "code": "THB",
+        "name": "Thai Baht",
+        "symbol": "฿",
+        "exchange_rate": 1,
+        "is_default": true,
+        "is_active": true,
+        "created_at": "2026-03-27T00:00:00.000Z"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

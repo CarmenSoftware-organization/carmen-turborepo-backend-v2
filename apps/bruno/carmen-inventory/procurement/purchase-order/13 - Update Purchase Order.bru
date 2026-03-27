@@ -12,6 +12,34 @@ docs {
 
   ### Path Parameters
   - `id` — Purchase order UUID
+
+
+  ### Sample Body
+  ```json
+  {
+    "vendor_id": "<vendor_uuid>",
+    "vendor_name": "ABC Food Supplies Co., Ltd.",
+    "delivery_date": "2026-04-05",
+    "currency_id": "<currency_uuid>",
+    "currency_code": "THB",
+    "exchange_rate": 1,
+    "...": "..."
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 put {

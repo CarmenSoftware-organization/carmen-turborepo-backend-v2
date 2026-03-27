@@ -9,6 +9,38 @@ docs {
   อัปเดตข้อมูลใบขอราคาที่มีอยู่
 
   Update an existing request for pricing.
+
+
+  ### Sample Body
+  ```json
+  {
+    "name": "aaaaa222",
+    "pricelist_template_id": "b28f5f93-3dd0-4c9d-a6f8-b05a7f6aa051",
+    "start_date": "2026-03-15T17:00:00.000Z",
+    "end_date": "2026-03-19T17:00:00.000Z",
+    "vendors": {
+      "remove": [
+        {
+          "id": "b164823f-deb5-41d8-bfe7-03203d12f69d"
+        }
+      ]
+    }
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 patch {

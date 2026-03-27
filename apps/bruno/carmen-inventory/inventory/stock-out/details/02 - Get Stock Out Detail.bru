@@ -14,6 +14,30 @@ docs {
   - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
   - `id` — Stock Out ID / รหัสรายการเบิกสินค้าออกจากคลัง
   - `detail_id` — Stock Out Detail ID / รหัสรายการย่อยเบิกสินค้าออกจากคลัง
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "so_no": "SO-2026-0001",
+      "so_date": "2026-03-27T00:00:00.000Z",
+      "description": "Stock out description",
+      "doc_status": "draft",
+      "adjustment_type_id": "uuid",
+      "note": "...",
+      "stock_out_detail": [],
+      "created_at": "2026-03-27T00:00:00.000Z",
+      "updated_at": "2026-03-27T00:00:00.000Z"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

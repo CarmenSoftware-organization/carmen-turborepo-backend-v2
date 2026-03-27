@@ -18,6 +18,36 @@ docs {
   - `page`, `perpage` — Pagination
   - `search` — Search by PO number, description, vendor name
   - `filter`, `sort` — Advanced filtering and sorting
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "po_no": "PO-2026-0001",
+        "po_status": "draft",
+        "description": "Purchase order",
+        "order_date": "2026-03-27T00:00:00.000Z",
+        "vendor_name": "Vendor Name",
+        "currency_code": "THB",
+        "total_amount": 15000,
+        "created_at": "2026-03-27T00:00:00.000Z"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

@@ -9,6 +9,28 @@ docs {
   ทำสำเนาใบขอซื้อที่มีอยู่หนึ่งรายการขึ้นไป โดยคงรายการสินค้าและรายละเอียดไว้ เหมาะสำหรับการจัดซื้อซ้ำที่แผนกสั่งสินค้าเดิมเป็นประจำ
 
   Creates copies of one or more existing purchase requests, preserving their line items and details. Useful for recurring procurement needs where departments regularly order the same items.
+
+
+  ### Sample Body
+  ```json
+  {
+    "id": "{{pr_id}}"
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

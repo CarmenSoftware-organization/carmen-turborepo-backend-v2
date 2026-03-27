@@ -9,6 +9,34 @@ docs {
   สร้างหน่วยธุรกิจใหม่
 
   Create a new business unit.
+
+
+  ### Sample Body
+  ```json
+  {
+    "cluster_id": "",
+    "code": "BU-001",
+    "name": "Business Unit 01",
+    "alias_name": "",
+    "description": "",
+    "info": null,
+    "...": "..."
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

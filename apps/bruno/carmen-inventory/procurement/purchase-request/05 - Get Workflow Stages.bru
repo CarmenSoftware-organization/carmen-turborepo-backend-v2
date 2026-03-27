@@ -9,6 +9,34 @@ docs {
   แสดงขั้นตอนเวิร์กโฟลว์การอนุมัติที่กำหนดค่าไว้ (เช่น HOD, ผู้จัดซื้อ, FC, GM) สำหรับใบขอซื้อในหน่วยธุรกิจนี้ ใช้เพื่อแสดงความคืบหน้าของเวิร์กโฟลว์
 
   Returns the configured approval workflow stages (e.g., HOD, Purchaser, FC, GM) for purchase requests in this business unit. Used to display workflow progress and determine which approval steps a PR must pass through.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "pr_no": "PR-2026-0001",
+      "pr_date": "2026-03-27T00:00:00.000Z",
+      "pr_status": "draft",
+      "description": "Purchase request",
+      "requestor_id": "uuid",
+      "requestor_name": "John Doe",
+      "department_id": "uuid",
+      "department_name": "Kitchen",
+      "workflow_id": "uuid",
+      "workflow_name": "PR Approval",
+      "purchase_request_detail": [],
+      "created_at": "2026-03-27T00:00:00.000Z",
+      "updated_at": "2026-03-27T00:00:00.000Z"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

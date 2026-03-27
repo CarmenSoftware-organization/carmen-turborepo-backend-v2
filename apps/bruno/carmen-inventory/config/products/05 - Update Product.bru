@@ -12,6 +12,34 @@ docs {
 
   ### Path Parameters
   - `id` — Product UUID (รหัสสินค้า)
+
+
+  ### Sample Body
+  ```json
+  {
+    "name": "Olive Oil 1L Updated",
+    "code": "PRD-001",
+    "local_name": "น้ำมันมะกอก 1 ลิตร",
+    "description": "Extra virgin olive oil 1 liter",
+    "inventory_unit_id": "",
+    "product_status_type": "active",
+    "...": "..."
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 patch {

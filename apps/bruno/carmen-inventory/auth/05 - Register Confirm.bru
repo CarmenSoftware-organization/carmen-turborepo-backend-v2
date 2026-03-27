@@ -9,6 +9,28 @@ docs {
   ยืนยันการลงทะเบียนสำหรับผู้ใช้ที่ได้รับเชิญ โดยตรวจสอบโทเค็นการเชิญเพื่อเปิดใช้งานบัญชี
 
   Completes the registration process for an invited user by verifying the invitation token and activating their account.
+
+
+  ### Sample Body
+  ```json
+  {
+    "token": ""
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

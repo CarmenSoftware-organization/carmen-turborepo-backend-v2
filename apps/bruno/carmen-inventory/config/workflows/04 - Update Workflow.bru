@@ -9,6 +9,30 @@ docs {
   อัปเดตขั้นตอนการทำงานที่มีอยู่ เช่น เพิ่ม/ลบขั้นตอนหรือเปลี่ยนบทบาทผู้อนุมัติ
 
   Modifies an existing approval workflow template, such as adding/removing approval stages or changing approver role assignments.
+
+
+  ### Sample Body
+  ```json
+  {
+    "name": "",
+    "code": "",
+    "is_active": true
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 put {

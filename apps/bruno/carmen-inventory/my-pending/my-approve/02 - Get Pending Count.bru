@@ -9,6 +9,21 @@ docs {
   ดึงจำนวนรวมของเอกสารที่รออนุมัติทั้งหมด (ใบเบิกสินค้า + ใบขอซื้อ + ใบสั่งซื้อ) ช่วยให้ผู้อนุมัติจัดลำดับความสำคัญของงาน
 
   Provides a dashboard summary count of all documents awaiting the current user's approval across store requisitions, purchase requests, and purchase orders, helping approvers prioritize their workload.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

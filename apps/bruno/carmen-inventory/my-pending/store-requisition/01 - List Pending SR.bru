@@ -16,6 +16,33 @@ docs {
   - `perpage` — Items per page (optional)
   - `search` — Search keyword (optional)
   - `bu_code` — Business unit code filter (optional)
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "sr_no": "SR-2026-0001",
+        "sr_date": "2026-03-27T00:00:00.000Z",
+        "doc_status": "pending_approval",
+        "requestor_name": "John Doe",
+        "department_name": "Kitchen"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

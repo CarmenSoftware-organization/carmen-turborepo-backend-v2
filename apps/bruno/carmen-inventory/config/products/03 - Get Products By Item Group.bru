@@ -12,6 +12,38 @@ docs {
 
   ### Path Parameters
   - `id` — Product Item Group UUID (รหัสกลุ่มรายการสินค้า)
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "code": "PRD-001",
+      "barcode": "1234567890",
+      "sku": "SKU-001",
+      "name": "Product Name",
+      "local_name": "ชื่อสินค้า",
+      "description": "...",
+      "product_status_type": "active",
+      "inventory_unit": {
+        "id": "uuid",
+        "code": "KG",
+        "name": "Kilogram"
+      },
+      "info": [],
+      "locations": [],
+      "order_units": [],
+      "created_at": "2026-03-27T00:00:00.000Z",
+      "updated_at": "2026-03-27T00:00:00.000Z"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

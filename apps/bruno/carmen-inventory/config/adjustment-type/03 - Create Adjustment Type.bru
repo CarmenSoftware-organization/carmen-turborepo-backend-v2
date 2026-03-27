@@ -9,6 +9,33 @@ docs {
   สร้างประเภทการปรับปรุงใหม่
 
   Creates a new adjustment type category.
+
+
+  ### Sample Body
+  ```json
+  {
+    "code": "ADJ-001",
+    "name": "Adjustment Type Test",
+    "type": "STOCK_IN",
+    "description": "Test adjustment type",
+    "is_active": true,
+    "note": ""
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

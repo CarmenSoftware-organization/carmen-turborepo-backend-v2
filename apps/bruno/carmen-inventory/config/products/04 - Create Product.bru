@@ -9,6 +9,34 @@ docs {
   สร้างสินค้าใหม่ในระบบพร้อมข้อมูลหน่วยสั่งซื้อ หน่วยส่วนผสม และสถานที่จัดเก็บ
 
   Adds a new product to the master catalog with its SKU, description, category, order units, ingredient units, and location assignments.
+
+
+  ### Sample Body
+  ```json
+  {
+    "name": "Olive Oil 1L",
+    "code": "PRD-001",
+    "local_name": "น้ำมันมะกอก 1 ลิตร",
+    "description": "Extra virgin olive oil 1 liter",
+    "inventory_unit_id": "",
+    "product_status_type": "active",
+    "...": "..."
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

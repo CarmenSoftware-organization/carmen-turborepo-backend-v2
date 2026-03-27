@@ -12,6 +12,34 @@ docs {
 
   ### Path Parameters
   - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+
+
+  ### Sample Body
+  ```json
+  {
+    "grn_date": "2026-03-25T09:00:00.000Z",
+    "invoice_no": "INV-2026-001",
+    "invoice_date": "2026-03-24T17:00:00.000Z",
+    "description": "Received goods from vendor",
+    "doc_status": "draft",
+    "doc_type": "purchase_order",
+    "...": "..."
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

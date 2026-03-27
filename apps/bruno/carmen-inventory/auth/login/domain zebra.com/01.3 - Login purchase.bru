@@ -9,6 +9,33 @@ docs {
   เข้าสู่ระบบด้วยบทบาทฝ่ายจัดซื้อ (Purchaser) สำหรับโดเมน zebra.com
 
   Login as a Purchaser role user for the zebra.com domain.
+
+
+  ### Sample Body
+  ```json
+  {
+    "email": "purchase@zebra.com",
+    "password": "12345678"
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "access_token": "eyJhbGciOiJSUzI1NiIs...",
+      "refresh_token": "eyJhbGciOiJSUzI1NiIs...",
+      "expires_in": 300,
+      "refresh_expires_in": 1800,
+      "token_type": "Bearer"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

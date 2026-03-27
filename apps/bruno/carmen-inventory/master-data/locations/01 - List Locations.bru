@@ -9,6 +9,32 @@ docs {
   แสดงรายการสถานที่/คลังสินค้าทั้งหมดที่ผู้ใช้เข้าถึงได้
 
   Retrieves all locations/warehouses accessible to the current user.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "code": "LOC-001",
+        "name": "Main Store",
+        "location_type": "store",
+        "is_active": true
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

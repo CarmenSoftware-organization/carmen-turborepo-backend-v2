@@ -13,6 +13,32 @@ docs {
   ### Path Parameters
   - `id` — Purchase order UUID
   - `detail_id` — Detail line item UUID
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "po_no": "PO-2026-0001",
+      "purchase_order_status": "draft",
+      "description": "Purchase order",
+      "order_date": "2026-03-27T00:00:00.000Z",
+      "delivery_date": "2026-04-03T00:00:00.000Z",
+      "vendor_id": "uuid",
+      "currency_id": "uuid",
+      "total_amount": 15000,
+      "details": [],
+      "created_at": "2026-03-27T00:00:00.000Z",
+      "updated_at": "2026-03-27T00:00:00.000Z"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

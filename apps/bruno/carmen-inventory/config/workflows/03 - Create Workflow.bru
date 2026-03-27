@@ -9,6 +9,30 @@ docs {
   สร้างขั้นตอนการทำงานใหม่สำหรับการอนุมัติเอกสารจัดซื้อ กำหนดขั้นตอนและบทบาทผู้อนุมัติ
 
   Creates a new approval workflow template defining the stages, approver roles, and routing rules for document approvals.
+
+
+  ### Sample Body
+  ```json
+  {
+    "name": "",
+    "code": "",
+    "is_active": true
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

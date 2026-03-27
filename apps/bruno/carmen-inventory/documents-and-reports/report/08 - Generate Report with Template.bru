@@ -9,6 +9,32 @@ docs {
   สร้างรายงานโดยใช้แม่แบบรายงานที่ระบุ
 
   Generate a report using a specific report template.
+
+
+  ### Sample Body
+  ```json
+  {
+    "report_type": "inventory_summary",
+    "format": "pdf",
+    "filters": {},
+    "options": {},
+    "template_id": ""
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

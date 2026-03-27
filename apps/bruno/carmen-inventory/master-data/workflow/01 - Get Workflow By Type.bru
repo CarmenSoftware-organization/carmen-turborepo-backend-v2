@@ -9,6 +9,22 @@ docs {
   ดึงข้อมูลขั้นตอนการทำงานตามประเภทเอกสาร (เช่น ใบขอซื้อ ใบสั่งซื้อ) รวมถึงขั้นตอนอนุมัติและบทบาท
 
   Retrieves the configurable approval workflow for a given document type (e.g., purchase_request), including approval stages and assigned roles.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "name": "Item Name"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

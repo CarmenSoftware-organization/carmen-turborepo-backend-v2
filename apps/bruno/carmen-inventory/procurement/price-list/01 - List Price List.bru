@@ -9,6 +9,39 @@ docs {
   แสดงรายการราคาทั้งหมดพร้อมการแบ่งหน้าและค้นหา
 
   Lists all active vendor price lists for the business unit with pagination and search support.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "no": "PL-001",
+        "name": "Q1 Price List",
+        "status": "active",
+        "vendor": {
+          "id": "uuid",
+          "name": "Vendor Name"
+        },
+        "currency": {
+          "id": "uuid",
+          "code": "THB"
+        }
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

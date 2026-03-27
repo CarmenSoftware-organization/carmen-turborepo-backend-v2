@@ -9,6 +9,29 @@ docs {
   สร้างสินค้าของผู้ขายใหม่ ลงทะเบียนว่าผู้ขายรายนี้จำหน่ายสินค้าชิ้นนี้
 
   Creates a new vendor-product mapping, registering that a specific vendor supplies a particular product.
+
+
+  ### Sample Body
+  ```json
+  {
+    "vendor_id": "",
+    "product_id": ""
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

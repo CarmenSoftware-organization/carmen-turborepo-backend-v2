@@ -9,6 +9,32 @@ docs {
   แสดงรายการสกุลเงินที่ใช้งานอยู่ทั้งหมดของหน่วยธุรกิจ
 
   Lists all currencies enabled for the business unit, used to populate currency selectors in procurement documents.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "code": "THB",
+        "name": "Thai Baht",
+        "symbol": "฿",
+        "is_active": true
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

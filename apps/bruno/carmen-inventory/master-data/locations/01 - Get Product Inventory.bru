@@ -9,6 +9,25 @@ docs {
   ดึงข้อมูลระดับสินค้าคงคลังของสินค้าที่สถานที่เฉพาะ
 
   Retrieves real-time inventory levels for a specific product at a given storage location.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "code": "LOC-001",
+      "name": "Main Store",
+      "location_type": "store",
+      "is_active": true
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

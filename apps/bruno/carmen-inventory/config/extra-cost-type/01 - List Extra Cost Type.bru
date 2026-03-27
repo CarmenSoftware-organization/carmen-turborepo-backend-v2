@@ -9,6 +9,33 @@ docs {
   แสดงรายการประเภทค่าใช้จ่ายเพิ่มเติมทั้งหมดพร้อมการแบ่งหน้าและค้นหา
 
   Returns all extra cost type categories configured for procurement with pagination and search support.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "code": "EC-001",
+        "name": "Shipping",
+        "description": "Shipping cost",
+        "is_active": true,
+        "created_at": "2026-03-27T00:00:00.000Z"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

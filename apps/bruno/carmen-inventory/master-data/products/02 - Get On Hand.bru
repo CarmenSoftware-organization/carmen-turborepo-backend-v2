@@ -15,6 +15,30 @@ docs {
 
   ### Query Parameters
   - `location_id` — Optional Location UUID to filter (รหัสสถานที่สำหรับกรอง)
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "code": "PRD-001",
+      "name": "Product Name",
+      "local_name": "ชื่อสินค้า",
+      "product_status_type": "active",
+      "inventory_unit": {
+        "id": "uuid",
+        "name": "KG"
+      },
+      "locations": []
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

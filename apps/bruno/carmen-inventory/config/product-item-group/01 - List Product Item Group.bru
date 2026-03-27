@@ -9,6 +9,33 @@ docs {
   แสดงรายการกลุ่มรายการสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา
 
   Returns all product item groups configured for the business unit.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "code": "GRP-001",
+        "name": "Dairy",
+        "description": "Dairy products group",
+        "is_active": true,
+        "created_at": "2026-03-27T00:00:00.000Z"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

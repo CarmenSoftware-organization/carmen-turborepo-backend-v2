@@ -9,6 +9,30 @@ docs {
   อัปเดตกฎการกำหนดเลขอัตโนมัติที่มีอยู่ เช่น เปลี่ยนรูปแบบหรือรีเซ็ตตัวนับ
 
   Modifies an existing auto-numbering rule, such as changing the format pattern, prefix, or resetting the counter.
+
+
+  ### Sample Body
+  ```json
+  {
+    "name": "",
+    "code": "",
+    "is_active": true
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 put {

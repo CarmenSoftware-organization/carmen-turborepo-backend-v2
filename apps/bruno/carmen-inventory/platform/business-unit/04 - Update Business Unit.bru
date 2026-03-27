@@ -9,6 +9,34 @@ docs {
   อัปเดตข้อมูลหน่วยธุรกิจที่มีอยู่
 
   Update an existing business unit.
+
+
+  ### Sample Body
+  ```json
+  {
+    "cluster_id": "6a34662e-24c9-43cb-a2d5-cdedabcd2a8f",
+    "code": "BLAVG",
+    "name": "Blueledgers (AVG)",
+    "alias_name": "BL01",
+    "is_hq": false,
+    "is_active": true,
+    "...": "..."
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 put {

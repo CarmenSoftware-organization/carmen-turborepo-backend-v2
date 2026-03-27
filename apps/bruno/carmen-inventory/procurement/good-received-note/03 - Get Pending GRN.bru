@@ -9,6 +9,32 @@ docs {
   แสดงจำนวนใบรับสินค้าที่รอดำเนินการของผู้ใช้ปัจจุบัน ใช้บนแดชบอร์ดเพื่อแจ้งเตือนเจ้าหน้าที่รับสินค้าเกี่ยวกับการส่งมอบจากผู้ขายที่รอการตรวจรับและบันทึก
 
   Returns the number of goods deliveries awaiting receiving action by the current user. Used on dashboards to alert receiving staff about pending vendor deliveries that need to be inspected and recorded.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "grn_no": "GRN-2026-0001",
+      "grn_date": "2026-03-27T00:00:00.000Z",
+      "doc_status": "draft",
+      "invoice_no": "INV-001",
+      "vendor_id": "uuid",
+      "vendor_name": "Vendor Name",
+      "currency_id": "uuid",
+      "currency_code": "THB",
+      "good_received_note_detail": [],
+      "created_at": "2026-03-27T00:00:00.000Z",
+      "updated_at": "2026-03-27T00:00:00.000Z"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

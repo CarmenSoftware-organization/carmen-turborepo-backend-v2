@@ -9,6 +9,30 @@ docs {
   อัปเดตอุปกรณ์ทำอาหารทั้งหมด การเปลี่ยนแปลงส่งผลต่อสูตรอาหารที่อ้างอิงอุปกรณ์นี้
 
   Fully updates an existing kitchen equipment type definition. Changes affect how recipes reference this equipment.
+
+
+  ### Sample Body
+  ```json
+  {
+    "name": "",
+    "code": "",
+    "is_active": true
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 put {

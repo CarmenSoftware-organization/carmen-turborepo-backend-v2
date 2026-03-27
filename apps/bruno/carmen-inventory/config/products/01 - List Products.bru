@@ -13,6 +13,35 @@ docs {
   ### Query Parameters
   - `perpage` — Number of items per page (-1 for all)
   - `search` — Optional search keyword
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "code": "PRD-001",
+        "name": "Product Name",
+        "local_name": "ชื่อสินค้า",
+        "description": "...",
+        "product_status_type": "active",
+        "inventory_unit_id": "uuid",
+        "inventory_unit_name": "KG"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

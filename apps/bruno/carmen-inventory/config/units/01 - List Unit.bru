@@ -9,6 +9,33 @@ docs {
   แสดงรายการหน่วยนับทั้งหมดพร้อมการแบ่งหน้าและค้นหา
 
   Retrieves all units of measurement configured in the business unit with pagination and search support.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "code": "KG",
+        "name": "Kilogram",
+        "description": "Unit of weight",
+        "is_active": true,
+        "created_at": "2026-03-27T00:00:00.000Z"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

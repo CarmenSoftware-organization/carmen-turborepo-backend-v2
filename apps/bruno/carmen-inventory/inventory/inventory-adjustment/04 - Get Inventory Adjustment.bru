@@ -42,4 +42,28 @@ docs {
   
   ### Query Parameters
   - `type` — `stock-in` or `stock-out` (ประเภทการปรับปรุง / adjustment type, required)
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "type": "adjustment",
+      "doc_no": "ADJ-2026-0001",
+      "doc_date": "2026-03-27T00:00:00.000Z",
+      "doc_status": "draft",
+      "location_id": "uuid",
+      "location_name": "Main Store",
+      "info": [],
+      "created_at": "2026-03-27T00:00:00.000Z",
+      "updated_at": "2026-03-27T00:00:00.000Z"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }

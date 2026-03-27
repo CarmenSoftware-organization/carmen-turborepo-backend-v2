@@ -9,6 +9,33 @@ docs {
   แสดงรายการใบสั่งซื้อทั้งหมดที่รอการอนุมัติของผู้ใช้พร้อมการแบ่งหน้า ให้ผู้อนุมัติตรวจสอบและดำเนินการกับใบสั่งซื้อที่รออนุมัติ
 
   Lists all purchase orders in the user's pending approval queue with pagination, allowing approvers to review and process vendor orders awaiting authorization before goods are procured.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "po_no": "PO-2026-0001",
+        "po_status": "pending_approval",
+        "vendor_name": "Vendor Name",
+        "total_amount": 15000,
+        "workflow_current_stage": "Manager Approval"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

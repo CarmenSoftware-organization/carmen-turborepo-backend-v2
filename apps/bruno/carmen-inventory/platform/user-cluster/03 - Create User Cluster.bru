@@ -9,6 +9,32 @@ docs {
   สร้างคลัสเตอร์ของผู้ใช้ใหม่
 
   Create a new user-cluster mapping.
+
+
+  ### Sample Body
+  ```json
+  {
+    "user_id": "",
+    "cluster_id": "",
+    "is_active": true,
+    "parent_bu_id": null,
+    "role": "member"
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

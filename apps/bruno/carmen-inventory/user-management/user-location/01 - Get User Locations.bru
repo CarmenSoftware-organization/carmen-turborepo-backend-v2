@@ -9,6 +9,26 @@ docs {
   ดึงรายการสถานที่ของผู้ใช้ทั้งหมดที่ผู้ใช้ปัจจุบันเข้าถึงได้
 
   Retrieve all locations accessible by the current user.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "username": "john.doe",
+      "email": "john@example.com",
+      "firstname": "John",
+      "lastname": "Doe",
+      "is_active": true
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

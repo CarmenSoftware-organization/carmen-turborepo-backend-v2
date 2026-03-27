@@ -12,6 +12,29 @@ docs {
 
   ### Path Parameters
   - `id` -- Tax profile ID (UUID) / รหัสโปรไฟล์ภาษี
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "name": "VAT 7%",
+      "tax_rate": 7,
+      "is_active": true,
+      "description": "Standard VAT",
+      "note": "...",
+      "info": [],
+      "created_at": "2026-03-27T00:00:00.000Z",
+      "updated_at": "2026-03-27T00:00:00.000Z"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

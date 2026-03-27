@@ -17,6 +17,34 @@ docs {
   - `details.add[]` — New line items to add
   - `details.update[]` — Existing line items to modify
   - `details.remove[]` — Line items to remove
+
+
+  ### Sample Body
+  ```json
+  {
+    "vendor_id": "<vendor_uuid>",
+    "vendor_name": "Fresh Farm Supplies Co.",
+    "delivery_date": "2026-04-05",
+    "currency_id": "<currency_uuid>",
+    "currency_code": "THB",
+    "exchange_rate": 1,
+    "...": "..."
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 patch {

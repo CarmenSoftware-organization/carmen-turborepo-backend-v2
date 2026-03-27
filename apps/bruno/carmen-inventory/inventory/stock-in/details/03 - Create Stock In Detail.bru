@@ -13,6 +13,35 @@ docs {
   ### Path Parameters
   - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
   - `id` — Stock In ID / รหัสรายการรับสินค้าเข้าคลัง
+
+
+  ### Sample Body
+  ```json
+  {
+    "product_id": "",
+    "product_name": "",
+    "location_id": "",
+    "location_code": "",
+    "location_name": "",
+    "qty": 5,
+    "...": "..."
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "si_no": "SI-2026-0001"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

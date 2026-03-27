@@ -13,6 +13,34 @@ docs {
   ### Body
   - `vendor_id`, `currency_id`, `delivery_date`, `workflow_id` — Required
   - `details.add[]` — Line items with product, qty, pricing, and PR detail linkages
+
+
+  ### Sample Body
+  ```json
+  {
+    "vendor_id": "<vendor_uuid>",
+    "vendor_name": "ABC Food Supplies Co., Ltd.",
+    "delivery_date": "2026-04-01",
+    "currency_id": "<currency_uuid>",
+    "currency_code": "THB",
+    "exchange_rate": 1,
+    "...": "..."
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

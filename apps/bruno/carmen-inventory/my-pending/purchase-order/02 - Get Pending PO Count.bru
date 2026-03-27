@@ -9,6 +9,21 @@ docs {
   ดึงจำนวนใบสั่งซื้อที่รอดำเนินการของผู้ใช้ปัจจุบัน ใช้สำหรับแสดงป้ายแจ้งเตือนบนแดชบอร์ดและตัวบ่งชี้ภาระงาน
 
   Returns the count of purchase orders currently awaiting the user's action in the approval pipeline, used for dashboard badge notifications and workload indicators.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

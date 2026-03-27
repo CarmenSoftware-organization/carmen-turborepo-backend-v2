@@ -15,6 +15,36 @@ docs {
 
   ### Query Parameters
   - `include_not_count` — รวมสถานที่ที่ไม่ตรวจนับ (default: false) / Include locations with physical_count_type=no
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "spot_check_no": "SC-2026-0001",
+        "start_date": "2026-03-27T00:00:00.000Z",
+        "location_id": "uuid",
+        "location_name": "Main Store",
+        "doc_status": "draft",
+        "method": "random",
+        "size": 10,
+        "created_at": "2026-03-27T00:00:00.000Z"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

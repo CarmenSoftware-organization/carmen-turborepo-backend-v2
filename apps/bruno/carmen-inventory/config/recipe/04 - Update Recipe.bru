@@ -9,6 +9,30 @@ docs {
   อัปเดตสูตรอาหารทั้งหมดรวมถึงรายการส่วนผสม ปริมาณ และคำแนะนำการเตรียม
 
   Fully updates a recipe including its ingredient list, quantities, and preparation instructions.
+
+
+  ### Sample Body
+  ```json
+  {
+    "name": "",
+    "code": "",
+    "is_active": true
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 put {

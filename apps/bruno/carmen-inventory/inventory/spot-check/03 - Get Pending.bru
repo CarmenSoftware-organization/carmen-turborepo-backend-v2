@@ -9,6 +9,31 @@ docs {
   ดึงจำนวนการตรวจสอบสินค้าเฉพาะจุดที่รอดำเนินการของผู้ใช้ปัจจุบัน ใช้สำหรับแสดงการแจ้งเตือนบนแดชบอร์ดสำหรับงานตรวจสอบคุณภาพ
 
   Returns the count of random inventory spot checks awaiting the current user, used to drive dashboard alerts for quality-control verification tasks.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "spot_check_no": "SC-2026-0001",
+      "start_date": "2026-03-27T00:00:00.000Z",
+      "location_id": "uuid",
+      "location_name": "Main Store",
+      "doc_status": "draft",
+      "method": "random",
+      "size": 10,
+      "tb_spot_check_detail": [],
+      "created_at": "2026-03-27T00:00:00.000Z",
+      "updated_at": "2026-03-27T00:00:00.000Z"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

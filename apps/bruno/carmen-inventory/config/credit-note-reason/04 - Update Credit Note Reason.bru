@@ -12,6 +12,29 @@ docs {
 
   ### Path Parameters
   - `id` -- Credit note reason ID (UUID) / รหัสเหตุผลใบลดหนี้
+
+
+  ### Sample Body
+  ```json
+  {
+    "name": "Damaged goods",
+    "description": "Items received were damaged during tr..."
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 put {

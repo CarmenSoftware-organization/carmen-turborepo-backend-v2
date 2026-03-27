@@ -27,4 +27,29 @@ docs {
   แสดงรายการผู้ใช้ทั้งหมดในหน่วยธุรกิจปัจจุบันพร้อมการแบ่งหน้าและค้นหา
   
   Retrieve all users in the current business unit with pagination and search support.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "username": "john.doe",
+        "email": "john@example.com",
+        "is_active": true
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }

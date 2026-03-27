@@ -12,6 +12,34 @@ docs {
 
   ### Path Parameters
   - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+
+
+  ### Sample Body
+  ```json
+  {
+    "location_id": "{{location_id}}",
+    "method": "random",
+    "items": 10,
+    "description": "Weekly spot check for dry goods storage",
+    "note": "Focus on high-value items"
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "spot_check_no": "SC-2026-0001",
+      "doc_status": "draft"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

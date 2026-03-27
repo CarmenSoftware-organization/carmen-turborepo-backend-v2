@@ -9,6 +9,28 @@ docs {
   เชิญผู้ใช้ใหม่เข้าร่วมแพลตฟอร์ม Carmen โดยส่งลิงก์ลงทะเบียนไปยังอีเมลที่ระบุ ต้องมีการยืนยันตัวตนก่อน
 
   Sends an invitation to a new user to join the Carmen ERP platform. The invited user receives a registration link via email. Requires authentication.
+
+
+  ### Sample Body
+  ```json
+  {
+    "email": ""
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

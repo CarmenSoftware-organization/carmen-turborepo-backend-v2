@@ -9,6 +9,32 @@ docs {
   สร้างรอบบัญชีใหม่
 
   Create a new fiscal/accounting period.
+
+
+  ### Sample Body
+  ```json
+  {
+    "fiscal_year": 2026,
+    "fiscal_month": 4,
+    "start_at": "2026-04-01T00:00:00.000Z",
+    "end_at": "2026-04-30T23:59:59.000Z",
+    "status": "open"
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

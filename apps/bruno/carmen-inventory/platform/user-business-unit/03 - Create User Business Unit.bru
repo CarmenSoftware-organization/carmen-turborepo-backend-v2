@@ -9,6 +9,32 @@ docs {
   สร้างหน่วยธุรกิจของผู้ใช้ใหม่
 
   Create a new user-business unit mapping.
+
+
+  ### Sample Body
+  ```json
+  {
+    "user_id": "",
+    "business_unit_id": "",
+    "role": "member",
+    "is_default": false,
+    "is_active": true
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

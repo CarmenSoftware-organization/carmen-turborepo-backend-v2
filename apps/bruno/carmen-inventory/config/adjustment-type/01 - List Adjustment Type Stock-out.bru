@@ -30,4 +30,32 @@ docs {
 
   ### Query Parameters
   - `type` — Filter by adjustment type: `stock-in` or `stock-out`
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "code": "ADJ-001",
+        "name": "Stock Adjustment",
+        "type": "adjustment",
+        "description": "Manual stock adjustment",
+        "is_active": true,
+        "created_at": "2026-03-27T00:00:00.000Z"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }

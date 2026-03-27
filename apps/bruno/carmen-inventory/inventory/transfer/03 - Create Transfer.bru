@@ -12,6 +12,35 @@ docs {
 
   ### Path Parameters
   - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+
+
+  ### Sample Body
+  ```json
+  {
+    "description": "Transfer Test",
+    "doc_status": "draft",
+    "from_location_id": "",
+    "from_location_code": "",
+    "from_location_name": "",
+    "to_location_id": "",
+    "...": "..."
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "tr_no": "TR-2026-0001"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

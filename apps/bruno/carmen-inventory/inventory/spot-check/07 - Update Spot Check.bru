@@ -13,6 +13,31 @@ docs {
   ### Path Parameters
   - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
   - `id` — Spot Check ID / รหัสการตรวจสอบสินค้าเฉพาะจุด
+
+
+  ### Sample Body
+  ```json
+  {
+    "description": "Updated spot check description",
+    "note": "Updated note - check expiry dates"
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "spot_check_no": "SC-2026-0001",
+      "doc_status": "draft"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 patch {

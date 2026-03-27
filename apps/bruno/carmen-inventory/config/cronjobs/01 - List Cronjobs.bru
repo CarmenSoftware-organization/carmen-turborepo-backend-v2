@@ -9,6 +9,29 @@ docs {
   ดึงรายการงานตั้งเวลาทั้งหมดที่กำหนดค่าในระบบ เช่น การสร้างรายงานอัตโนมัติ
 
   Returns all scheduled tasks configured in the system, such as automated report generation and periodic data synchronization.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "name": "Item Name"
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {

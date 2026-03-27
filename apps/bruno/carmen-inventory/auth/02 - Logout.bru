@@ -9,6 +9,28 @@ docs {
   ออกจากระบบโดยยกเลิกโทเค็นผู้ใช้ผ่าน Keycloak ต้องส่ง refresh_token ในเนื้อหาคำขอเพื่อสิ้นสุดเซสชัน
 
   Terminates the user's authenticated session by invalidating their Keycloak tokens. Requires the refresh_token in the request body to revoke the session.
+
+
+  ### Sample Body
+  ```json
+  {
+    "refresh_token": "{{refresh_token}}"
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

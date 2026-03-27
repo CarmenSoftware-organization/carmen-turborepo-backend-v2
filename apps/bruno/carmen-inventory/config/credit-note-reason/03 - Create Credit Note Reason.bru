@@ -9,6 +9,29 @@ docs {
   สร้างเหตุผลใบลดหนี้ใหม่
 
   Creates a new reason that can be selected when issuing vendor credit notes.
+
+
+  ### Sample Body
+  ```json
+  {
+    "name": "Damaged goods",
+    "description": "Items received were damaged during tr..."
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

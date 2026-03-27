@@ -32,4 +32,31 @@ docs {
   ### Path Parameters
   - `location_1` — First location UUID (รหัสสถานที่ 1)
   - `location_2` — Second location UUID (รหัสสถานที่ 2)
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "location_id": "uuid",
+        "product_id": "uuid",
+        "product_code": "PRD-001",
+        "product_name": "Product Name",
+        "on_hand_qty": 100
+      }
+    ],
+    "paginate": {
+      "total": 100,
+      "page": 1,
+      "perpage": 10,
+      "pages": 10
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }

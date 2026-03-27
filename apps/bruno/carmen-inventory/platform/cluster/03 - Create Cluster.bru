@@ -9,6 +9,34 @@ docs {
   สร้างคลัสเตอร์ใหม่
 
   Create a new cluster.
+
+
+  ### Sample Body
+  ```json
+  {
+    "code": "C-001",
+    "name": "Cluster 01",
+    "alias_name": "",
+    "logo_url": "",
+    "max_license_bu": null,
+    "is_active": true,
+    "...": "..."
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 post {

@@ -9,6 +9,24 @@ docs {
   ดึงข้อมูลผู้ใช้ทั้งหมดที่ผูกกับสถานที่ตาม Location ID
 
   Retrieves all users assigned to a specific location by its location ID.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid",
+      "user_id": "uuid",
+      "location_id": "uuid",
+      "location_name": "Main Store"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
 
 get {
