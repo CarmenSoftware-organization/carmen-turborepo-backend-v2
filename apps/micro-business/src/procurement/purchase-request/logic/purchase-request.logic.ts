@@ -543,6 +543,224 @@ export class PurchaseRequestLogic {
     return result
   }
 
+  async swipeApprove(
+    pr_ids: string[],
+    user_id: string,
+    tenant_id: string,
+  ) {
+    this.logger.debug({ function: 'swipeApprove', pr_ids, user_id, tenant_id }, PurchaseRequestLogic.name);
+    await this.purchaseRequestService.initializePrismaService(tenant_id, user_id);
+
+    const results: { id: string; success: boolean; message?: string }[] = [];
+
+    for (const id of pr_ids) {
+      try {
+        // Fetch PR data
+        const purchaseRequestResult = await this.purchaseRequestService.findById(id);
+        if (purchaseRequestResult.isError()) {
+          results.push({ id, success: false, message: 'Purchase request not found' });
+          continue;
+        }
+        const prData = purchaseRequestResult.value;
+
+        // Check PR status — only in_progress can be swipe approved
+        if (prData.pr_status !== 'in_progress') {
+          results.push({ id, success: false, message: `PR status is "${prData.pr_status}", only in_progress can be swipe approved` });
+          continue;
+        }
+
+        // Check user is in user_action.execute
+        const userActionExecute = (prData.user_action as { execute: any[] })?.execute || [];
+        const actionUserIds: string[] = userActionExecute.map((u) =>
+          typeof u === 'string' ? u : u?.user_id
+        ).filter(Boolean);
+
+        if (!actionUserIds.includes(user_id)) {
+          results.push({ id, success: false, message: 'User is not an action user for this PR' });
+          continue;
+        }
+
+        // Check role — purchase role cannot swipe approve
+        const populateData: Record<string, any> = await this.mapperLogic.populate({
+          workflow_id: prData.workflow_id,
+          user_id,
+        }, user_id, tenant_id);
+
+        const workflowData = populateData?.workflow_id?.data;
+        const total_amount = prData.purchase_request_detail?.reduce((curr, acc) => curr + acc.total_price, 0) || 0;
+
+        const navRes = this.masterService.send(
+          { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
+          {
+            workflowData,
+            currentStatus: prData.workflow_current_stage,
+            previousStatus: prData.workflow_previous_stage,
+            requestData: { amount: total_amount },
+          },
+        );
+        const workflowHeader: NavigateForwardResult = await firstValueFrom(navRes);
+
+        // Check current stage role
+        const stageInfo = workflowHeader.navigation_info.current_stage_info;
+        if (stageInfo?.role === enum_stage_role.purchase) {
+          results.push({ id, success: false, message: 'Purchase role cannot use swipe approve' });
+          continue;
+        }
+
+        // Build details — approve all with stage_status = approve
+        const details = (prData.purchase_request_detail || []).map((d) => ({
+          id: d.id,
+          purchase_request_id: id,
+          stage_status: stage_status.approve,
+          stage_message: null,
+        }));
+
+        // Build workflow header
+        const workflow_history = prData.workflow_history || [];
+        const lastActionAtDate = new Date();
+
+        workflow_history.push({
+          action: enum_last_action.approved,
+          datetime: lastActionAtDate.toISOString(),
+          user: { id: user_id, name: populateData?.user_id?.name },
+          current_stage: workflowHeader.previous_stage,
+          next_stage: workflowHeader.navigation_info.workflow_next_step ? workflowHeader.current_stage : '-',
+        });
+
+        let workflow: Record<string, unknown>;
+        if (!workflowHeader.navigation_info.workflow_next_step) {
+          workflow = {
+            workflow_previous_stage: workflowHeader.previous_stage,
+            workflow_current_stage: workflowHeader.current_stage,
+            workflow_next_stage: '-',
+            user_action: [],
+            last_action: enum_last_action.approved,
+            last_action_at_date: lastActionAtDate.toISOString(),
+            last_action_by_id: user_id,
+            last_action_by_name: populateData?.user_id?.name,
+            workflow_history,
+          };
+        } else {
+          const userAction = await this.buildUserAction(
+            workflowHeader.navigation_info.current_stage_info,
+            prData.department_id,
+            prData.department_name,
+            user_id,
+            tenant_id,
+          );
+          workflow = {
+            workflow_previous_stage: workflowHeader.previous_stage,
+            workflow_current_stage: workflowHeader.current_stage,
+            workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
+            user_action: userAction,
+            last_action: enum_last_action.approved,
+            last_action_at_date: lastActionAtDate.toISOString(),
+            last_action_by_id: user_id,
+            last_action_by_name: populateData?.user_id?.name,
+            workflow_history,
+          };
+        }
+
+        const result = await this.purchaseRequestService.approve(id, workflow, details);
+
+        if (result.isOk()) {
+          this.sendApproveNotification(prData, workflow as unknown as WorkflowHeader, user_id, populateData?.user_id?.name);
+          results.push({ id, success: true });
+        } else {
+          results.push({ id, success: false, message: 'Failed to approve' });
+        }
+      } catch (error: any) {
+        results.push({ id, success: false, message: error?.message || 'Unexpected error' });
+      }
+    }
+
+    return results;
+  }
+
+  async swipeReject(
+    pr_ids: string[],
+    reject_message: string,
+    user_id: string,
+    tenant_id: string,
+  ) {
+    this.logger.debug({ function: 'swipeReject', pr_ids, user_id, tenant_id }, PurchaseRequestLogic.name);
+    await this.purchaseRequestService.initializePrismaService(tenant_id, user_id);
+
+    const results: { id: string; success: boolean; message?: string }[] = [];
+
+    for (const id of pr_ids) {
+      try {
+        const purchaseRequestResult = await this.purchaseRequestService.findById(id);
+        if (purchaseRequestResult.isError()) {
+          results.push({ id, success: false, message: 'Purchase request not found' });
+          continue;
+        }
+        const prData = purchaseRequestResult.value;
+
+        // Check PR status — only in_progress can be swipe rejected
+        if (prData.pr_status !== 'in_progress') {
+          results.push({ id, success: false, message: `PR status is "${prData.pr_status}", only in_progress can be swipe rejected` });
+          continue;
+        }
+
+        // Check user is in user_action.execute
+        const userActionExecute = (prData.user_action as { execute: any[] })?.execute || [];
+        const actionUserIds: string[] = userActionExecute.map((u) =>
+          typeof u === 'string' ? u : u?.user_id
+        ).filter(Boolean);
+
+        if (!actionUserIds.includes(user_id)) {
+          results.push({ id, success: false, message: 'User is not an action user for this PR' });
+          continue;
+        }
+
+        // Check role — purchase role cannot swipe reject
+        const populateData: Record<string, any> = await this.mapperLogic.populate({
+          workflow_id: prData.workflow_id,
+          user_id,
+        }, user_id, tenant_id);
+
+        const workflowData = populateData?.workflow_id?.data;
+        const total_amount = prData.purchase_request_detail?.reduce((curr, acc) => curr + acc.total_price, 0) || 0;
+
+        const navRes = this.masterService.send(
+          { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
+          {
+            workflowData,
+            currentStatus: prData.workflow_current_stage,
+            previousStatus: prData.workflow_previous_stage,
+            requestData: { amount: total_amount },
+          },
+        );
+        const workflowHeader: NavigateForwardResult = await firstValueFrom(navRes);
+
+        const stageInfo = workflowHeader.navigation_info.current_stage_info;
+
+        // Build reject payload — reject all details
+        const rejectPayload: { stage_role: enum_stage_role; details: { id: string; stage_status: stage_status; stage_message: string }[] } = {
+          stage_role: (stageInfo?.role as enum_stage_role) || enum_stage_role.approve,
+          details: (prData.purchase_request_detail || []).map((d: any) => ({
+            id: d.id,
+            stage_status: stage_status.reject,
+            stage_message: reject_message,
+          })),
+        };
+
+        const result = await this.purchaseRequestService.reject(id, rejectPayload);
+
+        if (result.isOk()) {
+          results.push({ id, success: true });
+        } else {
+          results.push({ id, success: false, message: 'Failed to reject' });
+        }
+      } catch (error: any) {
+        results.push({ id, success: false, message: error?.message || 'Unexpected error' });
+      }
+    }
+
+    return results;
+  }
+
   async review(
     id: string,
     body: ReviewPurchaseRequestDto,

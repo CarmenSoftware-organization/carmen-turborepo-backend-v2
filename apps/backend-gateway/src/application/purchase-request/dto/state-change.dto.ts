@@ -71,3 +71,14 @@ export const SavePurchaseRequestSchema = z.discriminatedUnion('stage_role', [
 export class ApproveByStageRoleDto2 extends createZodDto(ApproveByStageRoleSchema2) { }
 // @ts-expect-error discriminatedUnion not supported by createZodDto
 export class SavePurchaseRequestDto extends createZodDto(SavePurchaseRequestSchema) { }
+
+export const SwipeApprovePurchaseRequestSchema = z.object({
+  pr_ids: z.array(z.string().uuid()).min(1, { message: 'At least one PR ID is required' }),
+})
+export class SwipeApprovePurchaseRequestDto extends createZodDto(SwipeApprovePurchaseRequestSchema) { }
+
+export const SwipeRejectPurchaseRequestSchema = z.object({
+  pr_ids: z.array(z.string().uuid()).min(1, { message: 'At least one PR ID is required' }),
+  reject_message: z.string().min(1, { message: 'Reject message is required' }),
+})
+export class SwipeRejectPurchaseRequestDto extends createZodDto(SwipeRejectPurchaseRequestSchema) { }

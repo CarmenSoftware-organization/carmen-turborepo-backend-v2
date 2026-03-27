@@ -473,6 +473,73 @@ export class PurchaseRequestService {
     return Result.ok(response.data);
   }
 
+  async swipeApprove(
+    pr_ids: string[],
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'swipeApprove', pr_ids, user_id, bu_code, version },
+      PurchaseRequestService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
+      { cmd: 'purchase-request.swipe-approve', service: 'purchase-request' },
+      {
+        body: { pr_ids },
+        user_id,
+        bu_code,
+        version,
+      },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
+  async swipeReject(
+    pr_ids: string[],
+    reject_message: string,
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'swipeReject', pr_ids, user_id, bu_code, version },
+      PurchaseRequestService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
+      { cmd: 'purchase-request.swipe-reject', service: 'purchase-request' },
+      {
+        body: { pr_ids, reject_message },
+        user_id,
+        bu_code,
+        version,
+      },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
   /**
    * Reject a purchase request via microservice
    * ปฏิเสธใบขอซื้อผ่านไมโครเซอร์วิส

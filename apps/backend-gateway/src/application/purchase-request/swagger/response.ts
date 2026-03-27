@@ -313,3 +313,19 @@ export class PurchaseRequestMutationResponseDto {
   @ApiPropertyOptional({ description: 'Purchase request status', example: 'draft' })
   pr_status?: string;
 }
+
+export class SwipeResultItemDto {
+  @ApiProperty({ description: 'Purchase request ID', format: 'uuid', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+
+  @ApiProperty({ description: 'Whether the operation succeeded', example: true })
+  success: boolean;
+
+  @ApiPropertyOptional({ description: 'Error message if failed', example: 'User is not an action user for this PR' })
+  message?: string;
+}
+
+export class SwipeResultResponseDto {
+  @ApiProperty({ description: 'Results per PR', type: [SwipeResultItemDto] })
+  data: SwipeResultItemDto[];
+}

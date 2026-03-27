@@ -243,6 +243,69 @@ export class PurchaseRequestController extends BaseMicroserviceController {
   }
 
   /**
+   * Swipe approve multiple purchase requests
+   * อนุมัติใบขอซื้อแบบรวดเร็วหลายรายการ
+   */
+  @MessagePattern({
+    cmd: 'purchase-request.swipe-approve',
+    service: 'purchase-request',
+  })
+  async swipeApprove(
+    @Body()
+    payload: MicroservicePayload,
+  ): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'swipeApprove', payload },
+      PurchaseRequestController.name,
+    );
+    const user_id = payload.user_id;
+    const bu_code = payload.bu_code;
+
+    const auditContext = this.createAuditContext(payload);
+    const results = await runWithAuditContext(auditContext, () =>
+      this.purchaseRequestLogic.swipeApprove(
+        payload.body.pr_ids,
+        user_id,
+        bu_code,
+      ),
+    );
+
+    return this.handleResult({ isOk: () => true, isError: () => false, value: results } as any);
+  }
+
+  /**
+   * Swipe reject multiple purchase requests
+   * ปฏิเสธใบขอซื้อแบบรวดเร็วหลายรายการ
+   */
+  @MessagePattern({
+    cmd: 'purchase-request.swipe-reject',
+    service: 'purchase-request',
+  })
+  async swipeReject(
+    @Body()
+    payload: MicroservicePayload,
+  ): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'swipeReject', payload },
+      PurchaseRequestController.name,
+    );
+    const user_id = payload.user_id;
+    const bu_code = payload.bu_code;
+
+    const auditContext = this.createAuditContext(payload);
+    const results = await runWithAuditContext(auditContext, () =>
+      this.purchaseRequestLogic.swipeReject(
+        payload.body.pr_ids,
+        payload.body.reject_message,
+        user_id,
+        bu_code,
+      ),
+    );
+
+    return this.handleResult({ isOk: () => true, isError: () => false, value: results } as any);
+  }
+
+  /**
    * Review a purchase request through the workflow
    * ตรวจสอบใบขอซื้อผ่านขั้นตอนการทำงาน
    * @param payload - Payload containing purchase request ID and review data / payload ที่มี ID ใบขอซื้อและข้อมูลการตรวจสอบ

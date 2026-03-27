@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { PurchaseRequestService } from './purchase-request.service';
-import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -43,7 +43,7 @@ import {
 } from '@/common';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
-import { ApproveByStageRoleDto2 } from './dto/state-change.dto';
+import { ApproveByStageRoleDto2, SwipeApprovePurchaseRequestDto, SwipeRejectPurchaseRequestDto } from './dto/state-change.dto';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { Permission } from 'src/auth/decorators/permission.decorator';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
@@ -57,7 +57,10 @@ import {
   ReviewPurchaseRequestSwaggerDto,
   UpdatePurchaseRequestSwaggerDto,
   CalculatePurchaseRequestDetailSwaggerDto,
+  SwipeApprovePurchaseRequestSwaggerDto,
+  SwipeRejectPurchaseRequestSwaggerDto,
 } from './swagger/request';
+import { SwipeResultResponseDto } from './swagger/response';
 
 @Controller('api')
 @ApiTags('Procurement')
@@ -690,6 +693,74 @@ export class PurchaseRequestController extends BaseHttpController {
 
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.purchaseRequestService.submit(id, payload, user_id, bu_code, version);
+    this.respond(res, result);
+  }
+
+  /**
+   * Swipe approve multiple purchase requests
+   * อนุมัติใบขอซื้อแบบรวดเร็วหลายรายการ
+   */
+  @Post(':bu_code/purchase-request/swipe-approve')
+  @UseGuards(new AppIdGuard('purchaseRequest.approve'))
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Swipe approve multiple purchase requests',
+    description: 'Quickly approve multiple purchase requests at once. Only works for approval roles (HOD, FC, GM). Purchase role cannot use this endpoint. The user must be an action user for each PR.',
+    operationId: 'swipeApprovePurchaseRequests',
+    tags: ['Procurement', 'Purchase Request'],
+    'x-description-th': 'อนุมัติใบขอซื้อแบบรวดเร็วหลายรายการ ใช้ได้เฉพาะผู้อนุมัติ (HOD, FC, GM)',
+  } as any)
+  @ApiBody({ type: SwipeApprovePurchaseRequestSwaggerDto })
+  @ApiResponse({ status: 200, description: 'Swipe approve results', type: SwipeResultResponseDto })
+  @HttpCode(HttpStatus.OK)
+  async swipeApprove(
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() body: SwipeApprovePurchaseRequestDto,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'swipeApprove', body, version },
+      PurchaseRequestController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.purchaseRequestService.swipeApprove(body.pr_ids, user_id, bu_code, version);
+    this.respond(res, result);
+  }
+
+  /**
+   * Swipe reject multiple purchase requests
+   * ปฏิเสธใบขอซื้อแบบรวดเร็วหลายรายการ
+   */
+  @Post(':bu_code/purchase-request/swipe-reject')
+  @UseGuards(new AppIdGuard('purchaseRequest.approve'))
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Swipe reject multiple purchase requests',
+    description: 'Quickly reject multiple purchase requests at once with a shared reject message. Only works for approval roles (HOD, FC, GM). Purchase role cannot use this endpoint.',
+    operationId: 'swipeRejectPurchaseRequests',
+    tags: ['Procurement', 'Purchase Request'],
+    'x-description-th': 'ปฏิเสธใบขอซื้อแบบรวดเร็วหลายรายการพร้อมเหตุผล',
+  } as any)
+  @ApiBody({ type: SwipeRejectPurchaseRequestSwaggerDto })
+  @ApiResponse({ status: 200, description: 'Swipe reject results', type: SwipeResultResponseDto })
+  @HttpCode(HttpStatus.OK)
+  async swipeReject(
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() body: SwipeRejectPurchaseRequestDto,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'swipeReject', body, version },
+      PurchaseRequestController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.purchaseRequestService.swipeReject(body.pr_ids, body.reject_message, user_id, bu_code, version);
     this.respond(res, result);
   }
 
