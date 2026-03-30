@@ -323,7 +323,7 @@ export class ReportService implements OnModuleInit {
     report_type?: string,
   ): Promise<HistoryResponse> {
     this.logger.debug({ function: 'getHistory', bu_code, page }, ReportService.name);
-    return firstValueFrom(
+    const result = await firstValueFrom(
       this.reportServiceGrpc.GetReportHistory({
         context: { user_id, bu_codes: [bu_code] },
         page,
@@ -331,6 +331,23 @@ export class ReportService implements OnModuleInit {
         report_type,
       }),
     );
+
+    // Clean protobuf metadata fields (e.g. _file_url from optional oneof)
+    if (result?.jobs) {
+      result.jobs = result.jobs.map((job) => ({
+        job_id: job.job_id,
+        report_type: job.report_type,
+        format: job.format,
+        status: job.status,
+        file_url: job.file_url,
+        file_name: job.file_name,
+        file_size: job.file_size,
+        row_count: job.row_count,
+        error_message: job.error_message,
+      }));
+    }
+
+    return result;
   }
 
   // --- Schedule methods ---
