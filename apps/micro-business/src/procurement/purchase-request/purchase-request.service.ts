@@ -378,6 +378,19 @@ export class PurchaseRequestService {
         };
       }
 
+      const validPrStatuses = Object.values(enum_purchase_request_doc_status);
+      const statusFilter = q.filter.find((f) => f.startsWith('pr_status|') || f.startsWith('pr_status:'));
+      if (statusFilter) {
+        const colonIndex = statusFilter.indexOf(':');
+        const filterValue = colonIndex !== -1 ? statusFilter.substring(colonIndex + 1).trim() : '';
+        if (filterValue && !validPrStatuses.includes(filterValue as enum_purchase_request_doc_status)) {
+          return Result.error(
+            `Invalid pr_status value: "${filterValue}". Valid values are: ${validPrStatuses.join(', ')}`,
+            ErrorCode.INVALID_ARGUMENT,
+          );
+        }
+      }
+
       const queryFromHeader = q.findMany();
 
       // Check permissions from most permissive to least permissive

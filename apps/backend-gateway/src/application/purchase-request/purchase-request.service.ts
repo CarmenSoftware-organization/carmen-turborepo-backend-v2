@@ -6,7 +6,7 @@ import {
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
-import { CreatePurchaseRequestDto, RejectPurchaseRequestDto, Result, SubmitPurchaseRequest, MicroserviceResponse } from '@/common';
+import { CreatePurchaseRequestDto, RejectPurchaseRequestDto, Result, SubmitPurchaseRequest, MicroserviceResponse, ErrorCode } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { ResponseLib } from 'src/libs/response.lib';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
@@ -122,16 +122,23 @@ export class PurchaseRequestService {
       },
     );
 
-    const response = await firstValueFrom(res);
+    try {
+      const response = await firstValueFrom(res);
 
-    if (response.response.status !== HttpStatus.OK) {
-      return Result.error(
-        response.response.message,
-        httpStatusToErrorCode(response.response.status),
-      );
+      if (response.response.status !== HttpStatus.OK) {
+        return Result.error(
+          response.response.message,
+          httpStatusToErrorCode(response.response.status),
+        );
+      }
+
+      return Result.ok({ data: response.data, paginate: response.paginate });
+    } catch (error) {
+      const message = error instanceof Error && error.message
+        ? error.message
+        : 'An error occurred while retrieving purchase requests';
+      return Result.error(message, ErrorCode.INTERNAL);
     }
-
-    return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
   /**

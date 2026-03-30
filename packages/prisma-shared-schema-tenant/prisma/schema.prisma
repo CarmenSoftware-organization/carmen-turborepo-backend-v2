@@ -226,12 +226,12 @@ enum enum_purchase_order_doc_status {
 }
 
 enum enum_purchase_request_doc_status {
-  draft
-  in_progress
-  approved
-  completed
-  cancelled
-  voided
+  draft // ร่าง
+  in_progress // กำลังดำเนินการ
+  approved // อนุมัติ
+  completed // เสร็จสิ้น
+  cancelled // ยกเลิก
+  voided // โมฆะ
 }
 
 enum enum_unit_type {
