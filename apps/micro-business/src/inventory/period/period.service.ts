@@ -307,11 +307,29 @@ export class PeriodService {
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
-    // Find the last OPEN period — new periods are created after this one
-    const lastOpenPeriod = await prisma.tb_period.findFirst({
+    // Find all open periods sorted ascending
+    const openPeriods = await prisma.tb_period.findMany({
       where: { status: enum_period_status.open, deleted_at: null },
-      orderBy: [{ fiscal_year: "desc" }, { fiscal_month: "desc" }],
+      orderBy: [{ fiscal_year: "asc" }, { fiscal_month: "asc" }],
+      select: { id: true, period: true, fiscal_year: true, fiscal_month: true },
     });
+
+    const existingOpenCount = openPeriods.length;
+
+    // Already have enough open periods — nothing to create
+    if (existingOpenCount >= safeCount) {
+      return Result.ok({
+        message: `Already have ${existingOpenCount} open period(s) — no new periods created`,
+        existing_open_count: existingOpenCount,
+        created: [],
+        total_created: 0,
+      });
+    }
+
+    const periodsToCreate = safeCount - existingOpenCount;
+
+    // Start from month after the last open period (or last period of any status, or current month)
+    const lastOpenPeriod = openPeriods[openPeriods.length - 1] ?? null;
 
     let startYear: number;
     let startMonth: number;
@@ -324,14 +342,13 @@ export class PeriodService {
         startYear += 1;
       }
     } else {
-      // No open periods — fall back to last period of any status
-      const lastPeriod = await prisma.tb_period.findFirst({
+      const lastAnyPeriod = await prisma.tb_period.findFirst({
         where: { deleted_at: null },
         orderBy: [{ fiscal_year: "desc" }, { fiscal_month: "desc" }],
       });
-      if (lastPeriod) {
-        startYear = lastPeriod.fiscal_year;
-        startMonth = lastPeriod.fiscal_month + 1;
+      if (lastAnyPeriod) {
+        startYear = lastAnyPeriod.fiscal_year;
+        startMonth = lastAnyPeriod.fiscal_month + 1;
         if (startMonth > 12) {
           startMonth = 1;
           startYear += 1;
@@ -343,14 +360,14 @@ export class PeriodService {
       }
     }
 
-    const createdPeriods: { id: string; period: string; fiscal_year: number; fiscal_month: number }[] = [];
+    const createdPeriods: { id: string; period: string; fiscal_year: number; fiscal_month: number; start_at: string; end_at: string }[] = [];
     const skippedPeriods: { period: string; reason: string }[] = [];
 
     let year = startYear;
     let month = startMonth;
-    const maxIterations = safeCount + 120; // safety limit to prevent infinite loop
+    const maxIterations = periodsToCreate + 120; // safety limit to prevent infinite loop
 
-    for (let i = 0; createdPeriods.length < safeCount && i < maxIterations; i++) {
+    for (let i = 0; createdPeriods.length < periodsToCreate && i < maxIterations; i++) {
       const periodCode = year.toString().slice(-2) + month.toString().padStart(2, "0");
 
       // Check if period already exists
@@ -401,6 +418,8 @@ export class PeriodService {
           period: periodCode,
           fiscal_year: year,
           fiscal_month: month,
+          start_at: startAt,
+          end_at: endAt,
         });
       }
 
@@ -413,10 +432,8 @@ export class PeriodService {
     }
 
     return Result.ok({
+      existing_open_count: existingOpenCount,
       start_from: { fiscal_year: startYear, fiscal_month: startMonth },
-      last_open_period: lastOpenPeriod
-        ? { period: lastOpenPeriod.period, fiscal_year: lastOpenPeriod.fiscal_year, fiscal_month: lastOpenPeriod.fiscal_month }
-        : null,
       created: createdPeriods,
       skipped: skippedPeriods,
       total_created: createdPeriods.length,
