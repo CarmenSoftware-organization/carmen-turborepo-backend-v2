@@ -179,8 +179,9 @@ export class PeriodService {
       return Result.error("Invalid start_at date", ErrorCode.INVALID_ARGUMENT);
     }
 
-    // Auto-calculate end_at as last moment of fiscal_month (day 0 of next month = last day of this month)
-    const endAtStr = new Date(Date.UTC(data.fiscal_year, data.fiscal_month, 0, 23, 59, 59, 999)).toISOString();
+    // Auto-calculate end_at as midnight UTC of the last day of fiscal_month
+    // Using day 0 of next month = last day of this month; stored at 00:00:00Z so UTC+7 display stays on the correct date
+    const endAtStr = new Date(Date.UTC(data.fiscal_year, data.fiscal_month, 0)).toISOString();
 
     const period = await prisma.tb_period.create({
       data: {
@@ -384,8 +385,8 @@ export class PeriodService {
       } else {
         // Calculate start_at and end_at based on safeStartDay
         const startAt = new Date(Date.UTC(year, month - 1, safeStartDay)).toISOString();
-        // end_at: day 0 of next month = last day of this month at 23:59:59.999 UTC
-        const endAt = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999)).toISOString();
+        // end_at: midnight UTC of last day of month — day 0 of next month = last day of this month
+        const endAt = new Date(Date.UTC(year, month, 0)).toISOString();
 
         const period = await prisma.tb_period.create({
           data: {
