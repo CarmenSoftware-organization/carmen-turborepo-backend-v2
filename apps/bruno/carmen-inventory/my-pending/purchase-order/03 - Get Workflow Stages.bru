@@ -1,0 +1,46 @@
+meta {
+  name: 03 - Get Workflow Stages
+  type: http
+  seq: 3
+}
+
+docs {
+  ## Get Workflow Stages for Purchase Order
+  ดึงขั้นตอนการอนุมัติที่กำหนดไว้สำหรับใบสั่งซื้อในหน่วยธุรกิจ แสดงลำดับขั้นตอนอนุมัติ (เช่น หัวหน้าแผนก ผู้ควบคุมการเงิน GM) ที่ใบสั่งซื้อต้องผ่าน
+
+  Retrieves the approval workflow stages configured for purchase orders in the business unit, showing the sequence of approval steps (e.g., HOD, Finance Controller, GM) that a purchase order must pass through.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": ["HOD", "Purchaser", "FC", "GM"],
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
+
+get {
+  url: {{host}}/api/my-pending/purchase-order/:bu_code/workflow-stages
+  body: none
+  auth: bearer
+}
+
+params:path {
+  bu_code: {{bu_code}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

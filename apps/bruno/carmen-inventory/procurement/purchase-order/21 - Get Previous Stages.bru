@@ -1,0 +1,49 @@
+meta {
+  name: 21 - Get Previous Stages
+  type: http
+  seq: 21
+}
+
+docs {
+  ## Get Previous Workflow Stages
+  ดึงขั้นตอนเวิร์กโฟลว์ทั้งหมดก่อนขั้นตอนปัจจุบันของใบสั่งซื้อ ใช้เพื่อกำหนดตัวเลือกการย้อนกลับ/ส่งคืนในสายการอนุมัติ
+
+  Retrieves all workflow stages before the current stage of a purchase order. Used to determine revert/return-to options in the approval chain.
+
+  ### Path Parameters
+  - `po_id` — Purchase order ID
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "1": "Create Request",
+      "2": "HOD"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:po_id/previous-stages
+  body: none
+  auth: bearer
+}
+
+params:path {
+  po_id: {{po_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

@@ -21,6 +21,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiResponse,
 } from '@nestjs/swagger';
 import {
   CreateStoreRequisitionSwaggerDto,
@@ -682,6 +683,42 @@ export class StoreRequisitionController extends BaseHttpController {
       user_id,
       bu_code,
       version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * Get all workflow stages for store requisitions in a business unit
+   * แสดงขั้นตอนเวิร์กโฟลว์การอนุมัติสำหรับใบเบิกสินค้าในหน่วยธุรกิจ
+   */
+  @Get(':bu_code/store-requisition/workflow-stages')
+  @UseGuards(new AppIdGuard('storeRequisition.findAll'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get all workflow stages for store requisitions',
+    description: 'Returns the configured approval workflow stages (e.g., HOD, Issuer) for store requisitions in this business unit. Used to display workflow progress and filter by stage.',
+    operationId: 'findAllWorkflowStagesBySr',
+    tags: ['Procurement', 'Store Requisition', 'Workflow & Approval'],
+    'x-description-th': 'แสดงขั้นตอนเวิร์กโฟลว์การอนุมัติสำหรับใบเบิกสินค้าในหน่วยธุรกิจ ใช้เพื่อแสดงความคืบหน้าและกรองตามขั้นตอน',
+  } as any)
+  @ApiResponse({ status: 200, description: 'Workflow stages retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Workflow stages not found' })
+  async findAllWorkflowStagesBySr(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('bu_code') bu_code: string,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'findAllWorkflowStagesBySr', version },
+      StoreRequisitionController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.storeRequisitionService.findAllWorkflowStagesBySr(
+      user_id, bu_code, version,
     );
     this.respond(res, result);
   }

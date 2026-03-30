@@ -215,6 +215,41 @@ export class PurchaseOrderController extends BaseHttpController {
   }
 
   /**
+   * Get all workflow stages for purchase orders in a business unit
+   * แสดงขั้นตอนเวิร์กโฟลว์การอนุมัติสำหรับใบสั่งซื้อในหน่วยธุรกิจ
+   */
+  @Get('workflow-stages')
+  @UseGuards(new AppIdGuard('purchaseOrder.findAll'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get all workflow stages for purchase orders',
+    description: 'Returns the configured approval workflow stages (e.g., HOD, Purchaser, FC, GM) for purchase orders in this business unit. Used to display workflow progress and filter by stage.',
+    operationId: 'findAllWorkflowStagesByPo',
+    tags: ['Procurement', 'Purchase Order', 'Workflow & Approval'],
+    'x-description-th': 'แสดงขั้นตอนเวิร์กโฟลว์การอนุมัติสำหรับใบสั่งซื้อในหน่วยธุรกิจ',
+  } as any)
+  @ApiResponse({ status: 200, description: 'Workflow stages retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Workflow stages not found' })
+  async findAllWorkflowStagesByPo(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'findAllWorkflowStagesByPo', version },
+      PurchaseOrderController.name,
+    );
+
+    const { user_id, bu_code } = ExtractRequestHeader(req);
+    const result = await this.purchaseOrderService.findAllWorkflowStagesByPo(
+      user_id, bu_code, version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
    * Get previous workflow stages for a purchase order
    * ดึงขั้นตอนอนุมัติก่อนหน้า current_stage ของใบสั่งซื้อ
    * @param po_id - Purchase order ID / รหัสใบสั่งซื้อ

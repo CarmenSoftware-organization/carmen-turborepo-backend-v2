@@ -1,0 +1,39 @@
+meta {
+  name: 12 - Get Workflow Stages
+  type: http
+  seq: 12
+}
+
+docs {
+  ## Get Workflow Stages
+  แสดงขั้นตอนเวิร์กโฟลว์การอนุมัติที่กำหนดค่าไว้ (เช่น HOD, Issuer) สำหรับใบเบิกสินค้าในหน่วยธุรกิจนี้ ใช้เพื่อแสดงความคืบหน้าของเวิร์กโฟลว์
+
+  Returns the configured approval workflow stages (e.g., HOD, Issuer) for store requisitions in this business unit. Used to display workflow progress and filter by stage.
+
+
+  ### Sample Response
+  ```json
+  {
+    "data": ["HOD", "Issuer"],
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/store-requisition/workflow-stages
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

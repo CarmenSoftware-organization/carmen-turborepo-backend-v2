@@ -954,4 +954,34 @@ export class PurchaseOrderService {
 
     return Result.ok(response.data);
   }
+
+  async findAllWorkflowStagesByPo(
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findAllWorkflowStagesByPo', user_id, bu_code, version },
+      PurchaseOrderService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
+      {
+        cmd: 'purchase-order.find-all-workflow-stages-by-po',
+        service: 'purchase-order',
+      },
+      { user_id, bu_code, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
 }

@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MyPendingPurchaseOrderService } from './my-pending.purchase-order.service';
-import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { BaseHttpController } from '@/common';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { ApiVersionMinRequest, ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator';
@@ -118,6 +118,45 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
       await this.myPendingPurchaseOrderService.findAllMyPendingPurchaseOrdersCount(
         user_id,
         version,
+      );
+    this.respond(res, result);
+  }
+
+  /**
+   * Get workflow stages for pending purchase orders
+   * ดึงขั้นตอนการทำงานสำหรับใบสั่งซื้อที่รอดำเนินการ
+   */
+  @Get(':bu_code/workflow-stages')
+  @UseGuards(
+    new AppIdGuard('my-pending.purchaseOrder.findAllWorkflowStagesByPo'),
+  )
+  @ApiVersionMinRequest()
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get workflow stages of purchase orders',
+    description: 'Retrieves the approval workflow stages configured for purchase orders in the business unit, showing the sequence of approval steps that a purchase order must pass through.',
+    operationId: 'findAllMyPendingPoWorkflowStages',
+    tags: ['Workflow & Approval', 'My Pending - Purchase Order'],
+    'x-description-th': 'ดึงขั้นตอนการอนุมัติที่กำหนดไว้สำหรับใบสั่งซื้อในหน่วยธุรกิจ แสดงลำดับขั้นตอนที่ใบสั่งซื้อต้องผ่าน',
+  } as any)
+  @ApiResponse({ status: 200, description: 'Workflow stages retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Workflow stages not found' })
+  @HttpCode(HttpStatus.OK)
+  async findAllWorkflowStagesByPo(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('bu_code') bu_code: string,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'findAllWorkflowStagesByPo', version },
+      MyPendingPurchaseOrderController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result =
+      await this.myPendingPurchaseOrderService.findAllMyPendingStages(
+        user_id, bu_code, version,
       );
     this.respond(res, result);
   }

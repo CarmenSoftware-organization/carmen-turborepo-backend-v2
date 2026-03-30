@@ -158,4 +158,34 @@ export class MyPendingPurchaseOrderService {
 
     return Result.ok(response.data);
   }
+
+  async findAllMyPendingStages(
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findAllMyPendingStages', user_id, bu_code, version },
+      MyPendingPurchaseOrderService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
+      {
+        cmd: 'purchase-order.find-all-my-pending-stages',
+        service: 'purchase-order',
+      },
+      { user_id, bu_code, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
 }

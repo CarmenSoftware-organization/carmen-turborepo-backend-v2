@@ -672,4 +672,34 @@ export class StoreRequisitionService {
 
     return Result.ok(response.data);
   }
+
+  async findAllWorkflowStagesBySr(
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findAllWorkflowStagesBySr', user_id, bu_code, version },
+      StoreRequisitionService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      {
+        cmd: 'store-requisition.find-all-workflow-stages-by-sr',
+        service: 'store-requisition',
+      },
+      { user_id, bu_code, version },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
 }
