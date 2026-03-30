@@ -27,7 +27,7 @@ export interface WorkflowHeader {
 }
 
 interface WorkflowHistory {
-  action: enum_last_action;
+  action: enum_last_action | 'completed';
   datetime: string | Date;
   user: {
     id: string;
