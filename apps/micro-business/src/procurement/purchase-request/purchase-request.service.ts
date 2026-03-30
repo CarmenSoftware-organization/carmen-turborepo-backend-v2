@@ -440,6 +440,7 @@ export class PurchaseRequestService {
               pr_date: pr.pr_date,
               description: pr.description,
               pr_status: pr.pr_status,
+              requestor_id: pr.requestor_id,
               requestor_name: pr.requestor_name,
               department_name: pr.department_name,
               workflow_name: pr.workflow_name,

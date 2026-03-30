@@ -1,6 +1,42 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 
+/**
+ * Parse a filter query string into a Record<key, value>.
+ * Supports semicolons or commas as filter separators.
+ * When a comma-split part has no colon, it is treated as a continuation
+ * of the previous filter's value, enabling IN queries:
+ *   "requestor_id|string:uuid1,uuid2" → { "requestor_id|string": "uuid1,uuid2" }
+ *   "status|string:draft;type|string:main" → two separate filters
+ */
+function parseFilterString(filterStr: string): Record<string, string> {
+  const result: Record<string, string> = {};
+  let lastKey: string | null = null;
+
+  filterStr.split(/[;,]/).forEach((item) => {
+    const trimmed = item.trim();
+    if (!trimmed) return;
+
+    const colonIndex = trimmed.indexOf(':');
+    if (colonIndex === -1) {
+      // No colon → continuation value for the previous key (IN query)
+      if (lastKey !== null) {
+        result[lastKey] = result[lastKey] + ',' + trimmed;
+      }
+      return;
+    }
+
+    const key = trimmed.substring(0, colonIndex).trim();
+    const value = trimmed.substring(colonIndex + 1).trim();
+    if (key && value) {
+      result[key] = result[key] ? result[key] + ',' + value : value;
+      lastKey = key;
+    }
+  });
+
+  return result;
+}
+
 export const PaginateSchema = z.object({
   page: z
     .string()
@@ -35,18 +71,7 @@ export const PaginateSchema = z.object({
     .optional()
     .transform((v) => {
       if (!v) return {};
-      const result: Record<string, string> = {};
-      v.split(/[;,]/).forEach((item) => {
-        const colonIndex = item.indexOf(':');
-        if (colonIndex === -1) return;
-        const k = item.substring(0, colonIndex).trim();
-        const val = item.substring(colonIndex + 1).trim();
-        if (k && val) {
-          // Merge duplicate keys with comma for IN queries
-          result[k] = result[k] ? result[k] + ',' + val : val;
-        }
-      });
-      return result;
+      return parseFilterString(v);
     }),
 
   advance: z
@@ -109,17 +134,7 @@ export function PaginateQuery(query: IPaginateQuery): IPaginate {
   let filterValue: Record<string, string> = {};
   if (query.filter) {
     if (typeof query.filter === 'string') {
-      // String format: "status:inactive;type:active" or comma-separated
-      query.filter.split(/[;,]/).forEach((item) => {
-        const colonIndex = item.indexOf(':');
-        if (colonIndex === -1) return;
-        const key = item.substring(0, colonIndex).trim();
-        const value = item.substring(colonIndex + 1).trim();
-        if (key && value) {
-          // Merge duplicate keys with comma for IN queries
-          filterValue[key] = filterValue[key] ? filterValue[key] + ',' + value : value;
-        }
-      });
+      filterValue = parseFilterString(query.filter);
     } else if (typeof query.filter === 'object') {
       // Object format: { status: 'inactive' }
       filterValue = query.filter as Record<string, string>;
