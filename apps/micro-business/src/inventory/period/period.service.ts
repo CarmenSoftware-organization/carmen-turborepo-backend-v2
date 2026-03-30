@@ -179,9 +179,8 @@ export class PeriodService {
       return Result.error("Invalid start_at date", ErrorCode.INVALID_ARGUMENT);
     }
 
-    // Auto-calculate end_at as last day of fiscal_month at 23:59:59.999
-    const lastDay = new Date(Date.UTC(data.fiscal_year, data.fiscal_month, 0)).getDate();
-    const endAtStr = new Date(Date.UTC(data.fiscal_year, data.fiscal_month - 1, lastDay, 23, 59, 59, 999)).toISOString();
+    // Auto-calculate end_at as last moment of fiscal_month (day 0 of next month = last day of this month)
+    const endAtStr = new Date(Date.UTC(data.fiscal_year, data.fiscal_month, 0, 23, 59, 59, 999)).toISOString();
 
     const period = await prisma.tb_period.create({
       data: {
@@ -385,19 +384,8 @@ export class PeriodService {
       } else {
         // Calculate start_at and end_at based on safeStartDay
         const startAt = new Date(Date.UTC(year, month - 1, safeStartDay)).toISOString();
-        let endAt: string;
-        if (safeStartDay === 1) {
-          const lastDay = new Date(Date.UTC(year, month, 0)).getDate();
-          endAt = new Date(Date.UTC(year, month - 1, lastDay, 23, 59, 59, 999)).toISOString();
-        } else {
-          let endMonth = month + 1;
-          let endYear = year;
-          if (endMonth > 12) {
-            endMonth = 1;
-            endYear += 1;
-          }
-          endAt = new Date(Date.UTC(endYear, endMonth - 1, safeStartDay - 1, 23, 59, 59, 999)).toISOString();
-        }
+        // end_at: day 0 of next month = last day of this month at 23:59:59.999 UTC
+        const endAt = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999)).toISOString();
 
         const period = await prisma.tb_period.create({
           data: {
