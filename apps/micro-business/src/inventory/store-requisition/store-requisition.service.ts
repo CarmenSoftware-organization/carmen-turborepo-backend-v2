@@ -866,6 +866,8 @@ export class StoreRequisitionService {
         },
         data: {
           ...workflow,
+          workflow_history: workflow.workflow_history as unknown as Prisma.InputJsonValue,
+          user_action: workflow.user_action as unknown as Prisma.InputJsonValue,
           doc_status:
             workflow.workflow_next_stage === '-'
               ? enum_doc_status.completed

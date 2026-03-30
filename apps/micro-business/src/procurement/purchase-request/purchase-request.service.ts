@@ -1478,6 +1478,8 @@ export class PurchaseRequestService {
         },
         data: {
           ...workflow,
+          workflow_history: workflow.workflow_history as unknown as Prisma.InputJsonValue,
+          user_action: workflow.user_action as unknown as Prisma.InputJsonValue,
           pr_status:
             workflow.workflow_next_stage === '-'
               ? enum_purchase_request_doc_status.approved

@@ -1844,8 +1844,8 @@ export class PurchaseOrderService {
         where: { id },
         data: {
           ...workflowHeader,
-          workflow_history: workflowHeader.workflow_history as any,
-          user_action: workflowHeader.user_action as any,
+          workflow_history: workflowHeader.workflow_history as unknown as Prisma.InputJsonValue,
+          user_action: workflowHeader.user_action as unknown as Prisma.InputJsonValue,
           doc_version: { increment: 1 },
           po_status: enum_purchase_order_doc_status.in_progress,
           po_no: newPoNo,
@@ -1955,6 +1955,8 @@ export class PurchaseOrderService {
         where: { id },
         data: {
           ...workflow,
+          workflow_history: workflow.workflow_history as unknown as Prisma.InputJsonValue,
+          user_action: workflow.user_action as unknown as Prisma.InputJsonValue,
           doc_version: { increment: 1 },
           updated_by_id: this.userId,
         },
@@ -2039,6 +2041,8 @@ export class PurchaseOrderService {
         where: { id },
         data: {
           ...workflow,
+          workflow_history: workflow.workflow_history as unknown as Prisma.InputJsonValue,
+          user_action: workflow.user_action as unknown as Prisma.InputJsonValue,
           po_status: enum_purchase_order_doc_status.closed,
           updated_by_id: this.userId,
         },
@@ -2124,6 +2128,8 @@ export class PurchaseOrderService {
         where: { id },
         data: {
           ...workflow,
+          workflow_history: workflow.workflow_history as unknown as Prisma.InputJsonValue,
+          user_action: workflow.user_action as unknown as Prisma.InputJsonValue,
           updated_by_id: this.userId,
         },
       });
