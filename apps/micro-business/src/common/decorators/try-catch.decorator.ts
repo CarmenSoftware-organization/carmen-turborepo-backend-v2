@@ -19,6 +19,14 @@ function isPrismaValidationError(error: unknown): boolean {
   return false;
 }
 
+function extractPrismaMessage(message: string): string {
+  // Prisma error messages contain a code block followed by the actual error.
+  // Extract the last non-empty paragraph after the code snippet.
+  const parts = message.split('\n\n').map((p) => p.trim()).filter(Boolean);
+  const last = parts[parts.length - 1];
+  return last ?? message;
+}
+
 export function TryCatch(
   target: unknown,
   propertyKey: string,
@@ -40,7 +48,10 @@ export function TryCatch(
       );
 
       if (isZodError(error) || isPrismaValidationError(error)) {
-        return Result.error(err, ErrorCode.INVALID_ARGUMENT);
+        const cleanMessage = isPrismaValidationError(error)
+          ? extractPrismaMessage(err.message)
+          : err.message;
+        return Result.error(cleanMessage, ErrorCode.INVALID_ARGUMENT);
       }
 
       return Result.error(err);

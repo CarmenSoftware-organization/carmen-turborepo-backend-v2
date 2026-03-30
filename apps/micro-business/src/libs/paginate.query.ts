@@ -298,7 +298,7 @@ export default class QueryParams {
     const trimmedValue = value?.trim() ?? "";
 
     // daterange must be handled before the comma check (value format: "from,to")
-    if (fieldType === "date_range") {
+    if (fieldType === "daterange" || fieldType === "date_range") {
       const [from, to] = trimmedValue.split(",").map((v) => v.trim());
       const fromDate = new Date(from);
       const toDate = new Date(to);
