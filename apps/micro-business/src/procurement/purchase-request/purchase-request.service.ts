@@ -357,11 +357,15 @@ export class PurchaseRequestService {
       if (statusFilter) {
         const colonIndex = statusFilter.indexOf(':');
         const filterValue = colonIndex !== -1 ? statusFilter.substring(colonIndex + 1).trim() : '';
-        if (filterValue && !validPrStatuses.includes(filterValue as enum_purchase_request_doc_status)) {
-          return Result.error(
-            `Invalid pr_status value: "${filterValue}". Valid values are: ${validPrStatuses.join(', ')}`,
-            ErrorCode.INVALID_ARGUMENT,
-          );
+        if (filterValue) {
+          const statusValues = filterValue.split(',').map((v) => v.trim()).filter(Boolean);
+          const invalidValues = statusValues.filter((v) => !validPrStatuses.includes(v as enum_purchase_request_doc_status));
+          if (invalidValues.length > 0) {
+            return Result.error(
+              `Invalid pr_status value(s): ${invalidValues.map((v) => `"${v}"`).join(', ')}. Valid values are: ${validPrStatuses.join(', ')}`,
+              ErrorCode.INVALID_ARGUMENT,
+            );
+          }
         }
       }
 

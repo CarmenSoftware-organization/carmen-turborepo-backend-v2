@@ -291,7 +291,14 @@ export class PeriodService {
    */
   @TryCatch
   async generateNextPeriods(count: number, start_day: number, user_id: string, tenant_id: string): Promise<Result<unknown>> {
-    this.logger.debug({ function: "generateNextPeriods", count, start_day, user_id, tenant_id }, PeriodService.name);
+    const safeCount = Number(count);
+    const safeStartDay = Number(start_day) || 1;
+
+    this.logger.debug({ function: "generateNextPeriods", count, safeCount, start_day: safeStartDay, user_id, tenant_id }, PeriodService.name);
+
+    if (!safeCount || safeCount <= 0 || !Number.isInteger(safeCount)) {
+      return Result.error(`count must be a positive integer, received: ${count}`, ErrorCode.INVALID_ARGUMENT);
+    }
 
     const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
     if (!tenant) {
@@ -327,9 +334,9 @@ export class PeriodService {
 
     let year = startYear;
     let month = startMonth;
-    const maxIterations = count + 120; // safety limit to prevent infinite loop
+    const maxIterations = safeCount + 120; // safety limit to prevent infinite loop
 
-    for (let i = 0; createdPeriods.length < count && i < maxIterations; i++) {
+    for (let i = 0; createdPeriods.length < safeCount && i < maxIterations; i++) {
       const periodCode = year.toString().slice(-2) + month.toString().padStart(2, "0");
 
       // Check if period already exists
@@ -345,10 +352,10 @@ export class PeriodService {
       if (existing) {
         skippedPeriods.push({ period: periodCode, reason: "Already exists" });
       } else {
-        // Calculate start_at and end_at based on start_day
-        const startAt = new Date(Date.UTC(year, month - 1, start_day)).toISOString();
+        // Calculate start_at and end_at based on safeStartDay
+        const startAt = new Date(Date.UTC(year, month - 1, safeStartDay)).toISOString();
         let endAt: string;
-        if (start_day === 1) {
+        if (safeStartDay === 1) {
           const lastDay = new Date(Date.UTC(year, month, 0)).getDate();
           endAt = new Date(Date.UTC(year, month - 1, lastDay, 23, 59, 59, 999)).toISOString();
         } else {
@@ -358,7 +365,7 @@ export class PeriodService {
             endMonth = 1;
             endYear += 1;
           }
-          endAt = new Date(Date.UTC(endYear, endMonth - 1, start_day - 1, 23, 59, 59, 999)).toISOString();
+          endAt = new Date(Date.UTC(endYear, endMonth - 1, safeStartDay - 1, 23, 59, 59, 999)).toISOString();
         }
 
         const period = await prisma.tb_period.create({
@@ -392,6 +399,8 @@ export class PeriodService {
     }
 
     return Result.ok({
+      start_from: { fiscal_year: startYear, fiscal_month: startMonth },
+      last_period: lastPeriod ? { period: lastPeriod.period, fiscal_year: lastPeriod.fiscal_year, fiscal_month: lastPeriod.fiscal_month } : null,
       created: createdPeriods,
       skipped: skippedPeriods,
       total_created: createdPeriods.length,
