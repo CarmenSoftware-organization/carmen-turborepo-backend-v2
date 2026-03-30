@@ -8,7 +8,7 @@ export const PeriodCreate = z.object({
   fiscal_year: z.number().int(),
   fiscal_month: z.number().int().min(1).max(12),
   start_at: z.coerce.date(),
-  end_at: z.coerce.date(),
+  end_at: z.coerce.date().optional(),
   status: z
     .enum(Object.values(enum_period_status) as [string, ...string[]])
     .optional()
@@ -41,11 +41,11 @@ export class PeriodCreateDto extends createZodDto(PeriodCreate) {
   })
   start_at: Date;
 
-  @ApiProperty({
-    description: 'Period end date (ISO 8601)',
+  @ApiPropertyOptional({
+    description: 'Period end date (ISO 8601) — auto-calculated as last day of fiscal_month if omitted',
     example: '2026-03-31T23:59:59.000Z',
   })
-  end_at: Date;
+  end_at?: Date;
 
   @ApiPropertyOptional({
     description: 'Period status',
