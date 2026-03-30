@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PurchaseRequestService } from './purchase-request.service';
 import { TenantService } from '@/tenant/tenant.service';
 import { CommonLogic } from '@/common/common.logic';
+import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
 import {
   enum_purchase_request_doc_status,
   enum_last_action,
@@ -29,19 +30,15 @@ describe('PurchaseRequestService', () => {
     generateRunningCode: jest.fn(),
   };
 
-  const mockAuthService = { send: jest.fn() };
-  const mockMasterService = { send: jest.fn() };
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PurchaseRequestService,
         { provide: 'PRISMA_SYSTEM', useValue: mockPrismaSystem },
         { provide: 'PRISMA_TENANT', useValue: mockPrismaTenant },
-        { provide: 'AUTH_SERVICE', useValue: mockAuthService },
-        { provide: 'MASTER_SERVICE', useValue: mockMasterService },
         { provide: TenantService, useValue: mockTenantService },
         { provide: CommonLogic, useValue: mockCommonLogic },
+        { provide: WorkflowOrchestratorService, useValue: { resolveUserRole: jest.fn() } },
       ],
     }).compile();
 

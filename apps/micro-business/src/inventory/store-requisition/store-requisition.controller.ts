@@ -389,4 +389,64 @@ export class StoreRequisitionController extends BaseMicroserviceController {
 
     return this.handleResult(result);
   }
+
+  @MessagePattern({
+    cmd: 'store-requisition.get-previous-stages',
+    service: 'store-requisition',
+  })
+  async getPreviousStages(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'getPreviousStages', payload },
+      StoreRequisitionController.name,
+    );
+    const user_id = payload.user_id;
+    const bu_code = payload.bu_code;
+    const sr_id = payload.sr_id;
+
+    await this.storeRequisitionService.initializePrismaService(bu_code, user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.storeRequisitionService.getPreviousStages(sr_id),
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'store-requisition.find-all-workflow-stages-by-sr',
+    service: 'store-requisition',
+  })
+  async findAllWorkflowStagesBySr(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'findAllWorkflowStagesBySr', payload },
+      StoreRequisitionController.name,
+    );
+    const user_id = payload.user_id;
+    const bu_code = payload.bu_code;
+
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.storeRequisitionService.findAllWorkflowStagesBySr(user_id, bu_code),
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'store-requisition.find-all-my-pending-stages',
+    service: 'store-requisition',
+  })
+  async findAllMyPendingStages(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'findAllMyPendingStages', payload },
+      StoreRequisitionController.name,
+    );
+    const user_id = payload.user_id;
+    const bu_code = payload.bu_code;
+
+    await this.storeRequisitionService.initializePrismaService(bu_code, user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.storeRequisitionService.findAllMyPendingStages(),
+    );
+    return this.handleResult(result);
+  }
 }

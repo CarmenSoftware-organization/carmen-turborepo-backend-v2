@@ -1,33 +1,32 @@
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { StoreRequisitionService } from '../store-requisition.service';
 import { MapperLogic } from '@/common/mapper/mapper.logic';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { IUpdateStoreRequisition, StoreRequisition } from '../interface/store-requisition.interface';
-import { UserActionProfile, WorkflowHeader, StageStatus } from '../interface/workflow.interface';
-import { CreateStoreRequisition, creatorAccess, NavigateForwardResult, NotificationService, NotificationType, stage_status, SubmitStoreRequisition } from '@/common';
-import { enum_last_action, enum_stage_role } from '@repo/prisma-shared-schema-tenant';
-import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom, Observable } from 'rxjs';
+import { WorkflowHeader, StageStatus } from '@/common/workflow/workflow.interfaces';
+import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
+import { SRWorkflowAdapter } from '../adapters/sr-workflow.adapter';
+import { CreateStoreRequisition, NotificationService, NotificationType, SubmitStoreRequisition } from '@/common';
+import { enum_stage_role } from '@repo/prisma-shared-schema-tenant';
 import { ValidateSRBeforeSubmitSchema } from '../dto/store-requisition.dto';
 import { RejectStoreRequisitionDto, ReviewStoreRequisitionDto } from '../dto/stage_role/store-requisition.stage-role.dto';
 import { InventoryTransactionService } from '@/inventory/inventory-transaction/inventory-transaction.service';
 
 // Re-export for backward compatibility
-export { WorkflowHeader, StageStatus } from '../interface/workflow.interface';
+export { WorkflowHeader, StageStatus } from '@/common/workflow/workflow.interfaces';
 
 @Injectable()
 export class StoreRequisitionLogic {
   private readonly logger: BackendLogger = new BackendLogger(
     StoreRequisitionLogic.name,
   );
+  private readonly srAdapter = new SRWorkflowAdapter();
+
   constructor(
     private readonly storeRequisitionService: StoreRequisitionService,
     private readonly mapperLogic: MapperLogic,
-    @Inject('MASTER_SERVICE')
-    private readonly masterService: ClientProxy,
-    @Inject('AUTH_SERVICE')
-    private readonly authService: ClientProxy,
     private readonly notificationService: NotificationService,
+    private readonly workflowOrchestrator: WorkflowOrchestratorService,
     private readonly inventoryTransactionService: InventoryTransactionService,
   ) {}
 
@@ -167,84 +166,14 @@ export class StoreRequisitionLogic {
 
     this.validateBeforeSubmit(storeRequisitionData);
 
-    const populateData: Record<string, any> = await this.mapperLogic.populate({
-      workflow_id: storeRequisitionData?.workflow_id,
-      user_id: user_id,
-    }, user_id, bu_code);
-
-    const workflowData = populateData?.workflow_id?.data;
-
-    // Determine current stage - if empty (old data), get first stage then navigate to stage 2
-    let currentStageForNavigation = storeRequisitionData?.workflow_current_stage;
-    let previousStage = storeRequisitionData?.workflow_current_stage;
-
-    if (!currentStageForNavigation) {
-      // Get first stage (draft) then use it to navigate to stage 2
-      const firstStageRes = this.masterService.send(
-        { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
-        {
-          workflowData,
-          currentStatus: '',
-          requestData: {},
-        },
-      );
-      const firstStageNav: NavigateForwardResult = await firstValueFrom(firstStageRes);
-      currentStageForNavigation = firstStageNav.navigation_info.current_stage_info?.name;
-      previousStage = currentStageForNavigation;
-    }
-
-    const res = this.masterService.send(
-      { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
-      {
-        workflowData,
-        currentStatus: currentStageForNavigation,
-        requestData: {},
-      },
+    const workflow = await this.workflowOrchestrator.buildSubmitWorkflow(
+      storeRequisitionData, this.srAdapter, user_id, bu_code,
     );
-    const workflowHeader: NavigateForwardResult = await firstValueFrom(res);
-    const lastActionAtDate = new Date();
-
-    const workflow_history = storeRequisitionData?.workflow_history?.length > 0 ? storeRequisitionData?.workflow_history : [];
-    workflow_history.push({
-      action: enum_last_action.submitted,
-      datetime: lastActionAtDate.toISOString(),
-      user: {
-        id: user_id,
-        name: populateData?.user_id?.name
-      },
-      current_stage: previousStage,
-      next_stage: workflowHeader.current_stage
-    });
-
-    const userAction = await this.buildUserAction(
-      workflowHeader.navigation_info.current_stage_info,
-      storeRequisitionData.department_id,
-      storeRequisitionData.department_name,
-      user_id,
-      bu_code,
-    );
-
-    const workflow: WorkflowHeader = {
-      workflow_previous_stage: workflowHeader.previous_stage,
-      workflow_current_stage: workflowHeader.current_stage,
-      workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
-      user_action: userAction,
-      last_action: enum_last_action.submitted,
-      last_action_at_date: lastActionAtDate.toISOString(),
-      last_action_by_id: user_id,
-      last_action_by_name: populateData?.user_id?.name,
-      workflow_history
-    };
 
     const result = await this.storeRequisitionService.submit(id, payload, workflow);
 
     if (result.isOk()) {
-      this.sendSubmitNotification(
-        result.value,
-        workflow,
-        user_id,
-        populateData?.user_id?.name,
-      );
+      this.sendSubmitNotification(result.value, workflow, user_id, workflow.last_action_by_name);
     }
 
     return result;
@@ -257,13 +186,14 @@ export class StoreRequisitionLogic {
       details
     }: {
       stage_role: enum_stage_role;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       details: any[];
     },
     user_id: string,
     tenant_id: string
   ) {
     await this.storeRequisitionService.initializePrismaService(tenant_id, user_id);
+
+    // Enrich detail data with product names
     const updateSRDetail = [];
     const extractIds = this.populateDetail(details);
     const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id);
@@ -275,8 +205,8 @@ export class StoreRequisitionLogic {
             ...detail,
             product_name: foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.name,
             product_local_name: foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.local_name,
-              product_code: foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.code,
-              product_sku: foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.code,
+            product_code: foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.code,
+            product_sku: foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id)?.code,
           })
         )
       );
@@ -288,96 +218,18 @@ export class StoreRequisitionLogic {
     }
     const storeRequisitionData = storeRequisitionResult.value;
 
-    const populateData: Record<string, any> = await this.mapperLogic.populate({
-      workflow_id: storeRequisitionData?.workflow_id,
-      user_id: user_id,
-    }, user_id, tenant_id);
-
-    const workflowData = populateData?.workflow_id?.data;
-
-    const res = this.masterService.send(
-      { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
-      {
-        workflowData,
-        currentStatus: storeRequisitionData?.workflow_current_stage,
-        previousStatus: storeRequisitionData?.workflow_previous_stage,
-        requestData: {},
-      },
+    const { workflow, isFinalApproval } = await this.workflowOrchestrator.buildApproveWorkflow(
+      storeRequisitionData, this.srAdapter, user_id, tenant_id,
     );
-    const workflowHeader: NavigateForwardResult = await firstValueFrom(res);
-
-    const workflow_history = storeRequisitionData?.workflow_history;
-    const lastActionAtDate = new Date();
-    let workflow = {};
-
-    if (!workflowHeader.navigation_info.workflow_next_step) {
-      workflow_history.push({
-        action: enum_last_action.approved,
-        datetime: lastActionAtDate.toISOString(),
-        user: {
-          id: user_id,
-          name: populateData?.user_id?.name
-        },
-        current_stage: workflowHeader.previous_stage,
-        next_stage: '-'
-      });
-      workflow = {
-        workflow_previous_stage: workflowHeader.previous_stage,
-        workflow_current_stage: workflowHeader.current_stage,
-        workflow_next_stage: '-',
-        user_action: [],
-        last_action: enum_last_action.approved,
-        last_action_at_date: lastActionAtDate.toISOString(),
-        last_action_by_id: user_id,
-        last_action_by_name: populateData?.user_id?.name,
-        workflow_history: workflow_history
-      };
-    } else {
-      workflow_history.push({
-        action: enum_last_action.approved,
-        datetime: lastActionAtDate.toISOString(),
-        user: {
-          id: user_id,
-          name: populateData?.user_id?.name
-        },
-        current_stage: workflowHeader.previous_stage,
-        next_stage: workflowHeader.current_stage
-      });
-      const userAction = await this.buildUserAction(
-        workflowHeader.navigation_info.current_stage_info,
-        storeRequisitionData.department_id,
-        storeRequisitionData.department_name,
-        user_id,
-        tenant_id,
-      );
-
-      workflow = {
-        workflow_previous_stage: workflowHeader.previous_stage,
-        workflow_current_stage: workflowHeader.current_stage,
-        workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
-        user_action: userAction,
-        last_action: enum_last_action.approved,
-        last_action_at_date: lastActionAtDate.toISOString(),
-        last_action_by_id: user_id,
-        last_action_by_name: populateData?.user_id?.name,
-        workflow_history: workflow_history
-      };
-    }
 
     this.logger.debug({ function: 'approve', id, stage_role, details, user_id, tenant_id }, StoreRequisitionLogic.name);
     const result = await this.storeRequisitionService.approve(id, workflow, updateSRDetail);
 
-    // When SR reaches last stage (completed), trigger inventory transfer
-    if (!workflowHeader.navigation_info.workflow_next_step) {
+    if (isFinalApproval) {
       await this.executeTransferOnComplete(storeRequisitionData, updateSRDetail, user_id, tenant_id);
     }
 
-    this.sendApproveNotification(
-      storeRequisitionData,
-      workflow as WorkflowHeader,
-      user_id,
-      populateData?.user_id?.name,
-    );
+    this.sendApproveNotification(storeRequisitionData, workflow, user_id, workflow.last_action_by_name);
 
     return result;
   }
@@ -457,47 +309,13 @@ export class StoreRequisitionLogic {
     }
     const storeRequisitionData = storeRequisitionResult.value;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const populateData: Record<string, any> = await this.mapperLogic.populate(
-      { user_id },
-      user_id,
-      bu_code,
+    const workflow = await this.workflowOrchestrator.buildRejectWorkflow(
+      storeRequisitionData, this.srAdapter, user_id, bu_code,
     );
-
-    const workflow_history = storeRequisitionData?.workflow_history || [];
-    const lastActionAtDate = new Date();
-
-    workflow_history.push({
-      action: enum_last_action.rejected,
-      datetime: lastActionAtDate.toISOString(),
-      user: {
-        id: user_id,
-        name: populateData?.user_id?.name,
-      },
-      current_stage: storeRequisitionData?.workflow_current_stage,
-      next_stage: '-',
-    });
-
-    const workflow = {
-      workflow_previous_stage: storeRequisitionData?.workflow_current_stage,
-      workflow_current_stage: storeRequisitionData?.workflow_current_stage,
-      workflow_next_stage: '-',
-      user_action: [],
-      last_action: enum_last_action.rejected,
-      last_action_at_date: lastActionAtDate.toISOString(),
-      last_action_by_id: user_id,
-      last_action_by_name: populateData?.user_id?.name,
-      workflow_history,
-    };
 
     const result = await this.storeRequisitionService.reject(id, workflow, body);
 
-    // Send notification for rejection
-    this.sendRejectNotification(
-      storeRequisitionData,
-      user_id,
-      populateData?.user_id?.name,
-    );
+    this.sendRejectNotification(storeRequisitionData, user_id, workflow.last_action_by_name);
 
     return result;
   }
@@ -517,83 +335,13 @@ export class StoreRequisitionLogic {
     }
     const storeRequisitionData = storeRequisitionResult.value;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const userRes: Observable<any> = this.authService.send(
-      { cmd: 'get-user-by-id', service: 'auth' },
-      { id: user_id },
+    const workflow = await this.workflowOrchestrator.buildReviewWorkflow(
+      storeRequisitionData, this.srAdapter, body.des_stage, user_id, bu_code,
     );
-    const userResponse = await firstValueFrom(userRes);
-
-    const workflowRes = this.masterService.send(
-      { cmd: 'workflows.findOne', service: 'workflows' },
-      {
-        id: storeRequisitionData.workflow_id,
-        user_id,
-        bu_code,
-      },
-    );
-    const workflowResponse = await firstValueFrom(workflowRes);
-    if (workflowResponse.response.status !== HttpStatus.OK) {
-      throw new Error(workflowResponse.response.message);
-    }
-
-    const workflowNavRes = this.masterService.send(
-      { cmd: 'workflows.navigate-back-to-stage', service: 'workflows' },
-      {
-        workflow_id: storeRequisitionData.workflow_id,
-        user_id,
-        bu_code,
-        stage: body.des_stage,
-        current_stage: storeRequisitionData.workflow_current_stage,
-        requestData: {},
-      },
-    );
-    const backToStageRes = await firstValueFrom(workflowNavRes);
-    const workflowHeader: NavigateForwardResult = backToStageRes.data;
-
-    const workflow_history = storeRequisitionData?.workflow_history || [];
-    const lastActionAtDate = new Date();
-
-    workflow_history.push({
-      action: enum_last_action.reviewed,
-      datetime: lastActionAtDate.toISOString(),
-      user: {
-        id: user_id,
-        name: userResponse?.data?.name,
-      },
-      current_stage: storeRequisitionData?.workflow_current_stage,
-      next_stage: workflowHeader.navigation_info.workflow_next_step,
-    });
-
-    const userAction = await this.buildUserAction(
-      workflowHeader.navigation_info.current_stage_info,
-      storeRequisitionData.department_id,
-      storeRequisitionData.department_name,
-      user_id,
-      bu_code,
-    );
-
-    const workflow = {
-      workflow_previous_stage: workflowHeader.previous_stage,
-      workflow_current_stage: workflowHeader.current_stage,
-      workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
-      user_action: userAction,
-      last_action: enum_last_action.reviewed,
-      last_action_at_date: lastActionAtDate.toISOString(),
-      last_action_by_id: user_id,
-      last_action_by_name: userResponse?.data?.name,
-      workflow_history,
-    };
 
     const result = await this.storeRequisitionService.review(id, workflow, body);
 
-    // Send notification for review (send back)
-    this.sendReviewNotification(
-      storeRequisitionData,
-      workflow as WorkflowHeader,
-      user_id,
-      userResponse?.data?.name,
-    );
+    this.sendReviewNotification(storeRequisitionData, workflow, user_id, workflow.last_action_by_name);
 
     return result;
   }
@@ -655,71 +403,7 @@ export class StoreRequisitionLogic {
     ValidateSRBeforeSubmitSchema.parse(storeRequisition);
   }
 
-  private distinctData(d: unknown[]): unknown[] {
-    return [...new Set(d)];
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private async buildUserAction(
-    currentStageInfo: any,
-    department_id: string | null | undefined,
-    department_name: string | null | undefined,
-    user_id: string,
-    bu_code: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ): Promise<{ execute: any[] } | null> {
-    const userIdsToAssign: string[] = [];
-
-    // Always add assigned_users from workflow stage
-    // assigned_users can be either string[] (IDs) or object[] (full profiles)
-    const assignedUsers: any[] = currentStageInfo?.assigned_users || [];
-    for (const user of assignedUsers) {
-      if (typeof user === 'string') {
-        userIdsToAssign.push(user);
-      } else if (user?.user_id) {
-        userIdsToAssign.push(user.user_id);
-      }
-    }
-
-    // Add all users in department if creator_access flag is set
-    if (currentStageInfo?.creator_access === creatorAccess.ALL_PEOPLE_IN_DEPARTMENT_CAN_ACTION && department_id) {
-      const res = this.masterService.send(
-        { cmd: 'department-users.find-by-department', service: 'department-users' },
-        { department_id, user_id, bu_code },
-      );
-      const usersInDepartment: { data: { user_id: string }[] } = await firstValueFrom(res);
-      userIdsToAssign.push(...usersInDepartment.data.map(u => u.user_id));
-    }
-
-    // Add HOD users if is_hod flag is set
-    if (currentStageInfo?.is_hod === true && department_id) {
-      const hodRes = this.masterService.send(
-        { cmd: 'department-users.get-hod-in-department', service: 'department-users' },
-        { department_id, user_id, bu_code },
-      );
-      const hodUsers: { data: string[] } = await firstValueFrom(hodRes);
-      userIdsToAssign.push(...hodUsers.data);
-    }
-
-    if (userIdsToAssign.length === 0) {
-      return null;
-    }
-
-    // Get distinct user IDs
-    const distinctUserIds = [...new Set(userIdsToAssign)];
-
-    // Fetch full user profiles from auth service
-    const profilesRes = this.authService.send(
-      { cmd: 'get-user-profiles-by-ids', service: 'auth' },
-      {
-        user_ids: distinctUserIds,
-        department: department_id ? { id: department_id, name: department_name } : undefined,
-      },
-    );
-    const profilesResult: { data: UserActionProfile[] } = await firstValueFrom(profilesRes);
-
-    return { execute: profilesResult.data || [] };
-  }
+  // buildUserAction and distinctData removed — now handled by WorkflowOrchestratorService
 
   private async sendSubmitNotification(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

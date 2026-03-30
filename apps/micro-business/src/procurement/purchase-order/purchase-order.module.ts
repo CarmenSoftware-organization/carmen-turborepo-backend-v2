@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { PurchaseOrderService } from './purchase-order.service';
 import { PurchaseOrderController } from './purchase-order.controller';
 import { PurchaseOrderLogic } from './purchase-order.logic';
+import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
 import { TenantModule } from '@/tenant/tenant.module';
 import { CommonModule } from '@/common/common.module';
 import { NotificationModule } from '@/common';
@@ -41,6 +42,7 @@ import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
   providers: [
     PurchaseOrderService,
     PurchaseOrderLogic,
+    WorkflowOrchestratorService,
     {
       provide: 'PRISMA_TENANT',
       useValue: PrismaClient_TENANT,

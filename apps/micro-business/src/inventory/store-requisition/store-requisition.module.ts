@@ -9,6 +9,7 @@ import { envConfig } from '@/libs/config.env';
 import { StoreRequisitionLogic } from './logic/store-requisition.logic';
 import { NotificationModule, MapperModule } from '@/common';
 import { InventoryTransactionModule } from '@/inventory/inventory-transaction/inventory-transaction.module';
+import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { InventoryTransactionModule } from '@/inventory/inventory-transaction/in
   providers: [
     StoreRequisitionService,
     StoreRequisitionLogic,
+    WorkflowOrchestratorService,
     {
       provide: 'PRISMA_TENANT',
       useValue: PrismaClient_TENANT,

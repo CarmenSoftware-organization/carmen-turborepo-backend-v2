@@ -9,6 +9,7 @@ import {
   enum_last_action,
 } from '@repo/prisma-shared-schema-tenant';
 import { StageStatus } from '../purchase-request/interface/workflow.interface';
+import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
 
 describe('PurchaseOrderService', () => {
   let service: PurchaseOrderService;
@@ -45,6 +46,7 @@ describe('PurchaseOrderService', () => {
         { provide: TenantService, useValue: mockTenantService },
         { provide: CommonLogic, useValue: mockCommonLogic },
         { provide: NotificationService, useValue: mockNotificationService },
+        { provide: WorkflowOrchestratorService, useValue: { resolveUserRole: jest.fn() } },
       ],
     }).compile();
 

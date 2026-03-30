@@ -38,6 +38,8 @@ import {
   stage_status,
 } from '@/common';
 import { StageStatus } from '../purchase-request/interface/workflow.interface';
+import { WorkflowPersistenceHelper } from '@/common/workflow/workflow-persistence.helper';
+import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
 import {
   ApprovePurchaseOrderDetailDto,
   RejectPurchaseOrderDetailDto,
@@ -119,6 +121,7 @@ export class PurchaseOrderService {
     private readonly tenantService: TenantService,
     private readonly commonLogic: CommonLogic,
     private readonly notificationService: NotificationService,
+    private readonly workflowOrchestrator: WorkflowOrchestratorService,
   ) { }
 
   /**
@@ -250,39 +253,15 @@ export class PurchaseOrderService {
       return Result.error('Purchase order not found', ErrorCode.NOT_FOUND);
     }
 
-    // Determine user role for this PO (same pattern as PR)
-    let role: string = enum_stage_role.view_only;
-    if (
-      purchaseOrder.po_status === enum_purchase_order_doc_status.draft &&
-      purchaseOrder.created_by_id === this.userId
-    ) {
-      role = enum_stage_role.create;
-    } else if (purchaseOrder.workflow_id && purchaseOrder.workflow_current_stage) {
-      try {
-        const workflowCallReq = this.masterService.send(
-          { cmd: 'workflows.get-workflow-stage-detail', service: 'workflows' },
-          {
-            workflow_id: purchaseOrder.workflow_id,
-            stage: purchaseOrder.workflow_current_stage,
-            user_id: this.userId,
-            bu_code: this.bu_code,
-          },
-        );
-        const callResult: GlobalApiReturn<Stage> = await firstValueFrom(workflowCallReq);
-        const stageDetail = callResult.data;
-
-        const userActionExecute = (purchaseOrder.user_action as { execute: any[] })?.execute || [];
-        const userIds: string[] = userActionExecute
-          .map((u) => (typeof u === 'string' ? u : u?.user_id))
-          .filter(Boolean);
-
-        role = userIds.includes(this.userId)
-          ? (stageDetail.role as string)
-          : enum_stage_role.view_only;
-      } catch {
-        role = enum_stage_role.view_only;
-      }
-    }
+    const role = await this.workflowOrchestrator.resolveUserRole(
+      purchaseOrder.po_status === enum_purchase_order_doc_status.draft,
+      purchaseOrder.created_by_id === this.userId,
+      purchaseOrder.workflow_id,
+      purchaseOrder.workflow_current_stage,
+      purchaseOrder.user_action,
+      this.userId,
+      this.bu_code,
+    );
 
     // Transform the response
     const transformedData = {
@@ -1882,35 +1861,23 @@ export class PurchaseOrderService {
         });
         if (!poDetail) continue;
 
-        const history: any[] = Array.isArray(poDetail.history)
-          ? (poDetail.history as any[])
-          : [];
-        const stages_status: any[] = Array.isArray(poDetail.stages_status)
+        const currentStages: StageStatus[] = Array.isArray(poDetail.stages_status)
           ? (poDetail.stages_status as unknown as StageStatus[])
           : [];
+        const { stages } = WorkflowPersistenceHelper.buildSubmitStagesStatus(
+          currentStages, detail, workflowHeader.workflow_previous_stage as string,
+        );
 
-        history.push({
-          seq: history.length + 1,
-          status: detail.stage_status,
-          name: workflowHeader.workflow_previous_stage,
-          message: detail.stage_message || 'submit for approval',
-          user: { id: this.userId },
-        });
-
-        if (detail.stage_status === stage_status.submit) {
-          stages_status.push({
-            seq: 1,
-            status: detail.stage_status,
-            name: workflowHeader.workflow_previous_stage,
-            message: detail.stage_message || 'submit for approval',
-          });
-        }
+        const history = WorkflowPersistenceHelper.appendHistory(
+          Array.isArray(poDetail.history) ? (poDetail.history as any[]) : [],
+          { status: detail.stage_status, name: workflowHeader.workflow_previous_stage as string, message: detail.stage_message || 'submit for approval', userId: this.userId },
+        );
 
         await tx.tb_purchase_order_detail.update({
           where: { id: detail.id },
           data: {
             history: history as any,
-            stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            stages_status: stages as unknown as Prisma.InputJsonValue,
             current_stage_status: '',
             doc_version: { increment: 1 },
             updated_by_id: this.userId,
@@ -1959,52 +1926,25 @@ export class PurchaseOrderService {
     await this.prismaService.$transaction(async (txp) => {
       for (const detail of payload) {
         const findPODoc = PODetailDocs.find((d) => d.id === detail.id);
-        if (!findPODoc) {
-          continue;
-        }
+        if (!findPODoc) continue;
 
-        const history: Record<string, unknown>[] = (findPODoc?.history as unknown as Record<string, unknown>[]) || [];
-        const stages_status: StageStatus[] = (findPODoc?.stages_status as unknown as StageStatus[]) || [];
-        const latestStageStatus = stages_status[stages_status.length - 1];
-
-        history.push({
-          seq: history.length + 1,
-          action: 'approved',
-          status: detail.stage_status,
-          user: {
-            id: this.userId,
-          },
-          at: new Date().toISOString(),
-        });
-
-        if (latestStageStatus?.status === stage_status.reject) {
-          // skip rejected details
-        } else if (
-          latestStageStatus?.status === stage_status.pending &&
-          latestStageStatus?.name === (workflow as any).workflow_previous_stage
-        ) {
-          stages_status[stages_status.length - 1] = {
-            ...latestStageStatus,
-            status: detail.stage_status,
-            message: '',
-          };
-        } else {
-          stages_status.push({
-            seq: stages_status.length + 1,
-            status: detail.stage_status,
-            name: (workflow as any).workflow_previous_stage,
-            message: '',
-          });
-        }
+        const { stages } = WorkflowPersistenceHelper.buildApproveStagesStatus(
+          (findPODoc?.stages_status as unknown as StageStatus[]) || [],
+          detail,
+          (workflow as any).workflow_previous_stage,
+        );
+        // PO always adds history even for rejected details
+        const history = WorkflowPersistenceHelper.appendHistory(
+          (findPODoc?.history as unknown as Record<string, unknown>[]) || [],
+          { status: detail.stage_status, name: (workflow as any).workflow_previous_stage, userId: this.userId, action: 'approved' },
+        );
 
         await txp.tb_purchase_order_detail.update({
-          where: {
-            id: detail.id,
-          },
+          where: { id: detail.id },
           data: {
             doc_version: { increment: 1 },
             history: history as unknown as Prisma.InputJsonValue,
-            stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            stages_status: stages as unknown as Prisma.InputJsonValue,
             current_stage_status: '',
             updated_by_id: this.userId,
           },
@@ -2012,9 +1952,7 @@ export class PurchaseOrderService {
       }
 
       await txp.tb_purchase_order.update({
-        where: {
-          id,
-        },
+        where: { id },
         data: {
           ...workflow,
           doc_version: { increment: 1 },
@@ -2073,42 +2011,24 @@ export class PurchaseOrderService {
     await this.prismaService.$transaction(async (txp) => {
       for (const detail of payload) {
         const findPODoc = PODetailDocs.find((d) => d.id === detail.id);
-        if (!findPODoc) {
-          continue;
-        }
+        if (!findPODoc) continue;
 
-        const history: Record<string, unknown>[] = (findPODoc?.history as unknown as Record<string, unknown>[]) || [];
-        let stages_status = (findPODoc?.stages_status as unknown as StageStatus[]) || [];
-        stages_status = stages_status.map((stage) => ({
-          ...stage,
-          status: stage_status.reject,
-        }));
-        stages_status.push({
-          seq: stages_status.length + 1,
-          status: detail.stage_status,
-          name: purchaseOrder.workflow_current_stage,
-          message: detail.stage_message || '',
-        });
-
-        history.push({
-          seq: history.length + 1,
-          action: 'rejected',
-          status: detail.stage_status,
-          message: detail.stage_message || '',
-          user: {
-            id: this.userId,
-          },
-          at: new Date().toISOString(),
-        });
+        const stages = WorkflowPersistenceHelper.buildRejectStagesStatus(
+          (findPODoc?.stages_status as unknown as StageStatus[]) || [],
+          detail,
+          purchaseOrder.workflow_current_stage,
+        );
+        const history = WorkflowPersistenceHelper.appendHistory(
+          (findPODoc?.history as unknown as Record<string, unknown>[]) || [],
+          { status: detail.stage_status, name: purchaseOrder.workflow_current_stage, message: detail.stage_message || '', userId: this.userId, action: 'rejected' },
+        );
 
         await txp.tb_purchase_order_detail.update({
-          where: {
-            id: detail.id,
-          },
+          where: { id: detail.id },
           data: {
             doc_version: { increment: 1 },
             history: history as unknown as Prisma.InputJsonValue,
-            stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            stages_status: stages as unknown as Prisma.InputJsonValue,
             current_stage_status: '',
             updated_by_id: this.userId,
           },
@@ -2116,9 +2036,7 @@ export class PurchaseOrderService {
       }
 
       await txp.tb_purchase_order.update({
-        where: {
-          id,
-        },
+        where: { id },
         data: {
           ...workflow,
           po_status: enum_purchase_order_doc_status.closed,
@@ -2179,45 +2097,23 @@ export class PurchaseOrderService {
     await this.prismaService.$transaction(async (txp) => {
       for (const detail of payload) {
         const findPODoc = PODetailDocs.find((d) => d.id === detail.id);
-        if (!findPODoc) {
-          continue;
-        }
+        if (!findPODoc) continue;
 
-        const history: Record<string, unknown>[] = (findPODoc?.history as unknown as Record<string, unknown>[]) || [];
-        const stagesStatus: StageStatus[] = (findPODoc?.stages_status as unknown as StageStatus[]) || [];
-
-        history.push({
-          seq: history.length + 1,
-          action: 'reviewed',
-          status: detail.stage_status,
-          message: detail.stage_message || '',
-          user: {
-            id: this.userId,
-          },
-          at: new Date().toISOString(),
-        });
-
-        // Trim stages_status back to des_stage and set it to pending
-        for (let index = stagesStatus.length - 1; index > 0; index--) {
-          if (stagesStatus[index].name === desStage) {
-            stagesStatus[index] = {
-              ...stagesStatus[index],
-              status: stage_status.pending,
-            };
-            break;
-          } else {
-            stagesStatus.splice(index + 1, stagesStatus.length - index - 1);
-          }
-        }
+        const stages = WorkflowPersistenceHelper.buildReviewStagesStatus(
+          (findPODoc?.stages_status as unknown as StageStatus[]) || [],
+          desStage,
+        );
+        const history = WorkflowPersistenceHelper.appendHistory(
+          (findPODoc?.history as unknown as Record<string, unknown>[]) || [],
+          { status: detail.stage_status, name: desStage, message: detail.stage_message || '', userId: this.userId, action: 'reviewed' },
+        );
 
         await txp.tb_purchase_order_detail.update({
-          where: {
-            id: detail.id,
-          },
+          where: { id: detail.id },
           data: {
             doc_version: { increment: 1 },
             history: history as unknown as Prisma.InputJsonValue,
-            stages_status: stagesStatus as unknown as Prisma.InputJsonValue,
+            stages_status: stages as unknown as Prisma.InputJsonValue,
             current_stage_status: '',
             updated_by_id: this.userId,
           },
@@ -2225,9 +2121,7 @@ export class PurchaseOrderService {
       }
 
       await txp.tb_purchase_order.update({
-        where: {
-          id,
-        },
+        where: { id },
         data: {
           ...workflow,
           updated_by_id: this.userId,
@@ -4860,33 +4754,80 @@ export class PurchaseOrderService {
       return Result.error('No workflow assigned to this purchase order', ErrorCode.NOT_FOUND);
     }
 
-    const res = this.masterService.send(
-      { cmd: 'workflows.get-previous-stages', service: 'workflows' },
-      {
-        workflow_id: po.workflow_id,
-        stage: po.workflow_current_stage,
-        user_id: this.userId,
-        bu_code: this.bu_code,
-      },
+    const numberedStages = await this.workflowOrchestrator.getPreviousStages(
+      po.workflow_id, po.workflow_current_stage, this.userId, this.bu_code,
     );
 
-    const response = await firstValueFrom(res);
+    return Result.ok(numberedStages);
+  }
 
-    if (response.response?.status !== HttpStatus.OK) {
-      return Result.error(
-        response.response?.message || 'Failed to get previous stages',
-        ErrorCode.INTERNAL,
-      );
+  /**
+   * Get all workflow stages for purchase orders owned by the user (for stage filter dropdown)
+   * ดึงขั้นตอนทั้งหมดของ workflow ที่ใช้ในใบสั่งซื้อของผู้ใช้
+   */
+  @TryCatch
+  async findAllWorkflowStagesByPo(
+    user_id: string,
+    bu_code: string,
+  ): Promise<Result<unknown>> {
+    const tenant = await this.tenantService.getdb_connection(user_id, bu_code);
+
+    if (!tenant) {
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
     }
 
-    // Transform array to numbered map: { "1": "Create Request", "2": "HOD", ... }
-    const stages = Array.isArray(response.data) ? response.data : [];
-    const numberedStages: Record<string, string> = {};
-    stages.forEach((name: string, index: number) => {
-      numberedStages[String(index + 1)] = name;
+    const prisma = await this.prismaTenant(
+      tenant.tenant_id,
+      tenant.db_connection,
+    );
+
+    const results = await prisma.tb_purchase_order.findMany({
+      where: { created_by_id: user_id },
+      select: { workflow_id: true },
+      distinct: ['workflow_id'],
     });
 
-    return Result.ok(numberedStages);
+    const stages = await this.workflowOrchestrator.findAllWorkflowStages(
+      results.map((r) => r.workflow_id),
+      user_id,
+      bu_code,
+    );
+
+    return Result.ok(stages);
+  }
+
+  /**
+   * Get distinct workflow stages where user has pending actions
+   * ดึงขั้นตอนที่ผู้ใช้มีงานรออนุมัติ
+   */
+  @TryCatch
+  async findAllMyPendingStages(): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findAllMyPendingStages', user_id: this.userId, tenant_id: this.bu_code },
+      PurchaseOrderService.name,
+    );
+
+    const stages = await this.prismaService.tb_purchase_order.findMany({
+      where: {
+        workflow_current_stage: { not: null },
+        OR: [
+          {
+            po_status: enum_purchase_order_doc_status.draft,
+            created_by_id: this.userId,
+          },
+          {
+            user_action: {
+              path: ['execute'],
+              array_contains: [{ user_id: this.userId }],
+            },
+          },
+        ],
+      },
+      select: { workflow_current_stage: true },
+      distinct: ['workflow_current_stage'],
+    });
+
+    return Result.ok(stages.map((s) => s.workflow_current_stage));
   }
 }
 

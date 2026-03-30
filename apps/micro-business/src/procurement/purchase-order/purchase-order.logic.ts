@@ -1,12 +1,13 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PurchaseOrderService } from './purchase-order.service';
 import { MapperLogic } from '@/common/mapper/mapper.logic';
 import { BackendLogger } from '@/common/helpers/backend.logger';
-import { creatorAccess, NavigateForwardResult, NotificationService, NotificationType, Result } from '@/common';
+import { NotificationService, NotificationType, Result } from '@/common';
+import { WorkflowHeader } from '@/common/workflow/workflow.interfaces';
+import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
+import { POWorkflowAdapter } from './adapters/po-workflow.adapter';
 import { IPaginate } from '@/common/shared-interface/paginate.interface';
-import { enum_last_action, enum_purchase_order_doc_status, enum_stage_role } from '@repo/prisma-shared-schema-tenant';
-import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom, Observable } from 'rxjs';
+import { enum_purchase_order_doc_status, enum_stage_role } from '@repo/prisma-shared-schema-tenant';
 import {
   ApprovePurchaseOrderDto,
   RejectPurchaseOrderDto,
@@ -17,41 +18,9 @@ import {
 import { CreatePurchaseOrderDto, CreatePurchaseOrderDataDto } from './dto/create-purchase-order.dto';
 import { ICreatePurchaseOrder } from './interface/purchase-order.interface';
 
-export interface UserActionProfile {
-  user_id: string;
-  email: string;
-  firstname: string;
-  middlename: string;
-  lastname: string;
-  initials: string;
-  department: {
-    id: string;
-    name: string;
-  } | null;
-}
-
-export interface WorkflowHeader {
-  workflow_previous_stage: string;
-  workflow_current_stage: string;
-  workflow_next_stage: string;
-  user_action: { execute: UserActionProfile[] };
-  last_action: enum_last_action;
-  last_action_at_date: string | Date;
-  last_action_by_id: string;
-  last_action_by_name: string;
-  workflow_history: WorkflowHistory[];
-}
-
-interface WorkflowHistory {
-  action: enum_last_action;
-  datetime: string | Date;
-  user: {
-    id: string;
-    name: string;
-  };
-  current_stage: string;
-  next_stage: string;
-}
+// Re-export for backward compatibility
+export { WorkflowHeader } from '@/common/workflow/workflow.interfaces';
+export type { UserActionProfile } from '@/common/workflow/workflow.interfaces';
 
 @Injectable()
 export class PurchaseOrderLogic {
@@ -59,14 +28,13 @@ export class PurchaseOrderLogic {
     PurchaseOrderLogic.name,
   );
 
+  private readonly poAdapter = new POWorkflowAdapter();
+
   constructor(
     private readonly purchaseOrderService: PurchaseOrderService,
     private readonly mapperLogic: MapperLogic,
-    @Inject('MASTER_SERVICE')
-    private readonly masterService: ClientProxy,
-    @Inject('AUTH_SERVICE')
-    private readonly authService: ClientProxy,
     private readonly notificationService: NotificationService,
+    private readonly workflowOrchestrator: WorkflowOrchestratorService,
   ) {}
 
   async submit(
@@ -84,81 +52,22 @@ export class PurchaseOrderLogic {
     if (poResult.isError()) throw new Error('Purchase Order not found');
     const poData = poResult.value;
 
-    const populateData: Record<string, any> = await this.mapperLogic.populate({
-      workflow_id: poData?.workflow_id,
-      user_id,
-    }, user_id, tenant_id);
-
-    const workflowData = populateData?.workflow_id?.data;
-
-    if (!workflowData) {
+    if (!poData?.workflow_id) {
       throw new Error('Cannot submit PO: workflow not found. Please set workflow_id on the purchase order before submitting.');
     }
-
     if (!poData?.tb_purchase_order_detail?.length) {
       throw new Error('Cannot submit PO: PO must have at least one detail line.');
     }
 
-    const total_amount = poData?.tb_purchase_order_detail?.reduce(
-      (curr, acc) => curr + Number(acc.total_price || 0),
-      0,
-    );
-
-    // Determine current stage
-    let currentStageForNavigation = poData?.workflow_current_stage;
-    let previousStage = poData?.workflow_current_stage;
-
-    if (!currentStageForNavigation) {
-      const firstStageRes = this.masterService.send(
-        { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
-        { workflowData, currentStatus: '', requestData: { amount: total_amount } },
-      );
-      const firstStageNav: NavigateForwardResult = await firstValueFrom(firstStageRes);
-      currentStageForNavigation = firstStageNav.navigation_info.current_stage_info?.name;
-      previousStage = currentStageForNavigation;
-    }
-
-    const res = this.masterService.send(
-      { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
-      { workflowData, currentStatus: currentStageForNavigation, requestData: { amount: total_amount } },
-    );
-    const workflowHeader: NavigateForwardResult = await firstValueFrom(res);
-    const lastActionAtDate = new Date();
-
-    const workflow_history = poData?.workflow_history?.length > 0 ? poData?.workflow_history : [];
-    workflow_history.push({
-      action: enum_last_action.submitted,
-      datetime: lastActionAtDate.toISOString(),
-      user: { id: user_id, name: populateData?.user_id?.name },
-      current_stage: previousStage,
-      next_stage: workflowHeader.current_stage,
-    });
-
     const creatorDept = await this.getCreatorDepartment(poData.created_by_id);
-    const userAction = await this.buildUserAction(
-      workflowHeader.navigation_info.current_stage_info,
-      creatorDept?.id,
-      creatorDept?.name,
-      user_id,
-      tenant_id,
+    const workflow = await this.workflowOrchestrator.buildSubmitWorkflow(
+      poData, this.poAdapter, user_id, tenant_id, creatorDept,
     );
 
-    const workflow = {
-      workflow_previous_stage: workflowHeader.previous_stage,
-      workflow_current_stage: workflowHeader.current_stage,
-      workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
-      user_action: userAction,
-      last_action: enum_last_action.submitted,
-      last_action_at_date: lastActionAtDate.toISOString(),
-      last_action_by_id: user_id,
-      last_action_by_name: populateData?.user_id?.name,
-      workflow_history,
-    };
-
-    const result = await this.purchaseOrderService.submit(id, payload, workflow);
+    const result = await this.purchaseOrderService.submit(id, payload, workflow as unknown as Record<string, unknown>);
 
     if (result.isOk()) {
-      this.sendSubmitNotification(poData, workflow, user_id, populateData?.user_id?.name);
+      this.sendSubmitNotification(poData, workflow, user_id, workflow.last_action_by_name);
     }
 
     return result;
@@ -297,124 +206,35 @@ export class PurchaseOrderLogic {
     this.purchaseOrderService.bu_code = tenant_id;
     await this.purchaseOrderService.initializePrismaService(tenant_id, user_id);
 
-    // Validate user's role matches the payload's stage_role
     await this.validateUserStageRole(id, stage_role);
 
-    /* Workflow Station */
     const purchaseOrderResult = await this.purchaseOrderService.findById(id);
     if (purchaseOrderResult.isError()) {
       throw new Error('Purchase Order not found');
     }
     const purchaseOrderData = purchaseOrderResult.value;
-    const total_amount = purchaseOrderData?.tb_purchase_order_detail?.reduce(
-      (curr, acc) => curr + Number(acc.total_price || 0),
-      0,
+
+    const creatorDept = await this.getCreatorDepartment(purchaseOrderData.created_by_id);
+    const { workflow, isFinalApproval } = await this.workflowOrchestrator.buildApproveWorkflow(
+      purchaseOrderData, this.poAdapter, user_id, tenant_id, creatorDept,
     );
 
-    const populateData: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Record<string, any> = await this.mapperLogic.populate(
-      {
-        workflow_id: purchaseOrderData?.workflow_id,
-        user_id: user_id,
-      },
-      user_id,
-      tenant_id,
-    );
-
-    const workflowData = populateData?.workflow_id?.data;
-
-    const res = this.masterService.send(
-      { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
-      {
-        workflowData,
-        currentStatus: purchaseOrderData?.workflow_current_stage,
-        previousStatus: purchaseOrderData?.workflow_previous_stage,
-        requestData: {
-          amount: total_amount,
-        },
-      },
-    );
-    const workflowHeader: NavigateForwardResult = await firstValueFrom(res);
-
-    const workflow_history = purchaseOrderData?.workflow_history || [];
-    const lastActionAtDate = new Date();
-    let workflow = {};
-
-    if (!workflowHeader.navigation_info.workflow_next_step) {
-      // Final approval - no next stage
-      workflow_history.push({
-        action: enum_last_action.approved,
-        datetime: lastActionAtDate.toISOString(),
-        user: {
-          id: user_id,
-          name: populateData?.user_id?.name,
-        },
-        current_stage: workflowHeader.previous_stage,
-        next_stage: '-',
-      });
-      workflow = {
-        workflow_previous_stage: workflowHeader.previous_stage,
-        workflow_current_stage: workflowHeader.current_stage,
-        workflow_next_stage: '-',
-        user_action: [],
-        last_action: enum_last_action.approved,
-        last_action_at_date: lastActionAtDate.toISOString(),
-        last_action_by_id: user_id,
-        last_action_by_name: populateData?.user_id?.name,
-        workflow_history: workflow_history,
-        po_status: enum_purchase_order_doc_status.sent,
-        approval_date: lastActionAtDate.toISOString(),
-      };
-    } else {
-      // More stages to go
-      workflow_history.push({
-        action: enum_last_action.approved,
-        datetime: lastActionAtDate.toISOString(),
-        user: {
-          id: user_id,
-          name: populateData?.user_id?.name,
-        },
-        current_stage: workflowHeader.previous_stage,
-        next_stage: workflowHeader.current_stage,
-      });
-
-      const creatorDept = await this.getCreatorDepartment(purchaseOrderData.created_by_id);
-      const userAction = await this.buildUserAction(
-        workflowHeader.navigation_info.current_stage_info,
-        creatorDept?.id,
-        creatorDept?.name,
-        user_id,
-        tenant_id,
-      );
-
-      workflow = {
-        workflow_previous_stage: workflowHeader.previous_stage,
-        workflow_current_stage: workflowHeader.current_stage,
-        workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
-        user_action: userAction,
-        last_action: enum_last_action.approved,
-        last_action_at_date: lastActionAtDate.toISOString(),
-        last_action_by_id: user_id,
-        last_action_by_name: populateData?.user_id?.name,
-        workflow_history: workflow_history,
-        po_status: enum_purchase_order_doc_status.in_progress,
-      };
-    }
+    // PO-specific: add po_status and approval_date to the workflow object
+    const poWorkflow = {
+      ...workflow,
+      po_status: isFinalApproval
+        ? enum_purchase_order_doc_status.sent
+        : enum_purchase_order_doc_status.in_progress,
+      ...(isFinalApproval ? { approval_date: workflow.last_action_at_date } : {}),
+    };
 
     this.logger.debug(
       { function: 'approve', id, stage_role, details, user_id, tenant_id },
       PurchaseOrderLogic.name,
     );
-    const result = await this.purchaseOrderService.approve(id, workflow, details);
+    const result = await this.purchaseOrderService.approve(id, poWorkflow, details);
 
-    // Send notification for approval
-    this.sendApproveNotification(
-      purchaseOrderData,
-      workflow as WorkflowHeader,
-      user_id,
-      populateData?.user_id?.name,
-      tenant_id,
-    );
+    this.sendApproveNotification(purchaseOrderData, workflow, user_id, workflow.last_action_by_name, tenant_id);
 
     return result;
   }
@@ -429,7 +249,6 @@ export class PurchaseOrderLogic {
     this.purchaseOrderService.bu_code = tenant_id;
     await this.purchaseOrderService.initializePrismaService(tenant_id, user_id);
 
-    // Validate user's role matches the payload's stage_role
     await this.validateUserStageRole(id, stage_role);
 
     const purchaseOrderResult = await this.purchaseOrderService.findById(id);
@@ -438,52 +257,17 @@ export class PurchaseOrderLogic {
     }
     const purchaseOrderData = purchaseOrderResult.value;
 
-    const populateData: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Record<string, any> = await this.mapperLogic.populate(
-      { user_id: user_id },
-      user_id,
-      tenant_id,
+    const workflow = await this.workflowOrchestrator.buildRejectWorkflow(
+      purchaseOrderData, this.poAdapter, user_id, tenant_id,
     );
-
-    const workflow_history = purchaseOrderData?.workflow_history || [];
-    const lastActionAtDate = new Date();
-
-    workflow_history.push({
-      action: enum_last_action.rejected,
-      datetime: lastActionAtDate,
-      user: {
-        id: user_id,
-        name: populateData?.user_id?.name,
-      },
-      current_stage: purchaseOrderData?.workflow_current_stage,
-      next_stage: '-',
-    });
-
-    const workflow = {
-      workflow_previous_stage: purchaseOrderData?.workflow_current_stage,
-      workflow_current_stage: purchaseOrderData?.workflow_current_stage,
-      workflow_next_stage: '-',
-      user_action: [],
-      last_action: enum_last_action.rejected,
-      last_action_at_date: lastActionAtDate.toISOString(),
-      last_action_by_id: user_id,
-      last_action_by_name: populateData?.user_id?.name,
-      workflow_history: workflow_history,
-    };
 
     this.logger.debug(
       { function: 'reject', id, stage_role, details, user_id, tenant_id },
       PurchaseOrderLogic.name,
     );
-    const result = await this.purchaseOrderService.reject(id, workflow, details);
+    const result = await this.purchaseOrderService.reject(id, workflow as unknown as Record<string, unknown>, details);
 
-    // Send notification for rejection
-    this.sendRejectNotification(
-      purchaseOrderData,
-      user_id,
-      populateData?.user_id?.name,
-      tenant_id,
-    );
+    this.sendRejectNotification(purchaseOrderData, user_id, workflow.last_action_by_name, tenant_id);
 
     return result;
   }
@@ -498,7 +282,6 @@ export class PurchaseOrderLogic {
     this.purchaseOrderService.bu_code = tenant_id;
     await this.purchaseOrderService.initializePrismaService(tenant_id, user_id);
 
-    // Validate user's role matches the payload's stage_role
     await this.validateUserStageRole(id, body.stage_role);
 
     const purchaseOrderResult = await this.purchaseOrderService.findById(id);
@@ -507,83 +290,18 @@ export class PurchaseOrderLogic {
     }
     const purchaseOrderData = purchaseOrderResult.value;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const userRes: Observable<any> = this.authService.send(
-      { cmd: 'get-user-by-id', service: 'auth' },
-      { id: user_id },
-    );
-    const userResponse = await firstValueFrom(userRes);
-
-    const total_amount = purchaseOrderData?.tb_purchase_order_detail?.reduce(
-      (curr, acc) => curr + Number(acc.total_price || 0),
-      0,
-    );
-
-    const workflowNavRes = this.masterService.send(
-      { cmd: 'workflows.navigate-back-to-stage', service: 'workflows' },
-      {
-        workflow_id: purchaseOrderData.workflow_id,
-        user_id: user_id,
-        bu_code: tenant_id,
-        stage: body.des_stage,
-        current_stage: purchaseOrderData.workflow_current_stage,
-        requestData: {
-          amount: total_amount,
-        },
-      },
-    );
-    const backToStageRes = await firstValueFrom(workflowNavRes);
-    const workflowHeader: NavigateForwardResult = backToStageRes.data;
-
-    const workflow_history = purchaseOrderData?.workflow_history || [];
-    const lastActionAtDate = new Date();
-
-    workflow_history.push({
-      action: enum_last_action.reviewed,
-      datetime: lastActionAtDate,
-      user: {
-        id: user_id,
-        name: userResponse?.data?.name,
-      },
-      current_stage: purchaseOrderData?.workflow_current_stage,
-      next_stage: workflowHeader.navigation_info.workflow_next_step,
-    });
-
     const creatorDept = await this.getCreatorDepartment(purchaseOrderData.created_by_id);
-    const userAction = await this.buildUserAction(
-      workflowHeader.navigation_info.current_stage_info,
-      creatorDept?.id,
-      creatorDept?.name,
-      user_id,
-      tenant_id,
+    const workflow = await this.workflowOrchestrator.buildReviewWorkflow(
+      purchaseOrderData, this.poAdapter, body.des_stage, user_id, tenant_id, creatorDept,
     );
-
-    const workflow = {
-      workflow_previous_stage: workflowHeader.previous_stage,
-      workflow_current_stage: workflowHeader.current_stage,
-      workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
-      user_action: userAction,
-      last_action: enum_last_action.reviewed,
-      last_action_at_date: lastActionAtDate.toISOString(),
-      last_action_by_id: user_id,
-      last_action_by_name: userResponse?.data?.name,
-      workflow_history: workflow_history,
-    };
 
     this.logger.debug(
       { function: 'review', id, body, user_id, tenant_id },
       PurchaseOrderLogic.name,
     );
-    const result = await this.purchaseOrderService.review(id, workflow, body.details);
+    const result = await this.purchaseOrderService.review(id, workflow as unknown as Record<string, unknown>, body.details);
 
-    // Send notification for review
-    this.sendReviewNotification(
-      purchaseOrderData,
-      workflow as WorkflowHeader,
-      user_id,
-      userResponse?.data?.name,
-      tenant_id,
-    );
+    this.sendReviewNotification(purchaseOrderData, workflow, user_id, workflow.last_action_by_name, tenant_id);
 
     return result;
   }
@@ -738,66 +456,7 @@ export class PurchaseOrderLogic {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private async buildUserAction(
-    currentStageInfo: any,
-    department_id: string | null | undefined,
-    department_name: string | null | undefined,
-    user_id: string,
-    bu_code: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ): Promise<{ execute: any[] } | null> {
-    const userIdsToAssign: string[] = [];
-
-    // Always add assigned_users from workflow stage
-    // assigned_users can be either string[] (IDs) or object[] (full profiles)
-    const assignedUsers: any[] = currentStageInfo?.assigned_users || [];
-    for (const user of assignedUsers) {
-      if (typeof user === 'string') {
-        userIdsToAssign.push(user);
-      } else if (user?.user_id) {
-        userIdsToAssign.push(user.user_id);
-      }
-    }
-
-    // Add all users in department if creator_access flag is set
-    if (currentStageInfo?.creator_access === creatorAccess.ALL_PEOPLE_IN_DEPARTMENT_CAN_ACTION && department_id) {
-      const res = this.masterService.send(
-        { cmd: 'department-users.find-by-department', service: 'department-users' },
-        { department_id, user_id, bu_code },
-      );
-      const usersInDepartment: { data: { user_id: string }[] } = await firstValueFrom(res);
-      userIdsToAssign.push(...usersInDepartment.data.map(u => u.user_id));
-    }
-
-    // Add HOD users if is_hod flag is set
-    if (currentStageInfo?.is_hod === true && department_id) {
-      const hodRes = this.masterService.send(
-        { cmd: 'department-users.get-hod-in-department', service: 'department-users' },
-        { department_id, user_id, bu_code },
-      );
-      const hodUsers: { data: string[] } = await firstValueFrom(hodRes);
-      userIdsToAssign.push(...hodUsers.data);
-    }
-
-    if (userIdsToAssign.length === 0) {
-      return null;
-    }
-
-    // Get distinct user IDs
-    const distinctUserIds = [...new Set(userIdsToAssign)];
-
-    // Fetch full user profiles from auth service
-    const profilesRes = this.authService.send(
-      { cmd: 'get-user-profiles-by-ids', service: 'auth' },
-      {
-        user_ids: distinctUserIds,
-        department: department_id ? { id: department_id, name: department_name } : undefined,
-      },
-    );
-    const profilesResult: { data: UserActionProfile[] } = await firstValueFrom(profilesRes);
-
-    return { execute: profilesResult.data || [] };
-  }
+  // buildUserAction removed — now handled by WorkflowOrchestratorService
 
   private async sendApproveNotification(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

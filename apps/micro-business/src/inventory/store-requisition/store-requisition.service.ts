@@ -19,6 +19,7 @@ import {
 import { IPaginate } from '@/common/shared-interface/paginate.interface';
 import QueryParams from '@/libs/paginate.query';
 import { format } from 'date-fns';
+import { randomBytes } from 'crypto';
 import { ClientProxy } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import {
@@ -39,6 +40,8 @@ import {
   StoreRequisitionListItemResponseSchema,
 } from '@/common';
 import { StageStatus, WorkflowHeader } from './interface/workflow.interface';
+import { WorkflowPersistenceHelper } from '@/common/workflow/workflow-persistence.helper';
+import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
 import { firstValueFrom } from 'rxjs';
 import getPaginationParams from '@/common/helpers/pagination.params';
 
@@ -126,6 +129,7 @@ export class StoreRequisitionService {
     @Inject('MASTER_SERVICE')
     private readonly masterService: ClientProxy,
     private readonly tenantService: TenantService,
+    private readonly workflowOrchestrator: WorkflowOrchestratorService,
   ) {}
 
   /**
@@ -212,38 +216,15 @@ export class StoreRequisitionService {
         const store_requisition_detail = res['tb_store_requisition_detail'];
         delete res['tb_store_requisition_detail'];
 
-        // Special case: draft SR owned by requestor should have "create" role
-        let returningRole: enum_stage_role;
-
-        if (
-          res.doc_status === enum_doc_status.draft &&
-          res.requestor_id === this.userId
-        ) {
-          returningRole = enum_stage_role.create;
-        } else {
-          const workflowCallReq = this.masterService.send(
-            { cmd: 'workflows.get-workflow-stage-detail', service: 'workflows' },
-            {
-              workflow_id: res.workflow_id,
-              stage: res.workflow_current_stage,
-              user_id: this.userId,
-              bu_code: this.bu_code,
-            },
-          );
-          const CallCurrentWorkflowDetail: GlobalApiReturn<Stage> =
-            await firstValueFrom(workflowCallReq);
-          const currentWorkflowDetail = CallCurrentWorkflowDetail.data;
-
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const userActionExecute = (res.user_action as { execute: any[] })?.execute || [];
-          const userIds: string[] = userActionExecute.map((u) =>
-            typeof u === 'string' ? u : u?.user_id
-          ).filter(Boolean);
-
-          returningRole = userIds.includes(this.userId)
-            ? (currentWorkflowDetail.role as enum_stage_role)
-            : enum_stage_role.view_only;
-        }
+        const returningRole = await this.workflowOrchestrator.resolveUserRole(
+          res.doc_status === enum_doc_status.draft,
+          res.requestor_id === this.userId,
+          res.workflow_id,
+          res.workflow_current_stage,
+          res.user_action,
+          this.userId,
+          this.bu_code,
+        );
 
         return {
           ...res,
@@ -468,7 +449,7 @@ export class StoreRequisitionService {
       const storeRequisitionObject = JSON.parse(
         JSON.stringify({
           ...createSR,
-          sr_no: 'draft-' + format(new Date(), 'yyyyMMddHHmmss'),
+          sr_no: 'draft-' + randomBytes(3).toString('hex'),
           sr_date: srDate,
           created_by_id: this.userId,
           last_action: null,
@@ -607,56 +588,24 @@ export class StoreRequisitionService {
       for (const detail of SRdetail) {
         const findDetails = payload.details.find((d) => d.id === detail.id);
         if (!findDetails) continue;
-        const stages_status = Array.isArray(detail.stages_status)
+
+        const currentStages: StageStatus[] = Array.isArray(detail.stages_status)
           ? (detail.stages_status as unknown as StageStatus[])
           : [];
-        const history = (detail.history as unknown as unknown[]) || [];
-        const latestStageStatus = stages_status[stages_status.length - 1];
+        const { stages, skipped } = WorkflowPersistenceHelper.buildSubmitStagesStatus(
+          currentStages, findDetails, workflowHeader.workflow_previous_stage,
+        );
+        if (skipped) continue;
 
-        if (findDetails.stage_status === stage_status.approve) {
-          continue;
-        } else if (findDetails.stage_status === stage_status.submit) {
-          stages_status.push({
-            seq: 1,
-            status: findDetails.stage_status,
-            name: workflowHeader.workflow_previous_stage,
-            message: findDetails?.stage_message || 'submit for approval',
-          });
-        } else if (
-          latestStageStatus?.status === stage_status.pending &&
-          latestStageStatus?.name === workflowHeader.workflow_previous_stage
-        ) {
-          stages_status[stages_status.length - 1] = {
-            seq: stages_status.length,
-            status: findDetails.stage_status,
-            name: workflowHeader.workflow_previous_stage,
-            message: findDetails.stage_message,
-          };
-        } else {
-          stages_status.push({
-            seq: stages_status.length + 1,
-            status: findDetails.stage_status,
-            name: workflowHeader.workflow_previous_stage,
-            message: findDetails.stage_message,
-          });
-        }
-
-        history.push({
-          seq: history.length + 1,
-          status: findDetails.stage_status,
-          name: workflowHeader.workflow_previous_stage,
-          message: findDetails.stage_message,
-          user: {
-            id: this.userId,
-            name: workflowHeader.last_action_by_name,
-          },
-          datetime: new Date().toISOString(),
-        });
+        const history = WorkflowPersistenceHelper.appendHistory(
+          (detail.history as unknown as Record<string, unknown>[]) || [],
+          { status: findDetails.stage_status, name: workflowHeader.workflow_previous_stage, message: findDetails.stage_message, userId: this.userId, userName: workflowHeader.last_action_by_name },
+        );
 
         await prismatx.tb_store_requisition_detail.update({
           where: { id: detail.id },
           data: {
-            stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            stages_status: stages as unknown as Prisma.InputJsonValue,
             history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             approved_qty: Number(detail.requested_qty),
@@ -928,48 +877,18 @@ export class StoreRequisitionService {
 
       for (const detail of payload) {
         const findSRDoc = SRDetailDocs.find((d) => d.id === detail.id);
-        const latestStageStatus =
-          findSRDoc.stages_status[
-            (findSRDoc.stages_status as unknown as StageStatus[]).length - 1
-          ];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const stages_status: any[] = findSRDoc?.stages_status as unknown as any[];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const history: any[] = (findSRDoc?.history as unknown as any[]) || [];
+        const currentStages = (findSRDoc?.stages_status as unknown as StageStatus[]) || [];
 
-        if (latestStageStatus.status === stage_status.reject) {
-          continue;
-        } else if (
-          latestStageStatus.status === stage_status.pending &&
-          latestStageStatus.name === workflow.workflow_previous_stage
-        ) {
-          stages_status[stages_status.length - 1] = {
-            ...latestStageStatus,
-            status: detail.stage_status || '',
-            message: detail.stage_message || '',
-          };
-        } else {
-          stages_status.push({
-            seq: stages_status.length + 1,
-            status: detail.stage_status || '',
-            name: workflow.workflow_previous_stage,
-            message: detail.stage_message || '',
-          });
-        }
+        const { stages, skipped } = WorkflowPersistenceHelper.buildApproveStagesStatus(
+          currentStages, detail, workflow.workflow_previous_stage,
+        );
+        if (skipped) continue;
 
         const now = new Date().toISOString();
-
-        history.push({
-          seq: history.length + 1,
-          status: detail.stage_status || '',
-          name: workflow.workflow_previous_stage,
-          message: detail.stage_message || '',
-          user: {
-            id: this.userId,
-            name: workflow.last_action_by_name,
-          },
-          datetime: now,
-        });
+        const history = WorkflowPersistenceHelper.appendHistory(
+          (findSRDoc?.history as unknown as Record<string, unknown>[]) || [],
+          { status: detail.stage_status || '', name: workflow.workflow_previous_stage, message: detail.stage_message || '', userId: this.userId, userName: workflow.last_action_by_name },
+        );
 
         const approvedMessage = detail.stage_message || '';
         delete detail.stage_message;
@@ -984,13 +903,11 @@ export class StoreRequisitionService {
         );
 
         await this.prismaService.tb_store_requisition_detail.update({
-          where: {
-            id: detail.id,
-          },
+          where: { id: detail.id },
           data: {
             ...updateDto,
             doc_version: { increment: 1 },
-            stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            stages_status: stages as unknown as Prisma.InputJsonValue,
             history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: '',
@@ -1053,43 +970,21 @@ export class StoreRequisitionService {
       for (const detail of storeRequisitionDetail) {
         const findSR = payload.details.find((d) => d.id === detail.id);
         if (!findSR) continue;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let stages_status: any[] = detail.stages_status as unknown as any[];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const history: any[] = (detail.history as unknown as any[]) || [];
 
-        stages_status = stages_status.map((stage) => {
-          return {
-            ...stage,
-            status: stage_status.reject,
-          };
-        });
-
-        stages_status.push({
-          seq: stages_status.length + 1,
-          status: findSR.stage_status,
-          name: storeRequisition.workflow_current_stage,
-          message: findSR.stage_message,
-        });
-
-        history.push({
-          seq: history.length + 1,
-          status: stage_status.reject,
-          name: storeRequisition.workflow_current_stage,
-          message: findSR.stage_message || '',
-          user: {
-            id: this.userId,
-            name: workflow.last_action_by_name,
-          },
-          datetime: now,
-        });
+        const stages = WorkflowPersistenceHelper.buildRejectStagesStatus(
+          (detail.stages_status as unknown as StageStatus[]) || [],
+          findSR,
+          storeRequisition.workflow_current_stage,
+        );
+        const history = WorkflowPersistenceHelper.appendHistory(
+          (detail.history as unknown as Record<string, unknown>[]) || [],
+          { status: stage_status.reject, name: storeRequisition.workflow_current_stage, message: findSR.stage_message || '', userId: this.userId, userName: workflow.last_action_by_name },
+        );
 
         await txp.tb_store_requisition_detail.update({
-          where: {
-            id: detail.id,
-          },
+          where: { id: detail.id },
           data: {
-            stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            stages_status: stages as unknown as Prisma.InputJsonValue,
             history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: '',
@@ -1167,40 +1062,21 @@ export class StoreRequisitionService {
           continue;
         }
 
-        const stagesStatus: StageStatus[] = detail.stages_status as unknown as StageStatus[];
-        const history: Record<string, unknown>[] = (detail.history as unknown as Record<string, unknown>[]) || [];
-
-        history.push({
-          seq: history.length + 1,
-          status: stage_status.review,
-          name: workflow.workflow_previous_stage,
-          message: findSR.stage_message || '',
-          user: {
-            id: this.userId,
-            name: workflow.last_action_by_name,
-          },
-          datetime: now,
-        });
-
-        // Trim stages_status back to destination stage (matching PR pattern)
-        for (let index = stagesStatus.length - 1; index > 0; index--) {
-          if (stagesStatus[index].name === payload.des_stage) {
-            stagesStatus[index] = {
-              ...stagesStatus[index],
-              status: stage_status.pending,
-            };
-            break;
-          } else {
-            stagesStatus.splice(index + 1, stagesStatus.length - index - 1);
-          }
-        }
+        const stages = WorkflowPersistenceHelper.buildReviewStagesStatus(
+          (detail.stages_status as unknown as StageStatus[]) || [],
+          payload.des_stage,
+        );
+        const history = WorkflowPersistenceHelper.appendHistory(
+          (detail.history as unknown as Record<string, unknown>[]) || [],
+          { status: stage_status.review, name: workflow.workflow_previous_stage, message: findSR.stage_message || '', userId: this.userId, userName: workflow.last_action_by_name },
+        );
 
         await txp.tb_store_requisition_detail.update({
           where: {
             id: detail.id,
           },
           data: {
-            stages_status: stagesStatus as unknown as Prisma.InputJsonValue,
+            stages_status: stages as unknown as Prisma.InputJsonValue,
             history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: '',
@@ -1766,5 +1642,105 @@ export class StoreRequisitionService {
     });
 
     return Result.ok({ pending: total });
+  }
+
+  /**
+   * Get previous workflow stages for a store requisition (for review/sendback)
+   * ดึงขั้นตอนอนุมัติก่อนหน้า current_stage ของใบเบิกสินค้า
+   */
+  @TryCatch
+  async getPreviousStages(sr_id: string): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'getPreviousStages', sr_id, user_id: this.userId, tenant_id: this.bu_code },
+      StoreRequisitionService.name,
+    );
+
+    const sr = await this.prismaService.tb_store_requisition.findFirst({
+      where: { id: sr_id, deleted_at: null },
+      select: { id: true, workflow_id: true, workflow_current_stage: true },
+    });
+
+    if (!sr) {
+      return Result.error('Store requisition not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (!sr.workflow_id || !sr.workflow_current_stage) {
+      return Result.error('No workflow assigned to this store requisition', ErrorCode.NOT_FOUND);
+    }
+
+    const numberedStages = await this.workflowOrchestrator.getPreviousStages(
+      sr.workflow_id, sr.workflow_current_stage, this.userId, this.bu_code,
+    );
+
+    return Result.ok(numberedStages);
+  }
+
+  /**
+   * Get all workflow stages for store requisitions owned by the user (for stage filter dropdown)
+   * ดึงขั้นตอนทั้งหมดของ workflow ที่ใช้ในใบเบิกสินค้าของผู้ใช้
+   */
+  @TryCatch
+  async findAllWorkflowStagesBySr(
+    user_id: string,
+    bu_code: string,
+  ): Promise<Result<unknown>> {
+    const tenant = await this.tenantService.getdb_connection(user_id, bu_code);
+
+    if (!tenant) {
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+    }
+
+    const prisma = await this.prismaTenant(
+      tenant.tenant_id,
+      tenant.db_connection,
+    );
+
+    const results = await prisma.tb_store_requisition.findMany({
+      where: { requestor_id: user_id },
+      select: { workflow_id: true },
+      distinct: ['workflow_id'],
+    });
+
+    const stages = await this.workflowOrchestrator.findAllWorkflowStages(
+      results.map((r) => r.workflow_id),
+      user_id,
+      bu_code,
+    );
+
+    return Result.ok(stages);
+  }
+
+  /**
+   * Get distinct workflow stages where user has pending actions
+   * ดึงขั้นตอนที่ผู้ใช้มีงานรออนุมัติ
+   */
+  @TryCatch
+  async findAllMyPendingStages(): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findAllMyPendingStages', user_id: this.userId, tenant_id: this.bu_code },
+      StoreRequisitionService.name,
+    );
+
+    const stages = await this.prismaService.tb_store_requisition.findMany({
+      where: {
+        workflow_current_stage: { not: null },
+        OR: [
+          {
+            doc_status: enum_doc_status.draft,
+            requestor_id: this.userId,
+          },
+          {
+            user_action: {
+              path: ['execute'],
+              array_contains: [{ user_id: this.userId }],
+            },
+          },
+        ],
+      },
+      select: { workflow_current_stage: true },
+      distinct: ['workflow_current_stage'],
+    });
+
+    return Result.ok(stages.map((s) => s.workflow_current_stage));
   }
 }

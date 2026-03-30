@@ -753,4 +753,43 @@ export class PurchaseOrderController extends BaseMicroserviceController {
     );
     return this.handleResult(result);
   }
+
+  @MessagePattern({
+    cmd: 'purchase-order.find-all-workflow-stages-by-po',
+    service: 'purchase-order',
+  })
+  async findAllWorkflowStagesByPo(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'findAllWorkflowStagesByPo', payload },
+      PurchaseOrderController.name,
+    );
+    const user_id = payload.user_id;
+    const bu_code = payload.bu_code;
+
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.purchaseOrderService.findAllWorkflowStagesByPo(user_id, bu_code),
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({
+    cmd: 'purchase-order.find-all-my-pending-stages',
+    service: 'purchase-order',
+  })
+  async findAllMyPendingStages(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'findAllMyPendingStages', payload },
+      PurchaseOrderController.name,
+    );
+    const user_id = payload.user_id;
+    const bu_code = payload.bu_code;
+
+    await this.purchaseOrderService.initializePrismaService(bu_code, user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.purchaseOrderService.findAllMyPendingStages(),
+    );
+    return this.handleResult(result);
+  }
 }

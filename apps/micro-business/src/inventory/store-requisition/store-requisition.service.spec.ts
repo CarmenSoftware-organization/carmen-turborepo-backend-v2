@@ -7,6 +7,7 @@ import {
   enum_last_action,
 } from '@repo/prisma-shared-schema-tenant';
 import { StageStatus, WorkflowHeader } from './interface/workflow.interface';
+import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
 
 describe('StoreRequisitionService', () => {
   let service: StoreRequisitionService;
@@ -31,6 +32,7 @@ describe('StoreRequisitionService', () => {
         { provide: 'AUTH_SERVICE', useValue: mockAuthService },
         { provide: 'MASTER_SERVICE', useValue: mockMasterService },
         { provide: TenantService, useValue: mockTenantService },
+        { provide: WorkflowOrchestratorService, useValue: { resolveUserRole: jest.fn() } },
       ],
     }).compile();
 

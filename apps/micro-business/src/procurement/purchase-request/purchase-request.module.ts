@@ -9,6 +9,7 @@ import { CommonModule } from '@/common/common.module';
 import { envConfig } from '@/libs/config.env';
 import { PurchaseRequestLogic } from './logic/purchase-request.logic';
 import { NotificationModule } from '@/common';
+import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { NotificationModule } from '@/common';
   providers: [
     PurchaseRequestService,
     PurchaseRequestLogic,
+    WorkflowOrchestratorService,
     {
       provide: 'PRISMA_TENANT',
       useValue: PrismaClient_TENANT,

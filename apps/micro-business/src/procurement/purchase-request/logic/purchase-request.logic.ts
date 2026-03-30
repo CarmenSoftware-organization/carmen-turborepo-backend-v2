@@ -3,28 +3,31 @@ import { PurchaseRequestService } from '../purchase-request.service';
 import { MapperLogic } from '@/common/mapper/mapper.logic';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { IUpdatePurchaseRequest, PurchaseRequest } from '../interface/purchase-request.interface';
-import { UserActionProfile, WorkflowHeader, StageStatus } from '../interface/workflow.interface';
-import { CreatePurchaseRequest, creatorAccess, NavigateForwardResult, NotificationService, NotificationType, PurchaseRoleApprovePurchaseRequestDetail, ReviewPurchaseRequestDto, stage_status, SubmitPurchaseRequest } from '@/common'
-import { enum_last_action, enum_stage_role } from '@repo/prisma-shared-schema-tenant';
+import { WorkflowHeader, StageStatus } from '@/common/workflow/workflow.interfaces';
+import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
+import { PRWorkflowAdapter } from '../adapters/pr-workflow.adapter';
+import { CreatePurchaseRequest, NavigateForwardResult, NotificationService, NotificationType, PurchaseRoleApprovePurchaseRequestDetail, ReviewPurchaseRequestDto, stage_status, SubmitPurchaseRequest } from '@/common'
+import { enum_stage_role } from '@repo/prisma-shared-schema-tenant';
 import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { ValidatePRBeforeSubmitSchema } from '../dto/purchase-request.dto';
 
 // Re-export for backward compatibility
-export { UserActionProfile, WorkflowHeader, StageStatus } from '../interface/workflow.interface';
+export { WorkflowHeader, StageStatus } from '@/common/workflow/workflow.interfaces';
 @Injectable()
 export class PurchaseRequestLogic {
   private readonly logger: BackendLogger = new BackendLogger(
     PurchaseRequestLogic.name,
   );
+  private readonly prAdapter = new PRWorkflowAdapter();
+
   constructor(
     private readonly purchaseRequestService: PurchaseRequestService,
     private readonly mapperLogic: MapperLogic,
     @Inject('MASTER_SERVICE')
     private readonly masterService: ClientProxy,
-    @Inject('AUTH_SERVICE')
-    private readonly authService: ClientProxy,
     private readonly notificationService: NotificationService,
+    private readonly workflowOrchestrator: WorkflowOrchestratorService,
   ) { }
 
   async create(payload: CreatePurchaseRequest, user_id: string, tenant_id: string) {
@@ -320,89 +323,14 @@ export class PurchaseRequestLogic {
 
     this.validateBeforeSubmit(purchaseRequestData)
 
-    const total_amount = purchaseRequestData?.purchase_request_detail?.reduce((curr, acc) => curr + acc.total_price, 0)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const populateData: Record<string, any> = await this.mapperLogic.populate({
-      workflow_id: purchaseRequestData?.workflow_id,
-      user_id: user_id,
-    }, user_id, bu_code)
-
-    const workflowData = populateData?.workflow_id?.data
-
-    // Determine current stage - if empty (old data), get first stage then navigate to stage 2
-    let currentStageForNavigation = purchaseRequestData?.workflow_current_stage
-    let previousStage = purchaseRequestData?.workflow_current_stage
-
-    if (!currentStageForNavigation) {
-      // Get first stage (draft) then use it to navigate to stage 2
-      const firstStageRes = this.masterService.send(
-        { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
-        {
-          workflowData,
-          currentStatus: '',
-          requestData: { amount: total_amount },
-        },
-      );
-      const firstStageNav: NavigateForwardResult = await firstValueFrom(firstStageRes);
-      currentStageForNavigation = firstStageNav.navigation_info.current_stage_info?.name
-      previousStage = currentStageForNavigation
-    }
-
-    const res = this.masterService.send(
-      { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
-      {
-        workflowData,
-        currentStatus: currentStageForNavigation,
-        requestData: {
-          amount: total_amount
-        },
-      },
+    const workflow = await this.workflowOrchestrator.buildSubmitWorkflow(
+      purchaseRequestData, this.prAdapter, user_id, bu_code,
     );
-    const workflowHeader: NavigateForwardResult = await firstValueFrom(res);
-    const lastActionAtDate = new Date()
-
-    const workflow_history = purchaseRequestData?.workflow_history?.length > 0 ? purchaseRequestData?.workflow_history : []
-    workflow_history.push({
-      action: enum_last_action.submitted,
-      datetime: lastActionAtDate.toISOString(),
-      user: {
-        id: user_id,
-        name: populateData?.user_id?.name
-      },
-      current_stage: previousStage,
-      next_stage: workflowHeader.current_stage
-    })
-
-    const userAction = await this.buildUserAction(
-      workflowHeader.navigation_info.current_stage_info,
-      purchaseRequestData.department_id,
-      purchaseRequestData.department_name,
-      user_id,
-      bu_code
-    )
-
-    const workflow: WorkflowHeader = {
-      workflow_previous_stage: workflowHeader.previous_stage,
-      workflow_current_stage: workflowHeader.current_stage,
-      workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
-      user_action: userAction,
-      last_action: enum_last_action.submitted,
-      last_action_at_date: lastActionAtDate.toISOString(),
-      last_action_by_id: user_id,
-      last_action_by_name: populateData?.user_id?.name,
-      workflow_history
-    }
 
     const result = await this.purchaseRequestService.submit(id, payload, workflow);
 
-    // Send notification to approvers
     if (result.isOk()) {
-      this.sendSubmitNotification(
-        result.value,
-        workflow,
-        user_id,
-        populateData?.user_id?.name,
-      );
+      this.sendSubmitNotification(result.value, workflow, user_id, workflow.last_action_by_name);
     }
 
     return result;
@@ -416,16 +344,16 @@ export class PurchaseRequestLogic {
     }:
       {
         stage_role: enum_stage_role,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      details: any[]
+        details: any[]
       },
     user_id: string,
     tenant_id: string
   ) {
     await this.purchaseRequestService.initializePrismaService(tenant_id, user_id);
+
+    // Enrich detail data with vendor, unit, currency names
     const updatePRDetail = []
     const extractIds = this.populateDetail(details)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id)
     for (const detail of details as PurchaseRoleApprovePurchaseRequestDetail[]) {
       updatePRDetail.push(
@@ -442,103 +370,20 @@ export class PurchaseRequestLogic {
       )
     }
 
-    /* Workflow Station */
     const purchaseRequestResult = await this.purchaseRequestService.findById(id)
     if (purchaseRequestResult.isError()) {
       throw new Error('Purchase Request not found');
     }
     const purchaseRequestData = purchaseRequestResult.value;
-    const total_amount = purchaseRequestData?.purchase_request_detail?.reduce((curr, acc) => curr + acc.total_price, 0)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const populateData: Record<string, any> = await this.mapperLogic.populate({
-      workflow_id: purchaseRequestData?.workflow_id,
-      user_id: user_id,
-    }, user_id, tenant_id)
 
-
-    const workflowData = populateData?.workflow_id?.data
-
-    const res = this.masterService.send(
-      { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
-      {
-        workflowData,
-        currentStatus: purchaseRequestData?.workflow_current_stage,
-        previousStatus: purchaseRequestData?.workflow_previous_stage,
-        requestData: {
-          amount: total_amount
-        },
-      },
+    const { workflow } = await this.workflowOrchestrator.buildApproveWorkflow(
+      purchaseRequestData, this.prAdapter, user_id, tenant_id,
     );
-    const workflowHeader: NavigateForwardResult = await firstValueFrom(res);
-
-    const workflow_history = purchaseRequestData?.workflow_history
-    const lastActionAtDate = new Date();
-    let workflow = {}
-
-    if (!workflowHeader.navigation_info.workflow_next_step) {
-      workflow_history.push({
-        action: enum_last_action.approved,
-        datetime: lastActionAtDate.toISOString(),
-        user: {
-          id: user_id,
-          name: populateData?.user_id?.name
-        },
-        current_stage: workflowHeader.previous_stage,
-        next_stage: '-'
-      })
-      workflow = {
-        workflow_previous_stage: workflowHeader.previous_stage,
-        workflow_current_stage: workflowHeader.current_stage,
-        workflow_next_stage: '-',
-        user_action: [],
-        last_action: enum_last_action.approved,
-        last_action_at_date: lastActionAtDate.toISOString(),
-        last_action_by_id: user_id,
-        last_action_by_name: populateData?.user_id?.name,
-        workflow_history: workflow_history
-      }
-    } else {
-      workflow_history.push({
-        action: enum_last_action.approved,
-        datetime: lastActionAtDate.toISOString(),
-        user: {
-          id: user_id,
-          name: populateData?.user_id?.name
-        },
-        current_stage: workflowHeader.previous_stage,
-        next_stage: workflowHeader.current_stage
-      })
-      const userAction = await this.buildUserAction(
-        workflowHeader.navigation_info.current_stage_info,
-        purchaseRequestData.department_id,
-        purchaseRequestData.department_name,
-        user_id,
-        tenant_id
-      )
-
-      workflow = {
-        workflow_previous_stage: workflowHeader.previous_stage,
-        workflow_current_stage: workflowHeader.current_stage,
-        workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
-        user_action: userAction,
-        last_action: enum_last_action.approved,
-        last_action_at_date: lastActionAtDate.toISOString(),
-        last_action_by_id: user_id,
-        last_action_by_name: populateData?.user_id?.name,
-        workflow_history: workflow_history
-      }
-    }
 
     this.logger.debug({ function: 'approve', id, stage_role, details, user_id, tenant_id }, PurchaseRequestLogic.name);
     const result = await this.purchaseRequestService.approve(id, workflow, updatePRDetail)
 
-    // Send notification for approval
-    this.sendApproveNotification(
-      purchaseRequestData,
-      workflow as WorkflowHeader,
-      user_id,
-      populateData?.user_id?.name,
-    );
+    this.sendApproveNotification(purchaseRequestData, workflow, user_id, workflow.last_action_by_name);
 
     return result
   }
@@ -581,14 +426,17 @@ export class PurchaseRequestLogic {
         }
 
         // Check role — purchase role cannot swipe approve
+        const { workflow } = await this.workflowOrchestrator.buildApproveWorkflow(
+          prData, this.prAdapter, user_id, tenant_id,
+        );
+
+        // Check current stage role — purchase role cannot use swipe approve
         const populateData: Record<string, any> = await this.mapperLogic.populate({
           workflow_id: prData.workflow_id,
           user_id,
         }, user_id, tenant_id);
-
         const workflowData = populateData?.workflow_id?.data;
         const total_amount = prData.purchase_request_detail?.reduce((curr, acc) => curr + acc.total_price, 0) || 0;
-
         const navRes = this.masterService.send(
           { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
           {
@@ -598,10 +446,8 @@ export class PurchaseRequestLogic {
             requestData: { amount: total_amount },
           },
         );
-        const workflowHeader: NavigateForwardResult = await firstValueFrom(navRes);
-
-        // Check current stage role
-        const stageInfo = workflowHeader.navigation_info.current_stage_info;
+        const navResult: NavigateForwardResult = await firstValueFrom(navRes);
+        const stageInfo = navResult.navigation_info.current_stage_info;
         if (stageInfo?.role === enum_stage_role.purchase) {
           results.push({ id, success: false, message: 'Purchase role cannot use swipe approve' });
           continue;
@@ -615,56 +461,10 @@ export class PurchaseRequestLogic {
           stage_message: null,
         }));
 
-        // Build workflow header
-        const workflow_history = prData.workflow_history || [];
-        const lastActionAtDate = new Date();
-
-        workflow_history.push({
-          action: enum_last_action.approved,
-          datetime: lastActionAtDate.toISOString(),
-          user: { id: user_id, name: populateData?.user_id?.name },
-          current_stage: workflowHeader.previous_stage,
-          next_stage: workflowHeader.navigation_info.workflow_next_step ? workflowHeader.current_stage : '-',
-        });
-
-        let workflow: Record<string, unknown>;
-        if (!workflowHeader.navigation_info.workflow_next_step) {
-          workflow = {
-            workflow_previous_stage: workflowHeader.previous_stage,
-            workflow_current_stage: workflowHeader.current_stage,
-            workflow_next_stage: '-',
-            user_action: [],
-            last_action: enum_last_action.approved,
-            last_action_at_date: lastActionAtDate.toISOString(),
-            last_action_by_id: user_id,
-            last_action_by_name: populateData?.user_id?.name,
-            workflow_history,
-          };
-        } else {
-          const userAction = await this.buildUserAction(
-            workflowHeader.navigation_info.current_stage_info,
-            prData.department_id,
-            prData.department_name,
-            user_id,
-            tenant_id,
-          );
-          workflow = {
-            workflow_previous_stage: workflowHeader.previous_stage,
-            workflow_current_stage: workflowHeader.current_stage,
-            workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
-            user_action: userAction,
-            last_action: enum_last_action.approved,
-            last_action_at_date: lastActionAtDate.toISOString(),
-            last_action_by_id: user_id,
-            last_action_by_name: populateData?.user_id?.name,
-            workflow_history,
-          };
-        }
-
         const result = await this.purchaseRequestService.approve(id, workflow, details);
 
         if (result.isOk()) {
-          this.sendApproveNotification(prData, workflow as unknown as WorkflowHeader, user_id, populateData?.user_id?.name);
+          this.sendApproveNotification(prData, workflow, user_id, workflow.last_action_by_name);
           results.push({ id, success: true });
         } else {
           results.push({ id, success: false, message: 'Failed to approve' });
@@ -776,94 +576,13 @@ export class PurchaseRequestLogic {
     }
     const purchaseRequest = purchaseRequestResult.value;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const userRes: Observable<any> = await this.authService.send(
-      {
-        cmd: 'get-user-by-id',
-        service: 'auth',
-      },
-      {
-        id: user_id,
-      },
-    );
-    const userResponse = await firstValueFrom(userRes);
-
-    const workflowRes = this.masterService.send(
-      { cmd: 'workflows.findOne', service: 'workflows' },
-      {
-        id: purchaseRequest.workflow_id,
-        user_id,
-        bu_code,
-      },
+    const workflow = await this.workflowOrchestrator.buildReviewWorkflow(
+      purchaseRequest, this.prAdapter, body.des_stage, user_id, bu_code,
     );
 
-    const workflowResponse = await firstValueFrom(workflowRes);
-    if (workflowResponse.response.status !== HttpStatus.OK) {
-      throw new Error(workflowResponse.response.message);
-    }
+    const result = await this.purchaseRequestService.review(id, body, workflow)
 
-    // const workflowData = workflowResponse.data
-    const total_amount = purchaseRequest?.purchase_request_detail?.reduce((curr, acc) => curr + acc.total_price, 0)
-
-    const workflowNavRes = this.masterService.send(
-      { cmd: 'workflows.navigate-back-to-stage', service: 'workflows' },
-      {
-        workflow_id: purchaseRequest.workflow_id,
-        user_id: user_id,
-        bu_code: bu_code,
-        stage: body.des_stage,  // Target stage to go back to
-        current_stage: purchaseRequest.workflow_current_stage,  // Where you are now
-        requestData: {  // Optional
-          amount: total_amount
-        }
-      },
-    );
-    const backToStageRes = await firstValueFrom(workflowNavRes);
-    const workflowHeader: NavigateForwardResult = backToStageRes.data;
-
-    const workflow_history = purchaseRequest?.workflow_history || []
-    const lastActionAtDate = new Date();
-    let workflow = {}
-
-    workflow_history.push({
-      action: enum_last_action.reviewed,
-      datetime: lastActionAtDate,
-      user: {
-        id: user_id,
-        name: userResponse?.data?.name
-      },
-      current_stage: purchaseRequest?.workflow_current_stage,
-      next_stage: workflowHeader.navigation_info.workflow_next_step
-    })
-
-    const userAction = await this.buildUserAction(
-      workflowHeader.navigation_info.current_stage_info,
-      purchaseRequest.department_id,
-      purchaseRequest.department_name,
-      user_id,
-      bu_code
-    )
-
-    workflow = {
-      workflow_previous_stage: workflowHeader.previous_stage,
-      workflow_current_stage: workflowHeader.current_stage,
-      workflow_next_stage: workflowHeader.navigation_info.workflow_next_step,
-      user_action: userAction,
-      last_action: enum_last_action.approved,
-      last_action_at_date: lastActionAtDate.toISOString(),
-      last_action_by_id: user_id,
-      last_action_by_name: userResponse?.data?.name,
-      workflow_history: workflow_history
-    }
-    const result = await this.purchaseRequestService.review(id, body, workflow as WorkflowHeader)
-
-    // Send notification for review (send back)
-    this.sendReviewNotification(
-      purchaseRequest,
-      workflow as WorkflowHeader,
-      user_id,
-      userResponse?.data?.name,
-    );
+    this.sendReviewNotification(purchaseRequest, workflow, user_id, workflow.last_action_by_name);
 
     return result
   }
@@ -1019,72 +738,7 @@ export class PurchaseRequestLogic {
     ValidatePRBeforeSubmitSchema.parse(purchaseRequest);
   }
 
-  private distinctData(d: unknown[]): unknown[] {
-    return [...new Set(d)];
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private async buildUserAction(
-    currentStageInfo: any,
-    department_id: string,
-    department_name: string,
-    user_id: string,
-    bu_code: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ): Promise<{ execute: any[] } | null> {
-    const userIdsToAssign: string[] = []
-
-    // Always add assigned_users from workflow stage
-    // assigned_users can be either string[] (IDs) or object[] (full profiles)
-    const assignedUsers: any[] = currentStageInfo?.assigned_users || []
-    for (const user of assignedUsers) {
-      if (typeof user === 'string') {
-        userIdsToAssign.push(user)
-      } else if (user?.user_id) {
-        userIdsToAssign.push(user.user_id)
-      }
-    }
-
-    // Add all users in department if creator_access flag is set
-    if (currentStageInfo?.creator_access === creatorAccess.ALL_PEOPLE_IN_DEPARTMENT_CAN_ACTION) {
-      const res = this.masterService.send(
-        { cmd: 'department-users.find-by-department', service: 'department-users' },
-        { department_id, user_id, bu_code },
-      );
-      const usersInDepartment: { data: { user_id: string }[] } = await firstValueFrom(res);
-      userIdsToAssign.push(...usersInDepartment.data.map(u => u.user_id))
-    }
-
-    // Add HOD users if is_hod flag is set
-    if (currentStageInfo?.is_hod === true) {
-      const hodRes = this.masterService.send(
-        { cmd: 'department-users.get-hod-in-department', service: 'department-users' },
-        { department_id, user_id, bu_code },
-      );
-      const hodUsers: { data: string[] } = await firstValueFrom(hodRes);
-      userIdsToAssign.push(...hodUsers.data)
-    }
-
-    if (userIdsToAssign.length === 0) {
-      return null
-    }
-
-    // Get distinct user IDs
-    const distinctUserIds = this.distinctData(userIdsToAssign) as string[]
-
-    // Fetch full user profiles from auth service
-    const profilesRes = this.authService.send(
-      { cmd: 'get-user-profiles-by-ids', service: 'auth' },
-      {
-        user_ids: distinctUserIds,
-        department: { id: department_id, name: department_name }
-      },
-    );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const profilesResult: { data: any[] } = await firstValueFrom(profilesRes);
-
-    return { execute: profilesResult.data || [] }
-  }
+  // buildUserAction and distinctData removed — now handled by WorkflowOrchestratorService
 
   /**
    * Send notification when PR is submitted

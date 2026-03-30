@@ -23,7 +23,7 @@ import QueryParams from '@/libs/paginate.query';
 import { CommonLogic } from '@/common/common.logic';
 import { getPattern } from '@/common/common.helper';
 import { format } from 'date-fns';
-import { ClientProxy } from '@nestjs/microservices';
+import { randomBytes } from 'crypto';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import {
   IPurchaseRequestDetail,
@@ -42,7 +42,8 @@ import {
   ErrorCode,
 } from '@/common';
 import { StageStatus, WorkflowHeader } from './interface/workflow.interface';
-import { firstValueFrom } from 'rxjs';
+import { WorkflowPersistenceHelper } from '@/common/workflow/workflow-persistence.helper';
+import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
 import getPaginationParams from '@/common/helpers/pagination.params';
 import * as ExcelJS from 'exceljs';
 import type {
@@ -128,13 +129,9 @@ export class PurchaseRequestService {
     private readonly prismaSystem: typeof PrismaClient_SYSTEM,
     @Inject('PRISMA_TENANT')
     private readonly prismaTenant: typeof PrismaClient_TENANT,
-    @Inject('AUTH_SERVICE')
-    private readonly authService: ClientProxy,
-    @Inject('MASTER_SERVICE')
-    private readonly masterService: ClientProxy,
-
     private readonly commonLogic: CommonLogic,
     private readonly tenantService: TenantService,
+    private readonly workflowOrchestrator: WorkflowOrchestratorService,
   ) { }
 
   /**
@@ -233,38 +230,15 @@ export class PurchaseRequestService {
         const purchase_request_detail = res['tb_purchase_request_detail'];
         delete res['tb_purchase_request_detail'];
 
-        // Special case: draft PR owned by requestor should have "create" role
-        let returningRole: enum_stage_role;
-
-        if (
-          res.pr_status === enum_purchase_request_doc_status.draft &&
-          res.requestor_id === this.userId
-        ) {
-          returningRole = enum_stage_role.create;
-        } else {
-          const workflowCallReq = this.masterService.send(
-            { cmd: 'workflows.get-workflow-stage-detail', service: 'workflows' },
-            {
-              workflow_id: res.workflow_id,
-              stage: res.workflow_current_stage,
-              user_id: this.userId,
-              bu_code: this.bu_code,
-            },
-          );
-          const CallCurrentWorkflowDetail: GlobalApiReturn<Stage> =
-            await firstValueFrom(workflowCallReq);
-          const currentWorkflowDetail = CallCurrentWorkflowDetail.data;
-
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const userActionExecute = (res.user_action as { execute: any[] })?.execute || [];
-          const userIds: string[] = userActionExecute.map((u) =>
-            typeof u === 'string' ? u : u?.user_id
-          ).filter(Boolean);
-
-          returningRole = userIds.includes(this.userId)
-            ? (currentWorkflowDetail.role as enum_stage_role)
-            : enum_stage_role.view_only;
-        }
+        const returningRole = await this.workflowOrchestrator.resolveUserRole(
+          res.pr_status === enum_purchase_request_doc_status.draft,
+          res.requestor_id === this.userId,
+          res.workflow_id,
+          res.workflow_current_stage,
+          res.user_action,
+          this.userId,
+          this.bu_code,
+        );
 
         return {
           ...res,
@@ -521,18 +495,13 @@ export class PurchaseRequestService {
       distinct: ['workflow_id'],
     });
 
-    const workflowCallReq = this.masterService.send(
-      { cmd: 'workflows.get-all-workflows-stages', service: 'workflows' },
-      {
-        workflow_ids: results.map((r) => r.workflow_id),
-        user_id: user_id,
-        bu_code: bu_code,
-      },
+    const stages = await this.workflowOrchestrator.findAllWorkflowStages(
+      results.map((r) => r.workflow_id),
+      user_id,
+      bu_code,
     );
-    const CallCurrentWorkflowDetail: GlobalApiReturn<string[]> =
-      await firstValueFrom(workflowCallReq);
 
-    return Result.ok(CallCurrentWorkflowDetail.data);
+    return Result.ok(stages);
   }
 
   /**
@@ -856,7 +825,7 @@ export class PurchaseRequestService {
       const purchaseRequestObject = JSON.parse(
         JSON.stringify({
           ...createPR,
-          pr_no: 'draft-' + format(new Date(), 'yyyyMMddHHmmss'),
+          pr_no: 'draft-' + randomBytes(3).toString('hex'),
           pr_date: prDate,
           created_by_id: this.userId,
           last_action: null,
@@ -947,59 +916,24 @@ export class PurchaseRequestService {
       for (const detail of PRdetail) {
         const findDetails = payload.details.find((d) => d.id === detail.id);
         if (!findDetails) continue;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const stages_status: any[] = Array.isArray(detail.stages_status)
+
+        const currentStages: StageStatus[] = Array.isArray(detail.stages_status)
           ? (detail.stages_status as unknown as StageStatus[])
           : [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const history: any[] = (detail.history as any[]) || [];
-        const latestStageStatus = stages_status[stages_status.length - 1];
+        const { stages, skipped } = WorkflowPersistenceHelper.buildSubmitStagesStatus(
+          currentStages, findDetails, workflowHeader.workflow_previous_stage,
+        );
+        if (skipped) continue;
 
-        if (findDetails.stage_status === stage_status.approve) {
-          continue;
-        } else if (
-          findDetails.stage_status === stage_status.submit
-        ) /* 1st time this detail is being submitted */ {
-          stages_status.push({
-            seq: 1,
-            status: findDetails.stage_status,
-            name: workflowHeader.workflow_previous_stage,
-            message: findDetails?.stage_message || 'submit for approval',
-          });
-        } else if (
-          latestStageStatus.status === stage_status.pending &&
-          latestStageStatus.name === workflowHeader.workflow_previous_stage
-        ) {
-          stages_status[stages_status.length - 1] = {
-            seq: stages_status.length,
-            status: findDetails.stage_status,
-            name: workflowHeader.workflow_previous_stage,
-            message: findDetails.stage_message,
-          };
-        } else {
-          stages_status.push({
-            seq: stages_status.length + 1,
-            status: findDetails.stage_status,
-            name: workflowHeader.workflow_previous_stage,
-            message: findDetails.stage_message,
-          });
-        }
+        const history = WorkflowPersistenceHelper.appendHistory(
+          (detail.history as any[]) || [],
+          { status: findDetails.stage_status, name: workflowHeader.workflow_previous_stage, message: findDetails.stage_message, userId: this.userId },
+        );
 
-        history.push({
-          seq: history.length + 1,
-          status: findDetails.stage_status,
-          name: workflowHeader.workflow_previous_stage,
-          message: findDetails.stage_message,
-          user: {
-            id: this.userId,
-          },
-        });
-
-        // if(Array.isArray(stages) && stages?.length === 0) {
         await prismatx.tb_purchase_request_detail.update({
           where: { id: detail.id },
           data: {
-            stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            stages_status: stages as unknown as Prisma.InputJsonValue,
             history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             approved_qty: Number(detail.requested_qty),
@@ -1011,7 +945,6 @@ export class PurchaseRequestService {
             current_stage_status: '',
           },
         });
-        // }
       }
 
       return updatePurchaseRequest;
@@ -1234,7 +1167,7 @@ export class PurchaseRequestService {
       for (const pr of basePrData) {
         const duplicatedPRDetails = [];
         const newPr = {
-          pr_no: 'draft-' + format(new Date(), 'yyyyMMddHHmmss'),
+          pr_no: 'draft-' + randomBytes(3).toString('hex'),
           pr_date: new Date().toISOString(),
           department_id: pr.department_id,
           department_name: pr.department_name,
@@ -1359,7 +1292,7 @@ export class PurchaseRequestService {
       // Generate new PR number based on status
       let newPrNo: string;
       if (originalPr.pr_status === enum_purchase_request_doc_status.draft) {
-        newPrNo = 'draft-' + format(new Date(), 'yyyyMMddHHmmss');
+        newPrNo = 'draft-' + randomBytes(3).toString('hex');
       } else {
         // For non-draft PRs, generate a proper PR number
         await this.initializePrismaService(bu_code, user_id);
@@ -1552,42 +1485,17 @@ export class PurchaseRequestService {
 
       for (const detail of payload) {
         const findPRDoc = PRDetailDocs.find((d) => d.id === detail.id);
-        const latestStageStatus =
-          findPRDoc.stages_status[
-          (findPRDoc.stages_status as unknown as StageStatus[]).length - 1
-          ];
-        const stages_status: StageStatus[] = findPRDoc?.stages_status as unknown as StageStatus[];
-        const history: Record<string, unknown>[] = (findPRDoc?.history as unknown as Record<string, unknown>[]) || [];
+        const currentStages = (findPRDoc?.stages_status as unknown as StageStatus[]) || [];
 
-        if (latestStageStatus.status === stage_status.reject) {
-          continue;
-        } else if (
-          latestStageStatus.status === stage_status.pending &&
-          latestStageStatus.name === workflow.workflow_previous_stage
-        ) {
-          stages_status[stages_status.length - 1] = {
-            ...latestStageStatus,
-            status: detail.stage_status || '',
-            message: detail.stage_message || '',
-          };
-        } else {
-          stages_status.push({
-            seq: stages_status.length + 1,
-            status: detail.stage_status || '',
-            name: workflow.workflow_previous_stage,
-            message: detail.stage_message || '',
-          });
-        }
+        const { stages, skipped } = WorkflowPersistenceHelper.buildApproveStagesStatus(
+          currentStages, detail, workflow.workflow_previous_stage,
+        );
+        if (skipped) continue;
 
-        history.push({
-          seq: history.length + 1,
-          status: detail.stage_status || '',
-          name: workflow.workflow_previous_stage,
-          message: detail.stage_message || '',
-          user: {
-            id: this.userId,
-          },
-        });
+        const history = WorkflowPersistenceHelper.appendHistory(
+          (findPRDoc?.history as unknown as Record<string, unknown>[]) || [],
+          { status: detail.stage_status || '', name: workflow.workflow_previous_stage, message: detail.stage_message || '', userId: this.userId },
+        );
 
         delete detail.stage_message;
         delete detail.stage_status;
@@ -1607,7 +1515,7 @@ export class PurchaseRequestService {
           data: {
             ...updateDto,
             doc_version: { increment: 1 },
-            stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            stages_status: stages as unknown as Prisma.InputJsonValue,
             history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: '',
@@ -1671,38 +1579,15 @@ export class PurchaseRequestService {
           continue;
         }
 
-        const stagesStatus: StageStatus[] = detail.stages_status as unknown as StageStatus[];
-        const history: Record<string, unknown>[] = (detail.history as unknown as Record<string, unknown>[]) || [];
-
-        history.push({
-          seq: history.length + 1,
-          status: stage_status.review,
-          name: workflow.workflow_previous_stage,
-          message: payloadDetail.stage_message || '',
-          user: {
-            id: this.userId,
-          },
-        });
-
-        for (let index = stagesStatus.length - 1; index > 0; index--) {
-          if (stagesStatus[index].name === payload.des_stage) {
-            stagesStatus[index] = {
-              ...stagesStatus[index],
-              status: stage_status.pending,
-            };
-
-            break;
-          } else {
-            stagesStatus.splice(index + 1, stagesStatus.length - index - 1);
-          }
-        }
+        const stages = WorkflowPersistenceHelper.buildReviewStagesStatus(
+          (detail.stages_status as unknown as StageStatus[]) || [],
+          payload.des_stage,
+        );
 
         await txp.tb_purchase_request_detail.update({
-          where: {
-            id: detail.id,
-          },
+          where: { id: detail.id },
           data: {
-            stages_status: stagesStatus as unknown as Prisma.InputJsonValue,
+            stages_status: stages as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: '',
           },
@@ -1766,36 +1651,23 @@ export class PurchaseRequestService {
     const tx = await this.prismaService.$transaction(async (txp) => {
       for (const detail of purchaseRequestDetail) {
         const findPR = payload.details.find((d) => d.id === detail.id);
-        let stages_status = detail.stages_status as unknown as StageStatus[];
-        stages_status = stages_status.map((stage) => {
-          return {
-            ...stage,
-            status: stage_status.reject,
-          };
-        });
-
-        stages_status.push({
-          seq: stages_status.length + 1,
-          status: findPR.stage_status,
-          name: purchaseRequest.workflow_current_stage,
-          message: findPR.stage_message,
-        });
+        const stages = WorkflowPersistenceHelper.buildRejectStagesStatus(
+          (detail.stages_status as unknown as StageStatus[]) || [],
+          findPR,
+          purchaseRequest.workflow_current_stage,
+        );
 
         await txp.tb_purchase_request_detail.update({
-          where: {
-            id: detail.id,
-          },
+          where: { id: detail.id },
           data: {
-            stages_status: stages_status as unknown as Prisma.InputJsonValue,
+            stages_status: stages as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: '',
           },
         });
       }
       await txp.tb_purchase_request.update({
-        where: {
-          id,
-        },
+        where: { id },
         data: {
           pr_status: enum_purchase_request_doc_status.voided,
           updated_by_id: this.userId,
@@ -2760,31 +2632,9 @@ export class PurchaseRequestService {
       return Result.error('No workflow assigned to this purchase request', ErrorCode.NOT_FOUND);
     }
 
-    const res = this.masterService.send(
-      { cmd: 'workflows.get-previous-stages', service: 'workflows' },
-      {
-        workflow_id: pr.workflow_id,
-        stage: pr.workflow_current_stage,
-        user_id: this.userId,
-        bu_code: this.bu_code,
-      },
+    const numberedStages = await this.workflowOrchestrator.getPreviousStages(
+      pr.workflow_id, pr.workflow_current_stage, this.userId, this.bu_code,
     );
-
-    const response = await firstValueFrom(res);
-
-    if (response.response?.status !== HttpStatus.OK) {
-      return Result.error(
-        response.response?.message || 'Failed to get previous stages',
-        ErrorCode.INTERNAL,
-      );
-    }
-
-    // Transform array to numbered map: { "1": "Create Request", "2": "HOD", ... }
-    const stages = Array.isArray(response.data) ? response.data : [];
-    const numberedStages: Record<string, string> = {};
-    stages.forEach((name: string, index: number) => {
-      numberedStages[String(index + 1)] = name;
-    });
 
     return Result.ok(numberedStages);
   }
