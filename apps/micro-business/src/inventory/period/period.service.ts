@@ -307,26 +307,40 @@ export class PeriodService {
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
-    // Find the last period overall to know where to start creating
-    const lastPeriod = await prisma.tb_period.findFirst({
-      where: { deleted_at: null },
+    // Find the last OPEN period — new periods are created after this one
+    const lastOpenPeriod = await prisma.tb_period.findFirst({
+      where: { status: enum_period_status.open, deleted_at: null },
       orderBy: [{ fiscal_year: "desc" }, { fiscal_month: "desc" }],
     });
 
     let startYear: number;
     let startMonth: number;
 
-    if (lastPeriod) {
-      startYear = lastPeriod.fiscal_year;
-      startMonth = lastPeriod.fiscal_month + 1;
+    if (lastOpenPeriod) {
+      startYear = lastOpenPeriod.fiscal_year;
+      startMonth = lastOpenPeriod.fiscal_month + 1;
       if (startMonth > 12) {
         startMonth = 1;
         startYear += 1;
       }
     } else {
-      const now = new Date();
-      startYear = now.getFullYear();
-      startMonth = now.getMonth() + 1;
+      // No open periods — fall back to last period of any status
+      const lastPeriod = await prisma.tb_period.findFirst({
+        where: { deleted_at: null },
+        orderBy: [{ fiscal_year: "desc" }, { fiscal_month: "desc" }],
+      });
+      if (lastPeriod) {
+        startYear = lastPeriod.fiscal_year;
+        startMonth = lastPeriod.fiscal_month + 1;
+        if (startMonth > 12) {
+          startMonth = 1;
+          startYear += 1;
+        }
+      } else {
+        const now = new Date();
+        startYear = now.getFullYear();
+        startMonth = now.getMonth() + 1;
+      }
     }
 
     const createdPeriods: { id: string; period: string; fiscal_year: number; fiscal_month: number }[] = [];
@@ -400,7 +414,9 @@ export class PeriodService {
 
     return Result.ok({
       start_from: { fiscal_year: startYear, fiscal_month: startMonth },
-      last_period: lastPeriod ? { period: lastPeriod.period, fiscal_year: lastPeriod.fiscal_year, fiscal_month: lastPeriod.fiscal_month } : null,
+      last_open_period: lastOpenPeriod
+        ? { period: lastOpenPeriod.period, fiscal_year: lastOpenPeriod.fiscal_year, fiscal_month: lastOpenPeriod.fiscal_month }
+        : null,
       created: createdPeriods,
       skipped: skippedPeriods,
       total_created: createdPeriods.length,

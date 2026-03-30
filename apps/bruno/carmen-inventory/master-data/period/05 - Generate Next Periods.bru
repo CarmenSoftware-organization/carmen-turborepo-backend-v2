@@ -4,36 +4,6 @@ meta {
   seq: 5
 }
 
-docs {
-  ## Generate Next Periods
-  สร้างรอบบัญชีถัดไปจำนวน N รอบแบบอัตโนมัติ
-
-  Bulk-generate the next N fiscal/accounting periods automatically.
-
-
-  ### Sample Body
-  ```json
-  {
-    "count": 12,
-    "start_day": 1
-  }
-  ```
-
-  ### Sample Response
-  ```json
-  {
-    "data": {
-      "id": "uuid"
-    },
-    "paginate": null,
-    "status": 200,
-    "success": true,
-    "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
-  }
-  ```
-}
-
 post {
   url: {{host}}/api/{{bu_code}}/period/next
   body: json
@@ -50,7 +20,37 @@ auth:bearer {
 
 body:json {
   {
+    "count": 3,
+    "start_day": 1
+  }
+}
+
+docs {
+  ## Generate Next Periods
+  สร้างรอบบัญชีถัดไปจำนวน N รอบแบบอัตโนมัติ
+  
+  Bulk-generate the next N fiscal/accounting periods automatically.
+  
+  
+  ### Sample Body
+  ```json
+  {
     "count": 12,
     "start_day": 1
   }
+  ```
+  
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
 }
