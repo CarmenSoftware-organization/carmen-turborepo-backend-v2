@@ -68,7 +68,7 @@
 //            console.log({key: o[0], value: o[1]});
 
 //           const [key, value] = o[1].split(':');
-//           const [k, f] = key.split('|');          
+//           const [k, f] = key.split('|');
 //           const kTrim = k.trim();
 //           const vTrim = value.trim();
 //           switch (f) {
@@ -94,8 +94,8 @@
 //               return {
 //                 [kTrim]: vTrim,
 //               };
-//             default:              
-//               return {              
+//             default:
+//               return {
 //                 [kTrim]: { contains: vTrim, mode: 'insensitive' },
 //               };
 //           }
@@ -215,7 +215,7 @@ interface PrismaWhereInput {
 }
 
 interface PrismaOrderByInput {
-  [key: string]: 'asc' | 'desc';
+  [key: string]: "asc" | "desc";
 }
 
 interface PrismaFindManyArgs {
@@ -238,7 +238,7 @@ export default class QueryParams {
   constructor(
     page: number = 1,
     perpage: number = 10,
-    search: string | unknown = '',
+    search: string | unknown = "",
     searchFields: string[] = [],
     defaultSearchFields: string[] = [],
     filter: string | string[] | Record<string, string> = [],
@@ -249,10 +249,13 @@ export default class QueryParams {
     this.perpage = Number(perpage) || 10;
 
     // ✅ FIX: normalize search ให้เป็น string เสมอ (and exclude functions)
-    this.search = typeof search === 'string' ? search : '';
+    this.search = typeof search === "string" ? search : "";
 
     this.searchFields = Array.isArray(searchFields)
-      ? searchFields.flatMap((f) => f.split(',')).map((f) => f.trim()).filter(Boolean)
+      ? searchFields
+          .flatMap((f) => f.split(","))
+          .map((f) => f.trim())
+          .filter(Boolean)
       : [];
     this.defaultSearchFields = defaultSearchFields ?? [];
 
@@ -265,109 +268,104 @@ export default class QueryParams {
     this.advance = advance;
   }
 
-  private normalizeFilter(
-    filter: string | string[] | Record<string, string>,
-  ): string[] {
+  private normalizeFilter(filter: string | string[] | Record<string, string>): string[] {
     if (!filter) {
       return [];
     }
 
-    if (typeof filter === 'string') {
-      return filter.split(',').map((f) => f.trim()).filter(Boolean);
-    }
-
-    if (Array.isArray(filter)) {
+    if (typeof filter === "string") {
       return filter
-        .flatMap((f) => f.split(','))
+        .split(",")
         .map((f) => f.trim())
         .filter(Boolean);
     }
 
-    if (typeof filter === 'object') {
-      return Object.entries(filter).map(
-        ([key, value]) => `${key}:${value}`,
-      );
+    if (Array.isArray(filter)) {
+      return filter
+        .flatMap((f) => f.split(","))
+        .map((f) => f.trim())
+        .filter(Boolean);
+    }
+
+    if (typeof filter === "object") {
+      return Object.entries(filter).map(([key, value]) => `${key}:${value}`);
     }
 
     return [];
   }
 
-  private castFilterValue(
-    fieldName: string,
-    fieldType: string | undefined,
-    value: string,
-  ): Record<string, unknown> {
-    const trimmedValue = value?.trim() ?? '';
+  private castFilterValue(fieldName: string, fieldType: string | undefined, value: string): Record<string, unknown> {
+    const trimmedValue = value?.trim() ?? "";
+
+    // daterange must be handled before the comma check (value format: "from,to")
+    if (fieldType === "date_range") {
+      const [from, to] = trimmedValue.split(",").map((v) => v.trim());
+      const fromDate = new Date(from);
+      const toDate = new Date(to);
+      toDate.setHours(23, 59, 59, 999);
+      return {
+        [fieldName]: {
+          gte: fromDate.toISOString(),
+          lte: toDate.toISOString(),
+        },
+      };
+    }
 
     // Handle comma-separated values as IN query
-    if (trimmedValue.includes(',')) {
-      const values = trimmedValue.split(',').map((v) => v.trim());
+    if (trimmedValue.includes(",")) {
+      const values = trimmedValue.split(",").map((v) => v.trim());
       return { [fieldName]: { in: values } };
     }
 
     switch (fieldType) {
-      case 'number':
-      case 'num':
+      case "number":
+      case "num":
         return { [fieldName]: Number(trimmedValue) };
 
-      case 'bool':
-      case 'boolean':
+      case "bool":
+      case "boolean":
         return {
-          [fieldName]:
-            trimmedValue.toLowerCase() === 'true' ||
-            trimmedValue.toLowerCase() === '1',
+          [fieldName]: trimmedValue.toLowerCase() === "true" || trimmedValue.toLowerCase() === "1",
         };
 
-      case 'date':
-      case 'datetime':
+      case "date":
+      case "datetime":
         return { [fieldName]: new Date(trimmedValue) };
 
-      case 'contains':
-      case 'like':
-        return { [fieldName]: { contains: trimmedValue, mode: 'insensitive' } };
+      case "contains":
+      case "like":
+        return { [fieldName]: { contains: trimmedValue, mode: "insensitive" } };
 
       default:
         return { [fieldName]: trimmedValue };
     }
   }
 
-  private castSearchValue(
-    fieldName: string,
-    fieldType: string | undefined,
-    value: unknown,
-  ): Record<string, unknown> {
-
-    const safeValue =
-      typeof value === 'string'
-        ? value
-        : value != null
-          ? String(value)
-          : '';
+  private castSearchValue(fieldName: string, fieldType: string | undefined, value: unknown): Record<string, unknown> {
+    const safeValue = typeof value === "string" ? value : value != null ? String(value) : "";
 
     const trimmedValue = safeValue.trim();
 
     switch (fieldType) {
-      case 'number':
-      case 'num':
+      case "number":
+      case "num":
         return { [fieldName]: Number(trimmedValue) };
 
-      case 'bool':
-      case 'boolean':
+      case "bool":
+      case "boolean":
         return {
-          [fieldName]:
-            trimmedValue.toLowerCase() === 'true' ||
-            trimmedValue === '1',
+          [fieldName]: trimmedValue.toLowerCase() === "true" || trimmedValue === "1",
         };
 
-      case 'date':
-      case 'datetime':
+      case "date":
+      case "datetime":
         return { [fieldName]: new Date(trimmedValue) };
 
       default:
         return {
           [fieldName]: {
             contains: trimmedValue,
-            mode: 'insensitive',
+            mode: "insensitive",
           },
         };
     }
@@ -383,7 +381,7 @@ export default class QueryParams {
     } else {
       if (this.filter && this.filter.length > 0) {
         _where.AND = this.filter.map((filterStr) => {
-          const colonIndex = filterStr.indexOf(':');
+          const colonIndex = filterStr.indexOf(":");
           if (colonIndex === -1) {
             return {};
           }
@@ -391,7 +389,7 @@ export default class QueryParams {
           const key = filterStr.substring(0, colonIndex);
           const value = filterStr.substring(colonIndex + 1);
 
-          const [fieldName, fieldType] = key.split('|');
+          const [fieldName, fieldType] = key.split("|");
           return this.castFilterValue(fieldName.trim(), fieldType?.trim(), value);
         });
       }
@@ -400,14 +398,10 @@ export default class QueryParams {
         this.searchFields = this.defaultSearchFields;
       }
 
-      if (this.search !== '') {
+      if (this.search !== "") {
         _where.OR = this.searchFields.map((field) => {
-          const [fieldName, fieldType] = field.split('|');
-          return this.castSearchValue(
-            fieldName.trim(),
-            fieldType?.trim(),
-            this.search,
-          );
+          const [fieldName, fieldType] = field.split("|");
+          return this.castSearchValue(fieldName.trim(), fieldType?.trim(), this.search);
         });
       }
     }
@@ -422,12 +416,12 @@ export default class QueryParams {
 
     return this.sort
       .map((s) => {
-        const [field, order] = s.split(':');
+        const [field, order] = s.split(":");
         const trimmedField = field?.trim();
         if (!trimmedField) {
           return null;
         }
-        return { [trimmedField]: order === 'desc' ? 'desc' : 'asc' } as PrismaOrderByInput;
+        return { [trimmedField]: order === "desc" ? "desc" : "asc" } as PrismaOrderByInput;
       })
       .filter((o): o is PrismaOrderByInput => o !== null);
   }
@@ -454,9 +448,9 @@ export default class QueryParams {
   //---------------------------------------
   private parseFilterDSL(filter: string): Record<string, unknown> {
     // BETWEEN
-    if (filter.includes(':between:')) {
-      const [field, , range] = filter.split(':');
-      const [from, to] = range.split(',');
+    if (filter.includes(":between:")) {
+      const [field, , range] = filter.split(":");
+      const [from, to] = range.split(",");
       return {
         [field]: {
           gte: this.castValue(from),
@@ -466,53 +460,53 @@ export default class QueryParams {
     }
 
     // IN
-    if (filter.includes(':in:')) {
-      const [field, , values] = filter.split(':');
+    if (filter.includes(":in:")) {
+      const [field, , values] = filter.split(":");
       return {
         [field]: {
-          in: values.split(',').map(v => this.castValue(v)),
+          in: values.split(",").map((v) => this.castValue(v)),
         },
       };
     }
 
     // >=
-    if (filter.includes('>=')) {
-      const [field, value] = filter.split('>=');
+    if (filter.includes(">=")) {
+      const [field, value] = filter.split(">=");
       return { [field]: { gte: this.castValue(value) } };
     }
 
     // <=
-    if (filter.includes('<=')) {
-      const [field, value] = filter.split('<=');
+    if (filter.includes("<=")) {
+      const [field, value] = filter.split("<=");
       return { [field]: { lte: this.castValue(value) } };
     }
 
     // >
-    if (filter.includes('>')) {
-      const [field, value] = filter.split('>');
+    if (filter.includes(">")) {
+      const [field, value] = filter.split(">");
       return { [field]: { gt: this.castValue(value) } };
     }
 
     // <
-    if (filter.includes('<')) {
-      const [field, value] = filter.split('<');
+    if (filter.includes("<")) {
+      const [field, value] = filter.split("<");
       return { [field]: { lt: this.castValue(value) } };
     }
 
     // CONTAINS
-    if (filter.includes('~')) {
-      const [field, value] = filter.split('~');
+    if (filter.includes("~")) {
+      const [field, value] = filter.split("~");
       return {
         [field]: {
           contains: value.trim(),
-          mode: 'insensitive',
+          mode: "insensitive",
         },
       };
     }
 
     // EQUALS (default)
-    if (filter.includes('=')) {
-      const [field, value] = filter.split('=');
+    if (filter.includes("=")) {
+      const [field, value] = filter.split("=");
       return { [field]: this.castValue(value) };
     }
 
@@ -522,8 +516,8 @@ export default class QueryParams {
   private castValue(value: string): CastValueResult {
     const v = value.trim();
 
-    if (v === 'true' || v === 'false') {
-      return v === 'true';
+    if (v === "true" || v === "false") {
+      return v === "true";
     }
 
     if (!isNaN(Number(v))) {
@@ -546,7 +540,7 @@ export default class QueryParams {
     }
 
     if (this.filter?.length) {
-      this.filter.forEach(f => {
+      this.filter.forEach((f) => {
         const parsed = this.parseFilterDSL(f);
         if (Object.keys(parsed).length > 0) {
           andConditions.push(parsed);
@@ -561,15 +555,14 @@ export default class QueryParams {
     }
 
     if (this.search) {
-      where.OR = this.searchFields.map(field => ({
+      where.OR = this.searchFields.map((field) => ({
         [field]: {
           contains: this.search,
-          mode: 'insensitive',
+          mode: "insensitive",
         },
       }));
     }
 
     return where;
   }
-
 }

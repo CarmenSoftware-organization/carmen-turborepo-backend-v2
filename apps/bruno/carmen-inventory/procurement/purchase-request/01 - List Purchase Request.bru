@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: {{host}}/api/purchase-request?bu_code=T02&filter=user_id|string:462a3bca-d0cd-4206-81de-db7b05f262d0
+  url: {{host}}/api/purchase-request?bu_code=T02&filter=requestor_id|string:462a3bca-d0cd-4206-81de-db7b05f262d0,7a7c1704-1742-4b97-9d4c-f21f76a2d2be
   body: none
   auth: bearer
 }
 
 params:query {
   bu_code: T02
-  filter: user_id|string:462a3bca-d0cd-4206-81de-db7b05f262d0
+  filter: requestor_id|string:462a3bca-d0cd-4206-81de-db7b05f262d0,7a7c1704-1742-4b97-9d4c-f21f76a2d2be
 }
 
 headers {
