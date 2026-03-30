@@ -175,14 +175,19 @@ describe('WorkflowOrchestratorService', () => {
       expect(workflow.workflow_current_stage).toBe('Purchaser');
     });
 
-    it('should add history entry with next_stage="-" for final approval', async () => {
+    it('should add approved and completed history entries for final approval', async () => {
       setupMapperPopulate({ stages: [] });
       mockMasterService.send.mockReturnValueOnce(mockNavigateForward('Final', null, 'HOD'));
 
       const doc = mockDocument({ workflow_current_stage: 'HOD' });
       const { workflow } = await service.buildApproveWorkflow(doc, mockAdapter, USER_ID, BU_CODE);
 
+      expect(workflow.workflow_history).toHaveLength(2);
+      expect(workflow.workflow_history[0].action).toBe(enum_last_action.approved);
       expect(workflow.workflow_history[0].next_stage).toBe('-');
+      expect(workflow.workflow_history[1].action).toBe('completed');
+      expect(workflow.workflow_history[1].current_stage).toBe('Final');
+      expect(workflow.workflow_history[1].next_stage).toBe('-');
     });
   });
 

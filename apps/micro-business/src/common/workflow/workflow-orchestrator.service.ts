@@ -136,6 +136,16 @@ export class WorkflowOrchestratorService {
       next_stage: isFinalApproval ? '-' : nav.current_stage,
     });
 
+    if (isFinalApproval) {
+      workflowHistory.push({
+        action: 'completed',
+        datetime: lastActionAtDate.toISOString(),
+        user: { id: userId, name: userName },
+        current_stage: nav.current_stage,
+        next_stage: '-',
+      });
+    }
+
     let userAction: { execute: UserActionProfile[] } | null = null;
     if (!isFinalApproval) {
       const dept = departmentOverride ?? adapter.getDepartmentInfo(document);

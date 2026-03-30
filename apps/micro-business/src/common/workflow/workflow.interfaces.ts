@@ -19,8 +19,10 @@ export interface UserActionProfile {
   } | null;
 }
 
+export type WorkflowHistoryAction = enum_last_action | 'completed';
+
 export interface WorkflowHistory {
-  action: enum_last_action;
+  action: WorkflowHistoryAction;
   datetime: string | Date;
   user: {
     id: string;
