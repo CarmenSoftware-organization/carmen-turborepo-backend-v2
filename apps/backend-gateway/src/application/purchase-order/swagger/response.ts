@@ -480,8 +480,10 @@ export class PurchaseOrderPreviousStagesResponseDto {
   @ApiProperty({
     description: 'Numbered map of workflow stages before the current stage',
     example: { '1': 'Create Request', '2': 'HOD Approval', '3': 'Purchaser' },
+    type: 'object',
+    additionalProperties: { type: 'string' },
   })
-  [key: string]: string;
+  stages: Record<string, string>;
 }
 
 // ==================== Mutation Response ====================

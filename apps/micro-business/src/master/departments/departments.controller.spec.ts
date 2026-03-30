@@ -17,6 +17,7 @@ describe('DepartmentsController', () => {
       controllers: [DepartmentsController],
       providers: [
         DepartmentsService,
+        { provide: 'PRISMA_SYSTEM', useValue: {} },
         {
           provide: TenantService,
           useValue: mockTenantService,

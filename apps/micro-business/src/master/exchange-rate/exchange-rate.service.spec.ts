@@ -15,6 +15,7 @@ describe('ExchangeRateService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ExchangeRateService,
+        { provide: 'PRISMA_SYSTEM', useValue: {} },
         {
           provide: TenantService,
           useValue: mockTenantService,

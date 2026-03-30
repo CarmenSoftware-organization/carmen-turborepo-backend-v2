@@ -8,7 +8,13 @@ describe('StoreRequisitionController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [StoreRequisitionController],
-      providers: [StoreRequisitionService],
+      providers: [
+        StoreRequisitionService,
+        {
+          provide: 'BUSINESS_SERVICE',
+          useValue: { send: jest.fn(), emit: jest.fn() },
+        },
+      ],
     }).compile();
 
     controller = module.get<StoreRequisitionController>(StoreRequisitionController);

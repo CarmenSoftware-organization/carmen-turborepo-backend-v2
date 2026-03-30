@@ -6,7 +6,17 @@ describe('BusinessUnitService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BusinessUnitService],
+      providers: [
+        BusinessUnitService,
+        {
+          provide: 'KEYCLOAK_SERVICE',
+          useValue: { send: jest.fn(), emit: jest.fn() },
+        },
+        {
+          provide: 'PRISMA_SYSTEM',
+          useValue: {},
+        },
+      ],
     }).compile();
 
     service = module.get<BusinessUnitService>(BusinessUnitService);

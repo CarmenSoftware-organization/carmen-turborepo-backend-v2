@@ -8,7 +8,17 @@ describe('ClusterController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ClusterController],
-      providers: [ClusterService],
+      providers: [
+        ClusterService,
+        {
+          provide: 'KEYCLOAK_SERVICE',
+          useValue: { send: jest.fn(), emit: jest.fn() },
+        },
+        {
+          provide: 'PRISMA_SYSTEM',
+          useValue: {},
+        },
+      ],
     }).compile();
 
     controller = module.get<ClusterController>(ClusterController);

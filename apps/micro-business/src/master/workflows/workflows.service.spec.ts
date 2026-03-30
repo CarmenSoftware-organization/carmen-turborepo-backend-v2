@@ -19,6 +19,7 @@ describe('WorkflowsService', () => {
           provide: TenantService,
           useValue: mockTenantService,
         },
+        { provide: 'AUTH_SERVICE', useValue: {} },
       ],
     }).compile();
 

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GoodReceivedNoteController } from './good-received-note.controller';
 import { GoodReceivedNoteService } from './good-received-note.service';
+import { GoodReceivedNoteLogic } from './good-received-note.logic';
 
 describe('GoodReceivedNoteController', () => {
   let controller: GoodReceivedNoteController;
@@ -27,6 +28,10 @@ describe('GoodReceivedNoteController', () => {
         {
           provide: GoodReceivedNoteService,
           useValue: mockGoodReceivedNoteService,
+        },
+        {
+          provide: GoodReceivedNoteLogic,
+          useValue: {},
         },
       ],
     }).compile();

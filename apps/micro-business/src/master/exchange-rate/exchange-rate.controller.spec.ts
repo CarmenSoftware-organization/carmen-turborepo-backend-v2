@@ -17,6 +17,7 @@ describe('ExchangeRateController', () => {
       controllers: [ExchangeRateController],
       providers: [
         ExchangeRateService,
+        { provide: 'PRISMA_SYSTEM', useValue: {} },
         {
           provide: TenantService,
           useValue: mockTenantService,

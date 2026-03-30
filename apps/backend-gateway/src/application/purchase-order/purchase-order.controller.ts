@@ -233,6 +233,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiResponse({ status: 200, description: 'Workflow stages retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Workflow stages not found' })
   async findAllWorkflowStagesByPo(
+    @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -242,7 +243,7 @@ export class PurchaseOrderController extends BaseHttpController {
       PurchaseOrderController.name,
     );
 
-    const { user_id, bu_code } = ExtractRequestHeader(req);
+    const { user_id } = ExtractRequestHeader(req);
     const result = await this.purchaseOrderService.findAllWorkflowStagesByPo(
       user_id, bu_code, version,
     );

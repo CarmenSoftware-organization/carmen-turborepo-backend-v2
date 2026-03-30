@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GoodReceivedNoteService } from './good-received-note.service';
 import { TenantService } from '@/tenant/tenant.service';
 import { NotificationService } from '@/common';
+import { InventoryTransactionService } from '@/inventory/inventory-transaction/inventory-transaction.service';
 
 describe('GoodReceivedNoteService', () => {
   let service: GoodReceivedNoteService;
@@ -49,6 +50,10 @@ describe('GoodReceivedNoteService', () => {
         {
           provide: NotificationService,
           useValue: mockNotificationService,
+        },
+        {
+          provide: InventoryTransactionService,
+          useValue: {},
         },
       ],
     }).compile();

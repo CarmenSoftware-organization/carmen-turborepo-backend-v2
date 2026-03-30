@@ -8,7 +8,13 @@ describe('CurrenciesController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CurrenciesController],
-      providers: [CurrenciesService],
+      providers: [
+        CurrenciesService,
+        {
+          provide: 'PRISMA_SYSTEM',
+          useValue: {},
+        },
+      ],
     }).compile();
 
     controller = module.get<CurrenciesController>(CurrenciesController);

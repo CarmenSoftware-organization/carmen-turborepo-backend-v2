@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PurchaseOrderController } from './purchase-order.controller';
 import { PurchaseOrderService } from './purchase-order.service';
+import { PurchaseOrderLogic } from './purchase-order.logic';
 
 describe('PurchaseOrderController', () => {
   let controller: PurchaseOrderController;
@@ -22,6 +23,7 @@ describe('PurchaseOrderController', () => {
           provide: PurchaseOrderService,
           useValue: mockPurchaseOrderService,
         },
+        { provide: PurchaseOrderLogic, useValue: {} },
       ],
     }).compile();
 

@@ -15,6 +15,7 @@ describe('LocationsService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         LocationsService,
+        { provide: 'PRISMA_SYSTEM', useValue: {} },
         {
           provide: TenantService,
           useValue: mockTenantService,

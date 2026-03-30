@@ -29,6 +29,12 @@ export const ApproveStoreRequisitionByStageRoleSchema = z.discriminatedUnion('st
   ApproveByStageRoleIssueSchema,
 ]);
 
+// Wrapper schema for createZodDto (discriminated unions can't be used as class base types)
+const ApproveStoreRequisitionByStageRoleDtoSchema = z.object({
+  stage_role: z.nativeEnum(enum_stage_role),
+  details: z.array(z.any()),
+}).pipe(ApproveStoreRequisitionByStageRoleSchema);
+
 // ============================================================================
 // Review Action - Send back to previous stage
 // ============================================================================
@@ -72,7 +78,7 @@ export type RejectStoreRequisition = z.infer<typeof RejectStoreRequisitionSchema
 // DTOs
 // ============================================================================
 
-export class ApproveStoreRequisitionByStageRoleDto extends createZodDto(ApproveStoreRequisitionByStageRoleSchema) {}
+export class ApproveStoreRequisitionByStageRoleDto extends createZodDto(ApproveStoreRequisitionByStageRoleDtoSchema) {}
 export class SubmitStoreRequisitionDto extends createZodDto(SubmitStoreRequisitionSchema) {}
 export class ReviewStoreRequisitionDto extends createZodDto(ReviewStoreRequisitionSchema) {}
 export class RejectStoreRequisitionDto extends createZodDto(RejectStoreRequisitionSchema) {}

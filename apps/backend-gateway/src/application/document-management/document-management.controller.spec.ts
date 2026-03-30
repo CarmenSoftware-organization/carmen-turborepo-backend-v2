@@ -82,7 +82,7 @@ describe('DocumentManagementController', () => {
         'user-123',
         'BU001',
       );
-      expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.OK);
+      expect(mockRes.status).toHaveBeenCalledWith(HttpStatus.CREATED);
       expect(mockRes.send).toHaveBeenCalled();
     });
 

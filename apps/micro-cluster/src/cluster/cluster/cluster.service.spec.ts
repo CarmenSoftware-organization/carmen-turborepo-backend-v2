@@ -6,7 +6,17 @@ describe('ClusterService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ClusterService],
+      providers: [
+        ClusterService,
+        {
+          provide: 'KEYCLOAK_SERVICE',
+          useValue: { send: jest.fn(), emit: jest.fn() },
+        },
+        {
+          provide: 'PRISMA_SYSTEM',
+          useValue: {},
+        },
+      ],
     }).compile();
 
     service = module.get<ClusterService>(ClusterService);

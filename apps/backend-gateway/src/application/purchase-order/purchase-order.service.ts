@@ -965,15 +965,15 @@ export class PurchaseOrderService {
       PurchaseOrderService.name,
     );
 
-    const res: Observable<MicroserviceResponse> = this.procurementService.send(
-      {
-        cmd: 'purchase-order.find-all-workflow-stages-by-po',
-        service: 'purchase-order',
-      },
-      { user_id, bu_code, version },
+    const response = await firstValueFrom(
+      this.procurementService.send(
+        {
+          cmd: 'purchase-order.find-all-workflow-stages-by-po',
+          service: 'purchase-order',
+        },
+        { user_id, bu_code, version },
+      ),
     );
-
-    const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.OK) {
       return Result.error(

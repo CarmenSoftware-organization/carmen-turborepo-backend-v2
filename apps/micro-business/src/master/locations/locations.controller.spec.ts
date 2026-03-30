@@ -17,6 +17,7 @@ describe('LocationsController', () => {
       controllers: [LocationsController],
       providers: [
         LocationsService,
+        { provide: 'PRISMA_SYSTEM', useValue: {} },
         {
           provide: TenantService,
           useValue: mockTenantService,

@@ -8,7 +8,7 @@ describe('ApplicationRoleController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ApplicationRoleController],
-      providers: [ApplicationRoleService],
+      providers: [{ provide: ApplicationRoleService, useValue: {} }],
     }).compile();
 
     controller = module.get<ApplicationRoleController>(ApplicationRoleController);
