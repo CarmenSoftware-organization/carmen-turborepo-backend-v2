@@ -1063,18 +1063,18 @@ export class PurchaseRequestService {
         }
       }
 
-      // if (Array.isArray(updatePRDetail)) {
-      //   for (const item of updatePRDetail) {
-      //     delete item.purchase_request_id
-      //     await tx.tb_purchase_request_detail.update({
-      //       where: { id: item.id },
-      //       data: {
-      //         ...item,
-      //         updated_by_id: user_id,
-      //       },
-      //     });
-      //   }
-      // }
+      if (Array.isArray(updatePRDetail)) {
+        for (const item of updatePRDetail) {
+          const { id: detailId, ...updateData } = item;
+          await prismatx.tb_purchase_request_detail.update({
+            where: { id: detailId },
+            data: {
+              ...updateData,
+              updated_by_id: this.userId,
+            },
+          });
+        }
+      }
 
       return { id: updatePurchaseRequest.id };
     });

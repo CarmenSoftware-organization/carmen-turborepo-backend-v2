@@ -6,7 +6,7 @@ import { IUpdatePurchaseRequest, PurchaseRequest } from '../interface/purchase-r
 import { WorkflowHeader, StageStatus } from '@/common/workflow/workflow.interfaces';
 import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
 import { PRWorkflowAdapter } from '../adapters/pr-workflow.adapter';
-import { CreatePurchaseRequest, NavigateForwardResult, NotificationService, NotificationType, PurchaseRoleApprovePurchaseRequestDetail, ReviewPurchaseRequestDto, stage_status, SubmitPurchaseRequest } from '@/common'
+import { CreatePurchaseRequest, NavigateForwardResult, NotificationService, NotificationType, PurchaseRoleApprovePurchaseRequestDetail, PurchaseRoleSavePurchaseRequestDetail, ReviewPurchaseRequestDto, stage_status, SubmitPurchaseRequest } from '@/common'
 import { enum_stage_role } from '@repo/prisma-shared-schema-tenant';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -292,7 +292,7 @@ export class PurchaseRequestLogic {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id)
       updatePRDetail = []
-      for (const detail of data as PurchaseRoleApprovePurchaseRequestDetail[]) {
+      for (const detail of data as PurchaseRoleSavePurchaseRequestDetail[]) {
         updatePRDetail.push(
           JSON.parse(
             JSON.stringify({

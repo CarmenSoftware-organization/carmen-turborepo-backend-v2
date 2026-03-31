@@ -1,4 +1,4 @@
-import { ApproveQuantityAndUnitSchema, EmbeddedCurrencySchema, EmbeddedDiscountSchema, EmbeddedInventorySchema, EmbeddedLocationSchema, EmbeddedPriceListSchema, EmbeddedProductSchema, EmbeddedTaxSchema, EmbeddedVendorSchema, FocSchema, PriceSchema, RequestedQuantityAndUnitSchema, ValidateSchema } from '@/common/dto/embedded.dto';
+import { EmbeddedCurrencySchema, EmbeddedDiscountSchema, EmbeddedInventorySchema, EmbeddedLocationSchema, EmbeddedPriceListSchema, EmbeddedProductSchema, EmbeddedTaxSchema, EmbeddedVendorSchema, FocSchema, RequestedQuantityAndUnitSchema, ValidateSchema } from '@/common/dto/embedded.dto';
 import { z } from 'zod'
 import { PrismaClient } from '@repo/prisma-shared-schema-tenant';
 
@@ -96,11 +96,15 @@ export const CreatePurchaseRequestDetailSchema = z.object({
 export const ApprovePurchaseRequestDetailSchema = z.object({
   id: ValidateSchema.shape.uuid,
   description: z.string().optional().nullable(),
+  comment: z.string().optional().nullable(),
   stage_status: z.nativeEnum(stage_status),
   stage_message: z.string().nullable(),
   current_stage_status: z.nativeEnum(stage_status).optional(),
+  approved_qty: ValidateSchema.shape.quantity,
+  approved_unit_id: ValidateSchema.shape.uuid,
+  approved_base_qty: ValidateSchema.shape.quantity.optional(),
+  approved_unit_conversion_factor: ValidateSchema.shape.factor.optional(),
 })
-  .merge(ApproveQuantityAndUnitSchema)
 
 // Approve By Purchase Role
 
@@ -109,9 +113,26 @@ export const PurchaseRoleApprovePurchaseRequestDetailSchema = ApprovePurchaseReq
   .merge(EmbeddedDiscountSchema)
   .merge(EmbeddedCurrencySchema)
   .merge(EmbeddedVendorSchema)
-  .merge(PriceSchema)
   .merge(FocSchema)
   .merge(EmbeddedPriceListSchema)
+  .extend({
+    // override: Price fields required
+    total_price: ValidateSchema.shape.price,
+    sub_total_price: ValidateSchema.shape.price,
+    net_amount: ValidateSchema.shape.price,
+    base_sub_total_price: ValidateSchema.shape.price.optional(),
+    base_total_price: ValidateSchema.shape.price.optional(),
+    base_net_amount: ValidateSchema.shape.price.optional(),
+    base_price: ValidateSchema.shape.price.optional(),
+    // override: is_tax_adjustment optional
+    is_tax_adjustment: z.boolean().optional(),
+  })
+
+// Save (patch) By Purchase Role — only id is required, everything else optional
+
+export const PurchaseRoleSavePurchaseRequestDetailSchema = PurchaseRoleApprovePurchaseRequestDetailSchema
+  .partial()
+  .required({ id: true })
 
 /*
   other state change
@@ -123,6 +144,7 @@ export const StateChangeSchema = z.object({
 })
 
 export type PurchaseRoleApprovePurchaseRequestDetail = z.infer<typeof PurchaseRoleApprovePurchaseRequestDetailSchema>
+export type PurchaseRoleSavePurchaseRequestDetail = z.infer<typeof PurchaseRoleSavePurchaseRequestDetailSchema>
 
 // ============================================================================
 // Factory Functions for Async Validation with Database
