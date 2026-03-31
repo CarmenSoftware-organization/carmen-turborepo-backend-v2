@@ -8,7 +8,7 @@ import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestr
 import { PRWorkflowAdapter } from '../adapters/pr-workflow.adapter';
 import { CreatePurchaseRequest, NavigateForwardResult, NotificationService, NotificationType, PurchaseRoleApprovePurchaseRequestDetail, PurchaseRoleSavePurchaseRequestDetail, ReviewPurchaseRequestDto, stage_status, SubmitPurchaseRequest, PR_ERROR, ErrorDetail } from '@/common'
 import { Result, ErrorCode } from '@/common/result';
-import { enum_stage_role } from '@repo/prisma-shared-schema-tenant';
+import { enum_stage_role, enum_pricelist_compare_type } from '@repo/prisma-shared-schema-tenant';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { ValidatePRBeforeSubmitSchema } from '../dto/purchase-request.dto';
@@ -329,11 +329,18 @@ export class PurchaseRequestLogic {
     const validationError = this.validateBeforeSubmit(purchaseRequestData);
     if (validationError) return validationError;
 
+    // Auto price compare for each detail
+    const pricelistMap = await this.lookupPricelistForDetails(
+      purchaseRequestData.purchase_request_detail || purchaseRequestData.tb_purchase_request_detail || [],
+      bu_code,
+      user_id,
+    );
+
     const workflow = await this.workflowOrchestrator.buildSubmitWorkflow(
       purchaseRequestData, this.prAdapter, user_id, bu_code,
     );
 
-    const result = await this.purchaseRequestService.submit(id, payload, workflow);
+    const result = await this.purchaseRequestService.submit(id, payload, workflow, pricelistMap);
 
     if (result.isOk()) {
       this.sendSubmitNotification(result.value, workflow, user_id, workflow.last_action_by_name);
@@ -814,6 +821,61 @@ export class PurchaseRequestLogic {
   }
 
   // buildUserAction and distinctData removed — now handled by WorkflowOrchestratorService
+
+  /**
+   * Lookup pricelist for each detail line using price-compare.
+   * Returns a map of detail_id → pricelist data (only for details that have a match).
+   */
+  private async lookupPricelistForDetails(
+    details: any[],
+    bu_code: string,
+    user_id: string,
+  ): Promise<Map<string, { pricelist_detail_id: string; pricelist_no: string; pricelist_price: number; pricelist_type: enum_pricelist_compare_type; vendor_id: string; vendor_name: string }>> {
+    const pricelistMap = new Map<string, any>();
+
+    for (const detail of details) {
+      if (!detail.product_id || !detail.currency_id) continue;
+
+      const dueDate = detail.delivery_date || new Date().toISOString();
+
+      try {
+        const res = this.masterService.send(
+          { cmd: 'price-list.price-compare', service: 'price-list' },
+          {
+            user_id,
+            bu_code,
+            data: {
+              product_id: detail.product_id,
+              due_date: new Date(dueDate),
+              unit_id: detail.requested_unit_id,
+              currency_id: detail.currency_id,
+            },
+          },
+        );
+        const result: any = await firstValueFrom(res);
+
+        if (result?.data?.selected) {
+          const selected = result.data.selected;
+          pricelistMap.set(detail.id, {
+            pricelist_detail_id: selected.pricelist_detail_id,
+            pricelist_no: selected.pricelist_no,
+            pricelist_price: selected.price,
+            pricelist_type: enum_pricelist_compare_type.automatic,
+            vendor_id: selected.vendor_id,
+            vendor_name: selected.vendor_name,
+          });
+        }
+      } catch (err: any) {
+        this.logger.warn(
+          { function: 'lookupPricelistForDetails', detail_id: detail.id, error: err?.message },
+          PurchaseRequestLogic.name,
+        );
+        // If price lookup fails, skip — don't block submit
+      }
+    }
+
+    return pricelistMap;
+  }
 
   /**
    * Send notification when PR is submitted

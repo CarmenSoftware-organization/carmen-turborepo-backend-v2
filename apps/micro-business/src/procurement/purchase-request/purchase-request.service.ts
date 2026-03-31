@@ -12,6 +12,7 @@ import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import {
   enum_last_action,
   enum_product_status_type,
+  enum_pricelist_compare_type,
   enum_purchase_request_doc_status,
   enum_stage_role,
   Prisma,
@@ -873,6 +874,7 @@ export class PurchaseRequestService {
     id: string,
     payload: SubmitPurchaseRequest,
     workflowHeader: WorkflowHeader,
+    pricelistMap?: Map<string, { pricelist_detail_id: string; pricelist_no: string; pricelist_price: number; pricelist_type: enum_pricelist_compare_type; vendor_id: string; vendor_name: string }>,
   ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'submit', id, user_id: this.userId, tenant_id: this.bu_code },
@@ -934,6 +936,7 @@ export class PurchaseRequestService {
           { status: findDetails.stage_status, name: workflowHeader.workflow_previous_stage, message: findDetails.stage_message, userId: this.userId },
         );
 
+        const priceData = pricelistMap?.get(detail.id);
         await prismatx.tb_purchase_request_detail.update({
           where: { id: detail.id },
           data: {
@@ -947,6 +950,14 @@ export class PurchaseRequestService {
               detail.requested_unit_conversion_factor,
             ),
             current_stage_status: '',
+            ...(priceData && {
+              pricelist_detail_id: priceData.pricelist_detail_id,
+              pricelist_no: priceData.pricelist_no,
+              pricelist_price: priceData.pricelist_price,
+              pricelist_type: priceData.pricelist_type as any,
+              vendor_id: priceData.vendor_id,
+              vendor_name: priceData.vendor_name,
+            }),
           },
         });
       }
