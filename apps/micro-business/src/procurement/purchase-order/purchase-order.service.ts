@@ -1929,7 +1929,7 @@ export class PurchaseOrderService {
         if (!findPODoc) continue;
 
         const { stages } = WorkflowPersistenceHelper.buildApproveStagesStatus(
-          (findPODoc?.stages_status as unknown as StageStatus[]) || [],
+          Array.isArray(findPODoc?.stages_status) ? findPODoc.stages_status as unknown as StageStatus[] : [],
           detail,
           (workflow as any).workflow_previous_stage,
         );
@@ -2016,7 +2016,7 @@ export class PurchaseOrderService {
         if (!findPODoc) continue;
 
         const stages = WorkflowPersistenceHelper.buildRejectStagesStatus(
-          (findPODoc?.stages_status as unknown as StageStatus[]) || [],
+          Array.isArray(findPODoc?.stages_status) ? findPODoc.stages_status as unknown as StageStatus[] : [],
           detail,
           purchaseOrder.workflow_current_stage,
         );
@@ -2104,7 +2104,7 @@ export class PurchaseOrderService {
         if (!findPODoc) continue;
 
         const stages = WorkflowPersistenceHelper.buildReviewStagesStatus(
-          (findPODoc?.stages_status as unknown as StageStatus[]) || [],
+          Array.isArray(findPODoc?.stages_status) ? findPODoc.stages_status as unknown as StageStatus[] : [],
           desStage,
         );
         const history = WorkflowPersistenceHelper.appendHistory(

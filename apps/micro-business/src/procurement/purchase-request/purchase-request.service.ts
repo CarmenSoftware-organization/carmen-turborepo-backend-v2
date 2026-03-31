@@ -1502,7 +1502,8 @@ export class PurchaseRequestService {
 
       for (const detail of payload) {
         const findPRDoc = PRDetailDocs.find((d) => d.id === detail.id);
-        const currentStages = (findPRDoc?.stages_status as unknown as StageStatus[]) || [];
+        const rawStages = findPRDoc?.stages_status;
+        const currentStages: StageStatus[] = Array.isArray(rawStages) ? rawStages as unknown as StageStatus[] : [];
 
         const { stages, skipped } = WorkflowPersistenceHelper.buildApproveStagesStatus(
           currentStages, detail, workflow.workflow_previous_stage,
@@ -1597,7 +1598,7 @@ export class PurchaseRequestService {
         }
 
         const stages = WorkflowPersistenceHelper.buildReviewStagesStatus(
-          (detail.stages_status as unknown as StageStatus[]) || [],
+          Array.isArray(detail.stages_status) ? detail.stages_status as unknown as StageStatus[] : [],
           payload.des_stage,
         );
 
@@ -1669,7 +1670,7 @@ export class PurchaseRequestService {
       for (const detail of purchaseRequestDetail) {
         const findPR = payload.details.find((d) => d.id === detail.id);
         const stages = WorkflowPersistenceHelper.buildRejectStagesStatus(
-          (detail.stages_status as unknown as StageStatus[]) || [],
+          Array.isArray(detail.stages_status) ? detail.stages_status as unknown as StageStatus[] : [],
           findPR,
           purchaseRequest.workflow_current_stage,
         );

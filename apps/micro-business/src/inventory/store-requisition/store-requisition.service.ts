@@ -879,7 +879,8 @@ export class StoreRequisitionService {
 
       for (const detail of payload) {
         const findSRDoc = SRDetailDocs.find((d) => d.id === detail.id);
-        const currentStages = (findSRDoc?.stages_status as unknown as StageStatus[]) || [];
+        const rawStages = findSRDoc?.stages_status;
+        const currentStages: StageStatus[] = Array.isArray(rawStages) ? rawStages as unknown as StageStatus[] : [];
 
         const { stages, skipped } = WorkflowPersistenceHelper.buildApproveStagesStatus(
           currentStages, detail, workflow.workflow_previous_stage,
@@ -974,7 +975,7 @@ export class StoreRequisitionService {
         if (!findSR) continue;
 
         const stages = WorkflowPersistenceHelper.buildRejectStagesStatus(
-          (detail.stages_status as unknown as StageStatus[]) || [],
+          Array.isArray(detail.stages_status) ? detail.stages_status as unknown as StageStatus[] : [],
           findSR,
           storeRequisition.workflow_current_stage,
         );
@@ -1065,7 +1066,7 @@ export class StoreRequisitionService {
         }
 
         const stages = WorkflowPersistenceHelper.buildReviewStagesStatus(
-          (detail.stages_status as unknown as StageStatus[]) || [],
+          Array.isArray(detail.stages_status) ? detail.stages_status as unknown as StageStatus[] : [],
           payload.des_stage,
         );
         const history = WorkflowPersistenceHelper.appendHistory(
