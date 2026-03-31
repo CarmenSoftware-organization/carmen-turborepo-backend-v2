@@ -4,20 +4,34 @@ meta {
   seq: 1
 }
 
+get {
+  url: {{host}}/api/my-pending/purchase-request
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
 docs {
   ## List Pending Purchase Requests
   แสดงรายการใบขอซื้อที่รอดำเนินการทั้งหมดของผู้ใช้ปัจจุบันพร้อมการแบ่งหน้า ช่วยให้ผู้ขอและผู้อนุมัติติดตามและจัดการคำขอจัดซื้อผ่านขั้นตอนอนุมัติ
-
+  
   Lists all purchase requests in the user's pending queue with pagination, enabling requestors and approvers to track and manage procurement requests through the approval workflow.
-
+  
   ### Query Parameters
   - `version` — API version (optional)
   - `page` — Page number (optional)
   - `perpage` — Items per page (optional)
   - `search` — Search keyword (optional)
   - `bu_code` — Business unit code filter (optional)
-
-
+  
+  
   ### Sample Response
   ```json
   {
@@ -44,18 +58,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-get {
-  url: {{host}}/api/my-pending/purchase-request
-  body: none
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

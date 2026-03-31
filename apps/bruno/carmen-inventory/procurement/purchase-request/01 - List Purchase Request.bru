@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: {{host}}/api/purchase-request?bu_code=T02&filter=pr_date|daterange:2026-03-25,2026-03-30
+  url: {{host}}/api/purchase-request?bu_code=T02&filter=pr_status|string:in_progress,draft
   body: none
   auth: bearer
 }
 
 params:query {
   bu_code: T02
-  filter: pr_date|daterange:2026-03-25,2026-03-30
+  filter: pr_status|string:in_progress,draft
 }
 
 headers {

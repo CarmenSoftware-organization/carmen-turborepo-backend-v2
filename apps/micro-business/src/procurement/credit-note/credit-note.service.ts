@@ -101,6 +101,22 @@ export class CreditNoteService {
     );
     const defaultSearchFields = ['credit_note_no', 'name'];
 
+    // Separate computed fields from sort params before passing to QueryParams
+    const computedSortFields = ['total_amount', 'base_total_amount', 'net_amount', 'base_net_amount'];
+    const sortParams = paginate.sort ?? [];
+    const computedSorts: { field: string; order: 'asc' | 'desc' }[] = [];
+    const prismaSorts: string[] = [];
+
+    for (const s of sortParams) {
+      const [field, order] = s.split(':');
+      const trimmedField = field?.trim();
+      if (computedSortFields.includes(trimmedField)) {
+        computedSorts.push({ field: trimmedField, order: order === 'desc' ? 'desc' : 'asc' });
+      } else {
+        prismaSorts.push(s);
+      }
+    }
+
     const q = new QueryParams(
       paginate.page,
       paginate.perpage,
@@ -108,7 +124,7 @@ export class CreditNoteService {
       paginate.searchfields,
       defaultSearchFields,
       typeof paginate.filter === 'object' && !Array.isArray(paginate.filter) ? paginate.filter : {},
-      paginate.sort,
+      prismaSorts,
       paginate.advance,
     );
 
@@ -176,6 +192,20 @@ export class CreditNoteService {
         created_at: cn.created_at,
       };
     });
+
+    // Apply in-memory sorting for computed fields
+    if (computedSorts.length > 0) {
+      transformedCreditNotes.sort((a, b) => {
+        for (const { field, order } of computedSorts) {
+          const aVal = a[field as keyof typeof a] as number;
+          const bVal = b[field as keyof typeof b] as number;
+          if (aVal !== bVal) {
+            return order === 'asc' ? aVal - bVal : bVal - aVal;
+          }
+        }
+        return 0;
+      });
+    }
 
     const serializedCreditNotes = transformedCreditNotes.map((item) => CreditNoteListItemResponseSchema.parse(item));
 
