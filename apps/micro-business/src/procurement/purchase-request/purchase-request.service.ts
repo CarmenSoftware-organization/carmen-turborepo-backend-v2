@@ -1065,7 +1065,7 @@ export class PurchaseRequestService {
 
       if (Array.isArray(updatePRDetail)) {
         for (const item of updatePRDetail) {
-          const { id: detailId, ...updateData } = item;
+          const { id: detailId, stage_status, stage_message, purchase_request_id, total_amount, foc_unit_conversion_rate, ...updateData } = item;
           await prismatx.tb_purchase_request_detail.update({
             where: { id: detailId },
             data: {

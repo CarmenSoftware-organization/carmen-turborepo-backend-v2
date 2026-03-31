@@ -6,7 +6,8 @@ import { IUpdatePurchaseRequest, PurchaseRequest } from '../interface/purchase-r
 import { WorkflowHeader, StageStatus } from '@/common/workflow/workflow.interfaces';
 import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
 import { PRWorkflowAdapter } from '../adapters/pr-workflow.adapter';
-import { CreatePurchaseRequest, NavigateForwardResult, NotificationService, NotificationType, PurchaseRoleApprovePurchaseRequestDetail, PurchaseRoleSavePurchaseRequestDetail, ReviewPurchaseRequestDto, stage_status, SubmitPurchaseRequest } from '@/common'
+import { CreatePurchaseRequest, NavigateForwardResult, NotificationService, NotificationType, PurchaseRoleApprovePurchaseRequestDetail, PurchaseRoleSavePurchaseRequestDetail, ReviewPurchaseRequestDto, stage_status, SubmitPurchaseRequest, PR_ERROR, ErrorDetail } from '@/common'
+import { Result, ErrorCode } from '@/common/result';
 import { enum_stage_role } from '@repo/prisma-shared-schema-tenant';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -317,11 +318,16 @@ export class PurchaseRequestLogic {
     await this.purchaseRequestService.initializePrismaService(bu_code, user_id);
     const purchaseRequestResult = await this.purchaseRequestService.findById(id)
     if (purchaseRequestResult.isError()) {
-      throw new Error('Purchase Request not found');
+      return Result.error<ErrorDetail>(
+        'Purchase Request not found',
+        ErrorCode.NOT_FOUND,
+        { error_code: PR_ERROR.NOT_FOUND, service: 'micro-business', id, error: 'Purchase request not found' },
+      );
     }
     const purchaseRequestData = purchaseRequestResult.value;
 
-    this.validateBeforeSubmit(purchaseRequestData)
+    const validationError = this.validateBeforeSubmit(purchaseRequestData);
+    if (validationError) return validationError;
 
     const workflow = await this.workflowOrchestrator.buildSubmitWorkflow(
       purchaseRequestData, this.prAdapter, user_id, bu_code,
@@ -734,8 +740,77 @@ export class PurchaseRequestLogic {
     }
   }
 
-  private validateBeforeSubmit(purchaseRequest: PurchaseRequest) {
-    ValidatePRBeforeSubmitSchema.parse(purchaseRequest);
+  private validateBeforeSubmit(purchaseRequest: PurchaseRequest): Result<true, ErrorDetail> | null {
+    const SERVICE_NAME = 'micro-business';
+    const prId = purchaseRequest.id;
+
+    if (!purchaseRequest.workflow_id) {
+      return Result.error<ErrorDetail>(
+        'Workflow is required before submitting PR',
+        ErrorCode.VALIDATION_FAILURE,
+        { error_code: PR_ERROR.WORKFLOW_REQUIRED, service: SERVICE_NAME, id: prId, error: 'workflow_id is missing' },
+      );
+    }
+
+    if (!purchaseRequest.requestor_id) {
+      return Result.error<ErrorDetail>(
+        'Requestor is required',
+        ErrorCode.VALIDATION_FAILURE,
+        { error_code: PR_ERROR.REQUESTOR_REQUIRED, service: SERVICE_NAME, id: prId, error: 'requestor_id is missing' },
+      );
+    }
+
+    if (!purchaseRequest.department_id) {
+      return Result.error<ErrorDetail>(
+        'Department is required',
+        ErrorCode.VALIDATION_FAILURE,
+        { error_code: PR_ERROR.DEPARTMENT_REQUIRED, service: SERVICE_NAME, id: prId, error: 'department_id is missing' },
+      );
+    }
+
+    if (!purchaseRequest.pr_date) {
+      return Result.error<ErrorDetail>(
+        'PR date is required',
+        ErrorCode.VALIDATION_FAILURE,
+        { error_code: PR_ERROR.PR_DATE_REQUIRED, service: SERVICE_NAME, id: prId, error: 'pr_date is missing' },
+      );
+    }
+
+    const details = purchaseRequest.purchase_request_detail || [];
+    if (details.length === 0) {
+      return Result.error<ErrorDetail>(
+        'PR must have at least one detail line',
+        ErrorCode.VALIDATION_FAILURE,
+        { error_code: PR_ERROR.DETAIL_REQUIRED, service: SERVICE_NAME, id: prId, error: 'purchase_request_detail is empty' },
+      );
+    }
+
+    for (let i = 0; i < details.length; i++) {
+      const d = details[i];
+      if (!d.product_id) {
+        return Result.error<ErrorDetail>(
+          `Detail line ${i + 1}: product_id is required`,
+          ErrorCode.VALIDATION_FAILURE,
+          { error_code: PR_ERROR.PRODUCT_REQUIRED, service: SERVICE_NAME, id: prId, error: `detail[${i}].product_id is missing` },
+        );
+      }
+      if (!d.requested_qty || d.requested_qty <= 0) {
+        return Result.error<ErrorDetail>(
+          `Detail line ${i + 1}: requested_qty must be positive`,
+          ErrorCode.VALIDATION_FAILURE,
+          { error_code: PR_ERROR.REQUESTED_QTY_INVALID, service: SERVICE_NAME, id: prId, error: `detail[${i}].requested_qty is invalid (${d.requested_qty})` },
+        );
+      }
+      if (!d.requested_unit_id) {
+        return Result.error<ErrorDetail>(
+          `Detail line ${i + 1}: requested_unit_id is required`,
+          ErrorCode.VALIDATION_FAILURE,
+          { error_code: PR_ERROR.REQUESTED_UNIT_REQUIRED, service: SERVICE_NAME, id: prId, error: `detail[${i}].requested_unit_id is missing` },
+        );
+      }
+    }
+
+    return null; // validation passed
   }
 
   // buildUserAction and distinctData removed — now handled by WorkflowOrchestratorService

@@ -12,3 +12,4 @@ export * from './validate/index';
 export * from './enum/index';
 export * from './mapper/index';
 export * from './interfaces/index';
+export * from './error-codes/index';

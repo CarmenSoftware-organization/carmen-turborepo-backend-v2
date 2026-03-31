@@ -15,6 +15,12 @@ export interface MicroserviceResponse<T = unknown> {
     status: HttpStatus;
     message: string;
     timestamp: string;
+    error?: {
+      error_code: string;
+      service: string;
+      id?: string;
+      error: string;
+    };
   };
 }
 
@@ -35,11 +41,20 @@ export abstract class BaseMicroserviceController {
     }
 
     const error = result.error;
+    const errorData = error.data as { error_code?: string; service?: string; id?: string; error?: string } | undefined;
     return {
       response: {
         status: this.fromStdStatus(this.errorCodeToStdStatus(error.code)),
         message: error.message,
         timestamp: new Date().toISOString(),
+        ...(errorData?.error_code && {
+          error: {
+            error_code: errorData.error_code,
+            service: errorData.service,
+            id: errorData.id,
+            error: errorData.error,
+          },
+        }),
       },
     };
   }
@@ -61,11 +76,20 @@ export abstract class BaseMicroserviceController {
     }
 
     const error = result.error;
+    const errorData = error.data as { error_code?: string; service?: string; id?: string; error?: string } | undefined;
     return {
       response: {
         status: this.fromStdStatus(this.errorCodeToStdStatus(error.code)),
         message: error.message,
         timestamp: new Date().toISOString(),
+        ...(errorData?.error_code && {
+          error: {
+            error_code: errorData.error_code,
+            service: errorData.service,
+            id: errorData.id,
+            error: errorData.error,
+          },
+        }),
       },
     };
   }
@@ -87,11 +111,20 @@ export abstract class BaseMicroserviceController {
     }
 
     const error = result.error;
+    const errorData = error.data as { error_code?: string; service?: string; id?: string; error?: string } | undefined;
     return {
       response: {
         status: this.fromStdStatus(this.errorCodeToStdStatus(error.code)),
         message: error.message,
         timestamp: new Date().toISOString(),
+        ...(errorData?.error_code && {
+          error: {
+            error_code: errorData.error_code,
+            service: errorData.service,
+            id: errorData.id,
+            error: errorData.error,
+          },
+        }),
       },
     };
   }
@@ -117,11 +150,20 @@ export abstract class BaseMicroserviceController {
     }
 
     const error = result.error;
+    const errorData = error.data as { error_code?: string; service?: string; id?: string; error?: string } | undefined;
     return {
       response: {
         status: this.fromStdStatus(this.errorCodeToStdStatus(error.code)),
         message: error.message,
         timestamp: new Date().toISOString(),
+        ...(errorData?.error_code && {
+          error: {
+            error_code: errorData.error_code,
+            service: errorData.service,
+            id: errorData.id,
+            error: errorData.error,
+          },
+        }),
       },
     };
   }
