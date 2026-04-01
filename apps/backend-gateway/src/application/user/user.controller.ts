@@ -9,6 +9,7 @@ import {
   Query,
   Param,
   Put,
+  Patch,
   Body,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
@@ -31,6 +32,8 @@ import {
   UserProfileResponseSchema,
   UserListItemResponseSchema,
 } from '@/common';
+import { UpdateUserProfileRequestDto } from './swagger/request';
+import { UserProfileResponseDto } from './swagger/response';
 
 @Controller()
 @ApiTags('User & Access')
@@ -101,6 +104,68 @@ export class UserController extends BaseHttpController {
 
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.userService.getUserProfile(user_id, version);
+    this.respond(res, result);
+  }
+
+  /**
+   * Update the authenticated user's profile
+   * อัปเดตข้อมูลโปรไฟล์ของผู้ใช้ที่เข้าสู่ระบบ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param updateData - Profile data to update / ข้อมูลโปรไฟล์ที่จะอัปเดต
+   * @param version - API version / เวอร์ชัน API
+   * @returns Updated user profile / ข้อมูลโปรไฟล์ผู้ใช้ที่อัปเดตแล้ว
+   */
+  @Patch('/api/user/profile')
+  @UseGuards(new AppIdGuard('user.updateProfile'))
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  @Serialize(UserProfileResponseSchema)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Update current user profile',
+    description:
+      "Updates the authenticated user's profile information (name, contact details) in both the identity provider and the ERP database.",
+    'x-description-th': 'อัปเดตข้อมูลโปรไฟล์ของผู้ใช้ที่เข้าสู่ระบบ',
+    operationId: 'updateCurrentUserProfile',
+    tags: ['User & Access', 'User'],
+    deprecated: false,
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
+    responses: {
+      200: {
+        description: 'User profile updated successfully',
+        type: UserProfileResponseDto,
+      },
+    },
+  })
+  @ApiBody({ type: UpdateUserProfileRequestDto })
+  async updateProfile(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() updateData: UpdateUserProfileDto,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    const { user_id } = ExtractRequestHeader(req);
+
+    this.logger.debug(
+      {
+        function: 'updateProfile',
+        user_id,
+        updateData,
+        version,
+      },
+      UserController.name,
+    );
+
+    const result = await this.userService.updateUserById(
+      user_id,
+      updateData,
+      version,
+    );
     this.respond(res, result);
   }
 
@@ -262,7 +327,7 @@ export class UserController extends BaseHttpController {
       },
     },
   })
-  @ApiBody({ type: UpdateUserProfileDto })
+  @ApiBody({ type: UpdateUserProfileRequestDto })
   async updateUserById(
     @Param('user_id') targetUserId: string,
     @Body() updateData: UpdateUserProfileDto,

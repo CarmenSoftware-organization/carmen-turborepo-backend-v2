@@ -1,6 +1,9 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateUserProfileRequestDto {
+  @ApiPropertyOptional({ description: 'Alias / display name', example: 'john.doe' })
+  alias_name?: string;
+
   @ApiPropertyOptional({ description: 'First name', example: 'John' })
   firstname?: string;
 

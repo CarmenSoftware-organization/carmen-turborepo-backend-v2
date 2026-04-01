@@ -131,6 +131,7 @@ export class UserService implements OnModuleInit {
   async updateUserById(
     userId: string,
     updateData: {
+      alias_name?: string;
       firstname?: string;
       middlename?: string;
       lastname?: string;

@@ -79,6 +79,7 @@ export type IRegister = z.infer<typeof RegisterSchema>;
 export class RegisterDto extends createZodDto(RegisterSchema) { }
 
 export const UpdateUserProfileSchema = z.object({
+  alias_name: z.string().optional().nullable(),
   firstname: z.string().optional(),
   middlename: z.string().optional().nullable(),
   lastname: z.string().optional(),

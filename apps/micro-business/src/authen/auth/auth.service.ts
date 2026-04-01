@@ -2247,6 +2247,11 @@ export class AuthService {
       }
 
       // Update Keycloak user (firstName, lastName, and custom attributes)
+      // Keycloak rejects names with special characters (person-name-invalid-character policy).
+      // Strip unsupported chars before sending to Keycloak; the full value is stored in the DB.
+      const sanitizeForKeycloak = (name: string): string =>
+        name.replace(/[^a-zA-Z\u0E00-\u0E7F\s'-]/g, '').trim();
+
       const keycloakUpdateData: {
         firstName?: string;
         lastName?: string;
@@ -2254,10 +2259,10 @@ export class AuthService {
       } = {};
 
       if (updateData.firstname) {
-        keycloakUpdateData.firstName = updateData.firstname;
+        keycloakUpdateData.firstName = sanitizeForKeycloak(updateData.firstname);
       }
       if (updateData.lastname) {
-        keycloakUpdateData.lastName = updateData.lastname;
+        keycloakUpdateData.lastName = sanitizeForKeycloak(updateData.lastname);
       }
 
       // Add middleName and telephone as custom attributes

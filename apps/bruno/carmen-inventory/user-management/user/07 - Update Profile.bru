@@ -1,16 +1,40 @@
 meta {
-  name: 04 - Update User
+  name: 07 - Update Profile
   type: http
-  seq: 4
+  seq: 7
+}
+
+patch {
+  url: {{host}}/api/user/profile
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "alias_name": "AA",
+    "firstname": "ศิริวรรณ (Purchase)",
+    "middlename": "",
+    "lastname": "ทองดี",
+    "telephone": ""
+  }
 }
 
 docs {
-  ## Update User
-  อัปเดตข้อมูลผู้ใช้ตาม ID
-
-  Update an existing user's profile information by user ID.
-
-
+  ## Update Profile
+  อัปเดตข้อมูลโปรไฟล์ของผู้ใช้ที่เข้าสู่ระบบ
+  
+  Updates the authenticated user's profile information (name, contact details). No user ID required — uses the current logged-in user from the bearer token.
+  
+  
   ### Sample Body
   ```json
   {
@@ -20,7 +44,7 @@ docs {
     "telephone": "+66-81-234-5678"
   }
   ```
-
+  
   ### Sample Response
   ```json
   {
@@ -44,31 +68,4 @@ docs {
     "timestamp": "2026-04-01T00:00:00.000Z"
   }
   ```
-}
-
-put {
-  url: {{host}}/api/user/:user_id
-  body: json
-  auth: bearer
-}
-
-params:path {
-  user_id: {{user_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "firstname": "John",
-    "middlename": "William",
-    "lastname": "Doe",
-    "telephone": "+66-81-234-5678"
-  }
 }

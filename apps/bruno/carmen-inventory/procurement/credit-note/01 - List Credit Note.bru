@@ -4,16 +4,36 @@ meta {
   seq: 1
 }
 
+get {
+  url: {{host}}/api/{{bu_code}}/credit-note?page=1&perpage=10&sort=total_amount%3Aasc
+  body: none
+  auth: bearer
+}
+
+params:query {
+  page: 1
+  perpage: 10
+  sort: total_amount%3Aasc
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
 docs {
   ## List All Credit Notes
   แสดงรายการใบลดหนี้ของผู้ขายทั้งหมดของหน่วยธุรกิจ ช่วยให้เจ้าหน้าที่จัดซื้อและการเงินติดตามเครดิตที่ได้รับจากสินค้าที่ส่งคืนหรือเสียหาย
-
+  
   Lists all vendor credit notes for the business unit, enabling procurement and finance staff to track credits received for returned or damaged goods.
-
+  
   ### Path Parameters
   - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
-
-
+  
+  
   ### Sample Response
   ```json
   {
@@ -41,18 +61,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-get {
-  url: {{host}}/api/{{bu_code}}/credit-note
-  body: none
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }
