@@ -99,7 +99,7 @@ export class CreditNoteService {
       { function: 'findAll', user_id: this.userId, tenant_id: this.bu_code, paginate },
       CreditNoteService.name,
     );
-    const defaultSearchFields = ['credit_note_no', 'name'];
+    const defaultSearchFields = ['cn_no', 'vendor_name', 'description'];
 
     // Separate computed fields from sort params before passing to QueryParams
     const computedSortFields = ['total_amount', 'base_total_amount', 'net_amount', 'base_net_amount'];
