@@ -251,13 +251,35 @@ export class WorkflowOrchestratorService {
     });
 
     const dept = departmentOverride ?? adapter.getDepartmentInfo(document);
-    const userAction = await this.buildUserAction(
-      nav.navigation_info.current_stage_info,
-      dept?.id ?? null,
-      dept?.name ?? null,
-      userId,
-      buCode,
-    );
+    const destStageInfo = nav.navigation_info.current_stage_info;
+
+    let userAction: { execute: UserActionProfile[] } | null;
+    if (destStageInfo?.creator_access === creatorAccess.ONLY_CREATOR) {
+      // When reviewing back to a creator-only stage (e.g., "Create Request"),
+      // only the original requestor should act — not all assigned_users.
+      const requestorId = adapter.getNotificationRecipientId(document);
+      if (requestorId) {
+        const profilesRes = this.authService.send(
+          { cmd: 'get-user-profiles-by-ids', service: 'auth' },
+          {
+            user_ids: [requestorId],
+            department: dept ? { id: dept.id, name: dept.name } : undefined,
+          },
+        );
+        const profilesResult: { data: UserActionProfile[] } = await firstValueFrom(profilesRes);
+        userAction = { execute: profilesResult.data || [] };
+      } else {
+        userAction = { execute: [] };
+      }
+    } else {
+      userAction = await this.buildUserAction(
+        destStageInfo,
+        dept?.id ?? null,
+        dept?.name ?? null,
+        userId,
+        buCode,
+      );
+    }
 
     return {
       workflow_previous_stage: nav.previous_stage,

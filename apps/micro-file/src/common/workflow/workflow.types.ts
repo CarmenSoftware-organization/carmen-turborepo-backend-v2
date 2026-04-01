@@ -130,7 +130,8 @@ enum slaUnit {
 }
 
 export enum creatorAccess {
-  ALL_PEOPLE_IN_DEPARTMENT_CAN_ACTION = 'all_department'
+  ALL_PEOPLE_IN_DEPARTMENT_CAN_ACTION = 'all_department',
+  ONLY_CREATOR = 'only_creator',
 }
 
 export interface IWorkflowRecipients {

@@ -365,6 +365,7 @@ export class WorkflowNavigatorService {
       hide_fields: stage.hide_fields,
       is_hod: stage?.is_hod ?? null,
       role: stage?.role || '',
+      creator_access: stage?.creator_access,
     };
   }
 }

@@ -235,6 +235,55 @@ describe('WorkflowOrchestratorService', () => {
       expect(result.last_action_by_name).toBe('Reviewer');
       expect(result.workflow_history[0].action).toBe(enum_last_action.reviewed);
     });
+
+    it('should only include requestor in user_action when reviewing back to only_creator stage', async () => {
+      const REQUESTOR_ID = '00000000-0000-4000-a000-000000000099';
+      const requestorProfile = {
+        user_id: REQUESTOR_ID,
+        email: 'requestor@test.com',
+        firstname: 'Requestor',
+        middlename: '',
+        lastname: 'User',
+        initials: 'RU',
+        department: { id: 'dept-001', name: 'Kitchen' },
+      };
+
+      // 1st call: resolveUserNameFromAuth
+      mockAuthService.send.mockReturnValueOnce(of({ data: { name: 'Reviewer' } }));
+      // 2nd call: navigate-back-to-stage
+      mockMasterService.send.mockReturnValueOnce(of({
+        data: {
+          previous_stage: 'HOD',
+          current_stage: 'Create Request',
+          navigation_info: {
+            workflow_next_step: 'HOD',
+            current_stage_info: {
+              name: 'Create Request',
+              assigned_users: [
+                { user_id: REQUESTOR_ID },
+                { user_id: '00000000-0000-4000-a000-000000000088' },
+              ],
+              creator_access: 'only_creator',
+            },
+          },
+        },
+      }));
+      // 3rd call: get-user-profiles-by-ids (for requestor only)
+      mockAuthService.send.mockReturnValueOnce(of({ data: [requestorProfile] }));
+
+      const doc = mockDocument({
+        workflow_current_stage: 'HOD',
+        requestor_id: REQUESTOR_ID,
+      });
+      const result = await service.buildReviewWorkflow(doc, mockAdapter, 'Create Request', USER_ID, BU_CODE);
+
+      expect(result.user_action.execute).toHaveLength(1);
+      expect(result.user_action.execute[0].user_id).toBe(REQUESTOR_ID);
+
+      // Verify get-user-profiles-by-ids was called with only the requestor
+      const profileCall = mockAuthService.send.mock.calls[1];
+      expect(profileCall[1].user_ids).toEqual([REQUESTOR_ID]);
+    });
   });
 
   // ===========================================================================
