@@ -247,7 +247,7 @@ export class WorkflowOrchestratorService {
       datetime: lastActionAtDate.toISOString(),
       user: { id: userId, name: userName },
       current_stage: adapter.getCurrentStage(document),
-      next_stage: nav.navigation_info.workflow_next_step,
+      next_stage: nav.current_stage,
     });
 
     const dept = departmentOverride ?? adapter.getDepartmentInfo(document);
