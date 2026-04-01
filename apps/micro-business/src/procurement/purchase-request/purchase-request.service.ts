@@ -1600,11 +1600,16 @@ export class PurchaseRequestService {
           Array.isArray(detail.stages_status) ? detail.stages_status as unknown as StageStatus[] : [],
           payload.des_stage,
         );
+        const history = WorkflowPersistenceHelper.appendHistory(
+          (detail.history as unknown as Record<string, unknown>[]) || [],
+          { status: stage_status.review, name: workflow.workflow_previous_stage, message: payloadDetail?.stage_message || '', userId: this.userId },
+        );
 
         await txp.tb_purchase_request_detail.update({
           where: { id: detail.id },
           data: {
             stages_status: stages as unknown as Prisma.InputJsonValue,
+            history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: '',
           },
@@ -1673,11 +1678,16 @@ export class PurchaseRequestService {
           findPR,
           purchaseRequest.workflow_current_stage,
         );
+        const history = WorkflowPersistenceHelper.appendHistory(
+          (detail.history as unknown as Record<string, unknown>[]) || [],
+          { status: stage_status.reject, name: purchaseRequest.workflow_current_stage, message: findPR?.stage_message || '', userId: this.userId },
+        );
 
         await txp.tb_purchase_request_detail.update({
           where: { id: detail.id },
           data: {
             stages_status: stages as unknown as Prisma.InputJsonValue,
+            history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: '',
           },
