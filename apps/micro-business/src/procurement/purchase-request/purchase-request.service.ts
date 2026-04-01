@@ -946,9 +946,8 @@ export class PurchaseRequestService {
             approved_qty: Number(detail.requested_qty),
             approved_unit_id: detail.requested_unit_id,
             approved_unit_name: detail.requested_unit_name,
-            approved_unit_conversion_factor: Number(
-              detail.requested_unit_conversion_factor,
-            ),
+            approved_unit_conversion_factor: Number(detail.requested_unit_conversion_factor),
+            approved_base_qty: Number(detail.requested_base_qty),
             current_stage_status: '',
             ...(priceData && {
               pricelist_detail_id: priceData.pricelist_detail_id,
