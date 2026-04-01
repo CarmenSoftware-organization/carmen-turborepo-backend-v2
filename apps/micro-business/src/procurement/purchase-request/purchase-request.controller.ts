@@ -370,10 +370,9 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     const bu_code = payload.bu_code;
     const body: RejectPurchaseRequestDto = payload.body;
 
-    await this.purchaseRequestService.initializePrismaService(bu_code, user_id);
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.purchaseRequestService.reject(payload.id, body),
+      this.purchaseRequestLogic.reject(payload.id, body, user_id, bu_code),
     );
 
     return this.handleResult(result);

@@ -1003,6 +1003,13 @@ export class PurchaseRequestService {
       return Result.error('Purchase request not found', ErrorCode.NOT_FOUND);
     }
 
+    // Fetch existing details for history appending
+    const existingDetails = await this.prismaService.tb_purchase_request_detail.findMany({
+      where: { purchase_request_id: id },
+      select: { id: true, history: true },
+    });
+    const existingDetailMap = new Map(existingDetails.map((d) => [d.id, d]));
+
     const tx = await this.prismaService.$transaction(async (prismatx) => {
       const updatePurchaseRequestData = JSON.parse(
         JSON.stringify({
@@ -1061,12 +1068,18 @@ export class PurchaseRequestService {
 
       if (updatePRDetail?.purchase_request_detail?.update?.length > 0) {
         for (const item of updatePRDetail.purchase_request_detail.update) {
+          const existing = existingDetailMap.get(item.id);
+          const history = WorkflowPersistenceHelper.appendHistory(
+            (existing?.history as unknown as Record<string, unknown>[]) || [],
+            { status: 'save', name: purchaseRequest.workflow_current_stage || '', message: '', userId: this.userId },
+          );
           await prismatx.tb_purchase_request_detail.update({
             where: {
               id: item.id,
             },
             data: {
               ...item,
+              history: history as unknown as Prisma.InputJsonValue,
               updated_by_id: this.userId,
             },
           });
@@ -1076,10 +1089,16 @@ export class PurchaseRequestService {
       if (Array.isArray(updatePRDetail)) {
         for (const item of updatePRDetail) {
           const { id: detailId, stage_status, stage_message, purchase_request_id, total_amount, foc_unit_conversion_rate, ...updateData } = item;
+          const existing = existingDetailMap.get(detailId);
+          const history = WorkflowPersistenceHelper.appendHistory(
+            (existing?.history as unknown as Record<string, unknown>[]) || [],
+            { status: 'save', name: purchaseRequest.workflow_current_stage || '', message: '', userId: this.userId },
+          );
           await prismatx.tb_purchase_request_detail.update({
             where: { id: detailId },
             data: {
               ...updateData,
+              history: history as unknown as Prisma.InputJsonValue,
               updated_by_id: this.userId,
             },
           });
@@ -1644,6 +1663,7 @@ export class PurchaseRequestService {
   @TryCatch
   async reject(
     id: string,
+    workflow: WorkflowHeader,
     payload: RejectPurchaseRequestDto,
   ): Promise<Result<unknown>> {
     this.logger.debug(
@@ -1696,6 +1716,9 @@ export class PurchaseRequestService {
       await txp.tb_purchase_request.update({
         where: { id },
         data: {
+          ...workflow,
+          workflow_history: workflow.workflow_history as unknown as Prisma.InputJsonValue,
+          user_action: workflow.user_action as unknown as Prisma.InputJsonValue,
           pr_status: enum_purchase_request_doc_status.voided,
           updated_by_id: this.userId,
         },

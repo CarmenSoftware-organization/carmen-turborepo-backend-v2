@@ -513,11 +513,23 @@ describe('PurchaseRequestService', () => {
   // WORKFLOW: reject
   // ===========================================================================
   describe('reject (workflow)', () => {
+    const mockRejectWorkflow: any = {
+      workflow_previous_stage: 'HOD',
+      workflow_current_stage: 'HOD',
+      workflow_next_stage: '-',
+      user_action: { execute: [] },
+      last_action: 'rejected',
+      last_action_at_date: new Date().toISOString(),
+      last_action_by_id: 'user-1',
+      last_action_by_name: 'Test User',
+      workflow_history: [{ action: 'rejected', datetime: new Date().toISOString(), user: { id: 'user-1', name: 'Test User' }, current_stage: 'HOD', next_stage: '-' }],
+    };
+
     it('should return error when PR not found or not in_progress', async () => {
       const prisma = setupPrismaService();
       prisma.tb_purchase_request.findFirst.mockResolvedValue(null);
 
-      const result = await service.reject(PR_ID, {
+      const result = await service.reject(PR_ID, mockRejectWorkflow, {
         stage_role: 'approve' as any,
         details: [{ id: 'detail-1', stage_status: stage_status.reject, stage_message: 'bad' }],
       });
@@ -563,7 +575,7 @@ describe('PurchaseRequestService', () => {
         return cb(txPrisma);
       });
 
-      const result = await service.reject(PR_ID, {
+      const result = await service.reject(PR_ID, mockRejectWorkflow, {
         stage_role: 'approve' as any,
         details: [{ id: 'detail-1', stage_status: stage_status.reject, stage_message: 'not approved' }],
       });
@@ -572,6 +584,7 @@ describe('PurchaseRequestService', () => {
       expect(capturedHeaderUpdate.data.pr_status).toBe(
         enum_purchase_request_doc_status.voided,
       );
+      expect(capturedHeaderUpdate.data.workflow_history).toBeDefined();
     });
 
     it('should mark all existing stages as rejected and add rejection stage', async () => {
@@ -606,7 +619,7 @@ describe('PurchaseRequestService', () => {
         return cb(txPrisma);
       });
 
-      await service.reject(PR_ID, {
+      await service.reject(PR_ID, mockRejectWorkflow, {
         stage_role: 'approve' as any,
         details: [{ id: 'detail-1', stage_status: stage_status.reject, stage_message: 'rejected by HOD' }],
       });

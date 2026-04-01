@@ -6,7 +6,7 @@ import { IUpdatePurchaseRequest, PurchaseRequest } from '../interface/purchase-r
 import { WorkflowHeader, StageStatus } from '@/common/workflow/workflow.interfaces';
 import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
 import { PRWorkflowAdapter } from '../adapters/pr-workflow.adapter';
-import { CreatePurchaseRequest, NavigateForwardResult, NotificationService, NotificationType, PurchaseRoleApprovePurchaseRequestDetail, PurchaseRoleSavePurchaseRequestDetail, ReviewPurchaseRequestDto, stage_status, SubmitPurchaseRequest, PR_ERROR, ErrorDetail } from '@/common'
+import { CreatePurchaseRequest, NavigateForwardResult, NotificationService, NotificationType, PurchaseRoleApprovePurchaseRequestDetail, PurchaseRoleSavePurchaseRequestDetail, RejectPurchaseRequestDto, ReviewPurchaseRequestDto, stage_status, SubmitPurchaseRequest, PR_ERROR, ErrorDetail } from '@/common'
 import { Result, ErrorCode } from '@/common/result';
 import { enum_stage_role, enum_pricelist_compare_type } from '@repo/prisma-shared-schema-tenant';
 import { ClientProxy } from '@nestjs/microservices';
@@ -490,6 +490,30 @@ export class PurchaseRequestLogic {
     return results;
   }
 
+  async reject(
+    id: string,
+    body: RejectPurchaseRequestDto,
+    user_id: string,
+    tenant_id: string,
+  ) {
+    this.logger.debug({ function: 'reject', id, user_id, tenant_id }, PurchaseRequestLogic.name);
+    await this.purchaseRequestService.initializePrismaService(tenant_id, user_id);
+
+    const purchaseRequestResult = await this.purchaseRequestService.findById(id);
+    if (purchaseRequestResult.isError()) {
+      throw new Error('Purchase Request not found');
+    }
+    const purchaseRequestData = purchaseRequestResult.value;
+
+    const workflow = await this.workflowOrchestrator.buildRejectWorkflow(
+      purchaseRequestData, this.prAdapter, user_id, tenant_id,
+    );
+
+    const result = await this.purchaseRequestService.reject(id, workflow, body);
+
+    return result;
+  }
+
   async swipeReject(
     pr_ids: string[],
     reject_message: string,
@@ -549,6 +573,11 @@ export class PurchaseRequestLogic {
 
         const stageInfo = workflowHeader.navigation_info.current_stage_info;
 
+        // Build reject workflow
+        const workflow = await this.workflowOrchestrator.buildRejectWorkflow(
+          prData, this.prAdapter, user_id, tenant_id,
+        );
+
         // Build reject payload — reject all details
         const rejectPayload: { stage_role: enum_stage_role; details: { id: string; stage_status: stage_status; stage_message: string }[] } = {
           stage_role: (stageInfo?.role as enum_stage_role) || enum_stage_role.approve,
@@ -559,7 +588,7 @@ export class PurchaseRequestLogic {
           })),
         };
 
-        const result = await this.purchaseRequestService.reject(id, rejectPayload);
+        const result = await this.purchaseRequestService.reject(id, workflow, rejectPayload);
 
         if (result.isOk()) {
           results.push({ id, success: true });
