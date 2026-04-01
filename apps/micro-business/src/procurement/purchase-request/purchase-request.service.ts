@@ -885,7 +885,10 @@ export class PurchaseRequestService {
       await this.prismaService.tb_purchase_request.findFirst({
         where: {
           id: id,
-          pr_status: enum_purchase_request_doc_status.draft,
+          OR: [
+            { pr_status: enum_purchase_request_doc_status.draft },
+            { pr_status: enum_purchase_request_doc_status.in_progress, last_action: enum_last_action.reviewed },
+          ],
         },
       });
 
@@ -893,9 +896,10 @@ export class PurchaseRequestService {
       return Result.error('Purchase request not found', ErrorCode.NOT_FOUND);
     }
 
-    const newPrNo = await this.generatePRNo(
-      new Date(purchaseRequest.pr_date).toISOString(),
-    );
+    const isDraft = purchaseRequest.pr_status === enum_purchase_request_doc_status.draft;
+    const newPrNo = isDraft
+      ? await this.generatePRNo(new Date(purchaseRequest.pr_date).toISOString())
+      : purchaseRequest.pr_no;
 
     const tx = await this.prismaService.$transaction(async (prismatx) => {
       const updatePurchaseRequest = await prismatx.tb_purchase_request.update({

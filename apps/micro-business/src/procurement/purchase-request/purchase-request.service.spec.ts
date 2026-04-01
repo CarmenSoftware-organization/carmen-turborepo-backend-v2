@@ -119,7 +119,13 @@ describe('PurchaseRequestService', () => {
       expect(result.isOk()).toBe(false);
       expect(result.error.message).toContain('not found');
       expect(prisma.tb_purchase_request.findFirst).toHaveBeenCalledWith({
-        where: { id: PR_ID, pr_status: enum_purchase_request_doc_status.draft },
+        where: {
+          id: PR_ID,
+          OR: [
+            { pr_status: enum_purchase_request_doc_status.draft },
+            { pr_status: enum_purchase_request_doc_status.in_progress, last_action: 'reviewed' },
+          ],
+        },
       });
     });
 
