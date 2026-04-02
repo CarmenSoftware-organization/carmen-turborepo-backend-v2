@@ -79,6 +79,8 @@ const PurchaseRequestDetailEmbeddedSchema = z.object({
 
   // Status & metadata
   current_stage_status: z.string().nullable().optional(),
+  stages_status: z.any().nullable().optional(),
+  history: z.any().nullable().optional(),
   dimension: z.any().nullable().optional(),
   is_active: z.boolean().optional(),
   created_at: z.coerce.date().optional(),
