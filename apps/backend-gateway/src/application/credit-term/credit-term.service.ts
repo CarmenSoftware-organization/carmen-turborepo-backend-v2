@@ -6,6 +6,7 @@ import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-c
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { IPaginateQuery } from 'src/shared-dto/paginate.dto';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class CreditTermService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -45,7 +46,7 @@ export class CreditTermService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'credit-term.findOne', service: 'credit-term' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -84,7 +85,7 @@ export class CreditTermService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'credit-term.findAll', service: 'credit-term' },
-      { user_id, bu_code, paginate, version },
+      { user_id, bu_code, paginate, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {

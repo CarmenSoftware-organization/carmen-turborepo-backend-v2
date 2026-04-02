@@ -6,6 +6,7 @@ import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-c
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class DocumentManagementService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -52,8 +53,7 @@ export class DocumentManagementService {
         mimeType,
         buffer: fileBase64,
         bu_code,
-        user_id,
-      },
+        user_id, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res) as any;
@@ -92,7 +92,7 @@ export class DocumentManagementService {
 
     const res: Observable<MicroserviceResponse> = this.fileService.send(
       { cmd: 'file.get', service: 'files' },
-      { fileToken, user_id, bu_code },
+      { fileToken, user_id, bu_code, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res) as any;
@@ -128,7 +128,7 @@ export class DocumentManagementService {
 
     const res: Observable<MicroserviceResponse> = this.fileService.send(
       { cmd: 'file.info', service: 'files' },
-      { fileToken, user_id, bu_code },
+      { fileToken, user_id, bu_code, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res) as any;
@@ -164,7 +164,7 @@ export class DocumentManagementService {
 
     const res: Observable<MicroserviceResponse> = this.fileService.send(
       { cmd: 'file.delete', service: 'files' },
-      { fileToken, user_id, bu_code },
+      { fileToken, user_id, bu_code, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res) as any;
@@ -209,8 +209,7 @@ export class DocumentManagementService {
         searchfields: paginate.searchfields?.join(','),
         sort: paginate.sort?.join(','),
         filter: paginate.filter ? JSON.stringify(paginate.filter) : undefined,
-        advance: paginate.advance ? JSON.stringify(paginate.advance) : undefined,
-      },
+        advance: paginate.advance ? JSON.stringify(paginate.advance) : undefined, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res) as any;
@@ -253,8 +252,7 @@ export class DocumentManagementService {
         fileToken,
         user_id,
         bu_code,
-        expirySeconds: expirySeconds || 3600,
-      },
+        expirySeconds: expirySeconds || 3600, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res) as any;

@@ -10,6 +10,7 @@ import { CreateApplicationRoleDto, UpdateApplicationRoleDto } from './dto/applic
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class ApplicationRoleService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -37,7 +38,7 @@ export class ApplicationRoleService {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'role.findAll', service: 'role' },
-      { version },
+      { version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -71,7 +72,7 @@ export class ApplicationRoleService {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'role.findOne', service: 'role' },
-      { id, version },
+      { id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -108,7 +109,7 @@ export class ApplicationRoleService {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'role.create', service: 'role' },
-      { data: createApplicationRoleDto, version },
+      { data: createApplicationRoleDto, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -148,7 +149,7 @@ export class ApplicationRoleService {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'role.update', service: 'role' },
-      { id, data: updateApplicationRoleDto, version },
+      { id, data: updateApplicationRoleDto, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -182,7 +183,7 @@ export class ApplicationRoleService {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'role.remove', service: 'role' },
-      { id, version },
+      { id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

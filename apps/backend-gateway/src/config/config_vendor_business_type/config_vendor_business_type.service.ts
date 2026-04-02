@@ -10,6 +10,7 @@ import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ResponseLib } from 'src/libs/response.lib';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Config_VendorBusinessTypeService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -46,7 +47,7 @@ export class Config_VendorBusinessTypeService {
     );
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'vendor-business-type.findOne', service: 'vendor-business-type' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -92,8 +93,7 @@ export class Config_VendorBusinessTypeService {
         user_id: user_id,
         paginate: query,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -137,8 +137,7 @@ export class Config_VendorBusinessTypeService {
         data: createDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -182,8 +181,7 @@ export class Config_VendorBusinessTypeService {
         data: updateDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -223,7 +221,7 @@ export class Config_VendorBusinessTypeService {
     );
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'vendor-business-type.delete', service: 'vendor-business-type' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

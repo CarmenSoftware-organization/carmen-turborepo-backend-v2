@@ -9,6 +9,7 @@ import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-c
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { IPeriodCreate, IPeriodUpdate } from 'src/common/dto/period/period.dto';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class PeriodService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -41,7 +42,7 @@ export class PeriodService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'inventory-period.findOne', service: 'inventory-period' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -78,7 +79,7 @@ export class PeriodService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'inventory-period.findAll', service: 'inventory-period' },
-      { user_id, tenant_id, paginate, version },
+      { user_id, tenant_id, paginate, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -115,7 +116,7 @@ export class PeriodService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'inventory-period.create', service: 'inventory-period' },
-      { data, user_id, tenant_id, version },
+      { data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -154,7 +155,7 @@ export class PeriodService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'inventory-period.update', service: 'inventory-period' },
-      { id, data, user_id, tenant_id, version },
+      { id, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -193,7 +194,7 @@ export class PeriodService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'inventory-period.generateNext', service: 'inventory-period' },
-      { count, start_day, user_id, tenant_id, version },
+      { count, start_day, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -228,7 +229,7 @@ export class PeriodService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'inventory-period.findCurrent', service: 'inventory-period' },
-      { user_id, tenant_id, version },
+      { user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -265,7 +266,7 @@ export class PeriodService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'inventory-period.delete', service: 'inventory-period' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

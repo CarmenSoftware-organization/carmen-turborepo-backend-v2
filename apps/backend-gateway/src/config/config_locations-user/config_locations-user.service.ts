@@ -5,6 +5,7 @@ import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Config_LocationsUserService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -29,9 +30,9 @@ export class Config_LocationsUserService {
 
     const response = await firstValueFrom(
       this.masterService.send(
-        { cmd: 'locations.getLocationsByUserId', service: 'locations' },
-        { target_user_id: userId, user_id, bu_code, version },
-      ),
+      { cmd: 'locations.getLocationsByUserId', service: 'locations' },
+      { target_user_id: userId, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -60,9 +61,9 @@ export class Config_LocationsUserService {
 
     const response = await firstValueFrom(
       this.masterService.send(
-        { cmd: 'locations.updateUserLocations', service: 'locations' },
-        { target_user_id: userId, location_ids: locationIds, user_id, bu_code, version },
-      ),
+      { cmd: 'locations.updateUserLocations', service: 'locations' },
+      { target_user_id: userId, location_ids: locationIds, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {

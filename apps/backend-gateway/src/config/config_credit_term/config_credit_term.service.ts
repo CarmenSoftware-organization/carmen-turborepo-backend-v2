@@ -11,6 +11,7 @@ import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Config_CreditTermService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -48,7 +49,7 @@ export class Config_CreditTermService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'credit-term.findOne', service: 'credit-term' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -93,8 +94,7 @@ export class Config_CreditTermService {
         user_id: user_id,
         paginate: query,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -139,8 +139,7 @@ export class Config_CreditTermService {
         data: createDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -185,8 +184,7 @@ export class Config_CreditTermService {
         data: updateDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -227,7 +225,7 @@ export class Config_CreditTermService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'credit-term.delete', service: 'credit-term' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

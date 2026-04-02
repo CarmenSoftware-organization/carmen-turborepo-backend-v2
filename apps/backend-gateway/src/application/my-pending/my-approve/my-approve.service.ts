@@ -5,6 +5,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { Result } from '@/common';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class MyApproveService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -106,15 +107,14 @@ export class MyApproveService {
 
     try {
       const res: Observable<any> = this.inventoryService.send(
-        {
+      {
           cmd: 'my-pending.store-requisition.find-all.count',
           service: 'my-pending',
         },
-        {
+      {
           user_id,
-          version,
-        },
-      );
+          version, ...getGatewayRequestContext() },
+    );
 
       const response = await firstValueFrom(res);
 
@@ -158,15 +158,14 @@ export class MyApproveService {
 
     try {
       const res: Observable<any> = this.procurementService.send(
-        {
+      {
           cmd: 'my-pending.purchase-request.find-all.count',
           service: 'my-pending',
         },
-        {
+      {
           user_id,
-          version,
-        },
-      );
+          version, ...getGatewayRequestContext() },
+    );
 
       const response = await firstValueFrom(res);
 
@@ -214,17 +213,16 @@ export class MyApproveService {
 
     try {
       const res: Observable<any> = this.inventoryService.send(
-        {
+      {
           cmd: 'my-pending.store-requisition.find-all',
           service: 'my-pending',
         },
-        {
+      {
           user_id,
           bu_code,
           paginate,
-          version,
-        },
-      );
+          version, ...getGatewayRequestContext() },
+    );
 
       const response = await firstValueFrom(res);
 
@@ -272,17 +270,16 @@ export class MyApproveService {
 
     try {
       const res: Observable<any> = this.procurementService.send(
-        {
+      {
           cmd: 'my-pending.purchase-request.find-all',
           service: 'my-pending',
         },
-        {
+      {
           user_id,
           bu_code,
           paginate,
-          version,
-        },
-      );
+          version, ...getGatewayRequestContext() },
+    );
 
       const response = await firstValueFrom(res);
 
@@ -326,15 +323,14 @@ export class MyApproveService {
 
     try {
       const res: Observable<any> = this.procurementService.send(
-        {
+      {
           cmd: 'my-pending.purchase-order.find-all.count',
           service: 'my-pending',
         },
-        {
+      {
           user_id,
-          version,
-        },
-      );
+          version, ...getGatewayRequestContext() },
+    );
 
       const response = await firstValueFrom(res);
 
@@ -382,17 +378,16 @@ export class MyApproveService {
 
     try {
       const res: Observable<any> = this.procurementService.send(
-        {
+      {
           cmd: 'my-pending.purchase-order.find-all',
           service: 'my-pending',
         },
-        {
+      {
           user_id,
           bu_code,
           paginate,
-          version,
-        },
-      );
+          version, ...getGatewayRequestContext() },
+    );
 
       const response = await firstValueFrom(res);
 

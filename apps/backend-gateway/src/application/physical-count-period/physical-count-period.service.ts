@@ -8,6 +8,7 @@ import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class PhysicalCountPeriodService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -43,7 +44,7 @@ export class PhysicalCountPeriodService {
         cmd: 'physical-count-period.findOne',
         service: 'physical-count-period',
       },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -83,7 +84,7 @@ export class PhysicalCountPeriodService {
         cmd: 'physical-count-period.findAll',
         service: 'physical-count-period',
       },
-      { user_id, tenant_id, paginate, version },
+      { user_id, tenant_id, paginate, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -149,7 +150,7 @@ export class PhysicalCountPeriodService {
         cmd: 'physical-count-period.current',
         service: 'physical-count-period',
       },
-      { user_id, tenant_id, version, include_not_count },
+      { user_id, tenant_id, version, include_not_count, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -186,7 +187,7 @@ export class PhysicalCountPeriodService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-period.create', service: 'physical-count-period' },
-      { data, user_id, tenant_id, version },
+      { data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -225,7 +226,7 @@ export class PhysicalCountPeriodService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-period.update', service: 'physical-count-period' },
-      { id, data, user_id, tenant_id, version },
+      { id, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -262,7 +263,7 @@ export class PhysicalCountPeriodService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-period.delete', service: 'physical-count-period' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

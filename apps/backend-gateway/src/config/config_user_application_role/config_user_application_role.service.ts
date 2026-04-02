@@ -6,6 +6,7 @@ import { IAssignUserApplicationRole, IRemoveUserApplicationRole, IUpdateUserAppl
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class ConfigUserApplicationRoleService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -40,8 +41,7 @@ export class ConfigUserApplicationRoleService {
       {
         user_id: targetUserId,
         bu_code,
-        version,
-      },
+        version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -82,8 +82,7 @@ export class ConfigUserApplicationRoleService {
         data,
         user_id: requestUserId,
         bu_code,
-        version,
-      },
+        version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -124,8 +123,7 @@ export class ConfigUserApplicationRoleService {
         data,
         user_id: requestUserId,
         bu_code,
-        version,
-      },
+        version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -166,8 +164,7 @@ export class ConfigUserApplicationRoleService {
         data,
         user_id: requestUserId,
         bu_code,
-        version,
-      },
+        version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

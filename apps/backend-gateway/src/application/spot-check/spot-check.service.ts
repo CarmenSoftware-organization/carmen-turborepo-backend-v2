@@ -10,6 +10,7 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ISpotCheckCreate, ISpotCheckUpdate } from 'src/common/dto/spot-check/spot-check.dto';
 
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class SpotCheckService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -38,7 +39,7 @@ export class SpotCheckService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.find-all-pending-count', service: 'spot-check' },
-      { user_id, version },
+      { user_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -81,7 +82,7 @@ export class SpotCheckService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.findOne', service: 'spot-check' },
-      { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
+      { id: id, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -128,8 +129,7 @@ export class SpotCheckService {
         user_id: user_id,
         tenant_id: tenant_id,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -172,7 +172,7 @@ export class SpotCheckService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.create', service: 'spot-check' },
-      { data: data, user_id: user_id, tenant_id: tenant_id, version: version },
+      { data: data, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -218,7 +218,7 @@ export class SpotCheckService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.update', service: 'spot-check' },
-      { id: id, data: data, user_id: user_id, tenant_id: tenant_id, version: version },
+      { id: id, data: data, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -261,7 +261,7 @@ export class SpotCheckService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.delete', service: 'spot-check' },
-      { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
+      { id: id, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -300,7 +300,7 @@ export class SpotCheckService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check-detail.find-by-id', service: 'spot-check' },
-      { detail_id: detailId, user_id, tenant_id, version },
+      { detail_id: detailId, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -337,7 +337,7 @@ export class SpotCheckService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check-detail.find-all', service: 'spot-check' },
-      { spot_check_id: spotCheckId, user_id, tenant_id, version },
+      { spot_check_id: spotCheckId, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -374,7 +374,7 @@ export class SpotCheckService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check-detail.delete', service: 'spot-check' },
-      { detail_id: detailId, user_id, tenant_id, version },
+      { detail_id: detailId, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -415,7 +415,7 @@ export class SpotCheckService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.save-items', service: 'spot-check' },
-      { id, data, user_id, tenant_id, version },
+      { id, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -454,7 +454,7 @@ export class SpotCheckService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.review-items', service: 'spot-check' },
-      { id, data, user_id, tenant_id, version },
+      { id, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -491,7 +491,7 @@ export class SpotCheckService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.get-review', service: 'spot-check' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -528,7 +528,7 @@ export class SpotCheckService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.submit', service: 'spot-check' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -565,7 +565,7 @@ export class SpotCheckService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.reset', service: 'spot-check' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -602,7 +602,7 @@ export class SpotCheckService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.get-products-by-location', service: 'spot-check' },
-      { location_id: locationId, user_id, tenant_id, version },
+      { location_id: locationId, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -634,7 +634,7 @@ export class SpotCheckService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'spot-check.current', service: 'spot-check' },
-      { user_id, tenant_id, version, include_not_count },
+      { user_id, tenant_id, version, include_not_count, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

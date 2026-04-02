@@ -7,6 +7,7 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { ICreateRecipeEquipmentCategory, IUpdateRecipeEquipmentCategory } from './dto/recipe-equipment-category.dto';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Config_RecipeEquipmentCategoryService {
   private readonly logger: BackendLogger = new BackendLogger(Config_RecipeEquipmentCategoryService.name);
@@ -20,7 +21,7 @@ export class Config_RecipeEquipmentCategoryService {
     this.logger.debug({ function: 'findOne', id, version }, Config_RecipeEquipmentCategoryService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-equipment-category.findOne', service: 'recipe-equipment-category' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -33,7 +34,7 @@ export class Config_RecipeEquipmentCategoryService {
     this.logger.debug({ function: 'findAll', paginate, version }, Config_RecipeEquipmentCategoryService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-equipment-category.findAll', service: 'recipe-equipment-category' },
-      { user_id, paginate, bu_code, version },
+      { user_id, paginate, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -46,7 +47,7 @@ export class Config_RecipeEquipmentCategoryService {
     this.logger.debug({ function: 'create', createDto, version }, Config_RecipeEquipmentCategoryService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-equipment-category.create', service: 'recipe-equipment-category' },
-      { data: createDto, user_id, bu_code, version },
+      { data: createDto, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.CREATED) {
@@ -59,7 +60,7 @@ export class Config_RecipeEquipmentCategoryService {
     this.logger.debug({ function: 'update', updateDto, version }, Config_RecipeEquipmentCategoryService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-equipment-category.update', service: 'recipe-equipment-category' },
-      { data: updateDto, user_id, bu_code, version },
+      { data: updateDto, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -72,7 +73,7 @@ export class Config_RecipeEquipmentCategoryService {
     this.logger.debug({ function: 'patch', updateDto, version }, Config_RecipeEquipmentCategoryService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-equipment-category.patch', service: 'recipe-equipment-category' },
-      { data: updateDto, user_id, bu_code, version },
+      { data: updateDto, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -85,7 +86,7 @@ export class Config_RecipeEquipmentCategoryService {
     this.logger.debug({ function: 'delete', id, version }, Config_RecipeEquipmentCategoryService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-equipment-category.delete', service: 'recipe-equipment-category' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {

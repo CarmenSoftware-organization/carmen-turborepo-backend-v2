@@ -10,6 +10,7 @@ import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Platform_BusinessUnitService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -48,7 +49,7 @@ export class Platform_BusinessUnitService {
     );
     const res: Observable<MicroserviceResponse> = this.businessUnitService.send(
       { cmd: 'business-unit.create', service: 'business-unit' },
-      { data: data, user_id: user_id, tenant_id: tenant_id, version: version },
+      { data: data, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -90,7 +91,7 @@ export class Platform_BusinessUnitService {
     );
     const res: Observable<MicroserviceResponse> = this.businessUnitService.send(
       { cmd: 'business-unit.update', service: 'business-unit' },
-      { data: data, user_id: user_id, tenant_id: tenant_id, version: version },
+      { data: data, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -132,7 +133,7 @@ export class Platform_BusinessUnitService {
     );
     const res: Observable<MicroserviceResponse> = this.businessUnitService.send(
       { cmd: 'business-unit.delete', service: 'business-unit' },
-      { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
+      { id: id, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -179,8 +180,7 @@ export class Platform_BusinessUnitService {
         user_id: user_id,
         tenant_id: tenant_id,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -225,7 +225,7 @@ export class Platform_BusinessUnitService {
     );
     const res: Observable<MicroserviceResponse> = this.businessUnitService.send(
       { cmd: 'business-unit.get-by-id', service: 'business-unit' },
-      { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
+      { id: id, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

@@ -10,6 +10,7 @@ import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class PlatformUserService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -38,7 +39,7 @@ export class PlatformUserService {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'sync-realm-users', service: 'auth' },
-      { data: {}, version },
+      { data: {}, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -86,8 +87,7 @@ export class PlatformUserService {
         user_id: user_id,
         tenant_id: tenant_id,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -137,8 +137,7 @@ export class PlatformUserService {
         id,
         user_id,
         tenant_id,
-        version,
-      },
+        version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -185,8 +184,7 @@ export class PlatformUserService {
         data,
         user_id,
         tenant_id,
-        version,
-      },
+        version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -237,8 +235,7 @@ export class PlatformUserService {
         data,
         user_id,
         tenant_id,
-        version,
-      },
+        version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -285,8 +282,7 @@ export class PlatformUserService {
         id,
         user_id,
         tenant_id,
-        version,
-      },
+        version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -323,7 +319,7 @@ export class PlatformUserService {
 
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'user.hard-delete', service: 'user' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

@@ -12,6 +12,7 @@ import { ResponseLib } from 'src/libs/response.lib';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { CalculatePurchaseRequestDetail } from './dto/CalculatePurchaseRequestDetail.dto';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class PurchaseRequestService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -61,8 +62,7 @@ export class PurchaseRequestService {
         user_id: user_id,
         bu_code: bu_code,
         userData: userData,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -118,8 +118,7 @@ export class PurchaseRequestService {
         bu_code: bu_code,
         paginate: paginate,
         userDatas: userDatas,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     try {
@@ -172,8 +171,7 @@ export class PurchaseRequestService {
       {
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -221,8 +219,7 @@ export class PurchaseRequestService {
         data: createDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -269,8 +266,7 @@ export class PurchaseRequestService {
         body: body,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -321,8 +317,7 @@ export class PurchaseRequestService {
         body: body,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -371,8 +366,7 @@ export class PurchaseRequestService {
         data: updateDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -415,7 +409,7 @@ export class PurchaseRequestService {
 
     const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.submit', service: 'purchase-request' },
-      { id: id, payload, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, payload, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -464,8 +458,7 @@ export class PurchaseRequestService {
         body: payload,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -497,8 +490,7 @@ export class PurchaseRequestService {
         body: { pr_ids },
         user_id,
         bu_code,
-        version,
-      },
+        version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -531,8 +523,7 @@ export class PurchaseRequestService {
         body: { pr_ids, reject_message },
         user_id,
         bu_code,
-        version,
-      },
+        version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -575,7 +566,7 @@ export class PurchaseRequestService {
 
     const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.reject', service: 'purchase-request' },
-      { id: id, body, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, body, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -618,7 +609,7 @@ export class PurchaseRequestService {
 
     const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.review', service: 'purchase-request' },
-      { id: id, body, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, body, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -659,7 +650,7 @@ export class PurchaseRequestService {
 
     const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.delete', service: 'purchase-request' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -712,8 +703,7 @@ export class PurchaseRequestService {
         bu_code: bu_code,
         paginate: paginate,
         version: version,
-        options: options,
-      },
+        options: options, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -754,9 +744,9 @@ export class PurchaseRequestService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-request.export', service: 'purchase-request' },
-        { id, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-request.export', service: 'purchase-request' },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -800,9 +790,9 @@ export class PurchaseRequestService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-request.print', service: 'purchase-request' },
-        { id, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-request.print', service: 'purchase-request' },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -853,8 +843,7 @@ export class PurchaseRequestService {
         detail_id: detail_id,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -902,8 +891,7 @@ export class PurchaseRequestService {
         detail_id: detail_id,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -954,8 +942,7 @@ export class PurchaseRequestService {
         data: data,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -987,7 +974,7 @@ export class PurchaseRequestService {
 
     const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.get-previous-stages', service: 'purchase-request' },
-      { pr_id, user_id, bu_code, version },
+      { pr_id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

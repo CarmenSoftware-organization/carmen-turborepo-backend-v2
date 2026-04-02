@@ -11,6 +11,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ResponseLib } from 'src/libs/response.lib';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Config_PriceListService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -47,7 +48,7 @@ export class Config_PriceListService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'price-list.findOne', service: 'price-list' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -94,8 +95,7 @@ export class Config_PriceListService {
         user_id: user_id,
         bu_code: bu_code,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -144,8 +144,7 @@ export class Config_PriceListService {
         data: updateConfigPriceListDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -190,8 +189,7 @@ export class Config_PriceListService {
         data: createConfigPriceListDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -232,7 +230,7 @@ export class Config_PriceListService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'price-list.remove', service: 'price-list' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -277,8 +275,7 @@ export class Config_PriceListService {
         data: createConfigPriceListDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -319,7 +316,7 @@ export class Config_PriceListService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'price-list.downloadExcel', service: 'price-list' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -364,8 +361,7 @@ export class Config_PriceListService {
         csvContent: csvContent,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

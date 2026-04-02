@@ -6,6 +6,7 @@ import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Config_LocationProductService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -43,7 +44,7 @@ export class Config_LocationProductService {
 
     const res: Observable<MicroserviceResponse> = this._masterService.send(
       { cmd: 'productLocation.findAllLocationsWithProducts', service: 'product-location' },
-      { user_id, bu_code, paginate, version, search, category_id },
+      { user_id, bu_code, paginate, version, search, category_id, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -84,8 +85,7 @@ export class Config_LocationProductService {
         user_id: user_id,
         bu_code: bu_code,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -118,7 +118,7 @@ export class Config_LocationProductService {
 
     const res: Observable<MicroserviceResponse> = this._masterService.send(
       { cmd: 'productLocation.compare', service: 'product-location' },
-      { location_id_1, location_id_2, user_id, bu_code, paginate, version },
+      { location_id_1, location_id_2, user_id, bu_code, paginate, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -156,8 +156,7 @@ export class Config_LocationProductService {
       { cmd: 'productLocation.refresh', service: 'product-location' },
       {
         user_id: user_id,
-        bu_code: bu_code,
-      },
+        bu_code: bu_code, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

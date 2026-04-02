@@ -14,6 +14,7 @@ import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-c
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { randomInt } from 'crypto';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class GoodReceivedNoteService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -52,7 +53,7 @@ export class GoodReceivedNoteService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.findOne', service: 'good-received-note' },
-      { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
+      { id: id, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -99,8 +100,7 @@ export class GoodReceivedNoteService {
         user_id: user_id,
         tenant_id: tenant_id,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -133,7 +133,7 @@ export class GoodReceivedNoteService {
   ): Promise<Result<unknown>> {
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.findByVendorId', service: 'good-received-note' },
-      { vendor_id, user_id, tenant_id, paginate, version },
+      { vendor_id, user_id, tenant_id, paginate, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -167,7 +167,7 @@ export class GoodReceivedNoteService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.create', service: 'good-received-note' },
-      { data: data, user_id: user_id, tenant_id: tenant_id, version: version },
+      { data: data, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -210,7 +210,7 @@ export class GoodReceivedNoteService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.update', service: 'good-received-note' },
-      { data: data, user_id: user_id, tenant_id: tenant_id, version: version },
+      { data: data, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -253,7 +253,7 @@ export class GoodReceivedNoteService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.delete', service: 'good-received-note' },
-      { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
+      { id: id, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -285,7 +285,7 @@ export class GoodReceivedNoteService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.void', service: 'good-received-note' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -328,7 +328,7 @@ export class GoodReceivedNoteService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.export', service: 'good-received-note' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -380,7 +380,7 @@ export class GoodReceivedNoteService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.reject', service: 'good-received-note' },
-      { id, reason, user_id, tenant_id, version },
+      { id, reason, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -423,7 +423,7 @@ export class GoodReceivedNoteService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.approve', service: 'good-received-note' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -462,7 +462,7 @@ export class GoodReceivedNoteService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note-detail.find-by-id', service: 'good-received-note' },
-      { detail_id: detailId, user_id, tenant_id, version },
+      { detail_id: detailId, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -499,7 +499,7 @@ export class GoodReceivedNoteService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note-detail.find-all', service: 'good-received-note' },
-      { grn_id: grnId, user_id, tenant_id, version },
+      { grn_id: grnId, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -536,7 +536,7 @@ export class GoodReceivedNoteService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note-detail.delete', service: 'good-received-note' },
-      { detail_id: detailId, user_id, tenant_id, version },
+      { detail_id: detailId, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -575,7 +575,7 @@ export class GoodReceivedNoteService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.find-by-manual-po', service: 'good-received-note' },
-      { po_no, user_id, tenant_id, version },
+      { po_no, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -608,7 +608,7 @@ export class GoodReceivedNoteService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.save', service: 'good-received-note' },
-      { id, data, user_id, tenant_id, version },
+      { id, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -641,7 +641,7 @@ export class GoodReceivedNoteService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.confirm', service: 'good-received-note' },
-      { id, data, user_id, tenant_id, version },
+      { id, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -678,7 +678,7 @@ export class GoodReceivedNoteService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.get-comments', service: 'good-received-note' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -717,7 +717,7 @@ export class GoodReceivedNoteService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.create-comment', service: 'good-received-note' },
-      { id, data, user_id, tenant_id, version },
+      { id, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

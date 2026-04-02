@@ -8,6 +8,7 @@ import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 export interface IActivityLogFilter {
   entity_type?: string;
   entity_id?: string;
@@ -60,8 +61,7 @@ export class ActivityLogService {
         user_id,
         bu_code,
         paginate,
-        filters,
-      },
+        filters, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -108,8 +108,7 @@ export class ActivityLogService {
         entity_type,
         user_id,
         bu_code,
-        paginate,
-      },
+        paginate, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -149,7 +148,7 @@ export class ActivityLogService {
 
     const res: Observable<MicroserviceResponse> = this.logService.send(
       { cmd: 'activity-log.findOne', service: 'activity-log' },
-      { id, user_id, bu_code },
+      { id, user_id, bu_code, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -189,7 +188,7 @@ export class ActivityLogService {
 
     const res: Observable<MicroserviceResponse> = this.logService.send(
       { cmd: 'activity-log.delete', service: 'activity-log' },
-      { id, user_id, bu_code },
+      { id, user_id, bu_code, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -229,7 +228,7 @@ export class ActivityLogService {
 
     const res: Observable<MicroserviceResponse> = this.logService.send(
       { cmd: 'activity-log.deleteMany', service: 'activity-log' },
-      { ids, user_id, bu_code },
+      { ids, user_id, bu_code, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -269,7 +268,7 @@ export class ActivityLogService {
 
     const res: Observable<MicroserviceResponse> = this.logService.send(
       { cmd: 'activity-log.hardDelete', service: 'activity-log' },
-      { id, user_id, bu_code },
+      { id, user_id, bu_code, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -309,7 +308,7 @@ export class ActivityLogService {
 
     const res: Observable<MicroserviceResponse> = this.logService.send(
       { cmd: 'activity-log.hardDeleteMany', service: 'activity-log' },
-      { ids, user_id, bu_code },
+      { ids, user_id, bu_code, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

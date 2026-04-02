@@ -16,6 +16,7 @@ import {
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class StoreRequisitionService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -65,8 +66,7 @@ export class StoreRequisitionService {
         user_id: user_id,
         bu_code: bu_code,
         userData: userData,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -121,8 +121,7 @@ export class StoreRequisitionService {
         bu_code: bu_code,
         paginate: paginate,
         userDatas: userDatas,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -170,8 +169,7 @@ export class StoreRequisitionService {
         data: createDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -220,8 +218,7 @@ export class StoreRequisitionService {
         data: updateDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -264,7 +261,7 @@ export class StoreRequisitionService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.submit', service: 'store-requisition' },
-      { id: id, payload, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, payload, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -313,8 +310,7 @@ export class StoreRequisitionService {
         body: payload,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -357,7 +353,7 @@ export class StoreRequisitionService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.reject', service: 'store-requisition' },
-      { id: id, body, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, body, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -400,7 +396,7 @@ export class StoreRequisitionService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.review', service: 'store-requisition' },
-      { id: id, body, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, body, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -471,7 +467,7 @@ export class StoreRequisitionService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.delete', service: 'store-requisition' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -522,8 +518,7 @@ export class StoreRequisitionService {
         user_id: user_id,
         bu_code: bu_code,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -573,8 +568,7 @@ export class StoreRequisitionService {
         user_id: user_id,
         bu_code: bu_code,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -617,7 +611,7 @@ export class StoreRequisitionService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.get-workflow-permission', service: 'store-requisition' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -658,7 +652,7 @@ export class StoreRequisitionService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.get-workflow-previous-step-list', service: 'store-requisition' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -688,7 +682,7 @@ export class StoreRequisitionService {
         cmd: 'store-requisition.find-all-workflow-stages-by-sr',
         service: 'store-requisition',
       },
-      { user_id, bu_code, version },
+      { user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

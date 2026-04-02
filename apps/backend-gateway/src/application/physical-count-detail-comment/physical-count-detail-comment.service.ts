@@ -7,6 +7,7 @@ import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class PhysicalCountDetailCommentService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -25,7 +26,7 @@ export class PhysicalCountDetailCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'physical-count-detail-comment.find-by-id', service: 'physical-count-detail-comment' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK)
@@ -45,7 +46,7 @@ export class PhysicalCountDetailCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'physical-count-detail-comment.find-all-by-physical-count-detail-id', service: 'physical-count-detail-comment' },
-      { physical_count_detail_id, user_id, bu_code, paginate, version },
+      { physical_count_detail_id, user_id, bu_code, paginate, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK)
@@ -64,7 +65,7 @@ export class PhysicalCountDetailCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'physical-count-detail-comment.create', service: 'physical-count-detail-comment' },
-      { data, user_id, bu_code, version },
+      { data, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.CREATED)
@@ -84,7 +85,7 @@ export class PhysicalCountDetailCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'physical-count-detail-comment.update', service: 'physical-count-detail-comment' },
-      { id, data, user_id, bu_code, version },
+      { id, data, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK)
@@ -103,7 +104,7 @@ export class PhysicalCountDetailCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'physical-count-detail-comment.delete', service: 'physical-count-detail-comment' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK)
@@ -123,7 +124,7 @@ export class PhysicalCountDetailCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'physical-count-detail-comment.add-attachment', service: 'physical-count-detail-comment' },
-      { id, attachment, user_id, bu_code, version },
+      { id, attachment, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK)
@@ -143,7 +144,7 @@ export class PhysicalCountDetailCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'physical-count-detail-comment.remove-attachment', service: 'physical-count-detail-comment' },
-      { id, fileToken, user_id, bu_code, version },
+      { id, fileToken, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK)

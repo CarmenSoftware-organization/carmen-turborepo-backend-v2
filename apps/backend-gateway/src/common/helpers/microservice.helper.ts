@@ -2,6 +2,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable, timeout, catchError, throwError } from 'rxjs';
 import { BackendLogger } from './backend.logger';
+import { getGatewayRequestContext } from '../context/gateway-request-context';
 
 const DEFAULT_TIMEOUT_MS = 15000; // 15 seconds
 
@@ -24,8 +25,10 @@ export async function sendToService<T = unknown>(
   data: Record<string, unknown>,
   timeoutMs: number = DEFAULT_TIMEOUT_MS,
 ): Promise<T> {
+  const enrichedData = { ...data, ...getGatewayRequestContext() };
+
   try {
-    return await attemptSend<T>(client, pattern, data, timeoutMs);
+    return await attemptSend<T>(client, pattern, enrichedData, timeoutMs);
   } catch (error) {
     // On timeout, reconnect and retry once
     if (error instanceof HttpException && error.getStatus() === HttpStatus.GATEWAY_TIMEOUT) {
@@ -40,7 +43,7 @@ export async function sendToService<T = unknown>(
       try {
         await client.close();
         await client.connect();
-        return await attemptSend<T>(client, pattern, data, timeoutMs);
+        return await attemptSend<T>(client, pattern, enrichedData, timeoutMs);
       } catch (retryError) {
         if (retryError instanceof HttpException) {
           throw retryError;

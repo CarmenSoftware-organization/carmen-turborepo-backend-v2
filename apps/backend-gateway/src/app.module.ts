@@ -19,6 +19,7 @@ import { Platform_UserBusinessUnitModule } from './platform/platform_user-busine
 import { PlatformUserModule } from './platform/platform-user/platform-user.module';
 import { Platform_ReportTemplateModule } from './platform/platform_report-template/platform_report-template.module';
 import { ExceptionFilter } from './exception/exception.fillter';
+import { GatewayRequestContextInterceptor } from './common/interceptors/gateway-request-context.interceptor';
 import { NotificationModule } from './notification/notification.module';
 import { DatabaseModule } from './common/database/database.module';
 import { PriceListTemplateModule } from './application/price-list-template/price-list-template.module';
@@ -89,6 +90,10 @@ import { RequestForPricingModule } from './application/request-for-pricing/reque
     {
       provide: APP_FILTER,
       useClass: ExceptionFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: GatewayRequestContextInterceptor,
     },
     {
       provide: APP_INTERCEPTOR,

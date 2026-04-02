@@ -7,6 +7,7 @@ import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-c
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class RequestForPricingService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -45,7 +46,7 @@ export class RequestForPricingService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'request-for-pricing.findOne', service: 'request-for-pricing' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -91,8 +92,7 @@ export class RequestForPricingService {
         user_id: user_id,
         bu_code: bu_code,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -135,7 +135,7 @@ export class RequestForPricingService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'request-for-pricing.create', service: 'request-for-pricing' },
-      { data: data, user_id: user_id, bu_code: bu_code, version: version },
+      { data: data, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -177,7 +177,7 @@ export class RequestForPricingService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'request-for-pricing.update', service: 'request-for-pricing' },
-      { data: data, user_id: user_id, bu_code: bu_code, version: version },
+      { data: data, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -220,7 +220,7 @@ export class RequestForPricingService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'request-for-pricing.remove', service: 'request-for-pricing' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

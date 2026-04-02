@@ -6,6 +6,7 @@ import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-c
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class CurrenciesService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -47,7 +48,7 @@ export class CurrenciesService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'currencies.findAllActive', service: 'currencies' },
-      { user_id, bu_code, paginate, version },
+      { user_id, bu_code, paginate, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -91,7 +92,7 @@ export class CurrenciesService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'currencies.findOne', service: 'currencies' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -128,7 +129,7 @@ export class CurrenciesService {
 
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'currencies.findAllISO', service: 'currencies' },
-      { user_id, paginate, version },
+      { user_id, paginate, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -170,7 +171,7 @@ export class CurrenciesService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'currencies.getDefault', service: 'currencies' },
-      { user_id, bu_code, version },
+      { user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {

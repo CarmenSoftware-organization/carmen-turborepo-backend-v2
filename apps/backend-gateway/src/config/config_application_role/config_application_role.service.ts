@@ -6,6 +6,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class ConfigApplicationRoleService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -40,8 +41,7 @@ export class ConfigApplicationRoleService {
         paginate,
         user_id,
         bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -81,8 +81,7 @@ export class ConfigApplicationRoleService {
         id,
         user_id,
         bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -122,8 +121,7 @@ export class ConfigApplicationRoleService {
         data: createConfigApplicationRoleDto,
         user_id,
         bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -163,8 +161,7 @@ export class ConfigApplicationRoleService {
         data: updateConfigApplicationRoleDto,
         user_id,
         bu_code,
-        version,
-      },
+        version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -204,8 +201,7 @@ export class ConfigApplicationRoleService {
         id,
         user_id,
         bu_code,
-        version,
-      },
+        version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

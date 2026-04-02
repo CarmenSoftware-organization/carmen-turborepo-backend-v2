@@ -8,6 +8,7 @@ import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class PurchaseRequestTemplateService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -54,8 +55,7 @@ export class PurchaseRequestTemplateService {
         user_id: user_id,
         bu_code: bu_code,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -99,7 +99,7 @@ export class PurchaseRequestTemplateService {
         cmd: 'purchase-request-template.find-one',
         service: 'purchase-request-template',
       },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -147,8 +147,7 @@ export class PurchaseRequestTemplateService {
         data: createPurchaseRequestTemplateDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -199,8 +198,7 @@ export class PurchaseRequestTemplateService {
         data: { id, ...updatePurchaseRequestTemplateDto },
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -244,7 +242,7 @@ export class PurchaseRequestTemplateService {
         cmd: 'purchase-request-template.delete',
         service: 'purchase-request-template',
       },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

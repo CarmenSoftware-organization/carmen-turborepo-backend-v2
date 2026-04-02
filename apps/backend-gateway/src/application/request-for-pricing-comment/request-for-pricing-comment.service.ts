@@ -7,6 +7,7 @@ import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class RequestForPricingCommentService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -26,7 +27,7 @@ export class RequestForPricingCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'request-for-pricing-comment.find-by-id', service: 'request-for-pricing-comment' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -47,7 +48,7 @@ export class RequestForPricingCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'request-for-pricing-comment.find-all-by-request-for-pricing-id', service: 'request-for-pricing-comment' },
-      { request_for_pricing_id, user_id, bu_code, paginate, version },
+      { request_for_pricing_id, user_id, bu_code, paginate, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -67,7 +68,7 @@ export class RequestForPricingCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'request-for-pricing-comment.create', service: 'request-for-pricing-comment' },
-      { data, user_id, bu_code, version },
+      { data, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.CREATED) {
@@ -88,7 +89,7 @@ export class RequestForPricingCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'request-for-pricing-comment.update', service: 'request-for-pricing-comment' },
-      { id, data, user_id, bu_code, version },
+      { id, data, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -108,7 +109,7 @@ export class RequestForPricingCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'request-for-pricing-comment.delete', service: 'request-for-pricing-comment' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -129,7 +130,7 @@ export class RequestForPricingCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'request-for-pricing-comment.add-attachment', service: 'request-for-pricing-comment' },
-      { id, attachment, user_id, bu_code, version },
+      { id, attachment, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -150,7 +151,7 @@ export class RequestForPricingCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'request-for-pricing-comment.remove-attachment', service: 'request-for-pricing-comment' },
-      { id, fileToken, user_id, bu_code, version },
+      { id, fileToken, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {

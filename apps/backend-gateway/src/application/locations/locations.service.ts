@@ -7,6 +7,7 @@ import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-c
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class LocationsService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -51,7 +52,7 @@ export class LocationsService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'locations.findOne', service: 'locations' },
-      { id: id, user_id: user_id, bu_code: bu_code, withUser: withUser, withProducts: withProducts, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, withUser: withUser, withProducts: withProducts, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -98,8 +99,7 @@ export class LocationsService {
         user_id: user_id,
         bu_code: bu_code,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -140,7 +140,7 @@ export class LocationsService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'locations.findAllByUser', service: 'locations' },
-      { user_id: user_id, bu_code: bu_code, version: version },
+      { user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
 
@@ -184,7 +184,7 @@ export class LocationsService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'locations.findAllByProductId', service: 'locations' },
-      { product_id, user_id, bu_code, paginate, version },
+      { product_id, user_id, bu_code, paginate, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
 
@@ -223,7 +223,7 @@ export class LocationsService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'locations-product.getProductInventory', service: 'locations-product-inventory' },
-      { location_id: location_id, product_id: product_id, user_id: user_id, bu_code: bu_code, version: version },
+      { location_id: location_id, product_id: product_id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

@@ -15,6 +15,7 @@ import {
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class TransferService {
   private readonly logger: BackendLogger = new BackendLogger(TransferService.name);
@@ -46,7 +47,7 @@ export class TransferService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer.findOne', service: 'transfer' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -83,7 +84,7 @@ export class TransferService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer.findAll', service: 'transfer' },
-      { user_id, tenant_id, paginate, version },
+      { user_id, tenant_id, paginate, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -120,7 +121,7 @@ export class TransferService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer.create', service: 'transfer' },
-      { data, user_id, tenant_id, version },
+      { data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -157,7 +158,7 @@ export class TransferService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer.update', service: 'transfer' },
-      { data, user_id, tenant_id, version },
+      { data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -194,7 +195,7 @@ export class TransferService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer.delete', service: 'transfer' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -233,7 +234,7 @@ export class TransferService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer-detail.find-by-id', service: 'transfer' },
-      { detail_id: detailId, user_id, tenant_id, version },
+      { detail_id: detailId, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -270,7 +271,7 @@ export class TransferService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer-detail.find-all', service: 'transfer' },
-      { transfer_id: transferId, user_id, tenant_id, version },
+      { transfer_id: transferId, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -309,7 +310,7 @@ export class TransferService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer-detail.create', service: 'transfer' },
-      { transfer_id: transferId, data, user_id, tenant_id, version },
+      { transfer_id: transferId, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -348,7 +349,7 @@ export class TransferService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer-detail.update', service: 'transfer' },
-      { detail_id: detailId, data, user_id, tenant_id, version },
+      { detail_id: detailId, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -385,7 +386,7 @@ export class TransferService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'transfer-detail.delete', service: 'transfer' },
-      { detail_id: detailId, user_id, tenant_id, version },
+      { detail_id: detailId, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

@@ -10,6 +10,7 @@ import { CreatePurchaseRequestDto, Result, MicroserviceResponse } from '@/common
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class MyPendingPurchaseRequestService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -47,7 +48,7 @@ export class MyPendingPurchaseRequestService {
 
     const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.find-by-id', service: 'purchase-request' },
-      { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
+      { id: id, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -94,8 +95,7 @@ export class MyPendingPurchaseRequestService {
         user_id: user_id,
         bu_code: bu_code,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -143,8 +143,7 @@ export class MyPendingPurchaseRequestService {
         data: createDto,
         user_id: user_id,
         tenant_id: tenant_id,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -192,8 +191,7 @@ export class MyPendingPurchaseRequestService {
         data: { id, ...updateDto },
         user_id: user_id,
         tenant_id: tenant_id,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -234,7 +232,7 @@ export class MyPendingPurchaseRequestService {
 
     const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.submit', service: 'purchase-request' },
-      { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
+      { id: id, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -283,8 +281,7 @@ export class MyPendingPurchaseRequestService {
         body: payload,
         user_id: user_id,
         tenant_id: tenant_id,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -325,7 +322,7 @@ export class MyPendingPurchaseRequestService {
 
     const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.reject', service: 'purchase-request' },
-      { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
+      { id: id, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -373,8 +370,7 @@ export class MyPendingPurchaseRequestService {
         body,
         user_id: user_id,
         tenant_id: tenant_id,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -415,7 +411,7 @@ export class MyPendingPurchaseRequestService {
 
     const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'purchase-request.delete', service: 'purchase-request' },
-      { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
+      { id: id, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -463,8 +459,7 @@ export class MyPendingPurchaseRequestService {
         status: status,
         user_id: user_id,
         tenant_id: tenant_id,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -509,8 +504,7 @@ export class MyPendingPurchaseRequestService {
       {
         user_id,
         bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -548,8 +542,7 @@ export class MyPendingPurchaseRequestService {
       { cmd: 'my-pending.purchase-request.find-all.count', service: 'my-pending' },
       {
         user_id,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

@@ -7,6 +7,7 @@ import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class PurchaseRequestCommentService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -47,7 +48,7 @@ export class PurchaseRequestCommentService {
         cmd: 'purchase-request-comment.find-by-id',
         service: 'purchase-request-comment',
       },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -94,7 +95,7 @@ export class PurchaseRequestCommentService {
         cmd: 'purchase-request-comment.find-all-by-purchase-request-id',
         service: 'purchase-request-comment',
       },
-      { purchase_request_id, user_id, bu_code, paginate, version },
+      { purchase_request_id, user_id, bu_code, paginate, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -138,7 +139,7 @@ export class PurchaseRequestCommentService {
         cmd: 'purchase-request-comment.create',
         service: 'purchase-request-comment',
       },
-      { data, user_id, bu_code, version },
+      { data, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -185,7 +186,7 @@ export class PurchaseRequestCommentService {
         cmd: 'purchase-request-comment.update',
         service: 'purchase-request-comment',
       },
-      { id, data, user_id, bu_code, version },
+      { id, data, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -229,7 +230,7 @@ export class PurchaseRequestCommentService {
         cmd: 'purchase-request-comment.delete',
         service: 'purchase-request-comment',
       },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -276,7 +277,7 @@ export class PurchaseRequestCommentService {
         cmd: 'purchase-request-comment.add-attachment',
         service: 'purchase-request-comment',
       },
-      { id, attachment, user_id, bu_code, version },
+      { id, attachment, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -323,7 +324,7 @@ export class PurchaseRequestCommentService {
         cmd: 'purchase-request-comment.remove-attachment',
         service: 'purchase-request-comment',
       },
-      { id, fileToken, user_id, bu_code, version },
+      { id, fileToken, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

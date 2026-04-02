@@ -6,6 +6,7 @@ import { ICreateCreditNoteReason } from 'src/common/dto/credit-note-reason';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from '@/common/helpers/backend.logger';
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class CreditNoteReasonService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -41,8 +42,7 @@ export class CreditNoteReasonService {
         user_id: user_id,
         bu_code: bu_code,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -81,8 +81,7 @@ export class CreditNoteReasonService {
         data: createDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

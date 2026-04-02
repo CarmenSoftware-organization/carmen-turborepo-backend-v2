@@ -9,6 +9,7 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { sendToService } from 'src/common/helpers/microservice.helper';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class UserService implements OnModuleInit {
   private readonly logger: BackendLogger = new BackendLogger(UserService.name);
@@ -105,7 +106,7 @@ export class UserService implements OnModuleInit {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'get-all-user-in-tenant', service: 'auth' },
-      { user_id: user_id, bu_code: bu_code, paginate: paginate, version: version },
+      { user_id: user_id, bu_code: bu_code, paginate: paginate, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -151,7 +152,7 @@ export class UserService implements OnModuleInit {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'update-user-profile', service: 'auth' },
-      { user_id: userId, data: updateData, version: version },
+      { user_id: userId, data: updateData, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -191,7 +192,7 @@ export class UserService implements OnModuleInit {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'get-permission', service: 'auth' },
-      { user_id: user_id, version: version },
+      { user_id: user_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

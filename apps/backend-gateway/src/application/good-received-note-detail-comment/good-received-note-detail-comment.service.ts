@@ -7,6 +7,7 @@ import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class GoodReceivedNoteDetailCommentService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -26,7 +27,7 @@ export class GoodReceivedNoteDetailCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'good-received-note-detail-comment.find-by-id', service: 'good-received-note-detail-comment' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -47,7 +48,7 @@ export class GoodReceivedNoteDetailCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'good-received-note-detail-comment.find-all-by-good-received-note-detail-id', service: 'good-received-note-detail-comment' },
-      { good_received_note_detail_id, user_id, bu_code, paginate, version },
+      { good_received_note_detail_id, user_id, bu_code, paginate, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -67,7 +68,7 @@ export class GoodReceivedNoteDetailCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'good-received-note-detail-comment.create', service: 'good-received-note-detail-comment' },
-      { data, user_id, bu_code, version },
+      { data, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.CREATED) {
@@ -88,7 +89,7 @@ export class GoodReceivedNoteDetailCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'good-received-note-detail-comment.update', service: 'good-received-note-detail-comment' },
-      { id, data, user_id, bu_code, version },
+      { id, data, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -108,7 +109,7 @@ export class GoodReceivedNoteDetailCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'good-received-note-detail-comment.delete', service: 'good-received-note-detail-comment' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -129,7 +130,7 @@ export class GoodReceivedNoteDetailCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'good-received-note-detail-comment.add-attachment', service: 'good-received-note-detail-comment' },
-      { id, attachment, user_id, bu_code, version },
+      { id, attachment, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -150,7 +151,7 @@ export class GoodReceivedNoteDetailCommentService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'good-received-note-detail-comment.remove-attachment', service: 'good-received-note-detail-comment' },
-      { id, fileToken, user_id, bu_code, version },
+      { id, fileToken, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {

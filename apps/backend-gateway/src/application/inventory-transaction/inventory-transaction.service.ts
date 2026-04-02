@@ -7,6 +7,7 @@ import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-c
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class InventoryTransactionService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -24,7 +25,7 @@ export class InventoryTransactionService {
   ): Promise<Result<unknown>> {
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd, service: 'inventory-transaction' },
-      payload,
+      { ...payload, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {

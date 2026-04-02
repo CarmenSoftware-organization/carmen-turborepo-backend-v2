@@ -11,6 +11,7 @@ import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Config_CreditNoteReasonService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -30,7 +31,7 @@ export class Config_CreditNoteReasonService {
   ): Promise<Result<unknown>> {
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'credit-note-reason.find-one', service: 'credit-note-reason' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -53,7 +54,7 @@ export class Config_CreditNoteReasonService {
   ): Promise<Result<unknown>> {
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'credit-note-reason.find-all', service: 'credit-note-reason' },
-      { user_id, paginate, bu_code, version },
+      { user_id, paginate, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -76,7 +77,7 @@ export class Config_CreditNoteReasonService {
   ): Promise<Result<unknown>> {
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'credit-note-reason.create', service: 'credit-note-reason' },
-      { data: createDto, user_id, bu_code, version },
+      { data: createDto, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -99,7 +100,7 @@ export class Config_CreditNoteReasonService {
   ): Promise<Result<unknown>> {
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'credit-note-reason.update', service: 'credit-note-reason' },
-      { data: updateDto, user_id, bu_code, version },
+      { data: updateDto, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -122,7 +123,7 @@ export class Config_CreditNoteReasonService {
   ): Promise<Result<unknown>> {
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'credit-note-reason.patch', service: 'credit-note-reason' },
-      { data: updateDto, user_id, bu_code, version },
+      { data: updateDto, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -145,7 +146,7 @@ export class Config_CreditNoteReasonService {
   ): Promise<Result<unknown>> {
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'credit-note-reason.delete', service: 'credit-note-reason' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

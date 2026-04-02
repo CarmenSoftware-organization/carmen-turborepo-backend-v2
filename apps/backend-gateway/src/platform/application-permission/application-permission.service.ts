@@ -10,6 +10,7 @@ import { CreateApplicationPermissionDto, UpdateApplicationPermissionDto } from '
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class ApplicationPermissionService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -37,7 +38,7 @@ export class ApplicationPermissionService {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'permission.findAll', service: 'permission' },
-      { version },
+      { version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -71,7 +72,7 @@ export class ApplicationPermissionService {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'permission.findOne', service: 'permission' },
-      { id, version },
+      { id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -108,7 +109,7 @@ export class ApplicationPermissionService {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'permission.create', service: 'permission' },
-      { data: createApplicationPermissionDto, version },
+      { data: createApplicationPermissionDto, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -148,7 +149,7 @@ export class ApplicationPermissionService {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'permission.update', service: 'permission' },
-      { id, data: updateApplicationPermissionDto, version },
+      { id, data: updateApplicationPermissionDto, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -182,7 +183,7 @@ export class ApplicationPermissionService {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'permission.remove', service: 'permission' },
-      { id, version },
+      { id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

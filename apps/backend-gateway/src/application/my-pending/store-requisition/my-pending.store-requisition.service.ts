@@ -15,6 +15,7 @@ import {
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class MyPendingStoreRequisitionService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -54,7 +55,7 @@ export class MyPendingStoreRequisitionService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.find-by-id', service: 'store-requisition' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -101,8 +102,7 @@ export class MyPendingStoreRequisitionService {
         user_id: user_id,
         bu_code: bu_code,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -145,7 +145,7 @@ export class MyPendingStoreRequisitionService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.create', service: 'store-requisition' },
-      { data: body, user_id, bu_code, version },
+      { data: body, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -191,7 +191,7 @@ export class MyPendingStoreRequisitionService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.update', service: 'store-requisition' },
-      { data: { id, ...body }, user_id, bu_code, version },
+      { data: { id, ...body }, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -234,7 +234,7 @@ export class MyPendingStoreRequisitionService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.submit', service: 'store-requisition' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -277,7 +277,7 @@ export class MyPendingStoreRequisitionService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.approve', service: 'store-requisition' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -320,7 +320,7 @@ export class MyPendingStoreRequisitionService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.reject', service: 'store-requisition' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -363,7 +363,7 @@ export class MyPendingStoreRequisitionService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.review', service: 'store-requisition' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -406,7 +406,7 @@ export class MyPendingStoreRequisitionService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'store-requisition.delete', service: 'store-requisition' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -452,7 +452,7 @@ export class MyPendingStoreRequisitionService {
         cmd: 'store-requisition.find-all-by-status',
         service: 'store-requisition',
       },
-      { status, user_id, bu_code, version },
+      { status, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -498,8 +498,7 @@ export class MyPendingStoreRequisitionService {
       {
         user_id,
         bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -541,8 +540,7 @@ export class MyPendingStoreRequisitionService {
       },
       {
         user_id,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

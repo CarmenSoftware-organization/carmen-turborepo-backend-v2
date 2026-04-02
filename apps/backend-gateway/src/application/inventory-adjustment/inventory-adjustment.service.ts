@@ -8,6 +8,7 @@ import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 export type AdjustmentType = 'stock-in' | 'stock-out';
 
 export interface InventoryAdjustmentItem {
@@ -68,9 +69,9 @@ export class InventoryAdjustmentService {
     // Fetch stock-in data if type is not specified or type is 'stock-in'
     if (!type || type === 'stock-in') {
       const stockInRes: Observable<MicroserviceResponse> = this.inventoryService.send(
-        { cmd: 'stock-in.findAll', service: 'stock-in' },
-        { user_id, tenant_id, paginate, version },
-      );
+      { cmd: 'stock-in.findAll', service: 'stock-in' },
+      { user_id, tenant_id, paginate, version, ...getGatewayRequestContext() },
+    );
 
       const stockInResponse = await firstValueFrom(stockInRes);
 
@@ -90,9 +91,9 @@ export class InventoryAdjustmentService {
     // Fetch stock-out data if type is not specified or type is 'stock-out'
     if (!type || type === 'stock-out') {
       const stockOutRes: Observable<MicroserviceResponse> = this.inventoryService.send(
-        { cmd: 'stock-out.findAll', service: 'stock-out' },
-        { user_id, tenant_id, paginate, version },
-      );
+      { cmd: 'stock-out.findAll', service: 'stock-out' },
+      { user_id, tenant_id, paginate, version, ...getGatewayRequestContext() },
+    );
 
       const stockOutResponse = await firstValueFrom(stockOutRes);
 
@@ -155,7 +156,7 @@ export class InventoryAdjustmentService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd, service },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

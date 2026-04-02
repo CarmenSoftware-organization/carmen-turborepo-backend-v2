@@ -11,6 +11,7 @@ import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Config_TaxProfileService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -47,7 +48,7 @@ export class Config_TaxProfileService {
     );
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'tax-profile.findOne', service: 'tax-profile' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -93,8 +94,7 @@ export class Config_TaxProfileService {
         user_id: user_id,
         paginate: query,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -138,8 +138,7 @@ export class Config_TaxProfileService {
         data: createDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -186,8 +185,7 @@ export class Config_TaxProfileService {
         data: updateDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -227,7 +225,7 @@ export class Config_TaxProfileService {
     );
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'tax-profile.delete', service: 'tax-profile' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

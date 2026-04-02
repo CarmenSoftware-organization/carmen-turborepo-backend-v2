@@ -6,6 +6,7 @@ import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Config_ProductsService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -43,7 +44,7 @@ export class Config_ProductsService {
     );
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'products.findOne', service: 'products' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -89,8 +90,7 @@ export class Config_ProductsService {
         user_id: user_id,
         bu_code: bu_code,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -138,8 +138,7 @@ export class Config_ProductsService {
         data: createDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -185,8 +184,7 @@ export class Config_ProductsService {
         data: updateDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -228,7 +226,7 @@ export class Config_ProductsService {
     );
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'products.delete', service: 'products' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -270,7 +268,7 @@ export class Config_ProductsService {
     );
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'products.findItemGroup', service: 'products' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

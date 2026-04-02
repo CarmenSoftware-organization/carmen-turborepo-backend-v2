@@ -7,6 +7,7 @@ import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-c
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class DepartmentService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -45,7 +46,7 @@ export class DepartmentService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'departments.findOne', service: 'departments' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -92,8 +93,7 @@ export class DepartmentService {
         user_id: user_id,
         paginate: query,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

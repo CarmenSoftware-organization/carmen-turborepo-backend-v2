@@ -8,6 +8,7 @@ import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class StockInDetailService {
   private readonly logger: BackendLogger = new BackendLogger(StockInDetailService.name);
@@ -39,7 +40,7 @@ export class StockInDetailService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in-detail.findAll', service: 'stock-in-detail' },
-      { user_id, tenant_id, paginate, version },
+      { user_id, tenant_id, paginate, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -76,7 +77,7 @@ export class StockInDetailService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in-detail.findOne', service: 'stock-in-detail' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -113,7 +114,7 @@ export class StockInDetailService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in-detail.createStandalone', service: 'stock-in-detail' },
-      { data, user_id, tenant_id, version },
+      { data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -152,7 +153,7 @@ export class StockInDetailService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in-detail.updateStandalone', service: 'stock-in-detail' },
-      { id, data, user_id, tenant_id, version },
+      { id, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -189,7 +190,7 @@ export class StockInDetailService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in-detail.deleteStandalone', service: 'stock-in-detail' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

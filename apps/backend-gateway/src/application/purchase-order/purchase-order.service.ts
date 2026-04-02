@@ -5,6 +5,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { Result, PurchaseOrderUpdateDto } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 import {
   SubmitPurchaseOrderDto,
   ApprovePurchaseOrderDto,
@@ -50,9 +51,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.find-by-id', service: 'purchase-order' },
-        { id, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order.find-by-id', service: 'purchase-order' },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -87,9 +88,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.find-all-for-grn', service: 'purchase-order' },
-        { user_id, bu_code, paginate, version },
-      ),
+      { cmd: 'purchase-order.find-all-for-grn', service: 'purchase-order' },
+      { user_id, bu_code, paginate, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -124,9 +125,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.find-vendors-for-grn', service: 'purchase-order' },
-        { user_id, bu_code, paginate, version },
-      ),
+      { cmd: 'purchase-order.find-vendors-for-grn', service: 'purchase-order' },
+      { user_id, bu_code, paginate, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -163,9 +164,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.find-all-for-grn-by-vendor', service: 'purchase-order' },
-        { vendor_id, user_id, bu_code, paginate, version },
-      ),
+      { cmd: 'purchase-order.find-all-for-grn-by-vendor', service: 'purchase-order' },
+      { vendor_id, user_id, bu_code, paginate, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -206,9 +207,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.find-all', service: 'purchase-order' },
-        { user_id, bu_code, paginate, version },
-      ),
+      { cmd: 'purchase-order.find-all', service: 'purchase-order' },
+      { user_id, bu_code, paginate, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -247,9 +248,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.create', service: 'purchase-order' },
-        { data: createDto, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order.create', service: 'purchase-order' },
+      { data: createDto, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.CREATED) {
@@ -291,9 +292,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.update', service: 'purchase-order' },
-        { data: { id, ...updateDto }, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order.update', service: 'purchase-order' },
+      { data: { id, ...updateDto }, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -332,9 +333,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.delete', service: 'purchase-order' },
-        { data: id, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order.delete', service: 'purchase-order' },
+      { data: id, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -375,9 +376,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.group-pr', service: 'purchase-order' },
-        { data: { pr_ids, workflow_id }, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order.group-pr', service: 'purchase-order' },
+      { data: { pr_ids, workflow_id }, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -418,9 +419,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.confirm-pr', service: 'purchase-order' },
-        { data: { pr_ids, workflow_id }, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order.confirm-pr', service: 'purchase-order' },
+      { data: { pr_ids, workflow_id }, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.CREATED) {
@@ -459,9 +460,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.cancel', service: 'purchase-order' },
-        { id, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order.cancel', service: 'purchase-order' },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -500,9 +501,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.close', service: 'purchase-order' },
-        { id, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order.close', service: 'purchase-order' },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -541,9 +542,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.export', service: 'purchase-order' },
-        { id, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order.export', service: 'purchase-order' },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -588,9 +589,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.print', service: 'purchase-order' },
-        { id, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order.print', service: 'purchase-order' },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -637,9 +638,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.save', service: 'purchase-order' },
-        { id, data, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order.save', service: 'purchase-order' },
+      { id, data, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -676,9 +677,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.submit', service: 'purchase-order' },
-        { id, payload, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order.submit', service: 'purchase-order' },
+      { id, payload, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -709,9 +710,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.approve', service: 'purchase-order' },
-        { id, data, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order.approve', service: 'purchase-order' },
+      { id, data, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -752,9 +753,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.reject', service: 'purchase-order' },
-        { id, data, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order.reject', service: 'purchase-order' },
+      { id, data, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -795,9 +796,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.review', service: 'purchase-order' },
-        { id, data, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order.review', service: 'purchase-order' },
+      { id, data, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -834,9 +835,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order-detail.find-by-id', service: 'purchase-order' },
-        { detail_id: detailId, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order-detail.find-by-id', service: 'purchase-order' },
+      { detail_id: detailId, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -871,9 +872,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order-detail.find-all', service: 'purchase-order' },
-        { purchase_order_id: purchaseOrderId, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order-detail.find-all', service: 'purchase-order' },
+      { purchase_order_id: purchaseOrderId, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -908,9 +909,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order-detail.delete', service: 'purchase-order' },
-        { detail_id: detailId, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order-detail.delete', service: 'purchase-order' },
+      { detail_id: detailId, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -940,9 +941,9 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        { cmd: 'purchase-order.get-previous-stages', service: 'purchase-order' },
-        { po_id, user_id, bu_code, version },
-      ),
+      { cmd: 'purchase-order.get-previous-stages', service: 'purchase-order' },
+      { po_id, user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -967,12 +968,12 @@ export class PurchaseOrderService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-        {
+      {
           cmd: 'purchase-order.find-all-workflow-stages-by-po',
           service: 'purchase-order',
         },
-        { user_id, bu_code, version },
-      ),
+      { user_id, bu_code, version, ...getGatewayRequestContext() },
+    ),
     );
 
     if (response.response.status !== HttpStatus.OK) {

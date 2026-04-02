@@ -8,6 +8,7 @@ import { CreateCreditNoteDto, UpdateCreditNoteDto, Result, MicroserviceResponse 
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class CreditNoteService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -47,7 +48,7 @@ export class CreditNoteService {
 
     const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'credit-note.find-one', service: 'credit-note' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -94,8 +95,7 @@ export class CreditNoteService {
         user_id: user_id,
         bu_code: bu_code,
         paginate: query,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -142,8 +142,7 @@ export class CreditNoteService {
         data: createDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -190,8 +189,7 @@ export class CreditNoteService {
         data: updateDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -234,7 +232,7 @@ export class CreditNoteService {
 
     const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'credit-note.delete', service: 'credit-note' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -262,7 +260,7 @@ export class CreditNoteService {
 
     const res: Observable<MicroserviceResponse> = this.procurementService.send(
       { cmd: 'credit-note.confirm', service: 'credit-note' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

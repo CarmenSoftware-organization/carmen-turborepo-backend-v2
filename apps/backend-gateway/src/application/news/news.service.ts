@@ -6,6 +6,7 @@ import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class NewsService {
   private readonly logger: BackendLogger = new BackendLogger(NewsService.name);
@@ -40,7 +41,7 @@ export class NewsService {
 
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'news.findAll', service: 'news' },
-      { user_id, paginate, version },
+      { user_id, paginate, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     // if (response.response.status !== HttpStatus.OK) {
@@ -85,7 +86,7 @@ export class NewsService {
 
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'news.findOne', service: 'news' },
-      { id, user_id, version },
+      { id, user_id, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     // if (response.response.status !== HttpStatus.OK) {
@@ -131,7 +132,7 @@ export class NewsService {
 
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'news.create', service: 'news' },
-      { data: createNewsDto, user_id, version },
+      { data: createNewsDto, user_id, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
 
@@ -181,7 +182,7 @@ export class NewsService {
 
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'news.update', service: 'news' },
-      { id, data: updateNewsDto, user_id, version },
+      { id, data: updateNewsDto, user_id, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
 
@@ -224,7 +225,7 @@ export class NewsService {
 
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'news.delete', service: 'news' },
-      { id, user_id, version },
+      { id, user_id, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
 

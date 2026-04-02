@@ -9,6 +9,7 @@ import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-c
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { randomInt } from 'crypto';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class PhysicalCountService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -47,7 +48,7 @@ export class PhysicalCountService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.findOne', service: 'physical-count' },
-      { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
+      { id: id, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -94,8 +95,7 @@ export class PhysicalCountService {
         user_id: user_id,
         tenant_id: tenant_id,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -138,7 +138,7 @@ export class PhysicalCountService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.create', service: 'physical-count' },
-      { data: data, user_id: user_id, tenant_id: tenant_id, version: version },
+      { data: data, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -184,7 +184,7 @@ export class PhysicalCountService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.update', service: 'physical-count' },
-      { id: id, data: data, user_id: user_id, tenant_id: tenant_id, version: version },
+      { id: id, data: data, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -227,7 +227,7 @@ export class PhysicalCountService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.delete', service: 'physical-count' },
-      { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
+      { id: id, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -264,7 +264,7 @@ export class PhysicalCountService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.refresh', service: 'physical-count' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -303,7 +303,7 @@ export class PhysicalCountService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-detail.find-by-id', service: 'physical-count' },
-      { detail_id: detailId, user_id, tenant_id, version },
+      { detail_id: detailId, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -340,7 +340,7 @@ export class PhysicalCountService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-detail.find-all', service: 'physical-count' },
-      { physical_count_id: physicalCountId, user_id, tenant_id, version },
+      { physical_count_id: physicalCountId, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -377,7 +377,7 @@ export class PhysicalCountService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-detail.delete', service: 'physical-count' },
-      { detail_id: detailId, user_id, tenant_id, version },
+      { detail_id: detailId, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -418,7 +418,7 @@ export class PhysicalCountService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.save-items', service: 'physical-count' },
-      { id, data, user_id, tenant_id, version },
+      { id, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -457,7 +457,7 @@ export class PhysicalCountService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.review-items', service: 'physical-count' },
-      { id, data, user_id, tenant_id, version },
+      { id, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -494,7 +494,7 @@ export class PhysicalCountService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.get-review', service: 'physical-count' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -531,7 +531,7 @@ export class PhysicalCountService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count.submit', service: 'physical-count' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -570,7 +570,7 @@ export class PhysicalCountService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'physical-count-detail.create-comment', service: 'physical-count' },
-      { detail_id: detailId, data, user_id, tenant_id, version },
+      { detail_id: detailId, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

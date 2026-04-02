@@ -15,6 +15,7 @@ import {
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class ApplicationRolePermissionService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -44,7 +45,7 @@ export class ApplicationRolePermissionService {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'get-permissions-by-role', service: 'auth' },
-      { roleId, version },
+      { roleId, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -81,7 +82,7 @@ export class ApplicationRolePermissionService {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'get-roles-by-permission', service: 'auth' },
-      { permissionId, version },
+      { permissionId, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -118,7 +119,7 @@ export class ApplicationRolePermissionService {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'assign-permissions-to-role', service: 'auth' },
-      { data: assignPermissionsDto, version },
+      { data: assignPermissionsDto, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -155,7 +156,7 @@ export class ApplicationRolePermissionService {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'remove-permissions-from-role', service: 'auth' },
-      { data: removePermissionsDto, version },
+      { data: removePermissionsDto, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -192,7 +193,7 @@ export class ApplicationRolePermissionService {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'assign-permission-to-role', service: 'auth' },
-      { data: assignPermissionDto, version },
+      { data: assignPermissionDto, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -229,7 +230,7 @@ export class ApplicationRolePermissionService {
 
     const res: Observable<MicroserviceResponse> = this.authService.send(
       { cmd: 'remove-permission-from-role', service: 'auth' },
-      { data: removePermissionDto, version },
+      { data: removePermissionDto, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

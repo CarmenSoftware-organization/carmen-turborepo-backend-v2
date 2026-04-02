@@ -6,6 +6,7 @@ import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Platform_ReportTemplateService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -30,7 +31,7 @@ export class Platform_ReportTemplateService {
 
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'report-template.findAll', service: 'report-template' },
-      { user_id, tenant_id, paginate, version },
+      { user_id, tenant_id, paginate, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
 
@@ -57,7 +58,7 @@ export class Platform_ReportTemplateService {
 
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'report-template.findOne', service: 'report-template' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
 
@@ -84,7 +85,7 @@ export class Platform_ReportTemplateService {
 
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'report-template.create', service: 'report-template' },
-      { data, user_id, tenant_id, version },
+      { data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
 
@@ -112,7 +113,7 @@ export class Platform_ReportTemplateService {
 
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'report-template.update', service: 'report-template' },
-      { id, data, user_id, tenant_id, version },
+      { id, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
 
@@ -139,7 +140,7 @@ export class Platform_ReportTemplateService {
 
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'report-template.delete', service: 'report-template' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
 

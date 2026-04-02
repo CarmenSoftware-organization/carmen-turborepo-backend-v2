@@ -6,6 +6,7 @@ import { Result } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class MyPendingPurchaseOrderService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -43,7 +44,7 @@ export class MyPendingPurchaseOrderService {
 
     const res: Observable<any> = this.procurementService.send(
       { cmd: 'purchase-order.find-by-id', service: 'purchase-order' },
-      { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
+      { id: id, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -90,8 +91,7 @@ export class MyPendingPurchaseOrderService {
         user_id: user_id,
         bu_code: bu_code,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -133,8 +133,7 @@ export class MyPendingPurchaseOrderService {
       },
       {
         user_id,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -174,7 +173,7 @@ export class MyPendingPurchaseOrderService {
         cmd: 'purchase-order.find-all-my-pending-stages',
         service: 'purchase-order',
       },
-      { user_id, bu_code, version },
+      { user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

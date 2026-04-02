@@ -7,6 +7,7 @@ import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-c
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class ProductsService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -54,8 +55,7 @@ export class ProductsService {
         bu_code: bu_code,
         location_id: location_id,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -83,7 +83,7 @@ export class ProductsService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'product.get-last-purchase', service: 'product' },
-      { product_id, date, user_id, bu_code, version },
+      { product_id, date, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -112,7 +112,7 @@ export class ProductsService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'product.get-on-hand', service: 'product' },
-      { product_id, location_id, user_id, bu_code, version },
+      { product_id, location_id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -142,7 +142,7 @@ export class ProductsService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'product.get-cost', service: 'product' },
-      { product_id, location_id, quantity, user_id, bu_code, version },
+      { product_id, location_id, quantity, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -170,7 +170,7 @@ export class ProductsService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'product.get-on-order', service: 'product' },
-      { product_id, user_id, bu_code, version },
+      { product_id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

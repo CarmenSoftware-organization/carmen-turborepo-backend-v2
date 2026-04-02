@@ -16,6 +16,7 @@ import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-c
 import { ErrorCode } from 'src/common/result/error';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class StockInService {
   private readonly logger: BackendLogger = new BackendLogger(StockInService.name);
@@ -47,7 +48,7 @@ export class StockInService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in.findOne', service: 'stock-in' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -84,7 +85,7 @@ export class StockInService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in.findAll', service: 'stock-in' },
-      { user_id, tenant_id, paginate, version },
+      { user_id, tenant_id, paginate, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -121,7 +122,7 @@ export class StockInService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in.create', service: 'stock-in' },
-      { data, user_id, tenant_id, version },
+      { data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     let response: MicroserviceResponse;
@@ -181,7 +182,7 @@ export class StockInService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in.update', service: 'stock-in' },
-      { data, user_id, tenant_id, version },
+      { data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -218,7 +219,7 @@ export class StockInService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in.delete', service: 'stock-in' },
-      { id, user_id, tenant_id, version },
+      { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -247,7 +248,7 @@ export class StockInService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in.void', service: 'stock-in' },
-      { id, data, user_id, tenant_id, version },
+      { id, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -286,7 +287,7 @@ export class StockInService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in-detail.find-by-id', service: 'stock-in' },
-      { detail_id: detailId, user_id, tenant_id, version },
+      { detail_id: detailId, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -323,7 +324,7 @@ export class StockInService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in-detail.find-all', service: 'stock-in' },
-      { stock_in_id: stockInId, user_id, tenant_id, version },
+      { stock_in_id: stockInId, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -362,7 +363,7 @@ export class StockInService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in-detail.create', service: 'stock-in' },
-      { stock_in_id: stockInId, data, user_id, tenant_id, version },
+      { stock_in_id: stockInId, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -401,7 +402,7 @@ export class StockInService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in-detail.update', service: 'stock-in' },
-      { detail_id: detailId, data, user_id, tenant_id, version },
+      { detail_id: detailId, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -438,7 +439,7 @@ export class StockInService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in-detail.delete', service: 'stock-in' },
-      { detail_id: detailId, user_id, tenant_id, version },
+      { detail_id: detailId, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

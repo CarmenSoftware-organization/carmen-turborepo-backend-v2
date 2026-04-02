@@ -11,6 +11,7 @@ import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Config_ExtraCostTypeService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -48,7 +49,7 @@ export class Config_ExtraCostTypeService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'extra-cost-type.findOne', service: 'extra-cost-type' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
 
@@ -92,8 +93,7 @@ export class Config_ExtraCostTypeService {
         user_id: user_id,
         paginate: query,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -138,8 +138,7 @@ export class Config_ExtraCostTypeService {
         data: createDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
 
@@ -183,8 +182,7 @@ export class Config_ExtraCostTypeService {
         data: updateDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
 
@@ -224,7 +222,7 @@ export class Config_ExtraCostTypeService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'extra-cost-type.delete', service: 'extra-cost-type' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
 

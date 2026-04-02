@@ -5,6 +5,7 @@ import { Result, MicroserviceResponse } from '@/common';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Config_ProductLocationService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -47,8 +48,7 @@ export class Config_ProductLocationService {
         product_id: productId,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

@@ -5,6 +5,7 @@ import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class UnitConversionService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -41,7 +42,7 @@ export class UnitConversionService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'unit.get-order-unit-by-product-id', service: 'unit-conversion' },
-      { productId, user_id, bu_code, version },
+      { productId, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -82,7 +83,7 @@ export class UnitConversionService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'unit.get-ingredient-unit-by-product-id', service: 'unit-conversion' },
-      { productId, user_id, bu_code, version },
+      { productId, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -123,7 +124,7 @@ export class UnitConversionService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'unit.get-available-unit-by-product-id', service: 'unit-conversion' },
-      { productId, user_id, bu_code, version },
+      { productId, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

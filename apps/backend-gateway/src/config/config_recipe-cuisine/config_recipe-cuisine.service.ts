@@ -7,6 +7,7 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { ICreateRecipeCuisine, IUpdateRecipeCuisine } from './dto/recipe-cuisine.dto';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Config_RecipeCuisineService {
   private readonly logger: BackendLogger = new BackendLogger(Config_RecipeCuisineService.name);
@@ -29,7 +30,7 @@ export class Config_RecipeCuisineService {
     this.logger.debug({ function: 'findOne', id, version }, Config_RecipeCuisineService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-cuisine.findOne', service: 'recipe-cuisine' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -51,7 +52,7 @@ export class Config_RecipeCuisineService {
     this.logger.debug({ function: 'findAll', paginate, version }, Config_RecipeCuisineService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-cuisine.findAll', service: 'recipe-cuisine' },
-      { user_id, paginate, bu_code, version },
+      { user_id, paginate, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -73,7 +74,7 @@ export class Config_RecipeCuisineService {
     this.logger.debug({ function: 'create', createDto, version }, Config_RecipeCuisineService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-cuisine.create', service: 'recipe-cuisine' },
-      { data: createDto, user_id, bu_code, version },
+      { data: createDto, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.CREATED) {
@@ -95,7 +96,7 @@ export class Config_RecipeCuisineService {
     this.logger.debug({ function: 'update', updateDto, version }, Config_RecipeCuisineService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-cuisine.update', service: 'recipe-cuisine' },
-      { data: updateDto, user_id, bu_code, version },
+      { data: updateDto, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -117,7 +118,7 @@ export class Config_RecipeCuisineService {
     this.logger.debug({ function: 'patch', updateDto, version }, Config_RecipeCuisineService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-cuisine.patch', service: 'recipe-cuisine' },
-      { data: updateDto, user_id, bu_code, version },
+      { data: updateDto, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {
@@ -139,7 +140,7 @@ export class Config_RecipeCuisineService {
     this.logger.debug({ function: 'delete', id, version }, Config_RecipeCuisineService.name);
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'recipe-cuisine.delete', service: 'recipe-cuisine' },
-      { id, user_id, bu_code, version },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
     if (response.response.status !== HttpStatus.OK) {

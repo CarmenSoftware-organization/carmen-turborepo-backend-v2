@@ -5,6 +5,7 @@ import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class UserBusinessUnitService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -40,7 +41,7 @@ export class UserBusinessUnitService {
 
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'business-unit.set-default-tenant', service: 'business-unit' },
-      { user_id: user_id, tenant_id: tenant_id, version: version },
+      { user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -74,7 +75,7 @@ export class UserBusinessUnitService {
 
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'business-unit.get-by-user-id', service: 'business-unit' },
-      { user_id: user_id, version: version },
+      { user_id: user_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

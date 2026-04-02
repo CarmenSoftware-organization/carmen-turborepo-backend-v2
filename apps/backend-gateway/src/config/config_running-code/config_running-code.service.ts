@@ -10,6 +10,7 @@ import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ResponseLib } from 'src/libs/response.lib';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Config_RunningCodeService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -37,7 +38,7 @@ export class Config_RunningCodeService {
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'running-code.findOne', service: 'running-codes' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -83,8 +84,7 @@ export class Config_RunningCodeService {
         user_id: user_id,
         bu_code: bu_code,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -124,8 +124,7 @@ export class Config_RunningCodeService {
       {
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -169,8 +168,7 @@ export class Config_RunningCodeService {
         data: createDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -214,8 +212,7 @@ export class Config_RunningCodeService {
         data: updateDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -255,7 +252,7 @@ export class Config_RunningCodeService {
     );
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'running-code.delete', service: 'running-codes' },
-      { id: id, user_id: user_id, bu_code: bu_code, version: version },
+      { id: id, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -295,7 +292,7 @@ export class Config_RunningCodeService {
     );
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'running-code.findByType', service: 'running-codes' },
-      { type: type, user_id: user_id, bu_code: bu_code, version: version },
+      { type: type, user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

@@ -10,6 +10,7 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Platform_UserBusinessUnitService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -40,7 +41,7 @@ export class Platform_UserBusinessUnitService {
     );
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'user-business-unit.findOne', service: 'business-unit' },
-      { id: id, user_id: user_id, version: version },
+      { id: id, user_id: user_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -82,8 +83,7 @@ export class Platform_UserBusinessUnitService {
       {
         user_id: user_id,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -122,7 +122,7 @@ export class Platform_UserBusinessUnitService {
     );
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'user-business-unit.create', service: 'business-unit' },
-      { data: data, user_id: user_id, version: version },
+      { data: data, user_id: user_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -161,7 +161,7 @@ export class Platform_UserBusinessUnitService {
     );
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'user-business-unit.update', service: 'business-unit' },
-      { data: data, user_id: user_id, version: version },
+      { data: data, user_id: user_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -196,7 +196,7 @@ export class Platform_UserBusinessUnitService {
     );
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'user-business-unit.delete', service: 'business-unit' },
-      { id: id, user_id: user_id, version: version },
+      { id: id, user_id: user_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

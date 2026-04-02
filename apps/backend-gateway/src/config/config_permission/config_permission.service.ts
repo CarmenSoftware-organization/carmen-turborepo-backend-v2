@@ -6,6 +6,7 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class ConfigPermissionService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -42,8 +43,7 @@ export class ConfigPermissionService {
         paginate,
         user_id,
         bu_code,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

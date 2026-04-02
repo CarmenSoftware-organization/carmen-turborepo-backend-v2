@@ -6,6 +6,7 @@ import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class UserLocationService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -42,7 +43,7 @@ export class UserLocationService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'locations.findAllByUser', service: 'locations' },
-      { user_id: user_id, bu_code: bu_code, version: version },
+      { user_id: user_id, bu_code: bu_code, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

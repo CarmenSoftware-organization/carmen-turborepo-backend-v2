@@ -5,6 +5,7 @@ import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class CheckPriceListService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -36,7 +37,7 @@ export class CheckPriceListService {
 
     const res: Observable<MicroserviceResponse> = this.masterService.send(
       { cmd: 'check-price-list.check', service: 'check-price-list' },
-      { url_token: urlToken, version, decodedToken },
+      { url_token: urlToken, version, decodedToken, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

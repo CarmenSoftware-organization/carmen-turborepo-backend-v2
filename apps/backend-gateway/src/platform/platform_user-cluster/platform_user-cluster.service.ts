@@ -7,6 +7,7 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Platform_UserClusterService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -48,8 +49,7 @@ export class Platform_UserClusterService {
         cluster_id: cluster_id,
         user_id: user_id,
         tenant_id: tenant_id,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -96,8 +96,7 @@ export class Platform_UserClusterService {
         user_id: user_id,
         tenant_id: tenant_id,
         paginate: paginate,
-        version: version,
-      },
+        version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -139,7 +138,7 @@ export class Platform_UserClusterService {
     );
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'cluster.create-user', service: 'cluster' },
-      { data: data, user_id: user_id, tenant_id: tenant_id, version: version },
+      { data: data, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -184,7 +183,7 @@ export class Platform_UserClusterService {
         cmd: 'cluster.update-user',
         service: 'cluster',
       },
-      { data: data, user_id: user_id, tenant_id: tenant_id, version: version },
+      { data: data, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
@@ -226,7 +225,7 @@ export class Platform_UserClusterService {
     );
     const res: Observable<MicroserviceResponse> = this.clusterService.send(
       { cmd: 'cluster.delete-user', service: 'cluster' },
-      { id: id, user_id: user_id, tenant_id: tenant_id, version: version },
+      { id: id, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);
