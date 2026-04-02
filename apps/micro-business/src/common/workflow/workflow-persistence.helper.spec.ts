@@ -74,6 +74,28 @@ describe('WorkflowPersistenceHelper', () => {
       });
     });
 
+    it('should replace pending entry when re-submitting after review', () => {
+      const existing: StageStatus[] = [
+        { seq: 1, status: stage_status.approve, name: 'HOD', message: '' },
+        { seq: 2, status: stage_status.pending, name: 'Create Request', message: '' },
+      ];
+
+      const { stages, skipped } = WorkflowPersistenceHelper.buildSubmitStagesStatus(
+        existing,
+        { stage_status: stage_status.submit, stage_message: 'submit for approval' },
+        'Create Request',
+      );
+
+      expect(skipped).toBe(false);
+      expect(stages).toHaveLength(2);
+      expect(stages[1]).toEqual({
+        seq: 2,
+        status: stage_status.submit,
+        name: 'Create Request',
+        message: 'submit for approval',
+      });
+    });
+
     it('should replace pending entry at same stage name', () => {
       const existing: StageStatus[] = [
         { seq: 1, status: stage_status.submit, name: 'Requestor', message: '' },
@@ -213,6 +235,9 @@ describe('WorkflowPersistenceHelper', () => {
 
       const hodStage = result.find((s) => s.name === 'HOD');
       expect(hodStage.status).toBe(stage_status.pending);
+      // Stages after HOD should be trimmed
+      expect(result.some((s) => s.name === 'Purchaser')).toBe(false);
+      expect(result).toHaveLength(2);
     });
 
     it('should trim stages after target when sending back multiple levels', () => {
@@ -228,7 +253,9 @@ describe('WorkflowPersistenceHelper', () => {
       const hodStage = result.find((s) => s.name === 'HOD');
       expect(hodStage.status).toBe(stage_status.pending);
       // Stages after HOD should be trimmed
+      expect(result.some((s) => s.name === 'Purchaser')).toBe(false);
       expect(result.some((s) => s.name === 'GM')).toBe(false);
+      expect(result).toHaveLength(2);
     });
   });
 

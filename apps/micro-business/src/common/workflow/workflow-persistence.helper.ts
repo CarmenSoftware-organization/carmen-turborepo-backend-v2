@@ -37,14 +37,7 @@ export class WorkflowPersistenceHelper {
 
     const latest = stages[stages.length - 1];
 
-    if (detail.stage_status === stage_status.submit) {
-      stages.push({
-        seq: 1,
-        status: detail.stage_status as stage_status,
-        name: workflowPreviousStage,
-        message: detail.stage_message || 'submit for approval',
-      });
-    } else if (
+    if (
       latest?.status === stage_status.pending &&
       latest?.name === workflowPreviousStage
     ) {
@@ -52,8 +45,15 @@ export class WorkflowPersistenceHelper {
         seq: stages.length,
         status: detail.stage_status as stage_status,
         name: workflowPreviousStage,
-        message: detail.stage_message || '',
+        message: detail.stage_message || (detail.stage_status === stage_status.submit ? 'submit for approval' : ''),
       };
+    } else if (detail.stage_status === stage_status.submit) {
+      stages.push({
+        seq: 1,
+        status: detail.stage_status as stage_status,
+        name: workflowPreviousStage,
+        message: detail.stage_message || 'submit for approval',
+      });
     } else {
       stages.push({
         seq: stages.length + 1,
@@ -153,6 +153,7 @@ export class WorkflowPersistenceHelper {
     for (let i = stages.length - 1; i > 0; i--) {
       if (stages[i].name === desStage) {
         stages[i] = { ...stages[i], status: stage_status.pending };
+        stages.splice(i + 1);
         break;
       } else {
         stages.splice(i + 1, stages.length - i - 1);
