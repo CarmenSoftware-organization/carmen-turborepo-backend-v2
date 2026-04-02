@@ -6,11 +6,10 @@ import { TryCatch, Result, ErrorCode } from '@/common';
 
 export interface IPaginate {
   page?: number;
-  limit?: number;
+  perpage?: number;
   search?: string;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
-  filters?: Record<string, unknown>;
+  sort?: string[];
+  filter?: Record<string, string>;
 }
 
 export interface IActivityLogFilter {
@@ -57,6 +56,30 @@ export class ActivityLogService {
   }
 
   /**
+   * Parse sort parameter from gateway format to Prisma orderBy.
+   * Supports "-field" (desc) and "field:asc" formats.
+   */
+  private parseSortParam(
+    sort?: string[],
+  ): Record<string, 'asc' | 'desc'> {
+    if (!sort || sort.length === 0) {
+      return { created_at: 'desc' };
+    }
+    const orderBy: Record<string, 'asc' | 'desc'> = {};
+    for (const item of sort) {
+      if (item.startsWith('-')) {
+        orderBy[item.slice(1)] = 'desc';
+      } else if (item.includes(':')) {
+        const [field, dir] = item.split(':');
+        orderBy[field] = dir === 'desc' ? 'desc' : 'asc';
+      } else {
+        orderBy[item] = 'asc';
+      }
+    }
+    return Object.keys(orderBy).length > 0 ? orderBy : { created_at: 'desc' };
+  }
+
+  /**
    * Find all activity logs with pagination and filters
    * ค้นหาบันทึกกิจกรรมทั้งหมดพร้อมการแบ่งหน้าและตัวกรอง
    * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
@@ -74,7 +97,7 @@ export class ActivityLogService {
     );
 
     const page = paginate?.page || 1;
-    const limit = paginate?.limit || 20;
+    const limit = paginate?.perpage || 20;
     const skip = (page - 1) * limit;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -111,12 +134,7 @@ export class ActivityLogService {
       ];
     }
 
-    const orderBy: Record<string, unknown> = {};
-    if (paginate?.sortBy) {
-      orderBy[paginate.sortBy] = paginate.sortOrder || 'desc';
-    } else {
-      orderBy.created_at = 'desc';
-    }
+    const orderBy = this.parseSortParam(paginate?.sort);
 
     const [data, total] = await Promise.all([
       this.prismaService.tb_activity.findMany({
@@ -157,7 +175,7 @@ export class ActivityLogService {
     );
 
     const page = paginate?.page || 1;
-    const limit = paginate?.limit || 20;
+    const limit = paginate?.perpage || 20;
     const skip = (page - 1) * limit;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -172,12 +190,7 @@ export class ActivityLogService {
       ];
     }
 
-    const orderBy: Record<string, unknown> = {};
-    if (paginate?.sortBy) {
-      orderBy[paginate.sortBy] = paginate.sortOrder || 'desc';
-    } else {
-      orderBy.created_at = 'desc';
-    }
+    const orderBy = this.parseSortParam(paginate?.sort);
 
     const [data, total] = await Promise.all([
       this.prismaService.tb_activity.findMany({
