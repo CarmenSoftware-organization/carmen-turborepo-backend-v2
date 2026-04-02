@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { AuditContextInterceptor, LogEventsModule } from '@repo/log-events-library';
+import { TraceContextInterceptor } from '@/common/interceptors/trace-context.interceptor';
 import { SentryModule } from '@sentry/nestjs/setup';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
@@ -172,6 +173,10 @@ import { CommonModule } from './common/common.module';
   providers: [
     AppService,
     BackendLogger,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TraceContextInterceptor,
+    },
     {
       provide: APP_INTERCEPTOR,
       useClass: AuditContextInterceptor,

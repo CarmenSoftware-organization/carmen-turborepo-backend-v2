@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Observable, from } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
+import { context as otelContext, propagation } from '@opentelemetry/api';
 import {
   gatewayRequestContextStorage,
   GatewayRequestContext,
@@ -26,6 +27,10 @@ export class GatewayRequestContextInterceptor implements NestInterceptor {
 
     if (contextType === 'http') {
       const request = context.switchToHttp().getRequest();
+      // Inject OTEL trace context for TCP propagation
+      const carrier: Record<string, string> = {};
+      propagation.inject(otelContext.active(), carrier);
+
       requestContext = {
         ip_address:
           request.ip ||
@@ -33,6 +38,8 @@ export class GatewayRequestContextInterceptor implements NestInterceptor {
           request.connection?.remoteAddress,
         user_agent: request.headers?.['user-agent'],
         request_id: request.headers?.['x-request-id'] || uuidv4(),
+        traceparent: carrier['traceparent'],
+        tracestate: carrier['tracestate'],
       };
     }
 

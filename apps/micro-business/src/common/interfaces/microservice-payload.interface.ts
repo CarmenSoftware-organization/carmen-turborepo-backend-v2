@@ -9,6 +9,10 @@ export interface MicroservicePayload {
   ip_address?: string;
   user_agent?: string;
 
+  // OpenTelemetry trace context
+  traceparent?: string;
+  tracestate?: string;
+
   // Entity data
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data?: any;

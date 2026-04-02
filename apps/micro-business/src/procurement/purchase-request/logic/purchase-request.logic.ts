@@ -11,6 +11,7 @@ import { Result, ErrorCode } from '@/common/result';
 import { enum_stage_role, enum_pricelist_compare_type } from '@repo/prisma-shared-schema-tenant';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
+import { trace } from '@opentelemetry/api';
 import { ValidatePRBeforeSubmitSchema } from '../dto/purchase-request.dto';
 
 // Re-export for backward compatibility
@@ -31,56 +32,70 @@ export class PurchaseRequestLogic {
     private readonly workflowOrchestrator: WorkflowOrchestratorService,
   ) { }
 
+  private readonly tracer = trace.getTracer('micro-business.purchase-request');
+
   async create(payload: CreatePurchaseRequest, user_id: string, tenant_id: string) {
     this.logger.debug({ function: 'create', data: payload, user_id, tenant_id }, PurchaseRequestLogic.name);
     await this.purchaseRequestService.initializePrismaService(tenant_id, user_id);
     const data = payload.details
     const extractId = this.populateData(data)
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractId, user_id, tenant_id)
-
-    // Validate HOD requirement when workflow is being assigned
-    if (data?.workflow_id && data?.department_id) {
-      const workflowData = foreignValue?.workflow_id?.data;
-      const stagesWithHod = workflowData?.stages?.filter((stage: Record<string, unknown>) => stage.is_hod === true) || [];
-      if (stagesWithHod.length > 0) {
-        const hodCheckRes = this.masterService.send(
-          { cmd: 'department-users.has-hod-in-department', service: 'department-users' },
-          {
-            department_id: data.department_id,
-            user_id,
-            bu_code: tenant_id
-          },
-        );
-        const hodCheckResult: { data: boolean; response: { status: number; message: string } } = await firstValueFrom(hodCheckRes);
-        if (hodCheckResult.response.status !== HttpStatus.OK) {
-          throw new BadRequestException(
-            hodCheckResult.response.message || 'Failed to check HOD status for department'
-          );
-        }
-        if (!hodCheckResult.data) {
-          throw new BadRequestException(
-            `Cannot create PR with this workflow: The workflow requires HOD approval, but department "${foreignValue?.department_id?.name}" does not have a Head of Department (HOD) assigned. Please assign an HOD to this department or select a different workflow.`
-          );
-        }
+    const foreignValue: Record<string, any> = await this.tracer.startActiveSpan('pr.create.populate-foreign-keys', async (span) => {
+      try {
+        return await this.mapperLogic.populate(extractId, user_id, tenant_id);
+      } finally {
+        span.end();
       }
-    }
+    });
 
-    // Initialize workflow first stage if workflow_id is provided
-    let workflowFirstStage = null
-    if (data?.workflow_id) {
-      const workflowData = foreignValue?.workflow_id?.data
-      const res = this.masterService.send(
-        { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
-        {
-          workflowData,
-          currentStatus: '',
-          requestData: { amount: 0 },
-        },
-      );
-      const workflowNav: NavigateForwardResult = await firstValueFrom(res);
-      workflowFirstStage = workflowNav.navigation_info.current_stage_info?.name
-    }
+    // Validate HOD requirement and initialize workflow
+    let workflowFirstStage = null;
+    await this.tracer.startActiveSpan('pr.create.workflow-init', async (span) => {
+      try {
+        if (data?.workflow_id && data?.department_id) {
+          const workflowData = foreignValue?.workflow_id?.data;
+          const stagesWithHod = workflowData?.stages?.filter((stage: Record<string, unknown>) => stage.is_hod === true) || [];
+          if (stagesWithHod.length > 0) {
+            const hodCheckRes = this.masterService.send(
+              { cmd: 'department-users.has-hod-in-department', service: 'department-users' },
+              {
+                department_id: data.department_id,
+                user_id,
+                bu_code: tenant_id
+              },
+            );
+            const hodCheckResult: { data: boolean; response: { status: number; message: string } } = await firstValueFrom(hodCheckRes);
+            if (hodCheckResult.response.status !== HttpStatus.OK) {
+              throw new BadRequestException(
+                hodCheckResult.response.message || 'Failed to check HOD status for department'
+              );
+            }
+            if (!hodCheckResult.data) {
+              throw new BadRequestException(
+                `Cannot create PR with this workflow: The workflow requires HOD approval, but department "${foreignValue?.department_id?.name}" does not have a Head of Department (HOD) assigned. Please assign an HOD to this department or select a different workflow.`
+              );
+            }
+          }
+        }
+
+        if (data?.workflow_id) {
+          const workflowData = foreignValue?.workflow_id?.data
+          const res = this.masterService.send(
+            { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
+            {
+              workflowData,
+              currentStatus: '',
+              requestData: { amount: 0 },
+            },
+          );
+          const workflowNav: NavigateForwardResult = await firstValueFrom(res);
+          workflowFirstStage = workflowNav.navigation_info.current_stage_info?.name
+        }
+      } finally {
+        span.end();
+      }
+    });
 
     const createPR = JSON.parse(JSON.stringify({
       ...data,

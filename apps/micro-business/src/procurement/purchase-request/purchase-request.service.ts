@@ -7,6 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { isUUID } from 'class-validator';
+import { trace } from '@opentelemetry/api';
 import { TenantService } from '@/tenant/tenant.service';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import {
@@ -94,6 +95,7 @@ export class PurchaseRequestService {
   private readonly logger: BackendLogger = new BackendLogger(
     PurchaseRequestService.name,
   );
+  private readonly tracer = trace.getTracer('micro-business.purchase-request');
 
   /**
    * Initialize the Prisma service for tenant-specific database access
@@ -820,42 +822,55 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const tx = await this.prismaService.$transaction(async (prisma) => {
-      if (!createPR.pr_date) {
-        throw new Error('PR date is required');
-      }
+    const tx = await this.tracer.startActiveSpan('pr.create.prisma-transaction', async (span) => {
+      try {
+        span.setAttribute('pr.detail_count', createPRDetail.length);
+        const result = await this.prismaService.$transaction(async (prisma) => {
+          if (!createPR.pr_date) {
+            throw new Error('PR date is required');
+          }
 
-      const prDate = new Date(createPR.pr_date).toISOString();
+          const prDate = new Date(createPR.pr_date).toISOString();
 
-      const purchaseRequestObject = JSON.parse(
-        JSON.stringify({
-          ...createPR,
-          pr_no: 'draft-' + randomBytes(3).toString('hex'),
-          pr_date: prDate,
-          created_by_id: this.userId,
-          last_action: null,
-        }),
-      );
+          const purchaseRequestObject = JSON.parse(
+            JSON.stringify({
+              ...createPR,
+              pr_no: 'draft-' + randomBytes(3).toString('hex'),
+              pr_date: prDate,
+              created_by_id: this.userId,
+              last_action: null,
+            }),
+          );
 
-      const createPurchaseRequest = await prisma.tb_purchase_request.create({
-        data: purchaseRequestObject,
-      });
+          const createPurchaseRequest = await prisma.tb_purchase_request.create({
+            data: purchaseRequestObject,
+          });
 
-      let sequence_no = 1;
-      if (createPRDetail.length > 0) {
-        const createPurchaseRequestObject = createPRDetail.map((item) => ({
-          ...item,
-          sequence_no: sequence_no++,
-          purchase_request_id: createPurchaseRequest.id,
-          created_by_id: this.userId,
-        }));
+          let sequence_no = 1;
+          if (createPRDetail.length > 0) {
+            const createPurchaseRequestObject = createPRDetail.map((item) => ({
+              ...item,
+              sequence_no: sequence_no++,
+              purchase_request_id: createPurchaseRequest.id,
+              created_by_id: this.userId,
+            }));
 
-        await prisma.tb_purchase_request_detail.createMany({
-          data: createPurchaseRequestObject as any,
+            await prisma.tb_purchase_request_detail.createMany({
+              data: createPurchaseRequestObject as any,
+            });
+          }
+
+          return { id: createPurchaseRequest.id };
         });
+        span.setAttribute('pr.id', result?.id || '');
+        return result;
+      } catch (error) {
+        span.recordException(error as Error);
+        span.setStatus({ code: 2 });
+        throw error;
+      } finally {
+        span.end();
       }
-
-      return { id: createPurchaseRequest.id };
     });
 
     return Result.ok(tx);

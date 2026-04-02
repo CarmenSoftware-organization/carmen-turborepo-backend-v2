@@ -4,6 +4,8 @@ export interface GatewayRequestContext {
   ip_address?: string;
   user_agent?: string;
   request_id?: string;
+  traceparent?: string;
+  tracestate?: string;
 }
 
 export const gatewayRequestContextStorage =
