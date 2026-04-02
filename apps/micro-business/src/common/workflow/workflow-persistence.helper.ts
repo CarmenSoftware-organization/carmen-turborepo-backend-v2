@@ -42,7 +42,7 @@ export class WorkflowPersistenceHelper {
     }
 
     if (
-      latest?.status === stage_status.pending &&
+      (latest?.status === stage_status.pending || latest?.status === stage_status.submit) &&
       latest?.name === workflowPreviousStage
     ) {
       stages[stages.length - 1] = {
@@ -154,7 +154,7 @@ export class WorkflowPersistenceHelper {
   ): StageStatus[] {
     const stages: StageStatus[] = [...current];
 
-    for (let i = stages.length - 1; i > 0; i--) {
+    for (let i = stages.length - 1; i >= 0; i--) {
       if (stages[i].name === desStage) {
         stages[i] = { ...stages[i], status: stage_status.pending };
         stages.splice(i + 1);

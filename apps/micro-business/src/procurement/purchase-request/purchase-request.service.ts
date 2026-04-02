@@ -1623,13 +1623,24 @@ export class PurchaseRequestService {
           continue;
         }
 
-        const stages = WorkflowPersistenceHelper.buildReviewStagesStatus(
-          Array.isArray(detail.stages_status) ? detail.stages_status as unknown as StageStatus[] : [],
-          payload.des_stage,
-        );
+        const currentStages: StageStatus[] = Array.isArray(detail.stages_status)
+          ? (detail.stages_status as unknown as StageStatus[])
+          : [];
+
+        let stages: StageStatus[];
+        if (payloadDetail.stage_status === stage_status.reject) {
+          stages = WorkflowPersistenceHelper.buildRejectStagesStatus(
+            currentStages, payloadDetail, workflow.workflow_previous_stage,
+          );
+        } else {
+          stages = WorkflowPersistenceHelper.buildReviewStagesStatus(
+            currentStages, payload.des_stage,
+          );
+        }
+
         const history = WorkflowPersistenceHelper.appendHistory(
           (detail.history as unknown as Record<string, unknown>[]) || [],
-          { status: stage_status.review, name: workflow.workflow_previous_stage, message: payloadDetail?.stage_message || '', userId: this.userId },
+          { status: payloadDetail.stage_status, name: workflow.workflow_previous_stage, message: payloadDetail?.stage_message || '', userId: this.userId },
         );
 
         await txp.tb_purchase_request_detail.update({
