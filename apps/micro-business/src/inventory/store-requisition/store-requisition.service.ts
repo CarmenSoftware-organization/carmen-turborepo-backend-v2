@@ -586,12 +586,14 @@ export class StoreRequisitionService {
         });
 
       for (const detail of SRdetail) {
-        const findDetails = payload.details.find((d) => d.id === detail.id);
-        if (!findDetails) continue;
-
         const currentStages: StageStatus[] = Array.isArray(detail.stages_status)
           ? (detail.stages_status as unknown as StageStatus[])
           : [];
+
+        const findDetails = payload.details?.length > 0
+          ? payload.details.find((d) => d.id === detail.id)
+          : WorkflowPersistenceHelper.autoGenerateSubmitDetail(detail.id, currentStages);
+        if (!findDetails) continue;
         const { stages, skipped } = WorkflowPersistenceHelper.buildSubmitStagesStatus(
           currentStages, findDetails, workflowHeader.workflow_previous_stage,
         );

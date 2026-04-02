@@ -1854,27 +1854,33 @@ export class PurchaseOrderService {
       });
 
       // Update detail history and stages_status
-      for (const detail of payload.details) {
-        const poDetail = await tx.tb_purchase_order_detail.findFirst({
-          where: { id: detail.id, deleted_at: null },
-          select: { id: true, history: true, stages_status: true },
-        });
-        if (!poDetail) continue;
+      const poDetails = await tx.tb_purchase_order_detail.findMany({
+        where: { purchase_order_id: id, deleted_at: null },
+        select: { id: true, history: true, stages_status: true },
+      });
 
+      for (const poDetail of poDetails) {
         const currentStages: StageStatus[] = Array.isArray(poDetail.stages_status)
           ? (poDetail.stages_status as unknown as StageStatus[])
           : [];
-        const { stages } = WorkflowPersistenceHelper.buildSubmitStagesStatus(
-          currentStages, detail, workflowHeader.workflow_previous_stage as string,
+
+        const findDetails = payload.details?.length > 0
+          ? payload.details.find((d) => d.id === poDetail.id)
+          : WorkflowPersistenceHelper.autoGenerateSubmitDetail(poDetail.id, currentStages);
+        if (!findDetails) continue;
+
+        const { stages, skipped } = WorkflowPersistenceHelper.buildSubmitStagesStatus(
+          currentStages, findDetails, workflowHeader.workflow_previous_stage as string,
         );
+        if (skipped) continue;
 
         const history = WorkflowPersistenceHelper.appendHistory(
           Array.isArray(poDetail.history) ? (poDetail.history as any[]) : [],
-          { status: detail.stage_status, name: workflowHeader.workflow_previous_stage as string, message: detail.stage_message || 'submit for approval', userId: this.userId },
+          { status: findDetails.stage_status, name: workflowHeader.workflow_previous_stage as string, message: findDetails.stage_message || 'submit for approval', userId: this.userId },
         );
 
         await tx.tb_purchase_order_detail.update({
-          where: { id: detail.id },
+          where: { id: poDetail.id },
           data: {
             history: history as any,
             stages_status: stages as unknown as Prisma.InputJsonValue,
@@ -1928,12 +1934,13 @@ export class PurchaseOrderService {
         const findPODoc = PODetailDocs.find((d) => d.id === detail.id);
         if (!findPODoc) continue;
 
-        const { stages } = WorkflowPersistenceHelper.buildApproveStagesStatus(
+        const { stages, skipped } = WorkflowPersistenceHelper.buildApproveStagesStatus(
           Array.isArray(findPODoc?.stages_status) ? findPODoc.stages_status as unknown as StageStatus[] : [],
           detail,
           (workflow as any).workflow_previous_stage,
         );
-        // PO always adds history even for rejected details
+        if (skipped) continue;
+
         const history = WorkflowPersistenceHelper.appendHistory(
           (findPODoc?.history as unknown as Record<string, unknown>[]) || [],
           { status: detail.stage_status, name: (workflow as any).workflow_previous_stage, userId: this.userId, action: 'approved' },

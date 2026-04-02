@@ -924,12 +924,16 @@ export class PurchaseRequestService {
         });
 
       for (const detail of PRdetail) {
-        const findDetails = payload.details.find((d) => d.id === detail.id);
-        if (!findDetails) continue;
-
         const currentStages: StageStatus[] = Array.isArray(detail.stages_status)
           ? (detail.stages_status as unknown as StageStatus[])
           : [];
+
+        // Use payload detail if provided, otherwise auto-generate based on current stages_status
+        const findDetails = payload.details?.length > 0
+          ? payload.details.find((d) => d.id === detail.id)
+          : WorkflowPersistenceHelper.autoGenerateSubmitDetail(detail.id, currentStages);
+        if (!findDetails) continue;
+
         const { stages, skipped } = WorkflowPersistenceHelper.buildSubmitStagesStatus(
           currentStages, findDetails, workflowHeader.workflow_previous_stage,
         );

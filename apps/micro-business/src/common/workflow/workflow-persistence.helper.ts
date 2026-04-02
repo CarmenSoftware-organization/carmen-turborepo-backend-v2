@@ -37,6 +37,10 @@ export class WorkflowPersistenceHelper {
 
     const latest = stages[stages.length - 1];
 
+    if (latest?.status === stage_status.reject) {
+      return { stages, skipped: true };
+    }
+
     if (
       latest?.status === stage_status.pending &&
       latest?.name === workflowPreviousStage
@@ -161,6 +165,24 @@ export class WorkflowPersistenceHelper {
     }
 
     return stages;
+  }
+
+  /**
+   * Auto-generate a submit detail entry based on current stages_status.
+   * Used when the frontend doesn't send details in the submit payload.
+   *
+   * - Items with latest status 'approve' or 'reject' → null (skip)
+   * - Otherwise → { stage_status: 'submit' }
+   */
+  static autoGenerateSubmitDetail(
+    detailId: string,
+    currentStages: StageStatus[],
+  ): { id: string; stage_status: stage_status; stage_message: string } | null {
+    const latest = currentStages[currentStages.length - 1];
+    if (latest?.status === stage_status.approve || latest?.status === stage_status.reject) {
+      return null;
+    }
+    return { id: detailId, stage_status: stage_status.submit, stage_message: '' };
   }
 
   // ---------------------------------------------------------------------------
