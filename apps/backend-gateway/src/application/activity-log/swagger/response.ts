@@ -21,6 +21,18 @@ export class ActivityLogResponseDto {
   @ApiPropertyOptional({ description: 'Actor (user) ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   actor_id?: string;
 
+  @ApiPropertyOptional({ description: 'Actor username', example: 'john.doe' })
+  actor_username?: string;
+
+  @ApiPropertyOptional({ description: 'Actor first name', example: 'John' })
+  actor_firstname?: string;
+
+  @ApiPropertyOptional({ description: 'Actor middle name', example: 'M.' })
+  actor_middlename?: string;
+
+  @ApiPropertyOptional({ description: 'Actor last name', example: 'Doe' })
+  actor_lastname?: string;
+
   @ApiPropertyOptional({ description: 'Metadata (JSON)', example: {} })
   meta_data?: unknown;
 

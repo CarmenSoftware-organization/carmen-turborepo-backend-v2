@@ -1,7 +1,8 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { TenantService } from '@/tenant/tenant.service';
 import { PrismaClient } from '@repo/prisma-shared-schema-tenant';
+import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import { TryCatch, Result, ErrorCode } from '@/common';
 
 export interface IPaginate {
@@ -30,7 +31,11 @@ export class ActivityLogService {
   public userId: string;
   public bu_code: string;
 
-  constructor(private readonly tenantService: TenantService) {}
+  constructor(
+    @Inject('PRISMA_SYSTEM')
+    private readonly prismaSystem: typeof PrismaClient_SYSTEM,
+    private readonly tenantService: TenantService,
+  ) {}
 
   /**
    * Initialize Prisma service for the tenant
@@ -146,6 +151,8 @@ export class ActivityLogService {
       this.prismaService.tb_activity.count({ where }),
     ]);
 
+    const mappedData = await this.mapActorInfo(data);
+
     return Result.ok({
       paginate: {
         total,
@@ -153,7 +160,7 @@ export class ActivityLogService {
         perpage: limit,
         pages: total === 0 ? 1 : Math.ceil(total / limit),
       },
-      data,
+      data: mappedData,
     });
   }
 
@@ -202,6 +209,8 @@ export class ActivityLogService {
       this.prismaService.tb_activity.count({ where }),
     ]);
 
+    const mappedData = await this.mapActorInfo(data);
+
     return Result.ok({
       paginate: {
         total,
@@ -209,7 +218,43 @@ export class ActivityLogService {
         perpage: limit,
         pages: total === 0 ? 1 : Math.ceil(total / limit),
       },
-      data,
+      data: mappedData,
+    });
+  }
+
+  /**
+   * Map actor info (username, firstname, lastname) from platform schema
+   * แมปข้อมูลผู้กระทำจาก platform schema (username, ชื่อ, นามสกุล)
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async mapActorInfo(data: any[]): Promise<any[]> {
+    const actorIds = [...new Set(data.map((d) => d.actor_id).filter(Boolean))] as string[];
+    if (actorIds.length === 0) return data;
+
+    const [users, userProfiles] = await Promise.all([
+      this.prismaSystem.tb_user.findMany({
+        where: { id: { in: actorIds } },
+        select: { id: true, username: true },
+      }),
+      this.prismaSystem.tb_user_profile.findMany({
+        where: { user_id: { in: actorIds } },
+        select: { user_id: true, firstname: true, middlename: true, lastname: true },
+      }),
+    ]);
+
+    const userMap = new Map(users.map((u) => [u.id, u]));
+    const profileMap = new Map(userProfiles.map((p) => [p.user_id, p]));
+
+    return data.map((item) => {
+      const user = item.actor_id ? userMap.get(item.actor_id) : null;
+      const profile = item.actor_id ? profileMap.get(item.actor_id) : null;
+      return {
+        ...item,
+        actor_username: user?.username ?? null,
+        actor_firstname: profile?.firstname ?? null,
+        actor_middlename: profile?.middlename ?? null,
+        actor_lastname: profile?.lastname ?? null,
+      };
     });
   }
 
