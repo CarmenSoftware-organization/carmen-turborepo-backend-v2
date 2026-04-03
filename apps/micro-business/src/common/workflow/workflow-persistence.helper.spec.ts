@@ -52,7 +52,24 @@ describe('WorkflowPersistenceHelper', () => {
       // Actually "approve" in submit is skipped. Let me test with a re-submit after review.
     });
 
-    it('should skip when latest stage is already approved', () => {
+    it('should skip when stage was already approved in stages_status', () => {
+      const existing: StageStatus[] = [
+        { seq: 1, status: stage_status.submit, name: 'Requestor', message: '' },
+        { seq: 2, status: stage_status.approve, name: 'HOD', message: '' },
+        { seq: 3, status: stage_status.pending, name: 'Purchaser', message: '' },
+      ];
+
+      const { stages, skipped } = WorkflowPersistenceHelper.buildSubmitStagesStatus(
+        existing,
+        { stage_status: stage_status.submit, stage_message: '' },
+        'HOD',
+      );
+
+      expect(skipped).toBe(true);
+      expect(stages).toHaveLength(3);
+    });
+
+    it('should push new entry when approved stage is different', () => {
       const existing: StageStatus[] = [
         { seq: 1, status: stage_status.submit, name: 'Requestor', message: '' },
         { seq: 2, status: stage_status.approve, name: 'HOD', message: '' },
@@ -64,8 +81,8 @@ describe('WorkflowPersistenceHelper', () => {
         'Purchaser',
       );
 
-      expect(skipped).toBe(true);
-      expect(stages).toHaveLength(2);
+      expect(skipped).toBe(false);
+      expect(stages).toHaveLength(3);
     });
 
     it('should replace pending entry when re-submitting after review', () => {

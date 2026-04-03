@@ -37,7 +37,11 @@ export class WorkflowPersistenceHelper {
 
     const latest = stages[stages.length - 1];
 
-    if (latest?.status === stage_status.reject || latest?.status === stage_status.approve) {
+    if (latest?.status === stage_status.reject) {
+      return { stages, skipped: true };
+    }
+
+    if (stages.some(s => s.status === stage_status.approve && s.name === workflowPreviousStage)) {
       return { stages, skipped: true };
     }
 
@@ -92,7 +96,7 @@ export class WorkflowPersistenceHelper {
       return { stages, skipped: true };
     }
 
-    if (latest?.status === stage_status.approve && latest?.name === workflowPreviousStage) {
+    if (stages.some(s => s.status === stage_status.approve && s.name === workflowPreviousStage)) {
       return { stages, skipped: true };
     }
 
