@@ -1634,24 +1634,14 @@ export class PurchaseRequestService {
 
       for (const detail of prDetail) {
         const payloadDetail = payload.details.find((d) => d.id === detail.id);
-        if (payloadDetail.stage_status === stage_status.approve) {
-          continue;
-        }
 
         const currentStages: StageStatus[] = Array.isArray(detail.stages_status)
           ? (detail.stages_status as unknown as StageStatus[])
           : [];
 
-        let stages: StageStatus[];
-        if (payloadDetail.stage_status === stage_status.reject) {
-          stages = WorkflowPersistenceHelper.buildRejectStagesStatus(
-            currentStages, payloadDetail, workflow.workflow_previous_stage,
-          );
-        } else {
-          stages = WorkflowPersistenceHelper.buildReviewStagesStatus(
-            currentStages, payload.des_stage,
-          );
-        }
+        const stages = WorkflowPersistenceHelper.buildReviewDetailStagesStatus(
+          currentStages, payloadDetail, workflow.workflow_previous_stage, payload.des_stage,
+        );
 
         const history = WorkflowPersistenceHelper.appendHistory(
           (detail.history as unknown as Record<string, unknown>[]) || [],

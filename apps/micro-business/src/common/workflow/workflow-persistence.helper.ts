@@ -92,6 +92,10 @@ export class WorkflowPersistenceHelper {
       return { stages, skipped: true };
     }
 
+    if (latest?.status === stage_status.approve && latest?.name === workflowPreviousStage) {
+      return { stages, skipped: true };
+    }
+
     if (
       latest?.status === stage_status.pending &&
       latest?.name === workflowPreviousStage
@@ -151,12 +155,13 @@ export class WorkflowPersistenceHelper {
   static buildReviewStagesStatus(
     current: StageStatus[],
     desStage: string,
+    message?: string,
   ): StageStatus[] {
     const stages: StageStatus[] = [...current];
 
     for (let i = stages.length - 1; i >= 0; i--) {
       if (stages[i].name === desStage) {
-        stages[i] = { ...stages[i], status: stage_status.pending };
+        stages[i] = { ...stages[i], status: stage_status.pending, message: message || '' };
         stages.splice(i + 1);
         break;
       } else {
@@ -165,6 +170,29 @@ export class WorkflowPersistenceHelper {
     }
 
     return stages;
+  }
+
+  /**
+   * Build stages_status for REVIEW action.
+   * Maps each detail to the correct builder based on its stage_status:
+   * - 'approve' → buildApproveStagesStatus
+   * - 'reject'  → buildRejectStagesStatus
+   * - 'review'  → buildReviewStagesStatus (roll back)
+   */
+  static buildReviewDetailStagesStatus(
+    current: StageStatus[],
+    detail: { stage_status: string; stage_message?: string | null },
+    stageName: string,
+    desStage: string,
+  ): StageStatus[] {
+    switch (detail.stage_status) {
+      case stage_status.approve:
+        return this.buildApproveStagesStatus(current, detail, stageName).stages;
+      case stage_status.reject:
+        return this.buildRejectStagesStatus(current, detail, stageName);
+      default:
+        return this.buildReviewStagesStatus(current, desStage, detail.stage_message);
+    }
   }
 
   /**

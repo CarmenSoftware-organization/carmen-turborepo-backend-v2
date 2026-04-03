@@ -119,6 +119,22 @@ describe('WorkflowPersistenceHelper', () => {
   // buildApproveStagesStatus
   // ===========================================================================
   describe('buildApproveStagesStatus', () => {
+    it('should skip when latest stage is already approved at same stage', () => {
+      const existing: StageStatus[] = [
+        { seq: 1, status: stage_status.submit, name: 'Requestor', message: '' },
+        { seq: 2, status: stage_status.approve, name: 'HOD', message: '' },
+      ];
+
+      const { stages, skipped } = WorkflowPersistenceHelper.buildApproveStagesStatus(
+        existing,
+        { stage_status: stage_status.approve },
+        'HOD',
+      );
+
+      expect(skipped).toBe(true);
+      expect(stages).toHaveLength(2);
+    });
+
     it('should skip when latest stage is rejected', () => {
       const existing: StageStatus[] = [
         { seq: 1, status: stage_status.submit, name: 'Requestor', message: '' },

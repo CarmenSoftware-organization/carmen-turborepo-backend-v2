@@ -1063,24 +1063,14 @@ export class StoreRequisitionService {
       for (const detail of storeRequisitionDetail) {
         const findSR = payload.details.find((d) => d.id === detail.id);
         if (!findSR) continue;
-        if (findSR.stage_status === stage_status.approve) {
-          continue;
-        }
 
         const currentStages: StageStatus[] = Array.isArray(detail.stages_status)
           ? (detail.stages_status as unknown as StageStatus[])
           : [];
 
-        let stages: StageStatus[];
-        if (findSR.stage_status === stage_status.reject) {
-          stages = WorkflowPersistenceHelper.buildRejectStagesStatus(
-            currentStages, findSR, workflow.workflow_previous_stage,
-          );
-        } else {
-          stages = WorkflowPersistenceHelper.buildReviewStagesStatus(
-            currentStages, payload.des_stage,
-          );
-        }
+        const stages = WorkflowPersistenceHelper.buildReviewDetailStagesStatus(
+          currentStages, findSR, workflow.workflow_previous_stage, payload.des_stage,
+        );
 
         const history = WorkflowPersistenceHelper.appendHistory(
           (detail.history as unknown as Record<string, unknown>[]) || [],

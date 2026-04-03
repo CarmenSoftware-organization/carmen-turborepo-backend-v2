@@ -2110,24 +2110,13 @@ export class PurchaseOrderService {
         const findPODoc = PODetailDocs.find((d) => d.id === detail.id);
         if (!findPODoc) continue;
 
-        if (detail.stage_status === stage_status.approve) {
-          continue;
-        }
-
         const currentStages: StageStatus[] = Array.isArray(findPODoc?.stages_status)
           ? (findPODoc.stages_status as unknown as StageStatus[])
           : [];
 
-        let stages: StageStatus[];
-        if (detail.stage_status === stage_status.reject) {
-          stages = WorkflowPersistenceHelper.buildRejectStagesStatus(
-            currentStages, detail, desStage,
-          );
-        } else {
-          stages = WorkflowPersistenceHelper.buildReviewStagesStatus(
-            currentStages, desStage,
-          );
-        }
+        const stages = WorkflowPersistenceHelper.buildReviewDetailStagesStatus(
+          currentStages, detail, desStage, desStage,
+        );
 
         const history = WorkflowPersistenceHelper.appendHistory(
           (findPODoc?.history as unknown as Record<string, unknown>[]) || [],
