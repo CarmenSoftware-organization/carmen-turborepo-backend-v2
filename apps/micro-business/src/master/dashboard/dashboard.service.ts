@@ -188,7 +188,7 @@ export class DashboardService {
       data: {
         ...updateData,
         updated_by_id: this.userId,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       },
     });
 
@@ -213,7 +213,7 @@ export class DashboardService {
     await this.prismaService.tb_dashboard_layout.update({
       where: { id },
       data: {
-        deleted_at: new Date(),
+        deleted_at: new Date().toISOString(),
         deleted_by_id: this.userId,
       },
     });
@@ -250,7 +250,7 @@ export class DashboardService {
             grid_w: w.grid_w,
             grid_h: w.grid_h,
             updated_by_id: this.userId,
-            updated_at: new Date(),
+            updated_at: new Date().toISOString(),
           },
         }),
       ),
@@ -332,7 +332,7 @@ export class DashboardService {
       data: {
         ...data,
         updated_by_id: this.userId,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),
       },
     });
 
@@ -357,7 +357,7 @@ export class DashboardService {
     await this.prismaService.tb_dashboard_widget.update({
       where: { id: widgetId },
       data: {
-        deleted_at: new Date(),
+        deleted_at: new Date().toISOString(),
         deleted_by_id: this.userId,
       },
     });
