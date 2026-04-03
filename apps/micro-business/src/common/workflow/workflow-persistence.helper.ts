@@ -41,6 +41,10 @@ export class WorkflowPersistenceHelper {
       return { stages, skipped: true };
     }
 
+    if (stages.some(s => s.status === stage_status.approve && s.name === workflowPreviousStage)) {
+      return { stages, skipped: true };
+    }
+
     if (
       (latest?.status === stage_status.pending || latest?.status === stage_status.submit) &&
       latest?.name === workflowPreviousStage
@@ -92,7 +96,7 @@ export class WorkflowPersistenceHelper {
       return { stages, skipped: true };
     }
 
-    if (latest?.status === stage_status.approve && latest?.name === workflowPreviousStage) {
+    if (stages.some(s => s.status === stage_status.approve && s.name === workflowPreviousStage)) {
       return { stages, skipped: true };
     }
 
