@@ -66,6 +66,7 @@ import { RecipeCategoryModule } from './master/recipe-category/recipe-category.m
 import { RecipeCuisineModule } from './master/recipe-cuisine/recipe-cuisine.module';
 import { RecipeEquipmentModule } from './master/recipe-equipment/recipe-equipment.module';
 import { RecipeEquipmentCategoryModule } from './master/recipe-equipment-category/recipe-equipment-category.module';
+import { DashboardModule } from './master/dashboard/dashboard.module';
 
 // Procurement modules
 import { CreditNoteModule } from './procurement/credit-note/credit-note.module';
@@ -159,6 +160,7 @@ import { CommonModule } from './common/common.module';
     RecipeCuisineModule,
     RecipeEquipmentModule,
     RecipeEquipmentCategoryModule,
+    DashboardModule,
 
     // Procurement modules (from micro-tenant-procurement)
     CreditNoteModule,

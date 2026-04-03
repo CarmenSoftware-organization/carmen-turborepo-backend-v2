@@ -5807,3 +5807,61 @@ model tb_report_schedule {
 
   @@index([is_active], map: "idx_report_schedule_active")
 }
+
+// ===== Dashboard =====
+
+model tb_dashboard_layout {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @db.VarChar(255)
+  description String?  @db.VarChar(500)
+  is_default  Boolean  @default(false)
+  is_shared   Boolean  @default(false)
+  owner_id    String   @db.Uuid
+  settings    Json?    @default("{}") @db.JsonB
+
+  // Audit Fields
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_by_id String?   @db.Uuid
+  deleted_at    DateTime? @db.Timestamptz(6)
+  deleted_by_id String?   @db.Uuid
+
+  widgets tb_dashboard_widget[]
+
+  @@index([owner_id], map: "idx_dashboard_layout_owner")
+  @@index([is_default, owner_id], map: "idx_dashboard_layout_default")
+}
+
+model tb_dashboard_widget {
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  dashboard_id String @db.Uuid
+  widget_type  String @db.VarChar(50)
+  title        String @db.VarChar(255)
+
+  // Grid position (react-grid-layout format)
+  grid_x Int @default(0)
+  grid_y Int @default(0)
+  grid_w Int @default(4)
+  grid_h Int @default(3)
+
+  // Data source
+  data_source_url      String @db.VarChar(500)
+  data_filters         Json?  @default("{}") @db.JsonB
+  chart_config         Json?  @default("{}") @db.JsonB
+  display_config       Json?  @default("{}") @db.JsonB
+  refresh_interval_sec Int?   @default(300)
+  sort_order           Int    @default(0)
+
+  // Audit Fields
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_by_id String?   @db.Uuid
+  deleted_at    DateTime? @db.Timestamptz(6)
+  deleted_by_id String?   @db.Uuid
+
+  dashboard tb_dashboard_layout @relation(fields: [dashboard_id], references: [id])
+
+  @@index([dashboard_id], map: "idx_dashboard_widget_dashboard")
+}
