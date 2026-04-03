@@ -1654,7 +1654,7 @@ export class PurchaseRequestService {
             stages_status: stages as unknown as Prisma.InputJsonValue,
             history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
-            current_stage_status: '',
+            current_stage_status: payloadDetail.stage_status === stage_status.reject ? stage_status.reject : '',
           },
         });
       }
