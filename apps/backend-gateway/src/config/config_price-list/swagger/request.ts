@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-export class PriceListCreateRequestDto {
+export class ConfigPriceListCreateRequestDto {
   @ApiPropertyOptional({ description: 'Price list number', example: 'PL-2026-001' })
   pricelist_no?: string;
 
@@ -35,7 +35,7 @@ export class PriceListCreateRequestDto {
   note?: string;
 }
 
-export class PriceListUpdateRequestDto {
+export class ConfigPriceListUpdateRequestDto {
   @ApiPropertyOptional({ description: 'Price list name', example: 'Q1 2026 Food Supplies - Updated' })
   name?: string;
 

@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaClient_SYSTEM_CUSTOM } from '@repo/prisma-shared-schema-platform';
 import type { PrismaClient } from '@repo/prisma-shared-schema-platform';
+import { EmailService, type EmailConfig } from '../email/email.service';
 
 export interface CreateSystemNotificationData {
   title: string;
@@ -33,26 +34,19 @@ export interface CreateBusinessUnitNotificationData {
 
 @Injectable()
 export class NotificationService {
+  private readonly logger = new Logger(NotificationService.name);
   private prismaPromise: Promise<PrismaClient>;
 
-  constructor() {
+  constructor(private readonly emailService: EmailService) {
     this.prismaPromise = PrismaClient_SYSTEM_CUSTOM(process.env.SYSTEM_DATABASE_URL!);
   }
 
-  /**
-   * Get Prisma client instance
-   * ดึงอินสแตนซ์ Prisma client
-   * @returns Prisma client / Prisma client
-   */
   private async getPrisma() {
     return this.prismaPromise;
   }
 
   /**
    * Create a system-wide notification for all or specific users
-   * สร้างการแจ้งเตือนทั้งระบบสำหรับผู้ใช้ทั้งหมดหรือผู้ใช้ที่ระบุ
-   * @param data - System notification data / ข้อมูลการแจ้งเตือนระบบ
-   * @returns Array of created notifications / อาร์เรย์ของการแจ้งเตือนที่สร้างแล้ว
    */
   async createSystemNotification(data: CreateSystemNotificationData) {
     const prisma = await this.getPrisma();
@@ -60,9 +54,7 @@ export class NotificationService {
     let users;
     if (data.userIds && data.userIds.length > 0) {
       users = await prisma.tb_user.findMany({
-        where: {
-          id: { in: data.userIds },
-        },
+        where: { id: { in: data.userIds } },
       });
     } else {
       users = await prisma.tb_user.findMany();
@@ -86,19 +78,19 @@ export class NotificationService {
       notifications.push(notification);
     }
 
+    // Send email if metadata has email config
+    await this.trySendEmail(data, users.map((u) => u.email).filter(Boolean));
+
     return notifications;
   }
 
   /**
    * Create a user-to-user notification
-   * สร้างการแจ้งเตือนจากผู้ใช้ถึงผู้ใช้
-   * @param data - User notification data / ข้อมูลการแจ้งเตือนผู้ใช้
-   * @returns Created notification / การแจ้งเตือนที่สร้างแล้ว
    */
   async createUserNotification(data: CreateUserNotificationData) {
     const prisma = await this.getPrisma();
 
-    return await prisma.tb_notification.create({
+    const notification = await prisma.tb_notification.create({
       data: {
         to_user_id: data.to_user_id,
         from_user_id: data.from_user_id,
@@ -110,21 +102,24 @@ export class NotificationService {
         scheduled_at: data.scheduled_at,
       },
     });
+
+    // Send email to recipient
+    const user = await prisma.tb_user.findFirst({ where: { id: data.to_user_id } });
+    if (user?.email) {
+      await this.trySendEmail(data, [user.email]);
+    }
+
+    return notification;
   }
 
   /**
    * Get users belonging to a specific business unit
-   * ดึงผู้ใช้ที่อยู่ในหน่วยธุรกิจที่ระบุ
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @returns Array of users in the business unit / อาร์เรย์ของผู้ใช้ในหน่วยธุรกิจ
    */
   async getUsersByBusinessUnitCode(bu_code: string) {
     const prisma = await this.getPrisma();
 
     const businessUnit = await prisma.tb_business_unit.findFirst({
-      where: {
-        code: bu_code,
-      },
+      where: { code: bu_code },
     });
 
     if (!businessUnit) {
@@ -132,9 +127,7 @@ export class NotificationService {
     }
 
     const userBusinessUnits = await prisma.tb_user_tb_business_unit.findMany({
-      where: {
-        business_unit_id: businessUnit.id,
-      },
+      where: { business_unit_id: businessUnit.id },
       include: {
         tb_user_tb_user_tb_business_unit_user_idTotb_user: true,
       },
@@ -149,9 +142,6 @@ export class NotificationService {
 
   /**
    * Create notifications for all users in a business unit
-   * สร้างการแจ้งเตือนสำหรับผู้ใช้ทั้งหมดในหน่วยธุรกิจ
-   * @param data - Business unit notification data / ข้อมูลการแจ้งเตือนหน่วยธุรกิจ
-   * @returns Array of created notifications / อาร์เรย์ของการแจ้งเตือนที่สร้างแล้ว
    */
   async createBusinessUnitNotification(data: CreateBusinessUnitNotificationData) {
     const prisma = await this.getPrisma();
@@ -178,33 +168,28 @@ export class NotificationService {
       notifications.push(notification);
     }
 
+    // Send email to BU users
+    const emails = users.map((u) => u.email).filter(Boolean);
+    if (emails.length > 0) {
+      await this.trySendEmailForBU(data, emails);
+    }
+
     return notifications;
   }
 
   /**
-   * Get unread notifications for a user, ordered by creation date descending
-   * ดึงการแจ้งเตือนที่ยังไม่ได้อ่านของผู้ใช้ เรียงตามวันที่สร้างจากใหม่ไปเก่า
-   * @param user_id - User ID / ID ผู้ใช้
-   * @returns Array of unread notifications / อาร์เรย์ของการแจ้งเตือนที่ยังไม่ได้อ่าน
+   * Get unread notifications for a user
    */
   async getUnreadNotifications(user_id: string) {
     const prisma = await this.getPrisma();
     return await prisma.tb_notification.findMany({
-      where: {
-        to_user_id: user_id,
-        is_read: false,
-      },
-      orderBy: {
-        created_at: 'desc',
-      },
+      where: { to_user_id: user_id, is_read: false },
+      orderBy: { created_at: 'desc' },
     });
   }
 
   /**
    * Mark a single notification as read
-   * ทำเครื่องหมายการแจ้งเตือนรายการเดียวว่าอ่านแล้ว
-   * @param notificationId - Notification ID / ID การแจ้งเตือน
-   * @returns Updated notification / การแจ้งเตือนที่อัปเดตแล้ว
    */
   async markNotificationAsRead(notificationId: string) {
     const prisma = await this.getPrisma();
@@ -216,47 +201,29 @@ export class NotificationService {
 
   /**
    * Mark all unread notifications as read for a user
-   * ทำเครื่องหมายการแจ้งเตือนที่ยังไม่ได้อ่านทั้งหมดของผู้ใช้ว่าอ่านแล้ว
-   * @param user_id - User ID / ID ผู้ใช้
-   * @returns Update result with count / ผลลัพธ์การอัปเดตพร้อมจำนวน
    */
   async markAllNotificationsAsRead(user_id: string) {
     const prisma = await this.getPrisma();
     return await prisma.tb_notification.updateMany({
-      where: {
-        to_user_id: user_id,
-        is_read: false,
-      },
+      where: { to_user_id: user_id, is_read: false },
       data: { is_read: true },
     });
   }
 
   /**
    * Get scheduled notifications that are due for sending
-   * ดึงการแจ้งเตือนที่ตั้งเวลาไว้และถึงกำหนดส่ง
-   * @returns Array of due scheduled notifications / อาร์เรย์ของการแจ้งเตือนที่ถึงกำหนด
    */
   async getScheduledNotifications() {
     const prisma = await this.getPrisma();
     const now = new Date();
     return await prisma.tb_notification.findMany({
-      where: {
-        scheduled_at: {
-          lte: now,
-        },
-        is_sent: false,
-      },
-      include: {
-        tb_user_tb_notification_to_user_idTotb_user: true,
-      },
+      where: { scheduled_at: { lte: now }, is_sent: false },
+      include: { tb_user_tb_notification_to_user_idTotb_user: true },
     });
   }
 
   /**
    * Mark a notification as sent
-   * ทำเครื่องหมายการแจ้งเตือนว่าส่งแล้ว
-   * @param notificationId - Notification ID / ID การแจ้งเตือน
-   * @returns Updated notification / การแจ้งเตือนที่อัปเดตแล้ว
    */
   async markNotificationAsSent(notificationId: string) {
     const prisma = await this.getPrisma();
@@ -268,58 +235,33 @@ export class NotificationService {
 
   /**
    * Get all users who have unread notifications
-   * ดึงผู้ใช้ทั้งหมดที่มีการแจ้งเตือนที่ยังไม่ได้อ่าน
-   * @returns Array of users with their unread notifications / อาร์เรย์ของผู้ใช้พร้อมการแจ้งเตือนที่ยังไม่ได้อ่าน
    */
   async getUsersWithUnreadNotifications() {
     const prisma = await this.getPrisma();
     return await prisma.tb_user.findMany({
       where: {
         tb_notification_tb_notification_to_user_idTotb_user: {
-          some: {
-            is_read: false,
-          },
+          some: { is_read: false },
         },
       },
       include: {
         tb_notification_tb_notification_to_user_idTotb_user: {
-          where: {
-            is_read: false,
-          },
+          where: { is_read: false },
         },
       },
     });
   }
 
-  /**
-   * Get all users from the platform database
-   * ค้นหารายการผู้ใช้ทั้งหมดจากฐานข้อมูลแพลตฟอร์ม
-   * @returns Array of all users / อาร์เรย์ของผู้ใช้ทั้งหมด
-   */
   async getAllUsers() {
     const prisma = await this.getPrisma();
     return await prisma.tb_user.findMany();
   }
 
-  /**
-   * Get a user by their ID
-   * ค้นหารายการเดียวตาม ID ผู้ใช้
-   * @param userId - User ID / ID ผู้ใช้
-   * @returns User or null if not found / ผู้ใช้หรือ null ถ้าไม่พบ
-   */
   async getUserById(userId: string) {
     const prisma = await this.getPrisma();
-    return await prisma.tb_user.findFirst({
-      where: { id: userId },
-    });
+    return await prisma.tb_user.findFirst({ where: { id: userId } });
   }
 
-  /**
-   * Get all notifications for a user
-   * ค้นหารายการแจ้งเตือนทั้งหมดของผู้ใช้
-   * @param userId - User ID / ID ผู้ใช้
-   * @returns Array of all notifications / อาร์เรย์ของการแจ้งเตือนทั้งหมด
-   */
   async getAllNotifications(userId: string) {
     const prisma = await this.getPrisma();
     return await prisma.tb_notification.findMany({
@@ -327,19 +269,129 @@ export class NotificationService {
     });
   }
 
-  /**
-   * Update user online status in the database
-   * อัปเดตสถานะออนไลน์ของผู้ใช้ในฐานข้อมูล
-   * @param user_id - User ID / ID ผู้ใช้
-   * @param isOnline - Online status / สถานะออนไลน์
-   * @returns Updated user or undefined on error / ผู้ใช้ที่อัปเดตแล้วหรือ undefined เมื่อเกิดข้อผิดพลาด
-   */
   async updateUserOnlineStatus(user_id: string, isOnline: boolean) {
     const prisma = await this.getPrisma();
-    return await prisma.tb_user.update({
-      where: { id: user_id },
-      data: { is_online: isOnline },
-    }).catch(() => {
-    });
+    return await prisma.tb_user
+      .update({
+        where: { id: user_id },
+        data: { is_online: isOnline },
+      })
+      .catch(() => {});
+  }
+
+  // ─── Email Integration ───
+
+  /**
+   * Try to send email notification using config from metadata
+   * Email config comes from tb_application_config (key: 'report_email')
+   */
+  private async trySendEmail(
+    data: { title: string; message: string; metadata?: Record<string, unknown> },
+    recipientEmails: string[],
+  ) {
+    try {
+      const emailConfig = this.extractEmailConfig(data.metadata);
+      if (!emailConfig) return;
+
+      const isReport = data.metadata?.source === 'micro-report';
+      const html = isReport
+        ? this.emailService.buildReportEmailHtml({
+            title: data.title,
+            message: data.message,
+            jobId: data.metadata?.job_id as string,
+            fileUrl: data.metadata?.file_url as string,
+            status: data.title.includes('Failed') ? 'failure' : 'success',
+          })
+        : this.emailService.buildNotificationEmailHtml(data.title, data.message);
+
+      // Use recipients from config, fallback to user emails
+      const to = emailConfig.recipients?.length > 0
+        ? emailConfig.recipients
+        : recipientEmails;
+
+      if (to.length === 0) return;
+
+      await this.emailService.sendEmail(emailConfig.smtp, {
+        to,
+        cc: emailConfig.cc,
+        subject: data.title,
+        subjectPrefix: emailConfig.subject_prefix,
+        html,
+        text: data.message,
+      });
+    } catch (error) {
+      this.logger.warn(`Email send attempt failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Try to send email for BU notification — loads config from tb_application_config
+   */
+  private async trySendEmailForBU(
+    data: CreateBusinessUnitNotificationData,
+    recipientEmails: string[],
+  ) {
+    try {
+      // Load email config from tenant DB (tb_application_config)
+      const config = await this.loadBUEmailConfig(data.bu_code);
+      if (!config) return;
+
+      const html = this.emailService.buildNotificationEmailHtml(data.title, data.message);
+
+      const to = config.recipients?.length > 0 ? config.recipients : recipientEmails;
+      if (to.length === 0) return;
+
+      await this.emailService.sendEmail(config.smtp, {
+        to,
+        cc: config.cc,
+        subject: data.title,
+        subjectPrefix: config.subject_prefix,
+        html,
+        text: data.message,
+      });
+    } catch (error) {
+      this.logger.warn(`BU email send failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Load report_email config from tb_application_config for a BU
+   */
+  private async loadBUEmailConfig(buCode: string): Promise<any | null> {
+    try {
+      const prisma = await this.getPrisma();
+
+      // Get tenant DB connection from tb_business_unit
+      const bu = await prisma.tb_business_unit.findFirst({
+        where: { code: buCode },
+      });
+      if (!bu) return null;
+
+      // Query tb_application_config in tenant schema
+      // Since we can't switch schema with Prisma, use raw query
+      const dbConn = bu.db_connection as any;
+      if (!dbConn) return null;
+
+      const schema = typeof dbConn === 'object' ? dbConn.schema : null;
+      if (!schema) return null;
+
+      const result = await prisma.$queryRawUnsafe<any[]>(
+        `SELECT value FROM "${schema}".tb_application_config WHERE key = 'report_email' AND deleted_at IS NULL LIMIT 1`,
+      );
+
+      if (result.length === 0) return null;
+      return result[0].value;
+    } catch (error) {
+      this.logger.warn(`Load BU email config failed for ${buCode}: ${error.message}`);
+      return null;
+    }
+  }
+
+  /**
+   * Extract email config from notification metadata (passed by micro-report)
+   */
+  private extractEmailConfig(metadata?: Record<string, unknown>): any | null {
+    if (!metadata?.email_config) return null;
+    return metadata.email_config as any;
   }
 }

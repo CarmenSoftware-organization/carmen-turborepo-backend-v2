@@ -39,7 +39,7 @@ import {
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
-import { PriceListCreateRequestDto, PriceListUpdateRequestDto } from './swagger/request';
+import { ConfigPriceListCreateRequestDto, ConfigPriceListUpdateRequestDto } from './swagger/request';
 
 @Controller('api/config/:bu_code/price-list')
 @ApiTags('Configuration')
@@ -77,7 +77,7 @@ export class Config_PriceListController extends BaseHttpController {
     responses: { 201: { description: 'Price list uploaded successfully' } },
     'x-description-th': 'อัปโหลดรายการราคาจากไฟล์ Excel',
   } as any)
-  @ApiBody({ type: PriceListCreateRequestDto })
+  @ApiBody({ type: ConfigPriceListCreateRequestDto })
   async uploadExcel(
     @Body() createConfigPriceListDto: PriceListCreateDto,
     @Param('bu_code') bu_code: string,
@@ -176,7 +176,7 @@ export class Config_PriceListController extends BaseHttpController {
     responses: { 201: { description: 'Price list created successfully' } },
     'x-description-th': 'สร้างรายการราคาใหม่',
   } as any)
-  @ApiBody({ type: PriceListCreateRequestDto })
+  @ApiBody({ type: ConfigPriceListCreateRequestDto })
   async create(
     @Body() createConfigPriceListDto: PriceListCreateDto,
     @Param('bu_code') bu_code: string,
@@ -319,7 +319,7 @@ export class Config_PriceListController extends BaseHttpController {
     responses: { 200: { description: 'Price list updated successfully' } },
     'x-description-th': 'อัปเดตข้อมูลรายการราคาที่มีอยู่',
   } as any)
-  @ApiBody({ type: PriceListUpdateRequestDto })
+  @ApiBody({ type: ConfigPriceListUpdateRequestDto })
   async update(
     @Param('id') id: string,
     @Body() updateConfigPriceListDto: PriceListUpdateDto,
