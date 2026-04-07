@@ -884,7 +884,50 @@ export class ProductsService {
     );
 
     const pagination = getPaginationParams(q.page, q.perpage);
-    const whereClause = q.where();
+    const whereClause: Record<string, unknown> = q.where();
+
+    // tb_product has no direct product_category_id / product_sub_category_id / product_item_group_id columns.
+    // Translate these filters (which QueryParams emits inside `AND: [{ key: value }, ...]`)
+    // into nested relations: product → item_group → sub_category → category.
+    let productCategoryId: string | undefined;
+    let productSubCategoryId: string | undefined;
+    let productItemGroupId: string | undefined;
+
+    const rewriteAndEntry = (entry: Record<string, unknown>): Record<string, unknown> | null => {
+      if ('product_category_id' in entry) {
+        productCategoryId = entry.product_category_id as string;
+        return null;
+      }
+      if ('product_sub_category_id' in entry) {
+        productSubCategoryId = entry.product_sub_category_id as string;
+        return null;
+      }
+      if ('product_item_group_id' in entry) {
+        productItemGroupId = entry.product_item_group_id as string;
+        return null;
+      }
+      return entry;
+    };
+
+    if (Array.isArray(whereClause.AND)) {
+      whereClause.AND = (whereClause.AND as Record<string, unknown>[])
+        .map(rewriteAndEntry)
+        .filter((e): e is Record<string, unknown> => e !== null);
+    }
+
+    if (productCategoryId || productSubCategoryId || productItemGroupId) {
+      whereClause.tb_product_item_group = {
+        ...(productItemGroupId ? { id: productItemGroupId } : {}),
+        ...(productSubCategoryId || productCategoryId
+          ? {
+              tb_product_sub_category: {
+                ...(productSubCategoryId ? { id: productSubCategoryId } : {}),
+                ...(productCategoryId ? { product_category_id: productCategoryId } : {}),
+              },
+            }
+          : {}),
+      };
+    }
 
     const [data, total] = await Promise.all([
       this.prismaService.tb_product.findMany({

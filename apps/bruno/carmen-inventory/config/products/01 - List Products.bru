@@ -4,17 +4,37 @@ meta {
   seq: 1
 }
 
+get {
+  url: {{host}}/api/config/{{bu_code}}/products?filter=product_category_id|string:2cc41635-cb88-41ca-a770-becaf9278045
+  body: none
+  auth: bearer
+}
+
+params:query {
+  filter: product_category_id|string:2cc41635-cb88-41ca-a770-becaf9278045
+  ~perpage: -1
+  ~search: 
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
 docs {
   ## List Products
   แสดงรายการสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา
-
+  
   Returns a paginated list of all products in the master catalog with optional search filtering.
-
+  
   ### Query Parameters
   - `perpage` — Number of items per page (-1 for all)
   - `search` — Optional search keyword
-
-
+  
+  
   ### Sample Response
   ```json
   {
@@ -42,23 +62,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-get {
-  url: {{host}}/api/config/{{bu_code}}/products?perpage=-1
-  body: none
-  auth: bearer
-}
-
-params:query {
-  perpage: -1
-  ~search: 
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }
