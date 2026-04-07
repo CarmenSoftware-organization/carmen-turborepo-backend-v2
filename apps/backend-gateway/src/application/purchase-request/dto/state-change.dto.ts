@@ -26,14 +26,35 @@ export const PurchaseRoleApprovePurchaseRequestDetailSchema = ApprovePurchaseReq
   .merge(FocSchema)
   .merge(EmbeddedPriceListSchema)
 
+// When stage_status === 'reject', the user only needs to send id + stage_message + purchase_request_id.
+// The frontend shouldn't have to fill vendor/tax/foc/pricelist/qty for an item it's rejecting.
+// We inject sentinel defaults for the few fields the strict schema marks as required, so validation
+// still passes without changing the schema structure (which would affect other endpoints).
+const fillRejectDefaults = (val: unknown): unknown => {
+  if (
+    val && typeof val === 'object' &&
+    (val as { stage_status?: unknown }).stage_status === stage_status.reject
+  ) {
+    return {
+      // Sentinel defaults for required fields on PurchaseRoleApprovePurchaseRequestDetailSchema:
+      is_tax_adjustment: false,
+      pricelist_detail_id: null,
+      pricelist_no: null,
+      foc_qty: 0,
+      ...(val as object),
+    };
+  }
+  return val;
+};
+
 export const ApproveByStageRoleSchema2 = z.discriminatedUnion('stage_role', [
   z.object({
     stage_role: z.literal(enum_stage_role.approve),
-    details: z.array(ApprovePurchaseRequestDetailSchema)
+    details: z.array(z.preprocess(fillRejectDefaults, ApprovePurchaseRequestDetailSchema))
   }),
   z.object({
     stage_role: z.literal(enum_stage_role.purchase),
-    details: z.array(PurchaseRoleApprovePurchaseRequestDetailSchema)
+    details: z.array(z.preprocess(fillRejectDefaults, PurchaseRoleApprovePurchaseRequestDetailSchema))
   })
 ]);
 

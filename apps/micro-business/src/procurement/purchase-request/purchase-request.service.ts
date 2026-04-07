@@ -1546,10 +1546,19 @@ export class PurchaseRequestService {
         const rawStages = findPRDoc?.stages_status;
         const currentStages: StageStatus[] = Array.isArray(rawStages) ? rawStages as unknown as StageStatus[] : [];
 
-        const { stages, skipped } = WorkflowPersistenceHelper.buildApproveStagesStatus(
-          currentStages, detail, workflow.workflow_previous_stage,
-        );
-        if (skipped) continue;
+        const isReject = detail.stage_status === stage_status.reject;
+        let stages: StageStatus[];
+        if (isReject) {
+          stages = WorkflowPersistenceHelper.buildRejectStagesStatus(
+            currentStages, detail, workflow.workflow_previous_stage,
+          );
+        } else {
+          const result = WorkflowPersistenceHelper.buildApproveStagesStatus(
+            currentStages, detail, workflow.workflow_previous_stage,
+          );
+          if (result.skipped) continue;
+          stages = result.stages;
+        }
 
         const history = WorkflowPersistenceHelper.appendHistory(
           (findPRDoc?.history as unknown as Record<string, unknown>[]) || [],
@@ -1577,7 +1586,7 @@ export class PurchaseRequestService {
             stages_status: stages as unknown as Prisma.InputJsonValue,
             history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
-            current_stage_status: '',
+            current_stage_status: isReject ? stage_status.reject : '',
           },
         });
       }
@@ -1654,10 +1663,7 @@ export class PurchaseRequestService {
             stages_status: stages as unknown as Prisma.InputJsonValue,
             history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
-            current_stage_status:
-              payloadDetail.stage_status === stage_status.reject ? stage_status.reject :
-              payloadDetail.stage_status === stage_status.approve ? stage_status.approve :
-              '',
+            current_stage_status: payloadDetail.stage_status === stage_status.reject ? stage_status.reject : '',
           },
         });
       }

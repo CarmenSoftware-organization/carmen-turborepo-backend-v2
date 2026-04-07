@@ -1934,12 +1934,20 @@ export class PurchaseOrderService {
         const findPODoc = PODetailDocs.find((d) => d.id === detail.id);
         if (!findPODoc) continue;
 
-        const { stages, skipped } = WorkflowPersistenceHelper.buildApproveStagesStatus(
-          Array.isArray(findPODoc?.stages_status) ? findPODoc.stages_status as unknown as StageStatus[] : [],
-          detail,
-          (workflow as any).workflow_previous_stage,
-        );
-        if (skipped) continue;
+        const currentStages: StageStatus[] = Array.isArray(findPODoc?.stages_status) ? findPODoc.stages_status as unknown as StageStatus[] : [];
+        const isReject = detail.stage_status === stage_status.reject;
+        let stages: StageStatus[];
+        if (isReject) {
+          stages = WorkflowPersistenceHelper.buildRejectStagesStatus(
+            currentStages, detail, (workflow as any).workflow_previous_stage,
+          );
+        } else {
+          const result = WorkflowPersistenceHelper.buildApproveStagesStatus(
+            currentStages, detail, (workflow as any).workflow_previous_stage,
+          );
+          if (result.skipped) continue;
+          stages = result.stages;
+        }
 
         const history = WorkflowPersistenceHelper.appendHistory(
           (findPODoc?.history as unknown as Record<string, unknown>[]) || [],
@@ -1952,7 +1960,7 @@ export class PurchaseOrderService {
             doc_version: { increment: 1 },
             history: history as unknown as Prisma.InputJsonValue,
             stages_status: stages as unknown as Prisma.InputJsonValue,
-            current_stage_status: '',
+            current_stage_status: isReject ? stage_status.reject : '',
             updated_by_id: this.userId,
           },
         });
@@ -2129,10 +2137,7 @@ export class PurchaseOrderService {
             doc_version: { increment: 1 },
             history: history as unknown as Prisma.InputJsonValue,
             stages_status: stages as unknown as Prisma.InputJsonValue,
-            current_stage_status:
-              detail.stage_status === stage_status.reject ? stage_status.reject :
-              detail.stage_status === stage_status.approve ? stage_status.approve :
-              '',
+            current_stage_status: detail.stage_status === stage_status.reject ? stage_status.reject : '',
             updated_by_id: this.userId,
           },
         });

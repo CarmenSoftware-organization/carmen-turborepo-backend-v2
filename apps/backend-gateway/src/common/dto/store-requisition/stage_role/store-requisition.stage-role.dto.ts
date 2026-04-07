@@ -6,21 +6,35 @@ import {
   IssueRoleApproveStoreRequisitionDetailSchema,
   StoreRequisitionStateChangeSchema,
 } from '../store-requisition-detail.dto';
+import { stage_status } from '../../purchase-request/stage_role/purchase-request.stage-role.dto';
 
 // ============================================================================
 // Approve Action - Discriminated Union by stage_role (approve, issue)
 // ============================================================================
 
+// When stage_status === 'reject', the user only needs to send id + stage_message.
+// Inject sentinel defaults for the qty fields the strict schemas require, so the frontend
+// doesn't have to fill approved_qty / issued_qty just to reject an item.
+const fillRejectQtyDefaults = (val: unknown): unknown => {
+  if (
+    val && typeof val === 'object' &&
+    (val as { stage_status?: unknown }).stage_status === stage_status.reject
+  ) {
+    return { approved_qty: 0, issued_qty: 0, ...(val as object) };
+  }
+  return val;
+};
+
 // Approve by Stage Role - Approve (sets approved_qty)
 const ApproveByStageRoleApproveSchema = z.object({
   stage_role: z.literal(enum_stage_role.approve),
-  details: z.array(ApproveRoleApproveStoreRequisitionDetailSchema),
+  details: z.array(z.preprocess(fillRejectQtyDefaults, ApproveRoleApproveStoreRequisitionDetailSchema)),
 });
 
 // Approve by Stage Role - Issue (sets issued_qty)
 const ApproveByStageRoleIssueSchema = z.object({
   stage_role: z.literal(enum_stage_role.issue),
-  details: z.array(IssueRoleApproveStoreRequisitionDetailSchema),
+  details: z.array(z.preprocess(fillRejectQtyDefaults, IssueRoleApproveStoreRequisitionDetailSchema)),
 });
 
 // Discriminated Union for Approve Action

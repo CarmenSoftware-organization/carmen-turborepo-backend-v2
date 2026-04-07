@@ -23,14 +23,34 @@ export const PurchaseRoleApprovePurchaseRequestDetailSchema = ApprovePurchaseReq
 .merge(PriceSchema)
 .merge(FocSchema)
 
-export const ApproveByStageRoleSchema2 = z.discriminatedUnion('stage_role', [
-  ApprovePurchaseRequestDetailSchema.extend({
-    stage_role: z.literal('approve')
-  }),
-  PurchaseRoleApprovePurchaseRequestDetailSchema.extend({
-    stage_role: z.literal('purchase')
-  })
-]);
+// When stage_status === 'reject', the user only needs to send id + stage_message;
+// inject sentinel defaults for fields the strict schemas mark as required so the frontend
+// doesn't have to fill vendor/tax/foc/pricelist for an item it's rejecting.
+const fillRejectDefaults = (val: unknown): unknown => {
+  if (
+    val && typeof val === 'object' &&
+    (val as { stage_status?: unknown }).stage_status === stage_status.reject
+  ) {
+    return {
+      is_tax_adjustment: false,
+      foc_qty: 0,
+      ...(val as object),
+    };
+  }
+  return val;
+};
+
+export const ApproveByStageRoleSchema2 = z.preprocess(
+  fillRejectDefaults,
+  z.discriminatedUnion('stage_role', [
+    ApprovePurchaseRequestDetailSchema.extend({
+      stage_role: z.literal('approve')
+    }),
+    PurchaseRoleApprovePurchaseRequestDetailSchema.extend({
+      stage_role: z.literal('purchase')
+    })
+  ])
+);
 
 // @ts-expect-error discriminatedUnion not supported by createZodDto
 export class ApproveByStageRoleDto2 extends createZodDto(ApproveByStageRoleSchema2) {}
