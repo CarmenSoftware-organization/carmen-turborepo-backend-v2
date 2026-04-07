@@ -1085,7 +1085,10 @@ export class StoreRequisitionService {
             stages_status: stages as unknown as Prisma.InputJsonValue,
             history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
-            current_stage_status: findSR.stage_status === stage_status.reject ? stage_status.reject : '',
+            current_stage_status:
+              findSR.stage_status === stage_status.reject ? stage_status.reject :
+              findSR.stage_status === stage_status.approve ? stage_status.approve :
+              '',
             last_action: enum_last_action.reviewed,
             review_by_id: this.userId,
             review_by_name: workflow.last_action_by_name,

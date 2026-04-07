@@ -2129,7 +2129,10 @@ export class PurchaseOrderService {
             doc_version: { increment: 1 },
             history: history as unknown as Prisma.InputJsonValue,
             stages_status: stages as unknown as Prisma.InputJsonValue,
-            current_stage_status: detail.stage_status === stage_status.reject ? stage_status.reject : '',
+            current_stage_status:
+              detail.stage_status === stage_status.reject ? stage_status.reject :
+              detail.stage_status === stage_status.approve ? stage_status.approve :
+              '',
             updated_by_id: this.userId,
           },
         });
