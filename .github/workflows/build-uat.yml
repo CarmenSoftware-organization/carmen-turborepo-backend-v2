@@ -12,40 +12,94 @@ jobs:
     environment: production
 
     steps:
-      - name: Deploy via SSH (mirrors scripts/deploy.sh)
-        uses: appleboy/ssh-action@v1
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          host: ${{ secrets.INSTANCE_HOST }}
-          username: ${{ secrets.INSTANCE_USER }}
-          key: ${{ secrets.INSTANCE_SSH_KEY }}
-          port: 22
-          command_timeout: 30m
-          script: |
-            set -e
-            export PATH="/home/ec2-user/.nvm/versions/node/v24.14.0/bin:/home/ec2-user/.bun/bin:$PATH"
-            BUN=/home/ec2-user/.bun/bin/bun
-            PROJECT_DIR=/home/ec2-user/carmen-turborepo-backend-v2
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-            echo "=== [1/4] Pull origin/UAT ==="
-            cd "$PROJECT_DIR"
-            git fetch origin UAT
-            git checkout UAT
-            git reset --hard origin/UAT
+      - name: Deploy via SSM (mirrors scripts/deploy.sh)
+        env:
+          INSTANCE_ID: ${{ secrets.INSTANCE_ID }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: |
+          set -e
 
-            echo "=== [2/4] Install dependencies ==="
-            $BUN install
+          PARAMS=$(jq -n '{commands: [
+            "#!/bin/bash",
+            "set -e",
+            "runuser -l ec2-user -c '"'"'",
+            "  set -e",
+            "  export PATH=\"/home/ec2-user/.nvm/versions/node/v24.14.0/bin:/home/ec2-user/.bun/bin:$PATH\"",
+            "  BUN=/home/ec2-user/.bun/bin/bun",
+            "  PROJECT_DIR=/home/ec2-user/carmen-turborepo-backend-v2",
+            "",
+            "  echo \"=== [1/4] Pull origin/UAT ===\"",
+            "  cd \"$PROJECT_DIR\"",
+            "  git fetch origin UAT",
+            "  git checkout UAT",
+            "  git reset --hard origin/UAT",
+            "",
+            "  echo \"=== [2/4] Install dependencies ===\"",
+            "  $BUN install",
+            "",
+            "  echo \"=== [3/4] Build ===\"",
+            "  NODE_OPTIONS=--max-old-space-size=6144 $BUN run build",
+            "'"'"'",
+            "",
+            "echo \"=== [4/4] Restart services ===\"",
+            "for svc in carmen-backend-gateway carmen-micro-business carmen-micro-cluster carmen-micro-file carmen-micro-keycloak-api carmen-micro-notification; do",
+            "  echo \"==> Restarting $svc...\"",
+            "  systemctl restart \"$svc.service\"",
+            "done",
+            "",
+            "echo \"=== Service status ===\"",
+            "for svc in carmen-backend-gateway carmen-micro-business carmen-micro-cluster carmen-micro-file carmen-micro-keycloak-api carmen-micro-notification; do",
+            "  printf \"%-32s \" \"$svc\"",
+            "  systemctl is-active \"$svc.service\" || true",
+            "done"
+          ]}')
 
-            echo "=== [3/4] Build ==="
-            NODE_OPTIONS=--max-old-space-size=6144 $BUN run build
+          COMMAND_ID=$(aws ssm send-command \
+            --region "$AWS_REGION" \
+            --instance-ids "$INSTANCE_ID" \
+            --document-name "AWS-RunShellScript" \
+            --timeout-seconds 1800 \
+            --comment "Deploy UAT ${GITHUB_SHA::7}" \
+            --parameters "$PARAMS" \
+            --query 'Command.CommandId' --output text)
 
-            echo "=== [4/4] Restart services ==="
-            for svc in carmen-backend-gateway carmen-micro-business carmen-micro-cluster carmen-micro-file carmen-micro-keycloak-api carmen-micro-notification; do
-              echo "==> Restarting $svc..."
-              sudo systemctl restart "$svc.service"
-            done
+          echo "SSM Command ID: $COMMAND_ID"
 
-            echo "=== Deployment complete ==="
-            for svc in carmen-backend-gateway carmen-micro-business carmen-micro-cluster carmen-micro-file carmen-micro-keycloak-api carmen-micro-notification; do
-              printf "%-32s " "$svc"
-              systemctl is-active "$svc.service" || true
-            done
+          for i in $(seq 1 120); do
+            sleep 15
+            STATUS=$(aws ssm get-command-invocation \
+              --region "$AWS_REGION" \
+              --command-id "$COMMAND_ID" \
+              --instance-id "$INSTANCE_ID" \
+              --query 'Status' --output text 2>/dev/null || echo "Pending")
+            echo "  Status: $STATUS (attempt $i/120)"
+
+            if [ "$STATUS" = "Success" ]; then
+              echo "=== Deploy stdout ==="
+              aws ssm get-command-invocation --region "$AWS_REGION" \
+                --command-id "$COMMAND_ID" --instance-id "$INSTANCE_ID" \
+                --query 'StandardOutputContent' --output text
+              exit 0
+            elif [ "$STATUS" = "Failed" ] || [ "$STATUS" = "Cancelled" ] || [ "$STATUS" = "TimedOut" ]; then
+              echo "::error::Deploy failed: $STATUS"
+              echo "=== stdout ==="
+              aws ssm get-command-invocation --region "$AWS_REGION" \
+                --command-id "$COMMAND_ID" --instance-id "$INSTANCE_ID" \
+                --query 'StandardOutputContent' --output text
+              echo "=== stderr ==="
+              aws ssm get-command-invocation --region "$AWS_REGION" \
+                --command-id "$COMMAND_ID" --instance-id "$INSTANCE_ID" \
+                --query 'StandardErrorContent' --output text | tail -100
+              exit 1
+            fi
+          done
+
+          echo "::error::Deploy timed out"
+          exit 1
