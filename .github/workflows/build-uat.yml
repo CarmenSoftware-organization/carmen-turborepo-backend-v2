@@ -9,16 +9,16 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/UAT'
-    environment: uat
+    environment: production
 
     steps:
       - name: Deploy via SSH (mirrors scripts/deploy.sh)
         uses: appleboy/ssh-action@v1
         with:
-          host: 43.209.126.252
-          username: ${{ secrets.UAT_SSH_USER }}
-          key: ${{ secrets.UAT_SSH_KEY }}
-          port: ${{ secrets.UAT_SSH_PORT }}
+          host: ${{ secrets.INSTANCE_HOST }}
+          username: ${{ secrets.INSTANCE_USER }}
+          key: ${{ secrets.INSTANCE_SSH_KEY }}
+          port: 22
           command_timeout: 30m
           script: |
             set -e
