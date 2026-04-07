@@ -62,7 +62,6 @@ The system uses an **API Gateway pattern** with TCP-based microservice communica
 - **micro-file** (TCP:5007, HTTP:6007) — File storage.
 - **micro-notification** (TCP:5006, HTTP:6006) — Real-time notifications via Socket.io.
 - **micro-keycloak-api** (TCP:5013, HTTP:6013) — Keycloak integration.
-- **micro-cronjob** (TCP:5012, HTTP:6012) — Scheduled tasks (uses Elysia/Bun, not NestJS).
 
 Each NestJS microservice runs dual ports: TCP for inter-service RPC (`@MessagePattern()`) and HTTP for direct access/health checks.
 

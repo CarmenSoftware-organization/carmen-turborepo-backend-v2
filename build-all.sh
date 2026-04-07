@@ -129,7 +129,6 @@ main() {
         "micro-file"
         "micro-notification"
         "micro-keycloak-api"
-        "micro-cronjob"
         "backend-gateway"
     )
     

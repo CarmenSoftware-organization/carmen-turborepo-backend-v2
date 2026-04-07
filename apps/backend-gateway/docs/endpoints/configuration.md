@@ -17,7 +17,6 @@
   - [Delivery Points](#delivery-points)
   - [Adjustment Types](#adjustment-types)
   - [Extra Cost Types](#extra-cost-types)
-  - [Cron Jobs](#cron-jobs)
 - [Product Configuration](#product-configuration)
   - [Products](#products)
   - [Product Categories](#product-categories)
@@ -318,26 +317,6 @@ Manage document number sequences (e.g., PR-0001, PO-0001).
 | DELETE | `/:id` | `extra-cost-type.delete` | 200 | Delete |
 
 **Response Schemas:** `ExtraCostTypeListItemResponseSchema`, `ExtraCostTypeDetailResponseSchema`, `ExtraCostTypeMutationResponseSchema`
-
----
-
-### Cron Jobs
-
-**Base Path:** `/api/config/cronjobs`
-
-> Note: This controller does NOT use `:bu_code` prefix. No explicit guards on endpoints.
-
-| Method | Path | AppIdGuard | Status | Description |
-|--------|------|------------|--------|-------------|
-| GET | `/` | — | 200 | List all cron jobs |
-| GET | `/:id` | — | 200 | Get cron job by ID |
-| POST | `/` | — | 201 | Create cron job |
-| PUT | `/:id` | — | 200 | Update cron job |
-| DELETE | `/:id` | — | 200 | Delete cron job |
-| POST | `/:id/start` | — | 200 | Start cron job |
-| POST | `/:id/stop` | — | 200 | Stop cron job |
-| POST | `/:id/execute` | — | 200 | Execute cron job immediately |
-| GET | `/debug/memory` | — | 200 | Get active jobs in memory (debug) |
 
 ---
 

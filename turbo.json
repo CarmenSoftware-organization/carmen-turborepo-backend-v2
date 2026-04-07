@@ -43,10 +43,7 @@
     "dev:keycloak-api": {
       "cache": false
     },
-    "dev:cronjob": {
-      "cache": false
-    },
-    "dev:cluster": {
+"dev:cluster": {
       "cache": false
     },
     "dev:base": {

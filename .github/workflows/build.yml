@@ -31,7 +31,6 @@ jobs:
           - backend-gateway
           - micro-business
           - micro-cluster
-          - micro-cronjob
           - micro-file
           - micro-keycloak-api
           - micro-notification

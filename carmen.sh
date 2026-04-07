@@ -34,10 +34,9 @@ SERVICE_CLUSTER="cluster|apps/micro-cluster|node dist/main"
 SERVICE_KEYCLOAK="keycloak|apps/micro-keycloak-api|node dist/main"
 SERVICE_FILE="file|apps/micro-file|node dist/main"
 SERVICE_NOTIFICATION="notification|apps/micro-notification|node dist/main"
-SERVICE_CRONJOB="cronjob|apps/micro-cronjob|bun dist/server.js"
 
 CORE_LIST="gateway business cluster keycloak"
-ALL_LIST="gateway business cluster keycloak file notification cronjob"
+ALL_LIST="gateway business cluster keycloak file notification"
 
 # ───────────────────────────────────────────────────────────
 # Helpers
@@ -51,7 +50,6 @@ get_service_def() {
         keycloak)     echo "$SERVICE_KEYCLOAK" ;;
         file)         echo "$SERVICE_FILE" ;;
         notification) echo "$SERVICE_NOTIFICATION" ;;
-        cronjob)      echo "$SERVICE_CRONJOB" ;;
         *) echo "" ;;
     esac
 }
@@ -121,11 +119,7 @@ cmd_build() {
         echo ""
         echo "--- Building: $name ---"
         cd "$ROOT_DIR/$dir"
-        if [ "$name" = "cronjob" ]; then
-            bun build src/server.ts --outdir=dist --target=bun
-        else
-            npx nest build
-        fi
+        npx nest build
     done
 
     cd "$ROOT_DIR"
@@ -154,18 +148,10 @@ cmd_start() {
         cmd=$(get_field "$def" 3)
 
         # เช็คว่า build แล้วยัง
-        if [ "$name" = "cronjob" ]; then
-            if [ ! -f "$ROOT_DIR/$dir/dist/server.js" ]; then
-                echo "  $name: not built yet, building..."
-                cd "$ROOT_DIR/$dir"
-                bun build src/server.ts --outdir=dist --target=bun
-            fi
-        else
-            if [ ! -d "$ROOT_DIR/$dir/dist" ]; then
-                echo "  $name: not built yet, building..."
-                cd "$ROOT_DIR/$dir"
-                npx nest build
-            fi
+        if [ ! -d "$ROOT_DIR/$dir/dist" ]; then
+            echo "  $name: not built yet, building..."
+            cd "$ROOT_DIR/$dir"
+            npx nest build
         fi
 
         cd "$ROOT_DIR/$dir"
@@ -258,7 +244,6 @@ cmd_status() {
             keycloak)     ports="5013, 6013" ;;
             file)         ports="5007, 6007" ;;
             notification) ports="5006, 6006" ;;
-            cronjob)      ports="5012, 6012" ;;
         esac
 
         printf "%-15s %-10s %-10s %s\n" "$name" "$status" "$pid" "$ports"
@@ -284,7 +269,6 @@ cmd_health() {
     check "Keycloak API (6013)" "http://localhost:6013/health"
     check "File (6007)"         "http://localhost:6007/health"
     check "Notification (6006)" "http://localhost:6006/health"
-    check "Cronjob (6012)"      "http://localhost:6012/health"
 }
 
 cmd_clean_logs() {
@@ -311,8 +295,8 @@ cmd_help() {
     echo ""
     echo "Targets:"
     echo "  core           gateway, business, cluster, keycloak (default)"
-    echo "  all            ทุก 7 services"
-    echo "  SERVICE name   gateway | business | cluster | keycloak | file | notification | cronjob"
+    echo "  all            ทุก 6 services"
+    echo "  SERVICE name   gateway | business | cluster | keycloak | file | notification"
     echo ""
     echo "ตัวอย่าง:"
     echo "  ./carmen.sh install             # ครั้งแรก"

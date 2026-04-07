@@ -35,13 +35,12 @@ SERVICE_CLUSTER="cluster|apps/micro-cluster|node dist/main|node"
 SERVICE_KEYCLOAK="keycloak|apps/micro-keycloak-api|node dist/main|node"
 SERVICE_FILE="file|apps/micro-file|node dist/main|node"
 SERVICE_NOTIFICATION="notification|apps/micro-notification|node dist/main|node"
-SERVICE_CRONJOB="cronjob|apps/micro-cronjob|bun dist/server.js|bun"
 
 # External services (outside monorepo)
 CARMEN_DEV_DIR="$HOME"
 SERVICE_REPORT="report|$CARMEN_DEV_DIR/micro-report|./bin/micro-report|go"
 CORE_LIST="gateway business cluster keycloak"
-ALL_LIST="gateway business cluster keycloak file notification cronjob report"
+ALL_LIST="gateway business cluster keycloak file notification report"
 
 # ───────────────────────────────────────────────────────────
 # Helpers
@@ -55,7 +54,6 @@ get_service_def() {
         keycloak)       echo "$SERVICE_KEYCLOAK" ;;
         file)           echo "$SERVICE_FILE" ;;
         notification)   echo "$SERVICE_NOTIFICATION" ;;
-        cronjob)        echo "$SERVICE_CRONJOB" ;;
         report)         echo "$SERVICE_REPORT" ;;
         *) echo "" ;;
     esac
@@ -104,7 +102,6 @@ get_ports() {
         keycloak)       echo "5013 6013" ;;
         file)           echo "5007 6007" ;;
         notification)   echo "5006 6006" ;;
-        cronjob)        echo "5012" ;;
         report)         echo "5015 6015" ;;
         *)              echo "" ;;
     esac
@@ -327,7 +324,6 @@ cmd_status() {
             keycloak)       ports="5013, 6013" ;;
             file)           ports="5007, 6007" ;;
             notification)   ports="5006, 6006" ;;
-            cronjob)        ports="5012" ;;
             report)         ports="5015, 6015" ;;
         esac
 
@@ -354,7 +350,6 @@ cmd_health() {
     check "Keycloak API (6013)"   "http://localhost:6013/health"
     check "File (6007)"           "http://localhost:6007/health"
     check "Notification (6006)"   "http://localhost:6006/health"
-    check "Cronjob (5012)"        "http://localhost:5012/health"
     check "Report (6015)"         "http://localhost:6015/health"
 }
 
@@ -382,8 +377,8 @@ cmd_help() {
     echo ""
     echo "Targets:"
     echo "  core           gateway, business, cluster, keycloak (default, 4 services)"
-    echo "  all            ทุก 8 services"
-    echo "  SERVICE name   gateway | business | cluster | keycloak | file | notification | cronjob | report"
+    echo "  all            ทุก 7 services"
+    echo "  SERVICE name   gateway | business | cluster | keycloak | file | notification | report"
     echo ""
     echo "ตัวอย่าง:"
     echo "  ./carmen.sh install             # ครั้งแรก"

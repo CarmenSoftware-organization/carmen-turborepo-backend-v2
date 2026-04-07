@@ -22,7 +22,6 @@ import { Config_PriceListModule } from './config_price-list/config_price-list.mo
 import { Config_LocationsUserModule } from './config_locations-user/config_locations-user.module';
 import { Config_UnitCommentModule } from './config_unit_comment/config_unit_comment.module';
 import { Config_DepartmentUserModule } from './config_department-user/config_department-user.module';
-import { ConfigCronjobModule } from './config_cronjob/config_cronjob.module';
 import { ConfigApplicationRoleModule } from './config_application_role/config_application_role.module';
 import { ConfigPermissionModule } from './config_permission/config_permssion.module';
 import { ConfigUserApplicationRoleModule } from './config_user_application_role/config_user_application_role.module';
@@ -63,7 +62,6 @@ import { Config_CreditNoteReasonModule } from './config_credit-note-reason/confi
     Config_LocationsUserModule,
     Config_UnitCommentModule,
     Config_DepartmentUserModule,
-    ConfigCronjobModule,
     Config_RecipeModule,
     Config_RecipeCategoryModule,
     Config_RecipeCuisineModule,

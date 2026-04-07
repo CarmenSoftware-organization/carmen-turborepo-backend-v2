@@ -33,9 +33,6 @@ services:
       - FILE_SERVICE_HOST=api-micro-file
       - FILE_SERVICE_TCP_PORT=5007
       - FILE_SERVICE_HTTP_PORT=6007
-      - CRONJOB_SERVICE_HOST=api-micro-cronjob
-      - CRONJOB_SERVICE_TCP_PORT=5012
-      - CRONJOB_SERVICE_HTTP_PORT=6012
       - KEYCLOAK_API_SERVICE_HOST=api-micro-keycloak-api
       - KEYCLOAK_API_SERVICE_TCP_PORT=5013
       - KEYCLOAK_API_SERVICE_HTTP_PORT=6013
@@ -75,7 +72,6 @@ services:
       - GATEWAY_SERVICE_HOST=api-backend-gateway
       - BUSINESS_SERVICE_HOST=api-micro-business
       - CLUSTER_SERVICE_HOST=0.0.0.0
-      - CRONJOB_SERVICE_HOST=api-micro-cronjob
       - FILE_SERVICE_HOST=api-micro-file
       - KEYCLOAK_API_SERVICE_HOST=api-micro-keycloak-api
       - KEYCLOAK_API_SERVICE_TCP_PORT=5013
@@ -111,8 +107,6 @@ services:
       - GATEWAY_SERVICE_HOST=api-backend-gateway
       - BUSINESS_SERVICE_HOST=api-micro-business
       - CLUSTER_SERVICE_HOST=api-micro-cluster
-      - CRONJOB_SERVICE_HOST=api-micro-cronjob
-      - CRONJOB_SERVICE_TCP_PORT=5012
       - FILE_SERVICE_HOST=api-micro-file
       - FILE_SERVICE_TCP_PORT=5007
       - KEYCLOAK_API_SERVICE_HOST=api-micro-keycloak-api
@@ -153,7 +147,6 @@ services:
       - GATEWAY_SERVICE_HOST=api-backend-gateway
       - BUSINESS_SERVICE_HOST=api-micro-business
       - CLUSTER_SERVICE_HOST=api-micro-cluster
-      - CRONJOB_SERVICE_HOST=api-micro-cronjob
       - FILE_SERVICE_HOST=api-micro-file
       - NOTIFICATION_SERVICE_HOST=api-micro-notification
       - REPORT_SERVICE_HOST=api-micro-report
@@ -181,7 +174,6 @@ services:
       - GATEWAY_SERVICE_HOST=api-backend-gateway
       - BUSINESS_SERVICE_HOST=api-micro-business
       - CLUSTER_SERVICE_HOST=api-micro-cluster
-      - CRONJOB_SERVICE_HOST=api-micro-cronjob
       - FILE_SERVICE_HOST=api-micro-file
       - KEYCLOAK_API_SERVICE_HOST=api-micro-keycloak-api
       - NOTIFICATION_SERVICE_HOST=api-micro-notification
@@ -210,7 +202,6 @@ services:
       - GATEWAY_SERVICE_HOST=api-backend-gateway
       - BUSINESS_SERVICE_HOST=api-micro-business
       - CLUSTER_SERVICE_HOST=api-micro-cluster
-      - CRONJOB_SERVICE_HOST=api-micro-cronjob
       - FILE_SERVICE_HOST=api-micro-file
       - KEYCLOAK_API_SERVICE_HOST=api-micro-keycloak-api
       - NOTIFICATION_SERVICE_HOST=0.0.0.0
@@ -228,36 +219,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-
-  api-micro-cronjob:
-    image: local/carmen-micro-cronjob:latest
-    build:
-      context: .
-      dockerfile: apps/micro-cronjob/Dockerfile
-    container_name: carmen-api-micro-cronjob
-    restart: unless-stopped
-    ports:
-      - "5012:5012"
-      - "6012:6012"
-    env_file:
-      - ./apps/micro-cronjob/.env
-    environment:
-      - NODE_ENV=production
-      # Service discovery
-      - GATEWAY_SERVICE_HOST=api-backend-gateway
-      - BUSINESS_SERVICE_HOST=api-micro-business
-      - CLUSTER_SERVICE_HOST=api-micro-cluster
-      - CRONJOB_SERVICE_HOST=api-micro-cronjob
-      - FILE_SERVICE_HOST=api-micro-file
-      - KEYCLOAK_API_SERVICE_HOST=api-micro-keycloak-api
-      - NOTIFICATION_SERVICE_HOST=api-micro-notification
-      - NOTIFICATION_SERVICE_TCP_PORT=5006
-      - REPORT_SERVICE_HOST=api-micro-report
-      - REPORT_RENDER_HOST=api-micro-report
-    networks:
-      - carmen-network
-    depends_on:
-      - api-backend-gateway
 
 networks:
   carmen-network:

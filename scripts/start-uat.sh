@@ -37,7 +37,7 @@ SSH_OPTS="-i $SSH_KEY -o StrictHostKeyChecking=no -o ConnectTimeout=10"
 SSH_CMD="ssh $SSH_OPTS $SSH_USER@$SSH_HOST"
 
 CORE_LIST="gateway business cluster keycloak"
-ALL_LIST="gateway business cluster keycloak file notification cronjob"
+ALL_LIST="gateway business cluster keycloak file notification"
 
 # ───────────────────────────────────────────────────────────
 # Helpers
@@ -93,14 +93,7 @@ cmd_build() {
         echo ""
         echo "--- [UAT] Building: $name ---"
         app_dir=$(resolve_app_dir "$name")
-        case "$name" in
-            cronjob)
-                remote_exec "cd $app_dir && bun build src/server.ts --outdir=dist --target=bun"
-                ;;
-            *)
-                remote_exec "export NODE_OPTIONS='--max-old-space-size=1024' && cd $app_dir && npx nest build"
-                ;;
-        esac
+        remote_exec "export NODE_OPTIONS='--max-old-space-size=1024' && cd $app_dir && npx nest build"
         echo "  $name: built"
     done
 
@@ -210,8 +203,8 @@ cmd_help() {
     echo ""
     echo "Targets:"
     echo "  core           gateway, business, cluster, keycloak (default)"
-    echo "  all            ทุก 7 services"
-    echo "  SERVICE name   gateway | business | cluster | keycloak | file | notification | cronjob"
+    echo "  all            ทุก 6 services"
+    echo "  SERVICE name   gateway | business | cluster | keycloak | file | notification"
     echo ""
     echo "ตัวอย่าง:"
     echo "  ./start-uat.sh deploy core      # Deploy + restart core services"

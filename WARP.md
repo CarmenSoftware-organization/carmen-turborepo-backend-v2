@@ -30,7 +30,6 @@ apps/                              # Microservice applications
 ├── micro-file/                   # File storage (TCP:5007, HTTP:6007)
 ├── micro-notification/           # Real-time notifications via Socket.io (TCP:5006, HTTP:6006)
 ├── micro-keycloak-api/           # Keycloak integration (TCP:5013, HTTP:6013)
-├── micro-cronjob/                # Scheduled tasks - Elysia/Bun (TCP:5012, HTTP:6012)
 └── bruno/                        # API testing collection
 
 packages/                          # Shared packages

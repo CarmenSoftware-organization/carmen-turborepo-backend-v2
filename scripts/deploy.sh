@@ -3,7 +3,7 @@
 # Carmen Backend V2 - Deployment Script
 # Usage: ./deploy.sh [command] [service]
 # Commands: pull, install, build, start, restart, stop, status
-# Service: all, gateway, business, cluster, cronjob, file, keycloak, notification, api-gateway-v2
+# Service: all, gateway, business, cluster, file, keycloak, notification, api-gateway-v2
 
 SSH_KEY="$HOME/workspace/ssh/aws/webservice/webservice.pem"
 SSH_HOST="ec2-user@43.209.126.252"
@@ -18,14 +18,13 @@ declare -A SERVICE_MAP=(
   [gateway]="carmen-backend-gateway"
   [business]="carmen-micro-business"
   [cluster]="carmen-micro-cluster"
-  [cronjob]="carmen-micro-cronjob"
   [file]="carmen-micro-file"
   [keycloak]="carmen-micro-keycloak-api"
   [notification]="carmen-micro-notification"
   [api-gateway-v2]="api-gateway-v2"
 )
 
-ALL_SERVICES="gateway business cluster cronjob file keycloak notification"
+ALL_SERVICES="gateway business cluster file keycloak notification"
 
 get_service_name() {
   local key="$1"
@@ -125,7 +124,6 @@ usage() {
   echo "  gateway          - Backend Gateway"
   echo "  business         - Micro Business"
   echo "  cluster          - Micro Cluster"
-  echo "  cronjob          - Micro Cronjob"
   echo "  file             - Micro File"
   echo "  keycloak         - Micro Keycloak API"
   echo "  notification     - Micro Notification"

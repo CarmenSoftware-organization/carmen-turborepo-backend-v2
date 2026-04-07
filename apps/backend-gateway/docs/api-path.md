@@ -58,7 +58,6 @@
 | CRUD | `recipe-category[/:id]` | Recipe category configuration |
 | CRUD | `recipe-cuisine[/:id]` | Recipe cuisine configuration |
 | CRUD | `recipe-equipment[/:id]` | Recipe equipment configuration |
-| CRUD | `cronjobs[/:id]` | Cron job configuration |
 | CRUD | `vendor-business-type[/:id]` | Vendor business type configuration |
 | GET | `location-product/:locationId` | Products by location |
 | GET/PUT | `locations/user/:userId` | Location-user assignments |

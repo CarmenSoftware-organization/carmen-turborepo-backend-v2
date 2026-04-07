@@ -18,8 +18,6 @@ const envSchema = z.object({
   FILE_SERVICE_TCP_PORT: z.coerce.number().default(5007),
   REPORT_SERVICE_HOST: z.string().min(1),
   REPORT_SERVICE_TCP_PORT: z.coerce.number().default(5015),
-  CRONJOB_SERVICE_HOST: z.string().min(1),
-  CRONJOB_SERVICE_TCP_PORT: z.coerce.number().default(5012),
 
   // JWT configuration
   JWT_EXPIRES_IN: z.string().default('1d'),
@@ -54,8 +52,6 @@ export const envConfig = {
   FILE_SERVICE_TCP_PORT: env.FILE_SERVICE_TCP_PORT,
   REPORT_SERVICE_HOST: env.REPORT_SERVICE_HOST,
   REPORT_SERVICE_TCP_PORT: env.REPORT_SERVICE_TCP_PORT,
-  CRONJOB_SERVICE_HOST: env.CRONJOB_SERVICE_HOST,
-  CRONJOB_SERVICE_TCP_PORT: env.CRONJOB_SERVICE_TCP_PORT,
 
   // JWT configuration
   JWT_SECRET: env.JWT_SECRET,
