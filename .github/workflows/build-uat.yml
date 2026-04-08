@@ -9,7 +9,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/UAT'
-    environment: production
+    environment: uat
 
     steps:
       - name: Configure AWS credentials
