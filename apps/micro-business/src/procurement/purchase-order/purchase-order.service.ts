@@ -1557,10 +1557,27 @@ export class PurchaseOrderService {
     await this.prismaService.$transaction(async (txp) => {
       // 1. Update PO header if any header fields provided
       if (Object.keys(header).length > 0) {
+        // Coerce empty-string UUID fields to null. The frontend may send
+        // `""` for an unselected buyer/credit term, but Prisma rejects empty
+        // strings on `String? @db.Uuid` columns with "Error creating UUID".
+        const UUID_HEADER_FIELDS = [
+          'workflow_id',
+          'vendor_id',
+          'currency_id',
+          'buyer_id',
+          'credit_term_id',
+        ] as const;
+        const sanitizedHeader: Record<string, unknown> = { ...header };
+        for (const field of UUID_HEADER_FIELDS) {
+          if (field in sanitizedHeader && sanitizedHeader[field] === '') {
+            sanitizedHeader[field] = null;
+          }
+        }
+
         await txp.tb_purchase_order.update({
           where: { id },
           data: {
-            ...header,
+            ...sanitizedHeader,
             delivery_date: header.delivery_date
               ? new Date(header.delivery_date as string).toISOString()
               : undefined,
