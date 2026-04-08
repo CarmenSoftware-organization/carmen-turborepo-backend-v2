@@ -19,6 +19,7 @@
     "db:deploy": "turbo run db:deploy",
     "build:package": "turbo run build:package",
     "setup": "bun install && turbo run build:package",
+    "clear": "rm -rf node_modules bun.lock bun.lockb && find apps packages -type d \\( -name node_modules -o -name dist -o -name .turbo -o -name .next \\) -prune -exec rm -rf {} +",
     "postinstall": "turbo run build:package"
   },
   "devDependencies": {

@@ -24,7 +24,19 @@ interface AllowedApp {
 const getAllowedApps = (): AllowedApp[] => {
   const logger = new BackendLogger('getAllowedApps');
   try {
-    const configPath = path.resolve(__dirname, '../../../x-app-id.json');
+    // Resolve x-app-id.json across both `src/` (dev) and `dist/src/` (build) layouts.
+    const candidates = [
+      path.resolve(__dirname, '../../../x-app-id.json'),
+      path.resolve(__dirname, '../../../../x-app-id.json'),
+      path.resolve(process.cwd(), 'x-app-id.json'),
+      path.resolve(process.cwd(), 'apps/backend-gateway/x-app-id.json'),
+    ];
+    const configPath = candidates.find((p) => fs.existsSync(p));
+    if (!configPath) {
+      throw new Error(
+        `x-app-id.json not found in any of: ${candidates.join(', ')}`,
+      );
+    }
     const data = fs.readFileSync(configPath, 'utf-8');
 
     const result =  JSON.parse(data) as AllowedApp[];
