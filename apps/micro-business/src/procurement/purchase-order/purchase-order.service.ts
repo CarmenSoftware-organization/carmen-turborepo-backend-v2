@@ -2075,7 +2075,7 @@ export class PurchaseOrderService {
           ...workflow,
           workflow_history: workflow.workflow_history as unknown as Prisma.InputJsonValue,
           user_action: workflow.user_action as unknown as Prisma.InputJsonValue,
-          po_status: enum_purchase_order_doc_status.closed,
+          po_status: enum_purchase_order_doc_status.voided,
           updated_by_id: this.userId,
         },
       });
