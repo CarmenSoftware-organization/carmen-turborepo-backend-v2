@@ -6,7 +6,7 @@ import { StdResponse } from '../std-response/std-response';
 export abstract class BaseHttpController {
   protected respond(
     response: Response,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     result: Result<unknown> | any,
     customStatus?: HttpStatus,
   ) {

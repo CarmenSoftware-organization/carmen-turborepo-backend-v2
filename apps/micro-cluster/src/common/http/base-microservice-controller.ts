@@ -44,7 +44,7 @@ export abstract class BaseMicroserviceController {
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   protected handleResult<T>(
     result: Result<any, any>,
     successStatus: HttpStatus = HttpStatus.OK,
@@ -70,7 +70,7 @@ export abstract class BaseMicroserviceController {
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   protected handleMultiPaginatedResult<T>(
     result: Result<any, any>,
   ): MicroserviceResponse<T[]> {
@@ -96,7 +96,7 @@ export abstract class BaseMicroserviceController {
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   protected handlePaginatedResult<T>(
     result: Result<any, any>,
   ): MicroserviceResponse<T[]> {

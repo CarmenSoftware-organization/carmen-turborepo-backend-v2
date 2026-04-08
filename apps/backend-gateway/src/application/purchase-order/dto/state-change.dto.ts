@@ -113,7 +113,7 @@ const UpdateSavePurchaseOrderDetailSchema = SavePurchaseOrderDetailSchema.omit({
 export const SavePurchaseOrderSchema = z.object({
   stage_role: z.nativeEnum(stage_role),
   // details: object (create role) or array (approve/purchase role)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   details: z.any(),
 });
 

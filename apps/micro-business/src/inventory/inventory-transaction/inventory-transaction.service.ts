@@ -476,7 +476,7 @@ export class InventoryTransactionService {
     return Result.ok(serializedInventoryTransactions);
   }
   async createFromGoodReceivedNote(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     tx: any,
     payload: ICreateFromGrnPayload,
   ): Promise<string> {
@@ -754,7 +754,7 @@ export class InventoryTransactionService {
   // HELPERS
   // ============================================================
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private async getAvailableFifoLots(tx: any, productId: string, locationId: string): Promise<IFifoLot[]> {
     // Get all receive layers (in_qty > 0)
     const receiveLayers = await tx.tb_inventory_transaction_cost_layer.findMany({
@@ -811,7 +811,7 @@ export class InventoryTransactionService {
     return buildAvailableFifoLots(lotGroups, consumedPerLot);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private async getNextLotSeqNo(tx: any, atPeriod: string): Promise<number> {
     const maxLayer = await tx.tb_inventory_transaction_cost_layer.findFirst({
       where: { at_period: atPeriod, deleted_at: null },
@@ -821,13 +821,13 @@ export class InventoryTransactionService {
     return (maxLayer?.lot_seq_no || 0) + 1;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private async getCurrentAverageCost(tx: any, productId: string): Promise<number> {
     const layers = await this.getReceivingLayers(tx, productId);
     return calculateAverageCost(layers);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private async getReceivingLayers(tx: any, productId: string) {
     const rawLayers = await tx.tb_inventory_transaction_cost_layer.findMany({
       where: { product_id: productId, in_qty: { gt: 0 }, deleted_at: null },
@@ -836,7 +836,7 @@ export class InventoryTransactionService {
     return rawLayers.map((l: any) => ({ in_qty: Number(l.in_qty), cost_per_unit: Number(l.cost_per_unit) }));
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private async getLocationBalance(tx: any, productId: string, locationId: string): Promise<number> {
     const result = await tx.tb_inventory_transaction_cost_layer.aggregate({
       where: { product_id: productId, location_id: locationId, deleted_at: null },
@@ -850,7 +850,7 @@ export class InventoryTransactionService {
   // FIFO CONSUMPTION (issue, adjustment_out)
   // ============================================================
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private async createFifoConsumption(
     tx: any,
     params: IConsumptionParams,
@@ -941,7 +941,7 @@ export class InventoryTransactionService {
   // AVERAGE CONSUMPTION (issue, adjustment_out)
   // ============================================================
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private async createAverageConsumption(
     tx: any,
     params: IConsumptionParams,
@@ -1610,7 +1610,7 @@ export class InventoryTransactionService {
    *   - total_cost     = CN's cost × out_qty
    *   - diff_amount    = (CN cost − lot cost) × out_qty
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private async createFifoCreditNoteQty(
     tx: any,
     payload: ICreditNoteQtyPayload,
@@ -1793,7 +1793,7 @@ export class InventoryTransactionService {
    *   - diff_amount           = 0 (only non-zero when stock is insufficient)
    *   - average_cost_per_unit = recalculated: (totalInCost - cnTotalCost) / (totalInQty - cnQty)
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private async createAverageCreditNoteQty(
     tx: any,
     payload: ICreditNoteQtyPayload,
@@ -1978,7 +1978,7 @@ export class InventoryTransactionService {
    *
    * Net stock effect = 0.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private async createFifoCreditNoteAmount(
     tx: any,
     payload: ICreditNoteAmountPayload,
@@ -2162,7 +2162,7 @@ export class InventoryTransactionService {
    * but also recalculates the weighted average cost and updates all
    * existing layers for each affected product.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private async createAverageCreditNoteAmount(
     tx: any,
     payload: ICreditNoteAmountPayload,
@@ -2392,7 +2392,7 @@ export class InventoryTransactionService {
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const where: any = { deleted_at: null };
     if (query.product_id) where.product_id = query.product_id;
     if (query.location_id) where.location_id = query.location_id;
@@ -2475,7 +2475,7 @@ export class InventoryTransactionService {
 
     const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const where: any = { deleted_at: null };
     if (query.product_id) where.product_id = query.product_id;
 

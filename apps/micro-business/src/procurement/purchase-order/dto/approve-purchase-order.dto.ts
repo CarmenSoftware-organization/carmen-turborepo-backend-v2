@@ -64,7 +64,7 @@ export const SavePurchaseOrderApproveDetailSchema = z.object({
 // Save PO schema - stage_role + details (shape depends on role)
 export const SavePurchaseOrderSchema = z.object({
   stage_role: z.nativeEnum(enum_stage_role),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   details: z.any(),
 });
 

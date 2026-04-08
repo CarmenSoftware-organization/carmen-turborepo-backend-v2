@@ -40,7 +40,7 @@ export class PurchaseRequestLogic {
     const data = payload.details
     const extractId = this.populateData(data)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const foreignValue: Record<string, any> = await this.tracer.startActiveSpan('pr.create.populate-foreign-keys', async (span) => {
       try {
         return await this.mapperLogic.populate(extractId, user_id, tenant_id);
@@ -145,7 +145,7 @@ export class PurchaseRequestLogic {
     id,
     { stage_role, details: data }: {
       stage_role: enum_stage_role,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       details: any
     },
     user_id: string,
@@ -153,11 +153,11 @@ export class PurchaseRequestLogic {
     this.logger.debug({ function: 'save', data, user_id, tenant_id }, PurchaseRequestLogic.name);
     await this.purchaseRequestService.initializePrismaService(tenant_id, user_id);
     let updatePR = {}
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     let updatePRDetail: any = {}
     if (stage_role === enum_stage_role.create) {
       const extractId = this.populateData(data)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
     const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractId, user_id, tenant_id)
 
       // Validate HOD requirement when workflow is being assigned
@@ -305,7 +305,7 @@ export class PurchaseRequestLogic {
       }
     } else if (stage_role === enum_stage_role.purchase || stage_role === enum_stage_role.approve) {
       const extractIds = this.populateDetail(data)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
     const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id)
       updatePRDetail = []
       for (const detail of data as PurchaseRoleSavePurchaseRequestDetail[]) {
@@ -925,7 +925,7 @@ export class PurchaseRequestLogic {
    * Send notification when PR is submitted
    */
   private async sendSubmitNotification(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     purchaseRequest: Record<string, any>,
     workflow: WorkflowHeader,
     submitterId: string,
@@ -964,7 +964,7 @@ export class PurchaseRequestLogic {
    * Send notification when PR is approved
    */
   private async sendApproveNotification(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     purchaseRequest: Record<string, any>,
     workflow: WorkflowHeader,
     approverId: string,
@@ -1030,7 +1030,7 @@ export class PurchaseRequestLogic {
    * Send notification when PR is reviewed (sent back)
    */
   private async sendReviewNotification(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     purchaseRequest: Record<string, any>,
     workflow: WorkflowHeader,
     reviewerId: string,

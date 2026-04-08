@@ -241,12 +241,16 @@ export class ProductItemGroupService {
       return Result.error(`Validation failed: ${errorMessages}`, ErrorCode.VALIDATION_FAILURE);
     }
 
+    if (typeof data.name === 'string') data.name = data.name.trim();
+    if (typeof data.code === 'string') data.code = data.code.trim().toUpperCase();
+
     // Business validation: check for duplicate
     const foundProductItemGroup = await this.prismaService.tb_product_item_group.findFirst({
       where: {
-        code: data.code.toUpperCase(),
-        name: data.name,
+        code: { equals: data.code, mode: 'insensitive' },
+        name: { equals: data.name, mode: 'insensitive' },
         product_subcategory_id: data.product_subcategory_id,
+        deleted_at: null,
       },
     });
 
@@ -297,14 +301,18 @@ export class ProductItemGroupService {
       return Result.error('Product item group not found', ErrorCode.NOT_FOUND);
     }
 
+    if (typeof data.name === 'string') data.name = data.name.trim();
+    if (typeof data.code === 'string') data.code = data.code.trim().toUpperCase();
+
     // Business validation: check for duplicate
     const foundProductItemGroup = await this.prismaService.tb_product_item_group.findFirst({
       where: {
-        code: data.code.toUpperCase() ?? productItemGroup.code,
-        name: data.name ?? productItemGroup.name,
+        code: { equals: data.code ?? productItemGroup.code, mode: 'insensitive' },
+        name: { equals: data.name ?? productItemGroup.name, mode: 'insensitive' },
         product_subcategory_id:
           data.product_subcategory_id ??
           productItemGroup.product_subcategory_id,
+        deleted_at: null,
         NOT: {
           id: data.id,
         },

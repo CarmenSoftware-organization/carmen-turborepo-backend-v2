@@ -79,7 +79,7 @@ export class PhysicalCountService {
     return this.getPhysicalCountWithDetails(prisma, id);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private async getPhysicalCountWithDetails(
     prisma: any,
     id: string,
@@ -1214,7 +1214,7 @@ export class PhysicalCountService {
     bu_code: string,
     user_id: string,
   ): Promise<string> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+     
     const res: Observable<any> = this.masterService.send(
       { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
       { type: 'SI', user_id, bu_code },
@@ -1243,7 +1243,7 @@ export class PhysicalCountService {
 
     const getDate = new Date(siDate);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+     
     const generateCodeRes: Observable<any> = this.masterService.send(
       { cmd: 'running-code.generate-code', service: 'running-codes' },
       {
@@ -1268,7 +1268,7 @@ export class PhysicalCountService {
     bu_code: string,
     user_id: string,
   ): Promise<string> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+     
     const res: Observable<any> = this.masterService.send(
       { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
       { type: 'SO', user_id, bu_code },
@@ -1297,7 +1297,7 @@ export class PhysicalCountService {
 
     const getDate = new Date(soDate);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+     
     const generateCodeRes: Observable<any> = this.masterService.send(
       { cmd: 'running-code.generate-code', service: 'running-codes' },
       {

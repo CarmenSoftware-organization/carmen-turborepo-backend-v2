@@ -55,7 +55,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       Sentry.captureException(exception);
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     let error: any;
 
     if (exception instanceof RpcException) {

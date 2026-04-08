@@ -238,9 +238,12 @@ export class VendorsService {
   async create(data: ICreateVendor): Promise<Result<unknown>> {
     this.logger.debug({ function: "create", data, user_id: this.userId, tenant_id: this.bu_code }, VendorsService.name);
 
+    if (typeof data.code === 'string') data.code = data.code.trim();
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
     const foundVendorByCode = await this.prismaService.tb_vendor.findFirst({
       where: {
-        code: data.code,
+        code: { equals: data.code, mode: 'insensitive' },
         deleted_at: null,
       },
       select: { id: true },
@@ -344,6 +347,23 @@ export class VendorsService {
 
     if (!vendor) {
       return Result.error("Vendor not found", ErrorCode.NOT_FOUND);
+    }
+
+    if (typeof data.code === 'string') data.code = data.code.trim();
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
+    if (data.code && data.code.toLowerCase() !== vendor.code.toLowerCase()) {
+      const duplicate = await this.prismaService.tb_vendor.findFirst({
+        where: {
+          code: { equals: data.code, mode: 'insensitive' },
+          deleted_at: null,
+          id: { not: data.id },
+        },
+        select: { id: true },
+      });
+      if (duplicate) {
+        return Result.error("Vendor code already exists", ErrorCode.ALREADY_EXISTS);
+      }
     }
 
     // check business type is exists

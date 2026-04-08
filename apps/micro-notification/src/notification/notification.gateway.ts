@@ -97,7 +97,8 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
 
         default:
       }
-    } catch (error) {
+    } catch {
+      // ignore
     }
   }
 

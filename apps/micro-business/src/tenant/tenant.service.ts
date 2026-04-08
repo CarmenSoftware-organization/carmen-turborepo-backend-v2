@@ -57,7 +57,7 @@ export class TenantService {
    * @param tenantId - Tenant ID / ID ผู้เช่า
    * @returns Department info with is_hod flag / ข้อมูลแผนกพร้อมสถานะหัวหน้าแผนก
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   async getUserDepartment(userId: string, tenantId: string): Promise<any> {
     this.logger.debug(
       { function: 'getUserDepartment', userId, tenantId },
@@ -134,7 +134,7 @@ export class TenantService {
    * @param tenantId - Tenant ID / ID ผู้เช่า
    * @returns HOD department info or null / ข้อมูลแผนกที่เป็นหัวหน้าหรือ null
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   async getUserHodDepartment(userId: string, tenantId: string): Promise<any> {
     this.logger.debug(
       { function: 'getUserHodDepartment', userId, tenantId },
@@ -211,7 +211,7 @@ export class TenantService {
    * @param user_id - User ID / ID ผู้ใช้
    * @returns Business unit data / ข้อมูลหน่วยธุรกิจ
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   async getTenantByCode(bu_code: string, user_id: string): Promise<any> {
     this.logger.debug(
       { function: 'getTenantByCode', bu_code },

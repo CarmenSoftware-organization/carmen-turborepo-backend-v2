@@ -229,7 +229,7 @@ export class UserService {
       tb_user_tb_business_unit_tb_user_tb_business_unit_user_idTotb_user,
       tb_cluster_user_tb_cluster_user_user_idTotb_user,
       ...rest
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     } = user as unknown as Record<string, any>;
     const profile = tb_user_profile_tb_user_profile_user_idTotb_user?.[0];
     const business_units = (tb_user_tb_business_unit_tb_user_tb_business_unit_user_idTotb_user || []).map((ub) => ({

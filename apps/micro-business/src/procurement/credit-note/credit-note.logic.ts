@@ -25,7 +25,7 @@ export class CreditNoteLogic implements IClassLogic {
       CreditNoteLogic.name,
     );
     await this.creditNoteService.initializePrismaService(tenant_id, user_id);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const populatedData: Record<string, any> = await this.populateData(
       data,
       user_id,
@@ -93,7 +93,7 @@ export class CreditNoteLogic implements IClassLogic {
       CreditNoteLogic.name,
     );
     await this.creditNoteService.initializePrismaService(tenant_id, user_id);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const populatedData: Record<string, any> = await this.populateData(
       data,
       user_id,

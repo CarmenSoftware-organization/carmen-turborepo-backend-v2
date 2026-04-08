@@ -565,7 +565,7 @@ export class StockInService {
   private async generateSINo(siDate: string, tenant_id: string, user_id: string): Promise<string> {
     this.logger.debug({ function: 'generateSINo', siDate, tenant_id, user_id }, StockInService.name);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+     
     const res: Observable<any> = this.masterService.send(
       { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
       { type: 'SI', user_id, bu_code: tenant_id },
@@ -599,7 +599,7 @@ export class StockInService {
       ? Number(latestSI.si_no.slice(-Number(runningPattern.pattern)))
       : 0;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+     
     const generateCodeRes: Observable<any> = this.masterService.send(
       { cmd: 'running-code.generate-code', service: 'running-codes' },
       {

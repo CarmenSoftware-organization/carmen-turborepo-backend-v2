@@ -105,7 +105,7 @@ export class ActivityLogService {
     const limit = paginate?.perpage || 20;
     const skip = (page - 1) * limit;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const where: Record<string, any> = {
       deleted_at: null,
     };
@@ -185,7 +185,7 @@ export class ActivityLogService {
     const limit = paginate?.perpage || 20;
     const skip = (page - 1) * limit;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const where: Record<string, any> = {
       deleted_at: null,
       entity_type: { contains: entityType, mode: 'insensitive' },
@@ -226,7 +226,7 @@ export class ActivityLogService {
    * Map actor info (username, firstname, lastname) from platform schema
    * แมปข้อมูลผู้กระทำจาก platform schema (username, ชื่อ, นามสกุล)
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private async mapActorInfo(data: any[]): Promise<any[]> {
     const actorIds = [...new Set(data.map((d) => d.actor_id).filter(Boolean))] as string[];
     if (actorIds.length === 0) return data;

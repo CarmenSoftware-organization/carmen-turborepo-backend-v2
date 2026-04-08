@@ -264,9 +264,12 @@ export class DepartmentsService {
       DepartmentsService.name,
     );
 
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
     const foundDepartment = await this.prismaService.tb_department.findFirst({
       where: {
-        name: data.name,
+        name: { equals: data.name, mode: 'insensitive' },
+        deleted_at: null,
       },
     });
 
@@ -342,6 +345,21 @@ export class DepartmentsService {
 
     if (!department) {
       return Result.error('Department not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
+    if (data.name && data.name.toLowerCase() !== department.name.toLowerCase()) {
+      const duplicate = await this.prismaService.tb_department.findFirst({
+        where: {
+          name: { equals: data.name, mode: 'insensitive' },
+          deleted_at: null,
+          id: { not: data.id },
+        },
+      });
+      if (duplicate) {
+        return Result.error('Department already exists', ErrorCode.ALREADY_EXISTS);
+      }
     }
 
     const transaction = await this.prismaService.$transaction(async (tx) => {

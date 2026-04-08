@@ -190,9 +190,12 @@ export class UnitsService {
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
       UnitsService.name,
     );
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
     const findUnit = await this.prismaService.tb_unit.findFirst({
       where: {
-        name: data.name,
+        name: { equals: data.name, mode: 'insensitive' },
+        deleted_at: null,
       },
     });
 
@@ -233,6 +236,21 @@ export class UnitsService {
 
     if (!unit) {
       return Result.error('Unit not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
+    if (data.name && data.name.toLowerCase() !== unit.name.toLowerCase()) {
+      const duplicate = await this.prismaService.tb_unit.findFirst({
+        where: {
+          name: { equals: data.name, mode: 'insensitive' },
+          deleted_at: null,
+          id: { not: data.id },
+        },
+      });
+      if (duplicate) {
+        return Result.error('Unit already exists', ErrorCode.ALREADY_EXISTS);
+      }
     }
 
     const updatedUnit = await this.prismaService.tb_unit.update({

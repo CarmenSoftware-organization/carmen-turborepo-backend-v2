@@ -216,7 +216,7 @@ export class PriceListService {
   }
 
   @TryCatch
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value accessed by callers within this service
+   
   async getTaxProfileList(id: string): Promise<Result<any>> {
     this.logger.debug(
       { function: 'getTaxProfileList', user_id: this.userId, tenant_id: this.bu_code },

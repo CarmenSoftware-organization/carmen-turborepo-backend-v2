@@ -142,9 +142,12 @@ export class CreditNoteReasonService {
       CreditNoteReasonService.name,
     );
 
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
     const foundCreditNoteReason = await this.prismaService.tb_credit_note_reason.findFirst({
       where: {
-        name: data.name,
+        name: { equals: data.name, mode: 'insensitive' },
+        deleted_at: null,
       },
     });
 
@@ -189,6 +192,21 @@ export class CreditNoteReasonService {
 
     if (!creditNoteReason) {
       return Result.error('Credit note reason not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
+    if (data.name && data.name.toLowerCase() !== creditNoteReason.name.toLowerCase()) {
+      const duplicate = await this.prismaService.tb_credit_note_reason.findFirst({
+        where: {
+          name: { equals: data.name, mode: 'insensitive' },
+          deleted_at: null,
+          id: { not: id },
+        },
+      });
+      if (duplicate) {
+        return Result.error('Credit note reason already exists', ErrorCode.ALREADY_EXISTS);
+      }
     }
 
     const updated = await this.prismaService.tb_credit_note_reason.update({

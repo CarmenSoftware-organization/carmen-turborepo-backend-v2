@@ -105,7 +105,7 @@ export class PurchaseOrderLogic {
 
     // Extract IDs for bulk population
     const extractIds = this.populateCreateData(data);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id);
 
     // Enrich header
@@ -154,12 +154,12 @@ export class PurchaseOrderLogic {
     if (stage_role === enum_stage_role.create) {
       // Creator can edit everything: header + details (add/update/remove)
       const extractIds = this.populateSaveData(data);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id);
 
       const header = this.enrichSaveHeader(data, foreignValue);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const details: Record<string, any> = {};
       if (data.purchase_order_detail?.add) {
         details.add = data.purchase_order_detail.add.map((d) => this.enrichSaveDetail(d, foreignValue));
@@ -306,7 +306,7 @@ export class PurchaseOrderLogic {
     return result;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private populateCreateData(data: CreatePurchaseOrderDataDto): Record<string, any> {
     const workflow_id = data.workflow_id;
     const location_ids: string[] = [];
@@ -323,7 +323,7 @@ export class PurchaseOrderLogic {
     return { workflow_id, location_ids, delivery_point_ids };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private populateSaveData(data: SavePurchaseOrderDataDto): Record<string, any> {
     const unit_ids: string[] = [];
     const tax_profile_ids: string[] = [];
@@ -346,7 +346,7 @@ export class PurchaseOrderLogic {
     return { unit_ids, tax_profile_ids, product_ids, vendor_ids, currency_ids, workflow_id: data.workflow_id };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private enrichSaveHeader(data: SavePurchaseOrderDataDto, foreignValue: Record<string, any>): Partial<SavePurchaseOrderDataDto> {
     const header: Record<string, unknown> = {};
     if (data.vendor_id !== undefined) header.vendor_id = data.vendor_id;
@@ -376,7 +376,7 @@ export class PurchaseOrderLogic {
     return header;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private enrichSaveDetail(detail: Record<string, any>, foreignValue: Record<string, any>): Record<string, any> {
     const product = this.findByIdInArray(foreignValue?.product_ids, detail.product_id);
     return JSON.parse(
@@ -396,7 +396,7 @@ export class PurchaseOrderLogic {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private findByIdInArray(arr: Record<string, any>[] | undefined, id: string | undefined): Record<string, any> | null {
     if (!arr || !id) return null;
     return arr.find((item) => item.id === id) || null;
@@ -455,11 +455,11 @@ export class PurchaseOrderLogic {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   // buildUserAction removed — now handled by WorkflowOrchestratorService
 
   private async sendApproveNotification(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     purchaseOrder: Record<string, any>,
     workflow: WorkflowHeader,
     user_id: string,
@@ -516,7 +516,7 @@ export class PurchaseOrderLogic {
   }
 
   private async sendRejectNotification(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     purchaseOrder: Record<string, any>,
     user_id: string,
     user_name: string,
@@ -551,7 +551,7 @@ export class PurchaseOrderLogic {
   }
 
   private async sendReviewNotification(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     purchaseOrder: Record<string, any>,
     workflow: WorkflowHeader,
     user_id: string,

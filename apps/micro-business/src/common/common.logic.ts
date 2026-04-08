@@ -33,7 +33,7 @@ export class CommonLogic {
       },
       CommonLogic.name,
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const res: Observable<any> = this.masterService.send(
       { cmd: 'running-code.generate-code', service: 'running-codes' },
       { type, issueDate, last_no, user_id, bu_code, version },
@@ -57,7 +57,7 @@ export class CommonLogic {
       { function: 'getRunningPattern', type, user_id, bu_code, version },
       CommonLogic.name,
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const res: Observable<any> = this.masterService.send(
       { cmd: 'running-code.find-by-type', service: 'running-codes' },
       { type, user_id, bu_code, version },
@@ -72,7 +72,7 @@ export class CommonLogic {
     if (response?.data) {
       pattern = response.data.config;
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const res: Observable<any> = this.masterService.send(
         { cmd: 'running-code.create', service: 'running-codes' },
         {

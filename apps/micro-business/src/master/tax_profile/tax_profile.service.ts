@@ -250,9 +250,12 @@ export class TaxProfileService {
       'create',
     );
 
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
     const findOne = await this.prismaService.tb_tax_profile.findFirst({
       where: {
-        name: data.name,
+        name: { equals: data.name, mode: 'insensitive' },
+        deleted_at: null,
       },
     });
 
@@ -307,6 +310,21 @@ export class TaxProfileService {
 
     if (!gbl_taxProfile) {
       return Result.error('Tax profile not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
+    if (data.name && data.name.toLowerCase() !== gbl_taxProfile.name.toLowerCase()) {
+      const duplicate = await this.prismaService.tb_tax_profile.findFirst({
+        where: {
+          name: { equals: data.name, mode: 'insensitive' },
+          deleted_at: null,
+          id: { not: id },
+        },
+      });
+      if (duplicate) {
+        return Result.error('Tax profile name already exists', ErrorCode.ALREADY_EXISTS);
+      }
     }
 
     const updatedTaxProfile = await this.prismaService.tb_tax_profile.update({

@@ -146,10 +146,10 @@ export class StoreRequisitionService {
       bu_id: string;
       bu_code: string;
       role: string;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       permissions: any;
     } = null,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value accessed by logic layer
+   
   ): Promise<Result<any>> {
     this.logger.debug(
       {
@@ -261,7 +261,7 @@ export class StoreRequisitionService {
       bu_id: string;
       bu_code: string;
       role: string;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       permissions: any;
     }[],
   ): Promise<Result<unknown>> {
@@ -632,7 +632,7 @@ export class StoreRequisitionService {
    * @returns Updated store requisition / ใบเบิกสินค้าที่แก้ไขแล้ว
    */
   @TryCatch
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   async update(
     id: string,
     updatePayload: any,
@@ -825,7 +825,7 @@ export class StoreRequisitionService {
    * @returns Approved store requisition / ใบเบิกสินค้าที่อนุมัติแล้ว
    */
   @TryCatch
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   async approve(id: string, workflow: any, payload: any[]): Promise<Result<unknown>> {
     this.logger.debug(
       {
@@ -950,7 +950,7 @@ export class StoreRequisitionService {
   @TryCatch
   async reject(
     id: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     workflow: Record<string, any>,
     payload: RejectStoreRequisitionDto,
   ): Promise<Result<unknown>> {
@@ -1038,7 +1038,7 @@ export class StoreRequisitionService {
    */
   async review(
     id: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     workflow: Record<string, any>,
     payload: ReviewStoreRequisitionDto,
   ): Promise<Result<unknown>> {

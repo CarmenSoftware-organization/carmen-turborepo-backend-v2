@@ -193,9 +193,12 @@ export class RecipeCategoryService {
       RecipeCategoryService.name,
     );
 
+    if (typeof data.code === 'string') data.code = data.code.trim();
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
     const found = await this.prismaService.tb_recipe_category.findFirst({
       where: {
-        code: data.code,
+        code: { equals: data.code, mode: 'insensitive' },
         deleted_at: null,
       },
     });
@@ -261,6 +264,22 @@ export class RecipeCategoryService {
       return Result.error('Recipe category not found', ErrorCode.NOT_FOUND);
     }
 
+    if (typeof data.code === 'string') data.code = data.code.trim();
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
+    if (data.code && data.code.toLowerCase() !== category.code.toLowerCase()) {
+      const duplicate = await this.prismaService.tb_recipe_category.findFirst({
+        where: {
+          code: { equals: data.code, mode: 'insensitive' },
+          deleted_at: null,
+          id: { not: data.id },
+        },
+      });
+      if (duplicate) {
+        return Result.error('Recipe category code already exists', ErrorCode.ALREADY_EXISTS);
+      }
+    }
+
     const { id, parent_id, level, ...fields } = data;
     const updateData: Record<string, unknown> = {
       ...fields,
@@ -323,6 +342,22 @@ export class RecipeCategoryService {
 
     if (!category) {
       return Result.error('Recipe category not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (typeof data.code === 'string') data.code = data.code.trim();
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
+    if (data.code && data.code.toLowerCase() !== category.code.toLowerCase()) {
+      const duplicate = await this.prismaService.tb_recipe_category.findFirst({
+        where: {
+          code: { equals: data.code, mode: 'insensitive' },
+          deleted_at: null,
+          id: { not: data.id },
+        },
+      });
+      if (duplicate) {
+        return Result.error('Recipe category code already exists', ErrorCode.ALREADY_EXISTS);
+      }
     }
 
     const { id, parent_id, level, ...fields } = data;

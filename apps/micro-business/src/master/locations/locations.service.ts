@@ -776,10 +776,13 @@ export class LocationsService {
       return Result.error(`Validation failed: ${errorMessages}`, ErrorCode.VALIDATION_FAILURE);
     }
 
+    // Trim whitespace from name
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
     // Business validation: Check for duplicate location
     const foundLocation = await this.prismaService.tb_location.findFirst({
       where: {
-        name: data.name,
+        name: { equals: data.name, mode: 'insensitive' },
         // location_type: data.location_type,
         deleted_at: null,
       },
@@ -874,11 +877,14 @@ export class LocationsService {
       return Result.error("Location not found", ErrorCode.NOT_FOUND);
     }
 
+    // Trim whitespace from name
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
     // Business validation: Check for duplicate name
     if (data.name) {
       const foundLocation = await this.prismaService.tb_location.findFirst({
         where: {
-          name: data.name,
+          name: { equals: data.name, mode: 'insensitive' },
           // location_type: data.location_type ?? location.location_type,
           deleted_at: null,
           id: {

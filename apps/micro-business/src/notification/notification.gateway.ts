@@ -81,7 +81,8 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
 
         default:
       }
-    } catch (error) {
+    } catch {
+      // ignore
     }
   }
 
@@ -139,7 +140,7 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   broadcastSystemNotification(notifications: any[]) {
     for (const notification of notifications) {
       this.sendNotificationToUser(notification.to_user_id as string, notification);

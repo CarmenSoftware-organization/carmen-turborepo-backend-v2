@@ -25,7 +25,7 @@ export class PurchaseRequestTemplateLogic {
       PurchaseRequestTemplateLogic.name,
     );
 
-    const populateData: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const populateData:  
     Record<string, any> = await this.populateData(data, user_id, bu_code);
     const purchaseRequestTemplate: Partial<CreatePurchaseRequestTemplate> = {
       workflow_id: populateData?.workflow_id?.id,
@@ -70,7 +70,7 @@ export class PurchaseRequestTemplateLogic {
       throw new Error('Purchase request template not found');
     }
 
-    const populateData: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const populateData:  
     Record<string, any> = await this.populateData(data, user_id, bu_code);
     const purchaseRequestTemplate: Partial<UpdatePurchaseRequestTemplate> = {
       workflow_id: populateData?.workflow_id?.id,
@@ -194,7 +194,7 @@ export class PurchaseRequestTemplateLogic {
     return populateData;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private mapDetailFields(detail: Record<string, any>, populateData: Record<string, any>) {
     const product = populateData?.product_ids?.find(
       (product) => product?.id === detail?.product_id,

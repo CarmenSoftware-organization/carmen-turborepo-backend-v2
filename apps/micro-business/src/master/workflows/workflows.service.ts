@@ -111,7 +111,7 @@ export class WorkflowsService {
    * @returns Workflow detail / รายละเอียดขั้นตอนการทำงาน
    */
   @TryCatch
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value accessed by controller
+   
   async findOne(id: string): Promise<Result<any>> {
     this.logger.debug(
       { function: 'findOne', id, user_id: this.userId, bu_code: this.bu_code },
@@ -547,7 +547,7 @@ export class WorkflowsService {
     ids: string[],
     bu_code: string,
     user_id: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value iterated by controller
+   
   ): Promise<Result<any>> {
     this.logger.debug(
       { function: 'findAllWorkflowByIds', ids, bu_code, user_id },

@@ -32,7 +32,7 @@ export interface CreateBusinessUnitNotificationData {
 
 @Injectable()
 export class NotificationService {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private prismaPromise: Promise<any>;
 
   constructor() {

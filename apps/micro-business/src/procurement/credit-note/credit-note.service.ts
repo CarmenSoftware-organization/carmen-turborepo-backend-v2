@@ -278,7 +278,7 @@ export class CreditNoteService {
    * @returns Created credit note ID / ID ของใบลดหนี้ที่สร้างแล้ว
    */
   @TryCatch
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value accessed by logic layer
+   
   async create(data: any): Promise<Result<any>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },

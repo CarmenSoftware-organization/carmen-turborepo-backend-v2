@@ -13,7 +13,7 @@ export class UserMapper {
 
   async fetch(id: string, user_id: string, bu_code: string) {
     this.logger.debug({ function: 'fetch-user', id, user_id, bu_code }, UserMapper.name);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const res: Observable<any> = await this.authService.send(
       {
         cmd: 'get-user-by-id',

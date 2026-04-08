@@ -176,9 +176,12 @@ export class ExtraCostTypeService {
     );
     // const prisma = await this.tenantService.prismaTenantInstance(this.bu_code, this.userId);
 
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
     const foundExtraCostType = await this.prismaService.tb_extra_cost_type.findFirst({
       where: {
-        name: data.name,
+        name: { equals: data.name, mode: 'insensitive' },
+        deleted_at: null,
       },
     });
 
@@ -220,10 +223,13 @@ export class ExtraCostTypeService {
       return Result.error('Extra cost type not found', ErrorCode.NOT_FOUND);
     }
 
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
     if (data.name) {
       const foundExtraCostType = await this.prismaService.tb_extra_cost_type.findFirst({
         where: {
-          name: data.name,
+          name: { equals: data.name, mode: 'insensitive' },
+          deleted_at: null,
           id: {
             not: data.id,
           },

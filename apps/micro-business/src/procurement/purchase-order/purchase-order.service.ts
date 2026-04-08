@@ -131,7 +131,7 @@ export class PurchaseOrderService {
    * @returns Purchase order data with relations / ข้อมูลใบสั่งซื้อพร้อมความสัมพันธ์
    */
   @TryCatch
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value accessed by logic layer
+   
   async findById(id: string): Promise<Result<any>> {
     this.logger.debug(
       { function: 'findById', id, user_id: this.userId, tenant_id: this.bu_code },
@@ -328,7 +328,7 @@ export class PurchaseOrderService {
    * Group pr_details by location_id for each detail.
    * Produces a `locations` array with summed qty fields and nested pr_details.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private enrichLocationFromPrDetails(transformedData: Record<string, any>): void {
     if (!transformedData.purchase_order_detail) return;
 
@@ -338,7 +338,7 @@ export class PurchaseOrderService {
         continue;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const locMap = new Map<string, any>();
 
       for (const pr of detail.pr_details) {
@@ -1522,7 +1522,7 @@ export class PurchaseOrderService {
    * @returns Saved purchase order ID / ID ของใบสั่งซื้อที่บันทึกแล้ว
    */
   @TryCatch
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   async save(id: string, header: Record<string, any>, details: Record<string, any>): Promise<Result<unknown>> {
     this.logger.debug(
       {
@@ -2420,7 +2420,7 @@ export class PurchaseOrderService {
     }
 
     // Group by vendor_id -> delivery_date -> currency_id
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const groupedData = new Map<string, Record<string, any>>();
 
     for (const prDetail of prDetails) {
@@ -2669,7 +2669,7 @@ export class PurchaseOrderService {
     const productMap = new Map(products.map((p) => [p.id, p]));
 
     // Group by vendor_id -> delivery_date -> currency_id
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const groupedData = new Map<string, Record<string, any>>();
 
     for (const prDetail of prDetails) {
@@ -3075,7 +3075,7 @@ export class PurchaseOrderService {
   /**
    * Send notification when POs are created from PR confirmation
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   /**
    * Send a notification when purchase orders are created from purchase requests
    * ส่งการแจ้งเตือนเมื่อสร้างใบสั่งซื้อจากใบขอซื้อ
@@ -3405,7 +3405,7 @@ export class PurchaseOrderService {
     // Add detail rows
     const currencySymbol = currency?.symbol || '';
     purchaseOrder.tb_purchase_order_detail.forEach((detail, index) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const info = detail.info as any;
       const productName = info?.product_name || detail.description || '';
 
@@ -3651,7 +3651,7 @@ export class PurchaseOrderService {
 
     // Add detail rows
     purchaseOrder.tb_purchase_order_detail.forEach((detail, index) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const info = detail.info as any;
       const productName = info?.product_name || detail.description || '';
 
@@ -3667,7 +3667,7 @@ export class PurchaseOrderService {
     });
 
     // Build document definition
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const docDefinition: any = {
       pageSize: 'A4',
       pageMargins: [40, 60, 40, 60],
@@ -4288,7 +4288,7 @@ export class PurchaseOrderService {
   /**
    * Helper method to update Purchase Order totals after detail changes
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   /**
    * Recalculate and update purchase order totals (qty, price, tax, amount) from detail lines
    * คำนวณและอัปเดตยอดรวมใบสั่งซื้อ (จำนวน ราคา ภาษี ยอดรวม) จากรายการรายละเอียด
@@ -4422,7 +4422,7 @@ export class PurchaseOrderService {
   /**
    * Send notification when PO is closed
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   /**
    * Send a notification when a purchase order is closed
    * ส่งการแจ้งเตือนเมื่อปิดใบสั่งซื้อ

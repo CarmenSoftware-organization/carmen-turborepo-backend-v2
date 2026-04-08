@@ -229,11 +229,13 @@ export class DeliveryPointService {
       DeliveryPointService.name,
     );
 
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
     const foundDeliveryPoint =
       await this.prismaService.tb_delivery_point.findFirst({
         where: {
-          name: data.name,
-          is_active: true,
+          name: { equals: data.name, mode: 'insensitive' },
+          deleted_at: null,
         },
       });
 
@@ -281,6 +283,21 @@ export class DeliveryPointService {
 
     if (!deliveryPoint) {
       return Result.error('Delivery point not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
+    if (data.name && data.name.toLowerCase() !== deliveryPoint.name.toLowerCase()) {
+      const duplicate = await this.prismaService.tb_delivery_point.findFirst({
+        where: {
+          name: { equals: data.name, mode: 'insensitive' },
+          deleted_at: null,
+          id: { not: data.id },
+        },
+      });
+      if (duplicate) {
+        return Result.error('Delivery point already exists', ErrorCode.ALREADY_EXISTS);
+      }
     }
 
     const updateDeliveryPoint =

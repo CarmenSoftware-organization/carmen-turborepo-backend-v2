@@ -43,7 +43,7 @@ export class TransferService {
    * @returns Generated document number / เลขที่เอกสารที่สร้างขึ้น
    */
   private async generateTRNo(trDate: string, tenant_id: string, user_id: string): Promise<string> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+     
     const res: Observable<any> = this.masterService.send(
       { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
       { type: 'TR', user_id, bu_code: tenant_id },
@@ -77,7 +77,7 @@ export class TransferService {
       ? Number(latestTR.tr_no.slice(-Number(runningPattern.pattern)))
       : 0;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+     
     const generateCodeRes: Observable<any> = this.masterService.send(
       { cmd: 'running-code.generate-code', service: 'running-codes' },
       {

@@ -285,10 +285,12 @@ export class CurrenciesService {
       CurrenciesService.name,
     );
 
+    if (typeof data.code === 'string') data.code = data.code.trim();
+
     const foundCurrency = await this.prismaService.tb_currency.findFirst({
       where: {
-        code: data.code,
-        is_active: true,
+        code: { equals: data.code, mode: 'insensitive' },
+        deleted_at: null,
       },
     });
 
@@ -329,6 +331,21 @@ export class CurrenciesService {
 
     if (!currency) {
       return Result.error('Currency not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (typeof data.code === 'string') data.code = data.code.trim();
+
+    if (data.code && data.code.toLowerCase() !== currency.code.toLowerCase()) {
+      const duplicate = await this.prismaService.tb_currency.findFirst({
+        where: {
+          code: { equals: data.code, mode: 'insensitive' },
+          deleted_at: null,
+          id: { not: data.id },
+        },
+      });
+      if (duplicate) {
+        return Result.error('Currency already exists', ErrorCode.ALREADY_EXISTS);
+      }
     }
 
     const updateCurrency = await this.prismaService.tb_currency.update({

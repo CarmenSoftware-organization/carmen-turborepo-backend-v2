@@ -1474,7 +1474,7 @@ export class GoodReceivedNoteService {
       'generateGRNNo',
     );
     // const pattern = await this.commonLogic.getRunningPattern('PR', user_id, tenant_id)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+     
     const res: Observable<any> = this.masterService.send(
       { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
       { type: 'GRN', user_id, bu_code: tenant_id },
@@ -1485,7 +1485,7 @@ export class GoodReceivedNoteService {
       throw new Error(`Failed to get running code pattern for GRN: ${JSON.stringify(response)}`);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const patterns: any[] = response.data as any[];
 
     let datePattern;
@@ -1513,7 +1513,7 @@ export class GoodReceivedNoteService {
       ? Number(latestGRN.grn_no.slice(-Number(runningPattern.pattern)))
       : 0;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const generateCodeRes: Observable<any> = this.masterService.send(
       { cmd: 'running-code.generate-code', service: 'running-codes' },
       {

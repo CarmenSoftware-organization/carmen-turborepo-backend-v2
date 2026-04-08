@@ -556,7 +556,7 @@ export class StockOutService {
   private async generateSONo(soDate: string, tenant_id: string, user_id: string): Promise<string> {
     this.logger.debug({ function: 'generateSONo', soDate, tenant_id, user_id }, StockOutService.name);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+     
     const res: Observable<any> = this.masterService.send(
       { cmd: 'running-code.get-pattern-by-type', service: 'running-codes' },
       { type: 'SO', user_id, bu_code: tenant_id },
@@ -590,7 +590,7 @@ export class StockOutService {
       ? Number(latestSO.so_no.slice(-Number(runningPattern.pattern)))
       : 0;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ClientProxy.send() response shape varies
+     
     const generateCodeRes: Observable<any> = this.masterService.send(
       { cmd: 'running-code.generate-code', service: 'running-codes' },
       {

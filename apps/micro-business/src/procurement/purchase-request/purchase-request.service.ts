@@ -151,10 +151,10 @@ export class PurchaseRequestService {
       bu_id: string;
       bu_code: string;
       role: string;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       permissions: any;
     } = null,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value accessed by logic layer
+   
   ): Promise<Result<any>> {
     this.logger.debug(
       {
@@ -278,7 +278,7 @@ export class PurchaseRequestService {
       bu_id: string;
       bu_code: string;
       role: string;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       permissions: any;
     }[],
   ): Promise<Result<unknown>> {
@@ -998,7 +998,7 @@ export class PurchaseRequestService {
    * @returns Updated purchase request ID / ID ของใบขอซื้อที่อัปเดตแล้ว
    */
   @TryCatch
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   async update(
     id: string,
     updatePPayload: any,
@@ -1295,7 +1295,7 @@ export class PurchaseRequestService {
     detailIds: string[],
     user_id: string,
     bu_code: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- result.value accessed by spec tests
+   
   ): Promise<Result<any>> {
     this.logger.debug(
       { function: 'splitPr', id, detailIds, user_id, bu_code },
@@ -1487,7 +1487,7 @@ export class PurchaseRequestService {
    * @returns Approved purchase request ID / ID ของใบขอซื้อที่อนุมัติแล้ว
    */
   @TryCatch
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   async approve(id: string, workflow: any, payload: any[]): Promise<Result<unknown>> {
     this.logger.debug(
       {
@@ -2251,7 +2251,7 @@ export class PurchaseRequestService {
       ]);
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const docDefinition: any = {
       pageSize: 'A4',
       pageMargins: [40, 60, 40, 60],

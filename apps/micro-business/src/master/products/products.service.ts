@@ -1883,7 +1883,7 @@ export class ProductsService {
     }
 
     // Fetch product-location settings (min/max qty)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const plWhere: any = { product_id, deleted_at: null };
     if (location_id) plWhere.location_id = location_id;
 
@@ -1910,7 +1910,7 @@ export class ProductsService {
     }]));
 
     // Fetch cost layers
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const layerWhere: any = { product_id, deleted_at: null };
     if (location_id) layerWhere.location_id = location_id;
 
@@ -1955,7 +1955,7 @@ export class ProductsService {
 
     // Fetch last counted date per location from physical count details
     const locationIds = [...balanceMap.keys()].filter((k) => k !== '_no_location_');
-    let lastCountedMap = new Map<string, Date>();
+    const lastCountedMap = new Map<string, Date>();
     if (locationIds.length > 0) {
       const lastCounted = await this.prismaService.tb_physical_count.findMany({
         where: {

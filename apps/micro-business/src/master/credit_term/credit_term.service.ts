@@ -192,9 +192,12 @@ export class CreditTermService {
 
     // const prisma = await this.tenantService.prismaTenantInstance(this.bu_code, this.userId);
 
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
     const foundCreditTerm = await this.prismaService.tb_credit_term.findFirst({
       where: {
-        name: data.name,
+        name: { equals: data.name, mode: 'insensitive' },
+        deleted_at: null,
       },
     });
 
@@ -240,10 +243,13 @@ export class CreditTermService {
       return Result.error('Credit term not found', ErrorCode.NOT_FOUND);
     }
 
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
     if (data.name) {
       const foundCreditTerm = await this.prismaService.tb_credit_term.findFirst({
         where: {
-          name: data.name,
+          name: { equals: data.name, mode: 'insensitive' },
+          deleted_at: null,
           id: {
             not: data.id,
           },

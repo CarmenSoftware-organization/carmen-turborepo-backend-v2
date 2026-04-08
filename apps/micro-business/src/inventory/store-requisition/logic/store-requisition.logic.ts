@@ -406,7 +406,7 @@ export class StoreRequisitionLogic {
   // buildUserAction and distinctData removed — now handled by WorkflowOrchestratorService
 
   private async sendSubmitNotification(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     storeRequisition: Record<string, any>,
     workflow: WorkflowHeader,
     submitterId: string,
@@ -442,7 +442,7 @@ export class StoreRequisitionLogic {
   }
 
   private async sendApproveNotification(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     storeRequisition: Record<string, any>,
     workflow: WorkflowHeader,
     approverId: string,
@@ -503,7 +503,7 @@ export class StoreRequisitionLogic {
   }
 
   private async sendRejectNotification(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     storeRequisition: Record<string, any>,
     userId: string,
     userName: string,
@@ -531,7 +531,7 @@ export class StoreRequisitionLogic {
   }
 
   private async sendReviewNotification(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     storeRequisition: Record<string, any>,
     workflow: WorkflowHeader,
     reviewerId: string,

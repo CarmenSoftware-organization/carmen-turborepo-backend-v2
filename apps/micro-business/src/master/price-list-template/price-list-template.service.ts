@@ -343,9 +343,12 @@ export class PriceListTemplateService {
       `create price-list-template ${JSON.stringify(data)} ${this.userId} ${this.bu_code}`,
     );
 
+    // Trim whitespace from name
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
     // Check for duplicate name
     const existingTemplate = await this.prismaService.tb_pricelist_template.findFirst({
-      where: { name: data.name, deleted_at: null },
+      where: { name: { equals: data.name, mode: 'insensitive' }, deleted_at: null },
     });
     if (existingTemplate) {
       return {
@@ -491,11 +494,14 @@ export class PriceListTemplateService {
       };
     }
 
+    // Trim whitespace from name
+    if (typeof data.name === 'string') data.name = data.name.trim();
+
     // Check for duplicate name (excluding current record and soft-deleted)
-    if (data.name && data.name !== currentTemplate.name) {
+    if (data.name && data.name.toLowerCase() !== currentTemplate.name.toLowerCase()) {
       const existingTemplate = await this.prismaService.tb_pricelist_template.findFirst({
         where: {
-          name: data.name,
+          name: { equals: data.name, mode: 'insensitive' },
           deleted_at: null,
           id: { not: templateId },
         },

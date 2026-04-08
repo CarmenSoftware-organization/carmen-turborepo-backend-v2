@@ -194,20 +194,24 @@ export class ProductCategoryService {
       return Result.error(`Validation failed: ${errorMessages}`, ErrorCode.VALIDATION_FAILURE);
     }
 
+    if (typeof data.name === 'string') data.name = data.name.trim();
+    if (typeof data.code === 'string') data.code = data.code.trim().toUpperCase();
+
     // Business validation: check for duplicate
     const foundProductCategory =
       await this.prismaService.tb_product_category.findFirst({
         where: {
-          code: data.code.toUpperCase(),
-          name: data.name,
+          OR: [
+            { code: { equals: data.code, mode: 'insensitive' } },
+            { name: { equals: data.name, mode: 'insensitive' } },
+          ],
+          deleted_at: null,
         },
       });
 
     if (foundProductCategory) {
       return Result.error('Product category already exists', ErrorCode.ALREADY_EXISTS);
     }
-
-    data.code = data.code.toUpperCase();
 
     const productCategory = await this.prismaService.tb_product_category.create({
       data: {
@@ -252,23 +256,29 @@ export class ProductCategoryService {
       return Result.error('Product category not found', ErrorCode.NOT_FOUND);
     }
 
+    if (typeof data.name === 'string') data.name = data.name.trim();
+    if (typeof data.code === 'string') data.code = data.code.trim().toUpperCase();
+
     // Business validation: check for duplicate
-    const foundProductCategory = await this.prismaService.tb_product_category.findFirst({
-      where: {
-        code: data.code.toUpperCase() ?? productCategory.code,
-        name: data.name ?? productCategory.name,
-        NOT: {
-          id: data.id,
-        },
-      },
-    });
-
-    if (foundProductCategory) {
-      return Result.error('Product category already exists', ErrorCode.ALREADY_EXISTS);
+    const dupConditions: Array<Record<string, unknown>> = [];
+    if (data.code && data.code.toLowerCase() !== productCategory.code.toLowerCase()) {
+      dupConditions.push({ code: { equals: data.code, mode: 'insensitive' } });
     }
+    if (data.name && data.name.toLowerCase() !== productCategory.name.toLowerCase()) {
+      dupConditions.push({ name: { equals: data.name, mode: 'insensitive' } });
+    }
+    if (dupConditions.length > 0) {
+      const foundProductCategory = await this.prismaService.tb_product_category.findFirst({
+        where: {
+          OR: dupConditions,
+          deleted_at: null,
+          NOT: { id: data.id },
+        },
+      });
 
-    if (data.code) {
-      data.code = data.code.toUpperCase();
+      if (foundProductCategory) {
+        return Result.error('Product category already exists', ErrorCode.ALREADY_EXISTS);
+      }
     }
 
     const { cascade_deviation, ...updateData } = data;
