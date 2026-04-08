@@ -219,6 +219,7 @@ enum enum_count_stock_status {
 enum enum_purchase_order_doc_status {
   draft // ร่าง
   in_progress // กำลังดำเนินการ
+  voided // โมฆะ
   sent // sent to vendor
   partial // partial receiving
   closed // closed หยุดหาไม่เจอ
@@ -228,10 +229,10 @@ enum enum_purchase_order_doc_status {
 enum enum_purchase_request_doc_status {
   draft // ร่าง
   in_progress // กำลังดำเนินการ
+  voided // โมฆะ
   approved // อนุมัติ
   completed // เสร็จสิ้น
   cancelled // ยกเลิก
-  voided // โมฆะ
 }
 
 enum enum_unit_type {
@@ -5811,13 +5812,13 @@ model tb_report_schedule {
 // ===== Dashboard =====
 
 model tb_dashboard_layout {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String   @db.VarChar(255)
-  description String?  @db.VarChar(500)
-  is_default  Boolean  @default(false)
-  is_shared   Boolean  @default(false)
-  owner_id    String   @db.Uuid
-  settings    Json?    @default("{}") @db.JsonB
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String  @db.VarChar(255)
+  description String? @db.VarChar(500)
+  is_default  Boolean @default(false)
+  is_shared   Boolean @default(false)
+  owner_id    String  @db.Uuid
+  settings    Json?   @default("{}") @db.JsonB
 
   // Audit Fields
   created_at    DateTime? @default(now()) @db.Timestamptz(6)
