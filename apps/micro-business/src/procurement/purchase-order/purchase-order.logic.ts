@@ -343,7 +343,15 @@ export class PurchaseOrderLogic {
       if (detail.tax_profile_id) tax_profile_ids.push(detail.tax_profile_id);
     }
 
-    return { unit_ids, tax_profile_ids, product_ids, vendor_ids, currency_ids, workflow_id: data.workflow_id };
+    return {
+      unit_ids,
+      tax_profile_ids,
+      product_ids,
+      vendor_ids,
+      currency_ids,
+      workflow_id: data.workflow_id,
+      buyer_id: data.buyer_id,
+    };
   }
 
    
@@ -365,7 +373,15 @@ export class PurchaseOrderLogic {
     if (data.credit_term_name !== undefined) header.credit_term_name = data.credit_term_name;
     if (data.credit_term_value !== undefined) header.credit_term_value = data.credit_term_value;
     if (data.buyer_id !== undefined) header.buyer_id = data.buyer_id;
-    if (data.buyer_name !== undefined) header.buyer_name = data.buyer_name;
+    if (data.buyer_id) {
+      // Resolve full name from auth service via userMapper. Falls back to the
+      // client-supplied name only if the lookup returned nothing.
+      const buyer = foreignValue?.buyer_id;
+      const lookedUpName = buyer?.name || buyer?.username;
+      header.buyer_name = lookedUpName || data.buyer_name;
+    } else if (data.buyer_name !== undefined) {
+      header.buyer_name = data.buyer_name;
+    }
     if (data.email !== undefined) header.email = data.email;
     if (data.remarks !== undefined) header.remarks = data.remarks;
     if (data.note !== undefined) header.note = data.note;

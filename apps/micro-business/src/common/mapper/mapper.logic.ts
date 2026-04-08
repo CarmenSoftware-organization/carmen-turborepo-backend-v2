@@ -47,6 +47,7 @@ export class MapperLogic {
     grn_id: this.goodReceivedNoteMapper,
     cn_reason_id: this.creditNoteReasonMapper,
     user_id: this.userMapper,
+    buyer_id: this.userMapper,
     pricelist_detail_ids: this.priceListDetailMapper,
     delivery_point_ids: this.deliveryPointMapper,
     tax_profile_ids: this.taxProfileMapper

@@ -39,7 +39,11 @@ export class POWorkflowAdapter implements WorkflowDocumentAdapter {
   }
 
   buildNavigationRequestData(doc: any): Record<string, any> {
-    const totalAmount = doc?.tb_purchase_order_detail?.reduce(
+    // findById renames the Prisma relation `tb_purchase_order_detail` to
+    // `purchase_order_detail` and deletes the original key, so reading the
+    // raw key here would always yield 0 and break amount-based stage routing
+    // (and `user_action` population at the routed-to stage).
+    const totalAmount = doc?.purchase_order_detail?.reduce(
       (sum: number, d: any) => sum + Number(d.total_price || 0), 0,
     ) || 0;
     return { amount: totalAmount };
