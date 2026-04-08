@@ -266,6 +266,7 @@ export class UserService {
       middlename,
       platform_role,
       is_active,
+      password,
     } = data;
 
     const findUser = await this.prismaSystem.tb_user.findFirst({
@@ -278,29 +279,83 @@ export class UserService {
       return Result.error('User already exists', ErrorCode.ALREADY_EXISTS);
     }
 
-    const newUser = await this.prismaSystem.tb_user.create({
-      data: {
-        username,
-        email,
-        platform_role,
-        is_active,
-        created_at: new Date(),
-        updated_at: new Date(),
-        tb_user_profile_tb_user_profile_user_idTotb_user: {
-          create: [
-            {
-              firstname,
-              lastname,
-              middlename,
-              created_at: new Date(),
-              updated_at: new Date(),
-            },
-          ],
+    // 1. Provision the user in Keycloak first so tb_user.id == Keycloak user id
+    const kcResponse: any = await firstValueFrom(
+      this.keycloakService.send(
+        { cmd: 'keycloak.users.create', service: 'keycloak' },
+        {
+          data: {
+            username,
+            email,
+            firstName: firstname,
+            lastName: lastname,
+            enabled: is_active ?? true,
+            emailVerified: true,
+            credentials: password
+              ? [{ type: 'password', value: password, temporary: false }]
+              : undefined,
+          },
         },
-      },
-    });
+      ),
+    );
 
-    return Result.ok({ id: newUser.id });
+    if (kcResponse?.response?.status !== 201 && kcResponse?.response?.status !== 200) {
+      return Result.error(
+        kcResponse?.response?.message || 'Failed to create user in Keycloak',
+        ErrorCode.INTERNAL,
+      );
+    }
+
+    const keycloakUserId: string = kcResponse?.data?.userId;
+    if (!keycloakUserId) {
+      return Result.error('Keycloak did not return a user id', ErrorCode.INTERNAL);
+    }
+
+    // 2. Create tb_user with the Keycloak id; roll back Keycloak on failure
+    try {
+      const newUser = await this.prismaSystem.tb_user.create({
+        data: {
+          id: keycloakUserId,
+          username,
+          email,
+          platform_role,
+          is_active,
+          created_at: new Date(),
+          updated_at: new Date(),
+          tb_user_profile_tb_user_profile_user_idTotb_user: {
+            create: [
+              {
+                firstname,
+                lastname,
+                middlename,
+                created_at: new Date(),
+                updated_at: new Date(),
+              },
+            ],
+          },
+        },
+      });
+
+      return Result.ok({ id: newUser.id });
+    } catch (error) {
+      // Roll back Keycloak user to keep systems in sync
+      try {
+        await firstValueFrom(
+          this.keycloakService.send(
+            { cmd: 'keycloak.users.delete', service: 'keycloak' },
+            { userId: keycloakUserId },
+          ),
+        );
+      } catch (rollbackError) {
+        this.logger.error(
+          `Failed to roll back Keycloak user ${keycloakUserId}: ${
+            rollbackError instanceof Error ? rollbackError.message : String(rollbackError)
+          }`,
+          UserService.name,
+        );
+      }
+      throw error;
+    }
   }
 
   @TryCatch
@@ -364,6 +419,30 @@ export class UserService {
         },
       },
     });
+
+    // Sync changes to Keycloak (best-effort; tb_user.id == Keycloak user id)
+    try {
+      const kcData: Record<string, unknown> = {};
+      if (username !== undefined) kcData.username = username;
+      if (email !== undefined) kcData.email = email;
+      if (firstname !== undefined) kcData.firstName = firstname;
+      if (lastname !== undefined) kcData.lastName = lastname;
+      if (is_active !== undefined) kcData.enabled = is_active;
+
+      if (Object.keys(kcData).length > 0) {
+        await firstValueFrom(
+          this.keycloakService.send(
+            { cmd: 'keycloak.users.update', service: 'keycloak' },
+            { userId: id, data: kcData },
+          ),
+        );
+      }
+    } catch (error) {
+      this.logger.warn(
+        `Failed to sync user update to Keycloak: ${error instanceof Error ? error.message : String(error)}`,
+        UserService.name,
+      );
+    }
 
     return Result.ok({ id });
   }
