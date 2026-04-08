@@ -2226,7 +2226,7 @@ export class PurchaseOrderService {
         where: { id: id },
         data: {
           po_status: enum_purchase_order_doc_status.closed,
-          last_action_at_date: new Date(),
+          last_action_at_date: new Date().toISOString(),
           last_action_by_id: this.userId,
           updated_by_id: this.userId,
         },
@@ -4389,7 +4389,7 @@ export class PurchaseOrderService {
         where: { id: id },
         data: {
           po_status: enum_purchase_order_doc_status.closed,
-          last_action_at_date: new Date(),
+          last_action_at_date: new Date().toISOString(),
           last_action_by_id: this.userId,
           updated_by_id: this.userId,
         },
