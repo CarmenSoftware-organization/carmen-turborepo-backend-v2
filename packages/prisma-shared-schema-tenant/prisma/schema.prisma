@@ -1315,7 +1315,7 @@ model tb_location {
   tb_stock_out                                  tb_stock_out[]
   tbPurchaseOrderDetailTbPurchaseRequestDetails tb_purchase_order_detail_tb_purchase_request_detail[]
 
-  @@unique([code, name, deleted_at], map: "location_code_name_u")
+  @@unique([name, deleted_at], map: "location_name_u")
   @@index([name], map: "location_name_idx")
   @@index([code], map: "location_code_idx")
 }

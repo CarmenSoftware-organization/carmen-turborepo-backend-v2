@@ -1,18 +1,12 @@
-import { BadRequestException, HttpStatus, Injectable, HttpException, Inject } from '@nestjs/common';
-import { TenantService } from '@/tenant/tenant.service';
-import { Prisma, PrismaClient } from '@repo/prisma-shared-schema-tenant';
-import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
-import {
-  ICreateLocation,
-  IUpdateLocation,
-} from './interface/location.interface';
-import { IPaginate } from '@/common/shared-interface/paginate.interface';
-import QueryParams from '@/common/libs/paginate.query';
-import {
-  enum_location_type,
-  enum_physical_count_type,
-} from '@repo/prisma-shared-schema-tenant';
-import { BackendLogger } from '@/common/helpers/backend.logger';
+import { BadRequestException, HttpStatus, Injectable, HttpException, Inject } from "@nestjs/common";
+import { TenantService } from "@/tenant/tenant.service";
+import { Prisma, PrismaClient } from "@repo/prisma-shared-schema-tenant";
+import { PrismaClient_SYSTEM } from "@repo/prisma-shared-schema-platform";
+import { ICreateLocation, IUpdateLocation } from "./interface/location.interface";
+import { IPaginate } from "@/common/shared-interface/paginate.interface";
+import QueryParams from "@/common/libs/paginate.query";
+import { enum_location_type, enum_physical_count_type } from "@repo/prisma-shared-schema-tenant";
+import { BackendLogger } from "@/common/helpers/backend.logger";
 import {
   IProductInventoryInfo,
   TryCatch,
@@ -23,11 +17,11 @@ import {
   LocationDetailResponseSchema,
   LocationListItemResponseSchema,
   LocationByUserResponseSchema,
-} from '@/common';
-import { isUUID } from 'class-validator';
-import { ERROR_MISSING_BU_CODE, ERROR_MISSING_TENANT_ID, ERROR_MISSING_USER_ID } from '@/common/constant';
-import order from '@/common/helpers/order_by';
-import getPaginationParams from '@/common/helpers/pagination.params';
+} from "@/common";
+import { isUUID } from "class-validator";
+import { ERROR_MISSING_BU_CODE, ERROR_MISSING_TENANT_ID, ERROR_MISSING_USER_ID } from "@/common/constant";
+import order from "@/common/helpers/order_by";
+import getPaginationParams from "@/common/helpers/pagination.params";
 
 @Injectable()
 export class LocationsService {
@@ -35,20 +29,14 @@ export class LocationsService {
     if (this._bu_code) {
       return String(this._bu_code);
     }
-    throw new HttpException(
-      ERROR_MISSING_BU_CODE,
-      HttpStatus.UNPROCESSABLE_ENTITY,
-    );
+    throw new HttpException(ERROR_MISSING_BU_CODE, HttpStatus.UNPROCESSABLE_ENTITY);
   }
 
   get userId(): string {
     if (isUUID(this._userId, 4)) {
       return String(this._userId);
     }
-    throw new HttpException(
-      ERROR_MISSING_USER_ID,
-      HttpStatus.UNPROCESSABLE_ENTITY,
-    );
+    throw new HttpException(ERROR_MISSING_USER_ID, HttpStatus.UNPROCESSABLE_ENTITY);
   }
 
   set bu_code(value: string) {
@@ -62,9 +50,7 @@ export class LocationsService {
   private _bu_code?: string;
   private _userId?: string;
 
-  private readonly logger: BackendLogger = new BackendLogger(
-    LocationsService.name,
-  );
+  private readonly logger: BackendLogger = new BackendLogger(LocationsService.name);
 
   /**
    * Initialize the Prisma service for the tenant
@@ -80,19 +66,16 @@ export class LocationsService {
 
   get prismaService(): PrismaClient {
     if (!this._prismaService) {
-      throw new HttpException(
-        'Prisma service is not initialized',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new HttpException("Prisma service is not initialized", HttpStatus.INTERNAL_SERVER_ERROR);
     }
     return this._prismaService;
   }
 
   constructor(
-      @Inject('PRISMA_SYSTEM')
-      private readonly prismaSystem: typeof PrismaClient_SYSTEM,
+    @Inject("PRISMA_SYSTEM")
+    private readonly prismaSystem: typeof PrismaClient_SYSTEM,
     private readonly tenantService: TenantService,
-  ) { }
+  ) {}
 
   /**
    * Find a single location by ID with optional users and products
@@ -108,11 +91,11 @@ export class LocationsService {
     id: string,
     withUsers: boolean = false,
     withProducts: boolean = false,
-    version: string = 'latest',
+    version: string = "latest",
   ): Promise<Result<unknown>> {
     this.logger.debug(
       {
-        function: 'findOne',
+        function: "findOne",
         id,
         user_id: this.userId,
         tenant_id: this.bu_code,
@@ -242,7 +225,7 @@ export class LocationsService {
       });
 
     if (!location) {
-      return Result.error('Location not found', ErrorCode.NOT_FOUND);
+      return Result.error("Location not found", ErrorCode.NOT_FOUND);
     }
 
     // Serialize response data
@@ -259,12 +242,9 @@ export class LocationsService {
    * @returns List of locations / รายการสถานที่
    */
   @TryCatch
-  async findManyById(
-    ids: string[],
-    version: string = 'latest',
-  ): Promise<any> {
+  async findManyById(ids: string[], version: string = "latest"): Promise<any> {
     this.logger.debug(
-      { function: 'findManyById', ids, user_id: this.userId, tenant_id: this.bu_code, version },
+      { function: "findManyById", ids, user_id: this.userId, tenant_id: this.bu_code, version },
       LocationsService.name,
     );
     const locations = await this.prismaService.tb_location.findMany({
@@ -296,16 +276,9 @@ export class LocationsService {
    * @returns Paginated list of locations / รายการสถานที่แบบแบ่งหน้า
    */
   @TryCatch
-  async findAll(
-    bu_code: string,
-    paginate: IPaginate,
-    version: string = 'latest',
-  ): Promise<any> {
-    this.logger.debug(
-      { function: 'findAll', user_id: this.userId, bu_code, paginate, version },
-      LocationsService.name,
-    );
-    const defaultSearchFields = ['name', 'code'];
+  async findAll(bu_code: string, paginate: IPaginate, version: string = "latest"): Promise<any> {
+    this.logger.debug({ function: "findAll", user_id: this.userId, bu_code, paginate, version }, LocationsService.name);
+    const defaultSearchFields = ["name", "code"];
 
     const q = new QueryParams(
       paginate.page,
@@ -313,7 +286,7 @@ export class LocationsService {
       paginate.search,
       paginate.searchfields,
       defaultSearchFields,
-      typeof paginate.filter === 'object' && !Array.isArray(paginate.filter) ? paginate.filter : {},
+      typeof paginate.filter === "object" && !Array.isArray(paginate.filter) ? paginate.filter : {},
       paginate.sort,
       paginate.advance,
     );
@@ -328,7 +301,7 @@ export class LocationsService {
       include: {
         tb_delivery_point: true,
       },
-      orderBy: hasCustomSort ? customOrderBy : [{ code: 'asc' as const }, { name: 'asc' as const }],
+      orderBy: hasCustomSort ? customOrderBy : [{ code: "asc" as const }, { name: "asc" as const }],
       ...pagination,
     };
     const data = await this.prismaService.tb_location.findMany(prismaParams);
@@ -345,10 +318,10 @@ export class LocationsService {
         info: item.info ?? null,
         delivery_point: item.tb_delivery_point
           ? {
-            id: item.tb_delivery_point.id,
-            name: item.tb_delivery_point.name,
-            is_active: item.tb_delivery_point.is_active,
-          }
+              id: item.tb_delivery_point.id,
+              name: item.tb_delivery_point.name,
+              is_active: item.tb_delivery_point.is_active,
+            }
           : {},
       };
     });
@@ -376,11 +349,9 @@ export class LocationsService {
    * @returns List of locations assigned to user / รายการสถานที่ที่มอบหมายให้ผู้ใช้
    */
   @TryCatch
-  async findAllByUser(
-    version: string = 'latest',
-  ): Promise<any> {
+  async findAllByUser(version: string = "latest"): Promise<any> {
     this.logger.debug(
-      { function: 'findAllByUser', user_id: this.userId, tenant_id: this.bu_code, version },
+      { function: "findAllByUser", user_id: this.userId, tenant_id: this.bu_code, version },
       LocationsService.name,
     );
 
@@ -442,17 +413,13 @@ export class LocationsService {
    * @returns List of locations assigned to product / รายการสถานที่ที่มอบหมายให้สินค้า
    */
   @TryCatch
-  async findAllByProductId(
-    product_id: string,
-    paginate: IPaginate,
-    version: string = 'latest',
-  ): Promise<any> {
+  async findAllByProductId(product_id: string, paginate: IPaginate, version: string = "latest"): Promise<any> {
     this.logger.debug(
-      { function: 'findAllByProductId', product_id, user_id: this.userId, tenant_id: this.bu_code, paginate, version },
+      { function: "findAllByProductId", product_id, user_id: this.userId, tenant_id: this.bu_code, paginate, version },
       LocationsService.name,
     );
 
-    const defaultSearchFields = ['name', 'code'];
+    const defaultSearchFields = ["name", "code"];
 
     const q = new QueryParams(
       paginate.page,
@@ -460,7 +427,7 @@ export class LocationsService {
       paginate.search,
       paginate.searchfields,
       defaultSearchFields,
-      typeof paginate.filter === 'object' && !Array.isArray(paginate.filter) ? paginate.filter : {},
+      typeof paginate.filter === "object" && !Array.isArray(paginate.filter) ? paginate.filter : {},
       paginate.sort,
       paginate.advance,
     );
@@ -542,7 +509,7 @@ export class LocationsService {
   @TryCatch
   async getLocationsByUserId(targetUserId: string): Promise<any> {
     this.logger.debug(
-      { function: 'getLocationsByUserId', targetUserId, user_id: this.userId, tenant_id: this.bu_code },
+      { function: "getLocationsByUserId", targetUserId, user_id: this.userId, tenant_id: this.bu_code },
       LocationsService.name,
     );
 
@@ -572,7 +539,7 @@ export class LocationsService {
   @TryCatch
   async updateUserLocations(targetUserId: string, locationIds: string[]): Promise<any> {
     this.logger.debug(
-      { function: 'updateUserLocations', targetUserId, locationIds, user_id: this.userId, tenant_id: this.bu_code },
+      { function: "updateUserLocations", targetUserId, locationIds, user_id: this.userId, tenant_id: this.bu_code },
       LocationsService.name,
     );
 
@@ -585,7 +552,7 @@ export class LocationsService {
       const validIds = new Set(validLocations.map((l) => l.id));
       const invalidIds = locationIds.filter((id) => !validIds.has(id));
       if (invalidIds.length > 0) {
-        throw new BadRequestException(`Location IDs not found: ${invalidIds.join(', ')}`);
+        throw new BadRequestException(`Location IDs not found: ${invalidIds.join(", ")}`);
       }
     }
 
@@ -623,9 +590,16 @@ export class LocationsService {
   }
 
   @TryCatch
-  async getProductInventory(location_id: string, product_id: string, version: string = 'latest'): Promise<any> {
+  async getProductInventory(location_id: string, product_id: string, version: string = "latest"): Promise<any> {
     this.logger.debug(
-      { function: 'getProductInventory', location_id, product_id, user_id: this.userId, tenant_id: this.bu_code, version },
+      {
+        function: "getProductInventory",
+        location_id,
+        product_id,
+        user_id: this.userId,
+        tenant_id: this.bu_code,
+        version,
+      },
       LocationsService.name,
     );
 
@@ -671,7 +645,7 @@ export class LocationsService {
         product_id,
         deleted_at: null,
         tb_purchase_order: {
-          po_status: { in: ['sent', 'partial'] },
+          po_status: { in: ["sent", "partial"] },
           deleted_at: null,
         },
       },
@@ -736,7 +710,7 @@ export class LocationsService {
           },
         },
       },
-      orderBy: { created_at: 'desc' },
+      orderBy: { created_at: "desc" },
     });
 
     const transactions = transactionDetails.map((td: any) => ({
@@ -788,12 +762,9 @@ export class LocationsService {
    * @returns Created location ID / รหัสสถานที่ที่สร้างแล้ว
    */
   @TryCatch
-  async create(
-    data: ICreateLocation,
-    version: string = 'latest',
-  ): Promise<any> {
+  async create(data: ICreateLocation, version: string = "latest"): Promise<any> {
     this.logger.debug(
-      { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code, version },
+      { function: "create", data, user_id: this.userId, tenant_id: this.bu_code, version },
       LocationsService.name,
     );
 
@@ -801,7 +772,7 @@ export class LocationsService {
     const validationSchema = createLocationCreateValidation(this.prismaService);
     const validationResult = await validationSchema.safeParseAsync(data);
     if (!validationResult.success) {
-      const errorMessages = validationResult.error.issues.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
+      const errorMessages = validationResult.error.issues.map((e) => `${e.path.join(".")}: ${e.message}`).join(", ");
       return Result.error(`Validation failed: ${errorMessages}`, ErrorCode.VALIDATION_FAILURE);
     }
 
@@ -809,21 +780,20 @@ export class LocationsService {
     const foundLocation = await this.prismaService.tb_location.findFirst({
       where: {
         name: data.name,
-        location_type: data.location_type,
+        // location_type: data.location_type,
+        deleted_at: null,
       },
     });
 
     if (foundLocation) {
-      return Result.error('Location already exists', ErrorCode.ALREADY_EXISTS);
+      return Result.error("Location already exists", ErrorCode.ALREADY_EXISTS);
     }
 
     const location_type = data.location_type as unknown as enum_location_type;
 
-    let count_type =
-      data.physical_count_type as unknown as enum_physical_count_type;
+    let count_type = data.physical_count_type as unknown as enum_physical_count_type;
     if (location_type === enum_location_type.direct) {
-      count_type =
-        enum_physical_count_type.no as unknown as enum_physical_count_type;
+      count_type = enum_physical_count_type.no as unknown as enum_physical_count_type;
     }
 
     const createLocation = await this.prismaService.$transaction(async (tx) => {
@@ -881,12 +851,9 @@ export class LocationsService {
    * @returns Updated location ID / รหัสสถานที่ที่อัปเดตแล้ว
    */
   @TryCatch
-  async update(
-    data: IUpdateLocation,
-    version: string = 'latest',
-  ): Promise<any> {
+  async update(data: IUpdateLocation, version: string = "latest"): Promise<any> {
     this.logger.debug(
-      { function: 'update', data, user_id: this.userId, tenant_id: this.bu_code, version },
+      { function: "update", data, user_id: this.userId, tenant_id: this.bu_code, version },
       LocationsService.name,
     );
 
@@ -894,7 +861,7 @@ export class LocationsService {
     const validationSchema = createLocationUpdateValidation(this.prismaService);
     const validationResult = await validationSchema.safeParseAsync(data);
     if (!validationResult.success) {
-      const errorMessages = validationResult.error.issues.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
+      const errorMessages = validationResult.error.issues.map((e) => `${e.path.join(".")}: ${e.message}`).join(", ");
       return Result.error(`Validation failed: ${errorMessages}`, ErrorCode.VALIDATION_FAILURE);
     }
 
@@ -904,7 +871,7 @@ export class LocationsService {
     });
 
     if (!location) {
-      return Result.error('Location not found', ErrorCode.NOT_FOUND);
+      return Result.error("Location not found", ErrorCode.NOT_FOUND);
     }
 
     // Business validation: Check for duplicate name
@@ -912,7 +879,8 @@ export class LocationsService {
       const foundLocation = await this.prismaService.tb_location.findFirst({
         where: {
           name: data.name,
-          location_type: data.location_type ?? location.location_type,
+          // location_type: data.location_type ?? location.location_type,
+          deleted_at: null,
           id: {
             not: location.id,
           },
@@ -920,105 +888,102 @@ export class LocationsService {
       });
 
       if (foundLocation) {
-        return Result.error('Location already exists', ErrorCode.ALREADY_EXISTS);
+        return Result.error("Location already exists", ErrorCode.ALREADY_EXISTS);
       }
     }
 
-    const location_type =
-      data.location_type ??
-      (location.location_type as unknown as enum_location_type);
-    let count_type =
-      data.physical_count_type ??
-      (location.physical_count_type as unknown as enum_physical_count_type);
+    const location_type = data.location_type ?? (location.location_type as unknown as enum_location_type);
+    let count_type = data.physical_count_type ?? (location.physical_count_type as unknown as enum_physical_count_type);
 
     if (location_type === enum_location_type.direct) {
-      count_type =
-        enum_physical_count_type.no as unknown as enum_physical_count_type;
+      count_type = enum_physical_count_type.no as unknown as enum_physical_count_type;
     }
 
-    const updateLocation = await this.prismaService.$transaction(async (tx) => {
-      const updateLocation = await tx.tb_location.update({
-        where: { id: location.id },
-        data: {
-          code: data.code ?? location.code,
-          name: data.name ?? location.name,
-          location_type: location_type,
-          physical_count_type: count_type,
-          description: data.description ?? location.description,
-          is_active: data.is_active ?? location.is_active,
-          // info: (data.info as object) ?? location.info,
-          delivery_point_id:
-            data.delivery_point_id ?? location.delivery_point_id,
-          updated_by_id: this.userId,
-        },
-      });
-
-      if (data.users?.add) {
-        await tx.tb_user_location.createMany({
-          data: data.users.add.map((user) => ({
-            user_id: user.id,
-            location_id: updateLocation.id,
-            created_by_id: this.userId,
-            created_at: new Date().toISOString(),
-          })),
-        });
-      }
-
-      if (data.users?.remove) {
-        await tx.tb_user_location.deleteMany({
-          where: {
-            user_id: { in: data.users.remove.map((user) => user.id) },
-            location_id: updateLocation.id,
+    const updateLocation = await this.prismaService.$transaction(
+      async (tx) => {
+        const updateLocation = await tx.tb_location.update({
+          where: { id: location.id },
+          data: {
+            code: data.code ?? location.code,
+            name: data.name ?? location.name,
+            location_type: location_type,
+            physical_count_type: count_type,
+            description: data.description ?? location.description,
+            is_active: data.is_active ?? location.is_active,
+            // info: (data.info as object) ?? location.info,
+            delivery_point_id: data.delivery_point_id ?? location.delivery_point_id,
+            updated_by_id: this.userId,
           },
         });
-      }
 
-      if (data.products?.add) {
-        await tx.tb_product_location.createMany({
-          data: data.products.add.map((product) => ({
-            product_id: product.id,
-            location_id: updateLocation.id,
-            min_qty: product.min_qty ?? 0,
-            max_qty: product.max_qty ?? 0,
-            re_order_qty: product.re_order_qty ?? 0,
-            par_qty: product.par_qty ?? 0,
-            created_by_id: this.userId,
-            created_at: new Date().toISOString(),
-          })),
-        });
-      }
-
-      if (data.products?.update) {
-        for (const product of data.products.update) {
-          await tx.tb_product_location.updateMany({
-            where: {
-              product_id: product.id,
+        if (data.users?.add) {
+          await tx.tb_user_location.createMany({
+            data: data.users.add.map((user) => ({
+              user_id: user.id,
               location_id: updateLocation.id,
-            },
-            data: {
-              min_qty: product.min_qty,
-              max_qty: product.max_qty,
-              re_order_qty: product.re_order_qty,
-              par_qty: product.par_qty,
-              updated_by_id: this.userId,
+              created_by_id: this.userId,
+              created_at: new Date().toISOString(),
+            })),
+          });
+        }
+
+        if (data.users?.remove) {
+          await tx.tb_user_location.deleteMany({
+            where: {
+              user_id: { in: data.users.remove.map((user) => user.id) },
+              location_id: updateLocation.id,
             },
           });
         }
-      }
 
-      if (data.products?.remove) {
-        await tx.tb_product_location.deleteMany({
-          where: {
-            product_id: {
-              in: data.products.remove.map((product) => product.id),
+        if (data.products?.add) {
+          await tx.tb_product_location.createMany({
+            data: data.products.add.map((product) => ({
+              product_id: product.id,
+              location_id: updateLocation.id,
+              min_qty: product.min_qty ?? 0,
+              max_qty: product.max_qty ?? 0,
+              re_order_qty: product.re_order_qty ?? 0,
+              par_qty: product.par_qty ?? 0,
+              created_by_id: this.userId,
+              created_at: new Date().toISOString(),
+            })),
+          });
+        }
+
+        if (data.products?.update) {
+          for (const product of data.products.update) {
+            await tx.tb_product_location.updateMany({
+              where: {
+                product_id: product.id,
+                location_id: updateLocation.id,
+              },
+              data: {
+                min_qty: product.min_qty,
+                max_qty: product.max_qty,
+                re_order_qty: product.re_order_qty,
+                par_qty: product.par_qty,
+                updated_by_id: this.userId,
+              },
+            });
+          }
+        }
+
+        if (data.products?.remove) {
+          await tx.tb_product_location.deleteMany({
+            where: {
+              product_id: {
+                in: data.products.remove.map((product) => product.id),
+              },
+              location_id: updateLocation.id,
             },
-            location_id: updateLocation.id,
-          },
-        });
-      }
+          });
+        }
 
-      return updateLocation;
-    }, { timeout: 30000 });
+        return updateLocation;
+      },
+      { timeout: 30000 },
+    );
 
     return Result.ok({ id: updateLocation.id });
   }
@@ -1031,12 +996,9 @@ export class LocationsService {
    * @returns Deleted location ID / รหัสสถานที่ที่ลบแล้ว
    */
   @TryCatch
-  async delete(
-    id: string,
-    version: string = 'latest',
-  ) {
+  async delete(id: string, version: string = "latest") {
     this.logger.debug(
-      { function: 'delete', id, user_id: this.userId, tenant_id: this.bu_code, version },
+      { function: "delete", id, user_id: this.userId, tenant_id: this.bu_code, version },
       LocationsService.name,
     );
 
@@ -1045,7 +1007,7 @@ export class LocationsService {
     });
 
     if (!location) {
-      return Result.error('Location not found', ErrorCode.NOT_FOUND);
+      return Result.error("Location not found", ErrorCode.NOT_FOUND);
     }
 
     await this.prismaService.tb_location.update({
