@@ -947,9 +947,9 @@ describe('PurchaseRequestService', () => {
   // ===========================================================================
   // current_stage_status field semantics
   // ---------------------------------------------------------------------------
-  // The backend only ever stamps `reject` (terminal) into current_stage_status.
-  // Approve / send-back / submit must always leave it as ''. The 'approve'
-  // display is computed by the frontend from stages_status + workflow_current_stage.
+  // The backend stamps `reject` (terminal) on rejection, and stamps `approve`
+  // ONLY at the final approval stage (workflow_next_stage === '-').
+  // Intermediate approves leave the field '' so the next stage can act on the row.
   // See: memory/feedback_current_stage_status_semantics.md
   // ===========================================================================
   describe('current_stage_status semantics', () => {
@@ -973,7 +973,7 @@ describe('PurchaseRequestService', () => {
       return captured;
     }
 
-    it('approve(): writes empty string to current_stage_status (never "approve")', async () => {
+    it('approve() at final stage (workflow_next_stage === "-"): writes "approve"', async () => {
       const prisma = setupPrismaService();
       const workflow = buildWorkflowHeader({
         workflow_previous_stage: 'HOD',
@@ -1002,8 +1002,39 @@ describe('PurchaseRequestService', () => {
       ]);
 
       expect(captured.value).not.toBeNull();
+      expect(captured.value.data.current_stage_status).toBe(stage_status.approve);
+    });
+
+    it('approve() at intermediate stage (workflow_next_stage !== "-"): writes ""', async () => {
+      const prisma = setupPrismaService();
+      const workflow = buildWorkflowHeader({
+        workflow_previous_stage: 'HOD',
+        workflow_current_stage: 'Purchaser',
+        workflow_next_stage: 'GM',
+      });
+
+      prisma.tb_purchase_request.findFirst.mockResolvedValue({
+        id: PR_ID,
+        pr_status: enum_purchase_request_doc_status.in_progress,
+      });
+
+      const existingStages: StageStatus[] = [
+        { seq: 1, status: stage_status.submit, name: 'Requestor', message: '' },
+        { seq: 2, status: stage_status.pending, name: 'HOD', message: '' },
+      ];
+
+      prisma.tb_purchase_request_detail.findMany.mockResolvedValue([
+        { id: 'detail-1', stages_status: existingStages, history: [] },
+      ]);
+
+      const captured = captureDetailUpdate(prisma);
+
+      await service.approve(PR_ID, workflow, [
+        { id: 'detail-1', stage_status: stage_status.approve, stage_message: 'ok' },
+      ]);
+
+      expect(captured.value).not.toBeNull();
       expect(captured.value.data.current_stage_status).toBe('');
-      expect(captured.value.data.current_stage_status).not.toBe(stage_status.approve);
     });
 
     it('reject(): writes "reject" to current_stage_status (terminal stamp)', async () => {
