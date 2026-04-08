@@ -477,7 +477,7 @@ describe('PurchaseOrderService', () => {
 
       expect(result.isOk()).toBe(true);
       expect(capturedHeaderUpdate.data.po_status).toBe(
-        enum_purchase_order_doc_status.closed,
+        enum_purchase_order_doc_status.voided,
       );
     });
 
