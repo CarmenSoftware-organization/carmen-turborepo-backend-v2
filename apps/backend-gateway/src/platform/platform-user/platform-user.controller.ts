@@ -331,6 +331,52 @@ export class PlatformUserController extends BaseHttpController {
   }
 
   /**
+   * Reset a platform user's password (admin)
+   * รีเซ็ตรหัสผ่านผู้ใช้โดยผู้ดูแลระบบ
+   */
+  @Put('user/:id/reset-password')
+  @UseGuards(new AppIdGuard('platform-user.update'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiParam({ name: 'id', description: 'User ID', type: 'string' })
+  @ApiOperation({
+    summary: 'Reset platform user password',
+    description: 'Admin-only password reset for a platform user via Keycloak. Body: { newPassword: string, temporary?: boolean }.',
+    'x-description-th': 'รีเซ็ตรหัสผ่านผู้ใช้โดยผู้ดูแลระบบผ่าน Keycloak',
+    operationId: 'platformUser_resetPassword',
+    tags: ['Platform Admin', 'Platform User'],
+    security: [{ bearerAuth: [] }],
+    responses: {
+      200: { description: 'Password reset successfully' },
+      400: { description: 'Bad request' },
+      401: { description: 'Unauthorized' },
+      404: { description: 'User not found' },
+    },
+  } as any)
+  async resetUserPassword(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+    @Body() data: { newPassword: string; temporary?: boolean },
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'resetUserPassword', id, version },
+      PlatformUserController.name,
+    );
+    const { user_id, tenant_id } = ExtractRequestHeader(req);
+    const result = await this.platformUserService.resetUserPassword(
+      user_id,
+      tenant_id,
+      id,
+      data?.newPassword,
+      data?.temporary ?? false,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
    * Delete a platform user
    * ลบผู้ใช้ระบบออกจากแพลตฟอร์ม
    * @param req - Request object / ออบเจกต์คำขอ

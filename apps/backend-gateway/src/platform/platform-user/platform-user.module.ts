@@ -23,6 +23,14 @@ import { envConfig } from 'src/libs/config.env';
           port: Number(envConfig.CLUSTER_SERVICE_TCP_PORT),
         },
       },
+      {
+        name: 'KEYCLOAK_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          host: envConfig.KEYCLOAK_API_SERVICE_HOST,
+          port: Number(envConfig.KEYCLOAK_API_SERVICE_TCP_PORT),
+        },
+      },
     ]),
   ],
   controllers: [PlatformUserController],

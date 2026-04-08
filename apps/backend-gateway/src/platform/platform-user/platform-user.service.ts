@@ -20,7 +20,50 @@ export class PlatformUserService {
   constructor(
     @Inject('BUSINESS_SERVICE') private readonly authService: ClientProxy,
     @Inject('CLUSTER_SERVICE') private readonly clusterService: ClientProxy,
+    @Inject('KEYCLOAK_SERVICE') private readonly keycloakService: ClientProxy,
   ) {}
+
+  /**
+   * Reset a platform user's password via Keycloak
+   * รีเซ็ตรหัสผ่านผู้ใช้ผ่าน Keycloak
+   */
+  async resetUserPassword(
+    user_id: string,
+    tenant_id: string,
+    id: string,
+    password: string,
+    temporary: boolean,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'resetUserPassword', user_id, tenant_id, id, version },
+      PlatformUserService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.keycloakService.send(
+      { cmd: 'keycloak.users.resetPassword', service: 'keycloak' },
+      {
+        userId: id,
+        password,
+        temporary,
+        user_id,
+        tenant_id,
+        version,
+        ...getGatewayRequestContext(),
+      },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
 
   /**
    * Fetch and sync users from Keycloak realm into the platform database
