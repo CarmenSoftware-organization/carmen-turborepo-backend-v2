@@ -39,8 +39,9 @@ SERVICE_NOTIFICATION="notification|apps/micro-notification|node dist/main|node"
 # External services (outside monorepo)
 CARMEN_DEV_DIR="$HOME"
 SERVICE_REPORT="report|$CARMEN_DEV_DIR/micro-report|./bin/micro-report|go"
+SERVICE_CRONJOB="cronjob|$CARMEN_DEV_DIR/micro-cronjobs|./bin/micro-cronjob|go"
 CORE_LIST="gateway business cluster keycloak"
-ALL_LIST="gateway business cluster keycloak file notification report"
+ALL_LIST="gateway business cluster keycloak file notification report cronjob"
 
 # ───────────────────────────────────────────────────────────
 # Helpers
@@ -55,6 +56,7 @@ get_service_def() {
         file)           echo "$SERVICE_FILE" ;;
         notification)   echo "$SERVICE_NOTIFICATION" ;;
         report)         echo "$SERVICE_REPORT" ;;
+        cronjob)        echo "$SERVICE_CRONJOB" ;;
         *) echo "" ;;
     esac
 }
@@ -103,6 +105,7 @@ get_ports() {
         file)           echo "5007 6007" ;;
         notification)   echo "5006 6006" ;;
         report)         echo "5015 6015" ;;
+        cronjob)        echo "6016" ;;
         *)              echo "" ;;
     esac
 }
@@ -162,7 +165,10 @@ cmd_build() {
         cd "$dir"
         case "$svc_type" in
             bun)    bun build src/server.ts --outdir=dist --target=bun ;;
-            go)     go build -o bin/micro-report ./cmd/server ;;
+            go)
+                bin_path=$(get_field "$def" 3)
+                CGO_ENABLED=0 go build -o "$bin_path" ./cmd/server
+                ;;
             *)      npx nest build ;;
         esac
     done
@@ -325,6 +331,7 @@ cmd_status() {
             file)           ports="5007, 6007" ;;
             notification)   ports="5006, 6006" ;;
             report)         ports="5015, 6015" ;;
+            cronjob)        ports="6016" ;;
         esac
 
         printf "%-15s %-10s %-10s %s\n" "$name" "$status" "$pid" "$ports"
@@ -351,6 +358,7 @@ cmd_health() {
     check "File (6007)"           "http://localhost:6007/health"
     check "Notification (6006)"   "http://localhost:6006/health"
     check "Report (6015)"         "http://localhost:6015/health"
+    check "Cronjob (6016)"        "http://localhost:6016/health"
 }
 
 cmd_clean_logs() {
@@ -378,7 +386,7 @@ cmd_help() {
     echo "Targets:"
     echo "  core           gateway, business, cluster, keycloak (default, 4 services)"
     echo "  all            ทุก 7 services"
-    echo "  SERVICE name   gateway | business | cluster | keycloak | file | notification | report"
+    echo "  SERVICE name   gateway | business | cluster | keycloak | file | notification | report | cronjob"
     echo ""
     echo "ตัวอย่าง:"
     echo "  ./carmen.sh install             # ครั้งแรก"
