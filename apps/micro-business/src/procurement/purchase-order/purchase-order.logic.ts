@@ -35,7 +35,7 @@ export class PurchaseOrderLogic {
     private readonly mapperLogic: MapperLogic,
     private readonly notificationService: NotificationService,
     private readonly workflowOrchestrator: WorkflowOrchestratorService,
-  ) {}
+  ) { }
 
   async submit(
     id: string,
@@ -55,7 +55,7 @@ export class PurchaseOrderLogic {
     if (!poData?.workflow_id) {
       throw new Error('Cannot submit PO: workflow not found. Please set workflow_id on the purchase order before submitting.');
     }
-    if (!poData?.tb_purchase_order_detail?.length) {
+    if (!poData?.purchase_order_detail?.length) {
       throw new Error('Cannot submit PO: PO must have at least one detail line.');
     }
 
@@ -687,21 +687,21 @@ export class PurchaseOrderLogic {
     const [products, locations, units] = await Promise.all([
       productIdsToEnrich.size > 0
         ? prisma.tb_product.findMany({
-            where: { id: { in: Array.from(productIdsToEnrich) } },
-            select: { id: true, code: true, name: true, local_name: true },
-          })
+          where: { id: { in: Array.from(productIdsToEnrich) } },
+          select: { id: true, code: true, name: true, local_name: true },
+        })
         : [],
       locationIdsToEnrich.size > 0
         ? prisma.tb_location.findMany({
-            where: { id: { in: Array.from(locationIdsToEnrich) } },
-            select: { id: true, code: true, name: true },
-          })
+          where: { id: { in: Array.from(locationIdsToEnrich) } },
+          select: { id: true, code: true, name: true },
+        })
         : [],
       unitIdsToEnrich.size > 0
         ? prisma.tb_unit.findMany({
-            where: { id: { in: Array.from(unitIdsToEnrich) } },
-            select: { id: true, name: true },
-          })
+          where: { id: { in: Array.from(unitIdsToEnrich) } },
+          select: { id: true, name: true },
+        })
         : [],
     ]);
 
