@@ -491,6 +491,25 @@ export class PriceListTemplateService {
       };
     }
 
+    // Check for duplicate name (excluding current record and soft-deleted)
+    if (data.name && data.name !== currentTemplate.name) {
+      const existingTemplate = await this.prismaService.tb_pricelist_template.findFirst({
+        where: {
+          name: data.name,
+          deleted_at: null,
+          id: { not: templateId },
+        },
+      });
+      if (existingTemplate) {
+        return {
+          response: {
+            status: HttpStatus.CONFLICT,
+            message: 'Price list template name already exists',
+          },
+        };
+      }
+    }
+
     // Get currency code for denormalization
     if (data.currency_id) {
       const currency = await this.prismaService.tb_currency.findFirst({
