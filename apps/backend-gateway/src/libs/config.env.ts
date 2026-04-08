@@ -72,6 +72,9 @@ const envSchema = z.object({
   REPORT_RENDER_HOST: host(),
   REPORT_RENDER_TCP_PORT: port(DEFAULT_PORTS.REPORT_RENDER_TCP),
 
+  // Cronjob (remote HTTP service)
+  CRONJOB_SERVICE_URL: z.string().url(),
+
   // Feature flags
   IS_ACTIVE_NOTIFICATION: z.string().optional(),
 
@@ -158,6 +161,9 @@ export const envConfig = {
   // Report Render
   REPORT_RENDER_HOST: env.REPORT_RENDER_HOST,
   REPORT_RENDER_TCP_PORT: env.REPORT_RENDER_TCP_PORT,
+
+  // Cronjob (remote HTTP service)
+  CRONJOB_SERVICE_URL: env.CRONJOB_SERVICE_URL,
 
   // App config
   IS_ACTIVE_NOTIFICATION: Boolean(env.IS_ACTIVE_NOTIFICATION),
