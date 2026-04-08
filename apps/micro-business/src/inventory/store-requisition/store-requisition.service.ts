@@ -916,6 +916,10 @@ export class StoreRequisitionService {
           }),
         );
 
+        // current_stage_status semantics: backend stamps 'reject' (terminal) or
+        // 'approve' ONLY at the final approval stage (workflow_next_stage === '-').
+        // Intermediate approves leave it '' so the next stage can act on the row.
+        const isFinalApproval = workflow.workflow_next_stage === '-';
         await this.prismaService.tb_store_requisition_detail.update({
           where: { id: detail.id },
           data: {
@@ -924,7 +928,9 @@ export class StoreRequisitionService {
             stages_status: stages as unknown as Prisma.InputJsonValue,
             history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
-            current_stage_status: isReject ? stage_status.reject : '',
+            current_stage_status: isReject
+              ? stage_status.reject
+              : (isFinalApproval ? stage_status.approve : ''),
             last_action: enum_last_action.approved,
             approved_by_id: this.userId,
             approved_by_name: workflow.last_action_by_name,

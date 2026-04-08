@@ -1971,13 +1971,19 @@ export class PurchaseOrderService {
           { status: detail.stage_status, name: (workflow as any).workflow_previous_stage, userId: this.userId, action: 'approved' },
         );
 
+        // current_stage_status semantics: backend stamps 'reject' (terminal) or
+        // 'approve' ONLY at the final approval stage (workflow_next_stage === '-').
+        // Intermediate approves leave it '' so the next stage can act on the row.
+        const isFinalApproval = (workflow as any).workflow_next_stage === '-';
         await txp.tb_purchase_order_detail.update({
           where: { id: detail.id },
           data: {
             doc_version: { increment: 1 },
             history: history as unknown as Prisma.InputJsonValue,
             stages_status: stages as unknown as Prisma.InputJsonValue,
-            current_stage_status: isReject ? stage_status.reject : '',
+            current_stage_status: isReject
+              ? stage_status.reject
+              : (isFinalApproval ? stage_status.approve : ''),
             updated_by_id: this.userId,
           },
         });
