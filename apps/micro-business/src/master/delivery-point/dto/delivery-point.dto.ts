@@ -8,7 +8,7 @@ export {
 } from '@/common/validate/delivery-point.validate';
 
 export const DeliveryPointCreate = z.object({
-  name: z.string(),
+  name: z.string().trim().min(1, 'name must not be empty'),
   is_active: z.boolean().default(true).nullable().optional(),
 });
 
@@ -16,7 +16,7 @@ export type ICreateDeliveryPoint = z.infer<typeof DeliveryPointCreate>;
 export class DeliveryPointCreateDto extends createZodDto(DeliveryPointCreate) {}
 
 export const DeliveryPointUpdate = z.object({
-  name: z.string().optional(),
+  name: z.string().trim().min(1, 'name must not be empty').optional(),
   is_active: z.boolean().optional(),
 });
 
