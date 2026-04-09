@@ -1,7 +1,42 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaClient_SYSTEM_CUSTOM } from '@repo/prisma-shared-schema-platform';
 import type { PrismaClient } from '@repo/prisma-shared-schema-platform';
+import { z } from 'zod';
 import { EmailService, type EmailConfig } from '../email/email.service';
+import { decryptSecret } from '../common/crypto.util';
+
+// ─── Zod schema for report_email config in tb_application_config ───
+const EmailSmtpSchema = z.object({
+  host: z.string().min(1),
+  port: z.number().int().min(1).max(65535),
+  username: z.string().min(1),
+  password: z.string().min(1),
+  from: z.string(),
+  enabled: z.boolean(),
+});
+
+const NotificationEmailConfigSchema = z.object({
+  smtp: EmailSmtpSchema,
+  recipients: z.array(z.string().email()).optional(),
+  cc: z.array(z.string().email()).optional(),
+  subject_prefix: z.string().optional(),
+});
+
+export type NotificationEmailConfig = z.infer<typeof NotificationEmailConfigSchema>;
+
+const SCHEMA_NAME_REGEX = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+
+// ─── In-memory config cache ───
+const CONFIG_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+interface CacheEntry {
+  config: NotificationEmailConfig | null;
+  expiresAt: number;
+}
+const buConfigCache = new Map<string, CacheEntry>();
+
+function errMsg(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
 
 export interface CreateSystemNotificationData {
   title: string;
@@ -294,24 +329,29 @@ export class NotificationService {
       if (!emailConfig) return;
 
       const isReport = data.metadata?.source === 'micro-report';
+      const metaStatus = data.metadata?.status;
+      const status: 'success' | 'failure' =
+        metaStatus === 'failure' || metaStatus === 'failed' ? 'failure' : 'success';
+
       const html = isReport
         ? this.emailService.buildReportEmailHtml({
             title: data.title,
             message: data.message,
             jobId: data.metadata?.job_id as string,
             fileUrl: data.metadata?.file_url as string,
-            status: data.title.includes('Failed') ? 'failure' : 'success',
+            status,
           })
         : this.emailService.buildNotificationEmailHtml(data.title, data.message);
 
       // Use recipients from config, fallback to user emails
-      const to = emailConfig.recipients?.length > 0
-        ? emailConfig.recipients
-        : recipientEmails;
+      const to =
+        (emailConfig.recipients?.length ?? 0) > 0
+          ? emailConfig.recipients!
+          : recipientEmails;
 
       if (to.length === 0) return;
 
-      await this.emailService.sendEmail(emailConfig.smtp, {
+      await this.emailService.sendEmail(emailConfig.smtp as EmailConfig, {
         to,
         cc: emailConfig.cc,
         subject: data.title,
@@ -320,7 +360,7 @@ export class NotificationService {
         text: data.message,
       });
     } catch (error) {
-      this.logger.warn(`Email send attempt failed: ${error.message}`);
+      this.logger.warn(`Email send attempt failed: ${errMsg(error)}`);
     }
   }
 
@@ -338,10 +378,11 @@ export class NotificationService {
 
       const html = this.emailService.buildNotificationEmailHtml(data.title, data.message);
 
-      const to = config.recipients?.length > 0 ? config.recipients : recipientEmails;
+      const to =
+        (config.recipients?.length ?? 0) > 0 ? config.recipients! : recipientEmails;
       if (to.length === 0) return;
 
-      await this.emailService.sendEmail(config.smtp, {
+      await this.emailService.sendEmail(config.smtp as EmailConfig, {
         to,
         cc: config.cc,
         subject: data.title,
@@ -350,14 +391,21 @@ export class NotificationService {
         text: data.message,
       });
     } catch (error) {
-      this.logger.warn(`BU email send failed: ${error.message}`);
+      this.logger.warn(`BU email send failed: ${errMsg(error)}`);
     }
   }
 
   /**
    * Load report_email config from tb_application_config for a BU
    */
-  private async loadBUEmailConfig(buCode: string): Promise<any | null> {
+  private async loadBUEmailConfig(buCode: string): Promise<NotificationEmailConfig | null> {
+    // Check cache first
+    const cached = buConfigCache.get(buCode);
+    const now = Date.now();
+    if (cached && cached.expiresAt > now) {
+      return cached.config;
+    }
+
     try {
       const prisma = await this.getPrisma();
 
@@ -365,33 +413,85 @@ export class NotificationService {
       const bu = await prisma.tb_business_unit.findFirst({
         where: { code: buCode },
       });
-      if (!bu) return null;
+      if (!bu) {
+        buConfigCache.set(buCode, { config: null, expiresAt: now + CONFIG_CACHE_TTL_MS });
+        return null;
+      }
 
-      // Query tb_application_config in tenant schema
-      // Since we can't switch schema with Prisma, use raw query
-      const dbConn = bu.db_connection as any;
-      if (!dbConn) return null;
+      const dbConn = bu.db_connection as { schema?: string } | null;
+      if (!dbConn || typeof dbConn !== 'object') return null;
 
-      const schema = typeof dbConn === 'object' ? dbConn.schema : null;
-      if (!schema) return null;
+      const schema = dbConn.schema;
+      if (!schema || !SCHEMA_NAME_REGEX.test(schema)) {
+        this.logger.warn(`Invalid tenant schema name for BU ${buCode}: ${schema}`);
+        return null;
+      }
 
-      const result = await prisma.$queryRawUnsafe<any[]>(
+      const result = await prisma.$queryRawUnsafe<Array<{ value: unknown }>>(
         `SELECT value FROM "${schema}".tb_application_config WHERE key = 'report_email' AND deleted_at IS NULL LIMIT 1`,
       );
 
-      if (result.length === 0) return null;
-      return result[0].value;
+      if (result.length === 0) {
+        buConfigCache.set(buCode, { config: null, expiresAt: now + CONFIG_CACHE_TTL_MS });
+        return null;
+      }
+
+      const config = this.parseAndDecryptConfig(result[0].value, `BU:${buCode}`);
+      buConfigCache.set(buCode, { config, expiresAt: now + CONFIG_CACHE_TTL_MS });
+      return config;
     } catch (error) {
-      this.logger.warn(`Load BU email config failed for ${buCode}: ${error.message}`);
+      this.logger.warn(`Load BU email config failed for ${buCode}: ${errMsg(error)}`);
       return null;
+    }
+  }
+
+  /**
+   * Invalidate cached config for a BU (call after admin updates config)
+   */
+  invalidateBUEmailConfigCache(buCode?: string) {
+    if (buCode) {
+      buConfigCache.delete(buCode);
+    } else {
+      buConfigCache.clear();
     }
   }
 
   /**
    * Extract email config from notification metadata (passed by micro-report)
    */
-  private extractEmailConfig(metadata?: Record<string, unknown>): any | null {
+  private extractEmailConfig(
+    metadata?: Record<string, unknown>,
+  ): NotificationEmailConfig | null {
     if (!metadata?.email_config) return null;
-    return metadata.email_config as any;
+    return this.parseAndDecryptConfig(metadata.email_config, 'metadata');
+  }
+
+  /**
+   * Validate raw config with Zod and decrypt SMTP password if encrypted.
+   */
+  private parseAndDecryptConfig(
+    raw: unknown,
+    source: string,
+  ): NotificationEmailConfig | null {
+    const parsed = NotificationEmailConfigSchema.safeParse(raw);
+    if (!parsed.success) {
+      this.logger.warn(
+        `Invalid email config from ${source}: ${parsed.error.issues
+          .map((i) => `${i.path.join('.')}: ${i.message}`)
+          .join('; ')}`,
+      );
+      return null;
+    }
+
+    const config = parsed.data;
+    try {
+      config.smtp.password = decryptSecret(config.smtp.password);
+    } catch (error) {
+      this.logger.error(
+        `Failed to decrypt SMTP password from ${source}: ${errMsg(error)}`,
+      );
+      return null;
+    }
+    return config;
   }
 }

@@ -29,7 +29,7 @@ mkdir -p "$PID_DIR" "$LOG_DIR"
 # Service definitions: name|dir|start_command|type
 # type: node (default), bun, go, dotnet
 # ใช้ build+node เพื่อประหยัด RAM (ไม่ใช้ ts-node-dev/watch)
-SERVICE_GATEWAY="gateway|apps/backend-gateway|node dist/main|node"
+SERVICE_GATEWAY="gateway|apps/backend-gateway|node dist/src/main|node"
 SERVICE_BUSINESS="business|apps/micro-business|node dist/main|node"
 SERVICE_CLUSTER="cluster|apps/micro-cluster|node dist/main|node"
 SERVICE_KEYCLOAK="keycloak|apps/micro-keycloak-api|node dist/main|node"
