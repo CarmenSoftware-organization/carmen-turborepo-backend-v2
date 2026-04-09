@@ -19,7 +19,7 @@ export const LocationCreate = z.object({
   ),
   description: z.string().optional(),
   is_active: z.boolean().default(true).nullable().optional(),
-  delivery_point_id: z.string().uuid().nullable().optional(),
+  delivery_point_id: z.string().uuid({ message: 'delivery_point_id is required' }),
   info: location_info.optional(),
   users: z
     .object({
@@ -60,7 +60,7 @@ export const LocationUpdate = z.object({
   location_type: z
     .enum(Object.values(enum_location_type) as [string, ...string[]])
     .optional(),
-  delivery_point_id: z.string().uuid().nullable().optional(),
+  delivery_point_id: z.string().uuid({ message: 'delivery_point_id is required' }),
   info: location_info.optional(),
   users: z
     .object({
