@@ -253,10 +253,17 @@ export class WorkflowOrchestratorService {
     const dept = departmentOverride ?? adapter.getDepartmentInfo(document);
     const destStageInfo = nav.navigation_info.current_stage_info;
 
+    // The destination is the first/create stage when there is no previous step
+    // in the navigation history. The workflow service returns workflow_previous_step
+    // = null only when currentIndex has been moved back to position 0.
+    const isCreateStage = !nav.navigation_info.workflow_previous_step;
+
     let userAction: { execute: UserActionProfile[] } | null;
-    if (destStageInfo?.creator_access === creatorAccess.ONLY_CREATOR) {
+    if (destStageInfo?.creator_access === creatorAccess.ONLY_CREATOR || isCreateStage) {
       // When reviewing back to a creator-only stage (e.g., "Create Request"),
       // only the original requestor should act — not all assigned_users.
+      // Also covers the case where the workflow's first stage isn't explicitly
+      // tagged with creator_access: 'only_creator' but is still the create stage.
       const requestorId = adapter.getNotificationRecipientId(document);
       if (requestorId) {
         const profilesRes = this.authService.send(
@@ -415,6 +422,77 @@ export class WorkflowOrchestratorService {
       return enum_stage_role.view_only;
     }
   }
+
+  // ===========================================================================
+  // PRESERVED-FOR-REUSE: repairUserActionAtCreateStage
+  //
+  // Purpose:
+  //   Recomputes user_action for documents whose user_action.execute was
+  //   incorrectly stored as [] by the previously-buggy buildReviewWorkflow
+  //   path. When a document is sitting at the workflow's first stage with an
+  //   empty user_action, the requestor/buyer can't act on it.
+  //
+  // How it works (when uncommented):
+  //   1. Loads the workflow definition via resolveWorkflowData.
+  //   2. Bails out unless the document's current stage IS the workflow's
+  //      first stage (this bug only manifests there).
+  //   3. Fetches the requestor's auth profile via get-user-profiles-by-ids.
+  //   4. Returns { execute: [profile] } so the caller can patch the doc and
+  //      persist the repair.
+  //
+  // Paired caller:
+  //   purchase-order.service.ts findById has a matching commented-out block
+  //   that invokes this method on read. Both must be uncommented together.
+  //
+  // When to re-enable:
+  //   If we discover another batch of affected docs (e.g. from a different
+  //   buggy write path or stale data after a migration), uncomment both this
+  //   method and the caller in PO findById (and optionally wire it into PR/SR
+  //   findById too — they share this orchestrator).
+  //
+  // Remove permanently when:
+  //   We're confident no more affected docs exist.
+  // ===========================================================================
+
+  // async repairUserActionAtCreateStage(
+  //   workflowId: string,
+  //   currentStage: string,
+  //   requestorId: string | null,
+  //   department: { id: string; name: string } | null,
+  //   userId: string,
+  //   buCode: string,
+  // ): Promise<{ execute: UserActionProfile[] } | null> {
+  //   if (!requestorId) return null;
+  //
+  //   try {
+  //     const workflowData = await this.resolveWorkflowData(workflowId, userId, buCode);
+  //     const stages: Array<{ name: string }> = workflowData?.stages || [];
+  //     if (stages.length === 0) return null;
+  //
+  //     // Only repair when the document is sitting at the FIRST stage of the
+  //     // workflow — that's the scenario this bug produces.
+  //     if (stages[0]?.name !== currentStage) return null;
+  //
+  //     const profilesRes = this.authService.send(
+  //       { cmd: 'get-user-profiles-by-ids', service: 'auth' },
+  //       {
+  //         user_ids: [requestorId],
+  //         department: department ? { id: department.id, name: department.name } : undefined,
+  //       },
+  //     );
+  //     const profilesResult: { data: UserActionProfile[] } = await firstValueFrom(profilesRes);
+  //     const profiles = profilesResult.data || [];
+  //     if (profiles.length === 0) return null;
+  //
+  //     return { execute: profiles };
+  //   } catch (err) {
+  //     this.logger.error(
+  //       { function: 'repairUserActionAtCreateStage', error: (err as Error).message },
+  //       WorkflowOrchestratorService.name,
+  //     );
+  //     return null;
+  //   }
+  // }
 
   // ===========================================================================
   // Public: workflow query helpers (used by findById, myPending, review endpoints)

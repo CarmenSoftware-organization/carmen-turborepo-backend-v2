@@ -221,6 +221,9 @@ describe('WorkflowOrchestratorService', () => {
           previous_stage: 'HOD',
           current_stage: 'Requestor',
           navigation_info: {
+            // workflow_previous_step is set, so the destination is NOT the first
+            // stage — the create-stage shortcut in buildReviewWorkflow won't fire.
+            workflow_previous_step: 'EarlierStage',
             workflow_next_step: 'HOD',
             current_stage_info: { name: 'Requestor', assigned_users: [] },
           },
@@ -281,6 +284,55 @@ describe('WorkflowOrchestratorService', () => {
       expect(result.user_action.execute[0].user_id).toBe(REQUESTOR_ID);
 
       // Verify get-user-profiles-by-ids was called with only the requestor
+      const profileCall = mockAuthService.send.mock.calls[1];
+      expect(profileCall[1].user_ids).toEqual([REQUESTOR_ID]);
+    });
+
+    it('should assign requestor when reviewing back to the first stage even without creator_access flag', async () => {
+      // Regression: PO/PR workflows whose first stage isn't tagged with
+      // creator_access: 'only_creator' used to end up with user_action.execute = []
+      // after a review-back, leaving the buyer/requestor unable to act.
+      // The orchestrator now treats "destination has no previous step in history"
+      // as a create-stage marker and assigns the requestor regardless.
+      const REQUESTOR_ID = '00000000-0000-4000-a000-000000000077';
+      const requestorProfile = {
+        user_id: REQUESTOR_ID,
+        email: 'buyer@test.com',
+        firstname: 'Buyer',
+        middlename: '',
+        lastname: 'User',
+        initials: 'BU',
+        department: { id: 'dept-001', name: 'Kitchen' },
+      };
+
+      mockAuthService.send.mockReturnValueOnce(of({ data: { name: 'Reviewer' } }));
+      mockMasterService.send.mockReturnValueOnce(of({
+        data: {
+          previous_stage: 'FC',
+          current_stage: 'Create Request',
+          navigation_info: {
+            // null = destination is the first stage in history
+            workflow_previous_step: null,
+            workflow_next_step: 'FC',
+            current_stage_info: {
+              name: 'Create Request',
+              assigned_users: [],
+              // Note: no creator_access flag set — this is the bug scenario
+            },
+          },
+        },
+      }));
+      mockAuthService.send.mockReturnValueOnce(of({ data: [requestorProfile] }));
+
+      const doc = mockDocument({
+        workflow_current_stage: 'FC',
+        requestor_id: REQUESTOR_ID,
+      });
+      const result = await service.buildReviewWorkflow(doc, mockAdapter, 'Create Request', USER_ID, BU_CODE);
+
+      expect(result.user_action.execute).toHaveLength(1);
+      expect(result.user_action.execute[0].user_id).toBe(REQUESTOR_ID);
+
       const profileCall = mockAuthService.send.mock.calls[1];
       expect(profileCall[1].user_ids).toEqual([REQUESTOR_ID]);
     });

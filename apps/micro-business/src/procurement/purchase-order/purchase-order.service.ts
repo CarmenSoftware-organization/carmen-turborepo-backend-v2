@@ -253,6 +253,66 @@ export class PurchaseOrderService {
       return Result.error('Purchase order not found', ErrorCode.NOT_FOUND);
     }
 
+    // ===========================================================================
+    // PRESERVED-FOR-REUSE: read-time repair of empty user_action.execute.
+    //
+    // Purpose:
+    //   Heals documents whose user_action.execute was incorrectly stored as []
+    //   by the previously-buggy buildReviewWorkflow path (the write-side bug is
+    //   already fixed in workflow-orchestrator.service.ts buildReviewWorkflow).
+    //   When a PO is sitting at the workflow's first stage with empty
+    //   user_action, the buyer/creator gets role: "view_only" instead of
+    //   "create" and can't act on it.
+    //
+    // How it works (when uncommented):
+    //   1. Detects POs with empty user_action.execute, status != draft,
+    //      and a current workflow stage set.
+    //   2. Calls workflowOrchestrator.repairUserActionAtCreateStage(...) which
+    //      checks the workflow's first stage matches the doc's current stage,
+    //      then fetches the buyer profile from the auth service.
+    //   3. Patches the in-memory purchaseOrder.user_action so the subsequent
+    //      resolveUserRole call returns "create" instead of "view_only".
+    //   4. Persists the repaired user_action back to the DB so the fix sticks.
+    //
+    // When to re-enable:
+    //   If we discover another batch of affected POs (e.g., from a different
+    //   buggy code path or stale data after a migration), uncomment this block
+    //   AND the matching repairUserActionAtCreateStage helper in
+    //   workflow-orchestrator.service.ts. Both must be uncommented together.
+    //
+    // Remove permanently when:
+    //   We're confident no more affected docs exist.
+    // ===========================================================================
+    // const existingUserActionExecute = (purchaseOrder.user_action as any)?.execute;
+    // const isUserActionEmpty = !existingUserActionExecute || existingUserActionExecute.length === 0;
+    // if (
+    //   isUserActionEmpty &&
+    //   purchaseOrder.po_status !== enum_purchase_order_doc_status.draft &&
+    //   purchaseOrder.workflow_id &&
+    //   purchaseOrder.workflow_current_stage
+    // ) {
+    //   const requestorId = purchaseOrder.buyer_id || purchaseOrder.created_by_id;
+    //   const repaired = await this.workflowOrchestrator.repairUserActionAtCreateStage(
+    //     purchaseOrder.workflow_id,
+    //     purchaseOrder.workflow_current_stage,
+    //     requestorId,
+    //     null,
+    //     this.userId,
+    //     this.bu_code,
+    //   );
+    //   if (repaired) {
+    //     purchaseOrder.user_action = repaired as unknown as typeof purchaseOrder.user_action;
+    //     await this.prismaService.tb_purchase_order.update({
+    //       where: { id: purchaseOrder.id },
+    //       data: { user_action: repaired as unknown as Prisma.InputJsonValue },
+    //     });
+    //     this.logger.log(
+    //       { function: 'findById.repairUserAction', id: purchaseOrder.id },
+    //       PurchaseOrderService.name,
+    //     );
+    //   }
+    // }
+
     const role = await this.workflowOrchestrator.resolveUserRole(
       purchaseOrder.po_status === enum_purchase_order_doc_status.draft,
       purchaseOrder.created_by_id === this.userId,
