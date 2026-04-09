@@ -7,6 +7,7 @@ import { TenantService } from '@/tenant/tenant.service';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
 import {
+  enum_last_action,
   enum_purchase_order_doc_status,
   enum_purchase_request_doc_status,
   enum_stage_role,
@@ -1902,19 +1903,28 @@ export class PurchaseOrderService {
     );
 
     const purchaseOrder = await this.prismaService.tb_purchase_order.findFirst({
-      where: { id, po_status: enum_purchase_order_doc_status.draft },
+      where: {
+        id,
+        OR: [
+          { po_status: enum_purchase_order_doc_status.draft },
+          { po_status: enum_purchase_order_doc_status.in_progress, last_action: enum_last_action.reviewed },
+        ],
+      },
     });
 
     if (!purchaseOrder) {
-      return Result.error('Purchase order not found or not in draft status', ErrorCode.NOT_FOUND);
+      return Result.error('Purchase order not found or not submittable', ErrorCode.NOT_FOUND);
     }
 
-    let newPoNo: string = '';
+    const isDraft = purchaseOrder.po_status === enum_purchase_order_doc_status.draft;
+    let newPoNo: string = purchaseOrder.po_no;
     await this.prismaService.$transaction(async (tx) => {
-      newPoNo = await this.generatePONo(
-        new Date(purchaseOrder.order_date || new Date()).toISOString(),
-        tx,
-      );
+      if (isDraft) {
+        newPoNo = await this.generatePONo(
+          new Date(purchaseOrder.order_date || new Date()).toISOString(),
+          tx,
+        );
+      }
 
       // Update PO header with workflow info and status
       await tx.tb_purchase_order.update({

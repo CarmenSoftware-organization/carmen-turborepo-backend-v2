@@ -503,13 +503,24 @@ export class StoreRequisitionService {
       await this.prismaService.tb_store_requisition.findFirst({
         where: {
           id: id,
-          doc_status: enum_doc_status.draft,
+          OR: [
+            { doc_status: enum_doc_status.draft },
+            {
+              doc_status: enum_doc_status.in_progress,
+              last_action: enum_last_action.reviewed,
+            },
+          ],
         },
       });
 
     if (!storeRequisition) {
-      return Result.error('Store requisition not found', ErrorCode.NOT_FOUND);
+      return Result.error(
+        'Store requisition not found or not submittable',
+        ErrorCode.NOT_FOUND,
+      );
     }
+
+    const isDraft = storeRequisition.doc_status === enum_doc_status.draft;
 
     // ตรวจสอบว่าสินค้าทั้งหมดสามารถอยู่ในสถานที่ปลายทางได้
     if (storeRequisition.to_location_id) {
@@ -557,9 +568,11 @@ export class StoreRequisitionService {
       }
     }
 
-    const newSrNo = await this.generateSRNo(
-      new Date(storeRequisition.sr_date).toISOString(),
-    );
+    const newSrNo = isDraft
+      ? await this.generateSRNo(
+        new Date(storeRequisition.sr_date).toISOString(),
+      )
+      : storeRequisition.sr_no;
 
     const tx = await this.prismaService.$transaction(async (prismatx) => {
       const updateStoreRequisition = await prismatx.tb_store_requisition.update(

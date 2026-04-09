@@ -96,7 +96,7 @@ describe('StoreRequisitionService', () => {
   // WORKFLOW: submit
   // ===========================================================================
   describe('submit (workflow)', () => {
-    it('should return error when SR not found or not in draft', async () => {
+    it('should return error when SR is neither draft nor reviewed-in-progress', async () => {
       const prisma = setupPrismaService();
       prisma.tb_store_requisition.findFirst.mockResolvedValue(null);
 
@@ -107,10 +107,70 @@ describe('StoreRequisitionService', () => {
       );
 
       expect(result.isOk()).toBe(false);
-      expect(result.error.message).toContain('not found');
+      expect(result.error.message).toContain('not submittable');
       expect(prisma.tb_store_requisition.findFirst).toHaveBeenCalledWith({
-        where: { id: SR_ID, doc_status: enum_doc_status.draft },
+        where: {
+          id: SR_ID,
+          OR: [
+            { doc_status: enum_doc_status.draft },
+            {
+              doc_status: enum_doc_status.in_progress,
+              last_action: enum_last_action.reviewed,
+            },
+          ],
+        },
       });
+    });
+
+    it('should re-submit a reviewed in_progress SR without regenerating sr_no', async () => {
+      const prisma = setupPrismaService();
+      const workflowHeader = buildWorkflowHeader();
+      const generateSRNoSpy = jest
+        .spyOn(service as any, 'generateSRNo')
+        .mockResolvedValue('SR-SHOULD-NOT-BE-USED');
+
+      const existingSrNo = 'SR2501-0042';
+      prisma.tb_store_requisition.findFirst.mockResolvedValue({
+        id: SR_ID,
+        sr_no: existingSrNo,
+        sr_date: new Date('2025-01-15'),
+        doc_status: enum_doc_status.in_progress,
+        last_action: enum_last_action.reviewed,
+        to_location_id: null,
+      });
+
+      let capturedHeaderUpdate: any = null;
+      prisma.$transaction.mockImplementation(async (cb) => {
+        const txPrisma = {
+          tb_store_requisition: {
+            update: jest.fn().mockImplementation((args) => {
+              capturedHeaderUpdate = args;
+              return Promise.resolve({ id: SR_ID });
+            }),
+          },
+          tb_store_requisition_detail: {
+            update: jest.fn().mockResolvedValue({}),
+          },
+        };
+        return cb(txPrisma);
+      });
+
+      // tb_store_requisition_detail.findMany is called outside the transaction
+      // for the SR detail iteration; return empty so we exercise only the header path.
+      prisma.tb_store_requisition_detail.findMany.mockResolvedValue([]);
+
+      const result = await service.submit(
+        SR_ID,
+        { stage_role: 'create', details: [] },
+        workflowHeader,
+      );
+
+      expect(result.isOk()).toBe(true);
+      expect(generateSRNoSpy).not.toHaveBeenCalled();
+      expect(capturedHeaderUpdate.data.sr_no).toBe(existingSrNo);
+      expect(capturedHeaderUpdate.data.doc_status).toBe(
+        enum_doc_status.in_progress,
+      );
     });
 
     it('should transition SR status from draft to in_progress', async () => {

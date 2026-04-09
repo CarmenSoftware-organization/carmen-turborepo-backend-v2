@@ -344,26 +344,30 @@ export class BackendLogger extends ConsoleLogger {
   }
 }
 
-export const winstonLogger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json(),
-  ),
-  transports: [
-    // ✅ Console logger
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.timestamp(),
-        winston.format.printf(
-          ({ level, message, timestamp }) =>
-            `[${timestamp}] ${level}: ${message}`,
-        ),
-      ),
-    }),
+// LokiTransport keeps an HTTP keep-alive timer alive for batched uploads,
+// which prevents Node from exiting. Under jest this causes the
+// "Jest did not exit one second after the test run has completed" warning
+// because every test file transitively imports BackendLogger from this module.
+// Skip Loki when running under jest — the Console transport is enough.
+const isJest = process.env.JEST_WORKER_ID !== undefined;
 
-    // ✅ Loki transport
+const transports: winston.transport[] = [
+  // ✅ Console logger
+  new winston.transports.Console({
+    format: winston.format.combine(
+      winston.format.colorize(),
+      winston.format.timestamp(),
+      winston.format.printf(
+        ({ level, message, timestamp }) =>
+          `[${timestamp}] ${level}: ${message}`,
+      ),
+    ),
+  }),
+];
+
+if (!isJest) {
+  // ✅ Loki transport
+  transports.push(
     new LokiTransport({
       host: `${config.protocol}://${config.host}:${config.port}`,
       json: config.json,
@@ -383,5 +387,14 @@ export const winstonLogger = winston.createLogger({
           },
         }),
     }),
-  ],
+  );
+}
+
+export const winstonLogger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json(),
+  ),
+  transports,
 });

@@ -108,7 +108,7 @@ describe('PurchaseOrderService', () => {
   // WORKFLOW: submit
   // ===========================================================================
   describe('submit (workflow)', () => {
-    it('should return error when PO not found or not in draft', async () => {
+    it('should return error when PO is neither draft nor reviewed-in-progress', async () => {
       const prisma = setupPrismaService();
       prisma.tb_purchase_order.findFirst.mockResolvedValue(null);
 
@@ -119,10 +119,67 @@ describe('PurchaseOrderService', () => {
       );
 
       expect(result.isOk()).toBe(false);
-      expect(result.error.message).toContain('not found');
+      expect(result.error.message).toContain('not submittable');
       expect(prisma.tb_purchase_order.findFirst).toHaveBeenCalledWith({
-        where: { id: PO_ID, po_status: enum_purchase_order_doc_status.draft },
+        where: {
+          id: PO_ID,
+          OR: [
+            { po_status: enum_purchase_order_doc_status.draft },
+            {
+              po_status: enum_purchase_order_doc_status.in_progress,
+              last_action: enum_last_action.reviewed,
+            },
+          ],
+        },
       });
+    });
+
+    it('should re-submit a reviewed in_progress PO without regenerating po_no', async () => {
+      const prisma = setupPrismaService();
+      const workflow = buildWorkflow();
+      const generatePONoSpy = jest
+        .spyOn(service as any, 'generatePONo')
+        .mockResolvedValue('PO-SHOULD-NOT-BE-USED');
+
+      const existingPoNo = 'PO2501-0042';
+      prisma.tb_purchase_order.findFirst.mockResolvedValue({
+        id: PO_ID,
+        po_no: existingPoNo,
+        order_date: new Date('2025-01-15'),
+        po_status: enum_purchase_order_doc_status.in_progress,
+        last_action: enum_last_action.reviewed,
+      });
+
+      let capturedHeaderUpdate: any = null;
+      prisma.$transaction.mockImplementation(async (cb) => {
+        const txPrisma = {
+          tb_purchase_order: {
+            update: jest.fn().mockImplementation((args) => {
+              capturedHeaderUpdate = args;
+              return Promise.resolve({});
+            }),
+          },
+          tb_purchase_order_detail: {
+            findMany: jest.fn().mockResolvedValue([]),
+            update: jest.fn().mockResolvedValue({}),
+          },
+        };
+        return cb(txPrisma);
+      });
+
+      const result = await service.submit(
+        PO_ID,
+        { stage_role: 'create', details: [] },
+        workflow,
+      );
+
+      expect(result.isOk()).toBe(true);
+      expect(generatePONoSpy).not.toHaveBeenCalled();
+      expect(capturedHeaderUpdate.data.po_no).toBe(existingPoNo);
+      expect(capturedHeaderUpdate.data.po_status).toBe(
+        enum_purchase_order_doc_status.in_progress,
+      );
+      expect((result.value as { po_no: string }).po_no).toBe(existingPoNo);
     });
 
     it('should transition PO status from draft to in_progress', async () => {
@@ -146,7 +203,7 @@ describe('PurchaseOrderService', () => {
             }),
           },
           tb_purchase_order_detail: {
-            findFirst: jest.fn().mockResolvedValue(null),
+            findMany: jest.fn().mockResolvedValue([]),
             update: jest.fn().mockResolvedValue({}),
           },
         };
@@ -185,11 +242,13 @@ describe('PurchaseOrderService', () => {
             update: jest.fn().mockResolvedValue({}),
           },
           tb_purchase_order_detail: {
-            findFirst: jest.fn().mockResolvedValue({
-              id: detailId,
-              history: [],
-              stages_status: [],
-            }),
+            findMany: jest.fn().mockResolvedValue([
+              {
+                id: detailId,
+                history: [],
+                stages_status: [],
+              },
+            ]),
             update: jest.fn().mockImplementation((args) => {
               capturedDetailUpdate = args;
               return Promise.resolve({});
@@ -279,7 +338,7 @@ describe('PurchaseOrderService', () => {
       expect(updatedStages[1].status).toBe(stage_status.approve);
     });
 
-    it('should not modify stages_status when latest stage is rejected but still update detail', async () => {
+    it('should skip the detail update entirely when the latest stage is already rejected', async () => {
       const prisma = setupPrismaService();
       const workflow = buildWorkflow({ workflow_previous_stage: 'HOD' });
 
@@ -297,30 +356,26 @@ describe('PurchaseOrderService', () => {
         { id: 'detail-1', stages_status: rejectedStages, history: [] },
       ]);
 
-      let capturedDetailUpdate: any = null;
+      const detailUpdateSpy = jest.fn().mockResolvedValue({});
       prisma.$transaction.mockImplementation(async (cb) => {
         const txPrisma = {
           tb_purchase_order: { update: jest.fn().mockResolvedValue({}) },
           tb_purchase_order_detail: {
-            update: jest.fn().mockImplementation((args) => {
-              capturedDetailUpdate = args;
-              return Promise.resolve({});
-            }),
+            update: detailUpdateSpy,
           },
         };
         return cb(txPrisma);
       });
 
-      await service.approve(PO_ID, workflow, [
+      const result = await service.approve(PO_ID, workflow, [
         { id: 'detail-1', stage_status: stage_status.approve },
       ]);
 
-      // Detail is still updated (history added) but stages_status stays unchanged
-      expect(capturedDetailUpdate).not.toBeNull();
-      const updatedStages = capturedDetailUpdate.data.stages_status;
-      // No new approve stage added - still 2 entries
-      expect(updatedStages).toHaveLength(2);
-      expect(updatedStages[1].status).toBe(stage_status.reject);
+      // Service hits `if (result.skipped) continue;` for already-rejected rows,
+      // so the detail row is not touched at all — neither stages_status nor history
+      // is rewritten. The approve call itself still succeeds.
+      expect(result.isOk()).toBe(true);
+      expect(detailUpdateSpy).not.toHaveBeenCalled();
     });
 
     it('should add new stage entry when detail is not pending at current stage', async () => {
