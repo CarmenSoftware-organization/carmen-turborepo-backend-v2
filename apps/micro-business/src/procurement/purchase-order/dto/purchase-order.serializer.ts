@@ -95,6 +95,7 @@ export const PurchaseOrderDetailResponseSchema = z.object({
   total_amount: decimalField,
   notes: z.string().nullable().optional(),
   email: z.string().nullable().optional(),
+  buyer_id: z.string().nullable().optional(),
   buyer_name: z.string().nullable().optional(),
   credit_term_id: z.string().nullable().optional(),
   credit_term_name: z.string().nullable().optional(),
@@ -106,6 +107,7 @@ export const PurchaseOrderDetailResponseSchema = z.object({
   workflow_current_stage: z.string().nullable().optional(),
   workflow_previous_stage: z.string().nullable().optional(),
   workflow_next_stage: z.string().nullable().optional(),
+  workflow_history: z.any().nullable().optional(),
   user_action: z.any().nullable().optional(),
   last_action: z.string().nullable().optional(),
   last_action_at_date: z.coerce.date().nullable().optional(),
@@ -115,6 +117,7 @@ export const PurchaseOrderDetailResponseSchema = z.object({
   info: z.any().nullable().optional(),
   is_active: z.boolean().optional(),
   created_at: z.coerce.date().optional(),
+  created_by_id: z.string().nullable().optional(),
   updated_at: z.coerce.date().optional(),
   purchase_order_detail: z.array(PurchaseOrderDetailEmbeddedSchema).optional(),
 });

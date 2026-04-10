@@ -1649,27 +1649,25 @@ export class PurchaseRequestService {
 
       for (const detail of prDetail) {
         const payloadDetail = payload.details.find((d) => d.id === detail.id);
+        if (!payloadDetail) continue;
 
-        const currentStages: StageStatus[] = Array.isArray(detail.stages_status)
-          ? (detail.stages_status as unknown as StageStatus[])
-          : [];
-
-        const stages = WorkflowPersistenceHelper.buildReviewDetailStagesStatus(
-          currentStages, payloadDetail, workflow.workflow_previous_stage, payload.des_stage,
-        );
-
-        const history = WorkflowPersistenceHelper.appendHistory(
-          (detail.history as unknown as Record<string, unknown>[]) || [],
-          { status: payloadDetail.stage_status, name: workflow.workflow_previous_stage, message: payloadDetail?.stage_message || '', userId: this.userId },
-        );
+        const bag = WorkflowPersistenceHelper.buildReviewDetailUpdate({
+          payloadDetail,
+          currentStages: Array.isArray(detail.stages_status) ? (detail.stages_status as unknown as StageStatus[]) : [],
+          currentHistory: (detail.history as unknown as Record<string, unknown>[]) || [],
+          workflowPreviousStage: workflow.workflow_previous_stage,
+          desStage: payload.des_stage,
+          userId: this.userId,
+        });
+        if (!bag) continue;
 
         await txp.tb_purchase_request_detail.update({
           where: { id: detail.id },
           data: {
-            stages_status: stages as unknown as Prisma.InputJsonValue,
-            history: history as unknown as Prisma.InputJsonValue,
+            stages_status: bag.stages_status as unknown as Prisma.InputJsonValue,
+            history: bag.history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
-            current_stage_status: payloadDetail.stage_status === stage_status.reject ? stage_status.reject : '',
+            current_stage_status: bag.current_stage_status,
           },
         });
       }
@@ -1732,23 +1730,23 @@ export class PurchaseRequestService {
     const tx = await this.prismaService.$transaction(async (txp) => {
       for (const detail of purchaseRequestDetail) {
         const findPR = payload.details.find((d) => d.id === detail.id);
-        const stages = WorkflowPersistenceHelper.buildRejectStagesStatus(
-          Array.isArray(detail.stages_status) ? detail.stages_status as unknown as StageStatus[] : [],
-          findPR,
-          purchaseRequest.workflow_current_stage,
-        );
-        const history = WorkflowPersistenceHelper.appendHistory(
-          (detail.history as unknown as Record<string, unknown>[]) || [],
-          { status: stage_status.reject, name: purchaseRequest.workflow_current_stage, message: findPR?.stage_message || '', userId: this.userId },
-        );
+        if (!findPR) continue;
+
+        const bag = WorkflowPersistenceHelper.buildRejectDetailUpdate({
+          payloadDetail: findPR,
+          currentStages: Array.isArray(detail.stages_status) ? detail.stages_status as unknown as StageStatus[] : [],
+          currentHistory: (detail.history as unknown as Record<string, unknown>[]) || [],
+          workflowCurrentStage: purchaseRequest.workflow_current_stage,
+          userId: this.userId,
+        });
 
         await txp.tb_purchase_request_detail.update({
           where: { id: detail.id },
           data: {
-            stages_status: stages as unknown as Prisma.InputJsonValue,
-            history: history as unknown as Prisma.InputJsonValue,
+            stages_status: bag.stages_status as unknown as Prisma.InputJsonValue,
+            history: bag.history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
-            current_stage_status: '',
+            current_stage_status: bag.current_stage_status,
           },
         });
       }

@@ -359,4 +359,159 @@ describe('WorkflowPersistenceHelper', () => {
       expect(result).toHaveLength(1);
     });
   });
+
+  // ===========================================================================
+  // Composite detail-update builders
+  // ===========================================================================
+
+  describe('buildRejectDetailUpdate', () => {
+    it('should stamp current_stage_status as reject', () => {
+      const result = WorkflowPersistenceHelper.buildRejectDetailUpdate({
+        payloadDetail: { stage_status: stage_status.reject, stage_message: 'no' },
+        currentStages: [{ seq: 1, status: stage_status.submit, name: 'Requestor', message: '' }],
+        currentHistory: [],
+        workflowCurrentStage: 'HOD',
+        userId: 'user-1',
+      });
+
+      expect(result.current_stage_status).toBe(stage_status.reject);
+      expect(result.stages_status).toHaveLength(2);
+      expect(result.history).toHaveLength(1);
+    });
+  });
+
+  describe('buildReviewDetailUpdate', () => {
+    it('should return null (skip) when payload stage_status is approve', () => {
+      const result = WorkflowPersistenceHelper.buildReviewDetailUpdate({
+        payloadDetail: { stage_status: stage_status.approve, stage_message: '' },
+        currentStages: [{ seq: 1, status: stage_status.submit, name: 'Requestor', message: '' }],
+        currentHistory: [],
+        workflowPreviousStage: 'HOD',
+        desStage: 'Requestor',
+        userId: 'user-1',
+      });
+
+      expect(result).toBeNull();
+    });
+
+    it('should stamp reject on review when payload stage_status is reject', () => {
+      const result = WorkflowPersistenceHelper.buildReviewDetailUpdate({
+        payloadDetail: { stage_status: stage_status.reject, stage_message: 'bad' },
+        currentStages: [{ seq: 1, status: stage_status.submit, name: 'Requestor', message: '' }],
+        currentHistory: [],
+        workflowPreviousStage: 'HOD',
+        desStage: 'Requestor',
+        userId: 'user-1',
+      });
+
+      expect(result).not.toBeNull();
+      expect(result.current_stage_status).toBe(stage_status.reject);
+    });
+
+    it('should set empty current_stage_status for review (send-back)', () => {
+      const result = WorkflowPersistenceHelper.buildReviewDetailUpdate({
+        payloadDetail: { stage_status: stage_status.review, stage_message: 'fix' },
+        currentStages: [
+          { seq: 1, status: stage_status.submit, name: 'Requestor', message: '' },
+          { seq: 2, status: stage_status.pending, name: 'HOD', message: '' },
+        ],
+        currentHistory: [],
+        workflowPreviousStage: 'HOD',
+        desStage: 'Requestor',
+        userId: 'user-1',
+      });
+
+      expect(result).not.toBeNull();
+      expect(result.current_stage_status).toBe('');
+    });
+  });
+
+  describe('buildApproveDetailUpdate', () => {
+    it('should stamp approve on final approval', () => {
+      const result = WorkflowPersistenceHelper.buildApproveDetailUpdate({
+        payloadDetail: { stage_status: stage_status.approve, stage_message: 'ok' },
+        currentStages: [{ seq: 1, status: stage_status.submit, name: 'Requestor', message: '' }],
+        currentHistory: [],
+        workflowPreviousStage: 'HOD',
+        isFinalApproval: true,
+        userId: 'user-1',
+      });
+
+      expect(result).not.toBeNull();
+      expect(result.current_stage_status).toBe(stage_status.approve);
+    });
+
+    it('should set empty current_stage_status for intermediate approval', () => {
+      const result = WorkflowPersistenceHelper.buildApproveDetailUpdate({
+        payloadDetail: { stage_status: stage_status.approve, stage_message: 'ok' },
+        currentStages: [{ seq: 1, status: stage_status.submit, name: 'Requestor', message: '' }],
+        currentHistory: [],
+        workflowPreviousStage: 'HOD',
+        isFinalApproval: false,
+        userId: 'user-1',
+      });
+
+      expect(result).not.toBeNull();
+      expect(result.current_stage_status).toBe('');
+    });
+
+    it('should stamp reject when a detail is individually rejected during approve', () => {
+      const result = WorkflowPersistenceHelper.buildApproveDetailUpdate({
+        payloadDetail: { stage_status: stage_status.reject, stage_message: 'nope' },
+        currentStages: [{ seq: 1, status: stage_status.submit, name: 'Requestor', message: '' }],
+        currentHistory: [],
+        workflowPreviousStage: 'HOD',
+        isFinalApproval: false,
+        userId: 'user-1',
+      });
+
+      expect(result).not.toBeNull();
+      expect(result.current_stage_status).toBe(stage_status.reject);
+    });
+
+    it('should return null (skip) when already approved at same stage', () => {
+      const result = WorkflowPersistenceHelper.buildApproveDetailUpdate({
+        payloadDetail: { stage_status: stage_status.approve },
+        currentStages: [
+          { seq: 1, status: stage_status.submit, name: 'Requestor', message: '' },
+          { seq: 2, status: stage_status.approve, name: 'HOD', message: '' },
+        ],
+        currentHistory: [],
+        workflowPreviousStage: 'HOD',
+        isFinalApproval: false,
+        userId: 'user-1',
+      });
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('buildSubmitDetailUpdate', () => {
+    it('should return null (skip) when detail stage_status is approve', () => {
+      const result = WorkflowPersistenceHelper.buildSubmitDetailUpdate({
+        payloadDetail: { stage_status: stage_status.approve },
+        currentStages: [],
+        currentHistory: [],
+        workflowPreviousStage: 'Requestor',
+        userId: 'user-1',
+      });
+
+      expect(result).toBeNull();
+    });
+
+    it('should set empty current_stage_status on submit', () => {
+      const result = WorkflowPersistenceHelper.buildSubmitDetailUpdate({
+        payloadDetail: { stage_status: stage_status.submit, stage_message: '' },
+        currentStages: [],
+        currentHistory: [],
+        workflowPreviousStage: 'Requestor',
+        userId: 'user-1',
+      });
+
+      expect(result).not.toBeNull();
+      expect(result.current_stage_status).toBe('');
+      expect(result.stages_status).toHaveLength(1);
+      expect(result.history).toHaveLength(1);
+    });
+  });
 });

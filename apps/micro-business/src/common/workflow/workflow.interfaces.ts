@@ -1,6 +1,5 @@
 import { stage_status } from '@/procurement/purchase-request/dto/purchase-request-detail.dto';
 import { enum_last_action } from '@repo/prisma-shared-schema-tenant';
-import { NotificationTypeValue } from '@/notification/dto/notification.dto';
 
 // ---------------------------------------------------------------------------
 // Core workflow data structures (previously duplicated in PR, PO, SR)
@@ -52,49 +51,70 @@ export interface StageStatus {
 }
 
 // ---------------------------------------------------------------------------
-// Adapter: each service (PR, PO, SR) implements this to configure workflow
+// WorkflowDocument: canonical input shape for the workflow orchestrator.
+//
+// Every consumer (PR, PO, SR, future modules) must build one of these via a
+// pure mapper function in their own domain folder before calling the
+// orchestrator. The orchestrator NEVER reads anything beyond these fields, so
+// adding a new workflow consumer requires zero changes to the orchestrator.
+//
+// History note:
+//   This shape replaces the previous `WorkflowDocumentAdapter<any>` pattern.
+//   The adapter pattern accepted `any` documents and used per-service adapter
+//   classes to read fields. That allowed schema-stripped data (from
+//   findById's Zod parse) to be passed silently, ending up with
+//   `requestor_id = null` and `user_action.execute = []`. The buyer/creator
+//   then got `role: "view_only"` and couldn't act on their own document.
+//   By making this a concrete typed input, TypeScript catches the same class
+//   of bug at compile time.
 // ---------------------------------------------------------------------------
 
-export interface WorkflowDocumentAdapter<TDocument = any> {
-  /** Display name for this document type, e.g. "Purchase Request" */
-  readonly documentTypeName: string;
+export interface WorkflowDocument {
+  /** Document primary key — used in error messages from runtime guards. */
+  id: string;
 
-  /** Short code, e.g. "PR", "PO", "SR" */
-  readonly documentTypeCode: string;
+  /** Workflow definition ID this document follows. */
+  workflow_id: string;
 
-  /** NotificationType value for notifications */
-  readonly notificationType: NotificationTypeValue;
+  /** Current workflow stage name, or null if the document hasn't started. */
+  workflow_current_stage: string | null;
 
-  /** Extract the document number for notifications (e.g., pr_no, po_no, sr_no) */
-  getDocumentNo(doc: TDocument): string;
-
-  /** Extract workflow_id from document */
-  getWorkflowId(doc: TDocument): string;
-
-  /** Extract current workflow stage from document */
-  getCurrentStage(doc: TDocument): string | null;
-
-  /** Extract previous workflow stage from document */
-  getPreviousStage(doc: TDocument): string | null;
-
-  /** Extract workflow_history array from document */
-  getWorkflowHistory(doc: TDocument): WorkflowHistory[];
+  /** Previous workflow stage name, or null. */
+  workflow_previous_stage: string | null;
 
   /**
-   * Get department info for buildUserAction.
-   * Return null if department needs to be resolved differently (e.g. PO uses creator's department).
+   * Workflow history array. Mappers MUST forward the persisted history from
+   * the document — passing `[]` here will erase prior workflow events.
    */
-  getDepartmentInfo(doc: TDocument): { id: string; name: string } | null;
+  workflow_history: WorkflowHistory[];
 
   /**
-   * Get the requestor/creator user ID for notifications.
-   * PO uses buyer_id || created_by_id; PR/SR use requestor_id.
+   * The requestor/creator user ID — the user who should act when the
+   * document is sent back to the create stage.
+   *
+   * - PR/SR: doc.requestor_id
+   * - PO: doc.buyer_id ?? doc.created_by_id
+   *
+   * May be null for documents that don't yet have an owner; the orchestrator
+   * throws at runtime when this is null in a code path that requires it
+   * (e.g. buildReviewWorkflow's create-stage branch).
    */
-  getNotificationRecipientId(doc: TDocument): string | null;
+  requestor_id: string | null;
 
   /**
-   * Build the requestData object for workflow navigation.
-   * PR/PO include { amount }, SR returns {}.
+   * Department for assignee resolution.
+   *
+   * - PR/SR: read directly from doc.department_id / doc.department_name
+   * - PO: looked up separately from the creator's department membership
+   *   (PO doesn't store department on the header)
    */
-  buildNavigationRequestData(doc: TDocument): Record<string, any>;
+  department: { id: string; name: string } | null;
+
+  /**
+   * Service-specific input passed to the workflow navigation engine.
+   *
+   * - PR/PO: `{ amount: <total> }` — used by amount-based stage routing rules
+   * - SR: `{}`
+   */
+  navigation_request_data: Record<string, unknown>;
 }

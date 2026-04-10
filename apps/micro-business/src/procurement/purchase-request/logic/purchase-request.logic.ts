@@ -5,7 +5,7 @@ import { BackendLogger } from '@/common/helpers/backend.logger';
 import { IUpdatePurchaseRequest, PurchaseRequest } from '../interface/purchase-request.interface';
 import { WorkflowHeader, StageStatus } from '@/common/workflow/workflow.interfaces';
 import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
-import { PRWorkflowAdapter } from '../adapters/pr-workflow.adapter';
+import { prToWorkflowDocument } from '../workflow/pr-workflow.mapper';
 import { CreatePurchaseRequest, NavigateForwardResult, NotificationService, NotificationType, PurchaseRoleApprovePurchaseRequestDetail, PurchaseRoleSavePurchaseRequestDetail, RejectPurchaseRequestDto, ReviewPurchaseRequestDto, stage_status, SubmitPurchaseRequest, PR_ERROR, ErrorDetail } from '@/common'
 import { Result, ErrorCode } from '@/common/result';
 import { enum_stage_role, enum_pricelist_compare_type } from '@repo/prisma-shared-schema-tenant';
@@ -21,8 +21,6 @@ export class PurchaseRequestLogic {
   private readonly logger: BackendLogger = new BackendLogger(
     PurchaseRequestLogic.name,
   );
-  private readonly prAdapter = new PRWorkflowAdapter();
-
   constructor(
     private readonly purchaseRequestService: PurchaseRequestService,
     private readonly mapperLogic: MapperLogic,
@@ -352,7 +350,7 @@ export class PurchaseRequestLogic {
     );
 
     const workflow = await this.workflowOrchestrator.buildSubmitWorkflow(
-      purchaseRequestData, this.prAdapter, user_id, bu_code,
+      prToWorkflowDocument(purchaseRequestData), user_id, bu_code,
     );
 
     const result = await this.purchaseRequestService.submit(id, payload, workflow, pricelistMap);
@@ -405,7 +403,7 @@ export class PurchaseRequestLogic {
     const purchaseRequestData = purchaseRequestResult.value;
 
     const { workflow } = await this.workflowOrchestrator.buildApproveWorkflow(
-      purchaseRequestData, this.prAdapter, user_id, tenant_id,
+      prToWorkflowDocument(purchaseRequestData), user_id, tenant_id,
     );
 
     this.logger.debug({ function: 'approve', id, stage_role, details, user_id, tenant_id }, PurchaseRequestLogic.name);
@@ -455,7 +453,7 @@ export class PurchaseRequestLogic {
 
         // Check role — purchase role cannot swipe approve
         const { workflow } = await this.workflowOrchestrator.buildApproveWorkflow(
-          prData, this.prAdapter, user_id, tenant_id,
+          prToWorkflowDocument(prData), user_id, tenant_id,
         );
 
         // Check current stage role — purchase role cannot use swipe approve
@@ -521,7 +519,7 @@ export class PurchaseRequestLogic {
     const purchaseRequestData = purchaseRequestResult.value;
 
     const workflow = await this.workflowOrchestrator.buildRejectWorkflow(
-      purchaseRequestData, this.prAdapter, user_id, tenant_id,
+      prToWorkflowDocument(purchaseRequestData), user_id, tenant_id,
     );
 
     const result = await this.purchaseRequestService.reject(id, workflow, body);
@@ -590,7 +588,7 @@ export class PurchaseRequestLogic {
 
         // Build reject workflow
         const workflow = await this.workflowOrchestrator.buildRejectWorkflow(
-          prData, this.prAdapter, user_id, tenant_id,
+          prToWorkflowDocument(prData), user_id, tenant_id,
         );
 
         // Build reject payload — reject all details
@@ -634,7 +632,7 @@ export class PurchaseRequestLogic {
     const purchaseRequest = purchaseRequestResult.value;
 
     const workflow = await this.workflowOrchestrator.buildReviewWorkflow(
-      purchaseRequest, this.prAdapter, body.des_stage, user_id, bu_code,
+      prToWorkflowDocument(purchaseRequest), body.des_stage, user_id, bu_code,
     );
 
     const result = await this.purchaseRequestService.review(id, body, workflow)

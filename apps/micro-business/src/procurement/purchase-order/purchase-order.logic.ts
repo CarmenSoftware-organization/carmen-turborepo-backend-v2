@@ -5,7 +5,7 @@ import { BackendLogger } from '@/common/helpers/backend.logger';
 import { NotificationService, NotificationType, Result } from '@/common';
 import { WorkflowHeader } from '@/common/workflow/workflow.interfaces';
 import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
-import { POWorkflowAdapter } from './adapters/po-workflow.adapter';
+import { poToWorkflowDocument } from './workflow/po-workflow.mapper';
 import { IPaginate } from '@/common/shared-interface/paginate.interface';
 import { enum_purchase_order_doc_status, enum_stage_role } from '@repo/prisma-shared-schema-tenant';
 import {
@@ -27,8 +27,6 @@ export class PurchaseOrderLogic {
   private readonly logger: BackendLogger = new BackendLogger(
     PurchaseOrderLogic.name,
   );
-
-  private readonly poAdapter = new POWorkflowAdapter();
 
   constructor(
     private readonly purchaseOrderService: PurchaseOrderService,
@@ -60,8 +58,9 @@ export class PurchaseOrderLogic {
     }
 
     const creatorDept = await this.getCreatorDepartment(poData.created_by_id);
+    const workflowDoc = poToWorkflowDocument(poData, creatorDept);
     const workflow = await this.workflowOrchestrator.buildSubmitWorkflow(
-      poData, this.poAdapter, user_id, tenant_id, creatorDept,
+      workflowDoc, user_id, tenant_id,
     );
 
     const result = await this.purchaseOrderService.submit(id, payload, workflow as unknown as Record<string, unknown>);
@@ -215,8 +214,9 @@ export class PurchaseOrderLogic {
     const purchaseOrderData = purchaseOrderResult.value;
 
     const creatorDept = await this.getCreatorDepartment(purchaseOrderData.created_by_id);
+    const workflowDoc = poToWorkflowDocument(purchaseOrderData, creatorDept);
     const { workflow, isFinalApproval } = await this.workflowOrchestrator.buildApproveWorkflow(
-      purchaseOrderData, this.poAdapter, user_id, tenant_id, creatorDept,
+      workflowDoc, user_id, tenant_id,
     );
 
     // PO-specific: add po_status and approval_date to the workflow object
@@ -257,8 +257,9 @@ export class PurchaseOrderLogic {
     }
     const purchaseOrderData = purchaseOrderResult.value;
 
+    const workflowDoc = poToWorkflowDocument(purchaseOrderData, null);
     const workflow = await this.workflowOrchestrator.buildRejectWorkflow(
-      purchaseOrderData, this.poAdapter, user_id, tenant_id,
+      workflowDoc, user_id, tenant_id,
     );
 
     this.logger.debug(
@@ -291,8 +292,9 @@ export class PurchaseOrderLogic {
     const purchaseOrderData = purchaseOrderResult.value;
 
     const creatorDept = await this.getCreatorDepartment(purchaseOrderData.created_by_id);
+    const workflowDoc = poToWorkflowDocument(purchaseOrderData, creatorDept);
     const workflow = await this.workflowOrchestrator.buildReviewWorkflow(
-      purchaseOrderData, this.poAdapter, body.des_stage, user_id, tenant_id, creatorDept,
+      workflowDoc, body.des_stage, user_id, tenant_id,
     );
 
     this.logger.debug(

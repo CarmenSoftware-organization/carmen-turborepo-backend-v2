@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { WorkflowOrchestratorService } from './workflow-orchestrator.service';
 import { MapperLogic } from '@/common/mapper/mapper.logic';
-import { WorkflowDocumentAdapter, WorkflowHeader } from './workflow.interfaces';
+import { WorkflowDocument } from './workflow.interfaces';
 import { enum_last_action, enum_stage_role } from '@repo/prisma-shared-schema-tenant';
 import { of } from 'rxjs';
 
@@ -39,32 +39,16 @@ describe('WorkflowOrchestratorService', () => {
   const USER_ID = '00000000-0000-4000-a000-000000000001';
   const BU_CODE = 'BU001';
 
-  const mockAdapter: WorkflowDocumentAdapter = {
-    documentTypeName: 'Test Document',
-    documentTypeCode: 'TD',
-    notificationType: 'PR',
-    getDocumentNo: (doc) => doc.doc_no || 'N/A',
-    getWorkflowId: (doc) => doc.workflow_id,
-    getCurrentStage: (doc) => doc.workflow_current_stage,
-    getPreviousStage: (doc) => doc.workflow_previous_stage,
-    getWorkflowHistory: (doc) => doc.workflow_history || [],
-    getDepartmentInfo: (doc) => doc.department_id ? { id: doc.department_id, name: doc.department_name } : null,
-    getNotificationRecipientId: (doc) => doc.requestor_id,
-    buildNavigationRequestData: (doc) => ({ amount: doc.total_amount || 0 }),
-  };
-
-  function mockDocument(overrides: Record<string, any> = {}) {
+  function mockDocument(overrides: Partial<WorkflowDocument> = {}): WorkflowDocument {
     return {
       id: 'doc-001',
-      doc_no: 'TD-001',
       workflow_id: 'wf-001',
       workflow_current_stage: null,
       workflow_previous_stage: null,
       workflow_history: [],
-      department_id: 'dept-001',
-      department_name: 'Kitchen',
+      department: { id: 'dept-001', name: 'Kitchen' },
       requestor_id: USER_ID,
-      total_amount: 1000,
+      navigation_request_data: { amount: 1000 },
       ...overrides,
     };
   }
@@ -102,7 +86,7 @@ describe('WorkflowOrchestratorService', () => {
         .mockReturnValueOnce(mockNavigateForward('HOD', 'Purchaser', 'Draft'));
 
       const doc = mockDocument();
-      const result = await service.buildSubmitWorkflow(doc, mockAdapter, USER_ID, BU_CODE);
+      const result = await service.buildSubmitWorkflow(doc, USER_ID, BU_CODE);
 
       expect(result.last_action).toBe(enum_last_action.submitted);
       expect(result.workflow_current_stage).toBe('HOD');
@@ -118,14 +102,14 @@ describe('WorkflowOrchestratorService', () => {
         .mockReturnValueOnce(mockNavigateForward('HOD', 'Purchaser', 'Requestor'));
 
       const doc = mockDocument({ workflow_current_stage: 'Requestor' });
-      const result = await service.buildSubmitWorkflow(doc, mockAdapter, USER_ID, BU_CODE);
+      const result = await service.buildSubmitWorkflow(doc, USER_ID, BU_CODE);
 
       // Should only call navigate once (not twice for first-stage lookup)
       expect(mockMasterService.send).toHaveBeenCalledTimes(1);
       expect(result.workflow_current_stage).toBe('HOD');
     });
 
-    it('should use departmentOverride when provided', async () => {
+    it('should pass document.department to buildUserAction', async () => {
       setupMapperPopulate({ stages: [] });
       mockMasterService.send.mockReturnValueOnce(mockNavigateForward('Draft', null, null))
         .mockReturnValueOnce(mockNavigateForward('HOD', null, 'Draft'));
@@ -133,8 +117,11 @@ describe('WorkflowOrchestratorService', () => {
       // Mock buildUserAction to verify department is passed
       const spy = jest.spyOn(service, 'buildUserAction').mockResolvedValue({ execute: [] });
 
-      const doc = mockDocument({ workflow_current_stage: null });
-      await service.buildSubmitWorkflow(doc, mockAdapter, USER_ID, BU_CODE, { id: 'override-dept', name: 'Override Dept' });
+      const doc = mockDocument({
+        workflow_current_stage: null,
+        department: { id: 'override-dept', name: 'Override Dept' },
+      });
+      await service.buildSubmitWorkflow(doc, USER_ID, BU_CODE);
 
       expect(spy).toHaveBeenCalledWith(
         expect.anything(),
@@ -143,6 +130,32 @@ describe('WorkflowOrchestratorService', () => {
         USER_ID,
         BU_CODE,
       );
+    });
+
+    it('should preserve existing workflow_history from the document', async () => {
+      // Regression: orchestrator must not erase prior history when appending.
+      // Previously the bug class included losing history because mappers
+      // forwarded `[]` from stripped data.
+      setupMapperPopulate({ stages: [] });
+      mockMasterService.send.mockReturnValueOnce(mockNavigateForward('HOD', 'Purchaser', 'Draft'));
+
+      const priorHistory = [{
+        action: enum_last_action.submitted,
+        datetime: '2026-01-01T00:00:00Z',
+        user: { id: 'prev-user', name: 'Prev' },
+        current_stage: 'Draft',
+        next_stage: 'HOD',
+      }];
+      const doc = mockDocument({
+        workflow_current_stage: 'Requestor',
+        workflow_history: priorHistory as any,
+      });
+      const result = await service.buildSubmitWorkflow(doc, USER_ID, BU_CODE);
+
+      expect(result.workflow_history).toHaveLength(2);
+      expect(result.workflow_history[0]).toEqual(priorHistory[0]);
+      // Orchestrator must not mutate the input array.
+      expect(doc.workflow_history).toHaveLength(1);
     });
   });
 
@@ -155,7 +168,7 @@ describe('WorkflowOrchestratorService', () => {
       mockMasterService.send.mockReturnValueOnce(mockNavigateForward('HOD', null, 'Requestor'));
 
       const doc = mockDocument({ workflow_current_stage: 'Requestor' });
-      const { workflow, isFinalApproval } = await service.buildApproveWorkflow(doc, mockAdapter, USER_ID, BU_CODE);
+      const { workflow, isFinalApproval } = await service.buildApproveWorkflow(doc, USER_ID, BU_CODE);
 
       expect(isFinalApproval).toBe(true);
       expect(workflow.workflow_next_stage).toBe('-');
@@ -168,7 +181,7 @@ describe('WorkflowOrchestratorService', () => {
       mockMasterService.send.mockReturnValueOnce(mockNavigateForward('Purchaser', 'GM', 'HOD'));
 
       const doc = mockDocument({ workflow_current_stage: 'HOD' });
-      const { workflow, isFinalApproval } = await service.buildApproveWorkflow(doc, mockAdapter, USER_ID, BU_CODE);
+      const { workflow, isFinalApproval } = await service.buildApproveWorkflow(doc, USER_ID, BU_CODE);
 
       expect(isFinalApproval).toBe(false);
       expect(workflow.workflow_next_stage).toBe('GM');
@@ -180,7 +193,7 @@ describe('WorkflowOrchestratorService', () => {
       mockMasterService.send.mockReturnValueOnce(mockNavigateForward('Final', null, 'HOD'));
 
       const doc = mockDocument({ workflow_current_stage: 'HOD' });
-      const { workflow } = await service.buildApproveWorkflow(doc, mockAdapter, USER_ID, BU_CODE);
+      const { workflow } = await service.buildApproveWorkflow(doc, USER_ID, BU_CODE);
 
       expect(workflow.workflow_history).toHaveLength(2);
       expect(workflow.workflow_history[0].action).toBe(enum_last_action.approved);
@@ -199,7 +212,7 @@ describe('WorkflowOrchestratorService', () => {
       setupMapperPopulate();
 
       const doc = mockDocument({ workflow_current_stage: 'HOD' });
-      const result = await service.buildRejectWorkflow(doc, mockAdapter, USER_ID, BU_CODE);
+      const result = await service.buildRejectWorkflow(doc, USER_ID, BU_CODE);
 
       expect(result.last_action).toBe(enum_last_action.rejected);
       expect(result.workflow_next_stage).toBe('-');
@@ -231,7 +244,7 @@ describe('WorkflowOrchestratorService', () => {
       }));
 
       const doc = mockDocument({ workflow_current_stage: 'Purchaser' });
-      const result = await service.buildReviewWorkflow(doc, mockAdapter, 'Requestor', USER_ID, BU_CODE);
+      const result = await service.buildReviewWorkflow(doc, 'Requestor', USER_ID, BU_CODE);
 
       expect(result.last_action).toBe(enum_last_action.reviewed);
       expect(result.workflow_current_stage).toBe('Requestor');
@@ -278,7 +291,7 @@ describe('WorkflowOrchestratorService', () => {
         workflow_current_stage: 'HOD',
         requestor_id: REQUESTOR_ID,
       });
-      const result = await service.buildReviewWorkflow(doc, mockAdapter, 'Create Request', USER_ID, BU_CODE);
+      const result = await service.buildReviewWorkflow(doc, 'Create Request', USER_ID, BU_CODE);
 
       expect(result.user_action.execute).toHaveLength(1);
       expect(result.user_action.execute[0].user_id).toBe(REQUESTOR_ID);
@@ -328,13 +341,45 @@ describe('WorkflowOrchestratorService', () => {
         workflow_current_stage: 'FC',
         requestor_id: REQUESTOR_ID,
       });
-      const result = await service.buildReviewWorkflow(doc, mockAdapter, 'Create Request', USER_ID, BU_CODE);
+      const result = await service.buildReviewWorkflow(doc, 'Create Request', USER_ID, BU_CODE);
 
       expect(result.user_action.execute).toHaveLength(1);
       expect(result.user_action.execute[0].user_id).toBe(REQUESTOR_ID);
 
       const profileCall = mockAuthService.send.mock.calls[1];
       expect(profileCall[1].user_ids).toEqual([REQUESTOR_ID]);
+    });
+
+    it('should THROW when reviewing back to create stage without requestor_id', async () => {
+      // Regression guard: the original bug was caused by passing schema-stripped
+      // data with `requestor_id = null` into the orchestrator, producing
+      // `user_action.execute = []` silently. The orchestrator now throws so the
+      // upstream data shape problem surfaces immediately instead of corrupting
+      // the document in the database.
+      mockAuthService.send.mockReturnValueOnce(of({ data: { name: 'Reviewer' } }));
+      mockMasterService.send.mockReturnValueOnce(of({
+        data: {
+          previous_stage: 'FC',
+          current_stage: 'Create Request',
+          navigation_info: {
+            workflow_previous_step: null,
+            workflow_next_step: 'FC',
+            current_stage_info: {
+              name: 'Create Request',
+              assigned_users: [],
+            },
+          },
+        },
+      }));
+
+      const doc = mockDocument({
+        workflow_current_stage: 'FC',
+        requestor_id: null,
+      });
+
+      await expect(
+        service.buildReviewWorkflow(doc, 'Create Request', USER_ID, BU_CODE),
+      ).rejects.toThrow(/cannot resolve requestor for document/);
     });
   });
 

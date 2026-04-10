@@ -1089,8 +1089,10 @@ describe('PurchaseRequestService', () => {
       expect(captured.data.current_stage_status).toBe(stage_status.reject);
     });
 
-    it('reject(): non-rejected items in same payload still get empty current_stage_status', async () => {
-      // payloadDetail.stage_status === reject ? 'reject' : ''
+    it('reject(): all items get current_stage_status "reject" regardless of payload stage_status', async () => {
+      // reject() is a terminal action — every detail row gets stamped 'reject'.
+      // Even if the payload sends an empty stage_status, the document is being
+      // rejected as a whole, so the stamp must always be 'reject'.
       const prisma = setupPrismaService();
       const workflow: any = {
         workflow_previous_stage: 'HOD',
@@ -1136,17 +1138,13 @@ describe('PurchaseRequestService', () => {
       await service.reject(PR_ID, workflow, {
         stage_role: 'approve' as any,
         details: [
-          // empty stage_status -> not reject -> field should be ''
           { id: 'detail-1', stage_status: '' as any, stage_message: '' },
         ],
       });
 
-      // When the reject() loop processes a non-reject payload row it writes ''
-      // (only true reject rows get the terminal stamp).
-      const nonRejectUpdate = updates.find(
-        (u) => u.data.current_stage_status === '',
-      );
-      expect(nonRejectUpdate).toBeDefined();
+      // All items must be stamped 'reject' — reject() is terminal.
+      expect(updates).toHaveLength(1);
+      expect(updates[0].data.current_stage_status).toBe(stage_status.reject);
     });
 
     it('review() (send-back): writes empty string to current_stage_status', async () => {

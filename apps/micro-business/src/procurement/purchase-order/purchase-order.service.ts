@@ -156,6 +156,7 @@ export class PurchaseOrderService {
         workflow_current_stage: true,
         workflow_previous_stage: true,
         workflow_next_stage: true,
+        workflow_history: true,
         user_action: true,
         last_action: true,
         last_action_at_date: true,
@@ -2123,23 +2124,22 @@ export class PurchaseOrderService {
         const findPODoc = PODetailDocs.find((d) => d.id === detail.id);
         if (!findPODoc) continue;
 
-        const stages = WorkflowPersistenceHelper.buildRejectStagesStatus(
-          Array.isArray(findPODoc?.stages_status) ? findPODoc.stages_status as unknown as StageStatus[] : [],
-          detail,
-          purchaseOrder.workflow_current_stage,
-        );
-        const history = WorkflowPersistenceHelper.appendHistory(
-          (findPODoc?.history as unknown as Record<string, unknown>[]) || [],
-          { status: detail.stage_status, name: purchaseOrder.workflow_current_stage, message: detail.stage_message || '', userId: this.userId, action: 'rejected' },
-        );
+        const bag = WorkflowPersistenceHelper.buildRejectDetailUpdate({
+          payloadDetail: detail,
+          currentStages: Array.isArray(findPODoc.stages_status) ? findPODoc.stages_status as unknown as StageStatus[] : [],
+          currentHistory: (findPODoc.history as unknown as Record<string, unknown>[]) || [],
+          workflowCurrentStage: purchaseOrder.workflow_current_stage,
+          userId: this.userId,
+          action: 'rejected',
+        });
 
         await txp.tb_purchase_order_detail.update({
           where: { id: detail.id },
           data: {
             doc_version: { increment: 1 },
-            history: history as unknown as Prisma.InputJsonValue,
-            stages_status: stages as unknown as Prisma.InputJsonValue,
-            current_stage_status: '',
+            stages_status: bag.stages_status as unknown as Prisma.InputJsonValue,
+            history: bag.history as unknown as Prisma.InputJsonValue,
+            current_stage_status: bag.current_stage_status,
             updated_by_id: this.userId,
           },
         });
@@ -2211,26 +2211,24 @@ export class PurchaseOrderService {
         const findPODoc = PODetailDocs.find((d) => d.id === detail.id);
         if (!findPODoc) continue;
 
-        const currentStages: StageStatus[] = Array.isArray(findPODoc?.stages_status)
-          ? (findPODoc.stages_status as unknown as StageStatus[])
-          : [];
-
-        const stages = WorkflowPersistenceHelper.buildReviewDetailStagesStatus(
-          currentStages, detail, desStage, desStage,
-        );
-
-        const history = WorkflowPersistenceHelper.appendHistory(
-          (findPODoc?.history as unknown as Record<string, unknown>[]) || [],
-          { status: detail.stage_status, name: desStage, message: detail.stage_message || '', userId: this.userId, action: 'reviewed' },
-        );
+        const bag = WorkflowPersistenceHelper.buildReviewDetailUpdate({
+          payloadDetail: detail,
+          currentStages: Array.isArray(findPODoc.stages_status) ? findPODoc.stages_status as unknown as StageStatus[] : [],
+          currentHistory: (findPODoc.history as unknown as Record<string, unknown>[]) || [],
+          workflowPreviousStage: desStage,
+          desStage,
+          userId: this.userId,
+          action: 'reviewed',
+        });
+        if (!bag) continue;
 
         await txp.tb_purchase_order_detail.update({
           where: { id: detail.id },
           data: {
             doc_version: { increment: 1 },
-            history: history as unknown as Prisma.InputJsonValue,
-            stages_status: stages as unknown as Prisma.InputJsonValue,
-            current_stage_status: detail.stage_status === stage_status.reject ? stage_status.reject : '',
+            stages_status: bag.stages_status as unknown as Prisma.InputJsonValue,
+            history: bag.history as unknown as Prisma.InputJsonValue,
+            current_stage_status: bag.current_stage_status,
             updated_by_id: this.userId,
           },
         });

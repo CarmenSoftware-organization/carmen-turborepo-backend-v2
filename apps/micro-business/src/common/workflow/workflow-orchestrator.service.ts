@@ -7,9 +7,8 @@ import { creatorAccess, NavigateForwardResult } from '@/common/workflow/workflow
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import {
   UserActionProfile,
-  WorkflowDocumentAdapter,
+  WorkflowDocument,
   WorkflowHeader,
-  WorkflowHistory,
 } from './workflow.interfaces';
 
 /**
@@ -18,8 +17,10 @@ import {
  * Extracts the duplicated "navigate → build history → build user_action → construct WorkflowHeader"
  * pattern that was copy-pasted across PR, PO, and SR logic layers.
  *
- * Each service provides a `WorkflowDocumentAdapter` to tell the orchestrator how to
- * read service-specific fields from its document.
+ * Every consumer constructs a canonical `WorkflowDocument` via a per-service
+ * mapper before calling these build* methods. The orchestrator never reads
+ * fields outside `WorkflowDocument`, so adding a new workflow consumer
+ * requires zero changes here.
  */
 @Injectable()
 export class WorkflowOrchestratorService {
@@ -41,21 +42,17 @@ export class WorkflowOrchestratorService {
    * Build a WorkflowHeader for the SUBMIT action.
    *
    * Handles the "if no current stage, get first stage then navigate forward" pattern.
-   *
-   * @param departmentOverride - PO passes creator's department instead of document's department
    */
   async buildSubmitWorkflow(
-    document: any,
-    adapter: WorkflowDocumentAdapter,
+    document: WorkflowDocument,
     userId: string,
     buCode: string,
-    departmentOverride?: { id: string; name: string } | null,
   ): Promise<WorkflowHeader> {
-    const workflowData = await this.resolveWorkflowData(adapter.getWorkflowId(document), userId, buCode);
-    const requestData = adapter.buildNavigationRequestData(document);
+    const workflowData = await this.resolveWorkflowData(document.workflow_id, userId, buCode);
+    const requestData = document.navigation_request_data;
 
     // Determine current stage for navigation
-    let currentStageForNavigation = adapter.getCurrentStage(document);
+    let currentStageForNavigation = document.workflow_current_stage;
     let previousStage = currentStageForNavigation;
 
     if (!currentStageForNavigation) {
@@ -68,7 +65,7 @@ export class WorkflowOrchestratorService {
     const lastActionAtDate = new Date();
     const userName = await this.resolveUserName(userId, buCode);
 
-    const workflowHistory = adapter.getWorkflowHistory(document);
+    const workflowHistory = [...document.workflow_history];
     workflowHistory.push({
       action: enum_last_action.submitted,
       datetime: lastActionAtDate.toISOString(),
@@ -77,7 +74,7 @@ export class WorkflowOrchestratorService {
       next_stage: nav.current_stage,
     });
 
-    const dept = departmentOverride ?? adapter.getDepartmentInfo(document);
+    const dept = document.department;
     const userAction = await this.buildUserAction(
       nav.navigation_info.current_stage_info,
       dept?.id ?? null,
@@ -103,30 +100,26 @@ export class WorkflowOrchestratorService {
    * Build a WorkflowHeader for the APPROVE action.
    *
    * Returns `isFinalApproval` so the caller can set the correct document status.
-   *
-   * @param departmentOverride - PO passes creator's department
    */
   async buildApproveWorkflow(
-    document: any,
-    adapter: WorkflowDocumentAdapter,
+    document: WorkflowDocument,
     userId: string,
     buCode: string,
-    departmentOverride?: { id: string; name: string } | null,
   ): Promise<{ workflow: WorkflowHeader; isFinalApproval: boolean }> {
-    const workflowData = await this.resolveWorkflowData(adapter.getWorkflowId(document), userId, buCode);
-    const requestData = adapter.buildNavigationRequestData(document);
+    const workflowData = await this.resolveWorkflowData(document.workflow_id, userId, buCode);
+    const requestData = document.navigation_request_data;
 
     const nav = await this.navigateForward(
       workflowData,
-      adapter.getCurrentStage(document),
+      document.workflow_current_stage,
       requestData,
-      adapter.getPreviousStage(document),
+      document.workflow_previous_stage,
     );
 
     const lastActionAtDate = new Date();
     const userName = await this.resolveUserName(userId, buCode);
     const isFinalApproval = !nav.navigation_info.workflow_next_step;
-    const workflowHistory = adapter.getWorkflowHistory(document);
+    const workflowHistory = [...document.workflow_history];
 
     workflowHistory.push({
       action: enum_last_action.approved,
@@ -148,7 +141,7 @@ export class WorkflowOrchestratorService {
 
     let userAction: { execute: UserActionProfile[] } | null = null;
     if (!isFinalApproval) {
-      const dept = departmentOverride ?? adapter.getDepartmentInfo(document);
+      const dept = document.department;
       userAction = await this.buildUserAction(
         nav.navigation_info.current_stage_info,
         dept?.id ?? null,
@@ -179,15 +172,14 @@ export class WorkflowOrchestratorService {
    * Rejection terminates the workflow — sets next_stage to '-', user_action to [].
    */
   async buildRejectWorkflow(
-    document: any,
-    adapter: WorkflowDocumentAdapter,
+    document: WorkflowDocument,
     userId: string,
     buCode: string,
   ): Promise<WorkflowHeader> {
     const userName = await this.resolveUserName(userId, buCode);
     const lastActionAtDate = new Date();
-    const workflowHistory = adapter.getWorkflowHistory(document);
-    const currentStage = adapter.getCurrentStage(document);
+    const workflowHistory = [...document.workflow_history];
+    const currentStage = document.workflow_current_stage;
 
     workflowHistory.push({
       action: enum_last_action.rejected,
@@ -213,71 +205,80 @@ export class WorkflowOrchestratorService {
   /**
    * Build a WorkflowHeader for the REVIEW (send-back) action.
    *
-   * @param departmentOverride - PO passes creator's department
+   * Throws when the destination is the create stage but the document has no
+   * `requestor_id`. That guard exists because the previous adapter pattern
+   * silently produced `user_action.execute = []` in this case, leaving the
+   * buyer/creator with `role: "view_only"` and unable to act on their own
+   * document. Failing loudly makes the upstream data shape problem visible
+   * before bad data lands in the database.
    */
   async buildReviewWorkflow(
-    document: any,
-    adapter: WorkflowDocumentAdapter,
+    document: WorkflowDocument,
     desStage: string,
     userId: string,
     buCode: string,
-    departmentOverride?: { id: string; name: string } | null,
   ): Promise<WorkflowHeader> {
     const userName = await this.resolveUserNameFromAuth(userId);
 
     const backRes = this.masterService.send(
       { cmd: 'workflows.navigate-back-to-stage', service: 'workflows' },
       {
-        workflow_id: adapter.getWorkflowId(document),
+        workflow_id: document.workflow_id,
         user_id: userId,
         bu_code: buCode,
         stage: desStage,
-        current_stage: adapter.getCurrentStage(document),
-        requestData: adapter.buildNavigationRequestData(document),
+        current_stage: document.workflow_current_stage,
+        requestData: document.navigation_request_data,
       },
     );
     const backToStageRes = await firstValueFrom(backRes);
     const nav: NavigateForwardResult = backToStageRes.data;
 
     const lastActionAtDate = new Date();
-    const workflowHistory = adapter.getWorkflowHistory(document);
+    const workflowHistory = [...document.workflow_history];
 
     workflowHistory.push({
       action: enum_last_action.reviewed,
       datetime: lastActionAtDate.toISOString(),
       user: { id: userId, name: userName },
-      current_stage: adapter.getCurrentStage(document),
+      current_stage: document.workflow_current_stage,
       next_stage: nav.current_stage,
     });
 
-    const dept = departmentOverride ?? adapter.getDepartmentInfo(document);
+    const dept = document.department;
     const destStageInfo = nav.navigation_info.current_stage_info;
 
     // The destination is the first/create stage when there is no previous step
     // in the navigation history. The workflow service returns workflow_previous_step
     // = null only when currentIndex has been moved back to position 0.
     const isCreateStage = !nav.navigation_info.workflow_previous_step;
+    const isCreatorOnlyStage =
+      destStageInfo?.creator_access === creatorAccess.ONLY_CREATOR || isCreateStage;
 
     let userAction: { execute: UserActionProfile[] } | null;
-    if (destStageInfo?.creator_access === creatorAccess.ONLY_CREATOR || isCreateStage) {
+    if (isCreatorOnlyStage) {
       // When reviewing back to a creator-only stage (e.g., "Create Request"),
       // only the original requestor should act — not all assigned_users.
       // Also covers the case where the workflow's first stage isn't explicitly
       // tagged with creator_access: 'only_creator' but is still the create stage.
-      const requestorId = adapter.getNotificationRecipientId(document);
-      if (requestorId) {
-        const profilesRes = this.authService.send(
-          { cmd: 'get-user-profiles-by-ids', service: 'auth' },
-          {
-            user_ids: [requestorId],
-            department: dept ? { id: dept.id, name: dept.name } : undefined,
-          },
+      if (!document.requestor_id) {
+        throw new Error(
+          `buildReviewWorkflow: cannot resolve requestor for document ${document.id}. ` +
+          `requestor_id is null but the destination stage "${nav.current_stage}" requires ` +
+          `the original creator to act. The mapper likely received schema-stripped data ` +
+          `that no longer carries buyer_id/created_by_id/requestor_id.`,
         );
-        const profilesResult: { data: UserActionProfile[] } = await firstValueFrom(profilesRes);
-        userAction = { execute: profilesResult.data || [] };
-      } else {
-        userAction = { execute: [] };
       }
+
+      const profilesRes = this.authService.send(
+        { cmd: 'get-user-profiles-by-ids', service: 'auth' },
+        {
+          user_ids: [document.requestor_id],
+          department: dept ? { id: dept.id, name: dept.name } : undefined,
+        },
+      );
+      const profilesResult: { data: UserActionProfile[] } = await firstValueFrom(profilesRes);
+      userAction = { execute: profilesResult.data || [] };
     } else {
       userAction = await this.buildUserAction(
         destStageInfo,
@@ -422,77 +423,6 @@ export class WorkflowOrchestratorService {
       return enum_stage_role.view_only;
     }
   }
-
-  // ===========================================================================
-  // PRESERVED-FOR-REUSE: repairUserActionAtCreateStage
-  //
-  // Purpose:
-  //   Recomputes user_action for documents whose user_action.execute was
-  //   incorrectly stored as [] by the previously-buggy buildReviewWorkflow
-  //   path. When a document is sitting at the workflow's first stage with an
-  //   empty user_action, the requestor/buyer can't act on it.
-  //
-  // How it works (when uncommented):
-  //   1. Loads the workflow definition via resolveWorkflowData.
-  //   2. Bails out unless the document's current stage IS the workflow's
-  //      first stage (this bug only manifests there).
-  //   3. Fetches the requestor's auth profile via get-user-profiles-by-ids.
-  //   4. Returns { execute: [profile] } so the caller can patch the doc and
-  //      persist the repair.
-  //
-  // Paired caller:
-  //   purchase-order.service.ts findById has a matching commented-out block
-  //   that invokes this method on read. Both must be uncommented together.
-  //
-  // When to re-enable:
-  //   If we discover another batch of affected docs (e.g. from a different
-  //   buggy write path or stale data after a migration), uncomment both this
-  //   method and the caller in PO findById (and optionally wire it into PR/SR
-  //   findById too — they share this orchestrator).
-  //
-  // Remove permanently when:
-  //   We're confident no more affected docs exist.
-  // ===========================================================================
-
-  // async repairUserActionAtCreateStage(
-  //   workflowId: string,
-  //   currentStage: string,
-  //   requestorId: string | null,
-  //   department: { id: string; name: string } | null,
-  //   userId: string,
-  //   buCode: string,
-  // ): Promise<{ execute: UserActionProfile[] } | null> {
-  //   if (!requestorId) return null;
-  //
-  //   try {
-  //     const workflowData = await this.resolveWorkflowData(workflowId, userId, buCode);
-  //     const stages: Array<{ name: string }> = workflowData?.stages || [];
-  //     if (stages.length === 0) return null;
-  //
-  //     // Only repair when the document is sitting at the FIRST stage of the
-  //     // workflow — that's the scenario this bug produces.
-  //     if (stages[0]?.name !== currentStage) return null;
-  //
-  //     const profilesRes = this.authService.send(
-  //       { cmd: 'get-user-profiles-by-ids', service: 'auth' },
-  //       {
-  //         user_ids: [requestorId],
-  //         department: department ? { id: department.id, name: department.name } : undefined,
-  //       },
-  //     );
-  //     const profilesResult: { data: UserActionProfile[] } = await firstValueFrom(profilesRes);
-  //     const profiles = profilesResult.data || [];
-  //     if (profiles.length === 0) return null;
-  //
-  //     return { execute: profiles };
-  //   } catch (err) {
-  //     this.logger.error(
-  //       { function: 'repairUserActionAtCreateStage', error: (err as Error).message },
-  //       WorkflowOrchestratorService.name,
-  //     );
-  //     return null;
-  //   }
-  // }
 
   // ===========================================================================
   // Public: workflow query helpers (used by findById, myPending, review endpoints)

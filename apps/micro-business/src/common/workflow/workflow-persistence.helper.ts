@@ -256,6 +256,189 @@ export class WorkflowPersistenceHelper {
   }
 
   // ---------------------------------------------------------------------------
+  // Composite detail-update builders
+  //
+  // These methods compose the low-level stage/history helpers above and return
+  // a uniform `DetailUpdateBag` that every service can write directly into
+  // `tx.tb_X_detail.update({ data: bag })`. The key business rules that MUST
+  // live here (not in individual services):
+  //
+  // - current_stage_status stamping: 'reject' on rejection, '' otherwise
+  //   (approve stamps 'approve' ONLY at the final stage)
+  // - skip logic: items that have already been approved/rejected aren't touched
+  //
+  // Service-specific extra fields (SR's reject_by_id, review_by_id, etc.)
+  // are spread ON TOP of this bag by the caller.
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Return shape from composite detail-update builders.
+   * `null` when the detail should be skipped (not updated).
+   */
+  static buildSubmitDetailUpdate(input: {
+    payloadDetail: { stage_status: string; stage_message?: string | null };
+    currentStages: StageStatus[];
+    currentHistory: Record<string, unknown>[];
+    workflowPreviousStage: string;
+    userId: string;
+    userName?: string;
+    action?: string;
+  }): { stages_status: StageStatus[]; history: Record<string, unknown>[]; current_stage_status: string } | null {
+    const { stages, skipped } = this.buildSubmitStagesStatus(
+      input.currentStages,
+      input.payloadDetail,
+      input.workflowPreviousStage,
+    );
+    if (skipped) return null;
+
+    const history = this.appendHistory(input.currentHistory, {
+      status: input.payloadDetail.stage_status,
+      name: input.workflowPreviousStage,
+      message: input.payloadDetail.stage_message || (input.payloadDetail.stage_status === stage_status.submit ? 'submit for approval' : ''),
+      userId: input.userId,
+      userName: input.userName,
+      action: input.action,
+    });
+
+    return {
+      stages_status: stages,
+      history,
+      current_stage_status: '',
+    };
+  }
+
+  static buildApproveDetailUpdate(input: {
+    payloadDetail: { stage_status?: string; stage_message?: string | null };
+    currentStages: StageStatus[];
+    currentHistory: Record<string, unknown>[];
+    workflowPreviousStage: string;
+    isFinalApproval: boolean;
+    userId: string;
+    userName?: string;
+    action?: string;
+  }): { stages_status: StageStatus[]; history: Record<string, unknown>[]; current_stage_status: string } | null {
+    const isReject = input.payloadDetail.stage_status === stage_status.reject;
+
+    let stages: StageStatus[];
+    if (isReject) {
+      stages = this.buildRejectStagesStatus(
+        input.currentStages,
+        input.payloadDetail as { stage_status: string; stage_message?: string | null },
+        input.workflowPreviousStage,
+      );
+    } else {
+      const result = this.buildApproveStagesStatus(
+        input.currentStages,
+        input.payloadDetail,
+        input.workflowPreviousStage,
+      );
+      if (result.skipped) return null;
+      stages = result.stages;
+    }
+
+    const history = this.appendHistory(input.currentHistory, {
+      status: input.payloadDetail.stage_status || '',
+      name: input.workflowPreviousStage,
+      message: input.payloadDetail.stage_message || '',
+      userId: input.userId,
+      userName: input.userName,
+      action: input.action,
+    });
+
+    // current_stage_status semantics:
+    // - reject items always get 'reject' (terminal stamp)
+    // - approve stamps 'approve' ONLY at the final stage (workflow complete)
+    // - intermediate stages stay ''
+    let currentStageStatus = '';
+    if (isReject) {
+      currentStageStatus = stage_status.reject;
+    } else if (input.isFinalApproval) {
+      currentStageStatus = stage_status.approve;
+    }
+
+    return {
+      stages_status: stages,
+      history,
+      current_stage_status: currentStageStatus,
+    };
+  }
+
+  static buildRejectDetailUpdate(input: {
+    payloadDetail: { stage_status: string; stage_message?: string | null };
+    currentStages: StageStatus[];
+    currentHistory: Record<string, unknown>[];
+    workflowCurrentStage: string;
+    userId: string;
+    userName?: string;
+    action?: string;
+  }): { stages_status: StageStatus[]; history: Record<string, unknown>[]; current_stage_status: string } {
+    const stages = this.buildRejectStagesStatus(
+      input.currentStages,
+      input.payloadDetail,
+      input.workflowCurrentStage,
+    );
+
+    const history = this.appendHistory(input.currentHistory, {
+      status: stage_status.reject,
+      name: input.workflowCurrentStage,
+      message: input.payloadDetail.stage_message || '',
+      userId: input.userId,
+      userName: input.userName,
+      action: input.action,
+    });
+
+    return {
+      stages_status: stages,
+      history,
+      // Reject always stamps 'reject' — this fixes the bug where the
+      // standalone reject() methods hardcoded '' across all 3 services.
+      current_stage_status: stage_status.reject,
+    };
+  }
+
+  static buildReviewDetailUpdate(input: {
+    payloadDetail: { stage_status: string; stage_message?: string | null };
+    currentStages: StageStatus[];
+    currentHistory: Record<string, unknown>[];
+    workflowPreviousStage: string;
+    desStage: string;
+    userId: string;
+    userName?: string;
+    action?: string;
+  }): { stages_status: StageStatus[]; history: Record<string, unknown>[]; current_stage_status: string } | null {
+    // Skip approved items — they should not be touched during review (send-back).
+    // This fixes the bug where all 3 services updated approved items
+    // unconditionally during review.
+    if (input.payloadDetail.stage_status === stage_status.approve) {
+      return null;
+    }
+
+    const stages = this.buildReviewDetailStagesStatus(
+      input.currentStages,
+      input.payloadDetail,
+      input.workflowPreviousStage,
+      input.desStage,
+    );
+
+    const history = this.appendHistory(input.currentHistory, {
+      status: input.payloadDetail.stage_status,
+      name: input.workflowPreviousStage,
+      message: input.payloadDetail.stage_message || '',
+      userId: input.userId,
+      userName: input.userName,
+      action: input.action,
+    });
+
+    return {
+      stages_status: stages,
+      history,
+      current_stage_status: input.payloadDetail.stage_status === stage_status.reject
+        ? stage_status.reject
+        : '',
+    };
+  }
+
+  // ---------------------------------------------------------------------------
   // Prisma data helpers
   // ---------------------------------------------------------------------------
 

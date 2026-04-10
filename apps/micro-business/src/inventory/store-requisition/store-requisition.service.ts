@@ -1004,23 +1004,22 @@ export class StoreRequisitionService {
         const findSR = payload.details.find((d) => d.id === detail.id);
         if (!findSR) continue;
 
-        const stages = WorkflowPersistenceHelper.buildRejectStagesStatus(
-          Array.isArray(detail.stages_status) ? detail.stages_status as unknown as StageStatus[] : [],
-          findSR,
-          storeRequisition.workflow_current_stage,
-        );
-        const history = WorkflowPersistenceHelper.appendHistory(
-          (detail.history as unknown as Record<string, unknown>[]) || [],
-          { status: stage_status.reject, name: storeRequisition.workflow_current_stage, message: findSR.stage_message || '', userId: this.userId, userName: workflow.last_action_by_name },
-        );
+        const bag = WorkflowPersistenceHelper.buildRejectDetailUpdate({
+          payloadDetail: findSR,
+          currentStages: Array.isArray(detail.stages_status) ? detail.stages_status as unknown as StageStatus[] : [],
+          currentHistory: (detail.history as unknown as Record<string, unknown>[]) || [],
+          workflowCurrentStage: storeRequisition.workflow_current_stage,
+          userId: this.userId,
+          userName: workflow.last_action_by_name,
+        });
 
         await txp.tb_store_requisition_detail.update({
           where: { id: detail.id },
           data: {
-            stages_status: stages as unknown as Prisma.InputJsonValue,
-            history: history as unknown as Prisma.InputJsonValue,
+            stages_status: bag.stages_status as unknown as Prisma.InputJsonValue,
+            history: bag.history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
-            current_stage_status: '',
+            current_stage_status: bag.current_stage_status,
             last_action: enum_last_action.rejected,
             reject_by_id: this.userId,
             reject_by_name: workflow.last_action_by_name,
@@ -1092,28 +1091,26 @@ export class StoreRequisitionService {
         const findSR = payload.details.find((d) => d.id === detail.id);
         if (!findSR) continue;
 
-        const currentStages: StageStatus[] = Array.isArray(detail.stages_status)
-          ? (detail.stages_status as unknown as StageStatus[])
-          : [];
-
-        const stages = WorkflowPersistenceHelper.buildReviewDetailStagesStatus(
-          currentStages, findSR, workflow.workflow_previous_stage, payload.des_stage,
-        );
-
-        const history = WorkflowPersistenceHelper.appendHistory(
-          (detail.history as unknown as Record<string, unknown>[]) || [],
-          { status: findSR.stage_status, name: workflow.workflow_previous_stage, message: findSR.stage_message || '', userId: this.userId, userName: workflow.last_action_by_name },
-        );
+        const bag = WorkflowPersistenceHelper.buildReviewDetailUpdate({
+          payloadDetail: findSR,
+          currentStages: Array.isArray(detail.stages_status) ? (detail.stages_status as unknown as StageStatus[]) : [],
+          currentHistory: (detail.history as unknown as Record<string, unknown>[]) || [],
+          workflowPreviousStage: workflow.workflow_previous_stage,
+          desStage: payload.des_stage,
+          userId: this.userId,
+          userName: workflow.last_action_by_name,
+        });
+        if (!bag) continue;
 
         await txp.tb_store_requisition_detail.update({
           where: {
             id: detail.id,
           },
           data: {
-            stages_status: stages as unknown as Prisma.InputJsonValue,
-            history: history as unknown as Prisma.InputJsonValue,
+            stages_status: bag.stages_status as unknown as Prisma.InputJsonValue,
+            history: bag.history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
-            current_stage_status: findSR.stage_status === stage_status.reject ? stage_status.reject : '',
+            current_stage_status: bag.current_stage_status,
             last_action: enum_last_action.reviewed,
             review_by_id: this.userId,
             review_by_name: workflow.last_action_by_name,

@@ -5,7 +5,7 @@ import { BackendLogger } from '@/common/helpers/backend.logger';
 import { IUpdateStoreRequisition, StoreRequisition } from '../interface/store-requisition.interface';
 import { WorkflowHeader, StageStatus } from '@/common/workflow/workflow.interfaces';
 import { WorkflowOrchestratorService } from '@/common/workflow/workflow-orchestrator.service';
-import { SRWorkflowAdapter } from '../adapters/sr-workflow.adapter';
+import { srToWorkflowDocument } from '../workflow/sr-workflow.mapper';
 import { CreateStoreRequisition, NotificationService, NotificationType, SubmitStoreRequisition } from '@/common';
 import { enum_stage_role } from '@repo/prisma-shared-schema-tenant';
 import { ValidateSRBeforeSubmitSchema } from '../dto/store-requisition.dto';
@@ -20,8 +20,6 @@ export class StoreRequisitionLogic {
   private readonly logger: BackendLogger = new BackendLogger(
     StoreRequisitionLogic.name,
   );
-  private readonly srAdapter = new SRWorkflowAdapter();
-
   constructor(
     private readonly storeRequisitionService: StoreRequisitionService,
     private readonly mapperLogic: MapperLogic,
@@ -167,7 +165,7 @@ export class StoreRequisitionLogic {
     this.validateBeforeSubmit(storeRequisitionData);
 
     const workflow = await this.workflowOrchestrator.buildSubmitWorkflow(
-      storeRequisitionData, this.srAdapter, user_id, bu_code,
+      srToWorkflowDocument(storeRequisitionData), user_id, bu_code,
     );
 
     const result = await this.storeRequisitionService.submit(id, payload, workflow);
@@ -219,7 +217,7 @@ export class StoreRequisitionLogic {
     const storeRequisitionData = storeRequisitionResult.value;
 
     const { workflow, isFinalApproval } = await this.workflowOrchestrator.buildApproveWorkflow(
-      storeRequisitionData, this.srAdapter, user_id, tenant_id,
+      srToWorkflowDocument(storeRequisitionData), user_id, tenant_id,
     );
 
     this.logger.debug({ function: 'approve', id, stage_role, details, user_id, tenant_id }, StoreRequisitionLogic.name);
@@ -310,7 +308,7 @@ export class StoreRequisitionLogic {
     const storeRequisitionData = storeRequisitionResult.value;
 
     const workflow = await this.workflowOrchestrator.buildRejectWorkflow(
-      storeRequisitionData, this.srAdapter, user_id, bu_code,
+      srToWorkflowDocument(storeRequisitionData), user_id, bu_code,
     );
 
     const result = await this.storeRequisitionService.reject(id, workflow, body);
@@ -336,7 +334,7 @@ export class StoreRequisitionLogic {
     const storeRequisitionData = storeRequisitionResult.value;
 
     const workflow = await this.workflowOrchestrator.buildReviewWorkflow(
-      storeRequisitionData, this.srAdapter, body.des_stage, user_id, bu_code,
+      srToWorkflowDocument(storeRequisitionData), body.des_stage, user_id, bu_code,
     );
 
     const result = await this.storeRequisitionService.review(id, workflow, body);
