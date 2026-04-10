@@ -988,4 +988,39 @@ export class PurchaseRequestService {
 
     return Result.ok(response.data);
   }
+
+  /**
+   * Print a purchase request via FastReport viewer (micro-report)
+   * พิมพ์ใบขอซื้อผ่าน FastReport viewer (micro-report)
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns { viewer_url } / URL ของ report viewer
+   */
+  async printToReport(
+    id: string,
+    user_id: string,
+    bu_code: string,
+  ): Promise<Result<{ viewer_url: string }>> {
+    this.logger.debug(
+      { function: 'printToReport', id },
+      PurchaseRequestService.name,
+    );
+
+    const response = await firstValueFrom(
+      this.procurementService.send(
+        { cmd: 'purchase-request.printToReport', service: 'purchase-request' },
+        { id, user_id, bu_code, ...getGatewayRequestContext() },
+      ),
+    );
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
 }

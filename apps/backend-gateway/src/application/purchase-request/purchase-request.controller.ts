@@ -1109,6 +1109,59 @@ export class PurchaseRequestController extends BaseHttpController {
   }
 
   /**
+   * Print a purchase request via FastReport viewer (micro-report)
+   * พิมพ์ใบขอซื้อผ่าน FastReport viewer (micro-report)
+   * @param id - Purchase request ID / รหัสใบขอซื้อ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns { viewer_url } / URL ของ report viewer
+   */
+  @Get(':bu_code/purchase-request/:id/print-viewer')
+  @UseGuards(new AppIdGuard('purchaseRequest.print'))
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Print purchase request via FastReport viewer',
+    description:
+      'Sends PR data + signature config to micro-report which generates FastReport XML and returns a viewer URL. The frontend can open this URL in an iframe or new tab.',
+    operationId: 'printPurchaseRequestViewer',
+    tags: ['Procurement', 'Purchase Request'],
+    parameters: [
+      { name: 'id', in: 'path', required: true, description: 'Purchase request ID' },
+      { name: 'bu_code', in: 'path', required: true, description: 'Business unit code' },
+    ],
+    responses: {
+      200: {
+        description: 'Viewer URL returned',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: { viewer_url: { type: 'string', example: 'https://report.blueledgers.cloud/viewer/abc123' } },
+            },
+          },
+        },
+      },
+      404: { description: 'Purchase request or report template not found' },
+    },
+    'x-description-th': 'ส่งข้อมูล PR + signature ไป micro-report เพื่อสร้าง FastReport XML แล้วคืน viewer URL สำหรับเปิดดู/พิมพ์',
+  } as any)
+  @HttpCode(HttpStatus.OK)
+  async printToReport(
+    @Param('id') id: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'printToReport', id, bu_code },
+      PurchaseRequestController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.purchaseRequestService.printToReport(id, user_id, bu_code);
+    this.respond(res, result);
+  }
+
+  /**
    * Delete a purchase request that is no longer needed
    * ลบใบขอซื้อที่ไม่ต้องการแล้ว
    * @param id - Purchase request ID / รหัสใบขอซื้อ

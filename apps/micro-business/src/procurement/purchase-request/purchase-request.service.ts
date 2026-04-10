@@ -2725,4 +2725,145 @@ export class PurchaseRequestService {
 
     return Result.ok(numberedStages);
   }
+
+  // ─── Print via micro-report (FastReport Viewer) ───
+
+  /**
+   * Build PR data + send to micro-report for FastReport viewer rendering.
+   * สร้างข้อมูล PR แล้วส่งไป micro-report เพื่อ render ผ่าน FastReport viewer
+   * Returns { viewer_url } that the frontend can open in an iframe/tab.
+   */
+  @TryCatch
+  async printToReport(
+    id: string,
+  ): Promise<Result<{ viewer_url: string }>> {
+    this.logger.debug(
+      { function: 'printToReport', id, user_id: this.userId, tenant_id: this.bu_code },
+      PurchaseRequestService.name,
+    );
+
+    // 1. Load PR + details
+    const pr = await this.prismaService.tb_purchase_request.findFirst({
+      where: { id },
+      include: {
+        tb_purchase_request_detail: { orderBy: { sequence_no: 'asc' } },
+      },
+    });
+
+    if (!pr) {
+      return Result.error('Purchase request not found', ErrorCode.NOT_FOUND);
+    }
+
+    // 2. Load signature config from tb_application_config
+    let sigNames = { Sig1Name: '', Sig2Name: '', Sig3Name: '' };
+    try {
+      const sigConfig = await this.prismaService.tb_application_config.findFirst({
+        where: { key: 'pr_signature_config', deleted_at: null },
+      });
+      if (sigConfig?.value) {
+        const cfg = sigConfig.value as {
+          signatures?: Array<{ position: number; name?: string }>;
+        };
+        const sorted = [...(cfg.signatures || [])].sort((a, b) => a.position - b.position);
+        if (sorted[0]?.name) sigNames.Sig1Name = sorted[0].name;
+        if (sorted[1]?.name) sigNames.Sig2Name = sorted[1].name;
+        if (sorted[2]?.name) sigNames.Sig3Name = sorted[2].name;
+      }
+    } catch {
+      this.logger.warn('Failed to load pr_signature_config, using empty signatures');
+    }
+
+    // 3. Load print config (orientation) from tb_application_config
+    let orientation: 'portrait' | 'landscape' = 'portrait';
+    try {
+      const printConfig = await this.prismaService.tb_application_config.findFirst({
+        where: { key: 'pr_print_config', deleted_at: null },
+      });
+      if (printConfig?.value) {
+        const cfg = printConfig.value as { orientation?: string };
+        if (cfg.orientation === 'landscape') orientation = 'landscape';
+      }
+    } catch {
+      this.logger.warn('Failed to load pr_print_config, using portrait');
+    }
+
+    // 4. Load template name/id from platform DB
+    const templateName = orientation === 'landscape'
+      ? 'Purchase Request Document Landscape'
+      : 'Purchase Request Document';
+
+    const template = await this.prismaSystem.tb_report_template.findFirst({
+      where: { name: templateName, deleted_at: null },
+      select: { id: true, name: true },
+    });
+
+    if (!template) {
+      return Result.error(`Report template "${templateName}" not found`, ErrorCode.NOT_FOUND);
+    }
+
+    // 4. Build data matching template DataSource columns
+    const formatDate = (d: Date | string | null | undefined): string => {
+      if (!d) return '';
+      return format(new Date(d), 'dd/MM/yyyy');
+    };
+
+    const headerData = [{
+      PrNo: pr.pr_no || '',
+      RequestorName: pr.requestor_name || '',
+      DepartmentName: pr.department_name || '',
+      Description: pr.description || '',
+      PrDate: formatDate(pr.pr_date),
+      DeliveryDate: '', // PR header has no delivery_date; shown per detail row
+      PrStatus: pr.pr_status || '',
+      WorkflowName: pr.workflow_name || '',
+      ...sigNames,
+    }];
+
+    const detailData = pr.tb_purchase_request_detail.map((d, i) => ({
+      No: String(i + 1),
+      ProductName: d.product_name || '',
+      LocationName: d.location_name || '',
+      RequestedQty: Number(d.requested_qty) || 0,
+      UnitName: d.requested_unit_name || '',
+      DeliveryDate: formatDate(d.delivery_date),
+      NetAmount: Number(d.net_amount) || 0,
+    }));
+
+    // 5. POST to micro-report
+    const reportHost = process.env.REPORT_SERVICE_HOST || '127.0.0.1';
+    const reportPort = process.env.REPORT_SERVICE_HTTP_PORT || '6015';
+    const reportUrl = `http://${reportHost}:${reportPort}/api/${this.bu_code}/report/viewer-with-data`;
+
+    const payload = {
+      template_name: templateName,
+      data: {
+        PRHeader: headerData,
+        PRDetail: detailData,
+      },
+    };
+
+    this.logger.debug(
+      { function: 'printToReport', reportUrl, template_name: payload.template_name, detail_count: detailData.length },
+      PurchaseRequestService.name,
+    );
+
+    const response = await fetch(reportUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(30000),
+    });
+
+    if (!response.ok) {
+      const errBody = await response.text().catch(() => '');
+      return Result.error(`Report service error: ${response.status} ${errBody}`, ErrorCode.INTERNAL);
+    }
+
+    const result = await response.json() as { url?: string };
+    if (!result.url) {
+      return Result.error('Report service did not return viewer URL', ErrorCode.INTERNAL);
+    }
+
+    return Result.ok({ viewer_url: result.url });
+  }
 }

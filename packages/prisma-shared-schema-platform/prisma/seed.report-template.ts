@@ -212,6 +212,259 @@ ${summaryObjs}    </ReportSummaryBand>
   return xml;
 }
 
+// ─── Document layout XML generator ───────────────────────────────────────────
+//
+// For single-document prints (PR/PO/GRN/SR), use this layout instead of the
+// list/tabular generator above. It produces a FastReport XML with TWO data
+// sources:
+//
+//   1. <headerDataSource>  — single row holding header values + signature
+//                            names/positions (e.g. PRHeader)
+//   2. <detailDataSource>  — N rows of line items (e.g. PRDetail)
+//
+// Layout structure:
+//   PageHeader   : logo + document title (e.g. "PURCHASE REQUEST") + BU name
+//   ReportTitle  : header field grid (2 columns key/value, e.g. PR No, Date)
+//   ColumnHeader : line item column headers
+//   Data1        : line item rows (bound to detailDataSource)
+//   ReportSummary: totals + signature footer (N signature columns)
+//   PageFooter   : print date + page number
+
+interface DocHeaderField {
+  key: string;                    // column name in headerDataSource
+  label: string;                  // display label
+  column?: 'left' | 'right';      // which side of the 2-col grid
+  type?: 'string' | 'date' | 'number';
+}
+
+interface DocSignature {
+  key: string;                    // column in headerDataSource holding the name
+  label: string;                  // e.g. "Requested by"
+}
+
+interface DocumentXmlConfig {
+  title: string;
+  headerDataSource: string;
+  headerFields: DocHeaderField[];
+  detailDataSource: string;
+  detailColumns: ColDef[];
+  totals?: string[];
+  signatures?: DocSignature[];
+  landscape?: boolean;
+  footerNote?: string;
+}
+
+function generateDocumentXml(cfg: DocumentXmlConfig): string {
+  const pageWidth = cfg.landscape ? 1047.06 : 718.2;
+  const paperAttrs = cfg.landscape
+    ? 'Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9"'
+    : 'RawPaperSize="9"';
+
+  // ── Detail column widths (same logic as tabular) ──
+  const totalCols = cfg.detailColumns.length;
+  const defaultWidth = Math.floor(pageWidth / totalCols);
+  const cols = cfg.detailColumns.map((c) => ({
+    ...c,
+    w: c.width || (c.type === 'number' ? Math.min(85, defaultWidth) : defaultWidth),
+  }));
+  const usedWidth = cols.slice(1).reduce((s, c) => s + c.w, 0);
+  cols[0].w = Math.max(100, pageWidth - usedWidth);
+
+  const positions: number[] = [];
+  let x = 0;
+  for (const c of cols) {
+    positions.push(parseFloat(x.toFixed(2)));
+    x += c.w;
+  }
+
+  const totalNames = cfg.totals || cols.filter((c) => c.type === 'number').map((c) => c.name);
+
+  // ── Dictionary ──
+  let dict = '';
+  dict += `    <TableDataSource Name="ADMIN_Bu" ReferenceName="ADMIN_Bu.ADMIN_Bu" DataType="System.Int32" Enabled="true">\n`;
+  dict += `      <Column Name="Name" DataType="System.String"/>\n`;
+  dict += `      <Column Name="BuLogo" DataType="System.Byte[]"/>\n`;
+  dict += `    </TableDataSource>\n`;
+
+  // Header datasource (1 row)
+  dict += `    <TableDataSource Name="${cfg.headerDataSource}" ReferenceName="${cfg.headerDataSource}.${cfg.headerDataSource}" DataType="System.Int32" Enabled="true">\n`;
+  for (const f of cfg.headerFields) {
+    dict += `      <Column Name="${f.key}" DataType="System.String"/>\n`;
+  }
+  for (const s of cfg.signatures || []) {
+    dict += `      <Column Name="${s.key}" DataType="System.String"/>\n`;
+  }
+  dict += `    </TableDataSource>\n`;
+
+  // Detail datasource (N rows)
+  dict += `    <TableDataSource Name="${cfg.detailDataSource}" ReferenceName="${cfg.detailDataSource}.${cfg.detailDataSource}" DataType="System.Int32" Enabled="true">\n`;
+  for (const c of cfg.detailColumns) {
+    dict += `      <Column Name="${c.name}" DataType="System.String"/>\n`;
+  }
+  dict += `    </TableDataSource>\n`;
+
+  // Totals
+  dict += `    <Total Name="Date" Expression="0" Evaluator="Data1"/>\n`;
+  for (const t of totalNames) {
+    dict += `    <Total Name="Sum_${t}" Expression="0" Evaluator="Data1"/>\n`;
+  }
+
+  // ── Header field grid ──
+  // Portrait: 2-column layout (left/right groups stacked vertically)
+  // Landscape: inline layout (all fields in a row, wrapping to next row every N fields)
+  const rowHeight = 18.9;
+  let textIdx = 100;
+  let headerObjs = '';
+  let headerBandHeight: number;
+
+  if (cfg.landscape) {
+    // Landscape: lay out all fields inline, N fields per row
+    const allFields = cfg.headerFields;
+    const fieldsPerRow = 4; // 4 label+value pairs per row
+    const labelWidth = 85;
+    const pairWidth = pageWidth / fieldsPerRow;
+    const valueWidth = pairWidth - labelWidth - 5;
+    const totalRows = Math.ceil(allFields.length / fieldsPerRow);
+    headerBandHeight = Math.max(40, totalRows * rowHeight + 15);
+
+    allFields.forEach((f, i) => {
+      const row = Math.floor(i / fieldsPerRow);
+      const col = i % fieldsPerRow;
+      const top = 5 + row * rowHeight;
+      const left = col * pairWidth;
+      let fmt = '';
+      if (f.type === 'number') fmt = ` ${numFmt()}`;
+      if (f.type === 'date') fmt = ` ${dateFmt()}`;
+      headerObjs += `      <TextObject Name="Text${textIdx++}" Left="${left}" Top="${top}" Width="${labelWidth}" Height="${rowHeight}" Text="${escapeXml(f.label)}:" Font="Tahoma, 8pt, style=Bold"/>\n`;
+      headerObjs += `      <TextObject Name="Text${textIdx++}" Left="${left + labelWidth}" Top="${top}" Width="${valueWidth}" Height="${rowHeight}" Text="[${cfg.headerDataSource}.${f.key}]"${fmt} Font="Tahoma, 8pt"/>\n`;
+    });
+  } else {
+    // Portrait: 2-column layout (left/right)
+    const labelWidth = 90;
+    const valueWidth = pageWidth / 2 - labelWidth - 10;
+    const leftFields = cfg.headerFields.filter((f) => f.column !== 'right');
+    const rightFields = cfg.headerFields.filter((f) => f.column === 'right');
+    const headerRows = Math.max(leftFields.length, rightFields.length);
+    headerBandHeight = Math.max(40, headerRows * rowHeight + 20);
+
+    leftFields.forEach((f, i) => {
+      const top = 5 + i * rowHeight;
+      let fmt = '';
+      if (f.type === 'number') fmt = ` ${numFmt()}`;
+      if (f.type === 'date') fmt = ` ${dateFmt()}`;
+      headerObjs += `      <TextObject Name="Text${textIdx++}" Left="0" Top="${top}" Width="${labelWidth}" Height="${rowHeight}" Text="${escapeXml(f.label)}:" Font="Tahoma, 8pt, style=Bold"/>\n`;
+      headerObjs += `      <TextObject Name="Text${textIdx++}" Left="${labelWidth}" Top="${top}" Width="${valueWidth}" Height="${rowHeight}" Text="[${cfg.headerDataSource}.${f.key}]"${fmt} Font="Tahoma, 8pt"/>\n`;
+    });
+    rightFields.forEach((f, i) => {
+      const top = 5 + i * rowHeight;
+      const leftBase = pageWidth / 2 + 10;
+      let fmt = '';
+      if (f.type === 'number') fmt = ` ${numFmt()}`;
+      if (f.type === 'date') fmt = ` ${dateFmt()}`;
+      headerObjs += `      <TextObject Name="Text${textIdx++}" Left="${leftBase}" Top="${top}" Width="${labelWidth}" Height="${rowHeight}" Text="${escapeXml(f.label)}:" Font="Tahoma, 8pt, style=Bold"/>\n`;
+      headerObjs += `      <TextObject Name="Text${textIdx++}" Left="${leftBase + labelWidth}" Top="${top}" Width="${valueWidth}" Height="${rowHeight}" Text="[${cfg.headerDataSource}.${f.key}]"${fmt} Font="Tahoma, 8pt"/>\n`;
+    });
+  }
+
+  // ── Column header band (line item table) ──
+  let colHeaderObjs = '';
+  for (let i = 0; i < cols.length; i++) {
+    const c = cols[i];
+    const align = c.type === 'number' ? ' HorzAlign="Right"' : '';
+    colHeaderObjs += `      <TextObject Name="Text${textIdx++}" Left="${positions[i]}" Width="${c.w}" Height="22.68" Text="${escapeXml(c.label)}"${align} VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>\n`;
+  }
+
+  // ── Data band (line items) ──
+  let dataObjs = '';
+  for (let i = 0; i < cols.length; i++) {
+    const c = cols[i];
+    const align = c.type === 'number' ? ' HorzAlign="Right"' : '';
+    let fmt = '';
+    if (c.type === 'number') fmt = ` ${numFmt()}`;
+    if (c.type === 'date') fmt = ` ${dateFmt()}`;
+    dataObjs += `        <TextObject Name="Text${textIdx++}" Left="${positions[i]}" Top="1.89" Width="${c.w}" Height="18.9" CanGrow="true" Text="[${cfg.detailDataSource}.${c.name}]"${fmt}${align} WordWrap="false" Font="Tahoma, 8pt"/>\n`;
+  }
+
+  // ── Report summary: totals + signatures ──
+  let summaryObjs = '';
+  for (let i = 0; i < cols.length; i++) {
+    const c = cols[i];
+    if (totalNames.includes(c.name)) {
+      summaryObjs += `      <TextObject Name="Text${textIdx++}" Left="${positions[i]}" Top="3.78" Width="${c.w}" Height="18.9" Text="[Sum_${c.name}]" ${numFmt()} HorzAlign="Right" Font="Tahoma, 8pt, style=Bold"/>\n`;
+    }
+  }
+  if (totalNames.length > 0) {
+    summaryObjs += `      <TextObject Name="Text${textIdx++}" Left="${positions[0]}" Top="3.78" Width="${cols[0].w}" Height="18.9" Text="Grand Total" Font="Tahoma, 8pt, style=Bold"/>\n`;
+  }
+
+  // Signature columns (laid out below totals)
+  const sigs = cfg.signatures || [];
+  let sigObjs = '';
+  if (sigs.length > 0) {
+    const sigBlockTop = 35;
+    const sigWidth = pageWidth / sigs.length;
+    const sigInnerWidth = sigWidth - 20;
+    sigs.forEach((s, i) => {
+      const left = i * sigWidth + 10;
+      // Signature line (60px above the name)
+      sigObjs += `      <LineObject Name="Line${textIdx++}" Left="${left + 20}" Top="${sigBlockTop + 60}" Width="${sigInnerWidth - 40}" Height="0" Border.Lines="Top"/>\n`;
+      // Name (under the line)
+      sigObjs += `      <TextObject Name="Text${textIdx++}" Left="${left}" Top="${sigBlockTop + 65}" Width="${sigInnerWidth}" Height="18" Text="([${cfg.headerDataSource}.${s.key}])" HorzAlign="Center" Font="Tahoma, 8pt"/>\n`;
+      // Label (under the name)
+      sigObjs += `      <TextObject Name="Text${textIdx++}" Left="${left}" Top="${sigBlockTop + 84}" Width="${sigInnerWidth}" Height="18" Text="${escapeXml(s.label)}" HorzAlign="Center" Font="Tahoma, 8pt, style=Bold"/>\n`;
+      // Date placeholder
+      sigObjs += `      <TextObject Name="Text${textIdx++}" Left="${left}" Top="${sigBlockTop + 102}" Width="${sigInnerWidth}" Height="18" Text="Date: ____________" HorzAlign="Center" Font="Tahoma, 8pt"/>\n`;
+    });
+  }
+
+  // Footer note
+  let footerNoteObj = '';
+  if (cfg.footerNote) {
+    const noteTop = 35 + (sigs.length > 0 ? 130 : 0);
+    footerNoteObj = `      <TextObject Name="Text${textIdx++}" Left="0" Top="${noteTop}" Width="${pageWidth}" Height="18" Text="${escapeXml(cfg.footerNote)}" HorzAlign="Center" Font="Tahoma, 7pt, style=Italic"/>\n`;
+  }
+
+  // ── Band positions ──
+  const headerBandTop = 100;
+  const colHeaderTop = headerBandTop + headerBandHeight + 5;
+  const dataBandTop = colHeaderTop + 26;
+  const summaryTop = dataBandTop + 30;
+  const summaryHeight = 30 + (sigs.length > 0 ? 130 : 0) + (cfg.footerNote ? 20 : 0);
+  const pageFooterTop = summaryTop + summaryHeight + 10;
+
+  // ── Assemble XML ──
+  return `<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp">
+  <Dictionary>
+${dict}  </Dictionary>
+
+  <ReportPage Name="Page1" ${paperAttrs}>
+    <PageHeaderBand Name="PageHeader1" Width="${pageWidth}" Height="98.28" Border.Lines="Bottom">
+      <PictureObject Name="Picture1" Width="151.2" Height="75.6" DataColumn="ADMIN_Bu.BuLogo"/>
+      <TextObject Name="Text1" Left="170.5" Top="2.83" Width="${pageWidth - 340}" Height="28.35" Text="${escapeXml(cfg.title)}" HorzAlign="Center" Font="Tahoma, 16pt, style=Bold"/>
+      <TextObject Name="Text2" Top="79.38" Width="302.4" Height="18.9" Text="[ADMIN_Bu.Name]" Font="Tahoma, 8pt"/>
+    </PageHeaderBand>
+
+    <ReportTitleBand Name="ReportTitle1" Top="${headerBandTop}" Width="${pageWidth}" Height="${headerBandHeight}" Border.Lines="Bottom">
+${headerObjs}    </ReportTitleBand>
+
+    <ColumnHeaderBand Name="ColumnHeader1" Top="${colHeaderTop}" Width="${pageWidth}" Height="22.68" Border.Lines="Top, Bottom" Fill.Color="WhiteSmoke">
+${colHeaderObjs}    </ColumnHeaderBand>
+
+    <DataBand Name="Data1" Top="${dataBandTop}" Width="${pageWidth}" Height="22.68" CanGrow="true" DataSource="${cfg.detailDataSource}">
+${dataObjs}    </DataBand>
+
+    <ReportSummaryBand Name="ReportSummary1" Top="${summaryTop}" Width="${pageWidth}" Height="${summaryHeight}" Border.Lines="Top" Border.Style="Dash">
+${summaryObjs}${sigObjs}${footerNoteObj}    </ReportSummaryBand>
+
+    <PageFooterBand Name="PageFooter1" Top="${pageFooterTop}" Width="${pageWidth}" Height="37.8">
+      <TextObject Name="Text98" Top="3.78" Width="207.9" Height="22.68" Text="Print On [Date]" ${dateFmt()} AutoWidth="true" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text99" Left="${pageWidth - 200}" Top="3.78" Width="200" Height="22.68" Text="Page [Page#] Of [TotalPages#]" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>`;
+}
+
 // ─── Report Template Definitions ─────────────────────────────────────────────
 
 interface ReportTemplate {
@@ -219,7 +472,8 @@ interface ReportTemplate {
   description: string;
   report_group: string;
   is_standard: boolean;
-  contentConfig: ReportXmlConfig;
+  contentConfig?: ReportXmlConfig;
+  documentConfig?: DocumentXmlConfig;
 }
 
 const reportTemplates: ReportTemplate[] = [
@@ -1367,6 +1621,167 @@ const reportTemplates: ReportTemplate[] = [
       totals: ['SalesQty', 'Cost', 'Profit'],
     },
   },
+
+  // ===================== Document Layout (Single-doc Print) =====================
+  {
+    name: 'Purchase Request Document',
+    description:
+      'Document layout สำหรับพิมพ์ใบ PR แต่ละใบ ประกอบด้วย header (PR No, Requestor, Department, Date), รายการสินค้า, และช่องลายเซ็นด้านล่าง',
+    report_group: 'PR_DOC',
+    is_standard: true,
+    documentConfig: {
+      title: 'PURCHASE REQUEST',
+      headerDataSource: 'PRHeader',
+      headerFields: [
+        { key: 'PrNo',           label: 'PR Number',  column: 'left' },
+        { key: 'RequestorName',  label: 'Requestor',  column: 'left' },
+        { key: 'DepartmentName', label: 'Department', column: 'left' },
+        { key: 'Description',    label: 'Description',column: 'left' },
+        { key: 'PrDate',         label: 'PR Date',    column: 'right', type: 'date' },
+        { key: 'DeliveryDate',   label: 'Required',   column: 'right', type: 'date' },
+        { key: 'PrStatus',       label: 'Status',     column: 'right' },
+        { key: 'WorkflowName',   label: 'Workflow',   column: 'right' },
+      ],
+      detailDataSource: 'PRDetail',
+      detailColumns: [
+        { name: 'No',           label: 'No.',        type: 'string', width: 30 },
+        { name: 'ProductName',  label: 'Product',    type: 'string', width: 200 },
+        { name: 'LocationName', label: 'Location',   type: 'string', width: 100 },
+        { name: 'RequestedQty', label: 'Req. Qty',   type: 'number', width: 70 },
+        { name: 'UnitName',     label: 'Unit',       type: 'string', width: 60 },
+        { name: 'DeliveryDate', label: 'Delivery',   type: 'date',   width: 75 },
+        { name: 'NetAmount',    label: 'Net Amount', type: 'number', width: 90 },
+      ],
+      totals: ['NetAmount'],
+      signatures: [
+        { key: 'Sig1Name', label: 'Requested by' },
+        { key: 'Sig2Name', label: 'Verified by' },
+        { key: 'Sig3Name', label: 'Approved by' },
+      ],
+      footerNote: 'This document is computer-generated.',
+    },
+  },
+  {
+    name: 'Purchase Request Document Landscape',
+    description:
+      'Document layout แนวนอนสำหรับพิมพ์ใบ PR — header data แสดงแบบ inline, ตารางกว้างขึ้น',
+    report_group: 'PR_DOC',
+    is_standard: true,
+    documentConfig: {
+      title: 'PURCHASE REQUEST',
+      landscape: true,
+      headerDataSource: 'PRHeader',
+      headerFields: [
+        { key: 'PrNo',           label: 'PR Number' },
+        { key: 'PrDate',         label: 'PR Date',    type: 'date' },
+        { key: 'PrStatus',       label: 'Status' },
+        { key: 'WorkflowName',   label: 'Workflow' },
+        { key: 'RequestorName',  label: 'Requestor' },
+        { key: 'DepartmentName', label: 'Department' },
+        { key: 'DeliveryDate',   label: 'Required',   type: 'date' },
+        { key: 'Description',    label: 'Description' },
+      ],
+      detailDataSource: 'PRDetail',
+      detailColumns: [
+        { name: 'No',           label: 'No.',        type: 'string', width: 30 },
+        { name: 'ProductName',  label: 'Product',    type: 'string', width: 250 },
+        { name: 'LocationName', label: 'Location',   type: 'string', width: 120 },
+        { name: 'RequestedQty', label: 'Req. Qty',   type: 'number', width: 75 },
+        { name: 'UnitName',     label: 'Unit',       type: 'string', width: 65 },
+        { name: 'UnitPrice',    label: 'Unit Price', type: 'number', width: 85 },
+        { name: 'Discount',     label: 'Discount',   type: 'number', width: 75 },
+        { name: 'TaxAmount',    label: 'Tax',        type: 'number', width: 75 },
+        { name: 'DeliveryDate', label: 'Delivery',   type: 'date',   width: 75 },
+        { name: 'NetAmount',    label: 'Net Amount', type: 'number', width: 95 },
+      ],
+      totals: ['NetAmount'],
+      signatures: [
+        { key: 'Sig1Name', label: 'Requested by' },
+        { key: 'Sig2Name', label: 'Verified by' },
+        { key: 'Sig3Name', label: 'Approved by' },
+      ],
+      footerNote: 'This document is computer-generated.',
+    },
+  },
+  {
+    name: 'Purchase Order Document',
+    description:
+      'Document layout สำหรับพิมพ์ใบ PO แต่ละใบ (แนวตั้ง) ประกอบด้วย header, รายการสินค้า, และช่องลายเซ็น',
+    report_group: 'PO_DOC',
+    is_standard: true,
+    documentConfig: {
+      title: 'PURCHASE ORDER',
+      headerDataSource: 'POHeader',
+      headerFields: [
+        { key: 'PoNo',          label: 'PO Number',  column: 'left' },
+        { key: 'VendorName',    label: 'Vendor',     column: 'left' },
+        { key: 'DepartmentName',label: 'Department', column: 'left' },
+        { key: 'Description',   label: 'Description',column: 'left' },
+        { key: 'PoDate',        label: 'PO Date',    column: 'right', type: 'date' },
+        { key: 'DeliveryDate',  label: 'Delivery',   column: 'right', type: 'date' },
+        { key: 'PoStatus',      label: 'Status',     column: 'right' },
+        { key: 'CreditTerm',    label: 'Credit Term', column: 'right' },
+      ],
+      detailDataSource: 'PODetail',
+      detailColumns: [
+        { name: 'No',           label: 'No.',        type: 'string', width: 30 },
+        { name: 'ProductName',  label: 'Product',    type: 'string', width: 200 },
+        { name: 'OrderQty',     label: 'Order Qty',  type: 'number', width: 70 },
+        { name: 'UnitName',     label: 'Unit',       type: 'string', width: 60 },
+        { name: 'UnitPrice',    label: 'Unit Price', type: 'number', width: 80 },
+        { name: 'NetAmount',    label: 'Net Amount', type: 'number', width: 90 },
+      ],
+      totals: ['NetAmount'],
+      signatures: [
+        { key: 'Sig1Name', label: 'Prepared by' },
+        { key: 'Sig2Name', label: 'Verified by' },
+        { key: 'Sig3Name', label: 'Approved by' },
+      ],
+      footerNote: 'This document is computer-generated.',
+    },
+  },
+  {
+    name: 'Purchase Order Document Landscape',
+    description:
+      'Document layout แนวนอนสำหรับพิมพ์ใบ PO — header data แสดงแบบ inline, ตารางกว้างขึ้น',
+    report_group: 'PO_DOC',
+    is_standard: true,
+    documentConfig: {
+      title: 'PURCHASE ORDER',
+      landscape: true,
+      headerDataSource: 'POHeader',
+      headerFields: [
+        { key: 'PoNo',          label: 'PO Number' },
+        { key: 'PoDate',        label: 'PO Date',    type: 'date' },
+        { key: 'PoStatus',      label: 'Status' },
+        { key: 'CreditTerm',    label: 'Credit Term' },
+        { key: 'VendorName',    label: 'Vendor' },
+        { key: 'DepartmentName',label: 'Department' },
+        { key: 'DeliveryDate',  label: 'Delivery',   type: 'date' },
+        { key: 'Description',   label: 'Description' },
+      ],
+      detailDataSource: 'PODetail',
+      detailColumns: [
+        { name: 'No',           label: 'No.',         type: 'string', width: 30 },
+        { name: 'ProductName',  label: 'Product',     type: 'string', width: 250 },
+        { name: 'LocationName', label: 'Location',    type: 'string', width: 120 },
+        { name: 'OrderQty',     label: 'Order Qty',   type: 'number', width: 75 },
+        { name: 'UnitName',     label: 'Unit',        type: 'string', width: 65 },
+        { name: 'UnitPrice',    label: 'Unit Price',  type: 'number', width: 85 },
+        { name: 'Discount',     label: 'Discount',    type: 'number', width: 75 },
+        { name: 'TaxAmount',    label: 'Tax',         type: 'number', width: 75 },
+        { name: 'DeliveryDate', label: 'Delivery',    type: 'date',   width: 75 },
+        { name: 'NetAmount',    label: 'Net Amount',  type: 'number', width: 95 },
+      ],
+      totals: ['NetAmount'],
+      signatures: [
+        { key: 'Sig1Name', label: 'Prepared by' },
+        { key: 'Sig2Name', label: 'Verified by' },
+        { key: 'Sig3Name', label: 'Approved by' },
+      ],
+      footerNote: 'This document is computer-generated.',
+    },
+  },
 ];
 
 // ─── Main ────────────────────────────────────────────────────────────────────
@@ -1383,7 +1798,9 @@ async function main() {
   for (let i = 0; i < reportTemplates.length; i++) {
     const t = reportTemplates[i];
     const progress = `[${i + 1}/${reportTemplates.length}]`;
-    const contentXml = generateContentXml(t.contentConfig);
+    const contentXml = t.documentConfig
+      ? generateDocumentXml(t.documentConfig)
+      : generateContentXml(t.contentConfig!);
 
     await prisma.tb_report_template.create({
       data: {

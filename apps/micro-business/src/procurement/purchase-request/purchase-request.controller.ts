@@ -644,6 +644,30 @@ export class PurchaseRequestController extends BaseMicroserviceController {
   }
 
   /**
+   * Print a purchase request via FastReport viewer (micro-report)
+   * พิมพ์ใบขอซื้อผ่าน FastReport viewer (micro-report)
+   * @param payload - Payload containing the purchase request ID / payload ที่มี ID ของใบขอซื้อ
+   * @returns { viewer_url } for the rendered report / URL ของรายงานที่ render แล้ว
+   */
+  @MessagePattern({
+    cmd: 'purchase-request.printToReport',
+    service: 'purchase-request',
+  })
+  async printToReport(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'printToReport', payload },
+      PurchaseRequestController.name,
+    );
+    const { user_id, bu_code, id } = payload;
+    await this.purchaseRequestService.initializePrismaService(bu_code, user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.purchaseRequestService.printToReport(id),
+    );
+    return this.handleResult(result);
+  }
+
+  /**
    * Find dimensions associated with a purchase request detail
    * ค้นหามิติที่เกี่ยวข้องกับรายละเอียดใบขอซื้อ
    * @param payload - Payload containing the detail ID / payload ที่มี ID ของรายละเอียด

@@ -80,6 +80,7 @@ import { PurchaseRequestTemplateModule } from './procurement/purchase-request-te
 // Shared modules
 import { TenantModule } from './tenant/tenant.module';
 import { CommonModule } from './common/common.module';
+import { AppConfigModule } from './app-config/app-config.module';
 
 @Module({
   imports: [
@@ -102,6 +103,7 @@ import { CommonModule } from './common/common.module';
     // Shared modules
     TenantModule,
     CommonModule,
+    AppConfigModule,
 
     // Authen modules (from micro-authen)
     AuthModule,

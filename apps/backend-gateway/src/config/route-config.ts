@@ -33,6 +33,7 @@ import { Config_RecipeEquipmentCategoryModule } from './config_recipe-equipment-
 import { Config_LocationProductModule } from './config_location-product/config_location-product.module';
 import { Config_ProductLocationModule } from './config_product-location/config_product-location.module';
 import { Config_CreditNoteReasonModule } from './config_credit-note-reason/config_credit-note-reason.module';
+import { Config_AppConfigModule } from './config_app_config/config_app_config.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { Config_CreditNoteReasonModule } from './config_credit-note-reason/confi
     Config_LocationProductModule,
     Config_ProductLocationModule,
     Config_CreditNoteReasonModule,
+    Config_AppConfigModule,
   ],
   controllers: [],
   providers: [],
