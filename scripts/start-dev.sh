@@ -19,8 +19,9 @@
 
 set -e
 
-# Project root
-ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+# Project root (resolve symlinks so running via /usr/local/bin/start-dev works)
+SCRIPT_PATH="$(readlink -f "$0" 2>/dev/null || echo "$0")"
+ROOT_DIR="$(cd "$(dirname "$SCRIPT_PATH")/.." && pwd)"
 PID_DIR="$ROOT_DIR/.carmen/pids"
 LOG_DIR="$ROOT_DIR/.carmen/logs"
 
