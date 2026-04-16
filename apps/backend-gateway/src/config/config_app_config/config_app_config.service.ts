@@ -42,10 +42,17 @@ export class Config_AppConfigService {
     const response = await firstValueFrom(obs);
 
     if (response.status !== okStatus) {
-      return Result.error(
-        response.error || response.details || 'Request failed',
-        httpStatusToErrorCode(response.status),
+      // Surface both the generic label and the underlying cause so the
+      // frontend / caller can see *why* it failed (Zod message, Prisma error,
+      // tenant lookup failure, etc.) instead of just "Request failed".
+      const message = response.details
+        ? `${response.error || 'Request failed'}: ${response.details}`
+        : response.error || 'Request failed';
+      this.logger.warn(
+        { function: 'call', cmd, status: response.status, error: response.error, details: response.details },
+        Config_AppConfigService.name,
       );
+      return Result.error(message, httpStatusToErrorCode(response.status));
     }
     return Result.ok(response.data);
   }

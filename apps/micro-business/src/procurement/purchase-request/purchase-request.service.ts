@@ -2754,23 +2754,26 @@ export class PurchaseRequestService {
       return Result.error('Purchase request not found', ErrorCode.NOT_FOUND);
     }
 
-    // 2. Load signature config from tb_application_config
-    let sigNames = { Sig1Name: '', Sig2Name: '', Sig3Name: '' };
+    // 2. Load signature names from workflow stages (skip first "Request Creation" stage)
+    const sigNames: Record<string, string> = {
+      Sig1Name: '', Sig2Name: '', Sig3Name: '', Sig4Name: '', Sig5Name: '',
+    };
     try {
-      const sigConfig = await this.prismaService.tb_application_config.findFirst({
-        where: { key: 'pr_signature_config', deleted_at: null },
-      });
-      if (sigConfig?.value) {
-        const cfg = sigConfig.value as {
-          signatures?: Array<{ position: number; name?: string }>;
-        };
-        const sorted = [...(cfg.signatures || [])].sort((a, b) => a.position - b.position);
-        if (sorted[0]?.name) sigNames.Sig1Name = sorted[0].name;
-        if (sorted[1]?.name) sigNames.Sig2Name = sorted[1].name;
-        if (sorted[2]?.name) sigNames.Sig3Name = sorted[2].name;
+      if (pr.workflow_id) {
+        const workflow = await this.prismaService.tb_workflow.findFirst({
+          where: { id: pr.workflow_id, deleted_at: null },
+          select: { data: true },
+        });
+        if (workflow?.data) {
+          const wfData = workflow.data as { stages?: Array<{ name: string }> };
+          const sigStages = (wfData.stages || []).filter((_, i) => i > 0);
+          for (let i = 0; i < Math.min(sigStages.length, 5); i++) {
+            sigNames[`Sig${i + 1}Name`] = sigStages[i].name;
+          }
+        }
       }
     } catch {
-      this.logger.warn('Failed to load pr_signature_config, using empty signatures');
+      this.logger.warn('Failed to load workflow stages for PR signatures');
     }
 
     // 3. Load print config (orientation) from tb_application_config

@@ -34,6 +34,7 @@ import { Config_LocationProductModule } from './config_location-product/config_l
 import { Config_ProductLocationModule } from './config_product-location/config_product-location.module';
 import { Config_CreditNoteReasonModule } from './config_credit-note-reason/config_credit-note-reason.module';
 import { Config_AppConfigModule } from './config_app_config/config_app_config.module';
+import { Config_SqlQueryModule } from './config_sql_query/config_sql_query.module';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { Config_AppConfigModule } from './config_app_config/config_app_config.mo
     Config_ProductLocationModule,
     Config_CreditNoteReasonModule,
     Config_AppConfigModule,
+    Config_SqlQueryModule,
   ],
   controllers: [],
   providers: [],

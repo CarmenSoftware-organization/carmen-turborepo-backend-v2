@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Logger } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { AppConfigService } from './app-config.service';
 
@@ -8,6 +8,8 @@ function errMsg(e: unknown): string {
 
 @Controller()
 export class AppConfigController {
+  private readonly logger = new Logger(AppConfigController.name);
+
   constructor(private readonly appConfigService: AppConfigService) {}
 
   @MessagePattern({ cmd: 'appConfig.list', service: 'business' })
@@ -47,6 +49,10 @@ export class AppConfigController {
       );
       return { status: 200, data: item };
     } catch (error) {
+      this.logger.error(
+        `appConfig.upsert failed for bu=${data.bu_code} key=${data.key} user=${data.user_id}: ${errMsg(error)}`,
+        error instanceof Error ? error.stack : undefined,
+      );
       return { status: 400, error: 'Failed to upsert app config', details: errMsg(error) };
     }
   }

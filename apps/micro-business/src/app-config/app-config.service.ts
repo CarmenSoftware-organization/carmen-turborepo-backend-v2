@@ -60,11 +60,28 @@ const ApprovalFlowSchema = z
   );
 
 /**
- * Print config per document type (PR/PO).
- * Stored in tb_application_config with key pr_print_config / po_print_config.
+ * Print config per document type (PR / PO / GRN / SR / CN / Adjustment).
+ * Stored in tb_application_config with key <doc>_print_config.
  */
 const PrintConfigSchema = z.object({
   orientation: z.enum(['portrait', 'landscape']).default('portrait'),
+});
+
+/**
+ * Signature config per document type.
+ * Stored in tb_application_config with key <doc>_signature_config.
+ * `signatures` is an ordered list (max 5) shown on the printed report footer.
+ */
+const SignatureConfigSchema = z.object({
+  signatures: z
+    .array(
+      z.object({
+        position: z.number().int().min(1),
+        name: z.string(),
+        label: z.string().min(1),
+      }),
+    )
+    .max(5),
 });
 
 @Injectable()
@@ -96,6 +113,22 @@ export class AppConfigService {
     return value;
   }
 
+  /** Default values for known config keys. Returned when no DB row exists yet. */
+  private readonly defaultByKey: Record<string, unknown> = {
+    pr_print_config: { orientation: 'portrait' },
+    po_print_config: { orientation: 'portrait' },
+    grn_print_config: { orientation: 'portrait' },
+    sr_print_config: { orientation: 'portrait' },
+    cn_print_config: { orientation: 'portrait' },
+    adjustment_print_config: { orientation: 'portrait' },
+    pr_signature_config: { signatures: [] },
+    po_signature_config: { signatures: [] },
+    grn_signature_config: { signatures: [] },
+    sr_signature_config: { signatures: [] },
+    cn_signature_config: { signatures: [] },
+    adjustment_signature_config: { signatures: [] },
+  };
+
   /** Validate value with per-key Zod schema. Unknown keys are accepted as-is. */
   private validateValue(key: string, value: unknown): unknown {
     const schemaByKey: Record<string, z.ZodTypeAny> = {
@@ -104,6 +137,16 @@ export class AppConfigService {
       po_approval_flow: ApprovalFlowSchema,
       pr_print_config: PrintConfigSchema,
       po_print_config: PrintConfigSchema,
+      grn_print_config: PrintConfigSchema,
+      sr_print_config: PrintConfigSchema,
+      cn_print_config: PrintConfigSchema,
+      adjustment_print_config: PrintConfigSchema,
+      pr_signature_config: SignatureConfigSchema,
+      po_signature_config: SignatureConfigSchema,
+      grn_signature_config: SignatureConfigSchema,
+      sr_signature_config: SignatureConfigSchema,
+      cn_signature_config: SignatureConfigSchema,
+      adjustment_signature_config: SignatureConfigSchema,
     };
 
     const schema = schemaByKey[key];
@@ -155,7 +198,13 @@ export class AppConfigService {
         updated_by_id: true,
       },
     });
-    if (!row) return null;
+    if (!row) {
+      const defaultValue = this.defaultByKey[key];
+      if (defaultValue !== undefined) {
+        return { id: null, key, value: defaultValue, created_at: null, created_by_id: null, updated_at: null, updated_by_id: null };
+      }
+      return null;
+    }
     return { ...row, value: this.maskSensitiveFields(row.key, row.value) };
   }
 
@@ -173,12 +222,16 @@ export class AppConfigService {
       select: { id: true },
     });
 
+    // Prisma with PostgreSQL @db.Timestamptz requires ISO string, not Date object
+    // (see CLAUDE.md § Code Conventions → Timestamps).
+    const nowIso = new Date().toISOString();
+
     const row = existing
       ? await prisma.tb_application_config.update({
           where: { id: existing.id },
           data: {
             value: toStore,
-            updated_at: new Date(),
+            updated_at: nowIso,
             updated_by_id: user_id,
           },
           select: {
@@ -195,7 +248,7 @@ export class AppConfigService {
           data: {
             key,
             value: toStore,
-            created_at: new Date(),
+            created_at: nowIso,
             created_by_id: user_id,
           },
           select: {
@@ -219,7 +272,7 @@ export class AppConfigService {
     const prisma = await this.tenantService.prismaTenantInstance(bu_code, user_id);
     const result = await prisma.tb_application_config.updateMany({
       where: { key, deleted_at: null },
-      data: { deleted_at: new Date(), deleted_by_id: user_id },
+      data: { deleted_at: new Date().toISOString(), deleted_by_id: user_id },
     });
 
     return { deleted: result.count > 0, count: result.count };

@@ -81,6 +81,7 @@ import { PurchaseRequestTemplateModule } from './procurement/purchase-request-te
 import { TenantModule } from './tenant/tenant.module';
 import { CommonModule } from './common/common.module';
 import { AppConfigModule } from './app-config/app-config.module';
+import { SqlQueryModule } from './sql-query/sql-query.module';
 
 @Module({
   imports: [
@@ -104,6 +105,7 @@ import { AppConfigModule } from './app-config/app-config.module';
     TenantModule,
     CommonModule,
     AppConfigModule,
+    SqlQueryModule,
 
     // Authen modules (from micro-authen)
     AuthModule,
