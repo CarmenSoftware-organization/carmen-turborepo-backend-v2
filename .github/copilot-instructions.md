@@ -34,7 +34,7 @@ turbo run db:generate     # Generate Prisma clients
 turbo run build:package   # Build shared packages first
 ```
 
-## TypeScript Conventions (from cursorrule.cursor)
+## TypeScript Conventions (from CLAUDE.md)
 
 ### Naming & Structure
 - **PascalCase**: Classes (`UserService`, `AuthModule`)

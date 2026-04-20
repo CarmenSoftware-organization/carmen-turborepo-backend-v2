@@ -1,4 +1,4 @@
-# คัดลอกเนื้อหานี้ไปสร้างไฟล์ .env ในโฟลเดอร์ docs/tools/
+# คัดลอกเนื้อหานี้ไปสร้างไฟล์ .env ในโฟลเดอร์ scripts/backup/
 
 # PostgreSQL Database Configuration
 DB_HOST=dev.blueledgers.com

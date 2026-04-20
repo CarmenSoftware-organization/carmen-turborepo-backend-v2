@@ -1,6 +1,672 @@
-# Carmen Kubernetes Dynamic Clustering Architecture
+# System Architecture
 
-## Concept: Dynamic Clustering
+## High-level system
+
+```
+                                USERS (Browser / Mobile)
+                                         |
+                        +----------------+--------------------+
+                        |                                     |
+                        v                                     v
+            carmen-inventory-frontend                carmen-platform
+              (Next.js / React)                    (Next.js / React)
+                        |                                     |
+                        +----------------+--------------------+
+                                         |
+                                    HTTPS/REST
+                                         |
+         ================================================================
+         |              DEPLOYMENT ZONE 1: AWS EC2 (Production)         |
+         |                                                              |
+         |    +------------------------------------------------------+  |
+         |    |           backend-gateway (:4000/:4001)               |  |
+         |    |        [Auth, Routing, Swagger, WebSocket]            |  |
+         |    |      JWT / Keycloak Auth Guards                       |  |
+         |    +--+-------+-------+-------+-------+-------+-----------+  |
+         |       |       |       |       |       |       |              |
+         |      TCP     TCP     TCP     TCP     TCP     TCP             |
+         |       |       |       |       |       |       |              |
+         |  +----+--+ +--+---+ +--+--+ +-+---+ +--+--+ +--+--------+  |
+         |  | micro  | |micro | |micro| |micro| |micro| |  micro    |  |
+         |  |business| |key-  | |file | |noti-| |cron-| |  cluster  |  |
+         |  | :5020  | |cloak | |:5007| |fica-| | job | |  :5014    |  |
+         |  | :6020  | |api   | |:6007| |tion | |:5012| |  :6014    |  |
+         |  |        | |:5013 | |     | |:5006| |:6012| |           |  |
+         |  |        | |:6013 | |     | |:6006| |     | |           |  |
+         |  +--------+ +--+---+ +-----+ +-----+ +-----+ +----------+  |
+         |       |         |                                            |
+         |       |         |        Docker Compose + ECR Images         |
+         ===|====|=========|============================================
+            |    |         |
+            |    |         v
+            |    |    +---------+
+            |    |    |Keycloak |  (Identity Provider)
+            |    |    |  Server |
+            |    |    +---------+
+            |    |
+            v    v
+         +---------------------------+
+         |       AWS RDS             |
+         |     (PostgreSQL)          |
+         |                           |
+         |  +---------------------+  |
+         |  | Platform Schema     |  |
+         |  | - users             |  |
+         |  | - clusters          |  |
+         |  | - business_units    |  |
+         |  | - roles/permissions |  |
+         |  | - subscriptions     |  |
+         |  +---------------------+  |
+         |                           |
+         |  +---------------------+  |
+         |  | Tenant Schema       |  |
+         |  | - products          |  |
+         |  | - inventory         |  |
+         |  | - procurement       |  |
+         |  | - recipes           |  |
+         |  | - vendors           |  |
+         |  | - locations         |  |
+         |  +---------------------+  |
+         +---------------------------+
+
+
+         ================================================================
+         |        DEPLOYMENT ZONE 2: VM dev.blueledgers.com (Dev/UAT)   |
+         |                                                              |
+         |    +------------------------------------------------------+  |
+         |    |           backend-gateway (:4000/:4001)               |  |
+         |    +--+-------+-------+-------+-------+-------+-----------+  |
+         |       |       |       |       |       |       |              |
+         |      TCP     TCP     TCP     TCP     TCP     TCP             |
+         |       |       |       |       |       |       |              |
+         |  +----+--+ +--+---+ +--+--+ +-+---+ +--+--+ +--+--------+  |
+         |  | micro  | |micro | |micro| |micro| |micro| |  micro    |  |
+         |  |business| |key-  | |file | |noti-| |cron-| |  cluster  |  |
+         |  | :5020  | |cloak | |:5007| |fica-| | job | |  :5014    |  |
+         |  | :6020  | |api   | |:6007| |tion | |:5012| |  :6014    |  |
+         |  |        | |:5013 | |     | |:5006| |:6012| |           |  |
+         |  |        | |:6013 | |     | |:6006| |     | |           |  |
+         |  +--------+ +------+ +-----+ +-----+ +-----+ +----------+  |
+         |                                                              |
+         |            Docker Compose (Local Build)                      |
+         ================================================================
+```
+
+### Service Communication Flow
+
+```
+                     HTTP Request
+                          |
+                          v
+                +-------------------+
+                | backend-gateway   |
+                | - JWT Validation  |
+                | - Keycloak Auth   |
+                | - Permission Guard|
+                | - Route to Service|
+                +--------+----------+
+                         |
+          +--------------+--------------+
+          |    NestJS TCP Transport     |
+          |    (@MessagePattern)        |
+          +-+----+----+----+----+----+-+
+            |    |    |    |    |    |
+            v    v    v    v    v    v
+    +-------+ +--+ +--+ +--+ +--+ +-------+
+    |business| |kc| |fi| |no| |cr| |cluster|
+    |        | |  | |le| |ti| |on| |       |
+    +---+----+ +--+ +--+ +--+ +--+ +--+---+
+        |                              |
+        v                              v
+ +------+------+               +-------+------+
+ |   Prisma    |               |    Prisma    |
+ |   Tenant    |               |   Platform   |
+ |   Client    |               |    Client    |
+ +------+------+               +-------+------+
+        |                              |
+        +-------------+----------------+
+                      |
+                      v
+              +-------+--------+
+              |    AWS RDS     |
+              |  (PostgreSQL)  |
+              +----------------+
+```
+
+### Deployment Pipeline
+
+```
+  Developer
+      |
+      v
+  Git Push
+      |
+      v
+  +---+---+
+  | Build |  bun install -> db:generate -> build:package -> build
+  +---+---+
+      |
+      +-------------------+
+      |                   |
+      v                   v
+  Production          Dev/UAT
+  (AWS EC2)           (dev.blueledgers.com)
+      |                   |
+      v                   v
+  Docker Build        Docker Build
+  Push to ECR         Local Images
+      |                   |
+      v                   v
+  docker-compose      docker-compose
+  .yml (pull ECR)     .dev.yml (build)
+      |                   |
+      v                   v
+  Services UP         Services UP
+```
+
+### Port Mapping
+
+| Service              | TCP (Internal) | HTTP (Direct) | Description                    |
+|----------------------|----------------|---------------|--------------------------------|
+| backend-gateway      | -              | 4000 / 4001   | HTTP / HTTPS entry point       |
+| micro-business       | 5020           | 6020          | Core business logic            |
+| micro-keycloak-api   | 5013           | 6013          | Keycloak integration           |
+| micro-file           | 5007           | 6007          | File storage                   |
+| micro-notification   | 5006           | 6006          | Real-time notifications        |
+| micro-cronjob        | 5012           | 6012          | Scheduled tasks                |
+| micro-cluster        | 5014           | 6014          | Cluster management             |
+
+### Tech Stack
+
+| Layer        | Technology                                      |
+|--------------|--------------------------------------------------|
+| Runtime      | Node.js 22 + Bun                                |
+| Framework    | NestJS (micro-cronjob uses Elysia/Bun)          |
+| Monorepo     | Turborepo                                        |
+| Database     | PostgreSQL (AWS RDS) + Prisma ORM                |
+| Auth         | JWT + Keycloak (OIDC)                            |
+| Container    | Docker (multi-stage build)                       |
+| Registry     | AWS ECR                                          |
+| Orchestrator | Docker Compose (current) -> Kubernetes (planned) |
+| Frontends    | carmen-inventory-frontend, carmen-platform        |
+
+## Infrastructure
+
+Server AWS
+
+### Server
+
+#### CloudFront
+
+    aws service : CloudFront
+    comment : Domain management, Cloud, Proxy, DDOS
+
+#### Front-end
+
+    aws service : S3
+    project type : NextJS
+    next-build : SSG
+
+#### Gateway
+
+    aws service : EC2 (ECS)
+    Project type : NestJS
+    Concern : API Gateway Overload
+    nest-build : microservice
+
+#### Elastic Load Balancing
+
+    aws service : ELB
+    comment : Load balancing, SSL termination, Proxy
+
+#### Microservices (Current Topology)
+
+    - micro-business (Consolidated)
+
+        project type : NestJS
+        protocol : TCP
+        Port number : 5020 (TCP) / 6020 (HTTP)
+        Modules : auth, cluster, inventory, master, procurement, recipe, log, notification
+
+    - micro-keycloak-api
+
+        project type : NestJS
+        protocol : TCP
+        Port number : 5013 (TCP) / 6013 (HTTP)
+        Integration : Keycloak identity provider
+
+    - micro-file
+
+        project type : NestJS
+        protocol : TCP
+        Port number : 5007 (TCP) / 6007 (HTTP)
+        Storage : MinIO (S3-compatible)
+
+    - micro-notification
+
+        project type : NestJS
+        protocol : TCP
+        Port number : 5006 (TCP) / 6006 (HTTP)
+        Real-time : Socket.io
+
+    - micro-cronjob
+
+        project type : Elysia + Bun
+        protocol : TCP
+        Port number : 5012 (TCP) / 6012 (HTTP)
+        Scheduled tasks
+
+#### Database
+
+    aws service : RDS OR Aurora
+    project type : PostgreSQL
+    Database : PostgreSQL
+    schema : Dual-schema (Platform + Tenant)
+
+```mermaid
+
+flowchart TD
+
+    FrontEnd["carmen-inventory-frontend\n(Next.JS)\nDocker Port: 3500"]
+    FrontEndAPI["Frontend API Routes"]
+    BackEnd["backend-gateway\nAPI Gateway\nHTTP: 4000 / HTTPS: 4001"]
+    VendorPortal["Vendor Portal\n(Next.JS)"]
+    ExchangeRate["Exchange Rate\nService\n(Bank Rate)"]
+    Redis[(Redis)]
+    PostgreSQL[(PostgreSQL\nAWS RDS)]
+    S3Storage[(MinIO / S3\nStorage)]
+    FileService["micro-file\nTCP: 5007\nHTTP: 6007"]
+    BusinessService["micro-business\nTCP: 5020 / HTTP: 6020\n• Auth & Roles\n• Clusters & BUs\n• Inventory (GRN, Stock, Transfer)\n• Master Data (Products, Vendors)\n• Procurement (PO, PR, Credit Notes)\n• Recipes\n• Activity Logging\n• Notifications"]
+    KeycloakService["micro-keycloak-api\nTCP: 5013 / HTTP: 6013"]
+    KeycloakServer["Keycloak Server\n:8080"]
+    NotificationService["micro-notification\nTCP: 5006 / HTTP: 6006\nSocket.io"]
+    CronjobService["micro-cronjob\nTCP: 5012 / HTTP: 6012\nElysia + Bun"]
+
+    FrontEnd <--> FrontEndAPI
+    FrontEndAPI <--> BackEnd
+    VendorPortal <--> BackEnd
+    BackEnd <--> ExchangeRate
+    BackEnd <--> Redis
+    BackEnd <--> BusinessService
+    BackEnd <--> KeycloakService
+    BackEnd <--> FileService
+    BackEnd <--> NotificationService
+    BackEnd <--> CronjobService
+    KeycloakService <--> KeycloakServer
+
+    BusinessService <--> PostgreSQL
+    KeycloakService <--> PostgreSQL
+    FileService <--> S3Storage
+    NotificationService <--> PostgreSQL
+
+    subgraph PlatformDB["Platform Schema"]
+        Users["tb_user, tb_platform_user"]
+        Clusters["tb_cluster, tb_business_unit"]
+        Roles["tb_application_role, tb_permission"]
+    end
+
+    subgraph TenantDB["Tenant Schema"]
+        Products["tb_product, tb_vendor, tb_location"]
+        Inventory["tb_stock_in, tb_stock_out, tb_transfer"]
+        Procurement["tb_purchase_order, tb_purchase_request"]
+    end
+
+    PostgreSQL --- PlatformDB
+    PostgreSQL --- TenantDB
+```
+
+## Kubernetes
+
+### Overview
+
+```
+                          USERS (Browser / Mobile)
+                                   |
+                  +----------------+----------------+
+                  |                                 |
+                  v                                 v
+      carmen-inventory-frontend             carmen-platform
+        (Next.js / Vercel)               (Next.js / Vercel)
+                  |                                 |
+                  +----------------+----------------+
+                                   |
+                              HTTPS/REST
+                                   |
+=======================================================================
+|                        AWS EKS Cluster                              |
+|                                                                     |
+|  +---------------------------------------------------------------+  |
+|  |                     INGRESS LAYER                             |  |
+|  |                                                               |  |
+|  |   +-------------------+          +-------------------------+  |  |
+|  |   | AWS ALB Ingress   |          | Certificate Manager     |  |  |
+|  |   | Controller        |--------->| (ACM / TLS Termination) |  |  |
+|  |   | api.carmen.com/*  |          +-------------------------+  |  |
+|  |   +--------+----------+                                       |  |
+|  +------------|--------------------------------------------------+  |
+|               |                                                     |
+|  +------------|--------------------------------------------------+  |
+|  |            v          NAMESPACE: carmen-production             |  |
+|  |                                                               |  |
+|  |  +--------------------------------------------------------+  |  |
+|  |  |              GATEWAY LAYER (Public)                     |  |  |
+|  |  |                                                         |  |  |
+|  |  |   +-------------------------------------------------+  |  |  |
+|  |  |   |  backend-gateway (Deployment)                    |  |  |  |
+|  |  |   |  Replicas: 2  |  HPA: 2-5  |  Port: 4000/4001  |  |  |  |
+|  |  |   |  [Auth, Routing, Swagger, WebSocket]             |  |  |  |
+|  |  |   |  [JWT + Keycloak Guards + Permission Guards]     |  |  |  |
+|  |  |   +---------+---------------------------------------+  |  |  |
+|  |  |             |                                           |  |  |
+|  |  |        ClusterIP Service                                |  |  |
+|  |  |     svc/backend-gateway:4000                            |  |  |
+|  |  +---------|-----------------------------------------------+  |  |
+|  |            |                                                  |  |
+|  |            | NestJS TCP Transport (@MessagePattern)           |  |
+|  |            |                                                  |  |
+|  |  +---------v----------------------------------------------+   |  |
+|  |  |              MICROSERVICES LAYER (Internal Only)        |  |  |
+|  |  |                                                         |  |  |
+|  |  |  +-------------+  +-------------+  +----------------+  |  |  |
+|  |  |  | micro-      |  | micro-      |  | micro-         |  |  |  |
+|  |  |  | business    |  | keycloak-api|  | report (NEW)   |  |  |  |
+|  |  |  | Replicas: 3 |  | Replicas: 2 |  | Replicas: 2    |  |  |  |
+|  |  |  | HPA: 2-6    |  | HPA: 2-4    |  | HPA: 2-4       |  |  |  |
+|  |  |  | TCP:5020    |  | TCP:5013    |  | TCP:5015       |  |  |  |
+|  |  |  | HTTP:6020   |  | HTTP:6013   |  | HTTP:6015      |  |  |  |
+|  |  |  +-------------+  +-------------+  +----------------+  |  |  |
+|  |  |                                                         |  |  |
+|  |  |  +-------------+  +-------------+  +----------------+  |  |  |
+|  |  |  | micro-      |  | micro-      |  | micro-         |  |  |  |
+|  |  |  | file        |  | notification|  | cluster        |  |  |  |
+|  |  |  | Replicas: 2 |  | Replicas: 2 |  | Replicas: 2    |  |  |  |
+|  |  |  | HPA: 1-3    |  | HPA: 2-4    |  | HPA: 1-3       |  |  |  |
+|  |  |  | TCP:5007    |  | TCP:5006    |  | TCP:5014       |  |  |  |
+|  |  |  | HTTP:6007   |  | HTTP:6006   |  | HTTP:6014      |  |  |  |
+|  |  |  +-------------+  +-------------+  +----------------+  |  |  |
+|  |  |                                                         |  |  |
+|  |  |                 +----------------+                      |  |  |
+|  |  |                 | micro-         |                      |  |  |
+|  |  |                 | cronjob        |                      |  |  |
+|  |  |                 | Replicas: 1    |                      |  |  |
+|  |  |                 | (No HPA)       |                      |  |  |
+|  |  |                 | TCP:5012       |                      |  |  |
+|  |  |                 | HTTP:6012      |                      |  |  |
+|  |  |                 +----------------+                      |  |  |
+|  |  +---------------------------------------------------------+  |  |
+|  |                                                               |  |
+|  |  +---------------------------------------------------------+  |  |
+|  |  |              CONFIG & SECRETS LAYER                     |  |  |
+|  |  |                                                         |  |  |
+|  |  |  +------------------+  +-----------------------------+  |  |  |
+|  |  |  | ConfigMap        |  | External Secrets            |  |  |  |
+|  |  |  | - service hosts  |  | (AWS Secrets Manager)       |  |  |  |
+|  |  |  | - service ports  |  | - DATABASE_URL              |  |  |  |
+|  |  |  | - NODE_ENV       |  | - JWT_SECRET       |  |  |  |
+|  |  |  | - LOKI_*         |  | - KEYCLOAK_*                |  |  |  |
+|  |  |  +------------------+  | - SMTP_*                    |  |  |  |
+|  |  |                        | - SENTRY_DSN                |  |  |  |
+|  |  |                        +-----------------------------+  |  |  |
+|  |  +---------------------------------------------------------+  |  |
+|  |                                                               |  |
+|  +---------------------------------------------------------------+  |
+|                                                                     |
+=======================================================================
+          |              |                    |
+          v              v                    v
+   +------------+  +-----------+     +----------------+
+   |  AWS RDS   |  | Keycloak  |     | AWS ECR        |
+   | PostgreSQL |  | Server    |     | (Container     |
+   | (Multi-AZ) |  | (EKS or  |     |  Registry)     |
+   |            |  |  ext.)    |     +----------------+
+   | +--------+ |  +-----------+
+   | |Platform| |
+   | | Schema | |
+   | +--------+ |
+   | +--------+ |
+   | |Tenant  | |
+   | | Schema | |
+   | +--------+ |
+   +------------+
+```
+
+#### Namespace Strategy
+
+```
+EKS Cluster
+  |
+  +-- carmen-production        # Production workloads
+  |     +-- All 8 microservices + gateway
+  |     +-- ConfigMaps, Secrets, HPA, PDB
+  |
+  +-- carmen-staging           # UAT / Staging (replaces dev.blueledgers.com)
+  |     +-- Same services, lower replicas
+  |     +-- Separate ConfigMap/Secrets pointing to staging DB
+  |
+  +-- carmen-system            # Shared infrastructure
+  |     +-- Keycloak (if running in-cluster)
+  |     +-- Monitoring stack (Prometheus, Grafana, Loki)
+  |
+  +-- ingress-nginx / kube-system
+        +-- Ingress Controller, Cert Manager, External Secrets Operator
+```
+
+#### Service Discovery (K8s vs Docker Compose)
+
+```
+  BEFORE (Docker Compose)                 AFTER (Kubernetes)
+  ========================                ====================
+
+  ENV hardcoded:                          K8s Service DNS:
+  BUSINESS_SERVICE_HOST=                  BUSINESS_SERVICE_HOST=
+    api-micro-business                      api-micro-business.carmen-production.svc.cluster.local
+  BUSINESS_SERVICE_PORT=5020              BUSINESS_SERVICE_PORT=5020
+                                          (or short: api-micro-business)
+
+  Docker Network:                         ClusterIP Services:
+  carmen-network (bridge)                 svc/api-micro-business      -> TCP:5020, HTTP:6020
+                                          svc/api-micro-keycloak-api  -> TCP:5013, HTTP:6013
+                                          svc/api-micro-report        -> TCP:5015, HTTP:6015
+                                          svc/api-micro-file          -> TCP:5007, HTTP:6007
+                                          svc/api-micro-notification  -> TCP:5006, HTTP:6006
+                                          svc/api-micro-cronjob       -> TCP:5012, HTTP:6012
+                                          svc/api-micro-cluster       -> TCP:5014, HTTP:6014
+
+  NOTE: Service names match Docker Compose names
+        -> ENV values stay the same, zero code changes needed!
+```
+
+#### Network Policy
+
+```
+                Internet
+                   |
+                   v
+          +--------+--------+
+          |  AWS ALB        |
+          |  (Ingress)      |
+          +--------+--------+
+                   |
+      Only port 4000/4001 exposed
+                   |
+                   v
++-----------------------------------------+
+|          backend-gateway                |  <-- Public-facing
+|          (NetworkPolicy: allow ingress) |
++----+----+----+----+----+----+----+------+
+     |    |    |    |    |    |    |
+     v    v    v    v    v    v    v
++----+----+----+----+----+----+----+------+
+|  micro-services (Internal Only)         |  <-- No external access
+|  NetworkPolicy:                         |
+|    ingress: from gateway only           |
+|    egress: to RDS, Keycloak, internet   |
++-----------------------------------------+
+```
+
+#### Horizontal Pod Autoscaler (HPA) Strategy
+
+```
+  Service              Min  Max  CPU Target  Memory Target  Reason
+  -------------------  ---  ---  ----------  -------------  -------------------------
+  backend-gateway       2    5     70%         80%          Entry point, must be HA
+  micro-business        3    6     70%         80%          Heaviest workload
+  micro-report (NEW)    2    4     70%         80%          Report generation = CPU heavy
+  micro-keycloak-api    2    4     60%         70%          Auth is critical path
+  micro-notification    2    4     60%         70%          WebSocket connections
+  micro-file            1    3     70%         80%          I/O bound, less CPU
+  micro-cluster         1    3     60%         70%          Lower traffic
+  micro-cronjob         1    1     N/A         N/A          Singleton, no scaling
+```
+
+#### CI/CD Pipeline (GitHub Actions -> EKS)
+
+```
+  +----------+     +-----------+     +----------+     +-----------+
+  |  GitHub  |     |  GitHub   |     |  AWS ECR |     |  AWS EKS  |
+  |  Push    +---->+  Actions  +---->+  Push    +---->+  Deploy   |
+  +----------+     +-----------+     +----------+     +-----------+
+
+  Workflow Steps:
+  ==============
+
+  1. Trigger: push to main (prod) or uat (staging)
+                    |
+                    v
+  2. Build:   bun install -> db:generate -> build:package
+                    |
+                    v
+  3. Docker:  Build images for each service (parallel)
+              docker build -f apps/<service>/Dockerfile .
+                    |
+                    v
+  4. Push:    Tag & push to ECR
+              <account>.dkr.ecr.ap-southeast-7.amazonaws.com/carmen-<service>:<sha>
+                    |
+                    v
+  5. Deploy:  kubectl set image deployment/<service> <service>=<new-image>
+              (or Helm upgrade / ArgoCD sync)
+                    |
+                    v
+  6. Verify:  kubectl rollout status deployment/<service>
+              Run smoke tests against /health endpoints
+```
+
+#### Kubernetes Resource Structure
+
+```
+k8s/
+  +-- base/                              # Shared base configs
+  |   +-- namespace.yaml                 # carmen-production, carmen-staging
+  |   +-- configmap.yaml                 # Service discovery ENVs
+  |   +-- network-policy.yaml            # Gateway-only ingress rule
+  |   +-- external-secret.yaml           # AWS Secrets Manager refs
+  |
+  +-- services/
+  |   +-- backend-gateway/
+  |   |   +-- deployment.yaml            # 2 replicas, health checks
+  |   |   +-- service.yaml               # ClusterIP :4000, :4001
+  |   |   +-- hpa.yaml                   # 2-5 pods
+  |   |   +-- pdb.yaml                   # minAvailable: 1
+  |   |
+  |   +-- micro-business/
+  |   |   +-- deployment.yaml            # 3 replicas
+  |   |   +-- service.yaml               # ClusterIP TCP:5020, HTTP:6020
+  |   |   +-- hpa.yaml                   # 2-6 pods
+  |   |   +-- pdb.yaml                   # minAvailable: 2
+  |   |
+  |   +-- micro-report/                  # NEW SERVICE
+  |   |   +-- deployment.yaml            # 2 replicas
+  |   |   +-- service.yaml               # ClusterIP TCP:5015, HTTP:6015
+  |   |   +-- hpa.yaml                   # 2-4 pods
+  |   |   +-- pdb.yaml                   # minAvailable: 1
+  |   |
+  |   +-- micro-keycloak-api/
+  |   |   +-- deployment.yaml
+  |   |   +-- service.yaml
+  |   |   +-- hpa.yaml
+  |   |   +-- pdb.yaml
+  |   |
+  |   +-- micro-file/
+  |   |   +-- deployment.yaml
+  |   |   +-- service.yaml
+  |   |   +-- hpa.yaml
+  |   |
+  |   +-- micro-notification/
+  |   |   +-- deployment.yaml
+  |   |   +-- service.yaml
+  |   |   +-- hpa.yaml
+  |   |
+  |   +-- micro-cluster/
+  |   |   +-- deployment.yaml
+  |   |   +-- service.yaml
+  |   |   +-- hpa.yaml
+  |   |
+  |   +-- micro-cronjob/
+  |       +-- deployment.yaml            # 1 replica (singleton)
+  |       +-- service.yaml
+  |
+  +-- ingress/
+  |   +-- ingress.yaml                   # ALB Ingress -> gateway
+  |   +-- certificate.yaml               # TLS cert ref
+  |
+  +-- overlays/                          # Kustomize overlays
+      +-- production/
+      |   +-- kustomization.yaml         # High replicas, prod secrets
+      +-- staging/
+          +-- kustomization.yaml         # Low replicas, staging secrets
+```
+
+#### Port Mapping (K8s)
+
+| Service              | TCP (Internal) | HTTP (Health) | K8s Service Name         | HPA   |
+|----------------------|----------------|---------------|--------------------------|-------|
+| backend-gateway      | -              | 4000 / 4001   | svc/backend-gateway      | 2-5   |
+| micro-business       | 5020           | 6020          | svc/api-micro-business   | 2-6   |
+| micro-report (NEW)   | 5015           | 6015          | svc/api-micro-report     | 2-4   |
+| micro-keycloak-api   | 5013           | 6013          | svc/api-micro-keycloak   | 2-4   |
+| micro-file           | 5007           | 6007          | svc/api-micro-file       | 1-3   |
+| micro-notification   | 5006           | 6006          | svc/api-micro-notification| 2-4  |
+| micro-cronjob        | 5012           | 6012          | svc/api-micro-cronjob    | 1     |
+| micro-cluster        | 5014           | 6014          | svc/api-micro-cluster    | 1-3   |
+
+#### Migration Path: Docker Compose -> Kubernetes
+
+```
+  Phase 1: Prepare (Week 1)
+  -------------------------
+  [x] Dockerfiles ready (all services)
+  [x] Health check endpoints (/health)
+  [x] ECR registry configured
+  [ ] Create micro-report service
+  [ ] Write K8s manifests
+  [ ] Setup EKS cluster (eksctl / Terraform)
+
+  Phase 2: Staging (Week 2)
+  -------------------------
+  [ ] Deploy to EKS carmen-staging namespace
+  [ ] Migrate dev.blueledgers.com -> EKS staging
+  [ ] Validate all services + health checks
+  [ ] Test HPA scaling
+
+  Phase 3: Production (Week 3)
+  ----------------------------
+  [ ] Deploy to EKS carmen-production namespace
+  [ ] Setup ALB Ingress + TLS
+  [ ] Configure External Secrets (AWS Secrets Manager)
+  [ ] Setup monitoring (Prometheus + Grafana)
+  [ ] DNS cutover: api.carmen.com -> ALB
+
+  Phase 4: Optimize (Week 4+)
+  ----------------------------
+  [ ] Fine-tune HPA thresholds
+  [ ] Add PodDisruptionBudgets
+  [ ] Setup ArgoCD for GitOps
+  [ ] Network policies hardening
+  [ ] Cost optimization (Spot instances, right-sizing)
+```
+
+### Dynamic clustering
 
 Carmen เป็น Multi-tenant SaaS โดยแต่ละ "Cluster" คือองค์กร/โรงแรม 1 แห่ง
 Dynamic Clustering หมายถึงระบบที่สามารถ:
@@ -9,22 +675,22 @@ Dynamic Clustering หมายถึงระบบที่สามารถ:
 - แยก isolation ระหว่าง tenant ตามระดับ subscription
 - Route traffic ไปยัง service instance ที่ถูกต้องตาม tenant context
 
-## High-Level Architecture
+#### High-Level Architecture (Dynamic Clustering)
 
 ```
-                                USERS (Browser / Mobile)
-                                         |
-                    +--------------------+--------------------+
-                    |                                         |
-                    v                                         v
-        carmen-inventory-frontend                    carmen-platform
-          (Next.js / Vercel)                        (Next.js / Vercel)
-                    |                                         |
-                    +--------------------+--------------------+
-                                         |
-                              HTTPS (api.carmen.com)
-                                         |
-                                         v
+                            USERS (Browser / Mobile)
+                                     |
+                +--------------------+--------------------+
+                |                                         |
+                v                                         v
+    carmen-inventory-frontend                    carmen-platform
+      (Next.js / Vercel)                        (Next.js / Vercel)
+                |                                         |
+                +--------------------+--------------------+
+                                     |
+                          HTTPS (api.carmen.com)
+                                     |
+                                     v
 =============================================================================================
 |                              AWS EKS CLUSTER                                              |
 |                                                                                           |
@@ -182,63 +848,63 @@ Dynamic Clustering หมายถึงระบบที่สามารถ:
 +------------+
 ```
 
-## Dynamic Clustering Flow
+#### Dynamic Clustering Flow
 
 ```
-                    Admin creates new Cluster
-                    via carmen-platform UI
-                              |
-                              v
-                    POST /api/v1/cluster
-                    { name: "Hotel-D", plan: "enterprise" }
-                              |
-                              v
-                   +----------+----------+
-                   |   backend-gateway   |
-                   +----------+----------+
-                              |
-                         TCP:5014
-                              |
-                              v
-              +---------------+----------------+
-              |       micro-cluster            |
-              |    (Tenant Provisioner)        |
-              +---------------+----------------+
-                              |
-          +-------------------+-------------------+
-          |                   |                   |
-          v                   v                   v
-  +-------+--------+  +------+-------+  +--------+---------+
-  | 1. Create K8s  |  | 2. Create    |  | 3. Provision     |
-  |    Namespace   |  |    Tenant DB |  |    Keycloak      |
-  |                |  |    Schema    |  |    Realm         |
-  | carmen-tenant- |  |              |  |                  |
-  |  hotel-d       |  | Run Prisma  |  | Create realm,    |
-  |                |  | migrate     |  | roles, clients   |
-  | Apply:         |  |             |  |                  |
-  | - ResourceQuota|  | Seed base   |  |                  |
-  | - LimitRange   |  | data        |  |                  |
-  | - NetworkPolicy|  |             |  |                  |
-  +-------+--------+  +------+-------+  +--------+---------+
-          |                   |                   |
-          v                   v                   v
-  +-------+--------+  +------+-------+  +--------+---------+
-  | 4. Deploy      |  | 5. Create    |  | 6. Register      |
-  |    Services    |  |    Secrets   |  |    DNS/Routing   |
-  |                |  |              |  |                  |
-  | micro-business |  | DB URL from  |  | Update gateway   |
-  | micro-report   |  | AWS Secrets  |  | ConfigMap with   |
-  |                |  | Manager      |  | new tenant       |
-  | Apply HPA      |  |              |  | service endpoint |
-  | based on plan  |  |              |  |                  |
-  +----------------+  +--------------+  +------------------+
-                              |
-                              v
-                   Tenant "Hotel-D" is READY
-                   Status: Active in Platform DB
+                Admin creates new Cluster
+                via carmen-platform UI
+                          |
+                          v
+                POST /api/v1/cluster
+                { name: "Hotel-D", plan: "enterprise" }
+                          |
+                          v
+               +----------+----------+
+               |   backend-gateway   |
+               +----------+----------+
+                          |
+                     TCP:5014
+                          |
+                          v
+          +---------------+----------------+
+          |       micro-cluster            |
+          |    (Tenant Provisioner)        |
+          +---------------+----------------+
+                          |
+      +-------------------+-------------------+
+      |                   |                   |
+      v                   v                   v
++-------+--------+  +------+-------+  +--------+---------+
+| 1. Create K8s  |  | 2. Create    |  | 3. Provision     |
+|    Namespace   |  |    Tenant DB |  |    Keycloak      |
+|                |  |    Schema    |  |    Realm         |
+| carmen-tenant- |  |              |  |                  |
+|  hotel-d       |  | Run Prisma  |  | Create realm,    |
+|                |  | migrate     |  | roles, clients   |
+| Apply:         |  |             |  |                  |
+| - ResourceQuota|  | Seed base   |  |                  |
+| - LimitRange   |  | data        |  |                  |
+| - NetworkPolicy|  |             |  |                  |
++-------+--------+  +------+-------+  +--------+---------+
+        |                   |                   |
+        v                   v                   v
++-------+--------+  +------+-------+  +--------+---------+
+| 4. Deploy      |  | 5. Create    |  | 6. Register      |
+|    Services    |  |    Secrets   |  |    DNS/Routing   |
+|                |  |              |  |                  |
+| micro-business |  | DB URL from  |  | Update gateway   |
+| micro-report   |  | AWS Secrets  |  | ConfigMap with   |
+|                |  | Manager      |  | new tenant       |
+| Apply HPA      |  |              |  | service endpoint |
+| based on plan  |  |              |  |                  |
++----------------+  +--------------+  +------------------+
+                          |
+                          v
+               Tenant "Hotel-D" is READY
+               Status: Active in Platform DB
 ```
 
-## Tenant Routing Architecture
+#### Tenant Routing Architecture
 
 ```
   HTTP Request
@@ -285,7 +951,7 @@ Dynamic Clustering หมายถึงระบบที่สามารถ:
   +--------------------------------------------------------+
 ```
 
-## Subscription Tier -> Resource Allocation
+#### Subscription Tier -> Resource Allocation
 
 ```
   +==================================================================================+
@@ -323,46 +989,46 @@ Dynamic Clustering หมายถึงระบบที่สามารถ:
   +==================================================================================+
 ```
 
-## Network Topology & Security
+#### Network Topology & Security
 
 ```
-                         Internet
-                            |
-                   +--------v--------+
-                   |    AWS WAF      |    <-- Rate limiting per tenant
-                   +--------+--------+        DDoS protection
-                            |
-                   +--------v--------+
-                   |    AWS ALB      |    <-- TLS termination
-                   |    Ingress      |        Path-based routing
-                   +--------+--------+
-                            |
-         +------------------+------------------+
-         |                                     |
-    api.carmen.com                    api-staging.carmen.com
-         |                                     |
-         v                                     v
-  carmen-shared namespace              carmen-staging namespace
+                     Internet
+                        |
+               +--------v--------+
+               |    AWS WAF      |    <-- Rate limiting per tenant
+               +--------+--------+        DDoS protection
+                        |
+               +--------v--------+
+               |    AWS ALB      |    <-- TLS termination
+               |    Ingress      |        Path-based routing
+               +--------+--------+
+                        |
+     +------------------+------------------+
+     |                                     |
+api.carmen.com                    api-staging.carmen.com
+     |                                     |
+     v                                     v
+carmen-shared namespace              carmen-staging namespace
 
-  +=======================================================+
-  |              NETWORK POLICIES                         |
-  |                                                       |
-  |  carmen-shared:                                       |
-  |    gateway    --> can reach ALL tenant namespaces      |
-  |    keycloak   --> can reach Keycloak DB only           |
-  |    file       --> can reach S3 only                    |
-  |    cronjob    --> can reach tenant namespaces           |
-  |    cluster    --> can reach K8s API (provisioning)      |
-  |    notification --> can reach all (push notifications)  |
-  |                                                       |
-  |  carmen-tenant-{name}:                                |
-  |    Ingress: ONLY from carmen-shared (gateway/cronjob) |
-  |    Egress:  ONLY to RDS, S3, external APIs            |
-  |    NO cross-tenant traffic allowed                    |
-  |                                                       |
-  |  carmen-tenant-pool:                                  |
-  |    Same as above, but shared across free tenants      |
-  +=======================================================+
++=======================================================+
+|              NETWORK POLICIES                         |
+|                                                       |
+|  carmen-shared:                                       |
+|    gateway    --> can reach ALL tenant namespaces      |
+|    keycloak   --> can reach Keycloak DB only           |
+|    file       --> can reach S3 only                    |
+|    cronjob    --> can reach tenant namespaces           |
+|    cluster    --> can reach K8s API (provisioning)      |
+|    notification --> can reach all (push notifications)  |
+|                                                       |
+|  carmen-tenant-{name}:                                |
+|    Ingress: ONLY from carmen-shared (gateway/cronjob) |
+|    Egress:  ONLY to RDS, S3, external APIs            |
+|    NO cross-tenant traffic allowed                    |
+|                                                       |
+|  carmen-tenant-pool:                                  |
+|    Same as above, but shared across free tenants      |
++=======================================================+
 
   Tenant Isolation:
   +----------------+     X (BLOCKED)     +----------------+
@@ -379,7 +1045,7 @@ Dynamic Clustering หมายถึงระบบที่สามารถ:
   +-----------------------------------------------------+
 ```
 
-## Auto-Scaling Architecture (KEDA + HPA + Karpenter)
+#### Auto-Scaling Architecture (KEDA + HPA + Karpenter)
 
 ```
   +=======================================================================+
@@ -448,60 +1114,7 @@ Dynamic Clustering หมายถึงระบบที่สามารถ:
   +=======================================================================+
 ```
 
-## micro-report Service Design (NEW)
-
-```
-  +====================================================================+
-  |  micro-report                                                      |
-  |  TCP: 5015  |  HTTP: 6015                                         |
-  |  Deployed: Per-tenant namespace (dedicated instance per tenant)    |
-  +====================================================================+
-  |                                                                    |
-  |  Responsibilities:                                                 |
-  |  - Generate PDF / Excel / CSV reports                              |
-  |  - Inventory reports (stock levels, movements, valuations)         |
-  |  - Procurement reports (PO status, vendor performance)             |
-  |  - Financial summaries (cost analysis, budget vs actual)           |
-  |  - Recipe costing reports                                          |
-  |  - Async report generation with progress tracking                  |
-  |  - Report caching (Redis / S3)                                     |
-  |                                                                    |
-  |  Architecture:                                                     |
-  |  +--------------------------------------------------------------+  |
-  |  |                                                              |  |
-  |  |  +------------+    +-------------+    +----------------+     |  |
-  |  |  | Report     |    | Report      |    | Report         |     |  |
-  |  |  | Controller |    | Service     |    | Queue          |     |  |
-  |  |  | (TCP)      |--->| (Business   |--->| (Bull/Redis)   |     |  |
-  |  |  |            |    |  Logic)     |    | Async Process  |     |  |
-  |  |  +------------+    +------+------+    +-------+--------+     |  |
-  |  |                           |                   |              |  |
-  |  |                    +------v------+    +-------v--------+     |  |
-  |  |                    | Template    |    | Worker         |     |  |
-  |  |                    | Engine      |    | (PDF/Excel     |     |  |
-  |  |                    | (Handlebars)|    |  Generation)   |     |  |
-  |  |                    +-------------+    +-------+--------+     |  |
-  |  |                                               |              |  |
-  |  +-----------------------------------------------|---+          |  |
-  |                                                  |              |  |
-  |  Communication:                                  v              |  |
-  |  - Gateway --> micro-report (TCP:5015)     Upload to S3         |  |
-  |  - micro-cronjob --> micro-report (TCP)    via micro-file       |  |
-  |  - micro-report --> RDS (data queries)                          |  |
-  |  - micro-report --> micro-file (store generated files)          |  |
-  |  - micro-report --> micro-notification (report ready alert)     |  |
-  |                                                                 |  |
-  +====================================================================+
-
-  Gateway Routing:
-    POST   /api/v1/report/generate     --> Request report generation
-    GET    /api/v1/report/:id/status   --> Check generation progress
-    GET    /api/v1/report/:id/download --> Download generated report
-    GET    /api/v1/report/templates    --> List available templates
-    POST   /api/v1/report/schedule     --> Schedule recurring report
-```
-
-## Complete Service Map
+#### Complete Service Map
 
 ```
   +===========================================================================+
@@ -531,7 +1144,7 @@ Dynamic Clustering หมายถึงระบบที่สามารถ:
   +===========================================================================+
 ```
 
-## K8s Resource Structure (Kustomize)
+#### K8s Resource Structure (Kustomize)
 
 ```
   k8s/
@@ -626,7 +1239,7 @@ Dynamic Clustering หมายถึงระบบที่สามารถ:
       +-- certificate.yaml
 ```
 
-## CI/CD Pipeline with Dynamic Clustering
+#### CI/CD Pipeline with Dynamic Clustering
 
 ```
   +=======================================================================+
@@ -674,7 +1287,7 @@ Dynamic Clustering หมายถึงระบบที่สามารถ:
   +=======================================================================+
 ```
 
-## Monitoring & Observability
+#### Monitoring & Observability
 
 ```
   +=======================================================================+
@@ -706,7 +1319,7 @@ Dynamic Clustering หมายถึงระบบที่สามารถ:
   +=======================================================================+
 ```
 
-## Cost Optimization
+#### Cost Optimization
 
 ```
   +=======================================================================+
@@ -740,7 +1353,7 @@ Dynamic Clustering หมายถึงระบบที่สามารถ:
   +=======================================================================+
 ```
 
-## Migration Path: Current -> K8s Dynamic Clustering
+#### Migration Path: Current -> K8s Dynamic Clustering
 
 ```
   Phase 1: Foundation (Week 1-2)

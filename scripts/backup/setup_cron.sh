@@ -8,7 +8,7 @@ echo "==============================="
 # ตรวจสอบว่าอยู่ในโฟลเดอร์ที่ถูกต้อง
 if [ ! -f "auto_backup.sh" ]; then
     echo "❌ ไม่พบไฟล์ auto_backup.sh"
-    echo "กรุณารันสคริปต์นี้ในโฟลเดอร์ docs/tools/"
+    echo "กรุณารันสคริปต์นี้ในโฟลเดอร์ scripts/backup/"
     exit 1
 fi
 
