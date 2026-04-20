@@ -1,99 +1,66 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# backend-gateway
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+> Part of [Carmen Backend](../../README.md).
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+HTTP/HTTPS gateway — single entry point, routes requests to microservices via TCP.
 
-## Description
+## Overview
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Acts as the only HTTP-facing component of the system. Inbound requests
+hit this service, get authenticated (Keycloak), authorized (permission
+guard), validated (Zod), and then forwarded over TCP to the appropriate
+microservice using NestJS `ClientsModule`. Responses are wrapped into
+the standard shape before returning.
 
-## Project setup
+## Dev
 
 ```bash
-$ npm install
+cd apps/backend-gateway
+bun run start:dev
 ```
 
-## Compile and run the project
+Ports (from `src/main.ts`):
+- HTTP: `:4000`
+- HTTPS: `:4001`
+- Swagger: `/swagger`
+- WebSocket: `/ws`
+
+## Interface
+
+Route modules are organized by domain under three top-level folders:
+- `src/config/` — configuration/admin endpoints.
+- `src/application/` — business-domain endpoints (procurement, inventory, recipes, etc.).
+- `src/platform/` — platform-level endpoints (clusters, business units, subscriptions).
+
+Each route module registers a controller that forwards to a microservice
+via TCP `ClientsModule.register()`.
+
+## Env
+
+Key variables (see [`apps/backend-gateway/.env.example`](.env.example) for the full list):
+- `JWT_SECRET` — JWT signing secret.
+- `BUSINESS_SERVICE_HOST` / `BUSINESS_SERVICE_TCP_PORT` — TCP target for micro-business.
+- `FILE_SERVICE_HOST` / `FILE_SERVICE_TCP_PORT`, `NOTIFICATION_SERVICE_*`, `KEYCLOAK_API_SERVICE_*`, `CLUSTER_SERVICE_*` — TCP targets for peer services.
+- `KEYCLOAK_BASE_URL`, `KEYCLOAK_REALM`, `KEYCLOAK_CLIENT_ID` — auth context.
+
+## Test
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+bun run test
+bun run test:watch
+bun run test:e2e
+bun run test:cov
 ```
 
-## Run tests
+## Links
 
-```bash
-# unit tests
-$ npm run test
+- Root: [`README.md`](../../README.md) · [`CLAUDE.md`](../../CLAUDE.md)
+- Architecture: [`docs/architecture-system.md`](../../docs/architecture-system.md)
+- API collections: [`apps/bruno/carmen-inventory/`](../bruno/carmen-inventory/)
 
-# e2e tests
-$ npm run test:e2e
+## Notes for agents
 
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- Guards apply **in order**: `KeycloakGuard → PermissionGuard`. `PermissionGuard` depends on user context set by `KeycloakGuard`.
+- Global Zod validation pipe + exception filter are registered in `main.ts` — do not re-register per-controller.
+- When adding a new route: create a module under the relevant folder, register a TCP client via `ClientsModule.register()`, expose the controller, and add auth/permission guards.
+- TCP message patterns must match the matching `@MessagePattern()` in the target microservice. Rename in both places or get silent 500s.
