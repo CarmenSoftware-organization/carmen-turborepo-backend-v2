@@ -72,7 +72,7 @@ row. Nothing is touched until its row has an action.
 | `docs/tools/restore_postgres.py` | relocate | `scripts/backup/restore_postgres.py` | script, not doc | (Task 5) |
 | `docs/tools/setup.sh` | relocate | `scripts/backup/setup.sh` | script, not doc | (Task 5) |
 | `docs/tools/setup_cron.sh` | relocate | `scripts/backup/setup_cron.sh` | script, not doc | (Task 5) |
-| `docs/tools/.gitignore` | relocate | `scripts/backup/.gitignore` | ignores script-generated files | (Task 8) |
+| `docs/tools/.gitignore` | relocate | `scripts/backup/.gitignore` | ignores script-generated files | (Task 5) |
 
 ## Judgment calls to resolve in Task 3
 
