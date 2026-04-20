@@ -17,15 +17,15 @@ row. Nothing is touched until its row has an action.
 |---|---|---|---|---|
 | `README.md` | keep | — | — | (fill in after Task 5) |
 | `CLAUDE.md` | keep | — | — | (fill in after Task 5) |
-| `PRD.md` | delete | — | (fill in Task 4) | (fill in Task 5) |
-| `PROJECT_DOCUMENTATION.md` | delete | — | (fill in Task 4) | (fill in Task 5) |
+| `PRD.md` | delete | — | Salvaged: success metrics, non-scope, hotel mock data context. | (fill in Task 5) |
+| `PROJECT_DOCUMENTATION.md` | delete | — | Salvaged: full ERDs, enums, deployment layout, CI/CD, env vars. | (fill in Task 5) |
 | `PROJECT_DOCUMENTATION.docx` | delete | — | binary — no salvage | (fill in Task 5) |
-| `WARP.md` | delete | — | (fill in Task 4) | (fill in Task 5) |
-| `cursorrule.cursor` | delete | — | (fill in Task 4) | (fill in Task 5) |
-| `api-500-errors-investigation.txt` | delete | — | (fill in Task 4) | (fill in Task 5) |
+| `WARP.md` | delete | — | Salvaged: service consolidation note, db:mock scripts, test:cov. | (fill in Task 5) |
+| `cursorrule.cursor` | delete | — | Salvaged: class size limits, RO-RO, workflow Zod pattern, common module structure. | (fill in Task 5) |
+| `api-500-errors-investigation.txt` | delete | — | Salvaged: 5 systemic bug patterns (msg-pattern mismatch, Prisma spread). | (fill in Task 5) |
 | `api-crud-test-results.txt` | delete | — | one-off test output — no salvage | (fill in Task 5) |
 | `api-test-results.txt` | delete | — | one-off test output — no salvage | (fill in Task 5) |
-| `PROJECT_ISSUES_REPORT.txt` | delete | — | (fill in Task 4) | (fill in Task 5) |
+| `PROJECT_ISSUES_REPORT.txt` | delete | — | Salvaged: all 20 issues (critical security bug, missing relations, stale turbo.json). | (fill in Task 5) |
 | `get-good-received-note-payload-from-PO.json` | delete | — | test scratch — no salvage | (fill in Task 5) |
 | `test_insert_report.json` | delete | — | test scratch — no salvage | (fill in Task 5) |
 | `generate` | delete | — | empty file — no salvage | (fill in Task 5) |
