@@ -7,7 +7,7 @@
 ### โครงสร้างไฟล์
 
 ```
-docs/tools/
+scripts/backup/
 ├── backup_postgres.py          # สคริปต์ backup หลัก
 ├── restore_postgres.py         # สคริปต์ restore
 ├── cleanup_backups.py          # สคริปต์ลบไฟล์เก่า
@@ -23,7 +23,7 @@ docs/tools/
 
 #### ติดตั้งแบบอัตโนมัติ
 ```bash
-cd docs/tools
+cd scripts/backup
 chmod +x setup.sh
 ./setup.sh
 ```
@@ -109,7 +109,7 @@ python3 cleanup_backups.py
 crontab -e
 
 # เพิ่มบรรทัดนี้
-0 2 * * * cd /path/to/docs/tools && ./auto_backup.sh >> backup.log 2>&1
+0 2 * * * cd /path/to/scripts/backup && ./auto_backup.sh >> backup.log 2>&1
 ```
 
 ### การตรวจสอบ
@@ -238,5 +238,5 @@ pg_dump --verbose --host=dev.blueledgers.com --port=6432 --username=developer --
 ### Convert COPY statements to INSERT statements
 
 ```batch
-/usr/local/bin/python3 convert-copy-to-insert.py
+/usr/local/bin/python3 scripts/backup/convert-copy-to-insert.py
 ```
