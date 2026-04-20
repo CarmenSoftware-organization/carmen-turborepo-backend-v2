@@ -2,6 +2,6 @@
 
 ``` bash
 
-turbo run dev:base
+bun run dev:base
 
 ```

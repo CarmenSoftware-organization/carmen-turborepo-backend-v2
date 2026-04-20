@@ -29,6 +29,8 @@
 
 ## 1. Core Business Rules Overview
 
+_(stale — needs rewrite)_
+
 ### 1.1 Fundamental Principles
 
 | Rule ID | Business Rule | Enforcement | Exception Handling |
@@ -55,6 +57,8 @@ Location: Engineering      → Periodic Average
 ---
 
 ## 2. FIFO Costing Rules & Examples
+
+_(stale — needs rewrite)_
 
 ### 2.1 FIFO Business Rules
 
@@ -164,6 +168,8 @@ FROM consumption_calc;
 ---
 
 ## 3. Periodic Average Costing Rules & Examples
+
+_(stale — needs rewrite)_
 
 ### 3.1 Periodic Average Business Rules
 
@@ -347,6 +353,8 @@ Allocation by Value:
 
 ## 5. Extra Cost Allocation Rules
 
+_(stale — needs rewrite)_
+
 ### 5.1 Extra Cost Business Rules
 
 | Rule | Description |
@@ -425,6 +433,8 @@ WHERE cl.grn_detail_id = gv.id;
 ---
 
 ## 6. Negative Inventory Rules
+
+_(stale — needs rewrite)_
 
 ### 6.1 Negative Inventory Business Rules
 
@@ -770,6 +780,8 @@ SELECT calculate_period_average_cost('jan-2024-period-uuid', 'housekeeping-uuid'
 
 ## 10. Backdating Rules & Recalculation
 
+_(stale — needs rewrite)_
+
 ### 10.1 Backdating Business Rules
 
 | Rule | Description |
@@ -853,6 +865,8 @@ Cost Impact Report:
 ---
 
 ## 11. Approval Workflow Rules
+
+_(stale — needs rewrite)_
 
 ### 11.1 Approval Business Rules
 
@@ -973,6 +987,8 @@ Note: SR-001 and SR-002 processed by timestamp since same priority
 
 ## 13. Variance Control Rules
 
+_(stale — needs rewrite)_
+
 ### 13.1 Variance Threshold Configuration
 
 | Location Type | Product Category | Qty Variance | Value Variance | Approval Level |
@@ -1078,6 +1094,8 @@ Cost Variance: $126 - $120 = $6.00 (absorbed in period)
 ---
 
 ## 15. Comprehensive Transaction Scenarios
+
+_(stale — needs rewrite)_
 
 ### 15.1 Complete Monthly Cycle Example
 
@@ -1258,6 +1276,8 @@ SELECT execute_audit_adjustment('adjustment-request-uuid', 'cfo-approval-token')
 ---
 
 ## Business Rules Validation Matrix
+
+_(stale — needs rewrite)_
 
 ### Validation Checkpoints
 
@@ -1574,6 +1594,8 @@ Required fields for each cost layer:
 ---
 
 ## 7. Data Requirements
+
+_(stale — needs rewrite)_
 
 ### 7.1 Database Schema
 
@@ -1921,6 +1943,8 @@ Product B allocation: $500 × 60% = $300
 
 ## 1. Executive Summary
 
+_(stale — needs rewrite)_
+
 ### 1.1 Purpose
 
 This document provides a comprehensive implementation guide for a FIFO (First-In-First-Out) and Periodic Average inventory costing system specifically designed for hotel supply chain management. The system handles inventory for:
@@ -1957,6 +1981,8 @@ This document provides a comprehensive implementation guide for a FIFO (First-In
 ---
 
 ## 2. System Requirements & Architecture
+
+_(stale — needs rewrite)_
 
 ### 2.1 Technical Requirements
 
@@ -2050,6 +2076,8 @@ tb_backdate_control             -- Backdating management
 ---
 
 ## 3. Period Management System
+
+_(stale — needs rewrite)_
 
 ### 3.1 Period Structure
 
@@ -2352,6 +2380,8 @@ $$ LANGUAGE plpgsql;
 
 ## 4. Lot Management & Tracking
 
+_(stale — needs rewrite)_
+
 ### 4.1 Lot Structure
 
 All inventory items are tracked using **system-generated lot numbers** for complete traceability.
@@ -2565,6 +2595,8 @@ $$ LANGUAGE plpgsql;
 ---
 
 ## 5. Cost Layer Architecture
+
+_(stale — needs rewrite)_
 
 ### 5.1 Cost Layer Structure with FOC Handling
 
@@ -2839,6 +2871,8 @@ Result: FOC items reduced unit cost from $2.00 to $1.875 including all costs
 ---
 
 ## 6. Transaction Processing & Sequencing
+
+_(stale — needs rewrite)_
 
 ### 6.1 Transaction Types and Priority
 
@@ -3192,6 +3226,8 @@ $$ LANGUAGE plpgsql;
 ---
 
 ## 7. Location & Transfer Management
+
+_(stale — needs rewrite)_
 
 ### 7.1 Location Configuration
 
@@ -3638,6 +3674,8 @@ $$ LANGUAGE plpgsql;
 ---
 
 ## 8. Recalculation & Backdating Engine
+
+_(stale — needs rewrite)_
 
 ### 8.1 Backdating Control
 
@@ -4109,6 +4147,8 @@ $$ LANGUAGE plpgsql;
 ---
 
 ## 9. Negative Inventory Control
+
+_(stale — needs rewrite)_
 
 ### 9.1 Configuration Structure
 
@@ -4763,6 +4803,8 @@ $$ LANGUAGE plpgsql;
 
 ## 10. Periodic Average Costing
 
+_(stale — needs rewrite)_
+
 ### 10.1 Average Cost Structure
 
 ```sql
@@ -5184,6 +5226,8 @@ $$ LANGUAGE plpgsql;
 ---
 
 ## 11. Performance Optimization
+
+_(stale — needs rewrite)_
 
 ### 11.1 Configuration for Medium Hotels
 
@@ -5644,6 +5688,8 @@ SET search_path TO inventory, audit, config, public;
 
 ## 13. SQL Schema Scripts
 
+_(stale — needs rewrite)_
+
 ### 13.1 Complete Schema Creation Script
 
 ```sql
@@ -5941,6 +5987,8 @@ SELECT cron.schedule('process-batch', '0 3 * * *', 'SELECT process_recalc_batch(
 ---
 
 ## 14. Monitoring & Maintenance
+
+_(stale — needs rewrite)_
 
 ### 14.1 Daily Operations Checklist
 
@@ -6336,6 +6384,8 @@ $$ LANGUAGE plpgsql;
 ---
 
 ## 15. Appendices
+
+_(stale — needs rewrite)_
 
 ### Appendix A: Quick Reference Commands
 

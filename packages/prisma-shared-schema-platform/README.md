@@ -41,4 +41,4 @@ See the root [`CLAUDE.md`](../../CLAUDE.md) "Environment Setup" for the full env
 
 - UUID primary keys (`gen_random_uuid()`), soft deletes (`deleted_at`), audit fields (`created_at`, `created_by_id`, `updated_at`, `updated_by_id`) are expected on every model. Copy from an existing model when adding new ones.
 - After editing `schema.prisma`, run `bun run db:generate` **before** running `bun run build` at the repo root, or consumer builds fail.
-- Prisma with PostgreSQL `@db.Timestamptz` columns requires ISO strings at write time: `approval_date: date.toISOString()` _(verify)_.
+- Prisma with PostgreSQL `@db.Timestamptz` columns requires ISO strings at write time: `approval_date: date.toISOString()`.

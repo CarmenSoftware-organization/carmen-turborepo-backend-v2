@@ -30,7 +30,7 @@ Domain modules under `src/`: `authen`, `inventory`, `master`, `procurement`,
 `log`, `notification`, `tenant`. Each module registers TCP `@MessagePattern()`
 handlers consumed by the gateway's per-route `@Client.send()`.
 
-MessagePattern naming convention: `<domain>.<verb>` _(verify)_.
+MessagePattern naming convention: `<domain>.<verb>`.
 
 ## Env
 
@@ -59,7 +59,7 @@ bun run test:cov
 ## Notes for agents
 
 - Earlier separate services (`micro-authen`, `micro-tenant-*`) no longer exist. Don't expect them.
-- When adding a `@MessagePattern()` handler here, also update the matching `@Client.send()` call in `backend-gateway`. Silent 500s on mismatch _(verify)_.
+- When adding a `@MessagePattern()` handler here, also update the matching `@Client.send()` call in `backend-gateway`. Silent 500s on mismatch.
 - Both Prisma clients are consumed — don't mix tenant and platform models in a single transaction.
-- Prisma `findMany({ ...query, select })` conflict: if `query` already carries a `select`, spreading breaks. Build the query without spread or strip `select` from the spread _(verify)_.
+- Prisma `findMany({ ...query, select })` conflict: if `query` already carries a `select`, spreading breaks. Build the query without spread or strip `select` from the spread.
 - Audit logging interceptor from `@repo/log-events-library` is registered globally; handler-level decorators drive which events fire.
