@@ -152,6 +152,29 @@ being treated as authoritative.
 - **Tenant DB migration gap — recipe tables.** _(stale — needs rewrite)_ Recipe tables historically lagged behind master data on new-tenant schema deploys. Re-run `db:migrate` inside `packages/prisma-shared-schema-tenant` after adding a tenant.
 - **Credentials in pre-PR-#8 git history.** A Supabase-style token `8wzw8O77O0VAGDnt` and dev password `123456` are present in commits on `main` predating sub-project #1. Rotate the Supabase token and scrub history separately; redacting going forward doesn't un-leak them.
 
+## Additional Code Conventions (from legacy notes — verified 2026-04-20)
+
+Supplementary conventions from `cursorrule.cursor` not explicitly captured above:
+
+- **JSDoc**: Required for public classes and methods
+- **No blank lines inside functions**
+- **`const` over `let`** when value is not reassigned
+- **Full words over abbreviations** — exceptions: `i`, `j`, `err`, `ctx`, `req`, `res`, `next`
+- **Class size limits**: max 200 statements, 10 public methods, 10 properties per class
+- **RO-RO pattern**: Use objects for both input params and return values when reducing param count
+- **Single abstraction level** per function
+- **Immutable data**: prefer `readonly` and `as const`
+- **SOLID principles** for classes; prefer composition over inheritance
+- **Arrow functions** only for simple functions ≤ 3 statements; use named functions for longer ones
+- **Void-returning functions**: use `executeX`, `saveX` naming pattern (in addition to the verb-prefix rule)
+
+### micro-cronjob Framework (from legacy notes — verified 2026-04-20)
+
+`micro-cronjob` (TCP:5012, HTTP:6012) uses **Elysia + Bun** (not NestJS). This is the only
+non-NestJS service in the stack. Confirmed in the architecture Mermaid diagram in
+`docs/architecture-system.md`. Do not apply NestJS patterns (decorators, modules, guards)
+when editing `apps/micro-cronjob`.
+
 ## Build Dependencies
 
 The Turborepo pipeline enforces: `db:generate` → `build:package` → `build`/`dev`. If Prisma clients are missing, run `bun run db:generate`. If shared packages fail to resolve, run `bun run build:package`.
