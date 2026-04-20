@@ -1398,3 +1398,197 @@ carmen-shared namespace              carmen-staging namespace
   [ ] Cost monitoring per tenant (Kubecost)
   [ ] Load testing + chaos engineering
 ```
+
+## Database Schema Reference (from legacy notes — verified 2026-04-20)
+
+Verified against `packages/prisma-shared-schema-platform/prisma/schema.prisma` and
+`packages/prisma-shared-schema-tenant/prisma/schema.prisma` at promotion time.
+
+### Platform Schema — Key Tables
+
+**tb_cluster**: id (UUID PK), code, name, alias_name, logo_url, is_active, info (JSON), created_at, created_by_id (FK), updated_by_id (FK), deleted_at
+
+**tb_business_unit**: id (UUID PK), cluster_id (FK→tb_cluster), code, name, alias_name, description, info (JSON), is_hq, is_active, db_connection (VARCHAR — stores tenant DB connection string), config (JSON), created_by_id (FK), updated_by_id (FK), deleted_at
+
+**tb_user**: id (UUID PK), username, email, platform_role (enum_platform_role), is_active, is_consent, socket_id, is_online, consent_at, created_at, created_by_id (FK), updated_by_id (FK), deleted_at
+
+**tb_application_role**: id (UUID PK), bu_id (FK→tb_business_unit), name, description, is_active, created_by_id (FK), updated_by_id (FK), deleted_at
+
+**tb_permission**: id (UUID PK), resource (VARCHAR), action (VARCHAR), description, created_by_id (FK), deleted_at
+
+**tb_subscription**: id (UUID PK), cluster_id (FK→tb_cluster), sub_number, start_date, end_date, status (enum_subscription_status)
+
+**tb_subscription_detail**: id (UUID PK), subscription_id (FK), bu_id (FK), module_id (FK)
+
+**tb_module**: id (UUID PK), name, desc
+
+**tb_user_profile**: id (UUID PK), user_id (FK 1:1→tb_user), firstname, middlename, lastname, telephone, bio (JSON)
+
+**tb_user_login_session**: id (UUID PK), token (VARCHAR), token_type (enum_token_type), user_id (FK), expired_on
+
+**tb_password**: id (UUID PK), user_id (FK), hash, is_active, expired_on
+
+**tb_notification** (platform): id (UUID PK), from_user (FK), to_user (FK), type, category, title, message, metadata (JSON), is_read, is_sent
+
+**tb_currency_iso**: id (UUID PK), iso_code, name, symbol
+
+**tb_shot_url**: id (UUID PK), url_token, token, expired_at, receiver_email
+
+Junction/association tables: `tb_user_tb_business_unit`, `tb_cluster_user`, `tb_user_tb_application_role`, `tb_application_role_tb_permission`, `tb_business_unit_tb_module`
+
+**Platform Enums**:
+- `enum_platform_role`: super_admin | platform_admin | (others)
+- `enum_cluster_user_role`: admin | user
+- `enum_subscription_status`: active | inactive | expired
+- `enum_token_type`: access_token | refresh_token
+
+**Platform Relationship Summary**:
+```
+tb_cluster ──< tb_business_unit ──< tb_application_role ──< tb_application_role_tb_permission >>── tb_permission
+tb_cluster ──< tb_cluster_user >>── tb_user
+tb_cluster ──< tb_subscription ──< tb_subscription_detail
+tb_business_unit ──< tb_user_tb_business_unit >>── tb_user
+tb_business_unit ──< tb_business_unit_tb_module >>── tb_module
+tb_user ── tb_user_profile (1:1)
+tb_user ──< tb_password
+tb_user ──< tb_user_login_session
+tb_user ──< tb_notification (from/to)
+tb_user ──< tb_user_tb_application_role >>── tb_application_role
+```
+
+### Tenant Schema — Master Data Tables
+
+**tb_product**: id (UUID PK), code, name, local_name, description, category_id (FK), sub_cat_id (FK), item_group_id (FK), unit_id (FK), tax_profile_id (FK), status (enum_product_status_type), min_qty, max_qty, avg_cost, last_cost, std_cost, dimension (JSON), info (JSON), note, doc_version (INT), created_at, created_by_id (FK), updated_by_id (FK), deleted_at
+
+**tb_product_category**: id, code, name, local_name, description, is_active
+
+**tb_product_sub_category**: id, category_id (FK), code, name, is_active
+
+**tb_product_item_group**: id, code, name, is_active
+
+**tb_product_location**: id, product_id (FK), location_id (FK), is_active, bin (VARCHAR)
+
+**tb_product_tb_vendor**: id, product_id (FK), vendor_id (FK), is_primary, vendor_product_code
+
+**tb_unit**: id, code, name, local_name, type (enum_unit_type), is_active
+
+**tb_unit_conversion**: id, from_unit (FK→tb_unit), to_unit (FK→tb_unit), factor (DECIMAL)
+
+**tb_tax_profile**: id, code, name, tax_type (enum_tax_type), tax_rate (DECIMAL), calc_method (enum_calculation_method), is_active
+
+**tb_location**: id, code, name, local_name, type (enum_location_type), description, is_active, dimension (JSON), info (JSON)
+
+**tb_vendor**: id, code, name, local_name, tax_id, credit_term_id (FK), is_active, dimension (JSON), info (JSON)
+
+**tb_vendor_address**: id, vendor_id (FK), type (enum_vendor_address_type), address, city, country
+
+**tb_vendor_contact**: id, vendor_id (FK), name, email, phone
+
+**tb_credit_term**: id, code, name, days (INT), is_active
+
+**tb_currency**: id, code, name, symbol, is_default, is_active
+
+**tb_exchange_rate**: id, currency_id (FK), rate (DECIMAL), effective_date
+
+**tb_department**: id, code, name, local_name, is_active
+
+**tb_delivery_point**: id, code, name, is_active
+
+### Tenant Schema — Procurement Flow
+
+**Procurement flow**: PR → PO → GRN → Credit Note
+
+**tb_purchase_request**: id, doc_number, doc_date, doc_status (enum_purchase_request_doc_status), location_id (FK), department_id (FK), delivery_date, workflow_id (FK), remark, dimension (JSON), doc_version (INT), created_by_id (FK), deleted_at
+
+**tb_purchase_request_detail**: id, purchase_request_id (FK), product_id (FK), unit_id (FK), qty (DECIMAL), remark, dimension (JSON)
+
+**tb_purchase_order**: id, doc_number, doc_date, doc_status (enum_purchase_order_doc_status), vendor_id (FK), location_id (FK), currency_id (FK), credit_term_id (FK), delivery_date, pr_id (FK→PR), exchange_rate, subtotal, tax_amount, total_amount, workflow_id (FK), dimension (JSON), doc_version (INT), created_by_id (FK), deleted_at
+
+**tb_purchase_order_detail**: id, purchase_order_id (FK), product_id (FK), unit_id (FK), qty, price, discount, tax_amount, total, pr_detail_id (FK), dimension (JSON)
+
+**tb_good_received_note**: id, doc_number, doc_date, type (enum_good_received_note_type), status (enum_good_received_note_status), vendor_id (FK), location_id (FK), po_id (FK), invoice_number, subtotal, tax_amount, total_amount, workflow_id (FK), dimension (JSON), doc_version (INT), created_by_id (FK), deleted_at
+
+**tb_good_received_note_detail**: id, grn_id (FK), product_id (FK), unit_id (FK), qty, price, po_detail_id (FK), tax_amount, total
+
+**tb_good_received_note_detail_item**: id, grn_detail_id (FK), batch_number, expiry_date, qty — (batch/lot tracking at GRN line level)
+
+**tb_credit_note**: id, doc_number, doc_date, type (enum_credit_note_type), doc_status (enum_credit_note_doc_status), vendor_id (FK), location_id (FK), grn_id (FK), reason_id (FK), subtotal, tax_amount, total_amount, workflow_id (FK), created_by_id (FK), deleted_at
+
+**tb_credit_note_detail**: id, credit_note_id (FK), product_id (FK), unit_id (FK), qty, price, grn_detail_id (FK)
+
+### Tenant Schema — Inventory & Stock
+
+**tb_inventory_transaction**: id, doc_type (enum_inventory_doc_type), doc_id (UUID), doc_number, transaction_date, location_id (FK), created_by_id (FK), deleted_at
+
+**tb_inventory_transaction_detail**: id, transaction_id (FK), product_id (FK), unit_id (FK), qty, cost, running_qty, running_cost
+
+**tb_stock_in**: id, doc_number, doc_date, doc_status (enum_doc_status), location_id (FK), workflow_id (FK), remark, dimension (JSON), created_by_id (FK), deleted_at
+
+**tb_stock_in_detail**: id, stock_in_id (FK), product_id (FK), unit_id (FK), qty, cost, remark, dimension (JSON)
+
+**tb_stock_out**: id, doc_number, doc_date, doc_status (enum_doc_status), location_id (FK), workflow_id (FK), remark, dimension (JSON), created_by_id (FK), deleted_at
+
+**tb_stock_out_detail**: id, stock_out_id (FK), product_id (FK), unit_id (FK), qty, cost, remark, dimension (JSON)
+
+**tb_transfer**: id, doc_number, doc_date, doc_status (enum_doc_status), from_loc_id (FK), to_loc_id (FK), workflow_id (FK), remark, dimension (JSON), created_by_id (FK), deleted_at
+
+**tb_transfer_detail**: id, transfer_id (FK), product_id (FK), unit_id (FK), qty, cost, remark, dimension (JSON)
+
+**tb_store_requisition**: id, doc_number, doc_date, doc_status (enum_doc_status), from_loc_id (FK), to_loc_id (FK), workflow_id (FK)
+
+**tb_store_requisition_detail**: id, requisition_id (FK), product_id (FK), unit_id (FK), qty
+
+**tb_count_stock**: id, doc_number, count_date, status (enum_count_stock_status), location_id (FK), type, created_by_id (FK)
+
+**tb_count_stock_detail**: id, count_stock_id (FK), product_id (FK), unit_id (FK), system_qty, count_qty, diff_qty
+
+### Tenant Schema — Pricing, Financial & Config
+
+**tb_pricelist**: id, doc_number, vendor_id (FK), status (enum_pricelist_status), effective_date, compare_type (enum_pricelist_compare_type), created_by_id (FK)
+
+**tb_pricelist_detail**: id, pricelist_id (FK), product_id (FK), unit_id (FK), price, remark
+
+**tb_request_for_pricing**: id, doc_number, vendor_id (FK), status, created_by_id (FK)
+
+**tb_request_for_pricing_detail**: id, rfp_id (FK), product_id (FK), unit_id (FK), qty, price
+
+**tb_jv_header**: id, doc_number, doc_date, status (enum_jv_status), description, created_by_id (FK)
+
+**tb_jv_detail**: id, jv_header_id (FK), account, debit, credit, description
+
+**tb_period**: id, name, start_date, end_date, status (enum_period_status), location_id (FK)
+
+**tb_workflow**: id, name, type (enum_workflow_type), config (JSON), is_active
+
+**Configuration tables**:
+- `tb_config_running_code`: id, doc_type, prefix, running_number (INT), format — (auto-numbering for documents)
+- `tb_application_config`: id, key, value (JSON)
+- `tb_dimension`: id, name, type (enum_dimension_type), is_active
+- `tb_attachment`: id, ref_id (UUID), ref_type (VARCHAR), file_name, file_url, file_size (INT)
+- `tb_user_location`: id, user_id, location_id (FK), is_default
+
+### Tenant Key Enums
+
+| Enum | Values |
+|------|--------|
+| `enum_doc_status` | draft, pending, approved, rejected, cancelled, closed |
+| `enum_purchase_request_doc_status` | draft, pending_approval, approved, rejected, cancelled, closed |
+| `enum_purchase_order_doc_status` | draft, pending_approval, approved, rejected, cancelled, partially_received, closed |
+| `enum_good_received_note_status` | draft, pending, approved, rejected, cancelled |
+| `enum_good_received_note_type` | po_based, non_po |
+| `enum_credit_note_type` | return, price_adjustment, damage |
+| `enum_credit_note_doc_status` | draft, pending, approved, rejected, cancelled |
+| `enum_location_type` | warehouse, store, kitchen, bar |
+| `enum_unit_type` | inventory, order, recipe |
+| `enum_tax_type` | vat, service_charge, withholding_tax |
+| `enum_calculation_method` | inclusive, exclusive |
+| `enum_inventory_doc_type` | (see schema: stock_in, stock_out, transfer_in, transfer_out, grn, adjustment variants) |
+| `enum_activity_action` | create, update, delete, approve, reject, cancel, close |
+| `enum_count_stock_status` | draft, in_progress, completed, cancelled |
+| `enum_period_status` | open, closed |
+| `enum_jv_status` | draft, posted, cancelled |
+| `enum_pricelist_status` | draft, active, expired, cancelled |
+| `enum_workflow_type` | approval, notification |
+| `enum_vendor_address_type` | billing, shipping, both |
+| `enum_product_status_type` | active, inactive, discontinued |
+| `enum_dimension_type` | text, number, date, select |
