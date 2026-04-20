@@ -11,6 +11,7 @@ import {
 } from './interface/good-received-note.interface';
 import { ClientProxy } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
+import { calcBaseQty } from '@/common/common.helper';
 import { Injectable, Inject, HttpStatus } from '@nestjs/common';
 import { enum_good_received_note_status, enum_good_received_note_type, enum_purchase_order_doc_status } from '@repo/prisma-shared-schema-tenant';
 import { InventoryTransactionService, ICreateFromGrnDetailItem } from '@/inventory/inventory-transaction/inventory-transaction.service';
@@ -705,17 +706,17 @@ export class GoodReceivedNoteService {
                   order_unit_id: (item as any).order_unit_id || null,
                   order_unit_name: (item as any).order_unit_name || null,
                   order_unit_conversion_factor: (item as any).order_unit_conversion_factor || 0,
-                  order_base_qty: (item as any).order_base_qty || 0,
+                  order_base_qty: calcBaseQty((item as any).order_qty, (item as any).order_unit_conversion_factor),
                   received_qty: (item as any).received_qty || 0,
                   received_unit_id: (item as any).received_unit_id || null,
                   received_unit_name: (item as any).received_unit_name || null,
                   received_unit_conversion_factor: (item as any).received_unit_conversion_factor || 0,
-                  received_base_qty: (item as any).received_base_qty || 0,
+                  received_base_qty: calcBaseQty((item as any).received_qty, (item as any).received_unit_conversion_factor),
                   foc_qty: (item as any).foc_qty || 0,
                   foc_unit_id: (item as any).foc_unit_id || null,
                   foc_unit_name: (item as any).foc_unit_name || null,
                   foc_unit_conversion_factor: (item as any).foc_unit_conversion_factor || 0,
-                  foc_base_qty: (item as any).foc_base_qty || 0,
+                  foc_base_qty: calcBaseQty((item as any).foc_qty, (item as any).foc_unit_conversion_factor),
                   tax_profile_id: item.tax_profile_id || null,
                   tax_profile_name: item.tax_profile_name || null,
                   tax_rate: item.tax_rate || 0,
@@ -767,12 +768,12 @@ export class GoodReceivedNoteService {
                 received_unit_id: (item as any).received_unit_id || null,
                 received_unit_name: (item as any).received_unit_name || null,
                 received_unit_conversion_factor: (item as any).received_unit_conversion_factor || 0,
-                received_base_qty: (item as any).received_base_qty || 0,
+                received_base_qty: calcBaseQty((item as any).received_qty, (item as any).received_unit_conversion_factor),
                 foc_qty: (item as any).foc_qty || 0,
                 foc_unit_id: (item as any).foc_unit_id || null,
                 foc_unit_name: (item as any).foc_unit_name || null,
                 foc_unit_conversion_factor: (item as any).foc_unit_conversion_factor || 0,
-                foc_base_qty: (item as any).foc_base_qty || 0,
+                foc_base_qty: calcBaseQty((item as any).foc_qty, (item as any).foc_unit_conversion_factor),
                 tax_profile_id: item.tax_profile_id || null,
                 tax_profile_name: item.tax_profile_name || null,
                 tax_rate: item.tax_rate || 0,
@@ -1121,12 +1122,12 @@ export class GoodReceivedNoteService {
                 received_unit_id: (item as any).received_unit_id || null,
                 received_unit_name: (item as any).received_unit_name || null,
                 received_unit_conversion_factor: (item as any).received_unit_conversion_factor || 0,
-                received_base_qty: (item as any).received_base_qty || 0,
+                received_base_qty: calcBaseQty((item as any).received_qty, (item as any).received_unit_conversion_factor),
                 foc_qty: (item as any).foc_qty || 0,
                 foc_unit_id: (item as any).foc_unit_id || null,
                 foc_unit_name: (item as any).foc_unit_name || null,
                 foc_unit_conversion_factor: (item as any).foc_unit_conversion_factor || 0,
-                foc_base_qty: (item as any).foc_base_qty || 0,
+                foc_base_qty: calcBaseQty((item as any).foc_qty, (item as any).foc_unit_conversion_factor),
                 tax_profile_id: (item as any).tax_profile_id || null,
                 tax_profile_name: (item as any).tax_profile_name || null,
                 tax_rate: (item as any).tax_rate || 0,
@@ -1190,6 +1191,10 @@ export class GoodReceivedNoteService {
             }
 
             if (Object.keys(itemData).length > 0) {
+              const merged = { ...(existingItem || {}), ...itemData } as Record<string, unknown>;
+              itemData.received_base_qty = calcBaseQty(merged.received_qty, merged.received_unit_conversion_factor);
+              itemData.foc_base_qty = calcBaseQty(merged.foc_qty, merged.foc_unit_conversion_factor);
+
               if (existingItem) {
                 await prisma.tb_good_received_note_detail_item.update({
                   where: { id: existingItem.id },

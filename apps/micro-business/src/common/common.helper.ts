@@ -32,6 +32,9 @@ function getDatePattern(pattern: string): IPattern {
   }
 }
 
+export const calcBaseQty = (qty: unknown, factor: unknown): number =>
+  Math.round(Number(qty ?? 0) * Number(factor ?? 0) * 100) / 100;
+
 function getRunningPattern(pattern: string): IPattern {
   const RUNNING_PATTERN = /\((\d+),(.*?)\)/
   const match = pattern.match(RUNNING_PATTERN)

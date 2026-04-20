@@ -23,7 +23,7 @@ import {
 import { IPaginate } from '@/common/shared-interface/paginate.interface';
 import QueryParams from '@/libs/paginate.query';
 import { CommonLogic } from '@/common/common.logic';
-import { getPattern } from '@/common/common.helper';
+import { getPattern, calcBaseQty } from '@/common/common.helper';
 import { format } from 'date-fns';
 import { randomBytes } from 'crypto';
 
@@ -965,6 +965,10 @@ export class PurchaseRequestService {
         );
 
         const priceData = pricelistMap?.get(detail.id);
+        const approvedBaseQty = calcBaseQty(
+          detail.requested_qty,
+          detail.requested_unit_conversion_factor,
+        );
         await prismatx.tb_purchase_request_detail.update({
           where: { id: detail.id },
           data: {
@@ -975,7 +979,9 @@ export class PurchaseRequestService {
             approved_unit_id: detail.requested_unit_id,
             approved_unit_name: detail.requested_unit_name,
             approved_unit_conversion_factor: Number(detail.requested_unit_conversion_factor),
-            approved_base_qty: Number(detail.requested_base_qty),
+            approved_base_qty: approvedBaseQty,
+            requested_base_qty: approvedBaseQty,
+            foc_base_qty: calcBaseQty(detail.foc_qty, detail.foc_unit_conversion_factor),
             current_stage_status: '',
             ...(priceData && {
               pricelist_detail_id: priceData.pricelist_detail_id,
@@ -1107,6 +1113,9 @@ export class PurchaseRequestService {
             },
             data: {
               ...item,
+              requested_base_qty: calcBaseQty(item.requested_qty, item.requested_unit_conversion_factor),
+              approved_base_qty: calcBaseQty(item.approved_qty, item.approved_unit_conversion_factor),
+              foc_base_qty: calcBaseQty(item.foc_qty, item.foc_unit_conversion_factor),
               history: history as unknown as Prisma.InputJsonValue,
               updated_by_id: this.userId,
             },
@@ -1126,6 +1135,9 @@ export class PurchaseRequestService {
             where: { id: detailId },
             data: {
               ...updateData,
+              requested_base_qty: calcBaseQty(updateData.requested_qty, updateData.requested_unit_conversion_factor),
+              approved_base_qty: calcBaseQty(updateData.approved_qty, updateData.approved_unit_conversion_factor),
+              foc_base_qty: calcBaseQty(updateData.foc_qty, updateData.foc_unit_conversion_factor),
               history: history as unknown as Prisma.InputJsonValue,
               updated_by_id: this.userId,
             },
@@ -1591,6 +1603,9 @@ export class PurchaseRequestService {
           },
           data: {
             ...updateDto,
+            requested_base_qty: calcBaseQty(detail.requested_qty, detail.requested_unit_conversion_factor),
+            approved_base_qty: calcBaseQty(detail.approved_qty, detail.approved_unit_conversion_factor),
+            foc_base_qty: calcBaseQty(detail.foc_qty, detail.foc_unit_conversion_factor),
             doc_version: { increment: 1 },
             stages_status: stages as unknown as Prisma.InputJsonValue,
             history: history as unknown as Prisma.InputJsonValue,
