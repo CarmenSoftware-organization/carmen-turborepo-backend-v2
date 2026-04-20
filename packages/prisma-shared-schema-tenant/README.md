@@ -39,5 +39,5 @@ are resolved by `micro-cluster` / `micro-business`.
 ## Notes for agents
 
 - Same conventions as platform schema: UUID PKs, soft deletes, audit fields.
-- Recipe tables historically lagged behind master data on new-tenant deploys — re-run `bun run db:migrate` inside this package after provisioning a tenant _(verify)_.
+- Recipe tables historically lagged behind master data on new-tenant deploys — re-run `bun run db:migrate` inside this package after provisioning a tenant _(stale — needs rewrite)_.
 - Changes here affect every tenant DB; migration must be idempotent and forward-compatible.

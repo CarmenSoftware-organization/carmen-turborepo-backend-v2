@@ -147,9 +147,9 @@ _(verify against current code)_ are salvaged from a historical report
 being treated as authoritative.
 
 - **Service consolidation history.** Earlier branches had `micro-authen`, `micro-tenant-inventory`, `micro-tenant-master`, `micro-tenant-procurement`, `micro-tenant-recipe` as separate services. They were merged into `micro-business`. Don't expect to find them.
-- **TCP message pattern drift.** _(verify against current code)_ When refactoring a `@MessagePattern()` handler in `micro-business`, also update the matching `@Client.send()` call in `backend-gateway`. Mismatches cause silent 500s.
-- **Prisma `findMany` with spread + select conflict.** _(verify against current code)_ `prisma.x.findMany({ ...query, select: {...} })` throws if `query` also sets `select`. Build the query object without spread, or strip `select` from the spread.
-- **Tenant DB migration gap — recipe tables.** _(verify against current code)_ Recipe tables historically lagged behind master data on new-tenant schema deploys. Re-run `db:migrate` inside `packages/prisma-shared-schema-tenant` after adding a tenant.
+- **TCP message pattern drift.** When refactoring a `@MessagePattern()` handler in `micro-business`, also update the matching `@Client.send()` call in `backend-gateway`. Mismatches cause silent 500s.
+- **Prisma `findMany` with spread + select conflict.** `prisma.x.findMany({ ...query, select: {...} })` throws if `query` also sets `select`. Build the query object without spread, or strip `select` from the spread.
+- **Tenant DB migration gap — recipe tables.** _(stale — needs rewrite)_ Recipe tables historically lagged behind master data on new-tenant schema deploys. Re-run `db:migrate` inside `packages/prisma-shared-schema-tenant` after adding a tenant.
 - **Credentials in pre-PR-#8 git history.** A Supabase-style token `8wzw8O77O0VAGDnt` and dev password `123456` are present in commits on `main` predating sub-project #1. Rotate the Supabase token and scrub history separately; redacting going forward doesn't un-leak them.
 
 ## Build Dependencies
