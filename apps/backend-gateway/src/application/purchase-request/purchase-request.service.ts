@@ -13,6 +13,7 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { CalculatePurchaseRequestDetail } from './dto/CalculatePurchaseRequestDetail.dto';
 
 import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
+import { withSpan } from '@repo/tracing';
 @Injectable()
 export class PurchaseRequestService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -210,28 +211,39 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    const res: Observable<MicroserviceResponse> = this.procurementService.send(
-      {
-        cmd: 'purchase-request.create',
-        service: 'purchase-request',
-      },
-      {
-        data: createDto,
-        user_id: user_id,
-        bu_code: bu_code,
-        version: version, ...getGatewayRequestContext() },
-    );
+    return withSpan('pr.create.gateway', async (span) => {
+      const dto = createDto as unknown as Record<string, unknown>;
+      const details = (dto.purchase_request_detail as { add?: unknown[] } | undefined)?.add;
+      span.setAttribute('bu_code', bu_code);
+      span.setAttribute('user_id', user_id);
+      span.setAttribute('pr.workflow_id', String(dto.workflow_id ?? ''));
+      span.setAttribute('pr.department_id', String(dto.department_id ?? ''));
+      span.setAttribute('pr.detail_count', details?.length ?? 0);
 
-    const response = await firstValueFrom(res);
-
-    if (response.response.status !== HttpStatus.CREATED) {
-      return Result.error(
-        response.response.message,
-        httpStatusToErrorCode(response.response.status),
+      const res: Observable<MicroserviceResponse> = this.procurementService.send(
+        {
+          cmd: 'purchase-request.create',
+          service: 'purchase-request',
+        },
+        {
+          data: createDto,
+          user_id: user_id,
+          bu_code: bu_code,
+          version: version, ...getGatewayRequestContext() },
       );
-    }
 
-    return Result.ok(response.data);
+      const response = await firstValueFrom(res);
+      span.setAttribute('response.status', response.response.status);
+
+      if (response.response.status !== HttpStatus.CREATED) {
+        return Result.error(
+          response.response.message,
+          httpStatusToErrorCode(response.response.status),
+        );
+      }
+
+      return Result.ok(response.data);
+    });
   }
 
   /**

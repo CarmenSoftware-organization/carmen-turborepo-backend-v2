@@ -15,6 +15,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { withSpan } from '@repo/tracing';
 import { PurchaseRequestService } from './purchase-request.service';
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
 import {
@@ -541,12 +542,17 @@ export class PurchaseRequestController extends BaseHttpController {
 
     const { user_id } = ExtractRequestHeader(req);
 
-    const result = await this.purchaseRequestService.create(
-      createDto,
-      user_id,
-      bu_code,
-      version,
-    );
+    const result = await withSpan('pr.create.controller', async (span) => {
+      span.setAttribute('bu_code', bu_code);
+      span.setAttribute('user_id', user_id);
+      span.setAttribute('api.version', version);
+      return this.purchaseRequestService.create(
+        createDto,
+        user_id,
+        bu_code,
+        version,
+      );
+    });
     this.respond(res, result, HttpStatus.CREATED);
   }
 

@@ -12,6 +12,7 @@ import { enum_stage_role, enum_pricelist_compare_type } from '@repo/prisma-share
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { trace } from '@opentelemetry/api';
+import { withSpan } from '@repo/tracing';
 import { ValidatePRBeforeSubmitSchema } from '../dto/purchase-request.dto';
 
 // Re-export for backward compatibility
@@ -38,7 +39,7 @@ export class PurchaseRequestLogic {
     const data = payload.details
     const extractId = this.populateData(data)
 
-     
+
     const foreignValue: Record<string, any> = await this.tracer.startActiveSpan('pr.create.populate-foreign-keys', async (span) => {
       try {
         return await this.mapperLogic.populate(extractId, user_id, tenant_id);
@@ -135,7 +136,12 @@ export class PurchaseRequestLogic {
       })
     }
 
-    const result = await this.purchaseRequestService.create(createPR, createPurchaseRequestDetail)
+    const result = await withSpan('pr.create.persist', async (span) => {
+      span.setAttribute('pr.detail_count', createPurchaseRequestDetail.length);
+      span.setAttribute('pr.workflow_id', createPR?.workflow_id ?? '');
+      span.setAttribute('pr.department_id', createPR?.department_id ?? '');
+      return this.purchaseRequestService.create(createPR, createPurchaseRequestDetail);
+    });
     return result
   }
 
@@ -143,7 +149,7 @@ export class PurchaseRequestLogic {
     id,
     { stage_role, details: data }: {
       stage_role: enum_stage_role,
-       
+
       details: any
     },
     user_id: string,
@@ -151,12 +157,12 @@ export class PurchaseRequestLogic {
     this.logger.debug({ function: 'save', data, user_id, tenant_id }, PurchaseRequestLogic.name);
     await this.purchaseRequestService.initializePrismaService(tenant_id, user_id);
     let updatePR = {}
-     
+
     let updatePRDetail: any = {}
     if (stage_role === enum_stage_role.create) {
       const extractId = this.populateData(data)
-       
-    const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractId, user_id, tenant_id)
+
+      const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractId, user_id, tenant_id)
 
       // Validate HOD requirement when workflow is being assigned
       if (data?.workflow_id && data?.department_id) {
@@ -303,8 +309,8 @@ export class PurchaseRequestLogic {
       }
     } else if (stage_role === enum_stage_role.purchase || stage_role === enum_stage_role.approve) {
       const extractIds = this.populateDetail(data)
-       
-    const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id)
+
+      const foreignValue: Record<string, any> = await this.mapperLogic.populate(extractIds, user_id, tenant_id)
       updatePRDetail = []
       for (const detail of data as PurchaseRoleSavePurchaseRequestDetail[]) {
         updatePRDetail.push(
@@ -923,7 +929,7 @@ export class PurchaseRequestLogic {
    * Send notification when PR is submitted
    */
   private async sendSubmitNotification(
-     
+
     purchaseRequest: Record<string, any>,
     workflow: WorkflowHeader,
     submitterId: string,
@@ -962,7 +968,7 @@ export class PurchaseRequestLogic {
    * Send notification when PR is approved
    */
   private async sendApproveNotification(
-     
+
     purchaseRequest: Record<string, any>,
     workflow: WorkflowHeader,
     approverId: string,
@@ -1028,7 +1034,7 @@ export class PurchaseRequestLogic {
    * Send notification when PR is reviewed (sent back)
    */
   private async sendReviewNotification(
-     
+
     purchaseRequest: Record<string, any>,
     workflow: WorkflowHeader,
     reviewerId: string,

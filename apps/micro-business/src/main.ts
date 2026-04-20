@@ -25,13 +25,18 @@ async function bootstrap() {
   logger.log(`HTTP server is configured to run on ${businessServiceHost}:${businessServiceHttpPort}`);
 
   // Connect TCP microservice
-  app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.TCP,
-    options: {
-      host: businessServiceHost,
-      port: businessServiceTcpPort,
+  // inheritAppConfig: true → global APP_INTERCEPTOR / APP_FILTER / APP_PIPE / APP_GUARD
+  // registered on AppModule are also applied to TCP message handlers
+  app.connectMicroservice<MicroserviceOptions>(
+    {
+      transport: Transport.TCP,
+      options: {
+        host: businessServiceHost,
+        port: businessServiceTcpPort,
+      },
     },
-  });
+    { inheritAppConfig: true },
+  );
 
   // Enable CORS for WebSocket
   app.enableCors({
