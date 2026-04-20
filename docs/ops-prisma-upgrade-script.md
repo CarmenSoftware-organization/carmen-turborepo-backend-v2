@@ -1,4 +1,4 @@
-#Run the following to update
+# Run the following to update
 
-    npm i --save-dev prisma@latest
-    npm i @prisma/client@latest
+    bun add -d prisma@latest
+    bun add @prisma/client@latest
