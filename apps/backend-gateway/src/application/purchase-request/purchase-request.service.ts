@@ -23,7 +23,7 @@ export class PurchaseRequestService {
   constructor(
     @Inject('BUSINESS_SERVICE')
     private readonly procurementService: ClientProxy,
-  ) {}
+  ) { }
 
   /**
    * Find a purchase request by ID via microservice
@@ -63,7 +63,8 @@ export class PurchaseRequestService {
         user_id: user_id,
         bu_code: bu_code,
         userData: userData,
-        version: version, ...getGatewayRequestContext() },
+        version: version, ...getGatewayRequestContext()
+      },
     );
 
     const response = await firstValueFrom(res);
@@ -119,7 +120,8 @@ export class PurchaseRequestService {
         bu_code: bu_code,
         paginate: paginate,
         userDatas: userDatas,
-        version: version, ...getGatewayRequestContext() },
+        version: version, ...getGatewayRequestContext()
+      },
     );
 
     try {
@@ -172,7 +174,8 @@ export class PurchaseRequestService {
       {
         user_id: user_id,
         bu_code: bu_code,
-        version: version, ...getGatewayRequestContext() },
+        version: version, ...getGatewayRequestContext()
+      },
     );
 
     const response = await firstValueFrom(res);
@@ -211,7 +214,7 @@ export class PurchaseRequestService {
       PurchaseRequestService.name,
     );
 
-    return withSpan('pr.create.gateway', async (span) => {
+    return withSpan('PurchaseRequestService.create', async (span) => {
       const dto = createDto as unknown as Record<string, unknown>;
       const details = (dto.purchase_request_detail as { add?: unknown[] } | undefined)?.add;
       span.setAttribute('bu_code', bu_code);
@@ -229,7 +232,8 @@ export class PurchaseRequestService {
           data: createDto,
           user_id: user_id,
           bu_code: bu_code,
-          version: version, ...getGatewayRequestContext() },
+          version: version, ...getGatewayRequestContext()
+        },
       );
 
       const response = await firstValueFrom(res);
@@ -278,7 +282,8 @@ export class PurchaseRequestService {
         body: body,
         user_id: user_id,
         bu_code: bu_code,
-        version: version, ...getGatewayRequestContext() },
+        version: version, ...getGatewayRequestContext()
+      },
     );
 
     const response = await firstValueFrom(res);
@@ -329,7 +334,8 @@ export class PurchaseRequestService {
         body: body,
         user_id: user_id,
         bu_code: bu_code,
-        version: version, ...getGatewayRequestContext() },
+        version: version, ...getGatewayRequestContext()
+      },
     );
 
     const response = await firstValueFrom(res);
@@ -378,7 +384,8 @@ export class PurchaseRequestService {
         data: updateDto,
         user_id: user_id,
         bu_code: bu_code,
-        version: version, ...getGatewayRequestContext() },
+        version: version, ...getGatewayRequestContext()
+      },
     );
 
     const response = await firstValueFrom(res);
@@ -470,7 +477,8 @@ export class PurchaseRequestService {
         body: payload,
         user_id: user_id,
         bu_code: bu_code,
-        version: version, ...getGatewayRequestContext() },
+        version: version, ...getGatewayRequestContext()
+      },
     );
 
     const response = await firstValueFrom(res);
@@ -502,7 +510,8 @@ export class PurchaseRequestService {
         body: { pr_ids },
         user_id,
         bu_code,
-        version, ...getGatewayRequestContext() },
+        version, ...getGatewayRequestContext()
+      },
     );
 
     const response = await firstValueFrom(res);
@@ -535,7 +544,8 @@ export class PurchaseRequestService {
         body: { pr_ids, reject_message },
         user_id,
         bu_code,
-        version, ...getGatewayRequestContext() },
+        version, ...getGatewayRequestContext()
+      },
     );
 
     const response = await firstValueFrom(res);
@@ -715,7 +725,8 @@ export class PurchaseRequestService {
         bu_code: bu_code,
         paginate: paginate,
         version: version,
-        options: options, ...getGatewayRequestContext() },
+        options: options, ...getGatewayRequestContext()
+      },
     );
 
     const response = await firstValueFrom(res);
@@ -756,9 +767,9 @@ export class PurchaseRequestService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-      { cmd: 'purchase-request.export', service: 'purchase-request' },
-      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
-    ),
+        { cmd: 'purchase-request.export', service: 'purchase-request' },
+        { id, user_id, bu_code, version, ...getGatewayRequestContext() },
+      ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -802,9 +813,9 @@ export class PurchaseRequestService {
 
     const response = await firstValueFrom(
       this.procurementService.send(
-      { cmd: 'purchase-request.print', service: 'purchase-request' },
-      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
-    ),
+        { cmd: 'purchase-request.print', service: 'purchase-request' },
+        { id, user_id, bu_code, version, ...getGatewayRequestContext() },
+      ),
     );
 
     if (response.response.status !== HttpStatus.OK) {
@@ -855,7 +866,8 @@ export class PurchaseRequestService {
         detail_id: detail_id,
         user_id: user_id,
         bu_code: bu_code,
-        version: version, ...getGatewayRequestContext() },
+        version: version, ...getGatewayRequestContext()
+      },
     );
 
     const response = await firstValueFrom(res);
@@ -903,7 +915,8 @@ export class PurchaseRequestService {
         detail_id: detail_id,
         user_id: user_id,
         bu_code: bu_code,
-        version: version, ...getGatewayRequestContext() },
+        version: version, ...getGatewayRequestContext()
+      },
     );
 
     const response = await firstValueFrom(res);
@@ -954,7 +967,8 @@ export class PurchaseRequestService {
         data: data,
         user_id: user_id,
         bu_code: bu_code,
-        version: version, ...getGatewayRequestContext() },
+        version: version, ...getGatewayRequestContext()
+      },
     );
 
     const response = await firstValueFrom(res);

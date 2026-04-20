@@ -11,7 +11,6 @@ import { Result, ErrorCode } from '@/common/result';
 import { enum_stage_role, enum_pricelist_compare_type } from '@repo/prisma-shared-schema-tenant';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { trace } from '@opentelemetry/api';
 import { withSpan } from '@repo/tracing';
 import { ValidatePRBeforeSubmitSchema } from '../dto/purchase-request.dto';
 
@@ -31,118 +30,141 @@ export class PurchaseRequestLogic {
     private readonly workflowOrchestrator: WorkflowOrchestratorService,
   ) { }
 
-  private readonly tracer = trace.getTracer('micro-business.purchase-request');
-
   async create(payload: CreatePurchaseRequest, user_id: string, tenant_id: string) {
-    this.logger.debug({ function: 'create', data: payload, user_id, tenant_id }, PurchaseRequestLogic.name);
-    await this.purchaseRequestService.initializePrismaService(tenant_id, user_id);
-    const data = payload.details
-    const extractId = this.populateData(data)
+    return withSpan('PurchaseRequestLogic.create', async (rootSpan) => {
+      this.logger.debug({ function: 'create', data: payload, user_id, tenant_id }, PurchaseRequestLogic.name);
+      rootSpan.setAttribute('bu_code', tenant_id);
+      rootSpan.setAttribute('user_id', user_id);
+      rootSpan.setAttribute('pr.workflow_id', String(payload?.details?.workflow_id ?? ''));
+      rootSpan.setAttribute('pr.department_id', String(payload?.details?.department_id ?? ''));
+      rootSpan.setAttribute('pr.detail_count', payload?.details?.purchase_request_detail?.add?.length ?? 0);
 
+      await withSpan('PurchaseRequestLogic.create.initPrisma', () =>
+        this.purchaseRequestService.initializePrismaService(tenant_id, user_id),
+      );
 
-    const foreignValue: Record<string, any> = await this.tracer.startActiveSpan('pr.create.populate-foreign-keys', async (span) => {
-      try {
-        return await this.mapperLogic.populate(extractId, user_id, tenant_id);
-      } finally {
-        span.end();
-      }
-    });
+      const data = payload.details;
+      const extractId = await withSpan('PurchaseRequestLogic.create.extractIds', async () => this.populateData(data));
 
-    // Validate HOD requirement and initialize workflow
-    let workflowFirstStage = null;
-    await this.tracer.startActiveSpan('pr.create.workflow-init', async (span) => {
-      try {
+      const foreignValue: Record<string, any> = await withSpan(
+        'PurchaseRequestLogic.create.populateForeignKeys',
+        async (span) => {
+          span.setAttribute('extract_id.keys', Object.keys(extractId ?? {}).length);
+          return this.mapperLogic.populate(extractId, user_id, tenant_id);
+        },
+      );
+
+      let workflowFirstStage = null;
+      await withSpan('PurchaseRequestLogic.create.workflowInit', async (span) => {
         if (data?.workflow_id && data?.department_id) {
           const workflowData = foreignValue?.workflow_id?.data;
           const stagesWithHod = workflowData?.stages?.filter((stage: Record<string, unknown>) => stage.is_hod === true) || [];
+          span.setAttribute('workflow.stages_with_hod', stagesWithHod.length);
           if (stagesWithHod.length > 0) {
-            const hodCheckRes = this.masterService.send(
-              { cmd: 'department-users.has-hod-in-department', service: 'department-users' },
-              {
-                department_id: data.department_id,
-                user_id,
-                bu_code: tenant_id
-              },
-            );
-            const hodCheckResult: { data: boolean; response: { status: number; message: string } } = await firstValueFrom(hodCheckRes);
-            if (hodCheckResult.response.status !== HttpStatus.OK) {
-              throw new BadRequestException(
-                hodCheckResult.response.message || 'Failed to check HOD status for department'
+            await withSpan('PurchaseRequestLogic.create.hodCheck', async (hodSpan) => {
+              hodSpan.setAttribute('department_id', data.department_id);
+              const hodCheckRes = this.masterService.send(
+                { cmd: 'department-users.has-hod-in-department', service: 'department-users' },
+                {
+                  department_id: data.department_id,
+                  user_id,
+                  bu_code: tenant_id,
+                },
               );
-            }
-            if (!hodCheckResult.data) {
-              throw new BadRequestException(
-                `Cannot create PR with this workflow: The workflow requires HOD approval, but department "${foreignValue?.department_id?.name}" does not have a Head of Department (HOD) assigned. Please assign an HOD to this department or select a different workflow.`
-              );
-            }
+              const hodCheckResult: { data: boolean; response: { status: number; message: string } } = await firstValueFrom(hodCheckRes);
+              hodSpan.setAttribute('hod.has_hod', Boolean(hodCheckResult.data));
+              if (hodCheckResult.response.status !== HttpStatus.OK) {
+                throw new BadRequestException(
+                  hodCheckResult.response.message || 'Failed to check HOD status for department',
+                );
+              }
+              if (!hodCheckResult.data) {
+                throw new BadRequestException(
+                  `Cannot create PR with this workflow: The workflow requires HOD approval, but department "${foreignValue?.department_id?.name}" does not have a Head of Department (HOD) assigned. Please assign an HOD to this department or select a different workflow.`,
+                );
+              }
+            });
           }
         }
 
         if (data?.workflow_id) {
-          const workflowData = foreignValue?.workflow_id?.data
-          const res = this.masterService.send(
-            { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
-            {
-              workflowData,
-              currentStatus: '',
-              requestData: { amount: 0 },
-            },
-          );
-          const workflowNav: NavigateForwardResult = await firstValueFrom(res);
-          workflowFirstStage = workflowNav.navigation_info.current_stage_info?.name
+          await withSpan('PurchaseRequestLogic.create.workflowNavigation', async (navSpan) => {
+            const workflowData = foreignValue?.workflow_id?.data;
+            const res = this.masterService.send(
+              { cmd: 'workflows.get-workflow-navigation', service: 'workflows' },
+              {
+                workflowData,
+                currentStatus: '',
+                requestData: { amount: 0 },
+              },
+            );
+            const workflowNav: NavigateForwardResult = await firstValueFrom(res);
+            workflowFirstStage = workflowNav.navigation_info.current_stage_info?.name;
+            navSpan.setAttribute('workflow.first_stage', String(workflowFirstStage ?? ''));
+          });
         }
-      } finally {
-        span.end();
-      }
+      });
+
+      const createPR = await withSpan('PurchaseRequestLogic.create.buildHeader', async (span) => {
+        const header = JSON.parse(
+          JSON.stringify({
+            ...data,
+            workflow_name: foreignValue?.workflow_id?.name,
+            workflow_current_stage: workflowFirstStage,
+            department_name: foreignValue?.department_id?.name,
+            requestor_name: foreignValue?.user_id?.name,
+          }),
+        );
+        delete header.purchase_request_detail;
+        span.setAttribute('pr.workflow_name', String(header?.workflow_name ?? ''));
+        return header;
+      });
+
+      const createPurchaseRequestDetail = await withSpan('PurchaseRequestLogic.create.mapDetails', async (span) => {
+        const details: Record<string, unknown>[] = [];
+        const input = data?.purchase_request_detail?.add ?? [];
+        span.setAttribute('pr.detail_count', input.length);
+        for (const detail of input) {
+          const detailAny = detail as unknown as Record<string, unknown>;
+          const product = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id);
+          const location = foreignValue?.location_ids?.find((location) => location?.id === detail?.location_id);
+          const requestedUnit = foreignValue?.unit_ids?.find((unit) => unit?.id === detail?.requested_unit_id);
+          const deliveryPoint = foreignValue?.delivery_point_ids?.find((dp) => dp?.id === detail?.delivery_point_id);
+          const currency = foreignValue?.currency_ids?.find((currency) => currency?.id === detail?.currency_id);
+          const focUnit = foreignValue?.unit_ids?.find((unit) => unit?.id === detailAny?.foc_unit_id);
+          const inventoryUnit = foreignValue?.unit_ids?.find((unit) => unit?.id === detailAny?.inventory_unit_id);
+
+          details.push({
+            ...detail,
+            product_name: product?.name,
+            product_code: product?.code,
+            product_sku: product?.code,
+            product_local_name: product?.local_name,
+            requested_unit_name: requestedUnit?.name,
+            location_name: location?.name,
+            location_code: location?.code,
+            delivery_point_id: deliveryPoint?.id,
+            delivery_point_name: deliveryPoint?.name,
+            currency_code: currency?.code,
+            exchange_rate: currency?.exchange_rate,
+            exchange_rate_date: currency?.exchange_rate_at,
+            foc_unit_name: focUnit?.name,
+            inventory_unit_name: inventoryUnit?.name,
+          });
+        }
+        return details;
+      });
+
+      const result = await withSpan('PurchaseRequestLogic.create.persist', async (span) => {
+        span.setAttribute('pr.detail_count', createPurchaseRequestDetail.length);
+        span.setAttribute('pr.workflow_id', createPR?.workflow_id ?? '');
+        span.setAttribute('pr.department_id', createPR?.department_id ?? '');
+        return this.purchaseRequestService.create(createPR, createPurchaseRequestDetail as any);
+      });
+
+      rootSpan.setAttribute('result.is_ok', typeof result?.isOk === 'function' ? result.isOk() : true);
+      return result;
     });
-
-    const createPR = JSON.parse(JSON.stringify({
-      ...data,
-      workflow_name: foreignValue?.workflow_id?.name,
-      workflow_current_stage: workflowFirstStage,
-      department_name: foreignValue?.department_id?.name,
-      requestor_name: foreignValue?.user_id?.name,
-    }))
-    delete createPR.purchase_request_detail
-
-    const createPurchaseRequestDetail = []
-
-    for (const detail of data?.purchase_request_detail?.add ?? []) {
-      const detailAny = detail as unknown as Record<string, unknown>;
-      const product = foreignValue?.product_ids?.find((product) => product?.id === detail?.product_id);
-      const location = foreignValue?.location_ids?.find((location) => location?.id === detail?.location_id);
-      const requestedUnit = foreignValue?.unit_ids?.find((unit) => unit?.id === detail?.requested_unit_id);
-      const deliveryPoint = foreignValue?.delivery_point_ids?.find((dp) => dp?.id === detail?.delivery_point_id);
-      const currency = foreignValue?.currency_ids?.find((currency) => currency?.id === detail?.currency_id);
-      const focUnit = foreignValue?.unit_ids?.find((unit) => unit?.id === detailAny?.foc_unit_id);
-      const inventoryUnit = foreignValue?.unit_ids?.find((unit) => unit?.id === detailAny?.inventory_unit_id);
-
-      createPurchaseRequestDetail.push({
-        ...detail,
-        product_name: product?.name,
-        product_code: product?.code,
-        product_sku: product?.code,
-        product_local_name: product?.local_name,
-        requested_unit_name: requestedUnit?.name,
-        location_name: location?.name,
-        location_code: location?.code,
-        delivery_point_id: deliveryPoint?.id,
-        delivery_point_name: deliveryPoint?.name,
-        currency_code: currency?.code,
-        exchange_rate: currency?.exchange_rate,
-        exchange_rate_date: currency?.exchange_rate_at,
-        foc_unit_name: focUnit?.name,
-        inventory_unit_name: inventoryUnit?.name,
-      })
-    }
-
-    const result = await withSpan('pr.create.persist', async (span) => {
-      span.setAttribute('pr.detail_count', createPurchaseRequestDetail.length);
-      span.setAttribute('pr.workflow_id', createPR?.workflow_id ?? '');
-      span.setAttribute('pr.department_id', createPR?.department_id ?? '');
-      return this.purchaseRequestService.create(createPR, createPurchaseRequestDetail);
-    });
-    return result
   }
 
   async save(

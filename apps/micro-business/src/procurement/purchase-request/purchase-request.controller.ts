@@ -6,6 +6,7 @@ import { RejectPurchaseRequestDto, ReviewPurchaseRequestDto, BaseMicroserviceCon
 import { PurchaseRequestLogic } from './logic/purchase-request.logic';
 import { AllExceptionsFilter } from '@/common/exception/global.filter';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
+import { withSpan } from '@repo/tracing';
 import { CalculatePurchaseRequestDetail } from './interface/CalculatePurchaseRequestDetail.dto';
 
 @UseFilters(new AllExceptionsFilter())
@@ -174,11 +175,23 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     const user_id = payload.user_id;
     const bu_code = payload.bu_code;
 
-    const auditContext = this.createAuditContext(payload);
-    const result = await runWithAuditContext(auditContext, () =>
-      this.purchaseRequestLogic.create(payload.data, user_id, bu_code),
-    );
-    return this.handleResult(result, HttpStatus.CREATED);
+    return withSpan('PurchaseRequestController.create', async (span) => {
+      const data = payload.data as Record<string, unknown> | undefined;
+      const details = (data?.purchase_request_detail as { add?: unknown[] } | undefined)?.add;
+      span.setAttribute('bu_code', bu_code);
+      span.setAttribute('user_id', user_id);
+      span.setAttribute('pr.workflow_id', String(data?.workflow_id ?? ''));
+      span.setAttribute('pr.department_id', String(data?.department_id ?? ''));
+      span.setAttribute('pr.detail_count', details?.length ?? 0);
+
+      const auditContext = this.createAuditContext(payload);
+      const result = await runWithAuditContext(auditContext, () =>
+        this.purchaseRequestLogic.create(payload.data, user_id, bu_code),
+      );
+
+      span.setAttribute('result.is_ok', result.isOk());
+      return this.handleResult(result, HttpStatus.CREATED);
+    });
   }
 
   /**
@@ -639,30 +652,6 @@ export class PurchaseRequestController extends BaseMicroserviceController {
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
       this.purchaseRequestService.printToPdf(id),
-    );
-    return this.handleResult(result);
-  }
-
-  /**
-   * Print a purchase request via FastReport viewer (micro-report)
-   * พิมพ์ใบขอซื้อผ่าน FastReport viewer (micro-report)
-   * @param payload - Payload containing the purchase request ID / payload ที่มี ID ของใบขอซื้อ
-   * @returns { viewer_url } for the rendered report / URL ของรายงานที่ render แล้ว
-   */
-  @MessagePattern({
-    cmd: 'purchase-request.printToReport',
-    service: 'purchase-request',
-  })
-  async printToReport(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug(
-      { function: 'printToReport', payload },
-      PurchaseRequestController.name,
-    );
-    const { user_id, bu_code, id } = payload;
-    await this.purchaseRequestService.initializePrismaService(bu_code, user_id);
-    const auditContext = this.createAuditContext(payload);
-    const result = await runWithAuditContext(auditContext, () =>
-      this.purchaseRequestService.printToReport(id),
     );
     return this.handleResult(result);
   }

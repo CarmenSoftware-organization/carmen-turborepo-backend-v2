@@ -542,7 +542,7 @@ export class PurchaseRequestController extends BaseHttpController {
 
     const { user_id } = ExtractRequestHeader(req);
 
-    const result = await withSpan('pr.create.controller', async (span) => {
+    const result = await withSpan('PurchaseRequestController.create', async (span) => {
       span.setAttribute('bu_code', bu_code);
       span.setAttribute('user_id', user_id);
       span.setAttribute('api.version', version);
