@@ -1,5 +1,9 @@
 # micro-report Service Design
 
+> **Status:** proposed — not yet implemented.
+>
+> This design document captures intent; no `apps/micro-report/` service exists in the repo as of 2026-04-20. Keep for reference when planning the service.
+
 ## Overview
 
 micro-report เป็น NestJS microservice สำหรับสร้าง report ทุกประเภทในระบบ Carmen ERP
