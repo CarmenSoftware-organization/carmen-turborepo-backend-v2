@@ -26,6 +26,9 @@ import { CommonLogic } from '@/common/common.logic';
 import { getPattern } from '@/common/common.helper';
 import { format } from 'date-fns';
 import { randomBytes } from 'crypto';
+
+const PR_RUNNING_NO_KEY = 'pr_running_no';
+const PR_DRAFT_NO_PREFIX = 'draft-';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import {
   IPurchaseRequestDetail,
@@ -832,10 +835,12 @@ export class PurchaseRequestService {
 
           const prDate = new Date(createPR.pr_date).toISOString();
 
+          const newPrNo = await this.generatePrNoFromConfig(prisma);
+
           const purchaseRequestObject = JSON.parse(
             JSON.stringify({
               ...createPR,
-              pr_no: 'draft-' + randomBytes(3).toString('hex'),
+              pr_no: newPrNo,
               pr_date: prDate,
               created_by_id: this.userId,
               last_action: null,
@@ -1765,6 +1770,59 @@ export class PurchaseRequestService {
     });
 
     return Result.ok({ id: purchaseRequest.id });
+  }
+
+  /**
+   * Generate a draft PR number on create using an atomic per-tenant counter
+   * stored in tb_application_config (key = pr_running_no, value = { last_no }).
+   *
+   * Race-condition handling: a Postgres advisory transaction lock (per key, per
+   * tenant DB) serializes concurrent create() calls so two clients cannot read
+   * the same last_no and emit duplicate pr_no. The lock auto-releases on tx
+   * commit/rollback.
+   *
+   * Format: draft-{seq} (e.g. draft-1, draft-2, ...). No padding.
+   */
+  private async generatePrNoFromConfig(
+    tx: Prisma.TransactionClient,
+  ): Promise<string> {
+    await tx.$executeRawUnsafe(
+      `SELECT pg_advisory_xact_lock(hashtext($1))`,
+      PR_RUNNING_NO_KEY,
+    );
+
+    const row = await tx.tb_application_config.findFirst({
+      where: { key: PR_RUNNING_NO_KEY, deleted_at: null },
+      select: { id: true, value: true },
+    });
+
+    const existing = (row?.value ?? null) as { last_no?: number } | null;
+    const nextNo = (Number(existing?.last_no) || 0) + 1;
+
+    const newValue = { last_no: nextNo };
+    const nowIso = new Date().toISOString();
+
+    if (row) {
+      await tx.tb_application_config.update({
+        where: { id: row.id },
+        data: {
+          value: newValue,
+          updated_at: nowIso,
+          updated_by_id: this.userId,
+        },
+      });
+    } else {
+      await tx.tb_application_config.create({
+        data: {
+          key: PR_RUNNING_NO_KEY,
+          value: newValue,
+          created_at: nowIso,
+          created_by_id: this.userId,
+        },
+      });
+    }
+
+    return `${PR_DRAFT_NO_PREFIX}${nextNo}`;
   }
 
   /**
