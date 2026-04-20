@@ -2,6 +2,8 @@
 
 ## High-level system
 
+_(stale — needs rewrite)_
+
 ```
                                 USERS (Browser / Mobile)
                                          |
@@ -94,6 +96,8 @@
 
 ### Service Communication Flow
 
+_(stale — needs rewrite)_
+
 ```
                      HTTP Request
                           |
@@ -173,7 +177,6 @@
 | micro-keycloak-api   | 5013           | 6013          | Keycloak integration           |
 | micro-file           | 5007           | 6007          | File storage                   |
 | micro-notification   | 5006           | 6006          | Real-time notifications        |
-| micro-cronjob        | 5012           | 6012          | Scheduled tasks                |
 | micro-cluster        | 5014           | 6014          | Cluster management             |
 
 ### Tech Stack
@@ -181,7 +184,7 @@
 | Layer        | Technology                                      |
 |--------------|--------------------------------------------------|
 | Runtime      | Node.js 22 + Bun                                |
-| Framework    | NestJS (micro-cronjob uses Elysia/Bun)          |
+| Framework    | NestJS                                          |
 | Monorepo     | Turborepo                                        |
 | Database     | PostgreSQL (AWS RDS) + Prisma ORM                |
 | Auth         | JWT + Keycloak (OIDC)                            |
@@ -249,19 +252,14 @@ Server AWS
         Port number : 5006 (TCP) / 6006 (HTTP)
         Real-time : Socket.io
 
-    - micro-cronjob
-
-        project type : Elysia + Bun
-        protocol : TCP
-        Port number : 5012 (TCP) / 6012 (HTTP)
-        Scheduled tasks
-
 #### Database
 
     aws service : RDS OR Aurora
     project type : PostgreSQL
     Database : PostgreSQL
     schema : Dual-schema (Platform + Tenant)
+
+_(stale — needs rewrite)_
 
 ```mermaid
 
@@ -316,6 +314,8 @@ flowchart TD
 ```
 
 ## Kubernetes
+
+_(stale — needs rewrite)_
 
 ### Overview
 
@@ -667,6 +667,8 @@ k8s/
 ```
 
 ### Dynamic clustering
+
+_(stale — needs rewrite)_
 
 Carmen เป็น Multi-tenant SaaS โดยแต่ละ "Cluster" คือองค์กร/โรงแรม 1 แห่ง
 Dynamic Clustering หมายถึงระบบที่สามารถ:
