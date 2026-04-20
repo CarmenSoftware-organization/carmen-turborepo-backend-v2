@@ -54,8 +54,8 @@ bun run test:cov
 
 ## Links
 
-- Root: [`README.md`](../../../README.md) · [`CLAUDE.md`](../../../CLAUDE.md)
-- Architecture: [`docs/architecture-system.md`](../../../docs/architecture-system.md)
+- Root: [`README.md`](../../README.md) · [`CLAUDE.md`](../../CLAUDE.md)
+- Architecture: [`docs/architecture-system.md`](../../docs/architecture-system.md)
 - API collections: [`apps/bruno/carmen-inventory/`](../bruno/carmen-inventory/)
 
 ## Notes for agents

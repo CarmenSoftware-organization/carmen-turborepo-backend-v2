@@ -42,8 +42,8 @@ bun run test:e2e
 
 ## Links
 
-- Root: [`README.md`](../../../README.md) · [`CLAUDE.md`](../../../CLAUDE.md)
-- Architecture: [`docs/architecture-system.md`](../../../docs/architecture-system.md)
+- Root: [`README.md`](../../README.md) · [`CLAUDE.md`](../../CLAUDE.md)
+- Architecture: [`docs/architecture-system.md`](../../docs/architecture-system.md)
 
 ## Notes for agents
 
