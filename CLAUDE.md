@@ -4,51 +4,36 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Carmen is a multi-tenant SaaS ERP backend for hotel/procurement management. Built with NestJS microservices in a Turborepo monorepo, using Bun as the package manager.
+Carmen is a multi-tenant SaaS ERP backend for hotel/procurement management. See `README.md` for product scope, core capabilities, and architecture overview. This file covers conventions and gotchas agents should know before editing.
 
-## Common Commands
+## Agent-specific commands
+
+README.md covers the core `dev` / `build` / `lint` / `format` / `check-types` / `db:generate` / `db:migrate` commands. The items below are less obvious and matter for agents working in the repo:
 
 ```bash
-# Setup (install + build shared packages)
-bun run setup
+# Required before `dev` / `build` if shared packages haven't been built yet
+bun run build:package
 
-# Development
-bun run dev                 # All services
-bun run dev:base            # Gateway + Business + Keycloak API (most common)
-bun run dev:business        # Business service only
-
-# Build
-bun run build               # Build all
-bun run build:package       # Build shared packages only
-
-# Code quality
-bun run lint                # ESLint
-bun run format              # Prettier
-bun run check-types         # TypeScript type checking
-
-# Database (runs across both platform and tenant schemas)
-bun run db:generate         # Generate Prisma clients (required after schema changes)
-bun run db:migrate          # Run migrations
-
-# Per-schema database operations
+# Per-schema permission seed (runs only on platform schema)
 cd packages/prisma-shared-schema-platform
-bun run db:generate && bun run db:migrate
-bun run db:seed             # Seed platform data
-bun run db:seed.permission  # Seed permissions
+bun run db:seed.permission
 
-cd packages/prisma-shared-schema-tenant
-bun run db:generate && bun run db:migrate
-bun run db:seed             # Seed tenant data
+# Mock data variants (salvaged from WARP.md — verify variant availability)
+bun run db:mock          # if present
+bun run db:mock.tenant   # if present
+
+# Coverage-enabled testing
+bun run test:cov
 ```
 
-### Testing
+### Testing (per service)
 
 ```bash
-# Per service (e.g., micro-business)
 cd apps/micro-business
-bun run test                # Run tests
-bun run test:watch          # Watch mode
-bun run test:e2e            # End-to-end tests
+bun run test
+bun run test:watch
+bun run test:e2e
+bun run test:cov
 ```
 
 ## Architecture
@@ -153,6 +138,19 @@ API collections for testing are located at `apps/bruno/carmen-inventory/`. Uses 
 - Login scripts auto-set `access_token` and `refresh_token` via post-response scripts
 - Multi-tenant endpoints use `{{bu_code}}` path parameter
 - API response wrapper: `{ data: {...}, status, success, message, timestamp }`
+
+## Gotchas
+
+Non-obvious behaviors to know before touching the code. Entries marked
+_(verify against current code)_ are salvaged from a historical report
+(see `docs/design-legacy-notes.md`) and should be re-confirmed before
+being treated as authoritative.
+
+- **Service consolidation history.** Earlier branches had `micro-authen`, `micro-tenant-inventory`, `micro-tenant-master`, `micro-tenant-procurement`, `micro-tenant-recipe` as separate services. They were merged into `micro-business`. Don't expect to find them.
+- **TCP message pattern drift.** _(verify against current code)_ When refactoring a `@MessagePattern()` handler in `micro-business`, also update the matching `@Client.send()` call in `backend-gateway`. Mismatches cause silent 500s.
+- **Prisma `findMany` with spread + select conflict.** _(verify against current code)_ `prisma.x.findMany({ ...query, select: {...} })` throws if `query` also sets `select`. Build the query object without spread, or strip `select` from the spread.
+- **Tenant DB migration gap — recipe tables.** _(verify against current code)_ Recipe tables historically lagged behind master data on new-tenant schema deploys. Re-run `db:migrate` inside `packages/prisma-shared-schema-tenant` after adding a tenant.
+- **Credentials in pre-PR-#8 git history.** A Supabase-style token `8wzw8O77O0VAGDnt` and dev password `123456` are present in commits on `main` predating sub-project #1. Rotate the Supabase token and scrub history separately; redacting going forward doesn't un-leak them.
 
 ## Build Dependencies
 
