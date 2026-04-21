@@ -154,7 +154,7 @@ export class CreateGoodReceivedNoteSwaggerDto {
     description: 'Extra cost - shipping, handling, or other additional charges',
     example: {
       name: 'Shipping Fee',
-      allocate_extracost_type: 'by_amount',
+      allocate_extra_cost_type: 'by_amount',
       note: 'Express delivery charge',
       info: {},
       dimension: {},
@@ -180,7 +180,7 @@ export class CreateGoodReceivedNoteSwaggerDto {
   })
   extra_cost?: {
     name?: string;
-    allocate_extracost_type?: string;
+    allocate_extra_cost_type?: string;
     note?: string;
     info?: unknown;
     dimension?: unknown;
@@ -363,7 +363,7 @@ export class UpdateGoodReceivedNoteSwaggerDto {
     example: {
       id: 'e5f6a7b8-c9d0-1234-efab-345678901234',
       name: 'Shipping Fee',
-      allocate_extracost_type: 'by_amount',
+      allocate_extra_cost_type: 'by_amount',
       extra_cost_detail: {
         add: [
           {
@@ -391,7 +391,7 @@ export class UpdateGoodReceivedNoteSwaggerDto {
   extra_cost?: {
     id?: string;
     name?: string;
-    allocate_extracost_type?: string;
+    allocate_extra_cost_type?: string;
     extra_cost_detail?: {
       add?: {
         extra_cost_type_id: string;

@@ -98,7 +98,7 @@ export const GoodReceivedNoteCreate = GoodReceivedNoteSchema
   extra_cost: z
     .object({
       name: z.string().optional(),
-      allocate_extracost_type: z
+      allocate_extra_cost_type: z
         .enum(
           Object.values(enum_allocate_extra_cost_type) as [string, ...string[]],
         )
@@ -186,7 +186,7 @@ export const GoodReceivedNoteUpdate = z.object({
   extra_cost: z.object({
     id: z.string().uuid().optional(),
     name: z.string().optional(),
-    allocate_extracost_type: z
+    allocate_extra_cost_type: z
       .enum(Object.values(enum_allocate_extra_cost_type) as [string, ...string[]],
       )
       .optional(),
