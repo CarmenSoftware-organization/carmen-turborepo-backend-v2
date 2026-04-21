@@ -4,16 +4,38 @@ meta {
   seq: 1
 }
 
+get {
+  url: {{host}}/api/{{bu_code}}/good-received-note/:good_received_note_id/comments
+  body: none
+  auth: bearer
+}
+
+params:path {
+  good_received_note_id: {{test_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+vars:pre-request {
+  test_id: 98220622-5b4a-4968-b0dd-f1eced12bebd
+}
+
 docs {
   ## List Good Received Note Comments
   แสดงความคิดเห็นทั้งหมดของใบรับสินค้า
-
+  
   Retrieves all comments for a good-received-note.
-
+  
   ### Path Parameters
   - `good_received_note_id` — Good Received Note ID
-
-
+  
+  
   ### Sample Response
   ```json
   {
@@ -35,22 +57,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-get {
-  url: {{host}}/api/{{bu_code}}/good-received-note/:good_received_note_id/comment
-  body: none
-  auth: bearer
-}
-
-params:path {
-  good_received_note_id: {{test_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

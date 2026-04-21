@@ -75,6 +75,7 @@ import { IssueModule } from './procurement/issue/issue.module';
 import { PurchaseOrderModule } from './procurement/purchase-order/purchase-order.module';
 import { PurchaseRequestModule } from './procurement/purchase-request/purchase-request.module';
 import { PurchaseRequestCommentModule } from './procurement/purchase-request-comment/purchase-request-comment.module';
+import { GoodReceivedNoteCommentModule } from './procurement/good-received-note-comment/good-received-note-comment.module';
 import { PurchaseRequestTemplateModule } from './procurement/purchase-request-template/purchase-request-template.module';
 
 // Shared modules
@@ -174,6 +175,7 @@ import { SqlQueryModule } from './sql-query/sql-query.module';
     PurchaseRequestModule,
     PurchaseRequestCommentModule,
     PurchaseRequestTemplateModule,
+    GoodReceivedNoteCommentModule,
   ],
   controllers: [AppController],
   providers: [
