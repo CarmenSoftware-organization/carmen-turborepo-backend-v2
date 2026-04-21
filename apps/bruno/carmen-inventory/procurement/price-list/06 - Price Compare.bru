@@ -4,18 +4,39 @@ meta {
   seq: 6
 }
 
+get {
+  url: {{host}}/api/{{bu_code}}/price-list/price-compare?product_id=00e2dcb0-d398-4ef1-9e86-c11cfe905a42&unit_id=b5b22dba-fff4-4662-8e43-b25566402461&at_date=2026-04-28&currency_id=93dabe25-1668-4c5b-bceb-3e0b83b78002
+  body: none
+  auth: bearer
+}
+
+params:query {
+  product_id: 00e2dcb0-d398-4ef1-9e86-c11cfe905a42
+  unit_id: b5b22dba-fff4-4662-8e43-b25566402461
+  at_date: 2026-04-28
+  currency_id: 93dabe25-1668-4c5b-bceb-3e0b83b78002
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
 docs {
   ## Price Compare
   เปรียบเทียบราคาสินค้าจากผู้ขายข้ามรายการราคาที่ใช้งานอยู่
-
+  
   Compares vendor prices for a specific product across all active price lists to identify the best-value supplier.
-
+  
   ### Query Parameters
   - `product_id` -- Product ID (UUID) / รหัสสินค้า
   - `at_date` -- Date for price lookup (yyyy-MM-dd) / วันที่สำหรับค้นหาราคา
   - `currency_id` -- Currency ID (UUID) / รหัสสกุลเงิน
-
-
+  
+  
   ### Sample Response
   ```json
   {
@@ -47,24 +68,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-get {
-  url: {{host}}/api/{{bu_code}}/price-list/price-compare?product_id=bb96415b-dff0-40ec-aa2f-2b4099418314&at_date=2026-03-16&currency_id=93dabe25-1668-4c5b-bceb-3e0b83b78002
-  body: none
-  auth: bearer
-}
-
-params:query {
-  product_id: bb96415b-dff0-40ec-aa2f-2b4099418314
-  at_date: 2026-03-16
-  currency_id: 93dabe25-1668-4c5b-bceb-3e0b83b78002
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

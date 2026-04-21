@@ -94,7 +94,11 @@ const trimStringValues = (data: any): any => {
 		return data.map(item => trimStringValues(item));
 	}
 
-	if (data && typeof data === 'object') {
+	if (
+		data &&
+		typeof data === 'object' &&
+		Object.getPrototypeOf(data) === Object.prototype
+	) {
 		const trimmed: any = {};
 		for (const key in data) {
 			if (Object.prototype.hasOwnProperty.call(data, key)) {
