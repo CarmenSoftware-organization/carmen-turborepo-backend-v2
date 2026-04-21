@@ -872,7 +872,7 @@ export class PurchaseRequestLogic {
     details: any[],
     bu_code: string,
     user_id: string,
-  ): Promise<Map<string, { pricelist_detail_id: string; pricelist_no: string; pricelist_price: number; pricelist_type: enum_pricelist_compare_type; vendor_id: string; vendor_name: string }>> {
+  ): Promise<Map<string, { pricelist_detail_id: string | null; pricelist_no: string | null; pricelist_price: number; pricelist_type: enum_pricelist_compare_type; vendor_id: string | null; vendor_name: string | null }>> {
     const pricelistMap = new Map<string, any>();
 
     for (const detail of details) {
@@ -914,9 +914,68 @@ export class PurchaseRequestLogic {
         );
         // If price lookup fails, skip — don't block submit
       }
+
+      if (!pricelistMap.has(detail.id)) {
+        const grnPrice = await this.lookupLatestGrnPrice(detail.product_id);
+        if (grnPrice) {
+          pricelistMap.set(detail.id, {
+            pricelist_detail_id: null,
+            pricelist_no: null,
+            pricelist_price: grnPrice.unit_price,
+            pricelist_type: enum_pricelist_compare_type.automatic,
+            vendor_id: grnPrice.vendor_id,
+            vendor_name: grnPrice.vendor_name,
+          });
+        }
+      }
     }
 
     return pricelistMap;
+  }
+
+  /**
+   * Fallback price source: unit price from the latest received GRN detail item
+   * for the given product. Returns null if no usable GRN record is found.
+   */
+  private async lookupLatestGrnPrice(
+    product_id: string,
+  ): Promise<{ unit_price: number; vendor_id: string | null; vendor_name: string | null } | null> {
+    try {
+      const grnItem = await this.purchaseRequestService.prismaService.tb_good_received_note_detail_item.findFirst({
+        where: {
+          deleted_at: null,
+          received_qty: { gt: 0 },
+          tb_good_received_note_detail: {
+            product_id,
+          },
+        },
+        orderBy: { created_at: 'desc' },
+        include: {
+          tb_good_received_note_detail: {
+            include: { tb_good_received_note: true },
+          },
+        },
+      });
+      if (!grnItem) return null;
+
+      const receivedQty = Number(grnItem.received_qty ?? 0);
+      const subTotal = Number(grnItem.sub_total_price ?? 0);
+      if (receivedQty <= 0 || subTotal <= 0) return null;
+
+      const unitPrice = subTotal / receivedQty;
+      const header = grnItem.tb_good_received_note_detail.tb_good_received_note;
+      return {
+        unit_price: unitPrice,
+        vendor_id: header?.vendor_id ?? null,
+        vendor_name: header?.vendor_name ?? null,
+      };
+    } catch (err: any) {
+      this.logger.warn(
+        { function: 'lookupLatestGrnPrice', product_id, error: err?.message },
+        PurchaseRequestLogic.name,
+      );
+      return null;
+    }
   }
 
   /**
