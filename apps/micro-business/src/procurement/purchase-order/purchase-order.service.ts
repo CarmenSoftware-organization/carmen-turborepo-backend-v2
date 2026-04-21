@@ -22,7 +22,7 @@ import {
 } from './interface/purchase-order.interface';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { CommonLogic } from '@/common/common.logic';
-import { getPattern } from '@/common/common.helper';
+import { getPattern, calcBasePrices } from '@/common/common.helper';
 import { format } from 'date-fns';
 import QueryParams from '@/libs/paginate.query';
 import getPaginationParams from '@/common/helpers/pagination.params';
@@ -1207,6 +1207,7 @@ export class PurchaseOrderService {
             discount_rate: detail.discount_rate || 0,
             discount_amount: detail.discount_amount || 0,
             is_discount_adjustment: detail.is_discount_adjustment || false,
+            ...calcBasePrices(detail, data.exchange_rate),
             note: detail.note,
             // Product info - enrich from DB if not provided
             product_id: detail.product_id,
@@ -1418,6 +1419,7 @@ export class PurchaseOrderService {
               sub_total_price: detail.sub_total_price,
               net_amount: detail.net_amount,
               total_price: detail.total_price,
+              ...calcBasePrices(detail, data.exchange_rate),
               note: detail.note,
               info: detail.info as object,
               is_active: true,
@@ -1491,6 +1493,7 @@ export class PurchaseOrderService {
               sub_total_price: detail.sub_total_price,
               net_amount: detail.net_amount,
               total_price: detail.total_price,
+              ...calcBasePrices(detail, data.exchange_rate),
               note: detail.note,
               info: detail.info as object,
               doc_version: { increment: 1 },
@@ -1708,6 +1711,7 @@ export class PurchaseOrderService {
               discount_rate: detail.discount_rate || 0,
               discount_amount: detail.discount_amount || 0,
               is_discount_adjustment: detail.is_discount_adjustment || false,
+              ...calcBasePrices(detail, header.exchange_rate ?? purchaseOrder.exchange_rate),
               note: detail.note,
               // Product info - enrich from DB if not provided
               product_id: detail.product_id,
@@ -1807,6 +1811,7 @@ export class PurchaseOrderService {
               sub_total_price: detail.sub_total_price,
               net_amount: detail.net_amount,
               total_price: detail.total_price,
+              ...calcBasePrices(detail, header.exchange_rate ?? purchaseOrder.exchange_rate),
               note: detail.note,
               current_stage_status: detail.current_stage_status !== undefined ? detail.current_stage_status : undefined,
               doc_version: { increment: 1 },
@@ -2963,6 +2968,7 @@ export class PurchaseOrderService {
               discount_rate: item.discount_rate,
               discount_amount: item.discount_amount,
               is_discount_adjustment: item.is_discount_adjustment,
+              ...calcBasePrices(item, group.exchange_rate),
               // Product info
               product_id: item.product_id,
               product_code: item.product_code,
@@ -4182,9 +4188,7 @@ export class PurchaseOrderService {
           sub_total_price: detailData.sub_total_price || 0,
           net_amount: detailData.net_amount || 0,
           total_price: detailData.total_price || 0,
-          base_sub_total_price: detailData.base_sub_total_price || 0,
-          base_net_amount: detailData.base_net_amount || 0,
-          base_total_price: detailData.base_total_price || 0,
+          ...calcBasePrices(detailData, purchaseOrder.exchange_rate),
           note: detailData.note,
           product_id: detailData.product_id,
           product_code: detailData.product_code || product?.code,
@@ -4286,9 +4290,17 @@ export class PurchaseOrderService {
           sub_total_price: detailData.sub_total_price ?? existingDetail.sub_total_price,
           net_amount: detailData.net_amount ?? existingDetail.net_amount,
           total_price: detailData.total_price ?? existingDetail.total_price,
-          base_sub_total_price: detailData.base_sub_total_price ?? existingDetail.base_sub_total_price,
-          base_net_amount: detailData.base_net_amount ?? existingDetail.base_net_amount,
-          base_total_price: detailData.base_total_price ?? existingDetail.base_total_price,
+          ...calcBasePrices(
+            {
+              price: detailData.price ?? existingDetail.price,
+              sub_total_price: detailData.sub_total_price ?? existingDetail.sub_total_price,
+              discount_amount: detailData.discount_amount ?? existingDetail.discount_amount,
+              net_amount: detailData.net_amount ?? existingDetail.net_amount,
+              tax_amount: detailData.tax_amount ?? existingDetail.tax_amount,
+              total_price: detailData.total_price ?? existingDetail.total_price,
+            },
+            existingDetail.tb_purchase_order?.exchange_rate,
+          ),
           note: detailData.note ?? existingDetail.note,
           info: detailData.info ?? existingDetail.info,
           doc_version: { increment: 1 },

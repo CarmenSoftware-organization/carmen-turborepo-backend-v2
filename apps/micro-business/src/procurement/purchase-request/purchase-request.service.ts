@@ -23,7 +23,7 @@ import {
 import { IPaginate } from '@/common/shared-interface/paginate.interface';
 import QueryParams from '@/libs/paginate.query';
 import { CommonLogic } from '@/common/common.logic';
-import { getPattern, calcBaseQty } from '@/common/common.helper';
+import { getPattern, calcBaseQty, calcBasePrices } from '@/common/common.helper';
 import { format } from 'date-fns';
 import { randomBytes } from 'crypto';
 
@@ -858,6 +858,10 @@ export class PurchaseRequestService {
               sequence_no: sequence_no++,
               purchase_request_id: createPurchaseRequest.id,
               created_by_id: this.userId,
+              requested_base_qty: calcBaseQty(item.requested_qty, item.requested_unit_conversion_factor),
+              approved_base_qty: calcBaseQty(item.approved_qty, item.approved_unit_conversion_factor),
+              foc_base_qty: calcBaseQty(item.foc_qty, item.foc_unit_conversion_factor),
+              ...calcBasePrices(item, item.exchange_rate),
             }));
 
             await prisma.tb_purchase_request_detail.createMany({
@@ -894,7 +898,7 @@ export class PurchaseRequestService {
     id: string,
     payload: SubmitPurchaseRequest,
     workflowHeader: WorkflowHeader,
-    pricelistMap?: Map<string, { pricelist_detail_id: string; pricelist_no: string; pricelist_price: number; pricelist_type: enum_pricelist_compare_type; vendor_id: string; vendor_name: string }>,
+    pricelistMap?: Map<string, { pricelist_detail_id: string | null; pricelist_no: string | null; pricelist_price: number; pricelist_type: enum_pricelist_compare_type; vendor_id: string | null; vendor_name: string | null }>,
   ): Promise<Result<unknown>> {
     this.logger.debug(
       { function: 'submit', id, user_id: this.userId, tenant_id: this.bu_code },
@@ -991,6 +995,13 @@ export class PurchaseRequestService {
               vendor_id: priceData.vendor_id,
               vendor_name: priceData.vendor_name,
             }),
+            ...calcBasePrices(
+              {
+                ...detail,
+                ...(priceData && { pricelist_price: priceData.pricelist_price }),
+              },
+              detail.exchange_rate,
+            ),
           },
         });
       }
@@ -1094,6 +1105,10 @@ export class PurchaseRequestService {
             sequence_no: ++sequenceNo,
             purchase_request_id: id,
             created_by_id: this.userId,
+            requested_base_qty: calcBaseQty(item.requested_qty, item.requested_unit_conversion_factor),
+            approved_base_qty: calcBaseQty(item.approved_qty, item.approved_unit_conversion_factor),
+            foc_base_qty: calcBaseQty(item.foc_qty, item.foc_unit_conversion_factor),
+            ...calcBasePrices(item, item.exchange_rate),
           }));
         await prismatx.tb_purchase_request_detail.createMany({
           data: createPurchaseRequestDetailObject,
@@ -1116,6 +1131,7 @@ export class PurchaseRequestService {
               requested_base_qty: calcBaseQty(item.requested_qty, item.requested_unit_conversion_factor),
               approved_base_qty: calcBaseQty(item.approved_qty, item.approved_unit_conversion_factor),
               foc_base_qty: calcBaseQty(item.foc_qty, item.foc_unit_conversion_factor),
+              ...calcBasePrices(item, item.exchange_rate),
               history: history as unknown as Prisma.InputJsonValue,
               updated_by_id: this.userId,
             },
@@ -1138,6 +1154,7 @@ export class PurchaseRequestService {
               requested_base_qty: calcBaseQty(updateData.requested_qty, updateData.requested_unit_conversion_factor),
               approved_base_qty: calcBaseQty(updateData.approved_qty, updateData.approved_unit_conversion_factor),
               foc_base_qty: calcBaseQty(updateData.foc_qty, updateData.foc_unit_conversion_factor),
+              ...calcBasePrices(updateData, updateData.exchange_rate),
               history: history as unknown as Prisma.InputJsonValue,
               updated_by_id: this.userId,
             },
@@ -1606,6 +1623,7 @@ export class PurchaseRequestService {
             requested_base_qty: calcBaseQty(detail.requested_qty, detail.requested_unit_conversion_factor),
             approved_base_qty: calcBaseQty(detail.approved_qty, detail.approved_unit_conversion_factor),
             foc_base_qty: calcBaseQty(detail.foc_qty, detail.foc_unit_conversion_factor),
+            ...calcBasePrices(detail, detail.exchange_rate),
             doc_version: { increment: 1 },
             stages_status: stages as unknown as Prisma.InputJsonValue,
             history: history as unknown as Prisma.InputJsonValue,

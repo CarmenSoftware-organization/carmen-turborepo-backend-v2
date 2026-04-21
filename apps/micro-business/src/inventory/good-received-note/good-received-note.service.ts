@@ -11,7 +11,7 @@ import {
 } from './interface/good-received-note.interface';
 import { ClientProxy } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
-import { calcBaseQty } from '@/common/common.helper';
+import { calcBaseQty, calcBasePrices } from '@/common/common.helper';
 import { Injectable, Inject, HttpStatus } from '@nestjs/common';
 import { enum_good_received_note_status, enum_good_received_note_type, enum_purchase_order_doc_status } from '@repo/prisma-shared-schema-tenant';
 import { InventoryTransactionService, ICreateFromGrnDetailItem } from '@/inventory/inventory-transaction/inventory-transaction.service';
@@ -734,10 +734,7 @@ export class GoodReceivedNoteService {
                   sub_total_price: (item as any).sub_total_price || 0,
                   net_amount: (item as any).net_amount || 0,
                   total_price: (item as any).total_price || 0,
-                  base_price: (item as any).base_price || 0,
-                  base_sub_total_price: (item as any).base_sub_total_price || 0,
-                  base_net_amount: (item as any).base_net_amount || 0,
-                  base_total_price: (item as any).base_total_price || 0,
+                  ...calcBasePrices(item as any, (data as any).exchange_rate),
                   note: (item as any).note || null,
                   created_by_id: user_id,
                 },
@@ -791,10 +788,7 @@ export class GoodReceivedNoteService {
                 sub_total_price: (item as any).sub_total_price || 0,
                 net_amount: (item as any).net_amount || 0,
                 total_price: (item as any).total_price || 0,
-                base_price: (item as any).base_price || 0,
-                base_sub_total_price: (item as any).base_sub_total_price || 0,
-                base_net_amount: (item as any).base_net_amount || 0,
-                base_total_price: (item as any).base_total_price || 0,
+                ...calcBasePrices(item as any, (data as any).exchange_rate),
                 note: (item as any).note || null,
                 created_by_id: user_id,
               },
@@ -1144,10 +1138,7 @@ export class GoodReceivedNoteService {
                 sub_total_price: (item as any).sub_total_price || 0,
                 net_amount: (item as any).net_amount || 0,
                 total_price: (item as any).total_price || 0,
-                base_price: (item as any).base_price || 0,
-                base_sub_total_price: (item as any).base_sub_total_price || 0,
-                base_net_amount: (item as any).base_net_amount || 0,
-                base_total_price: (item as any).base_total_price || 0,
+                ...calcBasePrices(item as any, (data as any).exchange_rate),
                 note: (item as any).note || null,
                 created_by_id: user_id,
               },
@@ -1198,6 +1189,7 @@ export class GoodReceivedNoteService {
               const merged = { ...(existingItem || {}), ...itemData } as Record<string, unknown>;
               itemData.received_base_qty = calcBaseQty(merged.received_qty, merged.received_unit_conversion_factor);
               itemData.foc_base_qty = calcBaseQty(merged.foc_qty, merged.foc_unit_conversion_factor);
+              Object.assign(itemData, calcBasePrices(merged, (data as any).exchange_rate));
 
               if (existingItem) {
                 await prisma.tb_good_received_note_detail_item.update({
@@ -1947,9 +1939,19 @@ export class GoodReceivedNoteService {
           discount_rate: data.discount_rate || 0,
           discount_amount: data.discount_amount || 0,
           is_discount_adjustment: data.is_discount_adjustment || false,
-          base_price: data.base_price || data.price || 0,
           sub_total_price: data.price ? (data.price * (data.received_qty || 0)) : 0,
           total_price: data.total_amount || 0,
+          ...calcBasePrices(
+            {
+              price: data.price,
+              sub_total_price: data.price ? (data.price * (data.received_qty || 0)) : 0,
+              discount_amount: data.discount_amount,
+              net_amount: (data as any).net_amount,
+              tax_amount: data.tax_amount,
+              total_price: data.total_amount,
+            },
+            grn.exchange_rate,
+          ),
           note: data.note,
           created_by_id: user_id,
         },
@@ -2048,8 +2050,18 @@ export class GoodReceivedNoteService {
             discount_rate: data.discount_rate,
             discount_amount: data.discount_amount,
             is_discount_adjustment: data.is_discount_adjustment,
-            base_price: data.base_price ?? data.price,
             total_price: data.total_amount,
+            ...calcBasePrices(
+              {
+                price: (data as any).price,
+                sub_total_price: (data as any).sub_total_price,
+                discount_amount: data.discount_amount,
+                net_amount: (data as any).net_amount,
+                tax_amount: data.tax_amount,
+                total_price: data.total_amount,
+              },
+              existingDetail.tb_good_received_note?.exchange_rate,
+            ),
             note: data.note,
             updated_by_id: user_id,
             updated_at: new Date().toISOString(),
