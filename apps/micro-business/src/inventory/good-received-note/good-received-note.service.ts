@@ -1256,7 +1256,7 @@ export class GoodReceivedNoteService {
           });
         }
 
-        if (data.extra_cost.extra_cost_detail?.add.length > 0) {
+        if (data.extra_cost.extra_cost_detail?.add?.length > 0) {
           const extraCostDetailObj = await Promise.all(
             data.extra_cost.extra_cost_detail.add.map(async (item) => {
               return {
@@ -1272,7 +1272,7 @@ export class GoodReceivedNoteService {
           });
         }
 
-        if (data.extra_cost.extra_cost_detail?.update.length > 0) {
+        if (data.extra_cost.extra_cost_detail?.update?.length > 0) {
           await Promise.all(
             data.extra_cost.extra_cost_detail.update.map(async (item) => {
               await prisma.tb_extra_cost_detail.update({
@@ -1286,7 +1286,7 @@ export class GoodReceivedNoteService {
             }),
           );
         }
-        if (data.extra_cost.extra_cost_detail?.remove.length > 0) {
+        if (data.extra_cost.extra_cost_detail?.remove?.length > 0) {
           const extraCostDetailId =
             data.extra_cost.extra_cost_detail.remove.map((item) => item.id);
 
