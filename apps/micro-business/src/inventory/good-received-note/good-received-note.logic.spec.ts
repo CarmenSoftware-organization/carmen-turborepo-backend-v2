@@ -11,7 +11,7 @@ import {
 
 // =============================================================================
 // Error / data-integrity tests for GoodReceivedNoteLogic.
-// Focus: status guards on save / confirm / approve / reject, partial-failure
+// Focus: status guards on save / commit / approve / reject, partial-failure
 // rollback, PO status boundary in updatePoStatuses, and BUG documentation
 // for the over-receive path that has no validation.
 // =============================================================================
@@ -181,25 +181,25 @@ describe('GoodReceivedNoteLogic', () => {
   });
 
   // ===========================================================================
-  // confirm()
+  // commit()
   // ===========================================================================
-  describe('confirm()', () => {
-    it('rejects confirming a draft GRN — line 80', async () => {
+  describe('commit()', () => {
+    it('rejects committing a draft GRN — line 80', async () => {
       wirePrisma();
       mockGrnService.findGrnWithDetails.mockResolvedValue(
         buildGrn({ doc_status: enum_good_received_note_status.draft }),
       );
-      const result = await logic.confirm(GRN_ID, {}, USER_ID, TENANT_ID);
+      const result = await logic.commit(GRN_ID, {}, USER_ID, TENANT_ID);
       expect(result.isOk()).toBe(false);
       expect(result.error.message).toContain('Only saved');
     });
 
-    it('rejects confirming an already-committed GRN', async () => {
+    it('rejects committing an already-committed GRN', async () => {
       wirePrisma();
       mockGrnService.findGrnWithDetails.mockResolvedValue(
         buildGrn({ doc_status: enum_good_received_note_status.committed }),
       );
-      const result = await logic.confirm(GRN_ID, {}, USER_ID, TENANT_ID);
+      const result = await logic.commit(GRN_ID, {}, USER_ID, TENANT_ID);
       expect(result.isOk()).toBe(false);
       expect(result.error.message).toContain('Only saved');
     });
@@ -209,7 +209,7 @@ describe('GoodReceivedNoteLogic', () => {
       mockGrnService.findGrnWithDetails.mockResolvedValue(
         buildGrn({ doc_status: enum_good_received_note_status.saved }),
       );
-      const result = await logic.confirm(GRN_ID, {}, USER_ID, TENANT_ID);
+      const result = await logic.commit(GRN_ID, {}, USER_ID, TENANT_ID);
       expect(result.isOk()).toBe(true);
       expect(mockGrnService.updateGrnStatus).toHaveBeenCalledWith(
         expect.anything(),

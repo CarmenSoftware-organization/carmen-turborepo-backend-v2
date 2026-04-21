@@ -145,6 +145,7 @@ async function upsert_permission() {
     { resource: "procurement.goods_received_note", action: "create", description: "Create goods received note" },
     { resource: "procurement.goods_received_note", action: "update", description: "Update goods received note" },
     { resource: "procurement.goods_received_note", action: "delete", description: "Delete goods received note" },
+    { resource: "procurement.goods_received_note", action: "commit", description: "Commit goods received note" },
 
     // procurement credit note
     { resource: "procurement.credit_note", action: "view", description: "View credit note" },

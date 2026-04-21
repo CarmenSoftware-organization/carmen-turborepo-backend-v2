@@ -51,6 +51,9 @@ export class CurrencyUpdateRequestDto {
   @ApiPropertyOptional({ description: 'Exchange rate', example: 35.5 })
   exchange_rate?: number;
 
+  @ApiPropertyOptional({ description: 'Exchange rate timestamp', example: '2026-01-15T10:30:00.000Z' })
+  exchange_rate_at?: string;
+
   @ApiPropertyOptional({ description: 'Additional notes', example: 'Base currency for local transactions' })
   note?: string;
 }

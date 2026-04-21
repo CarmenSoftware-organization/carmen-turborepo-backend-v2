@@ -279,18 +279,18 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * ยืนยันใบรับสินค้า — เปลี่ยนสถานะจาก saved เป็น committed
    */
   @MessagePattern({
-    cmd: 'good-received-note.confirm',
+    cmd: 'good-received-note.commit',
     service: 'good-received-note',
   })
-  async confirm(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'confirm', payload }, GoodReceivedNoteController.name);
+  async commit(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'commit', payload }, GoodReceivedNoteController.name);
     const id = payload.id;
     const data = payload.data || {};
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteLogic.confirm(id, data, user_id, tenant_id)
+      this.goodReceivedNoteLogic.commit(id, data, user_id, tenant_id)
     );
     return this.handleResult(result);
   }

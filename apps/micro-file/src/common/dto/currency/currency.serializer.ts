@@ -8,6 +8,8 @@ export const CurrencyResponseSchema = z.object({
   name: z.string(),
   symbol: z.string().nullable().optional(),
   exchange_rate: decimalField,
+  exchange_rate_at: z.coerce.date().nullable().optional(),
+  decimal_places: z.number().int().nullable().optional(),
   is_default: z.boolean().optional(),
   is_active: z.boolean().optional(),
   description: z.string().nullable().optional(),

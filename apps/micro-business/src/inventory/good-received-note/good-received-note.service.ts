@@ -1716,7 +1716,7 @@ export class GoodReceivedNoteService {
     return Result.ok({ buffer: Buffer.from(buffer), filename });
   }
 
-  // reject, approve, confirm — moved to good-received-note.logic.ts
+  // reject, approve, commit — moved to good-received-note.logic.ts
 
   // ==================== Good Received Note Detail CRUD ====================
 
@@ -2138,7 +2138,7 @@ export class GoodReceivedNoteService {
   }
 
   /**
-   * Find GRN with details and detail items for confirm/approve flow.
+   * Find GRN with details and detail items for commit/approve flow.
    */
   async findGrnWithDetails(prisma: any, id: string) {
     return prisma.tb_good_received_note.findFirst({

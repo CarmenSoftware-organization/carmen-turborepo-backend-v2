@@ -25,7 +25,7 @@ import {
   CreateGoodReceivedNoteSwaggerDto,
   UpdateGoodReceivedNoteSwaggerDto,
   RejectGoodReceivedNoteSwaggerDto,
-  ConfirmGoodReceivedNoteSwaggerDto,
+  CommitGoodReceivedNoteSwaggerDto,
   CreateGrnCommentSwaggerDto,
 } from './swagger/request';
 import {
@@ -1177,7 +1177,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
    * บันทึกใบรับสินค้า — สร้าง inventory transactions และอัปเดตจำนวนรับใน PO
    */
   @Patch(':bu_code/good-received-note/:id/save')
-  @UseGuards(new AppIdGuard('goodReceivedNote.confirm'))
+  @UseGuards(new AppIdGuard('goodReceivedNote.commit'))
   @Serialize(GoodReceivedNoteMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -1199,7 +1199,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
     },
     'x-description-th': 'บันทึกใบรับสินค้า สร้าง inventory transactions และอัปเดตจำนวนรับใน PO เปลี่ยนสถานะจาก draft เป็น saved',
   } as any)
-  @ApiBody({ type: ConfirmGoodReceivedNoteSwaggerDto })
+  @ApiBody({ type: CommitGoodReceivedNoteSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async saveGrn(
     @Param('id') id: string,
@@ -1230,7 +1230,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
    * ยืนยันใบรับสินค้า — เปลี่ยนสถานะจาก saved เป็น committed
    */
   @Patch(':bu_code/good-received-note/:id/commit')
-  @UseGuards(new AppIdGuard('goodReceivedNote.confirm'))
+  @UseGuards(new AppIdGuard('goodReceivedNote.commit'))
   @Serialize(GoodReceivedNoteMutationResponseSchema)
   @ApiVersionMinRequest()
   @ApiOperation({
@@ -1252,6 +1252,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
     },
     'x-description-th': 'ยืนยันใบรับสินค้า เปลี่ยนสถานะจาก saved เป็น committed',
   } as any)
+  @ApiBody({ type: CommitGoodReceivedNoteSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async commit(
     @Param('id') id: string,
@@ -1267,7 +1268,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.goodReceivedNoteService.confirm(
+    const result = await this.goodReceivedNoteService.commit(
       id,
       data,
       user_id,

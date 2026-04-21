@@ -438,9 +438,9 @@ export class RejectGoodReceivedNoteSwaggerDto {
   reason?: string;
 }
 
-export class ConfirmGoodReceivedNoteSwaggerDto {
+export class CommitGoodReceivedNoteSwaggerDto {
   @ApiPropertyOptional({
-    description: 'Optional confirmation data. The confirm action commits the GRN to inventory. For PO-based GRN, it also distributes received qty to PO/PR junction rows and updates PO status (partial/completed).',
+    description: 'Optional commit data. The commit action posts the GRN to inventory. For PO-based GRN, it also distributes received qty to PO/PR junction rows and updates PO status (partial/completed).',
     example: {},
   })
   data?: unknown;

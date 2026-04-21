@@ -56,20 +56,20 @@ export class GoodReceivedNoteLogic {
     return Result.ok({ id });
   }
 
-  // ==================== Confirm ====================
+  // ==================== Commit ====================
 
   /**
-   * Confirm/Commit a GRN:
+   * Commit a GRN:
    * Change status from saved to committed
    */
   @TryCatch
-  async confirm(
+  async commit(
     id: string,
     data: Record<string, unknown>,
     user_id: string,
     tenant_id: string,
   ): Promise<Result<unknown>> {
-    this.logger.debug({ function: 'confirm', id, user_id, tenant_id }, GoodReceivedNoteLogic.name);
+    this.logger.debug({ function: 'commit', id, user_id, tenant_id }, GoodReceivedNoteLogic.name);
 
     const prisma = await this.grnService.getPrismaClient(user_id, tenant_id);
     if (!prisma) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);

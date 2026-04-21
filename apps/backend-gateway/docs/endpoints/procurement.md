@@ -648,13 +648,13 @@ Approve and commit received goods to inventory.
 
 ---
 
-### Confirm GRN (Mobile)
+### Commit GRN (Mobile)
 
-**`PATCH /api/:bu_code/good-received-note/:id/confirm`**
+**`PATCH /api/:bu_code/good-received-note/:id/commit`**
 
-**AppIdGuard:** `goodReceivedNote.confirm`
+**AppIdGuard:** `goodReceivedNote.commit`
 
-Mobile confirmation of goods receipt.
+Mobile commit of goods receipt.
 
 **Response:** `200 OK`
 

@@ -627,7 +627,7 @@ export class GoodReceivedNoteService {
    * Commit a Good Received Note via microservice — changes status from saved to committed
    * ยืนยันใบรับสินค้าผ่านไมโครเซอร์วิส — เปลี่ยนสถานะจาก saved เป็น committed
    */
-  async confirm(
+  async commit(
     id: string,
     data: Record<string, unknown>,
     user_id: string,
@@ -635,12 +635,12 @@ export class GoodReceivedNoteService {
     version: string,
   ): Promise<Result<unknown>> {
     this.logger.debug(
-      { function: 'confirm', id, data, user_id, tenant_id, version },
+      { function: 'commit', id, data, user_id, tenant_id, version },
       GoodReceivedNoteService.name,
     );
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
-      { cmd: 'good-received-note.confirm', service: 'good-received-note' },
+      { cmd: 'good-received-note.commit', service: 'good-received-note' },
       { id, data, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 

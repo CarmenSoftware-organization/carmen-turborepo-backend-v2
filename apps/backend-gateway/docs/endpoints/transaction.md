@@ -8,8 +8,8 @@
 
 - [Stock In (Create & Adjust Inventory)](#stock-in-create--adjust-inventory)
 - [Stock Out (Create & Adjust Inventory)](#stock-out-create--adjust-inventory)
-- [GRN Confirm](#grn-confirm)
-- [GRN Confirm — PO Flow Detail](#grn-confirm--po-flow-detail)
+- [GRN Commit](#grn-commit)
+- [GRN Commit — PO Flow Detail](#grn-commit--po-flow-detail)
 - [Why FOR UPDATE + Prisma Increment](#why-for-update--prisma-increment)
 
 ---
@@ -61,9 +61,9 @@ Single $transaction:
 
 ---
 
-## GRN Confirm
+## GRN Commit
 
-**Endpoint:** `PATCH /api/:bu_code/good-received-note/:id/confirm`
+**Endpoint:** `PATCH /api/:bu_code/good-received-note/:id/commit`
 **File:** `micro-business/src/inventory/good-received-note/good-received-note.logic.ts`
 
 ยืนยัน GRN — สร้าง inventory transaction และ (ถ้าเป็น PO-based) อัพเดทจำนวนรับใน PO
@@ -95,7 +95,7 @@ Single $transaction:
 
 ---
 
-## GRN Confirm — PO Flow Detail
+## GRN Commit — PO Flow Detail
 
 ### ปัญหา: จะกระจาย received_qty ไปยัง junction rows อย่างไร?
 
@@ -124,7 +124,7 @@ remain = pr_detail_qty - received_qty
 
 ```
 +-----------+    +-----------+
-| GRN #1    |    | GRN #2    |    (confirm พร้อมกัน, PO เดียวกัน)
+| GRN #1    |    | GRN #2    |    (commit พร้อมกัน, PO เดียวกัน)
 +-----------+    +-----------+
       |                |
       v                v
@@ -160,7 +160,7 @@ Transaction อื่นที่ทำกับ PO detail คนละตัว
 |-----------|--------------------------|-------------------|
 | Stock In create | Doc + details + inventory adjustments | All or nothing |
 | Stock Out create | Doc + details + inventory adjustments | All or nothing |
-| GRN confirm (manual) | Status update + inventory transactions | All or nothing |
-| GRN confirm (PO) | Status update + inventory + PO junction + PO status | All or nothing |
+| GRN commit (manual) | Status update + inventory transactions | All or nothing |
+| GRN commit (PO) | Status update + inventory + PO junction + PO status | All or nothing |
 
 ทุก operation ใช้ single Prisma `$transaction` — ถ้า step ใด fail ทุกอย่าง rollback

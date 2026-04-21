@@ -94,7 +94,7 @@ const rolePermissions: Record<string, Record<string, string[]>> = {
     "procurement.purchase_request": ["view", "view_all"],
     "procurement.purchase_request_template": ["view", "create", "update", "delete"],
     "procurement.purchase_order": ["view"],
-    "procurement.goods_received_note": ["view", "create", "update", "delete"],
+    "procurement.goods_received_note": ["view", "create", "update", "delete", "commit"],
     "procurement.credit_note": ["view", "create", "update", "delete"],
     "procurement.vendor_comparison": ["view"],
     "inventory_management.store_requisition": ["view", "view_all"],
