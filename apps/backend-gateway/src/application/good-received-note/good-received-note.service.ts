@@ -210,7 +210,7 @@ export class GoodReceivedNoteService {
 
     const res: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'good-received-note.update', service: 'good-received-note' },
-      { data: data, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
+      { updateGoodReceivedNoteDto: data, user_id: user_id, tenant_id: tenant_id, version: version, ...getGatewayRequestContext() },
     );
 
     const response = await firstValueFrom(res);

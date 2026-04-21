@@ -1,14 +1,11 @@
-import { Controller, HttpStatus } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
-import { GoodReceivedNoteService } from './good-received-note.service';
-import { GoodReceivedNoteLogic } from './good-received-note.logic';
-import {
-  IGoodReceivedNoteCreate,
-  IGoodReceivedNoteUpdate,
-} from './interface/good-received-note.interface';
-import { BackendLogger } from '@/common/helpers/backend.logger';
-import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
-import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from '@/common';
+import { Controller, HttpStatus } from "@nestjs/common";
+import { MessagePattern, Payload } from "@nestjs/microservices";
+import { GoodReceivedNoteService } from "./good-received-note.service";
+import { GoodReceivedNoteLogic } from "./good-received-note.logic";
+import { IGoodReceivedNoteCreate, IGoodReceivedNoteUpdate } from "./interface/good-received-note.interface";
+import { BackendLogger } from "@/common/helpers/backend.logger";
+import { runWithAuditContext, AuditContext } from "@repo/log-events-library";
+import { BaseMicroserviceController, MicroservicePayload, MicroserviceResponse } from "@/common";
 
 @Controller()
 export class GoodReceivedNoteController extends BaseMicroserviceController {
@@ -43,17 +40,17 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * @returns Good received note detail / รายละเอียดใบรับสินค้า
    */
   @MessagePattern({
-    cmd: 'good-received-note.findOne',
-    service: 'good-received-note',
+    cmd: "good-received-note.findOne",
+    service: "good-received-note",
   })
   async findOne(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'findOne', payload: payload }, GoodReceivedNoteController.name);
+    this.logger.debug({ function: "findOne", payload: payload }, GoodReceivedNoteController.name);
     const id = payload.id;
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteService.findOne(id, user_id, tenant_id)
+      this.goodReceivedNoteService.findOne(id, user_id, tenant_id),
     );
     return this.handleResult(result);
   }
@@ -65,17 +62,17 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * @returns Paginated list of good received notes / รายการใบรับสินค้าแบบแบ่งหน้า
    */
   @MessagePattern({
-    cmd: 'good-received-note.findAll',
-    service: 'good-received-note',
+    cmd: "good-received-note.findAll",
+    service: "good-received-note",
   })
   async findAll(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'findAll', payload: payload }, GoodReceivedNoteController.name);
+    this.logger.debug({ function: "findAll", payload: payload }, GoodReceivedNoteController.name);
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const paginate = payload.paginate;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteService.findAll(user_id, tenant_id, paginate)
+      this.goodReceivedNoteService.findAll(user_id, tenant_id, paginate),
     );
     return this.handlePaginatedResult(result);
   }
@@ -87,55 +84,58 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * @returns Created good received note / ใบรับสินค้าที่สร้างแล้ว
    */
   @MessagePattern({
-    cmd: 'good-received-note.findByVendorId',
-    service: 'good-received-note',
+    cmd: "good-received-note.findByVendorId",
+    service: "good-received-note",
   })
   async findByVendorId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'findByVendorId', payload }, GoodReceivedNoteController.name);
+    this.logger.debug({ function: "findByVendorId", payload }, GoodReceivedNoteController.name);
     const vendor_id = payload.vendor_id;
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const paginate = payload.paginate;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteService.findByVendorId(vendor_id, user_id, tenant_id, paginate)
+      this.goodReceivedNoteService.findByVendorId(vendor_id, user_id, tenant_id, paginate),
     );
     return this.handlePaginatedResult(result);
   }
 
   @MessagePattern({
-    cmd: 'good-received-note.create',
-    service: 'good-received-note',
+    cmd: "good-received-note.create",
+    service: "good-received-note",
   })
   async create(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'create', payload: payload }, GoodReceivedNoteController.name);
+    this.logger.debug({ function: "create", payload: payload }, GoodReceivedNoteController.name);
     const data: IGoodReceivedNoteCreate = payload.data;
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     try {
       const result = await runWithAuditContext(auditContext, () =>
-        this.goodReceivedNoteService.create(data, user_id, tenant_id)
+        this.goodReceivedNoteService.create(data, user_id, tenant_id),
       );
-      this.logger.debug({ function: 'create', result: result }, GoodReceivedNoteController.name);
+      this.logger.debug({ function: "create", result: result }, GoodReceivedNoteController.name);
       if (!result) {
         return {
           response: {
             status: HttpStatus.INTERNAL_SERVER_ERROR,
-            message: 'Service returned undefined result',
+            message: "Service returned undefined result",
             timestamp: new Date().toISOString(),
           },
         };
       }
       return this.handleResult(result, HttpStatus.CREATED);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
       const errorStack = error instanceof Error ? error.stack : undefined;
-      this.logger.error({ function: 'create', error: errorMessage, stack: errorStack }, GoodReceivedNoteController.name);
+      this.logger.error(
+        { function: "create", error: errorMessage, stack: errorStack },
+        GoodReceivedNoteController.name,
+      );
       return {
         response: {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: errorMessage || 'Unknown error in create',
+          message: errorMessage || "Unknown error in create",
           timestamp: new Date().toISOString(),
         },
       };
@@ -149,17 +149,17 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * @returns Updated good received note / ใบรับสินค้าที่แก้ไขแล้ว
    */
   @MessagePattern({
-    cmd: 'good-received-note.update',
-    service: 'good-received-note',
+    cmd: "good-received-note.update",
+    service: "good-received-note",
   })
   async update(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'update', payload: payload }, GoodReceivedNoteController.name);
+    this.logger.debug({ function: "update", payload: payload }, GoodReceivedNoteController.name);
     const data: IGoodReceivedNoteUpdate = payload.updateGoodReceivedNoteDto;
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteService.update(data, user_id, tenant_id)
+      this.goodReceivedNoteService.update(data, user_id, tenant_id),
     );
     return this.handleResult(result);
   }
@@ -171,17 +171,17 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * @returns Deletion result / ผลลัพธ์การลบ
    */
   @MessagePattern({
-    cmd: 'good-received-note.delete',
-    service: 'good-received-note',
+    cmd: "good-received-note.delete",
+    service: "good-received-note",
   })
   async delete(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'delete', payload: payload }, GoodReceivedNoteController.name);
+    this.logger.debug({ function: "delete", payload: payload }, GoodReceivedNoteController.name);
     const id = payload.id;
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteService.delete(id, user_id, tenant_id)
+      this.goodReceivedNoteService.delete(id, user_id, tenant_id),
     );
     return this.handleResult(result);
   }
@@ -193,17 +193,17 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * @returns Excel export data / ข้อมูลส่งออก Excel
    */
   @MessagePattern({
-    cmd: 'good-received-note.export',
-    service: 'good-received-note',
+    cmd: "good-received-note.export",
+    service: "good-received-note",
   })
   async exportToExcel(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'exportToExcel', payload: payload }, GoodReceivedNoteController.name);
+    this.logger.debug({ function: "exportToExcel", payload: payload }, GoodReceivedNoteController.name);
     const id = payload.id;
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteService.exportToExcel(id, user_id, tenant_id)
+      this.goodReceivedNoteService.exportToExcel(id, user_id, tenant_id),
     );
     return this.handleResult(result);
   }
@@ -215,18 +215,18 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * @returns Rejected good received note / ใบรับสินค้าที่ปฏิเสธแล้ว
    */
   @MessagePattern({
-    cmd: 'good-received-note.reject',
-    service: 'good-received-note',
+    cmd: "good-received-note.reject",
+    service: "good-received-note",
   })
   async reject(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'reject', payload: payload }, GoodReceivedNoteController.name);
+    this.logger.debug({ function: "reject", payload: payload }, GoodReceivedNoteController.name);
     const id = payload.id;
-    const reason = payload.reason || '';
+    const reason = payload.reason || "";
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteLogic.reject(id, reason, user_id, tenant_id)
+      this.goodReceivedNoteLogic.reject(id, reason, user_id, tenant_id),
     );
     return this.handleResult(result);
   }
@@ -238,17 +238,17 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * @returns Approved good received note / ใบรับสินค้าที่อนุมัติแล้ว
    */
   @MessagePattern({
-    cmd: 'good-received-note.approve',
-    service: 'good-received-note',
+    cmd: "good-received-note.approve",
+    service: "good-received-note",
   })
   async approve(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'approve', payload: payload }, GoodReceivedNoteController.name);
+    this.logger.debug({ function: "approve", payload: payload }, GoodReceivedNoteController.name);
     const id = payload.id;
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteLogic.approve(id, user_id, tenant_id)
+      this.goodReceivedNoteLogic.approve(id, user_id, tenant_id),
     );
     return this.handleResult(result);
   }
@@ -258,18 +258,18 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * บันทึกใบรับสินค้า — เปลี่ยนสถานะเป็น saved, สร้าง inventory transactions, อัปเดตจำนวนรับใน PO
    */
   @MessagePattern({
-    cmd: 'good-received-note.save',
-    service: 'good-received-note',
+    cmd: "good-received-note.save",
+    service: "good-received-note",
   })
   async save(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'save', payload }, GoodReceivedNoteController.name);
+    this.logger.debug({ function: "save", payload }, GoodReceivedNoteController.name);
     const id = payload.id;
     const data = payload.data || {};
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteLogic.save(id, data, user_id, tenant_id)
+      this.goodReceivedNoteLogic.save(id, data, user_id, tenant_id),
     );
     return this.handleResult(result);
   }
@@ -279,18 +279,18 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * ยืนยันใบรับสินค้า — เปลี่ยนสถานะจาก saved เป็น committed
    */
   @MessagePattern({
-    cmd: 'good-received-note.commit',
-    service: 'good-received-note',
+    cmd: "good-received-note.commit",
+    service: "good-received-note",
   })
   async commit(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'commit', payload }, GoodReceivedNoteController.name);
+    this.logger.debug({ function: "commit", payload }, GoodReceivedNoteController.name);
     const id = payload.id;
     const data = payload.data || {};
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteLogic.commit(id, data, user_id, tenant_id)
+      this.goodReceivedNoteLogic.commit(id, data, user_id, tenant_id),
     );
     return this.handleResult(result);
   }
@@ -300,17 +300,17 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * ยกเลิกใบรับสินค้า
    */
   @MessagePattern({
-    cmd: 'good-received-note.void',
-    service: 'good-received-note',
+    cmd: "good-received-note.void",
+    service: "good-received-note",
   })
   async voidGrn(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'voidGrn', payload }, GoodReceivedNoteController.name);
+    this.logger.debug({ function: "voidGrn", payload }, GoodReceivedNoteController.name);
     const id = payload.id;
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteService.voidGrnById(id, user_id, tenant_id)
+      this.goodReceivedNoteService.voidGrnById(id, user_id, tenant_id),
     );
     return this.handleResult(result);
   }
@@ -324,17 +324,17 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * @returns Good received note detail / รายละเอียดใบรับสินค้า
    */
   @MessagePattern({
-    cmd: 'good-received-note-detail.find-by-id',
-    service: 'good-received-note',
+    cmd: "good-received-note-detail.find-by-id",
+    service: "good-received-note",
   })
   async getDetailById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'getDetailById', payload: payload }, GoodReceivedNoteController.name);
+    this.logger.debug({ function: "getDetailById", payload: payload }, GoodReceivedNoteController.name);
     const detailId = payload.detail_id;
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteService.findDetailById(detailId, user_id, tenant_id)
+      this.goodReceivedNoteService.findDetailById(detailId, user_id, tenant_id),
     );
     return this.handleResult(result);
   }
@@ -346,17 +346,17 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * @returns List of good received note details / รายการรายละเอียดใบรับสินค้า
    */
   @MessagePattern({
-    cmd: 'good-received-note-detail.find-all',
-    service: 'good-received-note',
+    cmd: "good-received-note-detail.find-all",
+    service: "good-received-note",
   })
   async getDetailsByGrnId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'getDetailsByGrnId', payload: payload }, GoodReceivedNoteController.name);
+    this.logger.debug({ function: "getDetailsByGrnId", payload: payload }, GoodReceivedNoteController.name);
     const grnId = payload.grn_id;
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteService.findDetailsByGrnId(grnId, user_id, tenant_id)
+      this.goodReceivedNoteService.findDetailsByGrnId(grnId, user_id, tenant_id),
     );
     return this.handleResult(result);
   }
@@ -368,18 +368,18 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * @returns Created detail item / รายละเอียดสินค้าที่สร้างแล้ว
    */
   @MessagePattern({
-    cmd: 'good-received-note-detail.create',
-    service: 'good-received-note',
+    cmd: "good-received-note-detail.create",
+    service: "good-received-note",
   })
   async createDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'createDetail', payload: payload }, GoodReceivedNoteController.name);
+    this.logger.debug({ function: "createDetail", payload: payload }, GoodReceivedNoteController.name);
     const grnId = payload.grn_id;
     const data = payload.data;
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteService.createDetail(grnId, data, user_id, tenant_id)
+      this.goodReceivedNoteService.createDetail(grnId, data, user_id, tenant_id),
     );
     return this.handleResult(result, HttpStatus.CREATED);
   }
@@ -391,18 +391,18 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * @returns Updated detail item / รายละเอียดสินค้าที่แก้ไขแล้ว
    */
   @MessagePattern({
-    cmd: 'good-received-note-detail.update',
-    service: 'good-received-note',
+    cmd: "good-received-note-detail.update",
+    service: "good-received-note",
   })
   async updateDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'updateDetail', payload: payload }, GoodReceivedNoteController.name);
+    this.logger.debug({ function: "updateDetail", payload: payload }, GoodReceivedNoteController.name);
     const detailId = payload.detail_id;
     const data = payload.data;
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteService.updateDetail(detailId, data, user_id, tenant_id)
+      this.goodReceivedNoteService.updateDetail(detailId, data, user_id, tenant_id),
     );
     return this.handleResult(result);
   }
@@ -414,17 +414,17 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
    * @returns Deletion result / ผลลัพธ์การลบ
    */
   @MessagePattern({
-    cmd: 'good-received-note-detail.delete',
-    service: 'good-received-note',
+    cmd: "good-received-note-detail.delete",
+    service: "good-received-note",
   })
   async deleteDetail(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'deleteDetail', payload: payload }, GoodReceivedNoteController.name);
+    this.logger.debug({ function: "deleteDetail", payload: payload }, GoodReceivedNoteController.name);
     const detailId = payload.detail_id;
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteService.deleteDetail(detailId, user_id, tenant_id)
+      this.goodReceivedNoteService.deleteDetail(detailId, user_id, tenant_id),
     );
     return this.handleResult(result);
   }
