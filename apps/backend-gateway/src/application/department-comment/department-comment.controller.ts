@@ -20,7 +20,7 @@ export class DepartmentCommentController {
   private readonly logger: BackendLogger = new BackendLogger(DepartmentCommentController.name);
   constructor(private readonly departmentCommentService: DepartmentCommentService) {}
 
-  @Get(':bu_code/department/:department_id/comment')
+  @Get(':bu_code/department/:department_id/comments')
   @UseGuards(new AppIdGuard('departmentComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

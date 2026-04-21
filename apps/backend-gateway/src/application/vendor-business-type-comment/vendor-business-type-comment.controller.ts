@@ -20,7 +20,7 @@ export class VendorBusinessTypeCommentController {
   private readonly logger: BackendLogger = new BackendLogger(VendorBusinessTypeCommentController.name);
   constructor(private readonly vendorBusinessTypeCommentService: VendorBusinessTypeCommentService) {}
 
-  @Get(':bu_code/vendor-business-type/:vendor_business_type_id/comment')
+  @Get(':bu_code/vendor-business-type/:vendor_business_type_id/comments')
   @UseGuards(new AppIdGuard('vendorBusinessTypeComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

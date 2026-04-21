@@ -66,23 +66,6 @@ export class GoodReceivedNoteCommentController {
   }
 
   @MessagePattern({
-    cmd: 'good-received-note.get-comments',
-    service: 'good-received-note',
-  })
-  async getComments(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'getComments', payload }, GoodReceivedNoteCommentController.name);
-
-    const { id, user_id, tenant_id, bu_code, paginate } = payload;
-    const resolvedBu = tenant_id || bu_code;
-
-    await this.goodReceivedNoteCommentService.initializePrismaService(resolvedBu, user_id);
-    const auditContext = this.createAuditContext(payload);
-    return runWithAuditContext(auditContext, () =>
-      this.goodReceivedNoteCommentService.findAllByGoodReceivedNoteId(id, paginate || {}),
-    );
-  }
-
-  @MessagePattern({
     cmd: 'good-received-note-comment.create',
     service: 'good-received-note-comment',
   })

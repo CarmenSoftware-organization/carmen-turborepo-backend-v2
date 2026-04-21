@@ -20,7 +20,7 @@ export class PricelistCommentController {
   private readonly logger: BackendLogger = new BackendLogger(PricelistCommentController.name);
   constructor(private readonly pricelistCommentService: PricelistCommentService) {}
 
-  @Get(':bu_code/pricelist/:pricelist_id/comment')
+  @Get(':bu_code/pricelist/:pricelist_id/comments')
   @UseGuards(new AppIdGuard('pricelistComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

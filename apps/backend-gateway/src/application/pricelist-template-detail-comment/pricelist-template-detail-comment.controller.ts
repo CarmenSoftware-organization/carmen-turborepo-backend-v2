@@ -20,7 +20,7 @@ export class PricelistTemplateDetailCommentController {
   private readonly logger: BackendLogger = new BackendLogger(PricelistTemplateDetailCommentController.name);
   constructor(private readonly pricelistTemplateDetailCommentService: PricelistTemplateDetailCommentService) {}
 
-  @Get(':bu_code/pricelist-template-detail/:pricelist_template_detail_id/comment')
+  @Get(':bu_code/pricelist-template-detail/:pricelist_template_detail_id/comments')
   @UseGuards(new AppIdGuard('pricelistTemplateDetailComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

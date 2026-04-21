@@ -20,7 +20,7 @@ export class ProductCategoryCommentController {
   private readonly logger: BackendLogger = new BackendLogger(ProductCategoryCommentController.name);
   constructor(private readonly productCategoryCommentService: ProductCategoryCommentService) {}
 
-  @Get(':bu_code/product-category/:product_category_id/comment')
+  @Get(':bu_code/product-category/:product_category_id/comments')
   @UseGuards(new AppIdGuard('productCategoryComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

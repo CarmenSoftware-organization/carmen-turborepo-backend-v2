@@ -42,7 +42,7 @@ export class StockOutDetailCommentController {
     private readonly stockOutDetailCommentService: StockOutDetailCommentService,
   ) {}
 
-  @Get(':bu_code/stock-out-detail/:stock_out_detail_id/comment')
+  @Get(':bu_code/stock-out-detail/:stock_out_detail_id/comments')
   @UseGuards(new AppIdGuard('stockOutDetailComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

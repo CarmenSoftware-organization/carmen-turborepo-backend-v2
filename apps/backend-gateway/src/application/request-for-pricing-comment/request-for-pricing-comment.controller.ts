@@ -42,7 +42,7 @@ export class RequestForPricingCommentController {
     private readonly requestForPricingCommentService: RequestForPricingCommentService,
   ) {}
 
-  @Get(':bu_code/request-for-pricing/:request_for_pricing_id/comment')
+  @Get(':bu_code/request-for-pricing/:request_for_pricing_id/comments')
   @UseGuards(new AppIdGuard('requestForPricingComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

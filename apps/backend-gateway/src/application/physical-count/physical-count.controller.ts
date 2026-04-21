@@ -762,7 +762,7 @@ export class PhysicalCountController extends BaseHttpController {
    * @param version - API version / เวอร์ชัน API
    * @returns Created comment / ความคิดเห็นที่สร้างขึ้น
    */
-  @Post(':bu_code/physical-count/:id/details/:detail_id/comment')
+  @Post(':bu_code/physical-count/:id/details/:detail_id/comments')
   @UseGuards(new AppIdGuard('physicalCount.createComment'))
   @ApiVersionMinRequest()
   @ApiOperation({

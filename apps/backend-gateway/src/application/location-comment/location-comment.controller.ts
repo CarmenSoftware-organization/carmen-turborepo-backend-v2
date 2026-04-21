@@ -20,7 +20,7 @@ export class LocationCommentController {
   private readonly logger: BackendLogger = new BackendLogger(LocationCommentController.name);
   constructor(private readonly locationCommentService: LocationCommentService) {}
 
-  @Get(':bu_code/location/:location_id/comment')
+  @Get(':bu_code/location/:location_id/comments')
   @UseGuards(new AppIdGuard('locationComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

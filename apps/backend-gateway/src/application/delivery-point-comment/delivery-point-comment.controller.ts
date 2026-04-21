@@ -20,7 +20,7 @@ export class DeliveryPointCommentController {
   private readonly logger: BackendLogger = new BackendLogger(DeliveryPointCommentController.name);
   constructor(private readonly deliveryPointCommentService: DeliveryPointCommentService) {}
 
-  @Get(':bu_code/delivery-point/:delivery_point_id/comment')
+  @Get(':bu_code/delivery-point/:delivery_point_id/comments')
   @UseGuards(new AppIdGuard('deliveryPointComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

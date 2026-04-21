@@ -42,7 +42,7 @@ export class ExtraCostCommentController {
     private readonly extraCostCommentService: ExtraCostCommentService,
   ) {}
 
-  @Get(':bu_code/extra-cost/:extra_cost_id/comment')
+  @Get(':bu_code/extra-cost/:extra_cost_id/comments')
   @UseGuards(new AppIdGuard('extraCostComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

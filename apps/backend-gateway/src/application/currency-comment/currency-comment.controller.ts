@@ -20,7 +20,7 @@ export class CurrencyCommentController {
   private readonly logger: BackendLogger = new BackendLogger(CurrencyCommentController.name);
   constructor(private readonly currencyCommentService: CurrencyCommentService) {}
 
-  @Get(':bu_code/currency/:currency_id/comment')
+  @Get(':bu_code/currency/:currency_id/comments')
   @UseGuards(new AppIdGuard('currencyComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

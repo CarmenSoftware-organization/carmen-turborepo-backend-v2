@@ -42,7 +42,7 @@ export class CreditNoteDetailCommentController {
     private readonly creditNoteDetailCommentService: CreditNoteDetailCommentService,
   ) {}
 
-  @Get(':bu_code/credit-note-detail/:credit_note_detail_id/comment')
+  @Get(':bu_code/credit-note-detail/:credit_note_detail_id/comments')
   @UseGuards(new AppIdGuard('creditNoteDetailComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

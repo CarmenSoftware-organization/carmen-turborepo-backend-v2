@@ -20,7 +20,7 @@ export class UnitCommentController {
   private readonly logger: BackendLogger = new BackendLogger(UnitCommentController.name);
   constructor(private readonly unitCommentService: UnitCommentService) {}
 
-  @Get(':bu_code/unit/:unit_id/comment')
+  @Get(':bu_code/unit/:unit_id/comments')
   @UseGuards(new AppIdGuard('unitComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

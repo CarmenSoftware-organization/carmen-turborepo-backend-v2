@@ -42,7 +42,7 @@ export class PurchaseOrderCommentController {
     private readonly purchaseOrderCommentService: PurchaseOrderCommentService,
   ) {}
 
-  @Get(':bu_code/purchase-order/:purchase_order_id/comment')
+  @Get(':bu_code/purchase-order/:purchase_order_id/comments')
   @UseGuards(new AppIdGuard('purchaseOrderComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

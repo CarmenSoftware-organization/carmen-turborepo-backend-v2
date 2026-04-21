@@ -42,7 +42,7 @@ export class CountStockCommentController {
     private readonly countStockCommentService: CountStockCommentService,
   ) {}
 
-  @Get(':bu_code/count-stock/:count_stock_id/comment')
+  @Get(':bu_code/count-stock/:count_stock_id/comments')
   @UseGuards(new AppIdGuard('countStockComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

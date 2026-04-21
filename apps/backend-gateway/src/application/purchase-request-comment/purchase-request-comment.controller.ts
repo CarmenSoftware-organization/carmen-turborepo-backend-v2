@@ -51,7 +51,7 @@ export class PurchaseRequestCommentController {
    * @param version - API version / เวอร์ชัน API
    * @returns List of comments with pagination / รายการความคิดเห็นแบบแบ่งหน้า
    */
-  @Get(':bu_code/purchase-request/:purchase_request_id/comment')
+  @Get(':bu_code/purchase-request/:purchase_request_id/comments')
   @UseGuards(new AppIdGuard('purchaseRequestComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

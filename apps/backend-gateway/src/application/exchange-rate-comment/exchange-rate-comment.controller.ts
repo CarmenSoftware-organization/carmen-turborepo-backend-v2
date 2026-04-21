@@ -20,7 +20,7 @@ export class ExchangeRateCommentController {
   private readonly logger: BackendLogger = new BackendLogger(ExchangeRateCommentController.name);
   constructor(private readonly exchangeRateCommentService: ExchangeRateCommentService) {}
 
-  @Get(':bu_code/exchange-rate/:exchange_rate_id/comment')
+  @Get(':bu_code/exchange-rate/:exchange_rate_id/comments')
   @UseGuards(new AppIdGuard('exchangeRateComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

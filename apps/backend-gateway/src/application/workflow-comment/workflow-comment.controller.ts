@@ -20,7 +20,7 @@ export class WorkflowCommentController {
   private readonly logger: BackendLogger = new BackendLogger(WorkflowCommentController.name);
   constructor(private readonly workflowCommentService: WorkflowCommentService) {}
 
-  @Get(':bu_code/workflow/:workflow_id/comment')
+  @Get(':bu_code/workflow/:workflow_id/comments')
   @UseGuards(new AppIdGuard('workflowComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

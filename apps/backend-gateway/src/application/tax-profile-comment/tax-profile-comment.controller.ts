@@ -20,7 +20,7 @@ export class TaxProfileCommentController {
   private readonly logger: BackendLogger = new BackendLogger(TaxProfileCommentController.name);
   constructor(private readonly taxProfileCommentService: TaxProfileCommentService) {}
 
-  @Get(':bu_code/tax-profile/:tax_profile_id/comment')
+  @Get(':bu_code/tax-profile/:tax_profile_id/comments')
   @UseGuards(new AppIdGuard('taxProfileComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

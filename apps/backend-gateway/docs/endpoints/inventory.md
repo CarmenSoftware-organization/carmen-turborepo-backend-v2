@@ -188,7 +188,7 @@ Full physical inventory count process with review and approval workflow.
 
 | Method | Path | AppIdGuard | Status | Description |
 |--------|------|------------|--------|-------------|
-| POST | `/:id/details/:detail_id/comment` | `physicalCount.createComment` | 201 | Add comment to a counted item |
+| POST | `/:id/details/:detail_id/comments` | `physicalCount.createComment` | 201 | Add comment to a counted item |
 
 ---
 

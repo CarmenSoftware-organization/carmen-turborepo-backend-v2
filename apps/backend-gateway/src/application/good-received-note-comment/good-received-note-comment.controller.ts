@@ -42,7 +42,7 @@ export class GoodReceivedNoteCommentController {
     private readonly goodReceivedNoteCommentService: GoodReceivedNoteCommentService,
   ) {}
 
-  @Get(':bu_code/good-received-note/:good_received_note_id/comment')
+  @Get(':bu_code/good-received-note/:good_received_note_id/comments')
   @UseGuards(new AppIdGuard('goodReceivedNoteComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

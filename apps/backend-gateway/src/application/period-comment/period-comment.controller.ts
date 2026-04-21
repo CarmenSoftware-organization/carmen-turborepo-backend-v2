@@ -20,7 +20,7 @@ export class PeriodCommentController {
   private readonly logger: BackendLogger = new BackendLogger(PeriodCommentController.name);
   constructor(private readonly periodCommentService: PeriodCommentService) {}
 
-  @Get(':bu_code/period/:period_id/comment')
+  @Get(':bu_code/period/:period_id/comments')
   @UseGuards(new AppIdGuard('periodComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

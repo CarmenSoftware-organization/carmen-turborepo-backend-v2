@@ -42,7 +42,7 @@ export class StockInDetailCommentController {
     private readonly stockInDetailCommentService: StockInDetailCommentService,
   ) {}
 
-  @Get(':bu_code/stock-in-detail/:stock_in_detail_id/comment')
+  @Get(':bu_code/stock-in-detail/:stock_in_detail_id/comments')
   @UseGuards(new AppIdGuard('stockInDetailComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

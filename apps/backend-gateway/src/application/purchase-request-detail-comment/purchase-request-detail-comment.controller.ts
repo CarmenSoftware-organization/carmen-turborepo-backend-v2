@@ -42,7 +42,7 @@ export class PurchaseRequestDetailCommentController {
     private readonly purchaseRequestDetailCommentService: PurchaseRequestDetailCommentService,
   ) {}
 
-  @Get(':bu_code/purchase-request-detail/:purchase_request_detail_id/comment')
+  @Get(':bu_code/purchase-request-detail/:purchase_request_detail_id/comments')
   @UseGuards(new AppIdGuard('purchaseRequestDetailComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

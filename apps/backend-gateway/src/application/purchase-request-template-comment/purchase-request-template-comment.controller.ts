@@ -42,7 +42,7 @@ export class PurchaseRequestTemplateCommentController {
     private readonly purchaseRequestTemplateCommentService: PurchaseRequestTemplateCommentService,
   ) {}
 
-  @Get(':bu_code/purchase-request-template/:purchase_request_template_id/comment')
+  @Get(':bu_code/purchase-request-template/:purchase_request_template_id/comments')
   @UseGuards(new AppIdGuard('purchaseRequestTemplateComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

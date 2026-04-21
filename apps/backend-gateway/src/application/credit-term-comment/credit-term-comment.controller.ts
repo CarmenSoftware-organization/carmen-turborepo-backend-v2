@@ -20,7 +20,7 @@ export class CreditTermCommentController {
   private readonly logger: BackendLogger = new BackendLogger(CreditTermCommentController.name);
   constructor(private readonly creditTermCommentService: CreditTermCommentService) {}
 
-  @Get(':bu_code/credit-term/:credit_term_id/comment')
+  @Get(':bu_code/credit-term/:credit_term_id/comments')
   @UseGuards(new AppIdGuard('creditTermComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

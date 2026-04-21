@@ -700,26 +700,6 @@ Mobile commit of goods receipt.
 
 ---
 
-### Get GRN Comments
-
-**`GET /api/:bu_code/good-received-note/:id/comments`**
-
-**AppIdGuard:** `goodReceivedNote.getComments`
-
-**Response:** `200 OK`
-
----
-
-### Create GRN Comment
-
-**`POST /api/:bu_code/good-received-note/:id/comments`**
-
-**AppIdGuard:** `goodReceivedNote.createComment`
-
-**Response:** `201 Created`
-
----
-
 ### Delete Good Received Note
 
 **`DELETE /api/:bu_code/good-received-note/:id`**
@@ -972,7 +952,7 @@ Comments and attachments on purchase requests. Uses `KeycloakGuard` + `Permissio
 
 ### List Comments for Purchase Request
 
-**`GET /api/:bu_code/purchase-request/:purchase_request_id/comment`**
+**`GET /api/:bu_code/purchase-request/:purchase_request_id/comments`**
 
 **AppIdGuard:** `purchaseRequestComment.findAll`
 

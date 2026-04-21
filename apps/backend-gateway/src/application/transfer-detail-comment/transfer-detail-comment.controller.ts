@@ -42,7 +42,7 @@ export class TransferDetailCommentController {
     private readonly transferDetailCommentService: TransferDetailCommentService,
   ) {}
 
-  @Get(':bu_code/transfer-detail/:transfer_detail_id/comment')
+  @Get(':bu_code/transfer-detail/:transfer_detail_id/comments')
   @UseGuards(new AppIdGuard('transferDetailComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

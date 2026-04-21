@@ -20,7 +20,7 @@ export class DimensionCommentController {
   private readonly logger: BackendLogger = new BackendLogger(DimensionCommentController.name);
   constructor(private readonly dimensionCommentService: DimensionCommentService) {}
 
-  @Get(':bu_code/dimension/:dimension_id/comment')
+  @Get(':bu_code/dimension/:dimension_id/comments')
   @UseGuards(new AppIdGuard('dimensionComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

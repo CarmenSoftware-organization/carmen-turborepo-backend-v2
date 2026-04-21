@@ -42,7 +42,7 @@ export class SpotCheckCommentController {
     private readonly spotCheckCommentService: SpotCheckCommentService,
   ) {}
 
-  @Get(':bu_code/spot-check/:spot_check_id/comment')
+  @Get(':bu_code/spot-check/:spot_check_id/comments')
   @UseGuards(new AppIdGuard('spotCheckComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

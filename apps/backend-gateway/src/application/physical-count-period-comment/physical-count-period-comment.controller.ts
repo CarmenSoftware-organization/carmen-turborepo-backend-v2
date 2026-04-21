@@ -42,7 +42,7 @@ export class PhysicalCountPeriodCommentController {
     private readonly physicalCountPeriodCommentService: PhysicalCountPeriodCommentService,
   ) {}
 
-  @Get(':bu_code/physical-count-period/:physical_count_period_id/comment')
+  @Get(':bu_code/physical-count-period/:physical_count_period_id/comments')
   @UseGuards(new AppIdGuard('physicalCountPeriodComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

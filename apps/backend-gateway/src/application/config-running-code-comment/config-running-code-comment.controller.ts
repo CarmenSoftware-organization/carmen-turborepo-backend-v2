@@ -20,7 +20,7 @@ export class ConfigRunningCodeCommentController {
   private readonly logger: BackendLogger = new BackendLogger(ConfigRunningCodeCommentController.name);
   constructor(private readonly configRunningCodeCommentService: ConfigRunningCodeCommentService) {}
 
-  @Get(':bu_code/config-running-code/:config_running_code_id/comment')
+  @Get(':bu_code/config-running-code/:config_running_code_id/comments')
   @UseGuards(new AppIdGuard('configRunningCodeComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

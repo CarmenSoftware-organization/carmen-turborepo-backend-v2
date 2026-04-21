@@ -42,7 +42,7 @@ export class StoreRequisitionDetailCommentController {
     private readonly storeRequisitionDetailCommentService: StoreRequisitionDetailCommentService,
   ) {}
 
-  @Get(':bu_code/store-requisition-detail/:store_requisition_detail_id/comment')
+  @Get(':bu_code/store-requisition-detail/:store_requisition_detail_id/comments')
   @UseGuards(new AppIdGuard('storeRequisitionDetailComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
