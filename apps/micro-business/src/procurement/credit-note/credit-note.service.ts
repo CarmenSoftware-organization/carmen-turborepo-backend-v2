@@ -306,7 +306,7 @@ export class CreditNoteService {
    * @returns Created credit note ID / ID ของใบลดหนี้ที่สร้างแล้ว
    */
   @TryCatch
-   
+
   async create(data: any): Promise<Result<any>> {
     this.logger.debug(
       { function: 'create', data, user_id: this.userId, tenant_id: this.bu_code },
@@ -409,10 +409,11 @@ export class CreditNoteService {
 
       if (data.credit_note_detail?.update?.length) {
         for (const detail of data.credit_note_detail.update) {
+          const { id, credit_note_id, requested_qty, approved_qty, ...rest } = detail;
           await tx.tb_credit_note_detail.update({
-            where: { id: detail.id },
+            where: { id },
             data: {
-              ...detail,
+              ...rest,
               updated_by_id: this.userId,
             },
           });
