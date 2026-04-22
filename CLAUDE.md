@@ -174,6 +174,7 @@ Supplementary conventions from `cursorrule.cursor` not explicitly captured above
 - **SOLID principles** for classes; prefer composition over inheritance
 - **Arrow functions** only for simple functions ≤ 3 statements; use named functions for longer ones
 - **Void-returning functions**: use `executeX`, `saveX` naming pattern (in addition to the verb-prefix rule)
+- **Swagger tags**: `@ApiTags(...)` on a gateway controller must match the mapping in `scripts/swagger-sync/tag-mapping.json`. The tag set and 2-level group structure are defined in `apps/backend-gateway/src/swagger/tag-groups.ts`. Run `bun run swagger:retag:dry` to preview, `bun run swagger:retag` to apply, and `bun run swagger:verify` to confirm consistency. New gateway controllers must add their mapping entry before commit.
 
 ### micro-cronjob Framework (from legacy notes — verified 2026-04-20)
 
