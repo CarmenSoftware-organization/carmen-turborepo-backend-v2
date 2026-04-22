@@ -20,6 +20,9 @@
     "build:package": "turbo run build:package",
     "bruno:sync": "bun run scripts/bruno-sync/index.ts",
     "bruno:sync:dry": "bun run scripts/bruno-sync/index.ts --dry-run",
+    "swagger:retag": "bun run scripts/swagger-sync/retag.ts --apply",
+    "swagger:retag:dry": "bun run scripts/swagger-sync/retag.ts",
+    "swagger:verify": "cd apps/backend-gateway && bun run scripts/verify-swagger.ts",
     "setup": "bun install && turbo run build:package",
     "clear": "rm -rf node_modules bun.lock bun.lockb && find apps packages -type d \\( -name node_modules -o -name dist -o -name .turbo -o -name .next \\) -prune -exec rm -rf {} +",
     "postinstall": "turbo run build:package"
