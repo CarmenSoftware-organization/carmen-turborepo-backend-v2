@@ -13,6 +13,13 @@ export class UnitResponseDto {
   @ApiPropertyOptional({ description: 'Whether the unit is active', example: true })
   is_active?: boolean;
 
+  @ApiProperty({
+    description: 'Number of decimal places for display and rounding',
+    example: 2,
+    minimum: 0,
+  })
+  decimal_place: number;
+
   @ApiPropertyOptional({ description: 'Additional notes', example: 'Used for dry goods' })
   note?: string;
 
