@@ -1,4 +1,8 @@
 import { BackendLogger } from '@/common/helpers/backend.logger';
+import {
+  resolveConversionDecimalPlace,
+  resolveUnitDecimalPlace,
+} from './utils/decimal-place.util';
 import { TenantService } from '@/tenant/tenant.service';
 import { HttpStatus, Injectable, HttpException } from '@nestjs/common';
 import { isUUID } from 'class-validator';
@@ -118,7 +122,8 @@ export class UnitConversionService {
           {
             id: product.inventory_unit_id,
             name: product.tb_unit?.name ?? product.inventory_unit_name,
-            conversion: 1
+            conversion: 1,
+            decimal_place: resolveUnitDecimalPlace({ unit: product.tb_unit }),
           }
         ]
       }
@@ -127,14 +132,19 @@ export class UnitConversionService {
       newData.push({
         id: res[0].tb_product.inventory_unit_id,
         name: res[0].tb_product.tb_unit?.name ?? res[0].tb_product.inventory_unit_name,
-        conversion: 1
+        conversion: 1,
+        decimal_place: resolveUnitDecimalPlace({ unit: res[0].tb_product.tb_unit }),
       })
 
       res.forEach((item) => {
         newData.push({
           id: item.from_unit_id,
           name: item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit?.name ?? item.from_unit_name,
-          conversion: Number(item.to_unit_qty)
+          conversion: Number(item.to_unit_qty),
+          decimal_place: resolveConversionDecimalPlace({
+            conversion: item,
+            fallbackUnit: item.tb_unit_tb_unit_conversion_from_unit_idTotb_unit,
+          }),
         });
       });
 
@@ -188,7 +198,8 @@ export class UnitConversionService {
           {
             id: product.inventory_unit_id,
             name: product.tb_unit?.name ?? product.inventory_unit_name,
-            conversion: 1
+            conversion: 1,
+            decimal_place: resolveUnitDecimalPlace({ unit: product.tb_unit }),
           }
         ]
       }
@@ -197,14 +208,19 @@ export class UnitConversionService {
       newData.push({
         id: res[0].tb_product.inventory_unit_id,
         name: res[0].tb_product.tb_unit?.name ?? res[0].tb_product.inventory_unit_name,
-        conversion: 1
+        conversion: 1,
+        decimal_place: resolveUnitDecimalPlace({ unit: res[0].tb_product.tb_unit }),
       })
 
       res.forEach((item) => {
         newData.push({
           id: item.to_unit_id,
           name: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit?.name ?? item.to_unit_name,
-          conversion: Number(item.to_unit_qty)
+          conversion: Number(item.to_unit_qty),
+          decimal_place: resolveConversionDecimalPlace({
+            conversion: item,
+            fallbackUnit: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit,
+          }),
         });
       });
 
@@ -260,7 +276,8 @@ export class UnitConversionService {
           {
             id: product?.inventory_unit_id,
             name: product?.tb_unit?.name ?? product?.inventory_unit_name,
-            conversion: 1
+            conversion: 1,
+            decimal_place: resolveUnitDecimalPlace({ unit: product?.tb_unit }),
           }
         ]
       }
@@ -269,7 +286,8 @@ export class UnitConversionService {
       newData.push({
         id: res[0].tb_product.inventory_unit_id,
         name: res[0].tb_product.tb_unit?.name ?? res[0].tb_product.inventory_unit_name,
-        conversion: 1
+        conversion: 1,
+        decimal_place: resolveUnitDecimalPlace({ unit: res[0].tb_product.tb_unit }),
       })
 
       res.forEach((item) => {
@@ -277,13 +295,21 @@ export class UnitConversionService {
           newData.push({
             id: item.to_unit_id,
             name: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit?.name ?? item.to_unit_name,
-            conversion: 1 / Number(item.to_unit_qty)
+            conversion: 1 / Number(item.to_unit_qty),
+            decimal_place: resolveConversionDecimalPlace({
+              conversion: item,
+              fallbackUnit: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit,
+            }),
           });
         } else if (item.unit_type === 'order_unit') {
           newData.push({
             id: item.to_unit_id,
             name: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit?.name ?? item.to_unit_name,
-            conversion: Number(item.from_unit_qty)
+            conversion: Number(item.from_unit_qty),
+            decimal_place: resolveConversionDecimalPlace({
+              conversion: item,
+              fallbackUnit: item.tb_unit_tb_unit_conversion_to_unit_idTotb_unit,
+            }),
           });
         }
       })
