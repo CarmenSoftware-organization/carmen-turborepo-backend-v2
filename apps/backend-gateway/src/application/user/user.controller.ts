@@ -36,7 +36,7 @@ import { UpdateUserProfileRequestDto } from './swagger/request';
 import { UserProfileResponseDto } from './swagger/response';
 
 @Controller()
-@ApiTags('User & Access')
+@ApiTags('User: Profile')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

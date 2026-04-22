@@ -12,7 +12,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { CreateLocationCommentDto, UpdateLocationCommentDto, AddAttachmentDto } from './dto/location-comment.dto';
 
 @Controller('api')
-@ApiTags('Master')
+@ApiTags('Config: Locations')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()

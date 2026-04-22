@@ -38,7 +38,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator';
 
 @Controller('api/:bu_code/documents')
-@ApiTags('Document & Log')
+@ApiTags('Documents: File Management')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

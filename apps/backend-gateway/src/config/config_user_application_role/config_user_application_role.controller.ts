@@ -12,7 +12,7 @@ import { ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator'
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/config/:bu_code/user-application-roles')
-@ApiTags('Configuration')
+@ApiTags('Config: Roles & Permissions')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

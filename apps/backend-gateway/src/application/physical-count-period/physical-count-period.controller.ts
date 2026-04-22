@@ -37,7 +37,7 @@ import {
 } from 'src/common/dto/physical-count-period/physical-count-period.dto';
 
 @Controller('api')
-@ApiTags('Inventory')
+@ApiTags('Inventory: Physical Count')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

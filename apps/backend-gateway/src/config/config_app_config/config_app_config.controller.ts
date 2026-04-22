@@ -25,7 +25,7 @@ interface AppConfigUpsertBody {
   value: unknown;
 }
 
-@ApiTags('Configuration')
+@ApiTags('Config: System')
 @ApiHeaderRequiredXAppId()
 @Controller('api/config/:bu_code/app-config')
 @UseGuards(KeycloakGuard)

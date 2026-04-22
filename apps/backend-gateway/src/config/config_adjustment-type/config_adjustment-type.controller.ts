@@ -39,7 +39,7 @@ import {
 } from './swagger/request';
 
 @Controller('api/config/:bu_code/adjustment-type')
-@ApiTags('Configuration')
+@ApiTags('Config: Tax & Cost Types')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

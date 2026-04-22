@@ -47,7 +47,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { PhysicalCountCreateDto, PhysicalCountUpdateDto } from 'src/common/dto/physical-count/physical-count.dto';
 
 @Controller('api')
-@ApiTags('Inventory')
+@ApiTags('Inventory: Physical Count')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

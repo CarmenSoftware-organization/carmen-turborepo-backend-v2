@@ -6,7 +6,7 @@ import {
 } from '@/common';
 
 @Controller('api/vendor-business-type')
-@ApiTags('Procurement')
+@ApiTags('Config: Vendors')
 export class VendorBusinessTypeController extends BaseHttpController {
   constructor(private readonly _vendorBusinessTypeService: VendorBusinessTypeService) {
     super();

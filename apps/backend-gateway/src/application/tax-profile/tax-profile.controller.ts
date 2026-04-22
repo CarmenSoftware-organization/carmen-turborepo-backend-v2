@@ -34,7 +34,7 @@ import {
 } from '@/common';
 
 @Controller('api/:bu_code/tax-profile')
-@ApiTags('Master Data')
+@ApiTags('Config: Tax & Cost Types')
 @ApiHeaderRequiredXAppId()
 @ApiBearerAuth()
 @UseGuards(KeycloakGuard)

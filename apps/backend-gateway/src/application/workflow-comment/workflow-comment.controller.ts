@@ -12,7 +12,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { CreateWorkflowCommentDto, UpdateWorkflowCommentDto, AddAttachmentDto } from './dto/workflow-comment.dto';
 
 @Controller('api')
-@ApiTags('Master')
+@ApiTags('Workflow: Operations')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()

@@ -24,7 +24,7 @@ import { GenerateReportRequestDto, ViewerRequestDto, ReportDataRequestDto, Creat
 import { ReportTypeResponseDto, ReportTemplateResponseDto, ViewerResponseDto, AsyncResponseDto, JobStatusResponseDto, ScheduleResponseDto } from './swagger/response';
 
 @Controller('api/:bu_code/report')
-@ApiTags('Report')
+@ApiTags('Reports: Reports')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

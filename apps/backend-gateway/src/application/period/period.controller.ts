@@ -34,7 +34,7 @@ import {
 import { PeriodGenerateNextRequestDto } from './swagger/request';
 
 @Controller('api')
-@ApiTags('Inventory')
+@ApiTags('Inventory: Periods')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

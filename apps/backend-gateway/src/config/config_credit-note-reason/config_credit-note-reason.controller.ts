@@ -47,7 +47,7 @@ import {
 } from './swagger/request';
 
 @Controller('api/config/:bu_code/credit-note-reason')
-@ApiTags('Configuration')
+@ApiTags('Config: Vendors')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

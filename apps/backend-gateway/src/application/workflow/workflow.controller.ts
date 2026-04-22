@@ -21,7 +21,7 @@ import {
 
 @Controller('api/:bu_code/workflow')
 @UseGuards(KeycloakGuard)
-@ApiTags('Workflow & Approval')
+@ApiTags('Workflow: Operations')
 @ApiHeaderRequiredXAppId()
 @ApiBearerAuth()
 export class WorkflowController extends BaseHttpController {

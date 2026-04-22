@@ -15,7 +15,7 @@ import {
 } from '@/common';
 
 @Controller('api/:bu_code/unit')
-@ApiTags('Master Data')
+@ApiTags('Config: Units')
 @ApiHeaderRequiredXAppId()
 @ApiBearerAuth()
 @UseGuards(KeycloakGuard)

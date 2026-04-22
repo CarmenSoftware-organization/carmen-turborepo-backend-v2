@@ -32,7 +32,7 @@ import {
 } from '@/common';
 
 @Controller('api/:bu_code/purchase-request-template')
-@ApiTags('Procurement')
+@ApiTags('Procurement: Purchase Requests')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

@@ -12,7 +12,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { CreateProductCommentDto, UpdateProductCommentDto, AddAttachmentDto } from './dto/product-comment.dto';
 
 @Controller('api')
-@ApiTags('Master')
+@ApiTags('Config: Products')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()

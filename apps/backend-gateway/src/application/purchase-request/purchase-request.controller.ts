@@ -63,7 +63,7 @@ import {
 import { SwipeResultResponseDto } from './swagger/response';
 
 @Controller('api')
-@ApiTags('Procurement')
+@ApiTags('Procurement: Purchase Requests')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()

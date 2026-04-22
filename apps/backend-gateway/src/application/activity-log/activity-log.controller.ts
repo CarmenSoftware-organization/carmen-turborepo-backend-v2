@@ -31,7 +31,7 @@ import { ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator'
 import { BatchDeleteDto } from './swagger/request';
 
 @Controller('api/:bu_code/activity-log')
-@ApiTags('Document & Log')
+@ApiTags('Reports: Activity Log')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

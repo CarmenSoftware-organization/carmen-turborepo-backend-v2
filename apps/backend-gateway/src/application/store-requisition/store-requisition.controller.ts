@@ -56,7 +56,7 @@ import {
 } from '@/common';
 
 @Controller('api')
-@ApiTags('Procurement')
+@ApiTags('Procurement: Store Requisitions')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

@@ -13,7 +13,7 @@ import { ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator'
 import { CreateApplicationRoleRequest, UpdateApplicationRoleRequest } from './swagger/request'
 
 @Controller('api/config/:bu_code/application-roles')
-@ApiTags('Configuration')
+@ApiTags('Config: Roles & Permissions')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

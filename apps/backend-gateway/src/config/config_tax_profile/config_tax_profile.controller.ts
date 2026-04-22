@@ -44,7 +44,7 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
-@ApiTags('Configuration')
+@ApiTags('Config: Tax & Cost Types')
 @ApiHeaderRequiredXAppId()
 @Controller('api/config/:bu_code/tax-profile')
 @UseGuards(KeycloakGuard)

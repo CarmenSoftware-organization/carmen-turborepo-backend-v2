@@ -36,7 +36,7 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 @Controller('api/my-pending/store-requisition')
-@ApiTags('Workflow & Approval')
+@ApiTags('Workflow: My Pending')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

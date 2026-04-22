@@ -32,7 +32,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { BaseHttpController } from '@/common';
 
 @Controller('api-system/user/cluster')
-@ApiTags('Platform Admin')
+@ApiTags('Platform: User ↔ Cluster')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

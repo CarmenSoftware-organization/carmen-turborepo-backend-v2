@@ -5,7 +5,7 @@ import { Request, Response } from 'express';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags('Notification')
+@ApiTags('Notifications')
 @ApiHeaderRequiredXAppId()
 @Controller('api/notifications')
 export class NotificationController {
