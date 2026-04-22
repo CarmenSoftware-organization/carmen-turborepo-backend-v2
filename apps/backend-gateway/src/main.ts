@@ -10,6 +10,7 @@ import { envConfig } from 'src/libs/config.env';
 import { winstonLogger } from './common/helpers/backend.logger';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import { APP_VERSION } from './version';
+import { SWAGGER_TAGS, SWAGGER_TAG_GROUPS } from './swagger/tag-groups';
 import { WinstonModule } from 'nest-winston';
 import { BackendLogger } from './common/helpers/backend.logger';
 import { ExceptionFilter } from './exception/exception.fillter';
@@ -56,7 +57,7 @@ async function bootstrap() {
   const gatewayPort = envConfig.GATEWAY_SERVICE_HTTP_PORT;
   const gatewayPortHttps = envConfig.GATEWAY_SERVICE_HTTPS_PORT;
 
-  const config = new DocumentBuilder()
+  const docConfigBuilder = new DocumentBuilder()
     .setTitle('CarmenSoftware')
     .setDescription('CarmenSoftware API Gateway')
     .setVersion(APP_VERSION)
@@ -79,18 +80,13 @@ async function bootstrap() {
       scheme: 'bearer',
       bearerFormat: 'JWT',
       in: 'header',
-    })
-    .addTag('Authentication', 'Login, logout, registration, password management, and token refresh via Keycloak')
-    .addTag('App', 'Application-level settings and metadata')
-    .addTag('Configuration', 'Business unit configuration: currencies, departments, locations, products, vendors, units, recipes, workflows, and more')
-    .addTag('Document & Log', 'Document management and activity/audit logging')
-    .addTag('Inventory', 'Stock-in, stock-out, transfers, adjustments, physical counts, spot checks, and inventory transactions')
-    .addTag('Master Data', 'Products, locations, vendors, and other shared reference data used across procurement and inventory')
-    .addTag('Notification', 'Real-time and persistent notifications for users')
-    .addTag('Platform Admin', 'System-wide administration: clusters, business units, users, roles, and permissions')
-    .addTag('Procurement', 'Purchase requests, purchase orders, good received notes, credit notes, request for pricing, and store requisitions')
-    .addTag('User & Access', 'User profiles, business unit assignments, location assignments, and role management')
-    .addTag('Workflow & Approval', 'Approval workflows, pending approvals, and document state transitions')
+    });
+
+  for (const t of SWAGGER_TAGS) {
+    docConfigBuilder.addTag(t.name, t.description);
+  }
+
+  const config = docConfigBuilder
     .addApiKey(
       {
         type: 'apiKey',
@@ -110,6 +106,11 @@ async function bootstrap() {
     app_https as unknown as Parameters<typeof SwaggerModule.createDocument>[0],
     config,
   );
+
+  (document_http as unknown as Record<string, unknown>)['x-tagGroups'] =
+    SWAGGER_TAG_GROUPS;
+  (document_https as unknown as Record<string, unknown>)['x-tagGroups'] =
+    SWAGGER_TAG_GROUPS;
 
   app_http.use(
     '/swagger',
