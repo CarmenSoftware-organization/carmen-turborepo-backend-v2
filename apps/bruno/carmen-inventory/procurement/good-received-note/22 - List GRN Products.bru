@@ -1,0 +1,65 @@
+meta {
+  name: 22 - List GRN Products
+  type: http
+  seq: 22
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/good-received-note/:grn_id/product
+  body: none
+  auth: bearer
+}
+
+params:path {
+  grn_id: 04e065de-03d0-4f33-baee-3ca3f7823eea
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+docs {
+  ## List distinct products in a GRN
+  แสดงรายการสินค้าแบบไม่ซ้ำที่รับในใบรับสินค้าพร้อมการแบ่งหน้าและตัวกรอง ใช้สำหรับหน้าจอสรุปสินค้าในใบรับสินค้าหนึ่งใบ
+  
+  Lists all distinct products received on a GRN with pagination and filtering. Used to show a product summary of a single GRN.
+  
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `grn_id` — Good Received Note ID / รหัสใบรับสินค้า
+  
+  ### Query Parameters (optional)
+  - `page`, `perpage` — pagination
+  - `search` — full-text search
+  - `searchfields` — comma-separated fields to search (default: `product_code,product_name,product_sku`)
+  - `filter` — comma-separated `field:value` pairs (e.g. `product_code:P001`)
+  - `sort` — comma-separated `field:asc|desc` (default: `product_code:asc`)
+  
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "product_id": "uuid",
+        "product_code": "P001",
+        "product_name": "Product Name",
+        "product_sku": "SKU-001"
+      }
+    ],
+    "paginate": {
+      "total": 1,
+      "page": 1,
+      "perpage": 10,
+      "pages": 1
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-04-22T08:41:09.468Z"
+  }
+  ```
+}

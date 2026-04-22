@@ -170,3 +170,22 @@ export const GoodReceivedNoteMutationResponseSchema = z.object({
 });
 
 export type GoodReceivedNoteMutationResponse = z.infer<typeof GoodReceivedNoteMutationResponseSchema>;
+
+// GRN product list item — used by product/location sub-resource endpoints
+export const GrnProductListItemSchema = z.object({
+  product_id: z.string().nullable().optional(),
+  product_code: z.string().nullable().optional(),
+  product_name: z.string().nullable().optional(),
+  product_sku: z.string().nullable().optional(),
+}).passthrough();
+
+export type GrnProductListItem = z.infer<typeof GrnProductListItemSchema>;
+
+// GRN location list item — used by location/product sub-resource endpoints
+export const GrnLocationListItemSchema = z.object({
+  location_id: z.string().nullable().optional(),
+  location_code: z.string().nullable().optional(),
+  location_name: z.string().nullable().optional(),
+}).passthrough();
+
+export type GrnLocationListItem = z.infer<typeof GrnLocationListItemSchema>;

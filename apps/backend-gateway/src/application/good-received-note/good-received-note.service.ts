@@ -585,6 +585,142 @@ export class GoodReceivedNoteService {
     return Result.ok(response.data);
   }
 
+  // ==================== Sub-resource list endpoints (products/locations in a GRN) ====================
+
+  /**
+   * List distinct products in a GRN via microservice
+   * ค้นหาสินค้าแบบไม่ซ้ำในใบรับสินค้าผ่านไมโครเซอร์วิส
+   */
+  async findProductsByGrnId(
+    grnId: string,
+    user_id: string,
+    tenant_id: string,
+    paginate: IPaginate,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findProductsByGrnId', grnId, user_id, tenant_id, paginate, version },
+      GoodReceivedNoteService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      { cmd: 'good-received-note.findProductsByGrnId', service: 'good-received-note' },
+      { grn_id: grnId, user_id, tenant_id, paginate, version, ...getGatewayRequestContext() },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok({ data: response.data, paginate: response.paginate });
+  }
+
+  /**
+   * List locations for a specific product in a GRN via microservice
+   * ค้นหาตำแหน่งจัดเก็บของสินค้าหนึ่งในใบรับสินค้าผ่านไมโครเซอร์วิส
+   */
+  async findLocationsByGrnIdAndProductId(
+    grnId: string,
+    productId: string,
+    user_id: string,
+    tenant_id: string,
+    paginate: IPaginate,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findLocationsByGrnIdAndProductId', grnId, productId, user_id, tenant_id, paginate, version },
+      GoodReceivedNoteService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      { cmd: 'good-received-note.findLocationsByGrnIdAndProductId', service: 'good-received-note' },
+      { grn_id: grnId, product_id: productId, user_id, tenant_id, paginate, version, ...getGatewayRequestContext() },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok({ data: response.data, paginate: response.paginate });
+  }
+
+  /**
+   * List distinct locations in a GRN via microservice
+   * ค้นหาตำแหน่งจัดเก็บแบบไม่ซ้ำในใบรับสินค้าผ่านไมโครเซอร์วิส
+   */
+  async findLocationsByGrnId(
+    grnId: string,
+    user_id: string,
+    tenant_id: string,
+    paginate: IPaginate,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findLocationsByGrnId', grnId, user_id, tenant_id, paginate, version },
+      GoodReceivedNoteService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      { cmd: 'good-received-note.findLocationsByGrnId', service: 'good-received-note' },
+      { grn_id: grnId, user_id, tenant_id, paginate, version, ...getGatewayRequestContext() },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok({ data: response.data, paginate: response.paginate });
+  }
+
+  /**
+   * List products at a specific location in a GRN via microservice
+   * ค้นหาสินค้าที่อยู่ในตำแหน่งจัดเก็บหนึ่งในใบรับสินค้าผ่านไมโครเซอร์วิส
+   */
+  async findProductsByGrnIdAndLocationId(
+    grnId: string,
+    locationId: string,
+    user_id: string,
+    tenant_id: string,
+    paginate: IPaginate,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findProductsByGrnIdAndLocationId', grnId, locationId, user_id, tenant_id, paginate, version },
+      GoodReceivedNoteService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      { cmd: 'good-received-note.findProductsByGrnIdAndLocationId', service: 'good-received-note' },
+      { grn_id: grnId, location_id: locationId, user_id, tenant_id, paginate, version, ...getGatewayRequestContext() },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok({ data: response.data, paginate: response.paginate });
+  }
+
   // ==================== Mobile-specific endpoints ====================
 
   /**

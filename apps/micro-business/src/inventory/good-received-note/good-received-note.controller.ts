@@ -451,4 +451,92 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     );
     return this.handleResult(result);
   }
+
+  // ==================== Sub-resource list endpoints (products/locations in a GRN) ====================
+
+  /**
+   * List distinct products in a GRN
+   * ค้นหาสินค้าแบบไม่ซ้ำในใบรับสินค้า
+   */
+  @MessagePattern({
+    cmd: "good-received-note.findProductsByGrnId",
+    service: "good-received-note",
+  })
+  async findProductsByGrnId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: "findProductsByGrnId", payload }, GoodReceivedNoteController.name);
+    const grnId = payload.grn_id;
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const paginate = payload.paginate;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.goodReceivedNoteService.findProductsByGrnId(grnId, user_id, tenant_id, paginate),
+    );
+    return this.handlePaginatedResult(result);
+  }
+
+  /**
+   * List locations for a specific product in a GRN
+   * ค้นหาตำแหน่งจัดเก็บของสินค้าหนึ่งในใบรับสินค้า
+   */
+  @MessagePattern({
+    cmd: "good-received-note.findLocationsByGrnIdAndProductId",
+    service: "good-received-note",
+  })
+  async findLocationsByGrnIdAndProductId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: "findLocationsByGrnIdAndProductId", payload }, GoodReceivedNoteController.name);
+    const grnId = payload.grn_id;
+    const productId = payload.product_id;
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const paginate = payload.paginate;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.goodReceivedNoteService.findLocationsByGrnId(grnId, user_id, tenant_id, paginate, productId),
+    );
+    return this.handlePaginatedResult(result);
+  }
+
+  /**
+   * List distinct locations in a GRN
+   * ค้นหาตำแหน่งจัดเก็บแบบไม่ซ้ำในใบรับสินค้า
+   */
+  @MessagePattern({
+    cmd: "good-received-note.findLocationsByGrnId",
+    service: "good-received-note",
+  })
+  async findLocationsByGrnId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: "findLocationsByGrnId", payload }, GoodReceivedNoteController.name);
+    const grnId = payload.grn_id;
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const paginate = payload.paginate;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.goodReceivedNoteService.findLocationsByGrnId(grnId, user_id, tenant_id, paginate),
+    );
+    return this.handlePaginatedResult(result);
+  }
+
+  /**
+   * List products at a specific location in a GRN
+   * ค้นหาสินค้าที่อยู่ในตำแหน่งจัดเก็บหนึ่งในใบรับสินค้า
+   */
+  @MessagePattern({
+    cmd: "good-received-note.findProductsByGrnIdAndLocationId",
+    service: "good-received-note",
+  })
+  async findProductsByGrnIdAndLocationId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: "findProductsByGrnIdAndLocationId", payload }, GoodReceivedNoteController.name);
+    const grnId = payload.grn_id;
+    const locationId = payload.location_id;
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const paginate = payload.paginate;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.goodReceivedNoteService.findProductsByGrnId(grnId, user_id, tenant_id, paginate, locationId),
+    );
+    return this.handlePaginatedResult(result);
+  }
 }

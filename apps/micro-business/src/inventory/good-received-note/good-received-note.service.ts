@@ -25,6 +25,8 @@ import {
   // NotificationType,
   GoodReceivedNoteDetailResponseSchema,
   GoodReceivedNoteListItemResponseSchema,
+  GrnProductListItemSchema,
+  GrnLocationListItemSchema,
   Result,
   ErrorCode,
   TryCatch,
@@ -1899,6 +1901,173 @@ export class GoodReceivedNoteService {
     });
 
     return Result.ok(details);
+  }
+
+  /**
+   * Find distinct products in a GRN with pagination/search/filter/sort
+   * ค้นหาสินค้าแบบไม่ซ้ำในใบรับสินค้าพร้อมการแบ่งหน้า/ค้นหา/กรอง/เรียง
+   */
+  @TryCatch
+  async findProductsByGrnId(
+    grnId: string,
+    user_id: string,
+    tenant_id: string,
+    paginate: IPaginate,
+    locationId?: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findProductsByGrnId', grnId, user_id, tenant_id, paginate, locationId },
+      GoodReceivedNoteService.name,
+    );
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) {
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+    }
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    const grn = await prisma.tb_good_received_note.findFirst({
+      where: { id: grnId, deleted_at: null },
+      select: { id: true },
+    });
+    if (!grn) {
+      return Result.error('Good Received Note not found', ErrorCode.NOT_FOUND);
+    }
+
+    const defaultSearchFields = ['product_code', 'product_name', 'product_sku'];
+    const q = new QueryParams(
+      paginate.page,
+      paginate.perpage,
+      paginate.search,
+      paginate.searchfields,
+      defaultSearchFields,
+      paginate.filter,
+      paginate.sort,
+      paginate.advance,
+    );
+
+    const baseWhere = {
+      good_received_note_id: grnId,
+      ...(locationId ? { location_id: locationId } : {}),
+    };
+    const { where: qWhere, orderBy, skip, take } = q.findMany();
+    const where = { ...qWhere, ...baseWhere };
+
+    const rows = await prisma.tb_good_received_note_detail.findMany({
+      where,
+      select: {
+        product_id: true,
+        product_code: true,
+        product_name: true,
+        product_sku: true,
+      },
+      distinct: ['product_id'],
+      orderBy: Array.isArray(orderBy) && orderBy.length > 0 ? orderBy : [{ product_code: 'asc' }],
+      skip,
+      take,
+    });
+
+    const totalGroups = await prisma.tb_good_received_note_detail.groupBy({
+      by: ['product_id'],
+      where,
+    });
+    const total = totalGroups.length;
+
+    const serialized = rows.map((r: any) => GrnProductListItemSchema.parse(r));
+
+    return Result.ok({
+      data: serialized,
+      paginate: {
+        total,
+        page: q.page,
+        perpage: q.perpage,
+        pages: total === 0 ? 1 : Math.ceil(total / q.perpage),
+      },
+    });
+  }
+
+  /**
+   * Find distinct locations in a GRN with pagination/search/filter/sort
+   * ค้นหาตำแหน่งจัดเก็บแบบไม่ซ้ำในใบรับสินค้าพร้อมการแบ่งหน้า/ค้นหา/กรอง/เรียง
+   */
+  @TryCatch
+  async findLocationsByGrnId(
+    grnId: string,
+    user_id: string,
+    tenant_id: string,
+    paginate: IPaginate,
+    productId?: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findLocationsByGrnId', grnId, user_id, tenant_id, paginate, productId },
+      GoodReceivedNoteService.name,
+    );
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) {
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+    }
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    const grn = await prisma.tb_good_received_note.findFirst({
+      where: { id: grnId, deleted_at: null },
+      select: { id: true },
+    });
+    if (!grn) {
+      return Result.error('Good Received Note not found', ErrorCode.NOT_FOUND);
+    }
+
+    const defaultSearchFields = ['location_code', 'location_name'];
+    const q = new QueryParams(
+      paginate.page,
+      paginate.perpage,
+      paginate.search,
+      paginate.searchfields,
+      defaultSearchFields,
+      paginate.filter,
+      paginate.sort,
+      paginate.advance,
+    );
+
+    const baseWhere = {
+      good_received_note_id: grnId,
+      ...(productId ? { product_id: productId } : {}),
+    };
+    const { where: qWhere, orderBy, skip, take } = q.findMany();
+    const where = { ...qWhere, ...baseWhere };
+
+    const rows = await prisma.tb_good_received_note_detail.findMany({
+      where,
+      select: {
+        location_id: true,
+        location_code: true,
+        location_name: true,
+      },
+      distinct: ['location_id'],
+      orderBy: Array.isArray(orderBy) && orderBy.length > 0 ? orderBy : [{ location_code: 'asc' }],
+      skip,
+      take,
+    });
+
+    const totalGroups = await prisma.tb_good_received_note_detail.groupBy({
+      by: ['location_id'],
+      where,
+    });
+    const total = totalGroups.length;
+
+    const serialized = rows.map((r: any) => GrnLocationListItemSchema.parse(r));
+
+    return Result.ok({
+      data: serialized,
+      paginate: {
+        total,
+        page: q.page,
+        perpage: q.perpage,
+        pages: total === 0 ? 1 : Math.ceil(total / q.perpage),
+      },
+    });
   }
 
   /**

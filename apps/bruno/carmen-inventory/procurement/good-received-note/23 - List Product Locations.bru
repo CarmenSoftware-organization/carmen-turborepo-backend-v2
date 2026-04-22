@@ -1,0 +1,66 @@
+meta {
+  name: 23 - List Product Locations
+  type: http
+  seq: 23
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/good-received-note/:grn_id/product/:product_id/location
+  body: none
+  auth: bearer
+}
+
+params:path {
+  grn_id: b10e8a74-8223-4de9-972e-439e00bdbf34
+  product_id: 00b9bdf3-b6dd-4745-b486-c78bb707e7d1
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+docs {
+  ## List locations for a specific product in a GRN
+  แสดงรายการตำแหน่งจัดเก็บแบบไม่ซ้ำที่รับสินค้ารายการหนึ่งในใบรับสินค้า ใช้สำหรับดูว่าสินค้าแต่ละตัวถูกรับที่ตำแหน่งไหนบ้าง
+  
+  Lists distinct locations where a given product was received on a GRN with pagination and filtering.
+  
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `grn_id` — Good Received Note ID / รหัสใบรับสินค้า
+  - `product_id` — Product ID / รหัสสินค้า
+  
+  ### Query Parameters (optional)
+  - `page`, `perpage` — pagination
+  - `search` — full-text search
+  - `searchfields` — comma-separated fields to search (default: `location_code,location_name`)
+  - `filter` — comma-separated `field:value` pairs
+  - `sort` — comma-separated `field:asc|desc` (default: `location_code:asc`)
+  
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "location_id": "uuid",
+        "location_code": "LOC-001",
+        "location_name": "Main Warehouse"
+      }
+    ],
+    "paginate": {
+      "total": 1,
+      "page": 1,
+      "perpage": 10,
+      "pages": 1
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-04-22T08:41:09.468Z"
+  }
+  ```
+}

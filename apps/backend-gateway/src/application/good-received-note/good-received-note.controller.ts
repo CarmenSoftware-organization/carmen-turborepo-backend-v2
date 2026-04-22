@@ -33,6 +33,8 @@ import {
   GoodReceivedNoteDetailResponseSchema,
   GoodReceivedNoteListItemResponseSchema,
   GoodReceivedNoteMutationResponseSchema,
+  GrnProductListItemSchema,
+  GrnLocationListItemSchema,
 } from '@/common';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
@@ -1317,6 +1319,218 @@ export class GoodReceivedNoteController extends BaseHttpController {
       data,
       user_id,
       bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  // ==================== Sub-resource list endpoints (products/locations in a GRN) ====================
+
+  /**
+   * List distinct products on a GRN
+   * แสดงรายการสินค้าแบบไม่ซ้ำในใบรับสินค้า
+   */
+  @Get(':bu_code/good-received-note/:grn_id/product')
+  @UseGuards(new AppIdGuard('goodReceivedNote.findOne'))
+  @Serialize(GrnProductListItemSchema)
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'List products on a Good Received Note',
+    description:
+      'Lists all distinct products received on a GRN with pagination and filtering. Used by frontend to show a summary of what products were received and to power product-based drill-down views.',
+    operationId: 'findProductsByGrnId',
+    tags: ['Procurement', 'Good Received Note'],
+    parameters: [
+      { name: 'grn_id', in: 'path', required: true, description: 'Good Received Note ID' },
+      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+    ],
+    responses: {
+      200: { description: 'Products retrieved successfully' },
+      404: { description: 'Good Received Note not found' },
+    },
+    'x-description-th': 'แสดงรายการสินค้าแบบไม่ซ้ำที่รับในใบรับสินค้าพร้อมการแบ่งหน้าและตัวกรอง',
+  } as any)
+  @HttpCode(HttpStatus.OK)
+  async findProductsByGrnId(
+    @Param('grn_id') grnId: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query() query: IPaginateQuery,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'findProductsByGrnId', grnId, version },
+      GoodReceivedNoteController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
+    const result = await this.goodReceivedNoteService.findProductsByGrnId(
+      grnId,
+      user_id,
+      bu_code,
+      paginate,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * List locations for a specific product on a GRN
+   * แสดงรายการตำแหน่งจัดเก็บของสินค้าหนึ่งในใบรับสินค้า
+   */
+  @Get(':bu_code/good-received-note/:grn_id/product/:product_id/location')
+  @UseGuards(new AppIdGuard('goodReceivedNote.findOne'))
+  @Serialize(GrnLocationListItemSchema)
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'List locations for a product on a GRN',
+    description:
+      'Lists distinct locations where a given product was received on a GRN with pagination and filtering. Used to drill down from a product summary to see where each product was placed.',
+    operationId: 'findLocationsByGrnIdAndProductId',
+    tags: ['Procurement', 'Good Received Note'],
+    parameters: [
+      { name: 'grn_id', in: 'path', required: true, description: 'Good Received Note ID' },
+      { name: 'product_id', in: 'path', required: true, description: 'Product ID' },
+      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+    ],
+    responses: {
+      200: { description: 'Locations retrieved successfully' },
+      404: { description: 'Good Received Note not found' },
+    },
+    'x-description-th': 'แสดงรายการตำแหน่งจัดเก็บแบบไม่ซ้ำของสินค้าหนึ่งในใบรับสินค้าพร้อมการแบ่งหน้าและตัวกรอง',
+  } as any)
+  @HttpCode(HttpStatus.OK)
+  async findLocationsByGrnIdAndProductId(
+    @Param('grn_id') grnId: string,
+    @Param('product_id') productId: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query() query: IPaginateQuery,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'findLocationsByGrnIdAndProductId', grnId, productId, version },
+      GoodReceivedNoteController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
+    const result = await this.goodReceivedNoteService.findLocationsByGrnIdAndProductId(
+      grnId,
+      productId,
+      user_id,
+      bu_code,
+      paginate,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * List distinct locations on a GRN
+   * แสดงรายการตำแหน่งจัดเก็บแบบไม่ซ้ำในใบรับสินค้า
+   */
+  @Get(':bu_code/good-received-note/:grn_id/location')
+  @UseGuards(new AppIdGuard('goodReceivedNote.findOne'))
+  @Serialize(GrnLocationListItemSchema)
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'List locations on a Good Received Note',
+    description:
+      'Lists all distinct locations where items were received on a GRN with pagination and filtering. Used by frontend to show a summary of receiving locations and to power location-based drill-down views.',
+    operationId: 'findLocationsByGrnId',
+    tags: ['Procurement', 'Good Received Note'],
+    parameters: [
+      { name: 'grn_id', in: 'path', required: true, description: 'Good Received Note ID' },
+      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+    ],
+    responses: {
+      200: { description: 'Locations retrieved successfully' },
+      404: { description: 'Good Received Note not found' },
+    },
+    'x-description-th': 'แสดงรายการตำแหน่งจัดเก็บแบบไม่ซ้ำที่มีการรับสินค้าในใบรับสินค้าพร้อมการแบ่งหน้าและตัวกรอง',
+  } as any)
+  @HttpCode(HttpStatus.OK)
+  async findLocationsByGrnId(
+    @Param('grn_id') grnId: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query() query: IPaginateQuery,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'findLocationsByGrnId', grnId, version },
+      GoodReceivedNoteController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
+    const result = await this.goodReceivedNoteService.findLocationsByGrnId(
+      grnId,
+      user_id,
+      bu_code,
+      paginate,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * List products at a specific location on a GRN
+   * แสดงรายการสินค้าที่อยู่ในตำแหน่งจัดเก็บหนึ่งในใบรับสินค้า
+   */
+  @Get(':bu_code/good-received-note/:grn_id/location/:location_id/product')
+  @UseGuards(new AppIdGuard('goodReceivedNote.findOne'))
+  @Serialize(GrnProductListItemSchema)
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'List products at a location on a GRN',
+    description:
+      'Lists distinct products received at a given location on a GRN with pagination and filtering. Used to drill down from a location summary to see what products arrived at each location.',
+    operationId: 'findProductsByGrnIdAndLocationId',
+    tags: ['Procurement', 'Good Received Note'],
+    parameters: [
+      { name: 'grn_id', in: 'path', required: true, description: 'Good Received Note ID' },
+      { name: 'location_id', in: 'path', required: true, description: 'Location ID' },
+      { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
+    ],
+    responses: {
+      200: { description: 'Products retrieved successfully' },
+      404: { description: 'Good Received Note not found' },
+    },
+    'x-description-th': 'แสดงรายการสินค้าแบบไม่ซ้ำที่รับในตำแหน่งจัดเก็บหนึ่งของใบรับสินค้าพร้อมการแบ่งหน้าและตัวกรอง',
+  } as any)
+  @HttpCode(HttpStatus.OK)
+  async findProductsByGrnIdAndLocationId(
+    @Param('grn_id') grnId: string,
+    @Param('location_id') locationId: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query() query: IPaginateQuery,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'findProductsByGrnIdAndLocationId', grnId, locationId, version },
+      GoodReceivedNoteController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
+    const result = await this.goodReceivedNoteService.findProductsByGrnIdAndLocationId(
+      grnId,
+      locationId,
+      user_id,
+      bu_code,
+      paginate,
       version,
     );
     this.respond(res, result);

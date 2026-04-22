@@ -1,0 +1,64 @@
+meta {
+  name: 24 - List GRN Locations
+  type: http
+  seq: 24
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/good-received-note/:grn_id/location
+  body: none
+  auth: bearer
+}
+
+params:path {
+  grn_id: 04e065de-03d0-4f33-baee-3ca3f7823eea
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+docs {
+  ## List distinct locations in a GRN
+  แสดงรายการตำแหน่งจัดเก็บแบบไม่ซ้ำที่มีการรับสินค้าในใบรับสินค้าพร้อมการแบ่งหน้าและตัวกรอง
+  
+  Lists all distinct locations where items were received on a GRN with pagination and filtering.
+  
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `grn_id` — Good Received Note ID / รหัสใบรับสินค้า
+  
+  ### Query Parameters (optional)
+  - `page`, `perpage` — pagination
+  - `search` — full-text search
+  - `searchfields` — comma-separated fields to search (default: `location_code,location_name`)
+  - `filter` — comma-separated `field:value` pairs
+  - `sort` — comma-separated `field:asc|desc` (default: `location_code:asc`)
+  
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "location_id": "uuid",
+        "location_code": "LOC-001",
+        "location_name": "Main Warehouse"
+      }
+    ],
+    "paginate": {
+      "total": 1,
+      "page": 1,
+      "perpage": 10,
+      "pages": 1
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-04-22T08:41:09.468Z"
+  }
+  ```
+}
