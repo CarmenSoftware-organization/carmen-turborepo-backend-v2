@@ -3240,6 +3240,8 @@ model tb_unit {
   description String?  @db.VarChar
   is_active   Boolean? @default(true)
 
+  decimal_place Int @default(2)
+
   note      String? @db.VarChar
   info      Json?   @default("{}") @db.JsonB
   dimension Json?   @default("[]") @db.JsonB
@@ -3322,6 +3324,8 @@ model tb_unit_conversion {
   to_unit_id   String?  @db.Uuid
   to_unit_name String   @db.VarChar
   to_unit_qty  Decimal? @default(0) @db.Decimal(20, 5)
+
+  decimal_place Int @default(2)
 
   is_default  Boolean? @default(false)
   description Json?    @default("{}") @db.JsonB
