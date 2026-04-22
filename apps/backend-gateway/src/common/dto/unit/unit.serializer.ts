@@ -7,6 +7,7 @@ export const UnitResponseSchema = z.object({
   name: z.string(),
   description: z.string().nullable().optional(),
   is_active: z.boolean().optional(),
+  decimal_place: z.number().int().nonnegative(),
   info: z.any().nullable().optional(),
   dimension: z.any().nullable().optional(),
   created_at: z.coerce.date().optional(),

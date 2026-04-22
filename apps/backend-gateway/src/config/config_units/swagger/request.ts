@@ -10,6 +10,14 @@ export class UnitCreateRequestDto {
   @ApiPropertyOptional({ description: 'Whether the unit is active', example: true })
   is_active?: boolean;
 
+  @ApiPropertyOptional({
+    description:
+      'Number of decimal places for display and rounding. Defaults to 2 if omitted.',
+    example: 2,
+    minimum: 0,
+  })
+  decimal_place?: number;
+
   @ApiPropertyOptional({ description: 'Additional notes', example: 'Used for dry goods' })
   note?: string;
 }
@@ -23,6 +31,14 @@ export class UnitUpdateRequestDto {
 
   @ApiPropertyOptional({ description: 'Whether the unit is active', example: true })
   is_active?: boolean;
+
+  @ApiPropertyOptional({
+    description:
+      'Number of decimal places for display and rounding. Defaults to 2 if omitted.',
+    example: 2,
+    minimum: 0,
+  })
+  decimal_place?: number;
 
   @ApiPropertyOptional({ description: 'Additional notes', example: 'Used for dry goods' })
   note?: string;

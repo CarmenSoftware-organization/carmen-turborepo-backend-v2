@@ -5,6 +5,7 @@ export const UnitsCreate = z.object({
   name: z.string(),
   description: z.string().optional(),
   is_active: z.boolean().default(true).nullable().optional(),
+  decimal_place: z.number().int().nonnegative().optional(),
 });
 
 export type ICreateUnits = z.infer<typeof UnitsCreate>;
@@ -14,6 +15,7 @@ export const UnitsUpdate = z.object({
   name: z.string().optional(),
   description: z.string().optional(),
   is_active: z.boolean().optional(),
+  decimal_place: z.number().int().nonnegative().optional(),
 });
 
 export type IUpdateUnits = z.infer<typeof UnitsUpdate> & { id: string };

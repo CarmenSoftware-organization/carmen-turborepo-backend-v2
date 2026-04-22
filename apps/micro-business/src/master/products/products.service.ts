@@ -1144,6 +1144,7 @@ export class ProductsService {
               description: orderUnit.description ?? null,
               is_active: true,
               is_default: orderUnit.is_default ?? false,
+              decimal_place: orderUnit.decimal_place,
               created_by_id: this.userId
             };
           }),
@@ -1181,6 +1182,7 @@ export class ProductsService {
               description: ingredientUnit.description ?? null,
               is_active: true,
               is_default: ingredientUnit.is_default ?? false,
+              decimal_place: ingredientUnit.decimal_place,
               created_by_id: this.userId,
             };
           }),
@@ -1464,6 +1466,7 @@ export class ProductsService {
                 description: orderUnit.description ?? null,
                 is_active: orderUnit.is_active ?? true,
                 is_default: orderUnit.is_default ?? false,
+                decimal_place: orderUnit.decimal_place,
                 created_by_id: this.userId,
                 created_at: new Date().toISOString()
               };
@@ -1506,6 +1509,8 @@ export class ProductsService {
                   orderUnit.description ?? productOrderUnit.description,
                 is_default: orderUnit.is_default ?? productOrderUnit.is_default,
                 is_active: orderUnit.is_active ?? productOrderUnit.is_active,
+                decimal_place:
+                  orderUnit.decimal_place ?? productOrderUnit.decimal_place,
                 updated_by_id: this.userId,
               };
 
@@ -1556,6 +1561,7 @@ export class ProductsService {
                 description: ingredientUnit.description ?? null,
                 is_active: ingredientUnit.is_active ?? true,
                 is_default: ingredientUnit.is_default ?? false,
+                decimal_place: ingredientUnit.decimal_place,
                 created_by_id: this.userId,
                 created_at: new Date().toISOString(),
               };
@@ -1603,6 +1609,9 @@ export class ProductsService {
                   ingredientUnit.is_default ?? productIngredientUnit.is_default,
                 is_active:
                   ingredientUnit.is_active ?? productIngredientUnit.is_active,
+                decimal_place:
+                  ingredientUnit.decimal_place ??
+                  productIngredientUnit.decimal_place,
                 updated_by_id: this.userId,
               };
 
