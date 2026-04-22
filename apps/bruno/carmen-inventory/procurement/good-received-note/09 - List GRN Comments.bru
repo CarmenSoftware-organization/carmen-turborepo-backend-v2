@@ -11,7 +11,7 @@ docs {
   Retrieves all comments and notes attached to a goods receiving record. Used by receiving staff and managers to review communication about delivery issues, quality concerns, or special handling instructions.
 
   ### Path Parameters
-  - `id` — Good Received Note ID / รหัสใบรับสินค้า
+  - `good_received_note_id` — Good Received Note ID / รหัสใบรับสินค้า
   - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
 
 
@@ -21,20 +21,21 @@ docs {
     "data": [
       {
         "id": "uuid",
-        "grn_no": "GRN-2026-0001",
-        "grn_date": "2026-03-27T00:00:00.000Z",
-        "doc_status": "draft",
-        "invoice_no": "INV-001",
-        "vendor_name": "Vendor Name",
-        "currency_code": "THB",
-        "created_at": "2026-03-27T00:00:00.000Z"
+        "good_received_note_id": "uuid",
+        "message": "Delivery arrived 2 hours late",
+        "type": "user",
+        "attachments": [],
+        "created_at": "2026-03-27T00:00:00.000Z",
+        "created_by_id": "uuid",
+        "updated_at": "2026-03-27T00:00:00.000Z",
+        "updated_by_id": "uuid"
       }
     ],
     "paginate": {
-      "total": 100,
+      "total": 5,
       "page": 1,
       "perpage": 10,
-      "pages": 10
+      "pages": 1
     },
     "status": 200,
     "success": true,
@@ -45,13 +46,13 @@ docs {
 }
 
 get {
-  url: {{host}}/api/{{bu_code}}/good-received-note/:id/comments
+  url: {{host}}/api/{{bu_code}}/good-received-note/:good_received_note_id/comments
   body: none
   auth: bearer
 }
 
 params:path {
-  id: {{grn_id}}
+  good_received_note_id: {{grn_id}}
 }
 
 headers {

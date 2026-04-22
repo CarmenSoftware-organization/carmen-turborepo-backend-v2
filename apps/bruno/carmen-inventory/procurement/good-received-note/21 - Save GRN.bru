@@ -1,0 +1,58 @@
+meta {
+  name: 21 - Save GRN
+  type: http
+  seq: 21
+}
+
+docs {
+  ## Save Good Received Note
+  บันทึกใบรับสินค้า สร้าง inventory transactions (FIFO/Average cost layers) และอัปเดตจำนวนรับใน PO เปลี่ยนสถานะจาก `draft` เป็น `saved`
+
+  Saves the goods receiving record, creating inventory transactions (FIFO/Average cost layers) and updating PO received quantities. Changes `doc_status` from `draft` to `saved`.
+
+  ### Path Parameters
+  - `id` — Good Received Note ID / รหัสใบรับสินค้า
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+
+
+  ### Sample Body
+  ```json
+  {}
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "uuid"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/good-received-note/:id/save
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: {{grn_id}}
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}
