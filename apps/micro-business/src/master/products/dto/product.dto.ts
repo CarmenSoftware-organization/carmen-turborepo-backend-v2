@@ -106,6 +106,7 @@ export const ProductCreate = z.object({
             description: z.string().optional(),
             is_default: z.boolean().default(false).optional(),
             is_active: z.boolean().default(true).optional(),
+            decimal_place: z.number().int().nonnegative().optional(),
           }),
         )
         .optional(),
@@ -123,6 +124,7 @@ export const ProductCreate = z.object({
             description: z.string().optional(),
             is_default: z.boolean().default(false).optional(),
             is_active: z.boolean().default(true).optional(),
+            decimal_place: z.number().int().nonnegative().optional(),
           }),
         )
         .optional(),
@@ -200,6 +202,7 @@ export const ProductUpdate = z.object({
             description: z.string().optional(),
             is_default: z.boolean().default(false).optional(),
             is_active: z.boolean().default(true).optional(),
+            decimal_place: z.number().int().nonnegative().optional(),
           }),
         )
         .optional(),
@@ -214,6 +217,7 @@ export const ProductUpdate = z.object({
             description: z.string().optional(),
             is_default: z.boolean().optional(),
             is_active: z.boolean().optional(),
+            decimal_place: z.number().int().nonnegative().optional(),
           }),
         )
         .optional(),
@@ -235,6 +239,7 @@ export const ProductUpdate = z.object({
             description: z.string().optional(),
             is_default: z.boolean().default(false).optional(),
             is_active: z.boolean().default(true).optional(),
+            decimal_place: z.number().int().nonnegative().optional(),
           }),
         )
         .optional(),
@@ -249,6 +254,7 @@ export const ProductUpdate = z.object({
             description: z.string().optional(),
             is_active: z.boolean().optional(),
             is_default: z.boolean().optional(),
+            decimal_place: z.number().int().nonnegative().optional(),
           }),
         )
         .optional(),

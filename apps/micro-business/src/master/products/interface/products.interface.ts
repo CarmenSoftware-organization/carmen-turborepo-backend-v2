@@ -45,6 +45,7 @@ export interface IAddOrderUnit {
   description?: string;
   is_active?: boolean;
   is_default?: boolean;
+  decimal_place?: number;
 }
 
 export interface IUpdateOrderUnit {
@@ -58,6 +59,7 @@ export interface IUpdateOrderUnit {
   description?: string;
   is_active?: boolean;
   is_default?: boolean;
+  decimal_place?: number;
 }
 
 export interface IRemoveOrderUnit {
@@ -75,6 +77,7 @@ export interface IAddIngredientUnit {
   description?: string;
   is_active?: boolean;
   is_default?: boolean;
+  decimal_place?: number;
 }
 
 export interface IUpdateIngredientUnit {
@@ -88,6 +91,7 @@ export interface IUpdateIngredientUnit {
   description?: string;
   is_active?: boolean;
   is_default?: boolean;
+  decimal_place?: number;
 }
 
 export interface IRemoveIngredientUnit {
