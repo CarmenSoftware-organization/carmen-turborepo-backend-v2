@@ -48,7 +48,9 @@ journey that reads top-to-bottom like a tutorial.
    Platform Admin → BU Config → Procurement → Inventory → Workflow →
    Reporting → Notifications → User Profile.
 
-## 4. Proposed Taxonomy (9 groups, 38 tags)
+## 4. Proposed Taxonomy (9 groups, 52 tags)
+
+> Count breakdown: 2 + 9 + 12 + 9 + 8 + 3 + 5 + 1 + 3 = 52.
 
 Tag naming pattern: `Group: Subject` (so plain Swagger UI also sorts them
 in the correct group order, since Scalar uses `x-tagGroups` but older UIs do

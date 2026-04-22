@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Reorganize `apps/backend-gateway` OpenAPI tags into 9 groups × 38 tags (via `x-tagGroups`) driven by a single mapping file, applied to all 144 controllers, and guarded by a verification check.
+**Goal:** Reorganize `apps/backend-gateway` OpenAPI tags into 9 groups × 52 tags (via `x-tagGroups`) driven by a single mapping file, applied to all 144 controllers, and guarded by a verification check.
 
 **Architecture:** One source of truth (`apps/backend-gateway/src/swagger/tag-groups.ts`) defines the tag set and group structure, consumed at runtime by `main.ts`. A sibling mapping (`scripts/swagger-sync/tag-mapping.json`) records the controller-path → tag assignment. A codemod (`scripts/swagger-sync/retag.ts`) applies the mapping in bulk. A headless verifier (`apps/backend-gateway/scripts/verify-swagger.ts`) boots the Nest app, builds the OpenAPI document, and asserts every operation is tagged with a declared tag that appears in exactly one group.
 
@@ -17,8 +17,8 @@
 ### New files
 | Path | Responsibility |
 |---|---|
-| `apps/backend-gateway/src/swagger/tag-groups.ts` | Exports `SWAGGER_TAGS` (38 entries) and `SWAGGER_TAG_GROUPS` (9 entries). Single source of truth for runtime + scripts. |
-| `apps/backend-gateway/src/swagger/tag-groups.spec.ts` | Jest spec asserting structural invariants: 38 tags, 9 groups, union of group tags = tag set, no duplicates. |
+| `apps/backend-gateway/src/swagger/tag-groups.ts` | Exports `SWAGGER_TAGS` (52 entries) and `SWAGGER_TAG_GROUPS` (9 entries). Single source of truth for runtime + scripts. |
+| `apps/backend-gateway/src/swagger/tag-groups.spec.ts` | Jest spec asserting structural invariants: 52 tags, 9 groups, union of group tags = tag set, no duplicates. |
 | `scripts/swagger-sync/tag-mapping.json` | `{ "<controller-path-relative-to-repo-root>": "<tag-name>" }` — 144 entries. |
 | `scripts/swagger-sync/tag-mapping.ts` | TypeScript helper: loads JSON, validates entries against `SWAGGER_TAGS` at runtime. |
 | `scripts/swagger-sync/retag.ts` | Codemod: reads mapping, rewrites `@ApiTags(...)` in each file. Pure transform `applyRetagToContent(content, newTag)` plus a CLI entry. |
@@ -51,8 +51,8 @@ Create `apps/backend-gateway/src/swagger/tag-groups.spec.ts`:
 import { SWAGGER_TAGS, SWAGGER_TAG_GROUPS } from './tag-groups';
 
 describe('SWAGGER_TAGS', () => {
-  it('has 38 entries', () => {
-    expect(SWAGGER_TAGS).toHaveLength(38);
+  it('has 52 entries', () => {
+    expect(SWAGGER_TAGS).toHaveLength(52);
   });
 
   it('has no duplicate names', () => {
@@ -299,7 +299,7 @@ Expected: PASS, 6 tests green.
 git add apps/backend-gateway/src/swagger/tag-groups.ts apps/backend-gateway/src/swagger/tag-groups.spec.ts
 git commit -m "feat(gateway): add swagger tag-groups source of truth
 
-Defines SWAGGER_TAGS (38) and SWAGGER_TAG_GROUPS (9) consumed by
+Defines SWAGGER_TAGS (52) and SWAGGER_TAG_GROUPS (9) consumed by
 main.ts and codemod/verification scripts.
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
@@ -849,7 +849,7 @@ Expected: ~130–140 lines starting with `~`, then a summary `dry-run: changed=N
 - [ ] **Step 2: Review dry-run output for surprises**
 
 Check `/tmp/swagger-retag-dry.txt`:
-- Every printed line matches `~ <path>  →  <tag>` where the tag is one of the 38 declared.
+- Every printed line matches `~ <path>  →  <tag>` where the tag is one of the 52 declared.
 - No `!` (failure) lines.
 - Spot-check 5 entries against `tag-mapping.json`.
 
@@ -884,7 +884,7 @@ Expected: PASS — confirms no controller was moved/renamed by the codemod.
 git add apps/backend-gateway/src
 git commit -m "refactor(gateway): apply swagger tag codemod to 144 controllers
 
-Every controller now uses a single @ApiTags(...) from the 38-tag set
+Every controller now uses a single @ApiTags(...) from the 52-tag set
 defined in apps/backend-gateway/src/swagger/tag-groups.ts.
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
@@ -1327,7 +1327,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 
 ```bash
 git push -u origin HEAD
-gh pr create --title "Redesign swagger tag taxonomy (9 groups / 38 tags)" --body "$(cat <<'EOF'
+gh pr create --title "Redesign swagger tag taxonomy (9 groups / 52 tags)" --body "$(cat <<'EOF'
 ## Summary
 - Reorganizes 144 gateway controllers into 9 tag groups via `x-tagGroups`, rendered natively by Scalar at `/swagger`.
 - Adds `apps/backend-gateway/src/swagger/tag-groups.ts` as the single source of truth for tags + groups.
