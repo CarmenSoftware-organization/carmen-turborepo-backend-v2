@@ -1,5 +1,5 @@
 meta {
-  name: 03 - Compare Products Between Locations
+  name: Compare locations config_location-product
   type: http
   seq: 3
 }
@@ -10,17 +10,16 @@ get {
   auth: bearer
 }
 
-params:path {
-  location_1: 3ad9d3e6-ca78-44de-9812-1f62adf26600
-  location_2: 4298bb2a-a412-4eb0-a13f-8f46643509c1
-}
-
 headers {
   x-app-id: {{x_app_id}}
 }
 
 auth:bearer {
   token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -59,4 +58,9 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
+}
+
+params:path {
+  location_1: 3ad9d3e6-ca78-44de-9812-1f62adf26600
+  location_2: 4298bb2a-a412-4eb0-a13f-8f46643509c1
 }

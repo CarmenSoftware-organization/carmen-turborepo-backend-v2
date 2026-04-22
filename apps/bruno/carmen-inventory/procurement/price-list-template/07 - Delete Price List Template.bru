@@ -1,7 +1,25 @@
 meta {
-  name: 07 - Delete Price List Template
+  name: Remove price-list-template
   type: http
   seq: 7
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/price-list-template/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -29,20 +47,6 @@ docs {
   ```
 }
 
-delete {
-  url: {{host}}/api/{{bu_code}}/price-list-template/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{price_list_template_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

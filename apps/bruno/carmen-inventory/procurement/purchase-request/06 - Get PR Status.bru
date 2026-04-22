@@ -1,7 +1,25 @@
 meta {
-  name: 06 - Get PR Status
+  name: Find all by status purchase-request
   type: http
   seq: 6
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request/:id/status/:status
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -43,21 +61,7 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/purchase-request/:id/status/:status
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{pr_id}}
   status: draft
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

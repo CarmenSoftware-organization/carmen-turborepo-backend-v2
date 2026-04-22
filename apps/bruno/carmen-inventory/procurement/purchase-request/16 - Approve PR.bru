@@ -1,7 +1,34 @@
 meta {
-  name: 16 - Approve PR
+  name: Approve purchase-request
   type: http
   seq: 16
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/purchase-request/:id/approve
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
+}
+
+vars:pre-request {
+  pr_id: d2a87a6c-5b77-4b43-9df4-e2d2aeab2bd7
 }
 
 docs {
@@ -34,28 +61,6 @@ docs {
   ```
 }
 
-patch {
-  url: {{host}}/api/{{bu_code}}/purchase-request/:id/approve
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: {{pr_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {}
-}
-
-vars:pre-request {
-  pr_id: d2a87a6c-5b77-4b43-9df4-e2d2aeab2bd7
 }

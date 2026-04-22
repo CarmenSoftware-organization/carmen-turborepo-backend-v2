@@ -1,7 +1,30 @@
 meta {
-  name: 04 - Create Period
+  name: Create period
   type: http
   seq: 4
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/period
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -35,28 +58,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-post {
-  url: {{host}}/api/{{bu_code}}/period
-  body: json
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "fiscal_year": 2026,
-    "fiscal_month": 4,
-    "start_at": "2026-04-01T00:00:00.000Z",
-    "end_at": "2026-04-30T23:59:59.000Z",
-    "status": "open"
-  }
 }

@@ -1,7 +1,25 @@
 meta {
-  name: 01 - List Exchange Rate Comments
+  name: Find all by exchange rate id exchange-rate-comment
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/exchange-rate/:exchange_rate_id/comments
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -37,20 +55,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/exchange-rate/:exchange_rate_id/comments
-  body: none
-  auth: bearer
-}
-
 params:path {
   exchange_rate_id: {{test_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

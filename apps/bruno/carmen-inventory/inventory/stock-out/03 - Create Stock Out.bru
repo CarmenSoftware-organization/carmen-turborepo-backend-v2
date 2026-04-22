@@ -1,7 +1,30 @@
 meta {
-  name: 03 - Create Stock Out
+  name: Create stock-out
   type: http
   seq: 3
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/stock-out
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -50,41 +73,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-post {
-  url: {{host}}/api/{{bu_code}}/stock-out
-  body: json
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "so_date": "2026-03-26T00:00:00.000Z",
-    "description": "SO มาแล้วจ๊ะ",
-    "doc_status": "completed",
-    "note": "test note SI",
-    "adjustment_type_id": "74b308a0-1249-4f9c-9b47-eb4ba3398659",
-    "location_id": "0731acf1-e04d-4648-b64d-cfbd34fa5d08",
-    "stock_out_detail": {
-      "add": [
-        {
-          "product_id": "006def75-7289-4a60-b110-2e809303bbbc",
-          "qty": 20,
-          "cost_per_unit": 2,
-          "total_cost": 3,
-          "description": "add desc",
-          "note": "add note"
-        }
-      ]
-    }
-  }
 }

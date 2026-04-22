@@ -1,7 +1,25 @@
 meta {
-  name: 01 - Get Workflow By Type
+  name: Find by type workflow
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/workflow/type/:type
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -27,20 +45,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/workflow/type/:type
-  body: none
-  auth: bearer
-}
-
 params:path {
   type: purchase_request
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

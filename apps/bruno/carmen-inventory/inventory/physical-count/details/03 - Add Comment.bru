@@ -1,7 +1,35 @@
 meta {
-  name: 03 - Add Comment
+  name: Create comment physical-count
   type: http
   seq: 3
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/physical-count/:id/details/:detail_id/comments
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
+}
+
+vars:pre-request {
+  physical_count_id:
+  physical_count_detail_id:
 }
 
 docs {
@@ -40,33 +68,7 @@ docs {
   ```
 }
 
-post {
-  url: {{host}}/api/{{bu_code}}/physical-count/:id/details/:detail_id/comments
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: {{physical_count_id}}
   detail_id: {{physical_count_detail_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "message": "Test comment",
-    "attachments": []
-  }
-}
-
-vars:pre-request {
-  physical_count_id:
-  physical_count_detail_id:
 }

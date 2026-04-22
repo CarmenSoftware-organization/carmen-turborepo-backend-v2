@@ -1,0 +1,19 @@
+meta {
+  name: Hard delete activity-log
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/activity-log/:id/hard
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

@@ -1,0 +1,25 @@
+meta {
+  name: Get history report
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/report/history
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~page: 
+  ~per_page: 
+  ~report_type: 
+}

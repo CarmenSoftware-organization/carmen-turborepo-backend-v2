@@ -1,0 +1,19 @@
+meta {
+  name: Print to report purchase-request
+  type: http
+  seq: 23
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request/:id/print-viewer
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

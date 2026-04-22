@@ -1,7 +1,25 @@
 meta {
-  name: 01 - Get Permissions By Role
+  name: Get permissions by role application-role-permission
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api-system/role-permission/role/:roleId/permissions
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -27,20 +45,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api-system/role-permission/role/:roleId/permissions
-  body: none
-  auth: bearer
-}
-
 params:path {
   roleId:
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

@@ -1,7 +1,25 @@
 meta {
-  name: 18 - Delete Purchase Order
+  name: Remove purchase-order
   type: http
   seq: 18
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -29,20 +47,6 @@ docs {
   ```
 }
 
-delete {
-  url: {{host}}/api/{{bu_code}}/purchase-order/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{po_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

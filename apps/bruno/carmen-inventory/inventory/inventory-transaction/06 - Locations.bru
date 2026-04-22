@@ -1,7 +1,21 @@
 meta {
-  name: 06 - Locations
+  name: Get locations inventory-transaction
   type: http
   seq: 6
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/inventory-transaction/locations
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
 }
 
 docs {
@@ -46,22 +60,8 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/inventory-transaction/locations?page=1&perpage=10
-  body: none
-  auth: bearer
-}
-
 params:query {
   page: 1
   perpage: 10
   ~search:
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

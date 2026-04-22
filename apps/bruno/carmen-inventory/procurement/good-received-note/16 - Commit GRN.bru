@@ -1,5 +1,5 @@
 meta {
-  name: 16 - Commit GRN
+  name: Commit good-received-note
   type: http
   seq: 16
 }
@@ -10,16 +10,17 @@ patch {
   auth: bearer
 }
 
-params:path {
-  id: {{grn_id}}
-}
-
 headers {
   x-app-id: {{x_app_id}}
+  Content-Type: application/json
 }
 
 auth:bearer {
   token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 body:json {
@@ -59,4 +60,8 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
+}
+
+params:path {
+  id: {{grn_id}}
 }

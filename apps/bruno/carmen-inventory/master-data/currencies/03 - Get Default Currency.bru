@@ -1,7 +1,25 @@
 meta {
-  name: 03 - Get Default Currency
+  name: Currency_default currencies
   type: http
   seq: 3
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/currencies/default
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -29,18 +47,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-get {
-  url: {{host}}/api/{{bu_code}}/currencies/default
-  body: none
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

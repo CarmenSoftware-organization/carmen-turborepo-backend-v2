@@ -1,7 +1,30 @@
 meta {
-  name: 04 - Update Transfer
+  name: Update transfer
   type: http
   seq: 4
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/transfer/:id
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -41,29 +64,6 @@ docs {
   ```
 }
 
-patch {
-  url: {{host}}/api/{{bu_code}}/transfer/:id
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: {{transfer_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "id": "{{transfer_id}}",
-    "description": "Transfer Updated",
-    "doc_status": "draft",
-    "note": "updated note"
-  }
 }

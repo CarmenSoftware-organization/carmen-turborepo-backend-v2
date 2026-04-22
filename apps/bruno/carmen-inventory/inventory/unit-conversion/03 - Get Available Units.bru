@@ -1,7 +1,29 @@
 meta {
-  name: 03 - Get Available Units
+  name: Get available unit product unit-conversion
   type: http
   seq: 3
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/unit/available/product/:productId
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+vars:pre-request {
+  product_id: 37a9ac81-b0d8-4f77-a727-41ad5ae9144c
 }
 
 docs {
@@ -27,24 +49,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/unit/available/product/:productId
-  body: none
-  auth: bearer
-}
-
 params:path {
   productId: {{product_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-vars:pre-request {
-  product_id: 37a9ac81-b0d8-4f77-a727-41ad5ae9144c
 }

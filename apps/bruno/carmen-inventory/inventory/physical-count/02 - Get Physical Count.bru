@@ -1,7 +1,29 @@
 meta {
-  name: 02 - Get Physical Count
+  name: By id physical-count
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/physical-count/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+vars:pre-request {
+  physical_count_id: 2d834681-4e3e-461b-8d44-791c9565dd38
 }
 
 docs {
@@ -31,24 +53,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/physical-count/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{physical_count_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-vars:pre-request {
-  physical_count_id: 2d834681-4e3e-461b-8d44-791c9565dd38
 }

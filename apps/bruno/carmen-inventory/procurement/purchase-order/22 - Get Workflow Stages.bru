@@ -1,7 +1,25 @@
 meta {
-  name: 22 - Get Workflow Stages
+  name: Find all workflow stages by po purchase-order
   type: http
   seq: 22
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-order/workflow-stages
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -22,18 +40,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-get {
-  url: {{host}}/api/{{bu_code}}/purchase-order/workflow-stages
-  body: none
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

@@ -1,18 +1,13 @@
 meta {
-  name: 01 - List Purchase Request
+  name: List purchase-request
   type: http
   seq: 1
 }
 
 get {
-  url: {{host}}/api/purchase-request?bu_code=T02&filter=pr_status|string:in_progress,draft
+  url: {{host}}/api/purchase-request
   body: none
   auth: bearer
-}
-
-params:query {
-  bu_code: T02
-  filter: pr_status|string:in_progress,draft
 }
 
 headers {
@@ -21,6 +16,10 @@ headers {
 
 auth:bearer {
   token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -64,4 +63,9 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
+}
+
+params:query {
+  bu_code: T02
+  filter: pr_status|string:in_progress,draft
 }

@@ -1,7 +1,25 @@
 meta {
-  name: 02 - Get Price List
+  name: By id config_price-list
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/price-list/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -48,20 +66,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/config/{{bu_code}}/price-list/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: 
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

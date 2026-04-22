@@ -1,7 +1,25 @@
 meta {
-  name: 05 - Delete Store Requisition
+  name: Remove store-requisition
   type: http
   seq: 5
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/store-requisition/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -30,20 +48,6 @@ docs {
   ```
 }
 
-delete {
-  url: {{host}}/api/{{bu_code}}/store-requisition/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{sr_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

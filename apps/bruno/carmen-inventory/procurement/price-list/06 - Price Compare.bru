@@ -1,20 +1,13 @@
 meta {
-  name: 06 - Price Compare
+  name: Price compare price-list
   type: http
   seq: 6
 }
 
 get {
-  url: {{host}}/api/{{bu_code}}/price-list/price-compare?product_id=00e2dcb0-d398-4ef1-9e86-c11cfe905a42&unit_id=b5b22dba-fff4-4662-8e43-b25566402461&at_date=2026-04-28&currency_id=93dabe25-1668-4c5b-bceb-3e0b83b78002
+  url: {{host}}/api/{{bu_code}}/price-list/price-compare
   body: none
   auth: bearer
-}
-
-params:query {
-  product_id: 00e2dcb0-d398-4ef1-9e86-c11cfe905a42
-  unit_id: b5b22dba-fff4-4662-8e43-b25566402461
-  at_date: 2026-04-28
-  currency_id: 93dabe25-1668-4c5b-bceb-3e0b83b78002
 }
 
 headers {
@@ -23,6 +16,10 @@ headers {
 
 auth:bearer {
   token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -68,4 +65,11 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
+}
+
+params:query {
+  product_id: 00e2dcb0-d398-4ef1-9e86-c11cfe905a42
+  unit_id: b5b22dba-fff4-4662-8e43-b25566402461
+  at_date: 2026-04-28
+  currency_id: 93dabe25-1668-4c5b-bceb-3e0b83b78002
 }

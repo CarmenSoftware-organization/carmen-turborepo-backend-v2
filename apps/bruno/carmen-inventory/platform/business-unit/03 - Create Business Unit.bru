@@ -1,7 +1,30 @@
 meta {
-  name: 03 - Create Business Unit
+  name: Create business unit platform_business-unit
   type: http
   seq: 3
+}
+
+post {
+  url: {{host}}/api-system/business-unit
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -37,58 +60,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-post {
-  url: {{host}}/api-system/business-unit
-  body: json
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "cluster_id": "",
-    "code": "BU-001",
-    "name": "Business Unit 01",
-    "alias_name": "",
-    "description": "",
-    "info": null,
-    "default_currency_id": null,
-    "max_license_users": null,
-    "is_hq": false,
-    "is_active": true,
-    "db_connection": null,
-    "config": null,
-    "calculation_method": "average",
-    "branch_no": "",
-    "company_name": "",
-    "company_address": "",
-    "company_email": "",
-    "company_tel": "",
-    "company_zip_code": "",
-    "tax_no": "",
-    "hotel_name": "",
-    "hotel_address": "",
-    "hotel_email": "",
-    "hotel_tel": "",
-    "hotel_zip_code": "",
-    "date_format": "yyyy-MM-dd",
-    "date_time_format": "yyyy-MM-dd HH:mm:ss",
-    "time_format": "HH:mm:ss",
-    "short_time_format": "HH:mm",
-    "long_time_format": "HH:mm:ss",
-    "timezone": "Asia/Bangkok",
-    "amount_format": null,
-    "quantity_format": null,
-    "perpage_format": null,
-    "recipe_format": null
-  }
 }

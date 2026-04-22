@@ -1,5 +1,5 @@
 meta {
-  name: 01 - List Pending PR
+  name: List my-pending
   type: http
   seq: 1
 }
@@ -16,6 +16,10 @@ headers {
 
 auth:bearer {
   token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {

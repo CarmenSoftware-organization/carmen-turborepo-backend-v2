@@ -1,7 +1,25 @@
 meta {
-  name: 06 - Download Price List Excel
+  name: Download excel config_price-list
   type: http
   seq: 6
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/price-list/:id/download-excel
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -29,20 +47,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/config/{{bu_code}}/price-list/:id/download-excel
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: 
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

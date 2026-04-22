@@ -1,7 +1,30 @@
 meta {
-  name: 15 - Approve PO
+  name: Approve purchase-order
   type: http
   seq: 15
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:id/approve
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -46,32 +69,6 @@ docs {
   ```
 }
 
-patch {
-  url: {{host}}/api/{{bu_code}}/purchase-order/:id/approve
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: {{po_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "stage_role": "approve",
-    "details": [
-      {
-        "id": "<po_detail_uuid>",
-        "stage_status": "approve"
-      }
-    ]
-  }
 }

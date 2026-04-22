@@ -1,7 +1,25 @@
 meta {
-  name: 06 - Delete Credit Note Reason
+  name: Remove config_credit-note-reason
   type: http
   seq: 6
+}
+
+delete {
+  url: {{host}}/api/config/{{bu_code}}/credit-note-reason/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -29,20 +47,6 @@ docs {
   ```
 }
 
-delete {
-  url: {{host}}/api/config/{{bu_code}}/credit-note-reason/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id:
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

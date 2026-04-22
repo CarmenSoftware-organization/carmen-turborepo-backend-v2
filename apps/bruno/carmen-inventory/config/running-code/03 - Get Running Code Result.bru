@@ -1,7 +1,25 @@
 meta {
-  name: 03 - Get Running Code Result
+  name: Find by type config_running-code
   type: http
   seq: 3
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/running-code/result/:type
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -30,20 +48,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/config/{{bu_code}}/running-code/result/:type
-  body: none
-  auth: bearer
-}
-
 params:path {
   type: 
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

@@ -1,7 +1,25 @@
 meta {
-  name: 01 - Get User Application Roles
+  name: Find by user config_user_application_role
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/user-application-roles/:user_id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -27,20 +45,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/config/{{bu_code}}/user-application-roles/:user_id
-  body: none
-  auth: bearer
-}
-
 params:path {
   user_id: 
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

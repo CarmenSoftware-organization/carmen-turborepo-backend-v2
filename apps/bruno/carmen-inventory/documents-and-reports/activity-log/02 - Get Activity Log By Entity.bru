@@ -1,7 +1,21 @@
 meta {
-  name: 02 - Get Activity Log By Entity
+  name: Find by entity activity-log
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/activity-log/entity/:entity_type
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
 }
 
 docs {
@@ -27,20 +41,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/activity-log/entity/:entity_type
-  body: none
-  auth: bearer
-}
-
 params:path {
   entity_type: purchase_request
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

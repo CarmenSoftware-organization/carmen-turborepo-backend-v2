@@ -1,7 +1,29 @@
 meta {
-  name: 02 - Get Physical Count Period
+  name: By id physical-count-period
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/physical-count-period/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+vars:pre-request {
+  physical_count_period_id: 123
 }
 
 docs {
@@ -30,24 +52,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/physical-count-period/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: d7692597-f247-438f-82ca-0ee506fbd490
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-vars:pre-request {
-  physical_count_period_id: 123
 }

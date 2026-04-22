@@ -1,7 +1,26 @@
 meta {
-  name: 02 - Get Previous Stages
+  name: Get previous stages workflow
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/workflow/:workflow_id/previous_stages
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~stage: 
+  ~version: 
 }
 
 docs {
@@ -27,20 +46,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/workflow/:workflow_id/previous_stages
-  body: none
-  auth: bearer
-}
-
 params:path {
   workflow_id: {{workflow_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

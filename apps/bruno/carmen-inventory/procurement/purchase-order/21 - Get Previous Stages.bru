@@ -1,7 +1,25 @@
 meta {
-  name: 21 - Get Previous Stages
+  name: Get previous stages by po id purchase-order
   type: http
   seq: 21
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:po_id/previous-stages
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -30,20 +48,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/purchase-order/:po_id/previous-stages
-  body: none
-  auth: bearer
-}
-
 params:path {
   po_id: {{po_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

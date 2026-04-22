@@ -1,7 +1,30 @@
 meta {
-  name: 03 - Create Transfer
+  name: Create transfer
   type: http
   seq: 3
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/transfer
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -41,43 +64,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-post {
-  url: {{host}}/api/{{bu_code}}/transfer
-  body: json
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "description": "Transfer Test",
-    "doc_status": "draft",
-    "from_location_id": "",
-    "from_location_code": "",
-    "from_location_name": "",
-    "to_location_id": "",
-    "to_location_code": "",
-    "to_location_name": "",
-    "note": "",
-    "details": [
-      {
-        "product_id": "",
-        "product_name": "",
-        "qty": 5,
-        "cost_per_unit": 100,
-        "total_cost": 500,
-        "description": "",
-        "note": ""
-      }
-    ]
-  }
 }

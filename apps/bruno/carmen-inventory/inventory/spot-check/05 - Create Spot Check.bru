@@ -1,7 +1,34 @@
 meta {
-  name: 05 - Create Spot Check
+  name: Create spot-check
   type: http
   seq: 5
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/spot-check
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
+}
+
+vars:pre-request {
+  location_id:
 }
 
 docs {
@@ -40,32 +67,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-post {
-  url: {{host}}/api/{{bu_code}}/spot-check
-  body: json
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "location_id": "{{location_id}}",
-    "method": "random",
-    "items": 10,
-    "description": "Weekly spot check for dry goods storage",
-    "note": "Focus on high-value items"
-  }
-}
-
-vars:pre-request {
-  location_id:
 }

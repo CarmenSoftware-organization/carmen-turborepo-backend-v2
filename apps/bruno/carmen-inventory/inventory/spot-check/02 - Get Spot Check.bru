@@ -1,7 +1,29 @@
 meta {
-  name: 02 - Get Spot Check
+  name: By id spot-check
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/spot-check/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+vars:pre-request {
+  spot_check_id:
 }
 
 docs {
@@ -40,24 +62,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/spot-check/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{spot_check_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-vars:pre-request {
-  spot_check_id:
 }

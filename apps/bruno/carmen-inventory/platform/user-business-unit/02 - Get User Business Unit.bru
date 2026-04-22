@@ -1,7 +1,25 @@
 meta {
-  name: 02 - Get User Business Unit
+  name: By id platform_user-business-unit
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api-system/user/business-unit/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -27,20 +45,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api-system/user/business-unit/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id:
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

@@ -1,7 +1,25 @@
 meta {
-  name: 06 - Export GRN
+  name: Export to excel good-received-note
   type: http
   seq: 6
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/good-received-note/:id/export
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -30,20 +48,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/good-received-note/:id/export
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{grn_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

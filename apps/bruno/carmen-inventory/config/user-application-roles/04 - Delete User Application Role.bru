@@ -1,7 +1,25 @@
 meta {
-  name: 04 - Delete User Application Role
+  name: Remove config_user_application_role
   type: http
   seq: 4
+}
+
+delete {
+  url: {{host}}/api/config/{{bu_code}}/user-application-roles
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -24,18 +42,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-delete {
-  url: {{host}}/api/config/{{bu_code}}/user-application-roles
-  body: none
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

@@ -1,7 +1,30 @@
 meta {
-  name: 16 - Reject PO
+  name: Reject purchase-order
   type: http
   seq: 16
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:id/reject
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -47,33 +70,6 @@ docs {
   ```
 }
 
-patch {
-  url: {{host}}/api/{{bu_code}}/purchase-order/:id/reject
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: {{po_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "stage_role": "approve",
-    "details": [
-      {
-        "id": "<po_detail_uuid>",
-        "stage_status": "reject",
-        "stage_message": "Price is too high, please renegotiate with vendor"
-      }
-    ]
-  }
 }

@@ -1,7 +1,30 @@
 meta {
-  name: 01 - List Activity Log
+  name: List activity-log
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/activity-log
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~entity_type: 
+  ~entity_id: 
+  ~actor_id: 
+  ~action: 
+  ~start_date: 
+  ~end_date: 
 }
 
 docs {
@@ -32,18 +55,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-get {
-  url: {{host}}/api/{{bu_code}}/activity-log
-  body: none
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

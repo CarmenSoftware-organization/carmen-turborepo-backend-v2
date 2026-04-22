@@ -1,7 +1,25 @@
 meta {
-  name: 01 - List Delivery Point
+  name: List config_delivery-point
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/delivery-point
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -35,18 +53,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-get {
-  url: {{host}}/api/config/{{bu_code}}/delivery-point
-  body: none
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

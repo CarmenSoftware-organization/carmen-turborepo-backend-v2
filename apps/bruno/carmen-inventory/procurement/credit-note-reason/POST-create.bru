@@ -1,0 +1,28 @@
+meta {
+  name: Create credit-note-reason
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/credit-note-reason
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
+}

@@ -1,7 +1,21 @@
 meta {
-  name: 08 - Products by Location
+  name: Get products by location inventory-transaction
   type: http
   seq: 8
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/inventory-transaction/locations/:location_id/products
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
 }
 
 docs {
@@ -44,12 +58,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/inventory-transaction/locations/:location_id/products?page=1&perpage=10
-  body: none
-  auth: bearer
-}
-
 params:query {
   page: 1
   perpage: 10
@@ -58,12 +66,4 @@ params:query {
 
 params:path {
   location_id: 0731acf1-e04d-4648-b64d-cfbd34fa5d08
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

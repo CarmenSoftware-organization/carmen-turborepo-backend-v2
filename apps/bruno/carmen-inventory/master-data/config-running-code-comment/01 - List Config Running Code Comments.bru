@@ -1,7 +1,25 @@
 meta {
-  name: 01 - List Config Running Code Comments
+  name: Find all by config running code id config-running-code-comment
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/config-running-code/:config_running_code_id/comments
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -37,20 +55,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/config-running-code/:config_running_code_id/comments
-  body: none
-  auth: bearer
-}
-
 params:path {
   config_running_code_id: {{test_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

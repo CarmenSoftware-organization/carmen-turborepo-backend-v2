@@ -1,0 +1,19 @@
+meta {
+  name: Get job status report
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/report/jobs/:job_id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

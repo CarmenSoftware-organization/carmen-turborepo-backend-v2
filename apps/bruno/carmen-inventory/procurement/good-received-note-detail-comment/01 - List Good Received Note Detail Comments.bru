@@ -1,7 +1,25 @@
 meta {
-  name: 01 - List Good Received Note Detail Comments
+  name: Find all by good received note detail id good-received-note-detail-comment
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/good-received-note-detail/:good_received_note_detail_id/comments
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -37,20 +55,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/good-received-note-detail/:good_received_note_detail_id/comments
-  body: none
-  auth: bearer
-}
-
 params:path {
   good_received_note_detail_id: {{test_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

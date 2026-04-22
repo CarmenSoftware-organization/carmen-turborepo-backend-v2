@@ -1,7 +1,25 @@
 meta {
-  name: 01 - List Purchase Request Template Comments
+  name: Find all by purchase request template id purchase-request-template-comment
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request-template/:purchase_request_template_id/comments
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -37,20 +55,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/purchase-request-template/:purchase_request_template_id/comments
-  body: none
-  auth: bearer
-}
-
 params:path {
   purchase_request_template_id: {{test_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

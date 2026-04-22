@@ -1,7 +1,25 @@
 meta {
-  name: 01 - List Request For Pricing Detail Comments
+  name: Find all by request for pricing detail id request-for-pricing-detail-comment
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/request-for-pricing-detail/:request_for_pricing_detail_id/comments
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -37,20 +55,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/request-for-pricing-detail/:request_for_pricing_detail_id/comments
-  body: none
-  auth: bearer
-}
-
 params:path {
   request_for_pricing_detail_id: {{test_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

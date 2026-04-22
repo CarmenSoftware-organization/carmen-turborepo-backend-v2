@@ -1,5 +1,5 @@
 meta {
-  name: 14 - Split PR
+  name: Split pr purchase-request
   type: http
   seq: 14
 }
@@ -10,20 +10,21 @@ post {
   auth: bearer
 }
 
-params:path {
-  id: {{pr_id}}
-}
-
 headers {
   x-app-id: {{x_app_id}}
+  Content-Type: application/json
 }
 
 auth:bearer {
   token: {{access_token}}
 }
 
+query {
+  ~version: 
+}
+
 body:json {
-  {"detail_ids":["d90a1789-d8e6-4917-ab67-1d9d316d368f"]}
+  {}
 }
 
 vars:pre-request {
@@ -58,4 +59,8 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
+}
+
+params:path {
+  id: {{pr_id}}
 }

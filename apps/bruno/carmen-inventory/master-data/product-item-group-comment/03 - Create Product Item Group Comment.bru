@@ -1,7 +1,30 @@
 meta {
-  name: 03 - Create Product Item Group Comment
+  name: Create product-item-group-comment
   type: http
   seq: 3
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/product-item-group-comment
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -31,25 +54,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-post {
-  url: {{host}}/api/{{bu_code}}/product-item-group-comment
-  body: json
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "product_item_group_id": "{{test_id}}",
-    "message": ""
-  }
 }

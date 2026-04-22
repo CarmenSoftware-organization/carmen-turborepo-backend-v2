@@ -1,7 +1,30 @@
 meta {
-  name: 09 - Cancel PO
+  name: Cancel purchase-order
   type: http
   seq: 9
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:id/cancel
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -34,24 +57,6 @@ docs {
   ```
 }
 
-post {
-  url: {{host}}/api/{{bu_code}}/purchase-order/:id/cancel
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: {{po_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {}
 }

@@ -1,7 +1,25 @@
 meta {
-  name: 06 - Remove Permission
+  name: Remove permission from role application-role-permission
   type: http
   seq: 6
+}
+
+delete {
+  url: {{host}}/api-system/role-permission/remove-permission
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -24,25 +42,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-delete {
-  url: {{host}}/api-system/role-permission/remove-permission
-  body: json
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "role_id": "",
-    "permission_id": ""
-  }
 }

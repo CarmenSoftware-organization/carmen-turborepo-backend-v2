@@ -1,7 +1,25 @@
 meta {
-  name: 05 - Delete Unit
+  name: Remove config_units
   type: http
   seq: 5
+}
+
+delete {
+  url: {{host}}/api/config/{{bu_code}}/units/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -26,20 +44,6 @@ docs {
   ```
 }
 
-delete {
-  url: {{host}}/api/config/{{bu_code}}/units/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: 
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

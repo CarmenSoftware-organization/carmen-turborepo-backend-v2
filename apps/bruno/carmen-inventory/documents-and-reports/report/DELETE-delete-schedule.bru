@@ -1,0 +1,19 @@
+meta {
+  name: Delete schedule report
+  type: http
+  seq: 17
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/report/schedules/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

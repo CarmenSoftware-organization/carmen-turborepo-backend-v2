@@ -1,7 +1,30 @@
 meta {
-  name: 04 - Update User Business Unit
+  name: Update platform_user-business-unit
   type: http
   seq: 4
+}
+
+patch {
+  url: {{host}}/api-system/user/business-unit/:id
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -37,30 +60,6 @@ docs {
   ```
 }
 
-patch {
-  url: {{host}}/api-system/user/business-unit/:id
-  body: json
-  auth: bearer
-}
-
 params:path {
   id:
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "user_id": "",
-    "business_unit_id": "",
-    "role": "member",
-    "is_default": false,
-    "is_active": true
-  }
 }

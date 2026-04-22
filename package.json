@@ -18,6 +18,8 @@
     "db:migrate": "turbo run db:migrate",
     "db:deploy": "turbo run db:deploy",
     "build:package": "turbo run build:package",
+    "bruno:sync": "bun run scripts/bruno-sync/index.ts",
+    "bruno:sync:dry": "bun run scripts/bruno-sync/index.ts --dry-run",
     "setup": "bun install && turbo run build:package",
     "clear": "rm -rf node_modules bun.lock bun.lockb && find apps packages -type d \\( -name node_modules -o -name dist -o -name .turbo -o -name .next \\) -prune -exec rm -rf {} +",
     "postinstall": "turbo run build:package"
@@ -25,6 +27,7 @@
   "devDependencies": {
     "prettier": "^3.5.3",
     "prisma": "^6.19.1",
+    "ts-morph": "^24.0.0",
     "turbo": "^2.5.8",
     "typescript": "5.8.2"
   },

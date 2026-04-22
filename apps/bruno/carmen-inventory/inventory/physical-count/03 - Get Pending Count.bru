@@ -1,7 +1,25 @@
 meta {
-  name: 03 - Get Pending Count
+  name: Find all pending physical count count physical-count
   type: http
   seq: 3
+}
+
+get {
+  url: {{host}}/api/physical-count/pending
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -25,18 +43,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-get {
-  url: {{host}}/api/physical-count/pending
-  body: none
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

@@ -1,7 +1,29 @@
 meta {
-  name: 11 - Delete Physical Count
+  name: Remove physical-count
   type: http
   seq: 11
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/physical-count/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+vars:pre-request {
+  physical_count_id:
 }
 
 docs {
@@ -31,24 +53,6 @@ docs {
   ```
 }
 
-delete {
-  url: {{host}}/api/{{bu_code}}/physical-count/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{physical_count_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-vars:pre-request {
-  physical_count_id:
 }

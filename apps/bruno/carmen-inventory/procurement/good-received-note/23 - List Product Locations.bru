@@ -1,5 +1,5 @@
 meta {
-  name: 23 - List Product Locations
+  name: Find locations by grn id and product id good-received-note
   type: http
   seq: 23
 }
@@ -10,17 +10,16 @@ get {
   auth: bearer
 }
 
-params:path {
-  grn_id: b10e8a74-8223-4de9-972e-439e00bdbf34
-  product_id: 00b9bdf3-b6dd-4745-b486-c78bb707e7d1
-}
-
 headers {
   x-app-id: {{x_app_id}}
 }
 
 auth:bearer {
   token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -63,4 +62,9 @@ docs {
     "timestamp": "2026-04-22T08:41:09.468Z"
   }
   ```
+}
+
+params:path {
+  grn_id: b10e8a74-8223-4de9-972e-439e00bdbf34
+  product_id: 00b9bdf3-b6dd-4745-b486-c78bb707e7d1
 }

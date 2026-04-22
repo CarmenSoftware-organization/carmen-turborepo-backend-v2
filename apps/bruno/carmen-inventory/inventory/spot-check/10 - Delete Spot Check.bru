@@ -1,7 +1,29 @@
 meta {
-  name: 10 - Delete Spot Check
+  name: Remove spot-check
   type: http
   seq: 10
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/spot-check/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+vars:pre-request {
+  spot_check_id:
 }
 
 docs {
@@ -32,24 +54,6 @@ docs {
   ```
 }
 
-delete {
-  url: {{host}}/api/{{bu_code}}/spot-check/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{spot_check_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-vars:pre-request {
-  spot_check_id:
 }

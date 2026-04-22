@@ -1,7 +1,35 @@
 meta {
-  name: 03 - Create Role
+  name: Create application-role
   type: http
   seq: 3
+}
+
+post {
+  url: {{host}}/api-system/role
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {
+    "name": "",
+    "description": "",
+    "code": "",
+    "is_active": false
+  }
 }
 
 docs {
@@ -33,26 +61,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-post {
-  url: {{host}}/api-system/role
-  body: json
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "name": "Role 01",
-    "code": "ROLE_01",
-    "is_active": true
-  }
 }

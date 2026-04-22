@@ -1,7 +1,26 @@
 meta {
-  name: 01 - List Spot Check
+  name: Find current by location spot-check
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/spot-check/current
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+  ~include_not_count: 
 }
 
 docs {
@@ -47,20 +66,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/spot-check/current?include_not_count=false
-  body: none
-  auth: bearer
-}
-
 params:query {
   include_not_count: false
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

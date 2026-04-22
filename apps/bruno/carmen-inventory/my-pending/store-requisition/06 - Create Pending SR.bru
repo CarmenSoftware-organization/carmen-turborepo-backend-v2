@@ -1,7 +1,30 @@
 meta {
-  name: 06 - Create Pending SR
+  name: Create my-pending
   type: http
   seq: 6
+}
+
+post {
+  url: {{host}}/api/my-pending/store-requisition/{{bu_code}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -34,24 +57,6 @@ docs {
   ```
 }
 
-post {
-  url: {{host}}/api/my-pending/store-requisition/:bu_code
-  body: json
-  auth: bearer
-}
-
 params:path {
   bu_code: {{bu_code}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {}
 }

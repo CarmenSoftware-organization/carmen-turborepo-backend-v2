@@ -1,0 +1,23 @@
+meta {
+  name: Remove platform_report-template
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{host}}/api-system/report-template/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}

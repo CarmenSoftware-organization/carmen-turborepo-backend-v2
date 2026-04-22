@@ -1,7 +1,25 @@
 meta {
-  name: 02 - Get Vendor Product
+  name: By id vendor-product
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/vendor-product/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -30,20 +48,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/vendor-product/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{vendor_product_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

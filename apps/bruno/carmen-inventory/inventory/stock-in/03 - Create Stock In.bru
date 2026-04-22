@@ -1,7 +1,30 @@
 meta {
-  name: 03 - Create Stock In
+  name: Create stock-in
   type: http
   seq: 3
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/stock-in
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -50,41 +73,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-post {
-  url: {{host}}/api/{{bu_code}}/stock-in
-  body: json
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "si_date": "2026-03-26T00:00:00.000Z",
-    "description": "SI มาแล้วจ๊ะ",
-    "doc_status": "completed",
-    "note": "test note SI",
-    "adjustment_type_id": "bcce2834-9202-4ed4-a8d5-e5019596286b",
-    "location_id": "0731acf1-e04d-4648-b64d-cfbd34fa5d08",
-    "stock_in_detail": {
-      "add": [
-        {
-          "product_id": "006def75-7289-4a60-b110-2e809303bbbc",
-          "qty": 1,
-          "cost_per_unit": 2,
-          "total_cost": 3,
-          "description": "add desc",
-          "note": "add note"
-        }
-      ]
-    }
-  }
 }

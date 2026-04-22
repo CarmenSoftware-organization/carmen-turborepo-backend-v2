@@ -1,7 +1,29 @@
 meta {
-  name: 07 - Delete Period
+  name: Remove period
   type: http
   seq: 7
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/period/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+vars:pre-request {
+  period_id: ca195e89-757d-439b-be23-f75a7c56d4b2
 }
 
 docs {
@@ -26,24 +48,6 @@ docs {
   ```
 }
 
-delete {
-  url: {{host}}/api/{{bu_code}}/period/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: ca195e89-757d-439b-be23-f75a7c56d4b2
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-vars:pre-request {
-  period_id: ca195e89-757d-439b-be23-f75a7c56d4b2
 }

@@ -1,7 +1,32 @@
 meta {
-  name: 07 - Generate Report (CSV)
+  name: Generate report
   type: http
   seq: 7
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/report/generate
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "report_type": "",
+    "format": "",
+    "filters": "",
+    "options": "",
+    "template_id": ""
+  }
 }
 
 docs {
@@ -34,27 +59,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-post {
-  url: {{host}}/api/{{bu_code}}/report/generate
-  body: json
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "report_type": "inventory_summary",
-    "format": "csv",
-    "filters": {},
-    "options": {}
-  }
 }

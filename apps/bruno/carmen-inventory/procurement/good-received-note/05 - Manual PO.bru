@@ -1,7 +1,25 @@
 meta {
-  name: 05 - Manual PO
+  name: Manual check po good-received-note
   type: http
   seq: 5
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/good-received-note/manual-po/:po_no
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -44,20 +62,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/good-received-note/manual-po/:po_no
-  body: none
-  auth: bearer
-}
-
 params:path {
   po_no: {{po_no}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

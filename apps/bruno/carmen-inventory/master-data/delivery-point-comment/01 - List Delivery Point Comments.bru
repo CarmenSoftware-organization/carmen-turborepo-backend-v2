@@ -1,7 +1,25 @@
 meta {
-  name: 01 - List Delivery Point Comments
+  name: Find all by delivery point id delivery-point-comment
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/delivery-point/:delivery_point_id/comments
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -37,20 +55,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/delivery-point/:delivery_point_id/comments
-  body: none
-  auth: bearer
-}
-
 params:path {
   delivery_point_id: {{test_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

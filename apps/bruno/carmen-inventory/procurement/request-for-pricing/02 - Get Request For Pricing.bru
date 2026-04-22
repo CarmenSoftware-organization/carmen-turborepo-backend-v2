@@ -1,7 +1,29 @@
 meta {
-  name: 02 - Get Request For Pricing
+  name: By id request-for-pricing
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/request-for-pricing/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+vars:pre-request {
+  rfp_id: 97e7fae5-18cc-4ae4-af9a-967799c0bffa
 }
 
 docs {
@@ -34,24 +56,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/request-for-pricing/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{rfp_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-vars:pre-request {
-  rfp_id: 97e7fae5-18cc-4ae4-af9a-967799c0bffa
 }

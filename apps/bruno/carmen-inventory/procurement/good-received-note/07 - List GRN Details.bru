@@ -1,7 +1,25 @@
 meta {
-  name: 07 - List GRN Details
+  name: Find details by grn id good-received-note
   type: http
   seq: 7
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/good-received-note/:id/details
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -44,20 +62,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/good-received-note/:id/details
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{grn_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

@@ -1,7 +1,26 @@
 meta {
-  name: 04 - Cost Layers
+  name: Get cost layers inventory-transaction
   type: http
   seq: 4
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/inventory-transaction/cost-layers
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~product_id: 
+  ~location_id: 
 }
 
 docs {
@@ -49,24 +68,10 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/inventory-transaction/cost-layers?page=1&perpage=10
-  body: none
-  auth: bearer
-}
-
 params:query {
   page: 1
   perpage: 10
   ~product_id:
   ~location_id:
   ~search:
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

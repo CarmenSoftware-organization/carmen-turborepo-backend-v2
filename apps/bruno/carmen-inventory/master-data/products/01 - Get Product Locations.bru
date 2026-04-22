@@ -1,7 +1,25 @@
 meta {
-  name: 01 - Get Product Locations
+  name: Get by location products
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/products/locations/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -38,20 +56,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/products/locations/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{product_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

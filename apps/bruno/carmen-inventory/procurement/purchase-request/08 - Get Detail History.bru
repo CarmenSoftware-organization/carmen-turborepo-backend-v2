@@ -1,7 +1,25 @@
 meta {
-  name: 08 - Get Detail History
+  name: Find history by detail id purchase-request
   type: http
   seq: 8
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request/detail/:detail_id/history
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -42,20 +60,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/purchase-request/detail/:detail_id/history
-  body: none
-  auth: bearer
-}
-
 params:path {
   detail_id: {{pr_detail_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

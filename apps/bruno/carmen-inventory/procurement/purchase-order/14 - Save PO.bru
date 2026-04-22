@@ -1,7 +1,34 @@
 meta {
-  name: 14 - Save PO
+  name: Save purchase-order
   type: http
   seq: 14
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:id/save
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
+}
+
+vars:pre-request {
+  po_id: df32410a-2e54-40c2-9b57-017208ed10c0
 }
 
 docs {
@@ -47,113 +74,6 @@ docs {
   ```
 }
 
-patch {
-  url: {{host}}/api/{{bu_code}}/purchase-order/:id/save
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: {{po_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "vendor_id": "<vendor_uuid>",
-    "vendor_name": "Fresh Farm Supplies Co.",
-    "delivery_date": "2026-04-05",
-    "currency_id": "<currency_uuid>",
-    "currency_code": "THB",
-    "exchange_rate": 1,
-    "description": "Updated PO - added new items",
-    "credit_term_id": "<credit_term_uuid>",
-    "credit_term_name": "Net 30",
-    "credit_term_value": 30,
-    "buyer_name": "Jane Smith",
-    "email": "vendor@example.com",
-    "remarks": "Urgent delivery required",
-    "note": "Deliver to back entrance",
-    "details": {
-      "add": [
-        {
-          "sequence": 3,
-          "product_id": "<product_uuid>",
-          "product_code": "PRD-CAR-001",
-          "product_name": "Carrots",
-          "order_unit_id": "<unit_uuid>",
-          "order_unit_name": "kg",
-          "order_qty": 20,
-          "base_unit_id": "<unit_uuid>",
-          "base_unit_name": "kg",
-          "base_qty": 20,
-          "price": 40,
-          "sub_total_price": 800,
-          "net_amount": 800,
-          "total_price": 856,
-          "tax_rate": 7,
-          "tax_amount": 56,
-          "is_foc": false,
-          "pr_detail": [
-            {
-              "pr_detail_id": "<pr_detail_uuid>",
-              "order_qty": 20,
-              "order_unit_id": "<unit_uuid>",
-              "order_unit_name": "kg",
-              "order_base_qty": 20
-            }
-          ]
-        }
-      ],
-      "update": [
-        {
-          "id": "<po_detail_uuid>",
-          "sequence": 1,
-          "product_id": "<product_uuid>",
-          "product_code": "PRD-TOM-001",
-          "product_name": "Fresh Tomatoes",
-          "order_unit_id": "<unit_uuid>",
-          "order_unit_name": "kg",
-          "order_qty": 80,
-          "base_unit_id": "<unit_uuid>",
-          "base_unit_name": "kg",
-          "base_qty": 80,
-          "price": 45,
-          "sub_total_price": 3600,
-          "net_amount": 3420,
-          "total_price": 3659.4,
-          "tax_rate": 7,
-          "tax_amount": 239.4,
-          "discount_rate": 5,
-          "discount_amount": 180,
-          "is_foc": false,
-          "pr_detail": [
-            {
-              "pr_detail_id": "<pr_detail_uuid>",
-              "order_qty": 80,
-              "order_unit_id": "<unit_uuid>",
-              "order_unit_name": "kg",
-              "order_base_qty": 80
-            }
-          ],
-          "description": "Fresh tomatoes - qty increased",
-          "note": "Grade A only"
-        }
-      ],
-      "remove": [
-        { "id": "<po_detail_uuid_to_remove>" }
-      ]
-    }
-  }
-}
-
-vars:pre-request {
-  po_id: df32410a-2e54-40c2-9b57-017208ed10c0
 }

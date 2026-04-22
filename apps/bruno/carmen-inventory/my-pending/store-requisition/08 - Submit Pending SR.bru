@@ -1,7 +1,30 @@
 meta {
-  name: 08 - Submit Pending SR
+  name: Submit my-pending
   type: http
   seq: 8
+}
+
+patch {
+  url: {{host}}/api/my-pending/store-requisition/{{bu_code}}/:id/submit
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -35,25 +58,7 @@ docs {
   ```
 }
 
-patch {
-  url: {{host}}/api/my-pending/store-requisition/:bu_code/:id/submit
-  body: json
-  auth: bearer
-}
-
 params:path {
   bu_code: {{bu_code}}
   id: {{sr_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {}
 }

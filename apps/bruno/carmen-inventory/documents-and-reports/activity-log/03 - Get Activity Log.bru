@@ -1,7 +1,21 @@
 meta {
-  name: 03 - Get Activity Log
+  name: By id activity-log
   type: http
   seq: 3
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/activity-log/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
 }
 
 docs {
@@ -27,20 +41,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/activity-log/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{activity_log_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

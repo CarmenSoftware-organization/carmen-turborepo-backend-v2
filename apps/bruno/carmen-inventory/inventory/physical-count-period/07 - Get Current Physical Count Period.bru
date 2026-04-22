@@ -1,7 +1,26 @@
 meta {
-  name: 07 - Get Current Physical Count Period
+  name: Find current physical-count-period
   type: http
   seq: 7
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/physical-count-period/current
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+  ~include_not_count: 
 }
 
 docs {
@@ -32,20 +51,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/physical-count-period/current?include_not_count=false
-  body: none
-  auth: bearer
-}
-
 params:query {
   include_not_count: false
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

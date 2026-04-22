@@ -1,5 +1,5 @@
 meta {
-  name: 19 - List GRN by Vendor for CN
+  name: Find by vendor id for cn good-received-note
   type: http
   seq: 19
 }
@@ -10,16 +10,16 @@ get {
   auth: bearer
 }
 
-params:path {
-  vendor_id: 0005206b-4cde-44ed-97f5-9b13d333b025
-}
-
 headers {
   x-app-id: {{x_app_id}}
 }
 
 auth:bearer {
   token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -67,4 +67,8 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
+}
+
+params:path {
+  vendor_id: 0005206b-4cde-44ed-97f5-9b13d333b025
 }

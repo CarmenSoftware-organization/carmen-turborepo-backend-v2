@@ -1,7 +1,25 @@
 meta {
-  name: 10 - List PR For PO
+  name: Find all for po purchase-request
   type: http
   seq: 10
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request/for-po
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -39,18 +57,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-get {
-  url: {{host}}/api/{{bu_code}}/purchase-request/for-po
-  body: none
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

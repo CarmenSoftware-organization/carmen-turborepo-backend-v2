@@ -1,5 +1,5 @@
 meta {
-  name: 01 - Get Location Product
+  name: Get product by location id config_location-product
   type: http
   seq: 1
 }
@@ -10,16 +10,16 @@ get {
   auth: bearer
 }
 
-params:path {
-  locationId: 3ad9d3e6-ca78-44de-9812-1f62adf26600
-}
-
 headers {
   x-app-id: {{x_app_id}}
 }
 
 auth:bearer {
   token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -52,4 +52,8 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
+}
+
+params:path {
+  locationId: 3ad9d3e6-ca78-44de-9812-1f62adf26600
 }

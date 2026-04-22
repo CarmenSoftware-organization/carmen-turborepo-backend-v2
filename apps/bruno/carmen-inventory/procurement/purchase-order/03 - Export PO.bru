@@ -1,7 +1,25 @@
 meta {
-  name: 03 - Export PO
+  name: Export to excel purchase-order
   type: http
   seq: 3
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:id/export
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -32,20 +50,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/purchase-order/:id/export
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{po_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

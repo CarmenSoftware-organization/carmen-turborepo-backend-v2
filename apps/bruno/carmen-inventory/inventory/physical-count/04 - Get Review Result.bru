@@ -1,7 +1,29 @@
 meta {
-  name: 04 - Get Review Result
+  name: Get review physical-count
   type: http
   seq: 4
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/physical-count/:id/review
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+vars:pre-request {
+  physical_count_id:
 }
 
 docs {
@@ -39,24 +61,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/physical-count/:id/review
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{physical_count_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-vars:pre-request {
-  physical_count_id:
 }

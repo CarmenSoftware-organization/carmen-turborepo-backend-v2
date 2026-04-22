@@ -1,5 +1,5 @@
 meta {
-  name: 22 - List GRN Products
+  name: Find products by grn id good-received-note
   type: http
   seq: 22
 }
@@ -10,16 +10,16 @@ get {
   auth: bearer
 }
 
-params:path {
-  grn_id: 04e065de-03d0-4f33-baee-3ca3f7823eea
-}
-
 headers {
   x-app-id: {{x_app_id}}
 }
 
 auth:bearer {
   token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -62,4 +62,8 @@ docs {
     "timestamp": "2026-04-22T08:41:09.468Z"
   }
   ```
+}
+
+params:path {
+  grn_id: 04e065de-03d0-4f33-baee-3ca3f7823eea
 }

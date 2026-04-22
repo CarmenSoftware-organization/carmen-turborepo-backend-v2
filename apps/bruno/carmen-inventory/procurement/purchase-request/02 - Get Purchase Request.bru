@@ -1,7 +1,25 @@
 meta {
-  name: 02 - Get Purchase Request
+  name: By id purchase-request
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -42,20 +60,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/purchase-request/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: e9445b62-983b-492c-a45b-288e628ccf11
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

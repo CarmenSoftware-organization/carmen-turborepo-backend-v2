@@ -1,7 +1,25 @@
 meta {
-  name: 04 - Print PO
+  name: Print to pdf purchase-order
   type: http
   seq: 4
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:id/print
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -43,20 +61,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/purchase-order/:id/print
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{po_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

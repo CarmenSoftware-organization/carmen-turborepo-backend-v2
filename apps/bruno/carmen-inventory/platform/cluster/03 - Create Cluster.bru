@@ -1,7 +1,30 @@
 meta {
-  name: 03 - Create Cluster
+  name: Create cluster platform_cluster
   type: http
   seq: 3
+}
+
+post {
+  url: {{host}}/api-system/cluster
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -37,30 +60,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-post {
-  url: {{host}}/api-system/cluster
-  body: json
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "code": "C-001",
-    "name": "Cluster 01",
-    "alias_name": "",
-    "logo_url": "",
-    "max_license_bu": null,
-    "is_active": true,
-    "info": null
-  }
 }

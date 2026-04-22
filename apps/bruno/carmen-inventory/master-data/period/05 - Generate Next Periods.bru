@@ -1,5 +1,5 @@
 meta {
-  name: 05 - Generate Next Periods
+  name: Generate next period
   type: http
   seq: 5
 }
@@ -12,17 +12,19 @@ post {
 
 headers {
   x-app-id: {{x_app_id}}
+  Content-Type: application/json
 }
 
 auth:bearer {
   token: {{access_token}}
 }
 
+query {
+  ~version: 
+}
+
 body:json {
-  {
-    "count": 3,
-    "start_day": 1
-  }
+  {}
 }
 
 docs {

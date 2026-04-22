@@ -1,7 +1,25 @@
 meta {
-  name: 07 - Remove Spot Check Comment Attachment
+  name: Remove attachment spot-check-comment
   type: http
   seq: 7
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/spot-check-comment/:id/attachment/:fileToken
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -28,21 +46,7 @@ docs {
   ```
 }
 
-delete {
-  url: {{host}}/api/{{bu_code}}/spot-check-comment/:id/attachment/:fileToken
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{test_id}}
   fileToken:
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

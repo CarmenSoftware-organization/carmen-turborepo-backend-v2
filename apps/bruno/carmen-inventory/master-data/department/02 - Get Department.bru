@@ -1,7 +1,25 @@
 meta {
-  name: 02 - Get Department
+  name: Get department department
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/department/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -27,20 +45,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/department/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{department_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

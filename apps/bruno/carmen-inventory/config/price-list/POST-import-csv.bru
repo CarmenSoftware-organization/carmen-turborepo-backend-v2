@@ -1,0 +1,28 @@
+meta {
+  name: Import csv config_price-list
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{host}}/api/config/{{bu_code}}/price-list/import-csv
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
+}

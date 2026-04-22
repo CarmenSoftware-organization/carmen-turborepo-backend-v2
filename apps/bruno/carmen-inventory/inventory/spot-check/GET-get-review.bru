@@ -1,0 +1,23 @@
+meta {
+  name: Get review spot-check
+  type: http
+  seq: 16
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/spot-check/:id/review
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}

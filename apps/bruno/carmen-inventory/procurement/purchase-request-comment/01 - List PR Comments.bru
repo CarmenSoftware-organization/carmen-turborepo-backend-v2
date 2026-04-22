@@ -1,7 +1,25 @@
 meta {
-  name: 01 - List PR Comments
+  name: Find all by purchase request id purchase-request-comment
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request/:purchase_request_id/comments
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -37,20 +55,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/purchase-request/:purchase_request_id/comments
-  body: none
-  auth: bearer
-}
-
 params:path {
   purchase_request_id: d2a87a6c-5b77-4b43-9df4-e2d2aeab2bd7
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

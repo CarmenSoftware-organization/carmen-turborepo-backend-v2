@@ -1,7 +1,30 @@
 meta {
-  name: 04 - Update Cluster
+  name: Update cluster platform_cluster
   type: http
   seq: 4
+}
+
+put {
+  url: {{host}}/api-system/cluster/:id
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -39,32 +62,6 @@ docs {
   ```
 }
 
-put {
-  url: {{host}}/api-system/cluster/:id
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: 6dbeb937-2fbb-4960-9b76-055b83a4591b
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "code": "C-001",
-    "name": "Cluster 01 Updated",
-    "alias_name": "",
-    "logo_url": "",
-    "max_license_bu": null,
-    "is_active": true,
-    "info": null
-  }
 }

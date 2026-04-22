@@ -1,0 +1,24 @@
+meta {
+  name: Patch user action workflow
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/workflow/patch-user-action
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}

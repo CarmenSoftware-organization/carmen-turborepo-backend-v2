@@ -1,7 +1,25 @@
 meta {
-  name: 10 - List GRN by Vendor
+  name: Find by vendor id good-received-note
   type: http
   seq: 10
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/good-received-note/vendor/:vendor_id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -44,20 +62,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/good-received-note/vendor/:vendor_id
-  body: none
-  auth: bearer
-}
-
 params:path {
   vendor_id:
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

@@ -1,7 +1,25 @@
 meta {
-  name: 20 - Delete Purchase Request
+  name: Remove purchase-request
   type: http
   seq: 20
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/purchase-request/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -29,20 +47,6 @@ docs {
   ```
 }
 
-delete {
-  url: {{host}}/api/{{bu_code}}/purchase-request/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{pr_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

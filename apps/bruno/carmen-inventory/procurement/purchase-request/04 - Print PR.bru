@@ -1,7 +1,25 @@
 meta {
-  name: 04 - Print PR
+  name: Print to pdf purchase-request
   type: http
   seq: 4
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request/:id/print
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -42,20 +60,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/purchase-request/:id/print
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{pr_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

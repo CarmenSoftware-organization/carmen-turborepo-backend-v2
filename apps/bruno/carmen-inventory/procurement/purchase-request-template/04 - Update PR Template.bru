@@ -1,7 +1,30 @@
 meta {
-  name: 04 - Update PR Template
+  name: Update purchase request template purchase-request-template
   type: http
   seq: 5
+}
+
+put {
+  url: {{host}}/api/{{bu_code}}/purchase-request-template/:id
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -37,27 +60,6 @@ docs {
   ```
 }
 
-put {
-  url: {{host}}/api/{{bu_code}}/purchase-request-template/:id
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: {{pr_template_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "name": "",
-    "description": ""
-  }
 }

@@ -1,0 +1,23 @@
+meta {
+  name: Find detail by id spot-check
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/spot-check/:id/details/:detail_id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}

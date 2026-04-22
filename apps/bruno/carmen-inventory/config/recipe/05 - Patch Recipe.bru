@@ -1,7 +1,30 @@
 meta {
-  name: 05 - Patch Recipe
+  name: Patch config_recipe
   type: http
   seq: 5
+}
+
+patch {
+  url: {{host}}/api/config/{{bu_code}}/recipe/:id
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -34,27 +57,6 @@ docs {
   ```
 }
 
-patch {
-  url: {{host}}/api/config/{{bu_code}}/recipe/:id
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: 
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "name": "",
-    "is_active": true
-  }
 }

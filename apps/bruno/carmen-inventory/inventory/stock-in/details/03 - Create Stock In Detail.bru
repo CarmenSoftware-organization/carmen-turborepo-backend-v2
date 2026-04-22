@@ -1,7 +1,30 @@
 meta {
-  name: 03 - Create Stock In Detail
+  name: Create detail stock-in
   type: http
   seq: 3
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/stock-in/:id/details
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -44,35 +67,6 @@ docs {
   ```
 }
 
-post {
-  url: {{host}}/api/{{bu_code}}/stock-in/:id/details
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: {{stock_in_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "product_id": "",
-    "product_name": "",
-    "location_id": "",
-    "location_code": "",
-    "location_name": "",
-    "qty": 5,
-    "cost_per_unit": 50,
-    "total_cost": 250,
-    "description": "",
-    "note": ""
-  }
 }

@@ -1,7 +1,25 @@
 meta {
-  name: 02 - Get Transfer Detail
+  name: Find detail by id transfer
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/transfer/:id/details/:detail_id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -42,21 +60,7 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/transfer/:id/details/:detail_id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{transfer_id}}
   detail_id: {{transfer_detail_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

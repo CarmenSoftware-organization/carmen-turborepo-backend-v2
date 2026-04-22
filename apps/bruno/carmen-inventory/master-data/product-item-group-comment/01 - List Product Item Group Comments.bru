@@ -1,7 +1,25 @@
 meta {
-  name: 01 - List Product Item Group Comments
+  name: Find all by product item group id product-item-group-comment
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/product-item-group/:product_item_group_id/comments
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -37,20 +55,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/product-item-group/:product_item_group_id/comments
-  body: none
-  auth: bearer
-}
-
 params:path {
   product_item_group_id: {{test_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

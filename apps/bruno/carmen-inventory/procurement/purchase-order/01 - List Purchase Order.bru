@@ -1,7 +1,26 @@
 meta {
-  name: 01 - List Purchase Order
+  name: List purchase-order
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-order
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~vendor_id: 
+  ~version: 
 }
 
 docs {
@@ -50,20 +69,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/purchase-order
-  body: none
-  auth: bearer
-}
-
 params:query {
   ~vendor_id:
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

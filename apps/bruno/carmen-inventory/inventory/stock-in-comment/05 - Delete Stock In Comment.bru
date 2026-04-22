@@ -1,7 +1,25 @@
 meta {
-  name: 05 - Delete Stock In Comment
+  name: Remove stock-in-comment
   type: http
   seq: 5
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/stock-in-comment/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -29,20 +47,6 @@ docs {
   ```
 }
 
-delete {
-  url: {{host}}/api/{{bu_code}}/stock-in-comment/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{test_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

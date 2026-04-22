@@ -1,7 +1,30 @@
 meta {
-  name: 11 - Group PR
+  name: Group pr for po purchase-order
   type: http
   seq: 11
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/purchase-order/group-pr
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -40,28 +63,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-post {
-  url: {{host}}/api/{{bu_code}}/purchase-order/group-pr
-  body: json
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "workflow_id": "0e90eca7-dba7-43da-ad09-f710b17827a7",
-    "pr_ids": [
-      "d2a87a6c-5b77-4b43-9df4-e2d2aeab2bd7",
-      "da939c08-ecc8-4dd7-8f4f-0db614cb5291"
-    ]
-  }
 }

@@ -1,7 +1,25 @@
 meta {
-  name: 03 - Get Workflow Stages
+  name: Find all workflow stages by sr my-pending
   type: http
   seq: 3
+}
+
+get {
+  url: {{host}}/api/my-pending/store-requisition/{{bu_code}}/workflow-stages
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -34,20 +52,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/my-pending/store-requisition/:bu_code/workflow-stages
-  body: none
-  auth: bearer
-}
-
 params:path {
   bu_code: {{bu_code}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

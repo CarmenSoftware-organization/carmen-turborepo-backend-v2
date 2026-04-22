@@ -1,7 +1,34 @@
 meta {
-  name: 04 - Update Request For Pricing
+  name: Update request-for-pricing
   type: http
   seq: 4
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/request-for-pricing/:id
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
+}
+
+vars:pre-request {
+  rfp_id: 97e7fae5-18cc-4ae4-af9a-967799c0bffa
 }
 
 docs {
@@ -43,40 +70,6 @@ docs {
   ```
 }
 
-patch {
-  url: {{host}}/api/{{bu_code}}/request-for-pricing/:id
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: 97e7fae5-18cc-4ae4-af9a-967799c0bffa
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "name": "aaaaa222",
-    "pricelist_template_id": "b28f5f93-3dd0-4c9d-a6f8-b05a7f6aa051",
-    "start_date": "2026-03-15T17:00:00.000Z",
-    "end_date": "2026-03-19T17:00:00.000Z",
-    "vendors": {
-      "remove": [
-        {
-          "id": "b164823f-deb5-41d8-bfe7-03203d12f69d"
-        }
-      ]
-    }
-  }
-}
-
-vars:pre-request {
-  rfp_id: 97e7fae5-18cc-4ae4-af9a-967799c0bffa
 }

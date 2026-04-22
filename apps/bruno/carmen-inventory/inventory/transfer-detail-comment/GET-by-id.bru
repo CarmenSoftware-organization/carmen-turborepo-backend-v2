@@ -1,0 +1,23 @@
+meta {
+  name: By id transfer-detail
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/transfer-detail/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}

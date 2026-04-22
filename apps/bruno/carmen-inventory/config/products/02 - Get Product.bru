@@ -1,7 +1,25 @@
 meta {
-  name: 02 - Get Product
+  name: By id config_products
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/products/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -46,20 +64,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/config/{{bu_code}}/products/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: 00cc576d-fa50-4eac-8cdd-96d0554009a2
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

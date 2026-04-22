@@ -24,6 +24,10 @@ bun run db:mock.tenant   # if present
 
 # Coverage-enabled testing
 bun run test:cov
+
+# Sync Bruno API collection with gateway endpoints
+bun run bruno:sync:dry   # preview add/update/archive
+bun run bruno:sync       # apply changes
 ```
 
 ### Testing (per service)
@@ -138,6 +142,9 @@ API collections for testing are located at `apps/bruno/carmen-inventory/`. Uses 
 - Login scripts auto-set `access_token` and `refresh_token` via post-response scripts
 - Multi-tenant endpoints use `{{bu_code}}` path parameter
 - API response wrapper: `{ data: {...}, status, success, message, timestamp }`
+
+### Syncing with gateway
+When adding or renaming gateway endpoints, run `bun run bruno:sync` before opening a PR so the Bruno collection stays in sync with `apps/backend-gateway/src/`. `_archived/` holds orphan files whose endpoints no longer exist in the gateway — review and delete periodically. The sync tool preserves `environments/`, `auth/`, and user-authored `script:*`, `tests`, `docs` sections on updates. See `scripts/bruno-sync/README.md`.
 
 ## Gotchas
 

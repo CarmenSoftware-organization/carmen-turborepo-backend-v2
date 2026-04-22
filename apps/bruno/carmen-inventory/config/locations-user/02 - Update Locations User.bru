@@ -1,5 +1,5 @@
 meta {
-  name: 02 - Update Locations User
+  name: Manager location user config_locations-user
   type: http
   seq: 2
 }
@@ -10,24 +10,21 @@ put {
   auth: bearer
 }
 
-params:path {
-  userId: 462a3bca-d0cd-4206-81de-db7b05f262d0
-}
-
 headers {
   x-app-id: {{x_app_id}}
+  Content-Type: application/json
 }
 
 auth:bearer {
   token: {{access_token}}
 }
 
+query {
+  ~version: 
+}
+
 body:json {
-  {
-    "location_ids": [
-     
-    ]
-  }
+  {}
 }
 
 docs {
@@ -57,4 +54,8 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
+}
+
+params:path {
+  userId: 462a3bca-d0cd-4206-81de-db7b05f262d0
 }

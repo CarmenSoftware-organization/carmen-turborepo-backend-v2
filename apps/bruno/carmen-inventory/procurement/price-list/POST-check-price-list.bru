@@ -1,0 +1,28 @@
+meta {
+  name: Check price list price-list
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{host}}/api/check-price-list/:url_token
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
+}

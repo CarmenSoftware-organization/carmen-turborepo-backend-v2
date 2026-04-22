@@ -1,7 +1,25 @@
 meta {
-  name: 02 - Get Vendor Business Type
+  name: By id config_vendor_business_type
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/vendor-business-type/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -32,20 +50,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/config/{{bu_code}}/vendor-business-type/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: 
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

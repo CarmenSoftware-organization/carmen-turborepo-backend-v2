@@ -1,7 +1,30 @@
 meta {
-  name: 04 - Update PR Comment
+  name: Update purchase-request-comment
   type: http
   seq: 4
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/purchase-request-comment/:id
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -36,26 +59,6 @@ docs {
   ```
 }
 
-patch {
-  url: {{host}}/api/{{bu_code}}/purchase-request-comment/:id
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: {{pr_comment_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "message": ""
-  }
 }

@@ -1,7 +1,21 @@
 meta {
-  name: 07 - Products
+  name: Get products inventory-transaction
   type: http
   seq: 7
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/inventory-transaction/products
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
 }
 
 docs {
@@ -46,22 +60,8 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/inventory-transaction/products?page=1&perpage=10
-  body: none
-  auth: bearer
-}
-
 params:query {
   page: 1
   perpage: 10
   ~search:
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

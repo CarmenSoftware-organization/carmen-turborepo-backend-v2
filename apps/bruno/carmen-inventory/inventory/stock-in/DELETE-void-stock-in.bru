@@ -1,0 +1,23 @@
+meta {
+  name: Void stock in stock-in
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/stock-in/:id/void
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}

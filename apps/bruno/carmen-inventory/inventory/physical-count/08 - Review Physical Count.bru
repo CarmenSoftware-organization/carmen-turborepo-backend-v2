@@ -1,7 +1,35 @@
 meta {
-  name: 08 - Review Physical Count
+  name: Review items physical-count
   type: http
   seq: 8
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/physical-count/:id/review
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
+}
+
+vars:pre-request {
+  physical_count_id:
+  physical_count_detail_id:
 }
 
 docs {
@@ -43,36 +71,6 @@ docs {
   ```
 }
 
-patch {
-  url: {{host}}/api/{{bu_code}}/physical-count/:id/review
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: {{physical_count_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "items": [
-      {
-        "id": "{{physical_count_detail_id}}",
-        "actual_qty": 10
-      }
-    ]
-  }
-}
-
-vars:pre-request {
-  physical_count_id:
-  physical_count_detail_id:
 }

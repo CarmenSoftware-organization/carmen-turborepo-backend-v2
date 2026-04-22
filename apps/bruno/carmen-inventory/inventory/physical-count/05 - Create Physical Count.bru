@@ -1,7 +1,36 @@
 meta {
-  name: 05 - Create Physical Count
+  name: Create physical-count
   type: http
   seq: 5
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/physical-count
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
+}
+
+vars:pre-request {
+  period_id: 4b589f8b-9fa7-4e62-a5b5-e6bf45c4f9bb
+  location_id: 47414c16-9d52-4b16-8428-4a4c4e89986e
+  physical_count_period_id: 4b589f8b-9fa7-4e62-a5b5-e6bf45c4f9bb
 }
 
 docs {
@@ -36,31 +65,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-post {
-  url: {{host}}/api/{{bu_code}}/physical-count
-  body: json
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "physical_count_period_id": "{{physical_count_period_id}}",
-    "location_id": "{{location_id}}"
-  }
-}
-
-vars:pre-request {
-  period_id: 4b589f8b-9fa7-4e62-a5b5-e6bf45c4f9bb
-  location_id: 47414c16-9d52-4b16-8428-4a4c4e89986e
-  physical_count_period_id: 4b589f8b-9fa7-4e62-a5b5-e6bf45c4f9bb
 }

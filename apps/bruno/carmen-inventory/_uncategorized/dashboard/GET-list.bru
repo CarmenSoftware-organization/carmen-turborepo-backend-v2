@@ -1,0 +1,19 @@
+meta {
+  name: List dashboard
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/dashboard
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

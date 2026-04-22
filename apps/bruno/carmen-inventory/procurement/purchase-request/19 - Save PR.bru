@@ -1,5 +1,5 @@
 meta {
-  name: 19 - Save PR
+  name: Update purchase-request
   type: http
   seq: 19
 }
@@ -10,65 +10,21 @@ patch {
   auth: bearer
 }
 
-params:path {
-  id: {{pr_id}}
-}
-
 headers {
   x-app-id: {{x_app_id}}
+  Content-Type: application/json
 }
 
 auth:bearer {
   token: {{access_token}}
 }
 
+query {
+  ~version: 
+}
+
 body:json {
-  {
-    "stage_role": "purchase",
-    "details": [
-      {
-        "id": "9dd4cde2-ea96-4d40-9a96-c8c680038805",
-        "stage_status": "approve",
-        "stage_message": null,
-        "is_tax_adjustment": false,
-        "description": null,
-        "approved_qty": 1,
-        "approved_unit_id": "b5b22dba-fff4-4662-8e43-b25566402461",
-        "approved_base_qty": 1,
-        "approved_unit_conversion_factor": 1,
-        "vendor_id": "0005206b-4cde-44ed-97f5-9b13d333b025",
-        "currency_id": "93dabe25-1668-4c5b-bceb-3e0b83b78002",
-        "exchange_rate": 1,
-        "exchange_rate_date": null,
-        "tax_profile_id": "337d3a49-f9de-497d-af33-acf2b4cfc731",
-        "tax_profile_name": null,
-        "tax_rate": 7,
-        "tax_amount": 1.12,
-        "base_tax_amount": 1.12,
-        "total_amount": 17.12,
-        "discount_rate": 20,
-        "discount_amount": 4,
-        "is_discount_adjustment": false,
-        "base_discount_amount": 4,
-        "total_price": 17.12,
-        "sub_total_price": 20,
-        "net_amount": 16,
-        "base_sub_total_price": 20,
-        "base_total_price": 17.12,
-        "base_net_amount": 16,
-        "base_price": 20,
-        "foc_qty": 0,
-        "foc_unit_id": "b5b22dba-fff4-4662-8e43-b25566402461",
-        "foc_unit_conversion_rate": 1,
-        "foc_base_qty": 0,
-        "pricelist_detail_id": null,
-        "pricelist_no": null,
-        "pricelist_price": 20,
-        "pricelist_type": "manual_input",
-        "current_stage_status": "pending"
-      }
-    ]
-  }
+  {}
 }
 
 vars:pre-request {
@@ -103,4 +59,8 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
+}
+
+params:path {
+  id: {{pr_id}}
 }

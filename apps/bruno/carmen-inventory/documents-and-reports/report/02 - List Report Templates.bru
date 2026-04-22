@@ -1,7 +1,25 @@
 meta {
-  name: 02 - List Report Templates
+  name: List templates report
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/report/templates
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~report_group: 
 }
 
 docs {
@@ -36,20 +54,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/report/templates
-  body: none
-  auth: bearer
-}
-
 params:query {
   ~report_group:
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

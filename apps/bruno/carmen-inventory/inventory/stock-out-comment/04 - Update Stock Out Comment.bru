@@ -1,7 +1,30 @@
 meta {
-  name: 04 - Update Stock Out Comment
+  name: Update stock-out-comment
   type: http
   seq: 4
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/stock-out-comment/:id
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -35,26 +58,6 @@ docs {
   ```
 }
 
-patch {
-  url: {{host}}/api/{{bu_code}}/stock-out-comment/:id
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: {{test_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "message": ""
-  }
 }

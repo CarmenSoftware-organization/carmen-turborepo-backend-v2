@@ -1,7 +1,21 @@
 meta {
-  name: 02 - Get Document
+  name: Get document document-management
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/documents/:filetoken
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
 }
 
 docs {
@@ -27,20 +41,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/documents/:filetoken
-  body: none
-  auth: bearer
-}
-
 params:path {
   filetoken: {{filetoken}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

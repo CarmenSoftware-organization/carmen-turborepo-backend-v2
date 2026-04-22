@@ -1,7 +1,21 @@
 meta {
-  name: 01 - List Documents
+  name: List documents document-management
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/documents
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
 }
 
 docs {
@@ -32,18 +46,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-get {
-  url: {{host}}/api/{{bu_code}}/documents
-  body: none
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

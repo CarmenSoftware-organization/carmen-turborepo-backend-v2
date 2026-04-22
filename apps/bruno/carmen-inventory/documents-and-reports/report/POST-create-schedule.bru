@@ -1,0 +1,34 @@
+meta {
+  name: Create schedule report
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/report/schedules
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "",
+    "report_type": "",
+    "report_template_id": "",
+    "format": "",
+    "cron_expression": "",
+    "schedule_config": "",
+    "filters": {},
+    "options": "",
+    "recipients": []
+  }
+}

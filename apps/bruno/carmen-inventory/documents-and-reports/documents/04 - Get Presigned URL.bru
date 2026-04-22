@@ -1,7 +1,25 @@
 meta {
-  name: 04 - Get Presigned URL
+  name: Get presigned url document-management
   type: http
   seq: 4
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/documents/:filetoken/presigned-url
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~expirySeconds: 
 }
 
 docs {
@@ -27,20 +45,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/documents/:filetoken/presigned-url
-  body: none
-  auth: bearer
-}
-
 params:path {
   filetoken: {{filetoken}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

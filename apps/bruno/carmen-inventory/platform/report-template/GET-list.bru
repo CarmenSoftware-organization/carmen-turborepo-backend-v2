@@ -1,0 +1,23 @@
+meta {
+  name: List platform_report-template
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api-system/report-template
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}

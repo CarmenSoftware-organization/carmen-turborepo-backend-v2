@@ -1,7 +1,35 @@
 meta {
-  name: 08 - Save Spot Check
+  name: Save items spot-check
   type: http
   seq: 8
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/spot-check/:id/save
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
+}
+
+vars:pre-request {
+  spot_check_id:
+  spot_check_detail_id:
 }
 
 docs {
@@ -44,36 +72,6 @@ docs {
   ```
 }
 
-patch {
-  url: {{host}}/api/{{bu_code}}/spot-check/:id/save
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: {{spot_check_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "items": [
-      {
-        "id": "{{spot_check_detail_id}}",
-        "actual_qty": 42.5
-      }
-    ]
-  }
-}
-
-vars:pre-request {
-  spot_check_id:
-  spot_check_detail_id:
 }

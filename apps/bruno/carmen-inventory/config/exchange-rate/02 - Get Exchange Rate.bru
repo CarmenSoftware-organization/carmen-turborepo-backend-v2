@@ -1,7 +1,25 @@
 meta {
-  name: 02 - Get Exchange Rate
+  name: By id config_exchange-rate
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/exchange-rate/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -38,20 +56,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/config/{{bu_code}}/exchange-rate/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: 
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

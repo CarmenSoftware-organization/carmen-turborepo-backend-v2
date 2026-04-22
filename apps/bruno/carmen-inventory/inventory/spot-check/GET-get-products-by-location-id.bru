@@ -1,0 +1,23 @@
+meta {
+  name: Get products by location id spot-check
+  type: http
+  seq: 17
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/locations/:location_id/products
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}

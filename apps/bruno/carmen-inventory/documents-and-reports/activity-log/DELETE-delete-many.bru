@@ -1,0 +1,19 @@
+meta {
+  name: Delete many activity-log
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/activity-log/batch/soft
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

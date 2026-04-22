@@ -1,7 +1,25 @@
 meta {
-  name: 11 - Get Previous Stages
+  name: Get previous stages by pr id purchase-request
   type: http
   seq: 11
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-request/:pr_id/previous-stages
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -42,20 +60,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/purchase-request/:pr_id/previous-stages
-  body: none
-  auth: bearer
-}
-
 params:path {
   pr_id: d2a87a6c-5b77-4b43-9df4-e2d2aeab2bd7
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

@@ -1,7 +1,29 @@
 meta {
-  name: 04 - Get Location By Product
+  name: Find by product id locations
   type: http
   seq: 4
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/locations/product/:product_id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+vars:pre-request {
+  product_id: bb96415b-dff0-40ec-aa2f-2b4099418314
 }
 
 docs {
@@ -30,24 +52,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/locations/product/:product_id
-  body: none
-  auth: bearer
-}
-
 params:path {
   product_id: {{product_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-vars:pre-request {
-  product_id: bb96415b-dff0-40ec-aa2f-2b4099418314
 }

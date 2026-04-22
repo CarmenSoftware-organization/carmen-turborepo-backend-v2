@@ -1,21 +1,13 @@
 meta {
-  name: 04 - Get Inventory Adjustment
+  name: By id inventory-adjustment
   type: http
   seq: 4
 }
 
 get {
-  url: {{host}}/api/{{bu_code}}/inventory-adjustment/:id?type=stock-in
+  url: {{host}}/api/{{bu_code}}/inventory-adjustment/:id
   body: none
   auth: bearer
-}
-
-params:query {
-  type: stock-in
-}
-
-params:path {
-  id: {{inventory_adjustment_id}}
 }
 
 headers {
@@ -24,6 +16,11 @@ headers {
 
 auth:bearer {
   token: {{access_token}}
+}
+
+query {
+  ~version: 
+  ~type: 
 }
 
 vars:pre-request {
@@ -66,4 +63,12 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
+}
+
+params:query {
+  type: stock-in
+}
+
+params:path {
+  id: {{inventory_adjustment_id}}
 }

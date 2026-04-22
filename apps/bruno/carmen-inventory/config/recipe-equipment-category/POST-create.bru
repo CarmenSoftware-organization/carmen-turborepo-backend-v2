@@ -1,0 +1,28 @@
+meta {
+  name: Create config_recipe-equipment-category
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/config/{{bu_code}}/recipe-equipment-category
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
+}

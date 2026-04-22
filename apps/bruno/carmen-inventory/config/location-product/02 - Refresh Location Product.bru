@@ -1,7 +1,26 @@
 meta {
-  name: 02 - Refresh Location Product
+  name: Refresh product locations config_location-product
   type: http
   seq: 2
+}
+
+post {
+  url: {{host}}/api/config/{{bu_code}}/location-product/refresh
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -24,18 +43,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-post {
-  url: {{host}}/api/config/{{bu_code}}/location-product/refresh
-  body: none
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

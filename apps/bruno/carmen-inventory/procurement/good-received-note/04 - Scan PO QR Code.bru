@@ -1,7 +1,25 @@
 meta {
-  name: 04 - Scan PO QR Code
+  name: Scan po good-received-note
   type: http
   seq: 4
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/good-received-note/scan-po/:qr_code
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -43,20 +61,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/good-received-note/scan-po/:qr_code
-  body: none
-  auth: bearer
-}
-
 params:path {
   qr_code: {{qr_code}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

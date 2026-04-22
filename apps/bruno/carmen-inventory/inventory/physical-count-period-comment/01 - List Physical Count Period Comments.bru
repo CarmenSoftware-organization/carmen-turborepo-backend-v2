@@ -1,7 +1,25 @@
 meta {
-  name: 01 - List Physical Count Period Comments
+  name: Find all by physical count period id physical-count-period-comment
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/physical-count-period/:physical_count_period_id/comments
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -37,20 +55,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/physical-count-period/:physical_count_period_id/comments
-  body: none
-  auth: bearer
-}
-
 params:path {
   physical_count_period_id: {{test_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

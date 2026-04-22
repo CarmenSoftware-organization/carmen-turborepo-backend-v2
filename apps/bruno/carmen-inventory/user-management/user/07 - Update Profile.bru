@@ -1,5 +1,5 @@
 meta {
-  name: 07 - Update Profile
+  name: Update profile user
   type: http
   seq: 7
 }
@@ -12,20 +12,19 @@ patch {
 
 headers {
   x-app-id: {{x_app_id}}
+  Content-Type: application/json
 }
 
 auth:bearer {
   token: {{access_token}}
 }
 
+query {
+  ~version: 
+}
+
 body:json {
-  {
-    "alias_name": "AA",
-    "firstname": "ศิริวรรณ (Purchase)",
-    "middlename": "",
-    "lastname": "ทองดี",
-    "telephone": ""
-  }
+  {}
 }
 
 docs {

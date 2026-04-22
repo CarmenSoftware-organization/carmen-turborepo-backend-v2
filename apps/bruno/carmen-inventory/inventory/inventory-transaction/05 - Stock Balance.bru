@@ -1,7 +1,25 @@
 meta {
-  name: 05 - Stock Balance
+  name: Get stock balance inventory-transaction
   type: http
   seq: 5
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/inventory-transaction/stock-balance
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~product_id: 
 }
 
 docs {
@@ -48,23 +66,9 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/inventory-transaction/stock-balance?page=1&perpage=10
-  body: none
-  auth: bearer
-}
-
 params:query {
   page: 1
   perpage: 10
   ~product_id:
   ~search:
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

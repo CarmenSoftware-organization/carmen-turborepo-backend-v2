@@ -1,7 +1,36 @@
 meta {
-  name: 06 - Add Pricelist Template Detail Comment Attachment
+  name: Add attachment pricelist-template-detail-comment
   type: http
   seq: 6
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/pricelist-template-detail-comment/:id/attachment
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {
+    "fileName": "",
+    "fileToken": "",
+    "fileUrl": "",
+    "contentType": "",
+    "size": 0
+  }
 }
 
 docs {
@@ -34,30 +63,6 @@ docs {
   ```
 }
 
-post {
-  url: {{host}}/api/{{bu_code}}/pricelist-template-detail-comment/:id/attachment
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: {{test_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "fileName": "document.pdf",
-    "fileToken": "{{bu_code}}/uuid-here",
-    "fileUrl": "",
-    "contentType": "application/pdf",
-    "size": 1024
-  }
 }

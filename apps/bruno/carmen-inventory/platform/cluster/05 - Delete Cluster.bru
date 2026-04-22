@@ -1,7 +1,25 @@
 meta {
-  name: 05 - Delete Cluster
+  name: Delete cluster platform_cluster
   type: http
   seq: 5
+}
+
+delete {
+  url: {{host}}/api-system/cluster/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -26,20 +44,6 @@ docs {
   ```
 }
 
-delete {
-  url: {{host}}/api-system/cluster/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: 6dbeb937-2fbb-4960-9b76-055b83a4591b
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

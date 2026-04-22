@@ -1,0 +1,19 @@
+meta {
+  name: Remove config_app_config
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{host}}/api/config/{{bu_code}}/app-config/:key
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

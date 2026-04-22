@@ -1,7 +1,25 @@
 meta {
-  name: 18 - Delete GRN Detail
+  name: Delete detail good-received-note
   type: http
   seq: 18
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/good-received-note/:id/details/:detail_id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -31,21 +49,7 @@ docs {
   ```
 }
 
-delete {
-  url: {{host}}/api/{{bu_code}}/good-received-note/:id/details/:detail_id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{grn_id}}
   detail_id: {{grn_detail_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

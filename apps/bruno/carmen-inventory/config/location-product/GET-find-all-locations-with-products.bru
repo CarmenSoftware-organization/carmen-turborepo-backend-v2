@@ -1,0 +1,25 @@
+meta {
+  name: Find all locations with products config_location-product
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/location-product
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+  ~search: 
+  ~category_id: 
+}

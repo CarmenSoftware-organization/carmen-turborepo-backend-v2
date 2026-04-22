@@ -1,7 +1,25 @@
 meta {
-  name: 20 - Void GRN
+  name: Void grn good-received-note
   type: http
   seq: 20
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/good-received-note/:id/void
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -30,20 +48,6 @@ docs {
   ```
 }
 
-delete {
-  url: {{host}}/api/{{bu_code}}/good-received-note/:id/void
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{grn_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

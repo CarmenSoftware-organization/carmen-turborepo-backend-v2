@@ -1,7 +1,21 @@
 meta {
-  name: 03 - Get Report Template by ID
+  name: Get template report
   type: http
   seq: 3
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/report/templates/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
 }
 
 docs {
@@ -31,20 +45,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/report/templates/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id:
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

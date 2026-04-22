@@ -1,7 +1,21 @@
 meta {
-  name: 04 - Delete Activity Log
+  name: Remove activity-log
   type: http
   seq: 4
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/activity-log/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
 }
 
 docs {
@@ -26,20 +40,6 @@ docs {
   ```
 }
 
-delete {
-  url: {{host}}/api/{{bu_code}}/activity-log/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{activity_log_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

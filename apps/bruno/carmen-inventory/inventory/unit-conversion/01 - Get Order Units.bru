@@ -1,7 +1,25 @@
 meta {
-  name: 01 - Get Order Units
+  name: Get order unit product unit-conversion
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/unit/order/product/:productId
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -27,20 +45,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/unit/order/product/:productId
-  body: none
-  auth: bearer
-}
-
 params:path {
   productId: {{product_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

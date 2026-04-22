@@ -1,7 +1,29 @@
 meta {
-  name: 02 - Get Purchase Order
+  name: By id purchase-order
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+vars:pre-request {
+  po_id: 2d44ef5b-2a78-4b3b-8387-dbdf0049a9ff
 }
 
 docs {
@@ -40,24 +62,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/purchase-order/:id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{po_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-vars:pre-request {
-  po_id: 2d44ef5b-2a78-4b3b-8387-dbdf0049a9ff
 }

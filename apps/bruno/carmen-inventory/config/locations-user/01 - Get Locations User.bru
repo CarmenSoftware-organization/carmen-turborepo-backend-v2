@@ -1,5 +1,5 @@
 meta {
-  name: 01 - Get Locations User
+  name: Get location by user id config_locations-user
   type: http
   seq: 1
 }
@@ -10,16 +10,16 @@ get {
   auth: bearer
 }
 
-params:path {
-  userId: 462a3bca-d0cd-4206-81de-db7b05f262d0
-}
-
 headers {
   x-app-id: {{x_app_id}}
 }
 
 auth:bearer {
   token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -46,4 +46,8 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
+}
+
+params:path {
+  userId: 462a3bca-d0cd-4206-81de-db7b05f262d0
 }

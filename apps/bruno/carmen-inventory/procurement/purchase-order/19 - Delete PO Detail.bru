@@ -1,7 +1,25 @@
 meta {
-  name: 19 - Delete PO Detail
+  name: Delete detail purchase-order
   type: http
   seq: 19
+}
+
+delete {
+  url: {{host}}/api/{{bu_code}}/purchase-order/:id/details/:detail_id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -30,21 +48,7 @@ docs {
   ```
 }
 
-delete {
-  url: {{host}}/api/{{bu_code}}/purchase-order/:id/details/:detail_id
-  body: none
-  auth: bearer
-}
-
 params:path {
   id: {{po_id}}
   detail_id: {{po_detail_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

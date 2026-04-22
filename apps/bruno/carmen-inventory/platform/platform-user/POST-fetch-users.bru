@@ -1,0 +1,28 @@
+meta {
+  name: Fetch users platform-user
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host}}/api-system/fetch-user
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
+}

@@ -1,0 +1,28 @@
+meta {
+  name: Confirm credit-note
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/credit-note/:id/confirm
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
+}

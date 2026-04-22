@@ -1,7 +1,21 @@
 meta {
-  name: 09 - Calculation Method
+  name: Get calculation method inventory-transaction
   type: http
   seq: 9
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/inventory-transaction/calculation-method
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
 }
 
 docs {
@@ -40,18 +54,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-get {
-  url: {{host}}/api/{{bu_code}}/inventory-transaction/calculation-method
-  body: none
-  auth: bearer
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

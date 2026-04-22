@@ -1,7 +1,25 @@
 meta {
-  name: 02 - List Price List Template filter
+  name: List price-list-template
   type: http
   seq: 2
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/price-list-template
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -40,20 +58,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/price-list-template?search=sss
-  body: none
-  auth: bearer
-}
-
 params:query {
   search: sss
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

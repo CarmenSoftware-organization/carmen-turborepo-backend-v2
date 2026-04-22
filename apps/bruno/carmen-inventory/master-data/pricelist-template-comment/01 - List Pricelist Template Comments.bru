@@ -1,7 +1,25 @@
 meta {
-  name: 01 - List Pricelist Template Comments
+  name: Find all by pricelist template id pricelist-template-comment
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/pricelist-template/:pricelist_template_id/comments
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -37,20 +55,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/pricelist-template/:pricelist_template_id/comments
-  body: none
-  auth: bearer
-}
-
 params:path {
   pricelist_template_id: {{test_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

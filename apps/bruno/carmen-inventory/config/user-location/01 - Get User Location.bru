@@ -1,7 +1,25 @@
 meta {
-  name: 01 - Get User Location
+  name: Get users by location id config_user-location
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/user/location/:locationId
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -29,20 +47,6 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/config/{{bu_code}}/user/location/:locationId
-  body: none
-  auth: bearer
-}
-
 params:path {
   locationId: 
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

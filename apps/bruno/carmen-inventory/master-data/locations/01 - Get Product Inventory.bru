@@ -1,7 +1,25 @@
 meta {
-  name: 01 - Get Product Inventory by Location
+  name: Get product inventory locations
   type: http
   seq: 1
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/locations/:location_id/product/:product_id/inventory
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -30,21 +48,7 @@ docs {
   ```
 }
 
-get {
-  url: {{host}}/api/{{bu_code}}/locations/:location_id/product/:product_id/inventory
-  body: none
-  auth: bearer
-}
-
 params:path {
   location_id: 1874fa94-8c81-4d52-ab39-f072db637f3b
   product_id: bb96415b-dff0-40ec-aa2f-2b4099418314
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
 }

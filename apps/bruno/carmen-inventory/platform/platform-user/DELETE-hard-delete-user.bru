@@ -1,0 +1,23 @@
+meta {
+  name: Hard delete user platform-user
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{host}}/api-system/user/:id/hard
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}

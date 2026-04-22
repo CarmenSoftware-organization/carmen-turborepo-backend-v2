@@ -1,7 +1,30 @@
 meta {
-  name: 21 - Save GRN
+  name: Save grn good-received-note
   type: http
   seq: 21
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/good-received-note/:id/save
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
 }
 
 docs {
@@ -35,24 +58,6 @@ docs {
   ```
 }
 
-patch {
-  url: {{host}}/api/{{bu_code}}/good-received-note/:id/save
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: {{grn_id}}
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {}
 }

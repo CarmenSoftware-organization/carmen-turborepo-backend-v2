@@ -1,0 +1,23 @@
+meta {
+  name: Lookups report
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/report/lookups
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~types: 
+}

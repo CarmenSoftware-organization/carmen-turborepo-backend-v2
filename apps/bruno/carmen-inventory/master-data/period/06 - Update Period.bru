@@ -1,7 +1,34 @@
 meta {
-  name: 06 - Update Period
+  name: Update period
   type: http
   seq: 6
+}
+
+patch {
+  url: {{host}}/api/{{bu_code}}/period/:id
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
+}
+
+vars:pre-request {
+  period_id: 19e7cc87-64b2-4002-9574-a8e2bfaa4950
 }
 
 docs {
@@ -37,34 +64,6 @@ docs {
   ```
 }
 
-patch {
-  url: {{host}}/api/{{bu_code}}/period/:id
-  body: json
-  auth: bearer
-}
-
 params:path {
   id: 6f871e7c-c138-40da-8baf-c8b0437ca651
-}
-
-headers {
-  x-app-id: {{x_app_id}}
-}
-
-auth:bearer {
-  token: {{access_token}}
-}
-
-body:json {
-  {
-    "fiscal_year": 2026,
-    "fiscal_month": 4,
-    "start_at": "2026-04-01T00:00:00.000Z",
-    "end_at": "2026-04-30T23:59:59.000Z",
-    "status": "open"
-  }
-}
-
-vars:pre-request {
-  period_id: 19e7cc87-64b2-4002-9574-a8e2bfaa4950
 }
