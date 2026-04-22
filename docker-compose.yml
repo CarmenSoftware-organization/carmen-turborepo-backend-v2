@@ -30,7 +30,6 @@ services:
       - REPORT_SERVICE_HOST=api-micro-report
       - REPORT_SERVICE_TCP_PORT=5015
       - REPORT_SERVICE_HTTP_PORT=6015
-      - REPORT_SERVICE_GRPC_PORT=5015
       - REPORT_RENDER_HOST=api-micro-report
       - REPORT_RENDER_TCP_PORT=8001
     networks:
@@ -181,7 +180,6 @@ api-micro-keycloak-api:
       - NOTIFICATION_SERVICE_TCP_PORT=5006
       - REPORT_SERVICE_HOST=api-micro-report
       - REPORT_SERVICE_TCP_PORT=5015
-      - REPORT_SERVICE_GRPC_PORT=5015
       - REPORT_RENDER_HOST=api-micro-report
       - REPORT_RENDER_TCP_PORT=8001
     networks:

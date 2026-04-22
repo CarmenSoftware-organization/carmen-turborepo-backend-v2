@@ -77,6 +77,7 @@ const SignatureConfigSchema = z.object({
     .array(
       z.object({
         position: z.number().int().min(1),
+        user_id: z.string().uuid().optional(),
         name: z.string(),
         label: z.string().min(1),
       }),
@@ -276,6 +277,78 @@ export class AppConfigService {
     });
 
     return { deleted: result.count > 0, count: result.count };
+  }
+
+  /**
+   * Return users eligible to sign on a printed document — read from tb_workflow
+   * (active workflows of the mapped type), collect assigned_users from stages
+   * whose role is approval-capable (excludes `create` / requestor), dedupe by user_id.
+   */
+  async getSignatureCandidates(bu_code: string, user_id: string, doc_type: string) {
+    // Doc types that have their own workflow use only that workflow's approvers.
+    // Doc types without a workflow of their own (GRN/CN/Adjustment) fall back
+    // to the union of all approvers across every active workflow in the BU.
+    const ALL_WORKFLOWS = [
+      'purchase_request_workflow',
+      'purchase_order_workflow',
+      'store_requisition_workflow',
+    ];
+    const DOC_TO_WORKFLOWS: Record<string, string[]> = {
+      pr: ['purchase_request_workflow'],
+      po: ['purchase_order_workflow'],
+      sr: ['store_requisition_workflow'],
+      grn: ALL_WORKFLOWS,
+      cn: ALL_WORKFLOWS,
+      adjustment: ALL_WORKFLOWS,
+    };
+    const workflow_types = DOC_TO_WORKFLOWS[doc_type];
+    if (!workflow_types || workflow_types.length === 0) return { candidates: [] };
+
+    const prisma = await this.tenantService.prismaTenantInstance(bu_code, user_id);
+    const workflows = await prisma.tb_workflow.findMany({
+      where: {
+        workflow_type: { in: workflow_types as never[] },
+        is_active: true,
+        deleted_at: null,
+      },
+      select: { data: true },
+    });
+
+    const SIGNER_ROLES = new Set(['approve', 'purchase']);
+    const seen = new Map<string, unknown>();
+
+    for (const wf of workflows) {
+      const stages = (wf.data as { stages?: unknown[] } | null)?.stages;
+      if (!Array.isArray(stages)) continue;
+
+      for (const stage of stages) {
+        const s = stage as { role?: string; assigned_users?: unknown[] };
+        if (!s.role || !SIGNER_ROLES.has(s.role)) continue;
+        if (!Array.isArray(s.assigned_users)) continue;
+
+        for (const u of s.assigned_users) {
+          const user = u as {
+            user_id?: string;
+            firstname?: string;
+            lastname?: string;
+            middlename?: string;
+            email?: string;
+            department?: { id?: string; name?: string };
+          };
+          if (!user.user_id || seen.has(user.user_id)) continue;
+          seen.set(user.user_id, {
+            user_id: user.user_id,
+            firstname: user.firstname ?? '',
+            middlename: user.middlename ?? '',
+            lastname: user.lastname ?? '',
+            email: user.email ?? '',
+            department: user.department ?? null,
+          });
+        }
+      }
+    }
+
+    return { candidates: Array.from(seen.values()) };
   }
 
   /**

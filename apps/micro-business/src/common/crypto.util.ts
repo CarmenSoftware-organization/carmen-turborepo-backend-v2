@@ -4,11 +4,10 @@ import * as crypto from 'crypto';
  * AES-256-GCM symmetric encryption for secrets stored in DB (e.g. SMTP passwords).
  *
  * Format of stored ciphertext: `enc:v1:<iv_b64>:<authTag_b64>:<ciphertext_b64>`
- * Plaintext values without the `enc:v1:` prefix are returned as-is by `decryptSecret`,
- * which lets existing plaintext rows keep working until they are rotated.
  *
  * Key source: env var `SECRET_ENCRYPTION_KEY` (32 bytes, base64 or hex).
- * If not set, encryption/decryption is a no-op (dev only).
+ * Fail-closed: if the key is missing or malformed, encryption throws — we never
+ * silently persist plaintext to DB.
  *
  * NOTE: This file is duplicated in apps/micro-notification/src/common/crypto.util.ts.
  * Both services must use the SAME SECRET_ENCRYPTION_KEY env var for cross-service
@@ -19,15 +18,16 @@ const ALGO = 'aes-256-gcm';
 const PREFIX = 'enc:v1:';
 const KEY_LENGTH = 32;
 
-let cachedKey: Buffer | null | undefined;
+let cachedKey: Buffer | undefined;
 
-function getKey(): Buffer | null {
+function getKey(): Buffer {
   if (cachedKey !== undefined) return cachedKey;
 
   const raw = process.env.SECRET_ENCRYPTION_KEY;
   if (!raw) {
-    cachedKey = null;
-    return null;
+    throw new Error(
+      'SECRET_ENCRYPTION_KEY is not set. Generate one with `openssl rand -base64 32` and add it to your .env.',
+    );
   }
 
   let key: Buffer;
@@ -50,7 +50,6 @@ function getKey(): Buffer | null {
 export function encryptSecret(plaintext: string): string {
   if (!plaintext) return plaintext;
   const key = getKey();
-  if (!key) return plaintext; // dev fallback
 
   const iv = crypto.randomBytes(12);
   const cipher = crypto.createCipheriv(ALGO, key, iv);

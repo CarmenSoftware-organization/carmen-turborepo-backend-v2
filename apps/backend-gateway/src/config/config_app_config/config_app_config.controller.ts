@@ -167,6 +167,40 @@ export class Config_AppConfigController extends BaseHttpController {
   }
 
   /**
+   * List signature candidates for a doc type (users with approval authority
+   * drawn from the BU's tb_workflow, excluding requestors/creators).
+   * ดึงรายชื่อผู้ลงนามที่มีสิทธิ์อนุมัติจาก tb_workflow ตามประเภทเอกสาร
+   */
+  @Get('signature-candidates/:doc_type')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'List signature candidates for a document type',
+    description:
+      'Returns deduplicated users assigned to approval stages in tb_workflow for the given doc_type (pr | po | sr). Used by frontend signature config select.',
+    operationId: 'configAppConfig_signatureCandidates',
+    tags: ['Configuration', 'App Config'],
+    'x-description-th': 'รายชื่อ user ที่มีสิทธิ์ลงนาม (จาก workflow) ใช้กับ select บนฟอร์ม signature config',
+  } as any)
+  async signatureCandidates(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('bu_code') bu_code: string,
+    @Param('doc_type') doc_type: string,
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'signatureCandidates', bu_code, doc_type },
+      Config_AppConfigController.name,
+    );
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.appConfigService.signatureCandidates(
+      bu_code,
+      user_id,
+      doc_type,
+    );
+    this.respond(res, result);
+  }
+
+  /**
    * Send a test email using the current report_email config
    * ส่งเมลทดสอบโดยใช้ config ปัจจุบัน
    */

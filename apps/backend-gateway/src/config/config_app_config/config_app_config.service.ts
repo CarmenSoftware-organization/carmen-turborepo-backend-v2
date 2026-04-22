@@ -81,4 +81,12 @@ export class Config_AppConfigService {
     this.logger.debug({ function: 'testEmail', bu_code }, Config_AppConfigService.name);
     return this.call('appConfig.testEmail', { bu_code, user_id });
   }
+
+  async signatureCandidates(bu_code: string, user_id: string, doc_type: string) {
+    this.logger.debug(
+      { function: 'signatureCandidates', bu_code, doc_type },
+      Config_AppConfigService.name,
+    );
+    return this.call('appConfig.signatureCandidates', { bu_code, user_id, doc_type });
+  }
 }

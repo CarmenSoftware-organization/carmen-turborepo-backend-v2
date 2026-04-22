@@ -80,4 +80,26 @@ export class AppConfigController {
       return { status: 500, error: 'Test email failed', details: errMsg(error) };
     }
   }
+
+  @MessagePattern({ cmd: 'appConfig.signatureCandidates', service: 'business' })
+  async signatureCandidates(data: {
+    bu_code: string;
+    user_id: string;
+    doc_type: string;
+  }) {
+    try {
+      const result = await this.appConfigService.getSignatureCandidates(
+        data.bu_code,
+        data.user_id,
+        data.doc_type,
+      );
+      return { status: 200, data: result };
+    } catch (error) {
+      return {
+        status: 500,
+        error: 'Failed to load signature candidates',
+        details: errMsg(error),
+      };
+    }
+  }
 }
