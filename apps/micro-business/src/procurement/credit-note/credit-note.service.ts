@@ -233,38 +233,66 @@ export class CreditNoteService {
       CreditNoteService.name,
     );
 
-    const creditNote = await this.prismaService.tb_credit_note.findFirst({
+    const res = await this.prismaService.tb_credit_note.findFirst({
+      where: { id },
       include: {
-        tb_credit_note_detail: true,
+        tb_vendor: true,
+        tb_currency: true,
+        tb_good_received_note: true,
+        tb_credit_note_reason: true,
+        tb_credit_note_comment: {
+          where: { deleted_at: null },
+          orderBy: { created_at: 'asc' },
+        },
+        tb_credit_note_detail: {
+          where: { deleted_at: null },
+          orderBy: { sequence_no: 'asc' },
+          include: {
+            tb_product: true,
+            tb_tax_profile: true,
+            tb_location: true,
+            tb_inventory_transaction: true,
+            tb_credit_note_detail_comment: {
+              where: { deleted_at: null },
+              orderBy: { created_at: 'asc' },
+            },
+          },
+        },
       },
-      where: {
-        id,
-      },
-    })
-      .then((res) => {
-        if (!res) return null;
-        return JSON.parse(JSON.stringify({
-          ...res,
-          credit_note_detail: res?.tb_credit_note_detail?.map(detail => ({
-            ...detail,
-            return_qty: Number(detail?.return_qty ?? 0),
-            return_base_qty: Number(detail?.return_base_qty ?? 0),
-            return_conversion_factor: Number(detail?.return_conversion_factor ?? 0),
-            price: Number(detail?.price ?? 0),
-            total_price: Number(detail?.total_price ?? 0),
-            tax_amount: Number(detail?.tax_amount ?? 0),
-            extra_cost_amount: Number(detail?.extra_cost_amount ?? 0),
-            base_tax_amount: Number(detail?.base_tax_amount ?? 0),
-            base_discount_amount: Number(detail?.base_discount_amount ?? 0),
-            base_extra_cost_amount: Number(detail?.base_extra_cost_amount ?? 0),
-          })),
-          tb_credit_note_detail: undefined,
-        }));
-      })
+    });
 
-    if (!creditNote) {
+    if (!res) {
       return Result.error('Credit note not found', ErrorCode.NOT_FOUND);
     }
+
+    const creditNote = JSON.parse(JSON.stringify({
+      ...res,
+      pricelist_price: Number(res.pricelist_price ?? 0),
+      exchange_rate: Number(res.exchange_rate ?? 0),
+      credit_note_detail: res.tb_credit_note_detail?.map(detail => ({
+        ...detail,
+        return_qty: Number(detail.return_qty ?? 0),
+        return_base_qty: Number(detail.return_base_qty ?? 0),
+        return_conversion_factor: Number(detail.return_conversion_factor ?? 0),
+        price: Number(detail.price ?? 0),
+        tax_rate: Number(detail.tax_rate ?? 0),
+        tax_amount: Number(detail.tax_amount ?? 0),
+        base_tax_amount: Number(detail.base_tax_amount ?? 0),
+        discount_rate: Number(detail.discount_rate ?? 0),
+        discount_amount: Number(detail.discount_amount ?? 0),
+        base_discount_amount: Number(detail.base_discount_amount ?? 0),
+        extra_cost_amount: Number(detail.extra_cost_amount ?? 0),
+        base_extra_cost_amount: Number(detail.base_extra_cost_amount ?? 0),
+        sub_total_price: Number(detail.sub_total_price ?? 0),
+        net_amount: Number(detail.net_amount ?? 0),
+        total_price: Number(detail.total_price ?? 0),
+        base_price: Number(detail.base_price ?? 0),
+        base_sub_total_price: Number(detail.base_sub_total_price ?? 0),
+        base_net_amount: Number(detail.base_net_amount ?? 0),
+        base_total_price: Number(detail.base_total_price ?? 0),
+      })),
+      tb_credit_note_detail: undefined,
+    }));
 
     const serializedCreditNote = CreditNoteDetailResponseSchema.parse(creditNote);
 
