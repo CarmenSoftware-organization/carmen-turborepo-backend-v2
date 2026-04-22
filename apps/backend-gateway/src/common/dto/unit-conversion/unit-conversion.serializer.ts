@@ -5,6 +5,7 @@ export const UnitConversionItemResponseSchema = z.object({
   id: z.string().nullable().optional(),
   name: z.string().nullable().optional(),
   conversion: z.number(),
+  decimal_place: z.number().int().nonnegative(),
 });
 
 export type UnitConversionItemResponse = z.infer<typeof UnitConversionItemResponseSchema>;
@@ -28,6 +29,7 @@ export const UnitConversionDetailResponseSchema = z.object({
   description: z.string().nullable().optional(),
   is_active: z.boolean().optional(),
   is_default: z.boolean().optional(),
+  decimal_place: z.number().int().nonnegative(),
   info: z.any().nullable().optional(),
   dimension: z.any().nullable().optional(),
   created_at: z.coerce.date().optional(),

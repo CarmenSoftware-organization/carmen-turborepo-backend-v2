@@ -37,6 +37,13 @@ export class UnitConversionResponseDto {
   @ApiPropertyOptional({ description: 'Whether the conversion is active', example: true })
   is_active?: boolean;
 
+  @ApiProperty({
+    description: 'Number of decimal places for display and rounding',
+    example: 2,
+    minimum: 0,
+  })
+  decimal_place: number;
+
   @ApiPropertyOptional({ description: 'Document version for optimistic locking', example: 1 })
   doc_version?: number;
 
