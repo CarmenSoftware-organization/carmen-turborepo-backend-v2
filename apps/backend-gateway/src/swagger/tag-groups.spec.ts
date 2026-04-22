@@ -1,8 +1,8 @@
 import { SWAGGER_TAGS, SWAGGER_TAG_GROUPS } from './tag-groups';
 
 describe('SWAGGER_TAGS', () => {
-  it('has 38 entries', () => {
-    expect(SWAGGER_TAGS).toHaveLength(38);
+  it('has 52 entries', () => {
+    expect(SWAGGER_TAGS).toHaveLength(52);
   });
 
   it('has no duplicate names', () => {

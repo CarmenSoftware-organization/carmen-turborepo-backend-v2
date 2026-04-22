@@ -9,11 +9,11 @@ export type SwaggerTagGroup = {
 };
 
 export const SWAGGER_TAGS: SwaggerTag[] = [
-  // Group 1 — Getting Started (2)
+  // Group 1 — Getting Started
   { name: 'Authentication', description: 'Login, logout, password change, token refresh via Keycloak' },
   { name: 'App Info',        description: 'App-level metadata, version, health' },
 
-  // Group 2 — Platform Administration (9)
+  // Group 2 — Platform Administration
   { name: 'Platform: Clusters',                description: 'Tenant clusters (hotel chains / franchise groups)' },
   { name: 'Platform: Business Units',          description: 'BU registration, activation, subscriptions' },
   { name: 'Platform: Users',                   description: 'Platform-level users (cross-BU)' },
@@ -24,7 +24,7 @@ export const SWAGGER_TAGS: SwaggerTag[] = [
   { name: 'Platform: Role ↔ Permission',       description: 'Bind permissions to roles' },
   { name: 'Platform: Report Templates',        description: 'Platform-wide report template catalog' },
 
-  // Group 3 — Business Unit Configuration (12)
+  // Group 3 — Business Unit Configuration
   { name: 'Config: Currencies & FX',     description: 'Currencies, exchange rates' },
   { name: 'Config: Locations',           description: 'Locations, location-user, product-location, delivery points' },
   { name: 'Config: Departments',         description: 'Departments, department-user assignments' },
@@ -38,32 +38,46 @@ export const SWAGGER_TAGS: SwaggerTag[] = [
   { name: 'Config: Roles & Permissions', description: 'BU-level role/permission binding' },
   { name: 'Config: System',              description: 'App-config, running codes, SQL query runner, dimensions' },
 
-  // Group 4 — Procurement (5)
-  { name: 'Procurement: Purchase Requests',   description: 'PR header, details, templates, comments' },
-  { name: 'Procurement: Purchase Orders',     description: 'PO header, details, comments' },
-  { name: 'Procurement: Good Received Notes', description: 'GRN header, details, comments' },
-  { name: 'Procurement: Credit Notes',        description: 'Credit notes, reasons, details, comments' },
-  { name: 'Procurement: Store Requisitions',  description: 'SR header, details, comments' },
+  // Group 4 — Procurement
+  { name: 'Procurement: Purchase Requests',    description: 'PR header, details, templates, comments' },
+  { name: 'Procurement: Purchase Orders',      description: 'PO header, details, comments' },
+  { name: 'Procurement: Good Received Notes',  description: 'GRN header, details, comments' },
+  { name: 'Procurement: Credit Notes',         description: 'Credit notes, reasons, details, comments' },
+  { name: 'Procurement: Request for Pricing',  description: 'RFP header, details, comments' },
+  { name: 'Procurement: Store Requisitions',   description: 'SR header, details, comments' },
+  { name: 'Procurement: Extra Costs',          description: 'Extra-cost document comments' },
+  { name: 'Procurement: Vendor Products',      description: 'Vendor-specific product catalog' },
+  { name: 'Procurement: Price Lists',          description: 'Active price lists, templates, price check' },
 
-  // Group 5 — Inventory (4)
-  { name: 'Inventory: Stock In',       description: 'Stock-in header, details, comments' },
-  { name: 'Inventory: Stock Out',      description: 'Stock-out header, details, comments' },
-  { name: 'Inventory: Transfers',      description: 'Transfer header, details, comments' },
-  { name: 'Inventory: Physical Count', description: 'Physical count, periods, details, comments' },
+  // Group 5 — Inventory
+  { name: 'Inventory: Stock In',         description: 'Stock-in header, details, comments' },
+  { name: 'Inventory: Stock Out',        description: 'Stock-out header, details, comments' },
+  { name: 'Inventory: Transfers',        description: 'Transfer header, details, comments' },
+  { name: 'Inventory: Physical Count',   description: 'Physical count, periods, details, comments' },
+  { name: 'Inventory: Spot Check',       description: 'Spot check header, details, comments' },
+  { name: 'Inventory: Adjustments',      description: 'Inventory adjustments' },
+  { name: 'Inventory: Transactions',     description: 'Read-only ledger of all stock movements' },
+  { name: 'Inventory: Periods',          description: 'Inventory period open/close' },
 
-  // Group 6 — Workflow & Approval (1)
-  { name: 'Workflow: Operations', description: 'Runtime workflow state transitions and comments' },
+  // Group 6 — Workflow & Approval
+  { name: 'Workflow: Operations',   description: 'Runtime workflow state transitions and comments' },
+  { name: 'Workflow: My Pending',   description: "Documents awaiting current user's action" },
+  { name: 'Workflow: My Approvals', description: 'Documents the current user has acted on' },
 
-  // Group 7 — Reporting & Insights (3)
+  // Group 7 — Reporting & Insights
   { name: 'Reports: Dashboard',         description: 'Aggregated KPI endpoints for dashboards' },
+  { name: 'Reports: Reports',           description: 'Formal report generation' },
   { name: 'Reports: Activity Log',      description: 'Audit trail / activity feed' },
+  { name: 'Reports: News',              description: 'Announcements / news feed' },
   { name: 'Documents: File Management', description: 'Attachment upload/download, document metadata' },
 
-  // Group 8 — Notifications (1)
+  // Group 8 — Notifications
   { name: 'Notifications', description: 'REST endpoints for notifications. WebSocket server at /ws documented here.' },
 
-  // Group 9 — User Profile & Access (1)
-  { name: 'User: Profile', description: 'Current user profile, BU assignments, and location assignments' },
+  // Group 9 — User Profile & Access
+  { name: 'User: Profile',        description: 'Current user profile' },
+  { name: 'User: Business Units', description: "User's BU assignments and BU directory" },
+  { name: 'User: Locations',      description: "User's location assignments" },
 ];
 
 export const SWAGGER_TAG_GROUPS: SwaggerTagGroup[] = [
@@ -106,7 +120,11 @@ export const SWAGGER_TAG_GROUPS: SwaggerTagGroup[] = [
       'Procurement: Purchase Orders',
       'Procurement: Good Received Notes',
       'Procurement: Credit Notes',
+      'Procurement: Request for Pricing',
       'Procurement: Store Requisitions',
+      'Procurement: Extra Costs',
+      'Procurement: Vendor Products',
+      'Procurement: Price Lists',
     ],
   },
   {
@@ -116,23 +134,29 @@ export const SWAGGER_TAG_GROUPS: SwaggerTagGroup[] = [
       'Inventory: Stock Out',
       'Inventory: Transfers',
       'Inventory: Physical Count',
+      'Inventory: Spot Check',
+      'Inventory: Adjustments',
+      'Inventory: Transactions',
+      'Inventory: Periods',
     ],
   },
   {
     name: 'Workflow & Approval',
-    tags: ['Workflow: Operations'],
+    tags: ['Workflow: Operations', 'Workflow: My Pending', 'Workflow: My Approvals'],
   },
   {
     name: 'Reporting & Insights',
     tags: [
       'Reports: Dashboard',
+      'Reports: Reports',
       'Reports: Activity Log',
+      'Reports: News',
       'Documents: File Management',
     ],
   },
   { name: 'Notifications', tags: ['Notifications'] },
   {
     name: 'User Profile & Access',
-    tags: ['User: Profile'],
+    tags: ['User: Profile', 'User: Business Units', 'User: Locations'],
   },
 ];
