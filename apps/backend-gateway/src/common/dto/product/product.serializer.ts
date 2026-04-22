@@ -27,6 +27,7 @@ const UnitConversionEmbeddedSchema = z.object({
   description: z.string().nullable().optional(),
   is_active: z.boolean().optional(),
   is_default: z.boolean().optional(),
+  decimal_place: z.number().int().nonnegative().optional(),
 });
 
 const ProductItemGroupEmbeddedSchema = z.object({
