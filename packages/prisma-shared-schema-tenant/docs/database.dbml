@@ -187,6 +187,7 @@ TABLE tb_unit {
   name varchar [unique, not null, note: 'ชื่อหน่วยนับ']
   description text [note: 'คำอธิบาย']
   is_active bool [default: true, note: 'เปิด']
+  decimal_place int [not null, default: 2, note: 'จำนวนทศนิยม']
 
   created_at timestamptz [default: `CURRENT_TIMESTAMP`, note: 'วันที่สร้าง']
   created_by_id uuid [note: 'รหัสผู้ใช้งาน']
@@ -214,6 +215,7 @@ TABLE tb_unit_conversion {
   to_unit_id uuid [ref: > tb_unit.id, note: 'รหัสหน่วยนับไป']
   to_unit_name varchar [not null, note: 'ชื่อหน่วยนับไป']
   to_unit_qty numeric(20,5) [default: 1, note: 'จำนวนหน่วยนับไป']
+  decimal_place int [not null, default: 2, note: 'จำนวนทศนิยม']
   is_default bool [default: false, note: 'เป็นค่าเริ่มต้น']
   description json [null, note: 'คำอธิบาย']
 
