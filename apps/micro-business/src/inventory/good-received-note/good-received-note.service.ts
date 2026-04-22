@@ -292,6 +292,15 @@ export class GoodReceivedNoteService {
     });
   }
 
+  /**
+   * Find all Good Received Notes for a vendor with pagination
+   * ค้นหาใบรับสินค้าทั้งหมดของผู้ขายรายหนึ่งพร้อมการแบ่งหน้า
+   * @param vendor_id - Vendor ID / รหัสผู้ขาย
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination/filter/sort options / ตัวเลือกการแบ่งหน้า กรอง และเรียงลำดับ
+   * @returns Paginated list of GRNs for the vendor (all statuses) / รายการใบรับสินค้าของผู้ขายทุกสถานะแบบแบ่งหน้า
+   */
   @TryCatch
   async findByVendorId(
     vendor_id: string,
@@ -303,6 +312,51 @@ export class GoodReceivedNoteService {
       { function: 'findByVendorId', vendor_id, user_id, tenant_id, paginate },
       GoodReceivedNoteService.name,
     );
+    return this.findByVendorIdInternal(vendor_id, user_id, tenant_id, paginate);
+  }
+
+  /**
+   * Find Good Received Notes for a vendor filtered to saved/committed for Credit Note selection
+   * ค้นหาใบรับสินค้าของผู้ขายเฉพาะสถานะ saved หรือ committed สำหรับใช้เลือกตอนสร้างใบลดหนี้
+   * @param vendor_id - Vendor ID / รหัสผู้ขาย
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination/filter/sort options / ตัวเลือกการแบ่งหน้า กรอง และเรียงลำดับ
+   * @returns Paginated list of GRNs with doc_status in (saved, committed) / รายการใบรับสินค้าที่สถานะเป็น saved หรือ committed แบบแบ่งหน้า
+   */
+  @TryCatch
+  async findByVendorIdForCn(
+    vendor_id: string,
+    user_id: string,
+    tenant_id: string,
+    paginate: IPaginate,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findByVendorIdForCn', vendor_id, user_id, tenant_id, paginate },
+      GoodReceivedNoteService.name,
+    );
+    return this.findByVendorIdInternal(vendor_id, user_id, tenant_id, paginate, {
+      doc_status: { in: ['saved', 'committed'] },
+    });
+  }
+
+  /**
+   * Shared internal implementation for vendor-scoped GRN list queries with optional where extension
+   * การทำงานภายในที่ใช้ร่วมกันสำหรับการค้นหาใบรับสินค้าตามผู้ขาย พร้อมเงื่อนไข where เพิ่มเติมแบบเลือกได้
+   * @param vendor_id - Vendor ID / รหัสผู้ขาย
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination/filter/sort options / ตัวเลือกการแบ่งหน้า กรอง และเรียงลำดับ
+   * @param extraWhere - Additional Prisma where predicates merged into the final query / เงื่อนไข where เพิ่มเติมที่รวมเข้ากับ query สุดท้าย
+   * @returns Paginated list of GRNs matching the combined filters / รายการใบรับสินค้าตามเงื่อนไขที่รวมกันแบบแบ่งหน้า
+   */
+  private async findByVendorIdInternal(
+    vendor_id: string,
+    user_id: string,
+    tenant_id: string,
+    paginate: IPaginate,
+    extraWhere: Record<string, unknown> = {},
+  ): Promise<Result<unknown>> {
     const defaultSearchFields = ['grn_no', 'name'];
 
     const q = new QueryParams(
@@ -326,6 +380,7 @@ export class GoodReceivedNoteService {
     const where = {
       ...q.where(),
       vendor_id,
+      ...extraWhere,
     };
 
     const goodReceivedNotes = await prisma.tb_good_received_note

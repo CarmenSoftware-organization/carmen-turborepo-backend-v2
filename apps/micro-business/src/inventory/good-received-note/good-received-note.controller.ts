@@ -100,6 +100,29 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
     return this.handlePaginatedResult(result);
   }
 
+  /**
+   * Find Good Received Notes by vendor filtered for Credit Note selection
+   * ค้นหาใบรับสินค้าของผู้ขายสำหรับใช้เลือกตอนสร้างใบลดหนี้
+   * @param payload - Contains vendor_id, user_id, tenant_id, paginate / ประกอบด้วย vendor_id, user_id, tenant_id, paginate
+   * @returns Paginated list of GRNs with doc_status in (saved, committed) / รายการใบรับสินค้าที่สถานะเป็น saved หรือ committed แบบแบ่งหน้า
+   */
+  @MessagePattern({
+    cmd: "good-received-note.findByVendorIdForCn",
+    service: "good-received-note",
+  })
+  async findByVendorIdForCn(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: "findByVendorIdForCn", payload }, GoodReceivedNoteController.name);
+    const vendor_id = payload.vendor_id;
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const paginate = payload.paginate;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.goodReceivedNoteService.findByVendorIdForCn(vendor_id, user_id, tenant_id, paginate),
+    );
+    return this.handlePaginatedResult(result);
+  }
+
   @MessagePattern({
     cmd: "good-received-note.create",
     service: "good-received-note",

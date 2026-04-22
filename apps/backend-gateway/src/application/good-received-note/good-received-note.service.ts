@@ -148,6 +148,40 @@ export class GoodReceivedNoteService {
     return Result.ok({ data: response.data, paginate: response.paginate });
   }
 
+  /**
+   * Find Good Received Notes by vendor filtered for Credit Note selection via microservice
+   * ค้นหาใบรับสินค้าของผู้ขายสำหรับใช้เลือกตอนสร้างใบลดหนี้ผ่านไมโครเซอร์วิส
+   * @param vendor_id - Vendor ID / รหัสผู้ขาย
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param tenant_id - Business unit code / รหัสหน่วยธุรกิจ
+   * @param paginate - Pagination/filter/sort options / ตัวเลือกการแบ่งหน้า กรอง และเรียงลำดับ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of GRNs with doc_status in (saved, committed) / รายการใบรับสินค้าที่สถานะเป็น saved หรือ committed แบบแบ่งหน้า
+   */
+  async findByVendorIdForCn(
+    vendor_id: string,
+    user_id: string,
+    tenant_id: string,
+    paginate: IPaginate,
+    version: string,
+  ): Promise<Result<unknown>> {
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      { cmd: 'good-received-note.findByVendorIdForCn', service: 'good-received-note' },
+      { vendor_id, user_id, tenant_id, paginate, version, ...getGatewayRequestContext() },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok({ data: response.data, paginate: response.paginate });
+  }
+
   async create(
     data: IGoodReceivedNoteCreate,
     user_id: string,

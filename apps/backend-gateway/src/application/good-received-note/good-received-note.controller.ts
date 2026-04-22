@@ -264,6 +264,51 @@ export class GoodReceivedNoteController extends BaseHttpController {
   }
 
   /**
+   * List Good Received Notes for a vendor filtered for Credit Note selection
+   * แสดงรายการใบรับสินค้าของผู้ขายสำหรับเลือกตอนสร้างใบลดหนี้
+   * @param req - Request object / ออบเจกต์คำขอ
+   * @param res - Response object / ออบเจกต์การตอบกลับ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param vendor_id - Vendor ID / รหัสผู้ขาย
+   * @param query - Pagination/search/filter/sort query / คำสั่ง pagination/search/filter/sort
+   * @param version - API version / เวอร์ชัน API
+   * @returns Paginated list of GRNs with doc_status in (saved, committed) / รายการใบรับสินค้าที่สถานะเป็น saved หรือ committed แบบแบ่งหน้า
+   */
+  @Get(':bu_code/good-received-note/vendor/:vendor_id/cn')
+  @UseGuards(new AppIdGuard('goodReceivedNote.findByVendorIdForCn'))
+  @Serialize(GoodReceivedNoteListItemResponseSchema)
+  @ApiVersionMinRequest()
+  @ApiUserFilterQueries()
+  @ApiOperation({
+    summary: 'Get Good Received Notes by vendor ID for Credit Note selection',
+    description:
+      'Lists goods receiving records for a specific vendor filtered to doc_status "saved" or "committed" only. Used as the selectable list when creating a Credit Note against a vendor — draft and voided GRNs are excluded.',
+    operationId: 'findGoodReceivedNotesByVendorIdForCn',
+    tags: ['Procurement', 'Good Received Note'],
+    'x-description-th': 'แสดงรายการใบรับสินค้าของผู้ขายรายหนึ่งเฉพาะสถานะ saved หรือ committed สำหรับใช้เลือกตอนสร้างใบลดหนี้ (Credit Note) โดยไม่รวม draft และ voided',
+  } as any)
+  @HttpCode(HttpStatus.OK)
+  async findByVendorIdForCn(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('bu_code') bu_code: string,
+    @Param('vendor_id') vendor_id: string,
+    @Query() query: IPaginateQuery,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    const { user_id } = ExtractRequestHeader(req);
+    const paginate = PaginateQuery(query);
+    const result = await this.goodReceivedNoteService.findByVendorIdForCn(
+      vendor_id,
+      user_id,
+      bu_code,
+      paginate,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
    * Scan a PO QR code to start the goods receiving process
    * สแกน QR code ของใบสั่งซื้อเพื่อเริ่มกระบวนการรับสินค้า
    * @param qr_code - QR code value / ค่า QR code

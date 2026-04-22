@@ -1,0 +1,70 @@
+meta {
+  name: 19 - List GRN by Vendor for CN
+  type: http
+  seq: 19
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/good-received-note/vendor/:vendor_id/cn
+  body: none
+  auth: bearer
+}
+
+params:path {
+  vendor_id: 0005206b-4cde-44ed-97f5-9b13d333b025
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+docs {
+  ## List Good Received Notes by Vendor for Credit Note selection
+  แสดงรายการใบรับสินค้าของผู้ขายรายหนึ่งเฉพาะสถานะ `saved` หรือ `committed` สำหรับใช้เลือกตอนสร้างใบลดหนี้ (Credit Note) โดยไม่รวม `draft` และ `voided` รองรับการแบ่งหน้า ค้นหา กรอง และเรียงลำดับเหมือน endpoint `list by vendor` เดิม
+  
+  Lists goods receiving records for a specific vendor filtered to `doc_status` "saved" or "committed" only. Used as the selectable list when creating a Credit Note against a vendor — `draft` and `voided` GRNs are excluded. Supports pagination, search, filter, and sort like the base `list by vendor` endpoint.
+  
+  ### Path Parameters
+  - `vendor_id` — Vendor ID / รหัสผู้ขาย
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  
+  
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "grn_no": "GRN-2026-0001",
+        "grn_date": "2026-03-27T00:00:00.000Z",
+        "doc_type": "purchase_order",
+        "doc_status": "committed",
+        "invoice_no": "INV-001",
+        "description": null,
+        "vendor_name": "Vendor Name",
+        "currency_code": "THB",
+        "net_amount": 10000,
+        "base_net_amount": 10000,
+        "total_amount": 10700,
+        "base_total_amount": 10700,
+        "created_at": "2026-03-27T00:00:00.000Z",
+        "is_active": true
+      }
+    ],
+    "paginate": {
+      "total": 12,
+      "page": 1,
+      "perpage": 10,
+      "pages": 2
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}
