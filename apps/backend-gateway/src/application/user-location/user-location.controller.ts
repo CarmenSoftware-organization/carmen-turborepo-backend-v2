@@ -16,7 +16,7 @@ import {
 } from '@/common';
 
 @Controller('api/:bu_code/user-location')
-@ApiTags('User & Access')
+@ApiTags('User: Locations')
 @ApiHeaderRequiredXAppId()
 @ApiBearerAuth()
 @UseGuards(KeycloakGuard)

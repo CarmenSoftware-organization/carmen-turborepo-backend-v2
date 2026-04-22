@@ -20,7 +20,7 @@ import {
 } from './dto/recipe-category.dto';
 
 @Controller('api/config/:bu_code/recipe-category')
-@ApiTags('Configuration')
+@ApiTags('Config: Recipes')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

@@ -36,7 +36,7 @@ import {
 } from '@/common';
 
 @Controller('api/:bu_code/request-for-pricing')
-@ApiTags('Procurement')
+@ApiTags('Procurement: Request for Pricing')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

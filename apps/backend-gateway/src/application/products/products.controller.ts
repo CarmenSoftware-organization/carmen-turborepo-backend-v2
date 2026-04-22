@@ -41,7 +41,7 @@ import {
 } from '@/common';
 
 @Controller('api')
-@ApiTags('Master Data')
+@ApiTags('Config: Products')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

@@ -29,7 +29,7 @@ import {
 } from './dto/extra-cost-comment.dto';
 
 @Controller('api')
-@ApiTags('Procurement')
+@ApiTags('Procurement: Extra Costs')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()

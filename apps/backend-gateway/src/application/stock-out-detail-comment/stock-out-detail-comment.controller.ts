@@ -29,7 +29,7 @@ import {
 } from './dto/stock-out-detail-comment.dto';
 
 @Controller('api')
-@ApiTags('Inventory')
+@ApiTags('Inventory: Stock Out')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()

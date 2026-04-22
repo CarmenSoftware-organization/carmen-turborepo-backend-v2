@@ -42,7 +42,7 @@ import {
 } from '@/common';
 
 @Controller('api/:bu_code/price-list-template')
-@ApiTags('Procurement')
+@ApiTags('Procurement: Price Lists')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

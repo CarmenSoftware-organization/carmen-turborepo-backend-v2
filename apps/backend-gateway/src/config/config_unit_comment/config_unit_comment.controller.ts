@@ -31,7 +31,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { UnitCommentCreateDto, UnitCommentUpdateDto } from 'src/common/dto/unit-comment/unit-comment.dto';
 
 @Controller('api/config/:bu_code/unit-comment')
-@ApiTags('Configuration')
+@ApiTags('Config: Units')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

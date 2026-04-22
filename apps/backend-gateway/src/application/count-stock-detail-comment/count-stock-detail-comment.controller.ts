@@ -29,7 +29,7 @@ import {
 } from './dto/count-stock-detail-comment.dto';
 
 @Controller('api')
-@ApiTags('Inventory')
+@ApiTags('Inventory: Physical Count')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()

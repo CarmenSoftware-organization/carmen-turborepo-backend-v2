@@ -29,7 +29,7 @@ import {
 } from './dto/spot-check-comment.dto';
 
 @Controller('api')
-@ApiTags('Inventory')
+@ApiTags('Inventory: Spot Check')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()

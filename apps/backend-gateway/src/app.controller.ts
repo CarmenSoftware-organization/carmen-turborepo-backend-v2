@@ -6,7 +6,7 @@ import { ApiHeaderRequiredXAppId } from './common/decorator/x-app-id.decorator';
 import * as httpdocs from './httpdocs/index';
 
 @Controller()
-@ApiTags('App')
+@ApiTags('App Info')
 @ApiHeaderRequiredXAppId()
 export class AppController {
   private readonly logger: BackendLogger = new BackendLogger(

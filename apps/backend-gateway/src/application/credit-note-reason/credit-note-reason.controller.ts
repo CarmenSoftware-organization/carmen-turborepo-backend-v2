@@ -36,7 +36,7 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/:bu_code/credit-note-reason')
-@ApiTags('Procurement')
+@ApiTags('Procurement: Credit Notes')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

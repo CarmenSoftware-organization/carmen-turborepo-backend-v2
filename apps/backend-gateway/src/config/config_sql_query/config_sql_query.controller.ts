@@ -38,7 +38,7 @@ interface SqlQueryUpdateBody {
   is_active?: boolean;
 }
 
-@ApiTags('SQL Query')
+@ApiTags('Config: System')
 @ApiHeaderRequiredXAppId()
 @Controller('api/config/:bu_code/sql-query')
 @UseGuards(KeycloakGuard)

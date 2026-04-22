@@ -23,7 +23,7 @@ import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { UrlTokenGuard } from 'src/auth/guards/url-token.guard';
 
 @Controller('api/check-price-list')
-@ApiTags('Procurement')
+@ApiTags('Procurement: Price Lists')
 @ApiHeaderRequiredXAppId()
 @IgnoreGuards(KeycloakGuard)
 @UseGuards(UrlTokenGuard)

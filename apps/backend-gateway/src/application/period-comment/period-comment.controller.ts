@@ -12,7 +12,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { CreatePeriodCommentDto, UpdatePeriodCommentDto, AddAttachmentDto } from './dto/period-comment.dto';
 
 @Controller('api')
-@ApiTags('Master')
+@ApiTags('Inventory: Periods')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()

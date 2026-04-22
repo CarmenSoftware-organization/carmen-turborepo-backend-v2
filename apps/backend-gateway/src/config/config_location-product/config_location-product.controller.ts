@@ -31,7 +31,7 @@ import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator';
 
 @Controller('api/config/:bu_code/location-product')
-@ApiTags('Configuration')
+@ApiTags('Config: Locations')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

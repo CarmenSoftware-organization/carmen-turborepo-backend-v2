@@ -81,7 +81,7 @@ import {
 } from '@/common';
 
 @Controller('api/:bu_code/purchase-order')
-@ApiTags('Procurement')
+@ApiTags('Procurement: Purchase Orders')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()

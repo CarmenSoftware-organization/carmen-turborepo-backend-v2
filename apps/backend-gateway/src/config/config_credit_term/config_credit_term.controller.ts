@@ -44,7 +44,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import { CreditTermCreateRequestDto, CreditTermUpdateRequestDto } from './swagger/request';
 
-@ApiTags('Configuration')
+@ApiTags('Config: Vendors')
 @ApiHeaderRequiredXAppId()
 @Controller('api/config/:bu_code/credit-term')
 @UseGuards(KeycloakGuard)

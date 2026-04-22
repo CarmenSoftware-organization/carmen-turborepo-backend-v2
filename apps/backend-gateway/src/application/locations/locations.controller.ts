@@ -35,7 +35,7 @@ import {
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api')
-@ApiTags('Master Data')
+@ApiTags('Config: Locations')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

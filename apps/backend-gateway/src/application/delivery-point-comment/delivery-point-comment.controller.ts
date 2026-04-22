@@ -12,7 +12,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { CreateDeliveryPointCommentDto, UpdateDeliveryPointCommentDto, AddAttachmentDto } from './dto/delivery-point-comment.dto';
 
 @Controller('api')
-@ApiTags('Master')
+@ApiTags('Config: Locations')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()

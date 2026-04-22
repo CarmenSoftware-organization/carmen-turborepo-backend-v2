@@ -23,7 +23,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { BaseHttpController } from 'src/common/http/base-http-controller';
 
 @Controller('api/config/:bu_code/product/location')
-@ApiTags('Configuration')
+@ApiTags('Config: Locations')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

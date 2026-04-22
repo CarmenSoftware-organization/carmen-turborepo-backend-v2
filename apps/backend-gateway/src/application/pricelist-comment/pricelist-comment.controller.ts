@@ -12,7 +12,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { CreatePricelistCommentDto, UpdatePricelistCommentDto, AddAttachmentDto } from './dto/pricelist-comment.dto';
 
 @Controller('api')
-@ApiTags('Master')
+@ApiTags('Procurement: Price Lists')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()

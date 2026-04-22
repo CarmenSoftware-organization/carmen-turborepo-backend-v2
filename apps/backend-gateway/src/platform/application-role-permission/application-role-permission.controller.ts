@@ -31,7 +31,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api-system/role-permission')
-@ApiTags('Platform Admin')
+@ApiTags('Platform: Role ↔ Permission')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

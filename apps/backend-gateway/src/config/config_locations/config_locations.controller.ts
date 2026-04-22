@@ -45,7 +45,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { LocationCreateRequestDto, LocationUpdateRequestDto } from './swagger/request';
 
 @Controller('api/config/:bu_code/locations')
-@ApiTags('Configuration')
+@ApiTags('Config: Locations')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

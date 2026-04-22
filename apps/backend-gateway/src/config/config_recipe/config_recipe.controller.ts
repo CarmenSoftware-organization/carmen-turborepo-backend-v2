@@ -37,7 +37,7 @@ import {
 } from './dto/recipe.dto';
 
 @Controller('api/config/:bu_code/recipe')
-@ApiTags('Configuration')
+@ApiTags('Config: Recipes')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

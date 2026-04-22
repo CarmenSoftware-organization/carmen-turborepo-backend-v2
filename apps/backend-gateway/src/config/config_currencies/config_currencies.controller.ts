@@ -43,7 +43,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { CurrencyCreateRequestDto, CurrencyUpdateRequestDto } from './swagger/request';
 
 @Controller('api/config/:bu_code/currencies')
-@ApiTags('Configuration')
+@ApiTags('Config: Currencies & FX')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

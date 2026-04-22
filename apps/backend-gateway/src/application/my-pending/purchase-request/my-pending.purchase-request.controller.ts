@@ -47,7 +47,7 @@ import {
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 
 @Controller('api/my-pending/purchase-request')
-@ApiTags('Workflow & Approval')
+@ApiTags('Workflow: My Pending')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

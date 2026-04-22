@@ -30,7 +30,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { BaseHttpController } from '@/common';
 
 @Controller('api-system/report-template')
-@ApiTags('Platform Admin')
+@ApiTags('Platform: Report Templates')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

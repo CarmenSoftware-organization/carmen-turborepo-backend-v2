@@ -12,7 +12,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator'
 
 @Controller('api/config/:bu_code/permissions')
-@ApiTags('Configuration')
+@ApiTags('Config: Roles & Permissions')
 @ApiHeaderRequiredXAppId()
 @ApiBearerAuth()
 @UseGuards(KeycloakGuard)

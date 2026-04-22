@@ -12,7 +12,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { CreateDimensionCommentDto, UpdateDimensionCommentDto, AddAttachmentDto } from './dto/dimension-comment.dto';
 
 @Controller('api')
-@ApiTags('Master')
+@ApiTags('Config: System')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()

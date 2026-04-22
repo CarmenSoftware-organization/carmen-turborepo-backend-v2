@@ -44,7 +44,7 @@ import {
 } from './swagger/request';
 
 @Controller('api/:bu_code/price-list')
-@ApiTags('Procurement')
+@ApiTags('Procurement: Price Lists')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

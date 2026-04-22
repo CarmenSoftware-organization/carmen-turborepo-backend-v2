@@ -44,7 +44,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import { ExtraCostTypeCreateRequest, ExtraCostTypeUpdateRequest } from './swagger/request';
 
-@ApiTags('Configuration')
+@ApiTags('Config: Tax & Cost Types')
 @ApiHeaderRequiredXAppId()
 @Controller('api/config/:bu_code/extra-cost-type')
 @UseGuards(KeycloakGuard)

@@ -28,7 +28,7 @@ import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { ApiUserFilterQueries, ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator';
 
 @Controller('api/:bu_code/inventory-transaction')
-@ApiTags('Inventory')
+@ApiTags('Inventory: Transactions')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

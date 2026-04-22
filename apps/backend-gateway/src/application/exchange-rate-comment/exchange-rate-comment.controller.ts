@@ -12,7 +12,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { CreateExchangeRateCommentDto, UpdateExchangeRateCommentDto, AddAttachmentDto } from './dto/exchange-rate-comment.dto';
 
 @Controller('api')
-@ApiTags('Master')
+@ApiTags('Config: Currencies & FX')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()

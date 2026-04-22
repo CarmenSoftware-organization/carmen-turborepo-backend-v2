@@ -31,7 +31,7 @@ import {
 } from '@/common';
 
 @Controller('api/business-unit')
-@ApiTags('User & Access')
+@ApiTags('User: Business Units')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

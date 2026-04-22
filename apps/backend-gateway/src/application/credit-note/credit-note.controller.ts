@@ -49,7 +49,7 @@ import {
 } from './example/credit-note.example';
 
 @Controller('api/:bu_code/credit-note')
-@ApiTags('Procurement')
+@ApiTags('Procurement: Credit Notes')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

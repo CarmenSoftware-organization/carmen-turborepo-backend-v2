@@ -12,7 +12,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { CreateVendorBusinessTypeCommentDto, UpdateVendorBusinessTypeCommentDto, AddAttachmentDto } from './dto/vendor-business-type-comment.dto';
 
 @Controller('api')
-@ApiTags('Master')
+@ApiTags('Config: Vendors')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()

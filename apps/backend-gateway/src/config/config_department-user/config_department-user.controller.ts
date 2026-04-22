@@ -37,7 +37,7 @@ import { DepartmentUserCreateRequest, DepartmentUserUpdateRequest } from './swag
 
 
 @Controller('api/config/:bu_code/department-user')
-@ApiTags('Configuration')
+@ApiTags('Config: Departments')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

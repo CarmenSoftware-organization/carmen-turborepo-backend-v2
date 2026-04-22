@@ -39,7 +39,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { BaseHttpController } from '@/common';
 
 @Controller('api-system')
-@ApiTags('Platform Admin')
+@ApiTags('Platform: Users')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

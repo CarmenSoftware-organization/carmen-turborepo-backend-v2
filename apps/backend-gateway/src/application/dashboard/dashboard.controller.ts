@@ -22,7 +22,7 @@ import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
 @Controller('api/:bu_code/dashboard')
-@ApiTags('Dashboard')
+@ApiTags('Reports: Dashboard')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

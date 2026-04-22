@@ -43,7 +43,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { StockInDetailCreateDto, StockInDetailUpdateDto } from 'src/common/dto/stock-in/stock-in.dto';
 
 @Controller('api/:bu_code/stock-in-detail')
-@ApiTags('Inventory')
+@ApiTags('Inventory: Stock In')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

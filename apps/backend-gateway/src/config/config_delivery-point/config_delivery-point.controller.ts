@@ -43,7 +43,7 @@ import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator
 import { DeliveryPointCreateRequest, DeliveryPointUpdateRequest } from './swagger/request';
 
 @Controller('api/config/:bu_code/delivery-point')
-@ApiTags('Configuration')
+@ApiTags('Config: Locations')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

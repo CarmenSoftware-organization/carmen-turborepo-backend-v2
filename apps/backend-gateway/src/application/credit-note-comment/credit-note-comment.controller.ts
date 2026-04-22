@@ -29,7 +29,7 @@ import {
 } from './dto/credit-note-comment.dto';
 
 @Controller('api')
-@ApiTags('Procurement')
+@ApiTags('Procurement: Credit Notes')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()

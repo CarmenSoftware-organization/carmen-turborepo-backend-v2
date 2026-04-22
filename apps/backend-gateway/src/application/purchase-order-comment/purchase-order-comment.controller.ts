@@ -29,7 +29,7 @@ import {
 } from './dto/purchase-order-comment.dto';
 
 @Controller('api')
-@ApiTags('Procurement')
+@ApiTags('Procurement: Purchase Orders')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()

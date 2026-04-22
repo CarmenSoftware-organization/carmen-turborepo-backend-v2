@@ -32,7 +32,7 @@ import {
 } from '@/common';
 
 @Controller('api/:bu_code/vendor-product')
-@ApiTags('Procurement')
+@ApiTags('Procurement: Vendor Products')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()

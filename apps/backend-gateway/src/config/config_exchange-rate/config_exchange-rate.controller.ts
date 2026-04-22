@@ -53,7 +53,7 @@ import {
 } from './swagger/response';
 
 @Controller('api/config/:bu_code/exchange-rate')
-@ApiTags('Configuration')
+@ApiTags('Config: Currencies & FX')
 @ApiHeaderRequiredXAppId()
 @UseGuards(KeycloakGuard)
 @ApiBearerAuth()
