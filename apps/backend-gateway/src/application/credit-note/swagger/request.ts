@@ -10,11 +10,8 @@ export class CreditNoteDetailItemSwaggerDto {
   @ApiPropertyOptional({ description: 'Product local name', example: 'ข้าวสาร 5 กก.' })
   product_local_name?: string;
 
-  @ApiProperty({ description: 'Requested quantity', example: 5 })
-  requested_qty: number;
-
-  @ApiProperty({ description: 'Approved quantity', example: 5 })
-  approved_qty: number;
+  @ApiPropertyOptional({ description: 'Inventory transaction ID (source GRN lot)', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  inventory_transaction_id?: string;
 
   @ApiPropertyOptional({ description: 'Description of the line item', example: 'Damaged item return' })
   description?: string;
