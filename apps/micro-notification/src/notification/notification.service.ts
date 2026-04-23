@@ -318,14 +318,25 @@ export class NotificationService {
 
   /**
    * Try to send email notification using config from metadata
-   * Email config comes from tb_application_config (key: 'report_email')
+   * Email config comes from tb_application_config (key: 'report_email').
+   * Priority:
+   *   1. metadata.email_config — inline SMTP (legacy micro-report path)
+   *   2. metadata.bu_code      — load report_email from that BU's tenant DB
+   *
+   * If metadata.notify_email is explicitly false, skip sending entirely so
+   * callers can opt out even when a config is available.
    */
   private async trySendEmail(
     data: { title: string; message: string; metadata?: Record<string, unknown> },
     recipientEmails: string[],
   ) {
     try {
-      const emailConfig = this.extractEmailConfig(data.metadata);
+      if (data.metadata?.notify_email === false) return;
+
+      let emailConfig = this.extractEmailConfig(data.metadata);
+      if (!emailConfig && typeof data.metadata?.bu_code === 'string') {
+        emailConfig = await this.loadBUEmailConfig(data.metadata.bu_code);
+      }
       if (!emailConfig) return;
 
       const isReport = data.metadata?.source === 'micro-report';

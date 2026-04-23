@@ -425,13 +425,15 @@ export class ReportController extends BaseHttpController {
       bu_code,
       body.name,
       body.report_type,
-      body.format || 'pdf',
+      body.format || 'viewer_url',
       body.cron_expression,
       body.filters as any,
       body.options as any,
       body.recipients,
       body.report_template_id,
       body.schedule_config as any,
+      body.delivery as any,
+      body.notifications as any,
     );
     this.respond(res, { data: result });
   }

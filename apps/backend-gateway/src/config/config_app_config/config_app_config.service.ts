@@ -48,10 +48,12 @@ export class Config_AppConfigService {
       const message = response.details
         ? `${response.error || 'Request failed'}: ${response.details}`
         : response.error || 'Request failed';
-      this.logger.warn(
-        { function: 'call', cmd, status: response.status, error: response.error, details: response.details },
-        Config_AppConfigService.name,
-      );
+      if (response.status >= 500) {
+        this.logger.warn(
+          { function: 'call', cmd, status: response.status, error: response.error, details: response.details },
+          Config_AppConfigService.name,
+        );
+      }
       return Result.error(message, httpStatusToErrorCode(response.status));
     }
     return Result.ok(response.data);

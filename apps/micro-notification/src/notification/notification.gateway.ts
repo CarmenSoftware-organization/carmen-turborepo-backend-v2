@@ -144,6 +144,11 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
     this.userConnections.set(user_id, client);
     this.socketToUser.set(client.id, user_id);
 
+    // Without this, NotificationController.create's `if (user.is_online)`
+    // guard skips the socket emit, so the client never sees the real-time
+    // push even though the notification row is in DB.
+    await this.notificationService.updateUserOnlineStatus(user_id, true);
+
     const unreadNotifications = await this.notificationService.getUnreadNotifications(user_id);
 
     for (const notification of unreadNotifications) {
@@ -174,9 +179,12 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
         type: 'notification',
         data: {
           id: notification.id,
+          user_id, // needed by backend-gateway bridge to route to the right browser WS client
           title: notification.title,
           message: notification.message,
           type: notification.type,
+          category: notification.category,
+          metadata: notification.metadata,
           created_at: notification.created_at,
         },
       };

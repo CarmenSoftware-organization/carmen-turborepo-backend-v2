@@ -102,6 +102,22 @@ export class ScheduleConfigDto {
   days_of_month?: number[];
 }
 
+export class ScheduleDeliveryDto {
+  @ApiPropertyOptional({ description: 'Delivery type', enum: ['viewer_url', 'file'], example: 'viewer_url', default: 'viewer_url' })
+  type?: string;
+
+  @ApiPropertyOptional({ description: 'Viewer endpoint to mint the report URL at run-time', example: '/api/proxy/api/T03/report/viewer' })
+  viewer_endpoint?: string;
+}
+
+export class ScheduleNotificationsDto {
+  @ApiPropertyOptional({ description: 'Send in-app (web application) notification', example: true, default: false })
+  web?: boolean;
+
+  @ApiPropertyOptional({ description: 'Send email notification', example: true, default: false })
+  email?: boolean;
+}
+
 export class CreateScheduleRequestDto {
   @ApiProperty({ description: 'Schedule name', example: 'Daily Inventory Report' })
   name: string;
@@ -112,7 +128,7 @@ export class CreateScheduleRequestDto {
   @ApiPropertyOptional({ description: 'Report template ID (UUID)' })
   report_template_id?: string;
 
-  @ApiPropertyOptional({ description: 'Output format', enum: ['json', 'pdf', 'excel', 'csv'], example: 'pdf', default: 'pdf' })
+  @ApiPropertyOptional({ description: 'Output format (use viewer_url to deliver a link instead of a file)', enum: ['viewer_url', 'json', 'pdf', 'excel', 'csv'], example: 'viewer_url', default: 'viewer_url' })
   format?: string;
 
   @ApiPropertyOptional({ description: 'Cron expression (5-field)', example: '0 8 * * *' })
@@ -126,6 +142,12 @@ export class CreateScheduleRequestDto {
 
   @ApiPropertyOptional({ description: 'Report options', type: ReportOptionsDto })
   options?: ReportOptionsDto;
+
+  @ApiPropertyOptional({ description: 'Delivery settings (viewer URL link vs. file)', type: ScheduleDeliveryDto })
+  delivery?: ScheduleDeliveryDto;
+
+  @ApiPropertyOptional({ description: 'Notification channels', type: ScheduleNotificationsDto })
+  notifications?: ScheduleNotificationsDto;
 
   @ApiPropertyOptional({ description: 'Recipient user IDs', type: [String], example: ['uuid1', 'uuid2'] })
   recipients?: string[];

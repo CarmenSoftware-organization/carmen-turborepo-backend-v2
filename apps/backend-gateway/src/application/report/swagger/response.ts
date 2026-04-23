@@ -96,6 +96,22 @@ export class JobStatusResponseDto {
   error_message?: string;
 }
 
+export class ScheduleDeliveryResponseDto {
+  @ApiPropertyOptional({ description: 'Delivery type', example: 'viewer_url' })
+  type?: string;
+
+  @ApiPropertyOptional({ description: 'Viewer endpoint used at run-time to mint the report URL' })
+  viewer_endpoint?: string;
+}
+
+export class ScheduleNotificationsResponseDto {
+  @ApiPropertyOptional({ description: 'In-app notification enabled', example: true })
+  web?: boolean;
+
+  @ApiPropertyOptional({ description: 'Email notification enabled', example: true })
+  email?: boolean;
+}
+
 export class ScheduleResponseDto {
   @ApiProperty({ description: 'Schedule ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   id: string;
@@ -106,11 +122,23 @@ export class ScheduleResponseDto {
   @ApiProperty({ description: 'Report type', example: 'inventory_summary' })
   report_type: string;
 
-  @ApiProperty({ description: 'Format (numeric)' })
-  format: number;
+  @ApiPropertyOptional({ description: 'Report template ID (UUID)' })
+  report_template_id?: string;
+
+  @ApiProperty({ description: 'Output format', example: 'viewer_url' })
+  format: string;
 
   @ApiProperty({ description: 'Cron expression', example: '0 8 * * *' })
   cron_expression: string;
+
+  @ApiPropertyOptional({ description: 'Delivery settings', type: ScheduleDeliveryResponseDto })
+  delivery?: ScheduleDeliveryResponseDto;
+
+  @ApiPropertyOptional({ description: 'Notification channels', type: ScheduleNotificationsResponseDto })
+  notifications?: ScheduleNotificationsResponseDto;
+
+  @ApiPropertyOptional({ description: 'Recipient user IDs', type: [String] })
+  recipients?: string[];
 
   @ApiProperty({ description: 'Whether schedule is active', example: true })
   is_active: boolean;

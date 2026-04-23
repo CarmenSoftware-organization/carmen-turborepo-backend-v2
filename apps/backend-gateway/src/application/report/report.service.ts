@@ -101,6 +101,16 @@ interface ScheduleConfig {
   days_of_month?: number[];
 }
 
+interface ScheduleDelivery {
+  type?: string;
+  viewer_endpoint?: string;
+}
+
+interface ScheduleNotifications {
+  web?: boolean;
+  email?: boolean;
+}
+
 interface ScheduleResponse {
   id: string;
   name: string;
@@ -109,6 +119,9 @@ interface ScheduleResponse {
   format: string;
   cron_expression: string;
   schedule_config?: ScheduleConfig;
+  delivery?: ScheduleDelivery;
+  notifications?: ScheduleNotifications;
+  recipients?: string[];
   is_active: boolean;
   last_run_at?: string;
   next_run_at?: string;
@@ -451,6 +464,8 @@ export class ReportService {
     recipients?: string[],
     report_template_id?: string,
     schedule_config?: ScheduleConfig,
+    delivery?: ScheduleDelivery,
+    notifications?: ScheduleNotifications,
   ): Promise<ScheduleResponse> {
     this.logger.debug(
       { function: 'createSchedule', name, report_type, bu_code, user_id },
@@ -464,6 +479,16 @@ export class ReportService {
         400,
       );
     }
+
+    const resolvedDelivery: ScheduleDelivery = {
+      type: delivery?.type ?? (format === 'viewer_url' ? 'viewer_url' : 'file'),
+      viewer_endpoint: delivery?.viewer_endpoint,
+    };
+
+    const resolvedNotifications: ScheduleNotifications = {
+      web: notifications?.web ?? false,
+      email: notifications?.email ?? false,
+    };
 
     const payload = {
       name,
@@ -481,6 +506,8 @@ export class ReportService {
         options,
         recipients: recipients ?? [],
         user_id,
+        delivery: resolvedDelivery,
+        notifications: resolvedNotifications,
       },
     };
 
@@ -550,8 +577,11 @@ export class ReportService {
       name: c.name,
       report_type: (cfg.template_id as string) ?? fallbackBuCode,
       report_template_id: cfg.template_id as string | undefined,
-      format: (cfg.format as string) ?? 'pdf',
+      format: (cfg.format as string) ?? 'viewer_url',
       cron_expression: c.cron_expression,
+      delivery: cfg.delivery ?? undefined,
+      notifications: cfg.notifications ?? undefined,
+      recipients: cfg.recipients ?? undefined,
       is_active: c.is_active,
       last_run_at: c.last_run_at,
       next_run_at: c.next_run_at,
@@ -591,6 +621,8 @@ interface CronJobResponse {
     format?: string;
     filters?: unknown;
     recipients?: string[];
+    delivery?: ScheduleDelivery;
+    notifications?: ScheduleNotifications;
   } | null;
   source_service?: string;
   source_id?: string;
