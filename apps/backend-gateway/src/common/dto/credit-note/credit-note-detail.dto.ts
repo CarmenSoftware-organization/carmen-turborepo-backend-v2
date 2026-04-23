@@ -12,12 +12,6 @@ export const CreditNoteDetailSchema = z
     product_name: z.string().optional(),
     product_local_name: z.string().optional(),
   })
-  .merge(
-    z.object({
-      requested_qty: ValidateSchema.shape.quantity,
-      approved_qty: ValidateSchema.shape.quantity,
-    }),
-  )
   .merge(InfoSchema)
   .merge(EmbeddedLocationSchema)
   .merge(EmbeddedTaxSchema)
@@ -30,4 +24,4 @@ export const CreditNoteDetailSchema = z
 
 export type CreditNoteDetail = z.infer<typeof CreditNoteDetailSchema>;
 
-export class CreditNoteDetailDto extends createZodDto(CreditNoteDetailSchema) {}
+export class CreditNoteDetailDto extends createZodDto(CreditNoteDetailSchema) { }
