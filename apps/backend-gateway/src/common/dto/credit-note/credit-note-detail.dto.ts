@@ -16,6 +16,7 @@ export const CreditNoteDetailSchema = z
   .merge(EmbeddedLocationSchema)
   .merge(EmbeddedTaxSchema)
   .merge(z.object({
+    return_qty: ValidateSchema.shape.quantity.optional(),
     return_base_qty: ValidateSchema.shape.quantity.optional(),
     return_unit_id: z.string().uuid().optional(),
     return_unit_conversion_factor: ValidateSchema.shape.price.optional(),
