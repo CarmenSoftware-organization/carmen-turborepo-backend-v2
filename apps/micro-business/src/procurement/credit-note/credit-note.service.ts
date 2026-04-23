@@ -409,7 +409,7 @@ export class CreditNoteService {
 
       if (data.credit_note_detail?.update?.length) {
         for (const detail of data.credit_note_detail.update) {
-          const { id, credit_note_id, requested_qty, approved_qty, ...rest } = detail;
+          const { id, ...rest } = detail;
           await tx.tb_credit_note_detail.update({
             where: { id },
             data: {
