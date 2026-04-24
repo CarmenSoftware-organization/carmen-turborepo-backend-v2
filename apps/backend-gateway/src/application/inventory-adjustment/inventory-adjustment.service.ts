@@ -9,7 +9,55 @@ import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-c
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 
 import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
+
 export type AdjustmentType = 'stock-in' | 'stock-out';
+
+function remapPaginateSort(
+  paginate: IPaginate,
+  fieldMap: Record<string, string>,
+): IPaginate {
+  if (!paginate.sort || paginate.sort.length === 0) {
+    return paginate;
+  }
+  const remapped = paginate.sort.map((s) => {
+    const colonIndex = s.indexOf(':');
+    const field = colonIndex === -1 ? s : s.substring(0, colonIndex);
+    const order = colonIndex === -1 ? '' : s.substring(colonIndex);
+    const mapped = fieldMap[field.trim()];
+    return mapped ? `${mapped}${order}` : s;
+  });
+  return { ...paginate, sort: remapped };
+}
+
+function sortMergedResults(
+  results: InventoryAdjustmentItem[],
+  sort: string[] | undefined,
+): void {
+  if (!sort || sort.length === 0) {
+    results.sort((a, b) => {
+      const dateA = new Date(a.created_at || 0).getTime();
+      const dateB = new Date(b.created_at || 0).getTime();
+      return dateB - dateA;
+    });
+    return;
+  }
+  results.sort((a, b) => {
+    for (const s of sort) {
+      const colonIndex = s.indexOf(':');
+      const field = (colonIndex === -1 ? s : s.substring(0, colonIndex)).trim();
+      const order = colonIndex === -1 ? 'asc' : s.substring(colonIndex + 1).trim().toLowerCase();
+      const direction = order === 'desc' ? -1 : 1;
+      const av = a[field];
+      const bv = b[field];
+      if (av == null && bv == null) continue;
+      if (av == null) return 1 * direction;
+      if (bv == null) return -1 * direction;
+      if (av < bv) return -1 * direction;
+      if (av > bv) return 1 * direction;
+    }
+    return 0;
+  });
+}
 
 export interface InventoryAdjustmentItem {
   id: string;
@@ -66,11 +114,20 @@ export class InventoryAdjustmentService {
     let totalStockIn = 0;
     let totalStockOut = 0;
 
+    const stockInPaginate = remapPaginateSort(paginate, {
+      document_no: 'si_no',
+      date: 'si_date',
+    });
+    const stockOutPaginate = remapPaginateSort(paginate, {
+      document_no: 'so_no',
+      date: 'so_date',
+    });
+
     // Fetch stock-in data if type is not specified or type is 'stock-in'
     if (!type || type === 'stock-in') {
       const stockInRes: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-in.findAll', service: 'stock-in' },
-      { user_id, tenant_id, paginate, version, ...getGatewayRequestContext() },
+      { user_id, tenant_id, paginate: stockInPaginate, version, ...getGatewayRequestContext() },
     );
 
       const stockInResponse = await firstValueFrom(stockInRes);
@@ -92,7 +149,7 @@ export class InventoryAdjustmentService {
     if (!type || type === 'stock-out') {
       const stockOutRes: Observable<MicroserviceResponse> = this.inventoryService.send(
       { cmd: 'stock-out.findAll', service: 'stock-out' },
-      { user_id, tenant_id, paginate, version, ...getGatewayRequestContext() },
+      { user_id, tenant_id, paginate: stockOutPaginate, version, ...getGatewayRequestContext() },
     );
 
       const stockOutResponse = await firstValueFrom(stockOutRes);
@@ -110,12 +167,7 @@ export class InventoryAdjustmentService {
       }
     }
 
-    // Sort by created_at descending (most recent first)
-    results.sort((a, b) => {
-      const dateA = new Date(a.created_at || 0).getTime();
-      const dateB = new Date(b.created_at || 0).getTime();
-      return dateB - dateA;
-    });
+    sortMergedResults(results, paginate.sort);
 
     return Result.ok({
       data: results,

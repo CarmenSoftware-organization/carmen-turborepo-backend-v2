@@ -5,9 +5,18 @@ meta {
 }
 
 get {
-  url: {{host}}/api/{{bu_code}}/inventory-adjustment
+  url: {{host}}/api/{{bu_code}}/inventory-adjustment?page=1&perpage=10&sort=date%3Aasc
   body: none
   auth: bearer
+}
+
+params:query {
+  page: 1
+  perpage: 10
+  sort: date%3Aasc
+  ~version: 
+  ~type: 
+  ~filter: 
 }
 
 headers {
@@ -18,11 +27,6 @@ auth:bearer {
   token: {{access_token}}
 }
 
-query {
-  ~version: 
-  ~type: 
-}
-
 docs {
   ## List Inventory Adjustments
   ดึงรายการปรับปรุงสินค้าคงคลังทั้งหมด (ทั้งรับเข้าและจ่ายออก) ของหน่วยธุรกิจ ช่วยให้ผู้จัดการตรวจสอบการปรับปรุงที่ทำขึ้นเพื่อแก้ไขความคลาดเคลื่อนจากการตรวจนับ สินค้าเสียหาย หรือการเคลื่อนไหวสินค้าที่ไม่เป็นมาตรฐาน
@@ -31,8 +35,8 @@ docs {
   
   ### Path Parameters
   - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
-
-
+  
+  
   ### Sample Response
   ```json
   {
@@ -60,8 +64,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-params:query {
-  ~filter: 
 }
