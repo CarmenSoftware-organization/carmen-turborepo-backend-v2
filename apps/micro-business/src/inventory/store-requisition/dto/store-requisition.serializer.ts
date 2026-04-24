@@ -10,6 +10,8 @@ const StoreRequisitionDetailEmbeddedSchema = z.object({
   product_code: z.string().nullable().optional(),
   product_local_name: z.string().nullable().optional(),
   product_sku: z.string().nullable().optional(),
+  inventory_unit_id: z.string().nullable().optional(),
+  inventory_unit_name: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   requested_qty: z.number().nullable().optional(),
   approved_qty: z.number().nullable().optional(),

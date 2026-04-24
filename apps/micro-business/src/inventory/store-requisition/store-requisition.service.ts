@@ -194,7 +194,17 @@ export class StoreRequisitionService {
           ...buildQuery,
         },
         include: {
-          tb_store_requisition_detail: true,
+          tb_store_requisition_detail: {
+            include: {
+              tb_product: {
+                select: {
+                  inventory_unit_id: true,
+                  inventory_unit_name: true,
+                  tb_unit: { select: { id: true, name: true } },
+                },
+              },
+            },
+          },
         },
       })
       .then(async (res) => {
@@ -211,6 +221,11 @@ export class StoreRequisitionService {
                 detail[key] = Number(detail[key]);
               }
             }
+            const prod = (detail as any).tb_product;
+            (detail as any).inventory_unit_id = prod?.inventory_unit_id ?? null;
+            (detail as any).inventory_unit_name =
+              prod?.inventory_unit_name || prod?.tb_unit?.name || null;
+            delete (detail as any).tb_product;
           }
         }
         const store_requisition_detail = res['tb_store_requisition_detail'];
