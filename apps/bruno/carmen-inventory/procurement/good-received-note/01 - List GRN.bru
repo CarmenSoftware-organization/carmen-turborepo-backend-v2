@@ -5,16 +5,9 @@ meta {
 }
 
 get {
-  url: {{host}}/api/{{bu_code}}/good-received-note?page=1&perpage=10&sort=total_amount%3Aasc
+  url: {{host}}/api/{{bu_code}}/good-received-note
   body: none
   auth: bearer
-}
-
-params:query {
-  page: 1
-  perpage: 10
-  sort: total_amount%3Aasc
-  ~version: 
 }
 
 headers {
@@ -23,6 +16,10 @@ headers {
 
 auth:bearer {
   token: {{access_token}}
+}
+
+query {
+  ~version: 
 }
 
 docs {
@@ -62,4 +59,11 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
+}
+
+params:query {
+  page: 1
+  perpage: 10
+  sort: total_amount%3Aasc
+  ~version: 
 }

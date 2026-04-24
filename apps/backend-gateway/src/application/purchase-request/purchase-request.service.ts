@@ -1023,4 +1023,33 @@ export class PurchaseRequestService {
 
     return Result.ok(response.data);
   }
+
+  /**
+   * Regenerate denormalized totals on tb_purchase_request via microservice.
+   * Pass id to scope to a single PR; omit to recompute all non-deleted PRs.
+   */
+  async regenerateTotals(
+    user_id: string,
+    bu_code: string,
+    id?: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'regenerateTotals', user_id, bu_code, id },
+      PurchaseRequestService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.procurementService.send(
+      { cmd: 'purchase-request.regenerate-totals', service: 'purchase-request' },
+      { user_id, tenant_id: bu_code, bu_code, id, ...getGatewayRequestContext() },
+    );
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+    return Result.ok(response.data);
+  }
 }

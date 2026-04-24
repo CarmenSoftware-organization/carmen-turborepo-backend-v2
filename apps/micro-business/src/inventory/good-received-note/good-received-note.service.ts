@@ -2375,6 +2375,51 @@ export class GoodReceivedNoteService {
   }
 
   /**
+   * Recompute amount totals for one GRN (or all non-deleted GRNs in tenant
+   * if grnId is omitted). Used by the admin "regenerate totals" endpoint to
+   * repair drift after manual DB edits or migrations.
+   * @returns count of GRNs recalculated
+   */
+  @TryCatch
+  async regenerateTotals(
+    user_id: string,
+    tenant_id: string,
+    grnId?: string,
+  ): Promise<Result<{ count: number }>> {
+    this.logger.debug(
+      { function: 'regenerateTotals', user_id, tenant_id, grnId },
+      GoodReceivedNoteService.name,
+    );
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) {
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+    }
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    if (grnId) {
+      const exists = await prisma.tb_good_received_note.findFirst({
+        where: { id: grnId, deleted_at: null },
+        select: { id: true },
+      });
+      if (!exists) {
+        return Result.error('Good received note not found', ErrorCode.NOT_FOUND);
+      }
+      await this.recalculateGrnTotals(prisma, grnId);
+      return Result.ok({ count: 1 });
+    }
+
+    const grns = await prisma.tb_good_received_note.findMany({
+      where: { deleted_at: null },
+      select: { id: true },
+    });
+    for (const g of grns) {
+      await this.recalculateGrnTotals(prisma, g.id);
+    }
+    return Result.ok({ count: grns.length });
+  }
+
+  /**
    * Recompute net_amount, base_net_amount, total_amount, base_total_amount on
    * tb_good_received_note from the current set of (non-deleted) detail items.
    * เรียกหลังจาก insert / update / soft-delete tb_good_received_note_detail_item

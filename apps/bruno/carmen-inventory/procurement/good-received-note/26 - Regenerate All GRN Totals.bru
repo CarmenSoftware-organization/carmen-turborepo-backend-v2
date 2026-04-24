@@ -1,0 +1,46 @@
+meta {
+  name: Regenerate all totals good-received-note
+  type: http
+  seq: 26
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/good-received-note/regenerate-totals
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}
+
+docs {
+  ## Regenerate GRN Amount Totals (All)
+  คำนวณ `net_amount`, `base_net_amount`, `total_amount`, `base_total_amount` บน `tb_good_received_note` ใหม่ทุกใบที่ยังไม่ถูกลบ ในหน่วยธุรกิจที่ระบุ โดย aggregate จาก `tb_good_received_note_detail_item`
+
+  Recomputes denormalized amount totals on every non-deleted Good Received Note in the business unit by aggregating from detail items. Use to repair drift after manual DB edits or schema migrations.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+
+  ### Sample Response
+  ```json
+  {
+    "data": { "count": 42 },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-04-24T00:00:00.000Z"
+  }
+  ```
+}

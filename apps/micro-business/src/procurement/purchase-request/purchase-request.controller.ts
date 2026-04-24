@@ -751,4 +751,28 @@ export class PurchaseRequestController extends BaseMicroserviceController {
       ),
     );
   }
+
+  /**
+   * Regenerate base_net_amount, base_total_amount on tb_purchase_request from
+   * detail rows. Recomputes one PR if payload.id is provided, otherwise all
+   * non-deleted PRs in tenant.
+   */
+  @MessagePattern({
+    cmd: 'purchase-request.regenerate-totals',
+    service: 'purchase-request',
+  })
+  async regenerateTotals(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug(
+      { function: 'regenerateTotals', payload },
+      PurchaseRequestController.name,
+    );
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const id = payload.id as string | undefined;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.purchaseRequestService.regenerateTotals(user_id, tenant_id, id),
+    );
+    return this.handleResult(result);
+  }
 }

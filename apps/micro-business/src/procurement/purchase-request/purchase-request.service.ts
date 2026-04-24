@@ -2956,6 +2956,51 @@ export class PurchaseRequestService {
   }
 
   /**
+   * Recompute amount totals for one PR (or all non-deleted PRs in tenant if
+   * prId is omitted). Used by the admin "regenerate totals" endpoint to repair
+   * drift after manual DB edits or migrations.
+   * @returns count of PRs recalculated
+   */
+  @TryCatch
+  async regenerateTotals(
+    user_id: string,
+    tenant_id: string,
+    prId?: string,
+  ): Promise<Result<{ count: number }>> {
+    this.logger.debug(
+      { function: 'regenerateTotals', user_id, tenant_id, prId },
+      PurchaseRequestService.name,
+    );
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) {
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+    }
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    if (prId) {
+      const exists = await prisma.tb_purchase_request.findFirst({
+        where: { id: prId, deleted_at: null },
+        select: { id: true },
+      });
+      if (!exists) {
+        return Result.error('Purchase request not found', ErrorCode.NOT_FOUND);
+      }
+      await this.recalculatePurchaseRequestTotals(prisma, prId);
+      return Result.ok({ count: 1 });
+    }
+
+    const prs = await prisma.tb_purchase_request.findMany({
+      where: { deleted_at: null },
+      select: { id: true },
+    });
+    for (const pr of prs) {
+      await this.recalculatePurchaseRequestTotals(prisma, pr.id);
+    }
+    return Result.ok({ count: prs.length });
+  }
+
+  /**
    * Recompute base_net_amount, base_total_amount on tb_purchase_request from the
    * current set of (non-deleted) detail rows. Only base_* totals are stored on
    * the header because PR details can have mixed currencies.

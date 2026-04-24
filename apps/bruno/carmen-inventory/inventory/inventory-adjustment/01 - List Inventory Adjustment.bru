@@ -5,18 +5,9 @@ meta {
 }
 
 get {
-  url: {{host}}/api/{{bu_code}}/inventory-adjustment?page=1&perpage=10&sort=date%3Aasc
+  url: {{host}}/api/{{bu_code}}/inventory-adjustment
   body: none
   auth: bearer
-}
-
-params:query {
-  page: 1
-  perpage: 10
-  sort: date%3Aasc
-  ~version: 
-  ~type: 
-  ~filter: 
 }
 
 headers {
@@ -25,6 +16,11 @@ headers {
 
 auth:bearer {
   token: {{access_token}}
+}
+
+query {
+  ~version: 
+  ~type: 
 }
 
 docs {
@@ -64,4 +60,13 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
+}
+
+params:query {
+  page: 1
+  perpage: 10
+  sort: date%3Aasc
+  ~version: 
+  ~type: 
+  ~filter: 
 }

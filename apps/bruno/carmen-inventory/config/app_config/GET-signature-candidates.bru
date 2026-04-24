@@ -1,0 +1,19 @@
+meta {
+  name: Signature candidates config_app_config
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/app-config/signature-candidates/:doc_type
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}

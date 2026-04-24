@@ -1536,4 +1536,49 @@ export class GoodReceivedNoteController extends BaseHttpController {
     this.respond(res, result);
   }
 
+  /**
+   * Regenerate denormalized amount totals on tb_good_received_note from detail items
+   * Recompute one GRN by id, or all non-deleted GRNs in the business unit if id is omitted
+   */
+  @Post(':bu_code/good-received-note/regenerate-totals')
+  @ApiOperation({
+    summary: 'Regenerate GRN amount totals (all)',
+    description:
+      'Recomputes net_amount, base_net_amount, total_amount, base_total_amount on every non-deleted Good Received Note in the business unit by aggregating from detail items. Use after manual DB edits or schema migrations to repair drift.',
+    operationId: 'regenerateAllGoodReceivedNoteTotals',
+    tags: ['Procurement', 'Good Received Note'],
+  } as any)
+  @HttpCode(HttpStatus.OK)
+  async regenerateAllTotals(
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    this.logger.debug({ function: 'regenerateAllTotals', bu_code }, GoodReceivedNoteController.name);
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.goodReceivedNoteService.regenerateTotals(user_id, bu_code);
+    this.respond(res, result);
+  }
+
+  @Post(':bu_code/good-received-note/:id/regenerate-totals')
+  @ApiOperation({
+    summary: 'Regenerate GRN amount totals (single)',
+    description:
+      'Recomputes net_amount, base_net_amount, total_amount, base_total_amount on a single Good Received Note by aggregating from detail items.',
+    operationId: 'regenerateGoodReceivedNoteTotals',
+    tags: ['Procurement', 'Good Received Note'],
+  } as any)
+  @HttpCode(HttpStatus.OK)
+  async regenerateTotalsById(
+    @Param('id') id: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    this.logger.debug({ function: 'regenerateTotalsById', id, bu_code }, GoodReceivedNoteController.name);
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.goodReceivedNoteService.regenerateTotals(user_id, bu_code, id);
+    this.respond(res, result);
+  }
+
 }

@@ -1,0 +1,51 @@
+meta {
+  name: Regenerate totals by id good-received-note
+  type: http
+  seq: 27
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/good-received-note/:id/regenerate-totals
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}
+
+docs {
+  ## Regenerate GRN Amount Totals (Single)
+  คำนวณ `net_amount`, `base_net_amount`, `total_amount`, `base_total_amount` ใหม่สำหรับ GRN เดียว โดย aggregate จาก `tb_good_received_note_detail_item`
+
+  Recomputes denormalized amount totals for one Good Received Note by aggregating from detail items.
+
+  ### Path Parameters
+  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  - `id` — Good Received Note ID / รหัสใบรับสินค้า
+
+  ### Sample Response
+  ```json
+  {
+    "data": { "count": 1 },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-04-24T00:00:00.000Z"
+  }
+  ```
+}
+
+params:path {
+  id: {{grn_id}}
+}

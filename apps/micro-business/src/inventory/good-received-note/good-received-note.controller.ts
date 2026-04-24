@@ -210,6 +210,26 @@ export class GoodReceivedNoteController extends BaseMicroserviceController {
   }
 
   /**
+   * Regenerate amount totals on tb_good_received_note from detail items.
+   * Recomputes one GRN if payload.id is provided, otherwise all non-deleted GRNs in tenant.
+   */
+  @MessagePattern({
+    cmd: "good-received-note.regenerate-totals",
+    service: "good-received-note",
+  })
+  async regenerateTotals(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: "regenerateTotals", payload }, GoodReceivedNoteController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const id = payload.id as string | undefined;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.goodReceivedNoteService.regenerateTotals(user_id, tenant_id, id),
+    );
+    return this.handleResult(result);
+  }
+
+  /**
    * Export a good received note to Excel
    * ส่งออกใบรับสินค้าเป็นไฟล์ Excel
    * @param payload - Contains id, user_id, tenant_id / ประกอบด้วย id, user_id, tenant_id

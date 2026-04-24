@@ -1352,4 +1352,49 @@ export class PurchaseRequestController extends BaseHttpController {
       version,
     );
   }
+
+  /**
+   * Regenerate denormalized base amount totals on tb_purchase_request from detail rows.
+   * Recompute one PR by id, or all non-deleted PRs in the business unit if id is omitted.
+   */
+  @Post(':bu_code/purchase-request/regenerate-totals')
+  @ApiOperation({
+    summary: 'Regenerate Purchase Request amount totals (all)',
+    description:
+      'Recomputes base_net_amount and base_total_amount on every non-deleted Purchase Request in the business unit by aggregating from detail rows. Use after manual DB edits or schema migrations to repair drift.',
+    operationId: 'regenerateAllPurchaseRequestTotals',
+    tags: ['Procurement', 'Purchase Request'],
+  } as any)
+  @HttpCode(HttpStatus.OK)
+  async regenerateAllTotals(
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    this.logger.debug({ function: 'regenerateAllTotals', bu_code }, PurchaseRequestController.name);
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.purchaseRequestService.regenerateTotals(user_id, bu_code);
+    this.respond(res, result);
+  }
+
+  @Post(':bu_code/purchase-request/:id/regenerate-totals')
+  @ApiOperation({
+    summary: 'Regenerate Purchase Request amount totals (single)',
+    description:
+      'Recomputes base_net_amount and base_total_amount on a single Purchase Request by aggregating from detail rows.',
+    operationId: 'regeneratePurchaseRequestTotals',
+    tags: ['Procurement', 'Purchase Request'],
+  } as any)
+  @HttpCode(HttpStatus.OK)
+  async regenerateTotalsById(
+    @Param('id') id: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    this.logger.debug({ function: 'regenerateTotalsById', id, bu_code }, PurchaseRequestController.name);
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.purchaseRequestService.regenerateTotals(user_id, bu_code, id);
+    this.respond(res, result);
+  }
 }

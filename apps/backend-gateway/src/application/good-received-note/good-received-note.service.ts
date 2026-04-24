@@ -888,4 +888,35 @@ if (response.response.status !== HttpStatus.OK) {
     return Result.ok(response.data);
   }
 
+  /**
+   * Regenerate denormalized totals on tb_good_received_note via microservice.
+   * Pass id to scope to a single GRN; omit to recompute all non-deleted GRNs.
+   */
+  async regenerateTotals(
+    user_id: string,
+    tenant_id: string,
+    id?: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'regenerateTotals', user_id, tenant_id, id },
+      GoodReceivedNoteService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.inventoryService.send(
+      { cmd: 'good-received-note.regenerate-totals', service: 'good-received-note' },
+      { user_id, tenant_id, id, ...getGatewayRequestContext() },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
 }
