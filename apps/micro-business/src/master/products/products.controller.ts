@@ -343,4 +343,34 @@ export class ProductsController extends BaseMicroserviceController {
     );
     return this.handleResult(result);
   }
+
+  @MessagePattern({ cmd: 'product.get-cost-estimate', service: 'product' })
+  async getProductCostEstimate(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'getProductCostEstimate', payload }, ProductsController.name);
+    const bu_code = payload.bu_code;
+    const user_id = payload.user_id;
+    this.productsService.userId = user_id;
+    this.productsService.bu_code = bu_code;
+    await this.productsService.initializePrismaService(bu_code, user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.productsService.getProductCostEstimate(payload.product_id, payload.location_id, Number(payload.quantity)),
+    );
+    return this.handleResult(result);
+  }
+
+  @MessagePattern({ cmd: 'product.get-last-receiving', service: 'product' })
+  async getLastReceiving(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'getLastReceiving', payload }, ProductsController.name);
+    const bu_code = payload.bu_code;
+    const user_id = payload.user_id;
+    this.productsService.userId = user_id;
+    this.productsService.bu_code = bu_code;
+    await this.productsService.initializePrismaService(bu_code, user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.productsService.getLastReceiving(payload.product_id),
+    );
+    return this.handleResult(result);
+  }
 }

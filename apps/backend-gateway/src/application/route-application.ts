@@ -6,6 +6,7 @@ import { StoreRequisitionModule } from './store-requisition/store-requisition.mo
 import { CreditNoteModule } from './credit-note/credit-note.module';
 import { UserModule } from './user/user.module';
 import { ProductsModule } from './products/products.module';
+import { CostModule } from './cost/cost.module';
 import { LocationsModule } from './locations/locations.module';
 import { WorkflowModule } from './workflow/workflow.module';
 import { DepartmentModule } from './department/department.module';
@@ -111,6 +112,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     PurchaseRequestModule,
     StoreRequisitionModule,
     ProductsModule,
+    CostModule,
     UserModule,
     LocationsModule,
     WorkflowModule,

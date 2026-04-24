@@ -2284,4 +2284,196 @@ export class ProductsService {
       orders,
     });
   }
+
+  /**
+   * Estimate FIFO deduction cost for a product at a location
+   * ประมาณต้นทุนการตัดสต็อกแบบ FIFO พร้อมรายละเอียดต่อ lot
+   */
+  @TryCatch
+  async getProductCostEstimate(
+    product_id: string,
+    location_id: string,
+    quantity: number,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'getProductCostEstimate', product_id, location_id, quantity, user_id: this.userId, tenant_id: this.bu_code },
+      ProductsService.name,
+    );
+
+    const product = await this.prismaService.tb_product.findFirst({
+      where: { id: product_id, deleted_at: null },
+      select: { id: true, code: true, name: true, inventory_unit_name: true, tb_unit: { select: { name: true } } },
+    });
+    if (!product) {
+      return Result.error('Product not found', ErrorCode.NOT_FOUND);
+    }
+
+    const location = await this.prismaService.tb_location.findFirst({
+      where: { id: location_id, deleted_at: null },
+      select: { id: true, code: true, name: true },
+    });
+    if (!location) {
+      return Result.error('Location not found', ErrorCode.NOT_FOUND);
+    }
+
+    const transactions = await this.prismaService.tb_inventory_transaction_detail.findMany({
+      where: { product_id, location_id },
+      select: { current_lot_no: true, qty: true, cost_per_unit: true, created_at: true },
+      orderBy: { created_at: 'asc' },
+    });
+
+    const inboundLots: { lot_no: string; qty: number; cost_per_unit: number }[] = [];
+    let totalOutbound = 0;
+    for (const tx of transactions) {
+      const qty = Number(tx.qty) || 0;
+      if (qty > 0) {
+        inboundLots.push({
+          lot_no: tx.current_lot_no || 'NO_LOT',
+          qty,
+          cost_per_unit: Number(tx.cost_per_unit) || 0,
+        });
+      } else {
+        totalOutbound += Math.abs(qty);
+      }
+    }
+
+    let outRemaining = totalOutbound;
+    for (const lot of inboundLots) {
+      if (outRemaining <= 0) break;
+      const consumed = Math.min(outRemaining, lot.qty);
+      lot.qty -= consumed;
+      outRemaining -= consumed;
+    }
+
+    const totalAvailable = inboundLots.reduce((sum, lot) => sum + lot.qty, 0);
+    if (totalAvailable <= 0) {
+      return Result.error(
+        'No available stock for this product at this location',
+        ErrorCode.VALIDATION_FAILURE,
+      );
+    }
+    if (quantity > totalAvailable) {
+      return Result.error(
+        `Insufficient stock: requested ${quantity} but only ${totalAvailable} available`,
+        ErrorCode.VALIDATION_FAILURE,
+      );
+    }
+
+    let remainingQty = quantity;
+    let totalCost = 0;
+    const lots: { lot_no: string; qty: number; cost_per_unit: number; line_cost: number }[] = [];
+
+    for (const lot of inboundLots) {
+      if (remainingQty <= 0) break;
+      if (lot.qty <= 0) continue;
+      const allocateQty = Math.min(remainingQty, lot.qty);
+      const lineCost = allocateQty * lot.cost_per_unit;
+      totalCost += lineCost;
+      lots.push({
+        lot_no: lot.lot_no,
+        qty: allocateQty,
+        cost_per_unit: lot.cost_per_unit,
+        line_cost: lineCost,
+      });
+      remainingQty -= allocateQty;
+    }
+
+    const averageCostPerUnit = quantity > 0 ? totalCost / quantity : 0;
+
+    return Result.ok({
+      product_id: product.id,
+      product_code: product.code,
+      product_name: product.name,
+      inventory_unit_name: product.inventory_unit_name || product.tb_unit?.name,
+      location_id: location.id,
+      location_code: location.code,
+      location_name: location.name,
+      requested_qty: quantity,
+      total_cost: totalCost,
+      average_cost_per_unit: averageCostPerUnit,
+      lots,
+    });
+  }
+
+  /**
+   * Get latest receiving transaction for a product (to check last cost)
+   * ค้นหาธุรกรรมรับเข้าล่าสุดของสินค้าเพื่อตรวจสอบต้นทุนล่าสุด
+   */
+  @TryCatch
+  async getLastReceiving(product_id: string): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'getLastReceiving', product_id, user_id: this.userId, tenant_id: this.bu_code },
+      ProductsService.name,
+    );
+
+    const product = await this.prismaService.tb_product.findFirst({
+      where: { id: product_id, deleted_at: null },
+      select: { id: true, code: true, name: true, inventory_unit_name: true, tb_unit: { select: { name: true } } },
+    });
+    if (!product) {
+      return Result.error('Product not found', ErrorCode.NOT_FOUND);
+    }
+
+    const lastReceipt = await this.prismaService.tb_inventory_transaction_detail.findFirst({
+      where: {
+        product_id,
+        qty: { gt: 0 },
+        tb_inventory_transaction: {
+          inventory_doc_type: { in: ['good_received_note', 'stock_in'] },
+          deleted_at: null,
+        },
+      },
+      orderBy: { created_at: 'desc' },
+      select: {
+        id: true,
+        inventory_transaction_id: true,
+        location_id: true,
+        location_code: true,
+        current_lot_no: true,
+        qty: true,
+        cost_per_unit: true,
+        total_cost: true,
+        created_at: true,
+        tb_inventory_transaction: {
+          select: {
+            inventory_doc_type: true,
+            inventory_doc_no: true,
+            created_at: true,
+          },
+        },
+      },
+    });
+
+    if (!lastReceipt) {
+      return Result.error('No receiving transaction found for this product', ErrorCode.NOT_FOUND);
+    }
+
+    const locationName = lastReceipt.location_id
+      ? (
+          await this.prismaService.tb_location.findFirst({
+            where: { id: lastReceipt.location_id },
+            select: { name: true },
+          })
+        )?.name ?? null
+      : null;
+
+    return Result.ok({
+      product_id: product.id,
+      product_code: product.code,
+      product_name: product.name,
+      inventory_unit_name: product.inventory_unit_name || product.tb_unit?.name,
+      transaction_detail_id: lastReceipt.id,
+      inventory_transaction_id: lastReceipt.inventory_transaction_id,
+      doc_type: lastReceipt.tb_inventory_transaction?.inventory_doc_type,
+      doc_no: lastReceipt.tb_inventory_transaction?.inventory_doc_no,
+      transaction_date: lastReceipt.tb_inventory_transaction?.created_at || lastReceipt.created_at,
+      location_id: lastReceipt.location_id,
+      location_code: lastReceipt.location_code,
+      location_name: locationName,
+      lot_no: lastReceipt.current_lot_no,
+      qty: Number(lastReceipt.qty),
+      cost_per_unit: Number(lastReceipt.cost_per_unit),
+      total_cost: Number(lastReceipt.total_cost),
+    });
+  }
 }

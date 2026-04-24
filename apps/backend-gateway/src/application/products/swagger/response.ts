@@ -69,3 +69,4 @@ export class ProductCostResponseDto {
   @ApiProperty({ description: 'Product name', example: 'Beef Tenderloin' })
   product_name: string;
 }
+
