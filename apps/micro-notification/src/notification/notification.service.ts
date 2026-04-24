@@ -1,11 +1,13 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom, timeout } from 'rxjs';
 import { PrismaClient_SYSTEM_CUSTOM } from '@repo/prisma-shared-schema-platform';
 import type { PrismaClient } from '@repo/prisma-shared-schema-platform';
 import { z } from 'zod';
 import { EmailService, type EmailConfig } from '../email/email.service';
-import { decryptSecret } from '../common/crypto.util';
+import { decryptSecret, isEncrypted } from '../common/crypto.util';
 
-// ─── Zod schema for report_email config in tb_application_config ───
+// ─── Zod schema for inline email config (legacy metadata.email_config path) ───
 const EmailSmtpSchema = z.object({
   host: z.string().min(1),
   port: z.number().int().min(1).max(65535),
@@ -24,18 +26,63 @@ const NotificationEmailConfigSchema = z.object({
 
 export type NotificationEmailConfig = z.infer<typeof NotificationEmailConfigSchema>;
 
-const SCHEMA_NAME_REGEX = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
-
-// ─── In-memory config cache ───
-const CONFIG_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
-interface CacheEntry {
-  config: NotificationEmailConfig | null;
-  expiresAt: number;
-}
-const buConfigCache = new Map<string, CacheEntry>();
-
 function errMsg(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+// ─── SMTP config from env (loaded once at startup) ───
+function splitCsv(raw: string | undefined): string[] {
+  if (!raw) return [];
+  return raw.split(',').map((s) => s.trim()).filter((s) => s.length > 0);
+}
+
+function loadEnvEmailConfig(logger: Logger): NotificationEmailConfig | null {
+  const enabled = process.env.SMTP_ENABLED === 'true';
+  if (!enabled) return null;
+
+  const host = process.env.SMTP_HOST;
+  const username = process.env.SMTP_USERNAME;
+  const rawPassword = process.env.SMTP_PASSWORD;
+  const portRaw = process.env.SMTP_PORT;
+  const from = process.env.SMTP_FROM || username || '';
+
+  if (!host || !username || !rawPassword || !portRaw) {
+    logger.warn(
+      'SMTP_ENABLED=true but SMTP_HOST / SMTP_USERNAME / SMTP_PASSWORD / SMTP_PORT is missing — email sending disabled.',
+    );
+    return null;
+  }
+
+  const port = Number(portRaw);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    logger.warn(`Invalid SMTP_PORT: ${portRaw}`);
+    return null;
+  }
+
+  // SMTP_PASSWORD may be plaintext or AES-GCM ciphertext (enc:v1:...)
+  // encrypted with SECRET_ENCRYPTION_KEY — same format used in tb_application_config.
+  let password: string;
+  if (isEncrypted(rawPassword)) {
+    try {
+      password = decryptSecret(rawPassword);
+    } catch (error) {
+      logger.error(
+        `Failed to decrypt SMTP_PASSWORD (check SECRET_ENCRYPTION_KEY): ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+      return null;
+    }
+  } else {
+    password = rawPassword;
+  }
+
+  return {
+    smtp: { host, port, username, password, from, enabled: true },
+    recipients: splitCsv(process.env.SMTP_RECIPIENTS),
+    cc: splitCsv(process.env.SMTP_CC),
+    subject_prefix: process.env.SMTP_SUBJECT_PREFIX || undefined,
+  };
 }
 
 export interface CreateSystemNotificationData {
@@ -67,13 +114,34 @@ export interface CreateBusinessUnitNotificationData {
   scheduled_at?: Date;
 }
 
+// ─── External mode cache (per-BU report_email fetched via micro-business TCP) ───
+const EXTERNAL_CONFIG_CACHE_TTL_MS = 5 * 60 * 1000;
+interface ExternalCacheEntry {
+  config: NotificationEmailConfig | null;
+  expiresAt: number;
+}
+
 @Injectable()
 export class NotificationService {
   private readonly logger = new Logger(NotificationService.name);
   private prismaPromise: Promise<PrismaClient>;
+  private readonly envEmailConfig: NotificationEmailConfig | null;
+  private readonly externalConfigCache = new Map<string, ExternalCacheEntry>();
 
-  constructor(private readonly emailService: EmailService) {
+  constructor(
+    private readonly emailService: EmailService,
+    @Inject('BUSINESS_SERVICE')
+    private readonly businessClient: ClientProxy,
+  ) {
     this.prismaPromise = PrismaClient_SYSTEM_CUSTOM(process.env.SYSTEM_DATABASE_URL!);
+    this.envEmailConfig = loadEnvEmailConfig(this.logger);
+    if (this.envEmailConfig) {
+      this.logger.log(
+        `SMTP configured from env (internal): ${this.envEmailConfig.smtp.host}:${this.envEmailConfig.smtp.port} (from=${this.envEmailConfig.smtp.from})`,
+      );
+    } else {
+      this.logger.log('Internal SMTP disabled (SMTP_ENABLED !== "true" or missing required env).');
+    }
   }
 
   private async getPrisma() {
@@ -317,14 +385,97 @@ export class NotificationService {
   // ─── Email Integration ───
 
   /**
-   * Try to send email notification using config from metadata
-   * Email config comes from tb_application_config (key: 'report_email').
-   * Priority:
-   *   1. metadata.email_config — inline SMTP (legacy micro-report path)
-   *   2. metadata.bu_code      — load report_email from that BU's tenant DB
+   * Resolve which SMTP config to use for a given notification.
    *
-   * If metadata.notify_email is explicitly false, skip sending entirely so
-   * callers can opt out even when a config is available.
+   * Mode is chosen by `metadata.mail_source`:
+   *   - `'internal'` (default) → env config (SMTP_* vars)
+   *   - `'external'`           → per-BU config from tb_application_config,
+   *                              fetched via TCP to micro-business.
+   *                              Requires `metadata.bu_code`. Falls back to
+   *                              internal if external lookup fails.
+   */
+  private async resolveEmailConfig(
+    metadata?: Record<string, unknown>,
+  ): Promise<NotificationEmailConfig | null> {
+    const mode = metadata?.mail_source === 'external' ? 'external' : 'internal';
+
+    if (mode === 'external') {
+      const buCode = typeof metadata?.bu_code === 'string' ? metadata.bu_code : undefined;
+      if (!buCode) {
+        this.logger.warn(
+          'mail_source=external requires metadata.bu_code; falling back to internal env config',
+        );
+        return this.envEmailConfig;
+      }
+      const external = await this.loadExternalEmailConfig(buCode);
+      if (external) return external;
+      this.logger.warn(
+        `External report_email config not available for BU ${buCode}; falling back to internal env config`,
+      );
+      return this.envEmailConfig;
+    }
+
+    return this.envEmailConfig;
+  }
+
+  /**
+   * Fetch per-BU report_email config from micro-business via TCP. micro-business
+   * owns tenant DB access (TenantService) so it can reach tb_application_config
+   * regardless of where the tenant schema lives. The returned config already has
+   * the SMTP password decrypted — safe to feed directly into nodemailer.
+   */
+  private async loadExternalEmailConfig(
+    buCode: string,
+  ): Promise<NotificationEmailConfig | null> {
+    const now = Date.now();
+    const cached = this.externalConfigCache.get(buCode);
+    if (cached && cached.expiresAt > now) {
+      return cached.config;
+    }
+
+    try {
+      const response$ = this.businessClient
+        .send<{
+          status: number;
+          data?: NotificationEmailConfig;
+          error?: string;
+          details?: string;
+        }>(
+          { cmd: 'appConfig.getReportEmailForSend', service: 'business' },
+          { bu_code: buCode },
+        )
+        .pipe(timeout(5_000));
+      const response = await firstValueFrom(response$);
+
+      if (response.status !== 200 || !response.data) {
+        this.logger.warn(
+          `External config lookup for BU ${buCode} returned status=${response.status} ${response.error ?? ''} ${response.details ?? ''}`,
+        );
+        this.externalConfigCache.set(buCode, {
+          config: null,
+          expiresAt: now + EXTERNAL_CONFIG_CACHE_TTL_MS,
+        });
+        return null;
+      }
+
+      this.externalConfigCache.set(buCode, {
+        config: response.data,
+        expiresAt: now + EXTERNAL_CONFIG_CACHE_TTL_MS,
+      });
+      return response.data;
+    } catch (error) {
+      this.logger.warn(
+        `External config lookup for BU ${buCode} failed: ${errMsg(error)}`,
+      );
+      return null;
+    }
+  }
+
+  /**
+   * Try to send email notification.
+   *
+   * Picks config via `resolveEmailConfig` (internal env vs external per-BU).
+   * If `metadata.notify_email === false`, skip entirely so callers can opt out.
    */
   private async trySendEmail(
     data: { title: string; message: string; metadata?: Record<string, unknown> },
@@ -333,10 +484,7 @@ export class NotificationService {
     try {
       if (data.metadata?.notify_email === false) return;
 
-      let emailConfig = this.extractEmailConfig(data.metadata);
-      if (!emailConfig && typeof data.metadata?.bu_code === 'string') {
-        emailConfig = await this.loadBUEmailConfig(data.metadata.bu_code);
-      }
+      const emailConfig = await this.resolveEmailConfig(data.metadata);
       if (!emailConfig) return;
 
       const isReport = data.metadata?.source === 'micro-report';
@@ -354,7 +502,6 @@ export class NotificationService {
           })
         : this.emailService.buildNotificationEmailHtml(data.title, data.message);
 
-      // Use recipients from config, fallback to user emails
       const to =
         (emailConfig.recipients?.length ?? 0) > 0
           ? emailConfig.recipients!
@@ -376,15 +523,16 @@ export class NotificationService {
   }
 
   /**
-   * Try to send email for BU notification — loads config from tb_application_config
+   * Try to send email for BU notification. Uses `bu_code` from the call itself
+   * if `metadata.mail_source === 'external'`, otherwise the env config.
    */
   private async trySendEmailForBU(
     data: CreateBusinessUnitNotificationData,
     recipientEmails: string[],
   ) {
     try {
-      // Load email config from tenant DB (tb_application_config)
-      const config = await this.loadBUEmailConfig(data.bu_code);
+      const metadata = { ...(data.metadata ?? {}), bu_code: data.bu_code };
+      const config = await this.resolveEmailConfig(metadata);
       if (!config) return;
 
       const html = this.emailService.buildNotificationEmailHtml(data.title, data.message);
@@ -407,102 +555,15 @@ export class NotificationService {
   }
 
   /**
-   * Load report_email config from tb_application_config for a BU
-   */
-  private async loadBUEmailConfig(buCode: string): Promise<NotificationEmailConfig | null> {
-    // Check cache first
-    const cached = buConfigCache.get(buCode);
-    const now = Date.now();
-    if (cached && cached.expiresAt > now) {
-      return cached.config;
-    }
-
-    try {
-      const prisma = await this.getPrisma();
-
-      // Get tenant DB connection from tb_business_unit
-      const bu = await prisma.tb_business_unit.findFirst({
-        where: { code: buCode },
-      });
-      if (!bu) {
-        buConfigCache.set(buCode, { config: null, expiresAt: now + CONFIG_CACHE_TTL_MS });
-        return null;
-      }
-
-      const dbConn = bu.db_connection as { schema?: string } | null;
-      if (!dbConn || typeof dbConn !== 'object') return null;
-
-      const schema = dbConn.schema;
-      if (!schema || !SCHEMA_NAME_REGEX.test(schema)) {
-        this.logger.warn(`Invalid tenant schema name for BU ${buCode}: ${schema}`);
-        return null;
-      }
-
-      const result = await prisma.$queryRawUnsafe<Array<{ value: unknown }>>(
-        `SELECT value FROM "${schema}".tb_application_config WHERE key = 'report_email' AND deleted_at IS NULL LIMIT 1`,
-      );
-
-      if (result.length === 0) {
-        buConfigCache.set(buCode, { config: null, expiresAt: now + CONFIG_CACHE_TTL_MS });
-        return null;
-      }
-
-      const config = this.parseAndDecryptConfig(result[0].value, `BU:${buCode}`);
-      buConfigCache.set(buCode, { config, expiresAt: now + CONFIG_CACHE_TTL_MS });
-      return config;
-    } catch (error) {
-      this.logger.warn(`Load BU email config failed for ${buCode}: ${errMsg(error)}`);
-      return null;
-    }
-  }
-
-  /**
-   * Invalidate cached config for a BU (call after admin updates config)
+   * Invalidate cached external config for a BU (called after admin updates
+   * tb_application_config via app-config.service.upsert / delete). Internal env
+   * config isn't cached per-BU and isn't affected.
    */
   invalidateBUEmailConfigCache(buCode?: string) {
     if (buCode) {
-      buConfigCache.delete(buCode);
+      this.externalConfigCache.delete(buCode);
     } else {
-      buConfigCache.clear();
+      this.externalConfigCache.clear();
     }
-  }
-
-  /**
-   * Extract email config from notification metadata (passed by micro-report)
-   */
-  private extractEmailConfig(
-    metadata?: Record<string, unknown>,
-  ): NotificationEmailConfig | null {
-    if (!metadata?.email_config) return null;
-    return this.parseAndDecryptConfig(metadata.email_config, 'metadata');
-  }
-
-  /**
-   * Validate raw config with Zod and decrypt SMTP password if encrypted.
-   */
-  private parseAndDecryptConfig(
-    raw: unknown,
-    source: string,
-  ): NotificationEmailConfig | null {
-    const parsed = NotificationEmailConfigSchema.safeParse(raw);
-    if (!parsed.success) {
-      this.logger.warn(
-        `Invalid email config from ${source}: ${parsed.error.issues
-          .map((i) => `${i.path.join('.')}: ${i.message}`)
-          .join('; ')}`,
-      );
-      return null;
-    }
-
-    const config = parsed.data;
-    try {
-      config.smtp.password = decryptSecret(config.smtp.password);
-    } catch (error) {
-      this.logger.error(
-        `Failed to decrypt SMTP password from ${source}: ${errMsg(error)}`,
-      );
-      return null;
-    }
-    return config;
   }
 }

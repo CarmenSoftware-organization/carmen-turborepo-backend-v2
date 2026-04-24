@@ -116,6 +116,15 @@ export class ScheduleNotificationsDto {
 
   @ApiPropertyOptional({ description: 'Send email notification', example: true, default: false })
   email?: boolean;
+
+  @ApiPropertyOptional({
+    description:
+      'SMTP config source used by micro-notification. "internal" uses micro-notification env (default); "external" uses per-BU report_email from tb_application_config.',
+    enum: ['internal', 'external'],
+    example: 'internal',
+    default: 'internal',
+  })
+  mail_source?: 'internal' | 'external';
 }
 
 export class CreateScheduleRequestDto {

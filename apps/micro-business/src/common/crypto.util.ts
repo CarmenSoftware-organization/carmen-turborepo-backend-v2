@@ -59,6 +59,30 @@ export function encryptSecret(plaintext: string): string {
   return `${PREFIX}${iv.toString('base64')}:${authTag.toString('base64')}:${ciphertext.toString('base64')}`;
 }
 
+export function decryptSecret(value: string): string {
+  if (!value || !value.startsWith(PREFIX)) {
+    throw new Error(
+      'Expected encrypted secret (enc:v1:...) but got plaintext. Re-save the config so it is encrypted at rest.',
+    );
+  }
+
+  const key = getKey();
+
+  const parts = value.slice(PREFIX.length).split(':');
+  if (parts.length !== 3) {
+    throw new Error('Malformed encrypted secret');
+  }
+  const [ivB64, tagB64, ctB64] = parts;
+  const iv = Buffer.from(ivB64, 'base64');
+  const authTag = Buffer.from(tagB64, 'base64');
+  const ciphertext = Buffer.from(ctB64, 'base64');
+
+  const decipher = crypto.createDecipheriv(ALGO, key, iv);
+  decipher.setAuthTag(authTag);
+  const plaintext = Buffer.concat([decipher.update(ciphertext), decipher.final()]);
+  return plaintext.toString('utf8');
+}
+
 export function isEncrypted(value: string): boolean {
   return typeof value === 'string' && value.startsWith(PREFIX);
 }

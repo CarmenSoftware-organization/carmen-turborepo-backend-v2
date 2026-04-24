@@ -71,6 +71,21 @@ export class AppConfigController {
     }
   }
 
+  @MessagePattern({ cmd: 'appConfig.getReportEmailForSend', service: 'business' })
+  async getReportEmailForSend(data: { bu_code: string }) {
+    try {
+      const config = await this.appConfigService.getReportEmailForSend(data.bu_code);
+      if (!config) return { status: 404, error: 'report_email not configured for BU' };
+      return { status: 200, data: config };
+    } catch (error) {
+      return {
+        status: 500,
+        error: 'Failed to load report_email config',
+        details: errMsg(error),
+      };
+    }
+  }
+
   @MessagePattern({ cmd: 'appConfig.testEmail', service: 'business' })
   async testEmail(data: { bu_code: string; user_id: string }) {
     try {

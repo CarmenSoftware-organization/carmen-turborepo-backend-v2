@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { z } from 'zod';
 import { TenantService } from '@/tenant/tenant.service';
-import { encryptSecret, isEncrypted } from '@/common/crypto.util';
+import { encryptSecret, decryptSecret, isEncrypted } from '@/common/crypto.util';
 import { NotificationService } from '@/common/services/notification.service';
 
 const KEY_REGEX = /^[a-zA-Z0-9_.-]+$/;
@@ -349,6 +349,43 @@ export class AppConfigService {
     }
 
     return { candidates: Array.from(seen.values()) };
+  }
+
+  /**
+   * Internal-only: return the report_email config for a BU with the SMTP password
+   * DECRYPTED, ready for micro-notification to feed into nodemailer.
+   *
+   * Different from `get()`:
+   *   - `get()` masks the password (safe for frontend / admin UI).
+   *   - This one decrypts the password (never expose over public HTTP; TCP only).
+   *
+   * Uses `getdb_connection_for_external` so system-initiated callers (cronjobs,
+   * micro-notification itself) don't need a real user_id.
+   */
+  async getReportEmailForSend(bu_code: string) {
+    const prisma = await this.tenantService.getdb_connection_for_external(
+      bu_code,
+      'micro-notification',
+    );
+    const row = await prisma.tb_application_config.findFirst({
+      where: { key: 'report_email', deleted_at: null },
+      select: { value: true },
+    });
+    if (!row) return null;
+
+    const parsed = ReportEmailSchema.safeParse(row.value);
+    if (!parsed.success) {
+      throw new Error(
+        `Invalid report_email for BU ${bu_code}: ${parsed.error.issues
+          .map((i) => `${i.path.join('.')}: ${i.message}`)
+          .join('; ')}`,
+      );
+    }
+    const config = parsed.data;
+    if (isEncrypted(config.smtp.password)) {
+      config.smtp.password = decryptSecret(config.smtp.password);
+    }
+    return config;
   }
 
   /**

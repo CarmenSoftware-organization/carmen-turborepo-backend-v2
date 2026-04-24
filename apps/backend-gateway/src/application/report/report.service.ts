@@ -109,6 +109,7 @@ interface ScheduleDelivery {
 interface ScheduleNotifications {
   web?: boolean;
   email?: boolean;
+  mail_source?: 'internal' | 'external';
 }
 
 interface ScheduleResponse {
@@ -488,6 +489,7 @@ export class ReportService {
     const resolvedNotifications: ScheduleNotifications = {
       web: notifications?.web ?? false,
       email: notifications?.email ?? false,
+      mail_source: notifications?.mail_source ?? 'internal',
     };
 
     const payload = {
