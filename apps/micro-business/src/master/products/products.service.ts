@@ -2236,6 +2236,7 @@ export class ProductsService {
             po_no: true,
             po_status: true,
             vendor_name: true,
+            order_date: true,
             delivery_date: true,
           },
         },
@@ -2247,23 +2248,28 @@ export class ProductsService {
       const receivedQty = Number(detail.received_qty) || 0;
       const cancelledQty = Number(detail.cancelled_qty) || 0;
       const pendingQty = orderQty - receivedQty - cancelledQty;
+      const price = Number(detail.price) || 0;
+      const total_amount = orderQty * price;
 
       return {
         po_id: detail.tb_purchase_order?.id,
         po_no: detail.tb_purchase_order?.po_no,
         po_status: detail.tb_purchase_order?.po_status,
         vendor_name: detail.tb_purchase_order?.vendor_name,
+        order_date: detail.tb_purchase_order?.order_date,
         delivery_date: detail.tb_purchase_order?.delivery_date,
         order_qty: orderQty,
         received_qty: receivedQty,
         cancelled_qty: cancelledQty,
         pending_qty: pendingQty,
         unit_name: detail.order_unit_name,
-        price: Number(detail.price) || 0,
+        price,
+        total_amount,
       };
     });
 
     const total_on_order = orders.reduce((sum, o) => sum + o.pending_qty, 0);
+    const total_order_amount = orders.reduce((sum, o) => sum + o.total_amount, 0);
 
     return Result.ok({
       product_id: product.id,
@@ -2274,6 +2280,7 @@ export class ProductsService {
       inventory_unit_name: product.inventory_unit_name || product.tb_unit?.name,
       sku: product.sku,
       total_on_order,
+      total_order_amount,
       orders,
     });
   }

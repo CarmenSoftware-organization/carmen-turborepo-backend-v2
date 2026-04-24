@@ -281,6 +281,9 @@ export class OnOrderItemDto {
   @ApiPropertyOptional({ description: 'Vendor name', example: 'ABC Supplies' })
   vendor_name?: string;
 
+  @ApiPropertyOptional({ description: 'PO order date', example: '2026-04-10T00:00:00.000Z' })
+  order_date?: Date;
+
   @ApiPropertyOptional({ description: 'Expected delivery date', example: '2026-04-01T00:00:00.000Z' })
   delivery_date?: Date;
 
@@ -301,6 +304,9 @@ export class OnOrderItemDto {
 
   @ApiProperty({ description: 'Unit price', example: 50 })
   price: number;
+
+  @ApiProperty({ description: 'Line total amount (order_qty * price)', example: 1250 })
+  total_amount: number;
 }
 
 export class OnOrderResponseDto {
@@ -327,6 +333,9 @@ export class OnOrderResponseDto {
 
   @ApiProperty({ description: 'Total on-order (pending) quantity', example: 60 })
   total_on_order: number;
+
+  @ApiProperty({ description: 'Sum of line total amounts across all active POs', example: 2830 })
+  total_order_amount: number;
 
   @ApiProperty({ description: 'Active purchase order details', type: [OnOrderItemDto] })
   orders: OnOrderItemDto[];
