@@ -2721,5 +2721,130 @@ export class InventoryTransactionService {
     const method = await this.getCalculationMethod(bu_code);
     return Result.ok({ calculation_method: method });
   }
+
+  /**
+   * Dev-only backfill: create missing tb_inventory_transaction_cost_layer rows
+   * for inbound stock-in details that were committed before the zero-cost
+   * guard was relaxed (see fifo-cost-split.helper.ts). Idempotent — already
+   * backfilled details are skipped via a NOT EXISTS clause.
+   */
+  @TryCatch
+  async backfillZeroCostLayers(
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'backfillZeroCostLayers', user_id, tenant_id },
+      InventoryTransactionService.name,
+    );
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    const orphans = await prisma.tb_inventory_transaction_detail.findMany({
+      where: {
+        qty: { gt: 0 },
+        tb_inventory_transaction: {
+          deleted_at: null,
+          inventory_doc_type: { in: ['good_received_note', 'stock_in'] },
+        },
+        tb_inventory_transaction_cost_layer: { none: { deleted_at: null } },
+      },
+      select: {
+        id: true,
+        product_id: true,
+        location_id: true,
+        location_code: true,
+        current_lot_no: true,
+        qty: true,
+        cost_per_unit: true,
+        total_cost: true,
+        created_by_id: true,
+        created_at: true,
+      },
+    });
+
+    if (orphans.length === 0) {
+      return Result.ok({
+        orphans_found: 0,
+        layers_inserted: 0,
+        inserted: [],
+      });
+    }
+
+    const inserted = await prisma.$transaction(async (tx) => {
+      const rows: Array<{
+        detail_id: string;
+        lot_no: string | null;
+        lot_index: number;
+        product_id: string | null;
+        qty: number;
+        cost_per_unit: number;
+      }> = [];
+
+      const nextIndexByLot = new Map<string, number>();
+
+      for (const d of orphans) {
+        const createdAt = d.created_at ?? new Date();
+        const atPeriod = format(createdAt, 'yyMM');
+        const lotKey = d.current_lot_no ?? `__no_lot_${d.id}`;
+
+        let lotIndex = nextIndexByLot.get(lotKey);
+        if (lotIndex === undefined) {
+          const maxLayer = d.current_lot_no
+            ? await tx.tb_inventory_transaction_cost_layer.findFirst({
+                where: { lot_no: d.current_lot_no, deleted_at: null },
+                orderBy: { lot_index: 'desc' },
+                select: { lot_index: true },
+              })
+            : null;
+          lotIndex = (maxLayer?.lot_index ?? 0) + 1;
+        }
+        nextIndexByLot.set(lotKey, lotIndex + 1);
+
+        await tx.tb_inventory_transaction_cost_layer.create({
+          data: {
+            inventory_transaction_detail_id: d.id,
+            lot_no: d.current_lot_no,
+            lot_index: lotIndex,
+            location_id: d.location_id,
+            location_code: d.location_code,
+            lot_at_date: createdAt,
+            lot_seq_no: 0,
+            product_id: d.product_id,
+            at_period: atPeriod,
+            transaction_type: enum_transaction_type.adjustment_in,
+            in_qty: d.qty,
+            out_qty: 0,
+            cost_per_unit: d.cost_per_unit,
+            total_cost: d.total_cost,
+            diff_amount: 0,
+            average_cost_per_unit: 0,
+            created_by_id: d.created_by_id,
+            created_at: createdAt,
+          },
+        });
+
+        rows.push({
+          detail_id: d.id,
+          lot_no: d.current_lot_no,
+          lot_index: lotIndex,
+          product_id: d.product_id,
+          qty: Number(d.qty),
+          cost_per_unit: Number(d.cost_per_unit),
+        });
+      }
+
+      return rows;
+    });
+
+    return Result.ok({
+      orphans_found: orphans.length,
+      layers_inserted: inserted.length,
+      inserted,
+    });
+  }
 }
 

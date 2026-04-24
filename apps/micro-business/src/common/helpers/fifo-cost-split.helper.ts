@@ -29,7 +29,7 @@ export function splitFifoCost(
   totalCost: number,
   decimals: number = 2,
 ): FifoCostLayer[] {
-  if (qty <= 0 || totalCost <= 0) {
+  if (qty <= 0 || totalCost < 0) {
     return [];
   }
 

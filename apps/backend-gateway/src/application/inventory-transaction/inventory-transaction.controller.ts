@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Param,
   ParseUUIDPipe,
+  Post,
   Query,
   Req,
   Res,
@@ -14,6 +15,7 @@ import { Response } from 'express';
 import { InventoryTransactionService } from './inventory-transaction.service';
 import {
   ApiBearerAuth,
+  ApiExcludeEndpoint,
   ApiOperation,
   ApiQuery,
   ApiTags,
@@ -220,6 +222,25 @@ export class InventoryTransactionController extends BaseHttpController {
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.inventoryTransactionService.getCalculationMethod(user_id, bu_code);
+    this.respond(res, result);
+  }
+
+  /**
+   * POST /api/:bu_code/inventory-transaction/admin/backfill/zero-cost-layers
+   * Dev-only: insert missing tb_inventory_transaction_cost_layer rows for
+   * stranded inbound details (created before the zero-cost guard fix).
+   * Idempotent. Not published in Swagger.
+   */
+  @Post('admin/backfill/zero-cost-layers')
+  @HttpCode(HttpStatus.OK)
+  @ApiExcludeEndpoint(true)
+  async backfillZeroCostLayers(
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.inventoryTransactionService.backfillZeroCostLayers(user_id, bu_code);
     this.respond(res, result);
   }
 }

@@ -78,4 +78,9 @@ export class InventoryTransactionService {
     this.logger.debug({ function: 'getCalculationMethod', user_id, tenant_id }, InventoryTransactionService.name);
     return this.sendCommand('inventory-transaction.get-calculation-method', { user_id, tenant_id });
   }
+
+  async backfillZeroCostLayers(user_id: string, tenant_id: string): Promise<Result<unknown>> {
+    this.logger.debug({ function: 'backfillZeroCostLayers', user_id, tenant_id }, InventoryTransactionService.name);
+    return this.sendCommand('inventory-transaction.backfill-zero-cost-layers', { user_id, tenant_id });
+  }
 }

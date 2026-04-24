@@ -160,4 +160,19 @@ export class InventoryTransactionController extends BaseMicroserviceController {
     const result = await this.inventoryTransactionService.getCalculationMethodResult(tenant_id);
     return this.handleResult(result);
   }
+
+  @MessagePattern({
+    cmd: 'inventory-transaction.backfill-zero-cost-layers',
+    service: 'inventory-transaction',
+  })
+  async backfillZeroCostLayers(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'backfillZeroCostLayers', payload }, InventoryTransactionController.name);
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.inventoryTransactionService.backfillZeroCostLayers(user_id, tenant_id),
+    );
+    return this.handleResult(result);
+  }
 }
