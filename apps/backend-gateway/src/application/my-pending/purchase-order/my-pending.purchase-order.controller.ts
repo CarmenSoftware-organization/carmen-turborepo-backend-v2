@@ -1,13 +1,14 @@
 import {
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
+  ParseUUIDPipe,
   Query,
   Req,
   Res,
   UseGuards,
-  HttpCode,
-  HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MyPendingPurchaseOrderService } from './my-pending.purchase-order.service';
@@ -208,7 +209,7 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(

@@ -1,13 +1,14 @@
 import {
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
-  UseGuards,
+  ParseUUIDPipe,
+  Query,
   Req,
   Res,
-  Query,
-  HttpStatus,
-  HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { InventoryAdjustmentService, AdjustmentType } from './inventory-adjustment.service';
@@ -139,7 +140,7 @@ export class InventoryAdjustmentController extends BaseHttpController {
     },
   } as any)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

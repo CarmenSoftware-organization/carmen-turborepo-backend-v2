@@ -1,17 +1,18 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
-  Body,
+  ParseUUIDPipe,
+  Patch,
   Post,
   Query,
   Req,
   Res,
   UseGuards,
-  HttpCode,
-  HttpStatus,
-  Patch,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MyPendingStoreRequisitionService as MyPendingStoreRequisitionService } from './my-pending.store-requisition.service';
@@ -273,7 +274,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
@@ -534,7 +535,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     @Res() res: Response,
     @Body() body: UpdateStoreRequisitionDto,
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
@@ -593,7 +594,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async submit(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
@@ -654,7 +655,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async approve(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
@@ -715,7 +716,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async reject(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
@@ -776,7 +777,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async review(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
@@ -845,7 +846,7 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async delete(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,

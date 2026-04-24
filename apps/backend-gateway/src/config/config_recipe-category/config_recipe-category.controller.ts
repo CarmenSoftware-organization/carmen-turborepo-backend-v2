@@ -1,6 +1,19 @@
 import {
-  Body, Controller, Delete, Get, HttpCode, HttpStatus,
-  Param, Patch, Post, Put, Query, Req, Res, UseGuards,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Put,
+  Query,
+  Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_RecipeCategoryService } from './config_recipe-category.service';
@@ -46,7 +59,7 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get a recipe category by ID', description: 'Retrieves a specific recipe category used to classify recipes (e.g., Appetizers, Main Course, Desserts, Beverages). Categories help organize the recipe catalog for menu planning and cost analysis.', operationId: 'configRecipeCategory_findOne', tags: ['Configuration', 'Recipe Category'], 'x-description-th': 'ดึงข้อมูลหมวดหมู่สูตรอาหารเดียวตาม ID สำหรับจำแนกประเภทสูตรอาหาร' } as any)
-  async findOne(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
+  async findOne(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'findOne', id, version }, Config_RecipeCategoryController.name);
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.recipeCategoryService.findOne(id, user_id, bu_code, version);
@@ -117,7 +130,7 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update a recipe category', description: 'Fully updates an existing recipe category, such as renaming it. Changes affect how recipes are organized and filtered in the catalog.', operationId: 'configRecipeCategory_update', tags: ['Configuration', 'Recipe Category'], 'x-description-th': 'อัปเดตหมวดหมู่สูตรอาหารทั้งหมด เช่น เปลี่ยนชื่อหมวดหมู่' } as any)
   @ApiBody({ type: RecipeCategoryUpdateRequest })
-  async update(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeCategoryUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
+  async update(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeCategoryUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'update', id, updateDto, version }, Config_RecipeCategoryController.name);
     const { user_id } = ExtractRequestHeader(req);
     const data: IUpdateRecipeCategory = { ...updateDto, id };
@@ -142,7 +155,7 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Patch a recipe category', description: 'Partially updates specific fields of a recipe category without replacing the entire record. Useful for toggling active status or making minor adjustments.', operationId: 'configRecipeCategory_patch', tags: ['Configuration', 'Recipe Category'], 'x-description-th': 'อัปเดตบางฟิลด์ของหมวดหมู่สูตรอาหาร เช่น สถานะการใช้งาน' } as any)
   @ApiBody({ type: RecipeCategoryUpdateRequest })
-  async patch(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeCategoryUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
+  async patch(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeCategoryUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'patch', id, updateDto, version }, Config_RecipeCategoryController.name);
     const { user_id } = ExtractRequestHeader(req);
     const data: IUpdateRecipeCategory = { ...updateDto, id };
@@ -165,7 +178,7 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delete a recipe category', description: 'Removes a recipe category from the system. Recipes currently assigned to this category should be reassigned before deletion.', operationId: 'configRecipeCategory_delete', tags: ['Configuration', 'Recipe Category'], 'x-description-th': 'ลบหมวดหมู่สูตรอาหารออกจากระบบ ควรย้ายสูตรอาหารไปหมวดหมู่อื่นก่อนลบ' } as any)
-  async delete(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
+  async delete(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'delete', id, version }, Config_RecipeCategoryController.name);
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.recipeCategoryService.delete(id, user_id, bu_code, version);

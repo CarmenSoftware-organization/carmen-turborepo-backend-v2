@@ -1,17 +1,18 @@
 import {
-  Controller,
-  Get,
-  Param,
-  Post,
   Body,
-  Put,
+  Controller,
   Delete,
-  UseGuards,
-  Req,
-  Res,
-  Query,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Query,
+  Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_RunningCodeService } from './config_running-code.service';
@@ -66,7 +67,7 @@ export class Config_RunningCodeController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({ summary: 'Get a running code by ID', description: 'Retrieves a specific auto-numbering rule configuration used to generate sequential document codes (e.g., PR-001, PO-001, GRN-001) for procurement and inventory documents.', operationId: 'configRunningCode_findOne', tags: ['Configuration', 'Running Code'], 'x-description-th': 'ดึงข้อมูลรหัสเลขที่เอกสารอัตโนมัติเดียวตาม ID สำหรับสร้างรหัสเอกสาร' } as any)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -254,7 +255,7 @@ export class Config_RunningCodeController extends BaseHttpController {
   @ApiOperation({ summary: 'Update a running code', description: 'Modifies an existing auto-numbering rule, such as changing the format pattern, prefix, or resetting the counter. Changes affect how future document numbers are generated.', operationId: 'configRunningCode_update', tags: ['Configuration', 'Running Code'], 'x-description-th': 'อัปเดตกฎการกำหนดเลขอัตโนมัติที่มีอยู่ เช่น เปลี่ยนรูปแบบหรือรีเซ็ตตัวนับ' } as any)
   @ApiBody({ type: RunningCodeUpdateRequest })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() updateDto: RunningCodeUpdateDto,
     @Req() req: Request,
@@ -299,7 +300,7 @@ export class Config_RunningCodeController extends BaseHttpController {
   @ApiVersionMinRequest()
   @ApiOperation({ summary: 'Delete a running code', description: 'Removes an auto-numbering rule from the system. The associated document type will no longer have automatic code generation until a new rule is configured.', operationId: 'configRunningCode_delete', tags: ['Configuration', 'Running Code'], 'x-description-th': 'ลบกฎการกำหนดเลขอัตโนมัติออกจากระบบ' } as any)
   async remove(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

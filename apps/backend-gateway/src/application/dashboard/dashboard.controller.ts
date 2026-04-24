@@ -1,16 +1,17 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
   Post,
   Put,
-  Delete,
-  Param,
-  Body,
   Req,
   Res,
   UseGuards,
-  HttpCode,
-  HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { DashboardService } from './dashboard.service';
@@ -55,7 +56,7 @@ export class DashboardController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.dashboardService.findOne(id, user_id, bu_code);
@@ -83,7 +84,7 @@ export class DashboardController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() body: unknown,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
@@ -98,7 +99,7 @@ export class DashboardController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.dashboardService.delete(id, user_id, bu_code);
@@ -112,7 +113,7 @@ export class DashboardController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() body: unknown,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
@@ -127,7 +128,7 @@ export class DashboardController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() body: unknown,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
@@ -142,8 +143,8 @@ export class DashboardController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
-    @Param('widget_id') widget_id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('widget_id', new ParseUUIDPipe({ version: '4' })) widget_id: string,
     @Body() body: unknown,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
@@ -158,8 +159,8 @@ export class DashboardController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
-    @Param('widget_id') widget_id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('widget_id', new ParseUUIDPipe({ version: '4' })) widget_id: string,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.dashboardService.deleteWidget(id, widget_id, user_id, bu_code);

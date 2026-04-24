@@ -1,4 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Res, UseGuards, HttpCode, HttpStatus } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Query,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common'
 import { Response } from 'express';
 import { KeycloakGuard } from 'src/auth'
 import { ConfigApplicationRoleService } from './config_application_role.service'
@@ -77,7 +92,7 @@ export class ConfigApplicationRoleController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get an application role by ID', description: 'Retrieves a specific application role definition with its associated permissions. Used to review what system capabilities are granted to users assigned this role.', operationId: 'configApplicationRole_findOne', tags: ['Configuration', 'Application Role'], 'x-description-th': 'ดึงข้อมูลบทบาทในระบบรายการเดียวตาม ID' } as any)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
@@ -130,7 +145,7 @@ export class ConfigApplicationRoleController extends BaseHttpController {
   @ApiOperation({ summary: 'Update an application role', description: 'Modifies an existing application role definition, such as updating its name or permission set. Changes immediately affect all users currently assigned this role.', operationId: 'configApplicationRole_update', tags: ['Configuration', 'Application Role'], 'x-description-th': 'อัปเดตข้อมูลบทบาทในระบบที่มีอยู่' } as any)
   @ApiBody({ type: UpdateApplicationRoleRequest })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
@@ -156,7 +171,7 @@ export class ConfigApplicationRoleController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delete an application role', description: 'Removes an application role from the system. Users previously assigned this role will lose its associated permissions. Ensure users are reassigned to appropriate roles before deletion.', operationId: 'configApplicationRole_delete', tags: ['Configuration', 'Application Role'], 'x-description-th': 'ลบบทบาทในระบบตาม ID' } as any)
   async remove(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,

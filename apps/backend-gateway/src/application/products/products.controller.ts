@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Query,
   Req,
@@ -98,7 +99,7 @@ export class ProductsController extends BaseHttpController {
     description: 'No purchase found for this product',
   })
   async getLastPurchase(
-    @Param('product_id') product_id: string,
+    @Param('product_id', new ParseUUIDPipe({ version: '4' })) product_id: string,
     @Param('date') date: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -160,7 +161,7 @@ export class ProductsController extends BaseHttpController {
     type: OnHandResponseDto,
   })
   async getOnHand(
-    @Param('product_id') product_id: string,
+    @Param('product_id', new ParseUUIDPipe({ version: '4' })) product_id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -208,7 +209,7 @@ export class ProductsController extends BaseHttpController {
   @ApiResponse({ status: 200, description: 'On-order balance retrieved successfully', type: OnOrderResponseDto })
   @ApiResponse({ status: 404, description: 'Product not found' })
   async getOnOrder(
-    @Param('product_id') product_id: string,
+    @Param('product_id', new ParseUUIDPipe({ version: '4' })) product_id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -327,7 +328,7 @@ export class ProductsController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Query() query: IPaginateQuery,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {

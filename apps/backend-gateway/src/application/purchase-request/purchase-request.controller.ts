@@ -3,6 +3,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Body,
   Post,
   Query,
@@ -326,7 +327,7 @@ export class PurchaseRequestController extends BaseHttpController {
     'x-description-th': 'ดึงขั้นตอนเวิร์กโฟลว์ทั้งหมดก่อนขั้นตอนปัจจุบันของใบขอซื้อ ใช้เพื่อกำหนดตัวเลือกการย้อนกลับ/ส่งคืนในสายการอนุมัติ',
   } as any)
   async getPreviousStagesByPrId(
-    @Param('pr_id') pr_id: string,
+    @Param('pr_id', new ParseUUIDPipe({ version: '4' })) pr_id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -390,7 +391,7 @@ export class PurchaseRequestController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   async findOne(
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -630,7 +631,7 @@ export class PurchaseRequestController extends BaseHttpController {
   @ApiBody({ type: SplitPurchaseRequestSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async splitPr(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() body: { detail_ids: string[] },
     @Req() req: Request,
@@ -675,7 +676,7 @@ export class PurchaseRequestController extends BaseHttpController {
   @ApiBody({ type: SubmitPurchaseRequestSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async submit(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() payload: SubmitPurchaseRequestDto,
     @Req() req: Request,
@@ -799,7 +800,7 @@ export class PurchaseRequestController extends BaseHttpController {
   })
   @HttpCode(HttpStatus.OK)
   async approve(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -843,7 +844,7 @@ export class PurchaseRequestController extends BaseHttpController {
   @ApiBody({ type: RejectPurchaseRequestSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async reject(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -888,7 +889,7 @@ export class PurchaseRequestController extends BaseHttpController {
   @ApiBody({ type: ReviewPurchaseRequestSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async review(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -953,7 +954,7 @@ export class PurchaseRequestController extends BaseHttpController {
   @ApiBody({ type: UpdatePurchaseRequestSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() updateDto: Record<string, unknown>,
     @Req() req: Request,
@@ -1018,7 +1019,7 @@ export class PurchaseRequestController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async exportToExcel(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1081,7 +1082,7 @@ export class PurchaseRequestController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async printToPdf(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1146,7 +1147,7 @@ export class PurchaseRequestController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async printToReport(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1198,7 +1199,7 @@ export class PurchaseRequestController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async delete(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1238,7 +1239,7 @@ export class PurchaseRequestController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async findDimensionsByDetailId(
-    @Param('detail_id') detail_id: string,
+    @Param('detail_id', new ParseUUIDPipe({ version: '4' })) detail_id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
@@ -1282,7 +1283,7 @@ export class PurchaseRequestController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async findHistoryByDetailId(
-    @Param('detail_id') detail_id: string,
+    @Param('detail_id', new ParseUUIDPipe({ version: '4' })) detail_id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
@@ -1328,7 +1329,7 @@ export class PurchaseRequestController extends BaseHttpController {
   @ApiBody({ type: CalculatePurchaseRequestDetailSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async getCalculatePriceInfoByDetailId(
-    @Param('detail_id') detail_id: string,
+    @Param('detail_id', new ParseUUIDPipe({ version: '4' })) detail_id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Body() data: CalculatePurchaseRequestDetail,
@@ -1387,7 +1388,7 @@ export class PurchaseRequestController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async regenerateTotalsById(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

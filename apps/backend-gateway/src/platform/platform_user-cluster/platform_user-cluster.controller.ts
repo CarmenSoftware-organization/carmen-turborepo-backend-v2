@@ -1,17 +1,18 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
   Post,
+  Put,
+  Query,
   Req,
   Res,
   UseGuards,
-  Body,
-  Param,
-  HttpCode,
-  HttpStatus,
-  Put,
-  Delete,
-  Query,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Platform_UserClusterService } from './platform_user-cluster.service';
@@ -78,7 +79,7 @@ export class Platform_UserClusterController extends BaseHttpController {
   async getUserCluster(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
@@ -237,7 +238,7 @@ export class Platform_UserClusterController extends BaseHttpController {
   async UpdateUserCluster(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() body: UserClusterUpdateDto,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
@@ -295,7 +296,7 @@ export class Platform_UserClusterController extends BaseHttpController {
   async DeleteUserCluster(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(

@@ -4,6 +4,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Query,
   Req,
   Res,
@@ -75,7 +76,7 @@ export class TaxProfileController extends BaseHttpController {
     'x-description-th': 'ดึงข้อมูลโปรไฟล์ภาษีรายการเดียวตาม ID',
   } as any)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

@@ -1,17 +1,18 @@
 import {
-  Controller,
-  Get,
-  Param,
-  Post,
   Body,
+  Controller,
   Delete,
-  UseGuards,
-  Req,
-  Res,
-  Query,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseUUIDPipe,
   Patch,
+  Post,
+  Query,
+  Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CreditNoteService } from './credit-note.service';
@@ -83,7 +84,7 @@ export class CreditNoteController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -238,7 +239,7 @@ export class CreditNoteController extends BaseHttpController {
   })
   @HttpCode(HttpStatus.OK)
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateDto: UpdateCreditNoteDto,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -285,7 +286,7 @@ export class CreditNoteController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async delete(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -329,7 +330,7 @@ export class CreditNoteController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async confirm(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

@@ -1,6 +1,19 @@
 import {
-  Body, Controller, Delete, Get, HttpCode, HttpStatus,
-  Param, Patch, Post, Put, Query, Req, Res, UseGuards,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Put,
+  Query,
+  Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_RecipeEquipmentService } from './config_recipe-equipment.service';
@@ -46,7 +59,7 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get a recipe equipment by ID', description: 'Retrieves a specific kitchen equipment definition (e.g., oven, mixer, blender, sous vide) that can be associated with recipes to track required equipment for preparation.', operationId: 'configRecipeEquipment_findOne', tags: ['Configuration', 'Recipe Equipment'], 'x-description-th': 'ดึงข้อมูลอุปกรณ์ทำอาหารเดียวตาม ID สำหรับติดตามอุปกรณ์ที่จำเป็นในการเตรียมสูตรอาหาร' } as any)
-  async findOne(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
+  async findOne(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'findOne', id, version }, Config_RecipeEquipmentController.name);
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.recipeEquipmentService.findOne(id, user_id, bu_code, version);
@@ -117,7 +130,7 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update a recipe equipment', description: 'Fully updates an existing kitchen equipment type definition. Changes affect how recipes reference this equipment.', operationId: 'configRecipeEquipment_update', tags: ['Configuration', 'Recipe Equipment'], 'x-description-th': 'อัปเดตอุปกรณ์ทำอาหารทั้งหมด การเปลี่ยนแปลงส่งผลต่อสูตรอาหารที่อ้างอิงอุปกรณ์นี้' } as any)
   @ApiBody({ type: RecipeEquipmentUpdateRequest })
-  async update(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeEquipmentUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
+  async update(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeEquipmentUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'update', id, updateDto, version }, Config_RecipeEquipmentController.name);
     const { user_id } = ExtractRequestHeader(req);
     const data: IUpdateRecipeEquipment = { ...updateDto, id };
@@ -142,7 +155,7 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Patch a recipe equipment', description: 'Partially updates specific fields of a kitchen equipment definition without replacing the entire record.', operationId: 'configRecipeEquipment_patch', tags: ['Configuration', 'Recipe Equipment'], 'x-description-th': 'อัปเดตบางฟิลด์ของอุปกรณ์ทำอาหารโดยไม่แทนที่ข้อมูลทั้งหมด' } as any)
   @ApiBody({ type: RecipeEquipmentUpdateRequest })
-  async patch(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeEquipmentUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
+  async patch(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeEquipmentUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'patch', id, updateDto, version }, Config_RecipeEquipmentController.name);
     const { user_id } = ExtractRequestHeader(req);
     const data: IUpdateRecipeEquipment = { ...updateDto, id };
@@ -165,7 +178,7 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delete a recipe equipment', description: 'Removes a kitchen equipment type from the system. Recipes referencing this equipment should be updated before deletion.', operationId: 'configRecipeEquipment_delete', tags: ['Configuration', 'Recipe Equipment'], 'x-description-th': 'ลบอุปกรณ์ทำอาหารออกจากระบบ ควรอัปเดตสูตรอาหารที่อ้างอิงอุปกรณ์นี้ก่อนลบ' } as any)
-  async delete(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
+  async delete(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'delete', id, version }, Config_RecipeEquipmentController.name);
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.recipeEquipmentService.delete(id, user_id, bu_code, version);

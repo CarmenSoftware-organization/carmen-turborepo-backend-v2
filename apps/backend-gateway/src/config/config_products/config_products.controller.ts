@@ -6,12 +6,13 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
-  Query,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_ProductsService } from './config_products.service';
@@ -83,7 +84,7 @@ export class Config_ProductsController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
@@ -176,7 +177,7 @@ export class Config_ProductsController extends BaseHttpController {
     'x-description-th': 'ดึงข้อมูลกลุ่มรายการสินค้าตาม ID',
   } as any)
   async findItemGroup(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -202,7 +203,7 @@ export class Config_ProductsController extends BaseHttpController {
   }
 
   // @Get('by-item-group-id/:id')
-  // async getByItemsGroup(@Param('id') id: string) {
+  // async getByItemsGroup(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
   //   this.logger.debug({
   //     file: ProductsController.name,
   //     function: this.getByItemsGroup.name,
@@ -211,7 +212,7 @@ export class Config_ProductsController extends BaseHttpController {
   // }
 
   // @Get('order-unit/:id')
-  // async getOrderUnitByProductId(@Param('id') id: string) {
+  // async getOrderUnitByProductId(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
   //   this.logger.debug({
   //     file: ProductsController.name,
   //     function: this.getOrderUnitByProductId.name,
@@ -220,7 +221,7 @@ export class Config_ProductsController extends BaseHttpController {
   // }
 
   // @Get('ingredient-unit/:id')
-  // async getIngredientUnitByProductId(@Param('id') id: string) {
+  // async getIngredientUnitByProductId(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
   //   this.logger.debug({
   //     file: ProductsController.name,
   //     function: this.getIngredientUnitByProductId.name,
@@ -306,7 +307,7 @@ export class Config_ProductsController extends BaseHttpController {
   async update(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() updateDto: ProductUpdateDto,
     @Query('version') version: string = 'latest',
@@ -361,7 +362,7 @@ export class Config_ProductsController extends BaseHttpController {
   async delete(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {

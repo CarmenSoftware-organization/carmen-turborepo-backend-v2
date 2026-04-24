@@ -1,17 +1,18 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
+  Get,
   HttpCode,
   HttpStatus,
-  Req,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
   Query,
+  Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { RequestForPricingService } from './request-for-pricing.service';
@@ -93,7 +94,7 @@ export class RequestForPricingController extends BaseHttpController {
     },
   } as any)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -274,7 +275,7 @@ export class RequestForPricingController extends BaseHttpController {
   })
   @ApiBody({ type: UpdateRequestForPricingRequestDto })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() data: Record<string, unknown>,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -342,7 +343,7 @@ export class RequestForPricingController extends BaseHttpController {
     },
   } as any)
   async remove(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

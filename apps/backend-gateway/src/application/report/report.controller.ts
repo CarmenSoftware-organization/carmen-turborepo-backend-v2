@@ -1,16 +1,17 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Delete,
-  Param,
   Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Post,
   Query,
   Req,
   Res,
   UseGuards,
-  HttpCode,
-  HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -183,7 +184,7 @@ export class ReportController extends BaseHttpController {
   @ApiResponse({ status: 404, description: 'Report template not found' })
   @HttpCode(HttpStatus.OK)
   async getTemplate(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Res() res: Response,
   ): Promise<void> {
     const result = await this.reportService.getTemplate(id);
@@ -479,7 +480,7 @@ export class ReportController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   async deleteSchedule(
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<void> {

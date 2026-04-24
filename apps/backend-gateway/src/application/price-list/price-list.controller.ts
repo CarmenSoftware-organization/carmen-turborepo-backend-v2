@@ -1,17 +1,18 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
+  Get,
   HttpCode,
   HttpStatus,
-  Req,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
   Query,
+  Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { PriceListService } from './price-list.service';
@@ -174,7 +175,7 @@ export class PriceListController extends BaseHttpController {
     'x-description-th': 'ดึงข้อมูลรายการราคารายการเดียวตาม ID',
   } as any)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -359,7 +360,7 @@ export class PriceListController extends BaseHttpController {
   } as any)
   @ApiBody({ type: PriceListUpdateRequestDto })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() data: PriceListUpdateDto,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -425,7 +426,7 @@ export class PriceListController extends BaseHttpController {
     'x-description-th': 'ลบรายการราคาตาม ID',
   } as any)
   async remove(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

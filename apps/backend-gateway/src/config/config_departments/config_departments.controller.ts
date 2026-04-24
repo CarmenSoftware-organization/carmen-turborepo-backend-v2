@@ -3,15 +3,16 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
-  Patch,
-  Post,
-  UseGuards,
-  Req,
-  Res,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
   Query,
+  Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_DepartmentsService } from './config_departments.service';
@@ -103,7 +104,7 @@ export class Config_DepartmentsController extends BaseHttpController {
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
@@ -306,7 +307,7 @@ export class Config_DepartmentsController extends BaseHttpController {
   async update(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() updateDto: DepartmentsUpdateDto,
     @Query('version') version: string = 'latest',
@@ -378,7 +379,7 @@ export class Config_DepartmentsController extends BaseHttpController {
   async delete(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {

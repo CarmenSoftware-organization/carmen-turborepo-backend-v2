@@ -1,16 +1,17 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
-  Body,
+  ParseUUIDPipe,
+  Patch,
   Post,
   Query,
   Req,
   UseGuards,
-  HttpCode,
-  HttpStatus,
-  Patch,
 } from '@nestjs/common';
 import { RequestForPricingCommentService } from './request-for-pricing-comment.service';
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
@@ -59,7 +60,7 @@ export class RequestForPricingCommentController {
   @HttpCode(HttpStatus.OK)
   async findAllByRequestForPricingId(
     @Param('bu_code') bu_code: string,
-    @Param('request_for_pricing_id') request_for_pricing_id: string,
+    @Param('request_for_pricing_id', new ParseUUIDPipe({ version: '4' })) request_for_pricing_id: string,
     @Req() req: Request,
     @Query() query: IPaginateQuery,
     @Query('version') version: string = 'latest',
@@ -90,7 +91,7 @@ export class RequestForPricingCommentController {
   @HttpCode(HttpStatus.OK)
   async findById(
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
@@ -139,7 +140,7 @@ export class RequestForPricingCommentController {
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateDto: UpdateRequestForPricingCommentDto,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
@@ -164,7 +165,7 @@ export class RequestForPricingCommentController {
   @HttpCode(HttpStatus.OK)
   async delete(
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
@@ -188,7 +189,7 @@ export class RequestForPricingCommentController {
   @HttpCode(HttpStatus.OK)
   async addAttachment(
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() attachment: AddAttachmentDto,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
@@ -212,7 +213,7 @@ export class RequestForPricingCommentController {
   @HttpCode(HttpStatus.OK)
   async removeAttachment(
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('fileToken') fileToken: string,
     @Req() req: Request,
     @Query('version') version: string = 'latest',

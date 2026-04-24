@@ -1,17 +1,18 @@
 import {
-  Controller,
-  Get,
-  Param,
-  Post,
   Body,
+  Controller,
   Delete,
-  UseGuards,
-  Req,
-  Res,
+  Get,
   HttpCode,
   HttpStatus,
-  Query,
+  Param,
+  ParseUUIDPipe,
   Patch,
+  Post,
+  Query,
+  Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_ExtraCostTypeService } from './config_extra_cost_type.service';
@@ -78,7 +79,7 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
@@ -206,7 +207,7 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
   async update(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() updateDto: ExtraCostTypeUpdateDto,
     @Query('version') version: string = 'latest',
@@ -253,7 +254,7 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
   async delete(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {

@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Req,
@@ -84,7 +85,7 @@ export class Config_SqlQueryController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.service.get(bu_code, user_id, id);
@@ -150,7 +151,7 @@ export class Config_SqlQueryController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() body: SqlQueryUpdateBody,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
@@ -171,7 +172,7 @@ export class Config_SqlQueryController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.service.delete(bu_code, user_id, id);
@@ -191,7 +192,7 @@ export class Config_SqlQueryController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.service.duplicate(bu_code, user_id, id);

@@ -1,15 +1,16 @@
 import {
+  Body,
   Controller,
-  Get,
-  Param,
   Delete,
-  UseGuards,
-  Req,
-  Res,
-  Query,
+  Get,
   HttpCode,
   HttpStatus,
-  Body,
+  Param,
+  ParseUUIDPipe,
+  Query,
+  Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ActivityLogService, IActivityLogFilter } from './activity-log.service';
@@ -185,7 +186,7 @@ export class ActivityLogController extends BaseHttpController {
     },
   } as any)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -227,7 +228,7 @@ export class ActivityLogController extends BaseHttpController {
     },
   } as any)
   async delete(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -311,7 +312,7 @@ export class ActivityLogController extends BaseHttpController {
     },
   } as any)
   async hardDelete(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

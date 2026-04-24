@@ -1,6 +1,19 @@
 import {
-  Body, Controller, Delete, Get, HttpCode, HttpStatus,
-  Param, Patch, Post, Put, Query, Req, Res, UseGuards,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Put,
+  Query,
+  Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_RecipeCuisineService } from './config_recipe-cuisine.service';
@@ -46,7 +59,7 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get a recipe cuisine by ID', description: 'Retrieves a specific cuisine type definition (e.g., Thai, Italian, Japanese, Continental) used to classify recipes by culinary origin for menu diversity management.', operationId: 'configRecipeCuisine_findOne', tags: ['Configuration', 'Recipe Cuisine'], 'x-description-th': 'ดึงข้อมูลประเภทอาหารเดียวตาม ID สำหรับจำแนกสูตรอาหารตามต้นกำเนิดการทำอาหาร' } as any)
-  async findOne(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
+  async findOne(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'findOne', id, version }, Config_RecipeCuisineController.name);
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.recipeCuisineService.findOne(id, user_id, bu_code, version);
@@ -117,7 +130,7 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update a recipe cuisine', description: 'Fully updates an existing cuisine type definition. Changes affect how recipes tagged with this cuisine are categorized.', operationId: 'configRecipeCuisine_update', tags: ['Configuration', 'Recipe Cuisine'], 'x-description-th': 'อัปเดตประเภทอาหารทั้งหมด การเปลี่ยนแปลงส่งผลต่อสูตรอาหารที่ใช้ประเภทนี้' } as any)
   @ApiBody({ type: RecipeCuisineUpdateRequest })
-  async update(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeCuisineUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
+  async update(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeCuisineUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'update', id, updateDto, version }, Config_RecipeCuisineController.name);
     const { user_id } = ExtractRequestHeader(req);
     const data: IUpdateRecipeCuisine = { ...updateDto, id };
@@ -142,7 +155,7 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Patch a recipe cuisine', description: 'Partially updates specific fields of a cuisine type definition without replacing the entire record.', operationId: 'configRecipeCuisine_patch', tags: ['Configuration', 'Recipe Cuisine'], 'x-description-th': 'อัปเดตบางฟิลด์ของประเภทอาหารโดยไม่แทนที่ข้อมูลทั้งหมด' } as any)
   @ApiBody({ type: RecipeCuisineUpdateRequest })
-  async patch(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeCuisineUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
+  async patch(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeCuisineUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'patch', id, updateDto, version }, Config_RecipeCuisineController.name);
     const { user_id } = ExtractRequestHeader(req);
     const data: IUpdateRecipeCuisine = { ...updateDto, id };
@@ -165,7 +178,7 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delete a recipe cuisine', description: 'Removes a cuisine type from the system. Recipes currently tagged with this cuisine should be reassigned before deletion.', operationId: 'configRecipeCuisine_delete', tags: ['Configuration', 'Recipe Cuisine'], 'x-description-th': 'ลบประเภทอาหารออกจากระบบ ควรย้ายสูตรอาหารไปประเภทอื่นก่อนลบ' } as any)
-  async delete(@Req() req: Request, @Res() res: Response, @Param('id') id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
+  async delete(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'delete', id, version }, Config_RecipeCuisineController.name);
     const { user_id } = ExtractRequestHeader(req);
     const result = await this.recipeCuisineService.delete(id, user_id, bu_code, version);

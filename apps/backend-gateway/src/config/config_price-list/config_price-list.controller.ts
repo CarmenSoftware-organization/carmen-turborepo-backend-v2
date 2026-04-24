@@ -1,19 +1,20 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
   Query,
   Req,
   Res,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
-  HttpCode,
-  HttpStatus,
-  UploadedFile,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -128,7 +129,7 @@ export class Config_PriceListController extends BaseHttpController {
     'x-description-th': 'ดาวน์โหลดรายการราคาเป็นไฟล์ Excel',
   } as any)
   async downloadExcel(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -275,7 +276,7 @@ export class Config_PriceListController extends BaseHttpController {
     'x-description-th': 'ดึงข้อมูลรายการราคารายการเดียวตาม ID',
   } as any)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -321,7 +322,7 @@ export class Config_PriceListController extends BaseHttpController {
   } as any)
   @ApiBody({ type: ConfigPriceListUpdateRequestDto })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateConfigPriceListDto: PriceListUpdateDto,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -373,7 +374,7 @@ export class Config_PriceListController extends BaseHttpController {
     'x-description-th': 'ลบรายการราคาตาม ID',
   } as any)
   async remove(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

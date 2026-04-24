@@ -1,13 +1,14 @@
 import {
   Controller,
   Get,
-  Param,
-  Query,
-  UseGuards,
-  Req,
-  Res,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Query,
+  Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { InventoryTransactionService } from './inventory-transaction.service';
@@ -191,7 +192,7 @@ export class InventoryTransactionController extends BaseHttpController {
   } as any)
   async getProductsByLocation(
     @Param('bu_code') bu_code: string,
-    @Param('location_id') location_id: string,
+    @Param('location_id', new ParseUUIDPipe({ version: '4' })) location_id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Query() query: IPaginateQuery,

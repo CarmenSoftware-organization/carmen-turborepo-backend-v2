@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Query,
@@ -120,7 +121,7 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
     'x-description-th': 'ดึงเทมเพลตใบขอซื้อเฉพาะพร้อมรายการสินค้าและจำนวนที่กำหนดไว้ล่วงหน้า ช่วยให้ผู้ใช้ตรวจสอบหรือใช้เทมเพลตสำหรับสร้างคำขอจัดซื้อใหม่',
   } as any)
   async getPurchaseRequestTemplateById(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -224,7 +225,7 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
     @Body() updatePurchaseRequestTemplateDto: UpdatePurchaseRequestTemplateDto,
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
@@ -270,7 +271,7 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
     'x-description-th': 'ลบเทมเพลตใบขอซื้อที่ไม่จำเป็นอีกต่อไป ป้องกันไม่ให้พนักงานใช้ชุดสินค้าที่ล้าสมัยหรือยกเลิกแล้วสำหรับคำขอจัดซื้อใหม่',
   } as any)
   async deletePurchaseRequestTemplate(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

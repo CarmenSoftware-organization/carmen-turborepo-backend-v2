@@ -1,17 +1,18 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
-  Body,
+  ParseUUIDPipe,
+  Patch,
   Post,
   Query,
   Req,
   Res,
   UseGuards,
-  HttpCode,
-  HttpStatus,
-  Patch,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MyPendingPurchaseRequestService } from './my-pending.purchase-request.service';
@@ -286,7 +287,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -562,7 +563,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async submit(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
@@ -615,7 +616,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   @ApiBody({ type: ApproveByStageRoleRequestDto })
   @HttpCode(HttpStatus.OK)
   async approve(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Body() payload: ApproveByStageRoleDto2,
@@ -668,7 +669,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async reject(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
@@ -721,7 +722,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   @ApiBody({ type: ReviewPurchaseRequestRequestDto })
   @HttpCode(HttpStatus.OK)
   async review(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Body() payload: ReviewPurchaseRequestDto,
@@ -793,7 +794,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   @ApiBody({ type: UpdatePurchaseRequestDto })
   @HttpCode(HttpStatus.OK)
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateDto: UpdatePurchaseRequestDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -859,7 +860,7 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async delete(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,

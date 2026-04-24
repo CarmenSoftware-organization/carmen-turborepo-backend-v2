@@ -6,12 +6,13 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
-  Query,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_LocationsService } from './config_locations.service';
@@ -105,7 +106,7 @@ export class Config_LocationsController extends BaseHttpController {
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Query('withUser') withUser: boolean = true,
     @Query('withProducts') withProducts: boolean = true,
@@ -329,7 +330,7 @@ export class Config_LocationsController extends BaseHttpController {
   async update(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() updateDto: LocationUpdateDto,
     @Query('version') version: string = 'latest',
@@ -401,7 +402,7 @@ export class Config_LocationsController extends BaseHttpController {
   async delete(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {

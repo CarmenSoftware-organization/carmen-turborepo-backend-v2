@@ -1,18 +1,19 @@
 import {
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-  Req,
-  UseGuards,
   Body,
-  Put,
-  Patch,
+  Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Put,
+  Query,
+  Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { StoreRequisitionService } from './store-requisition.service';
@@ -113,7 +114,7 @@ export class StoreRequisitionController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -339,7 +340,7 @@ export class StoreRequisitionController extends BaseHttpController {
   @ApiBody({ type: UpdateStoreRequisitionSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() updateDto: UpdateStoreRequisitionDto,
     @Req() req: Request,
@@ -390,7 +391,7 @@ export class StoreRequisitionController extends BaseHttpController {
   @ApiBody({ type: SubmitStoreRequisitionSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async submit(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() payload: SubmitStoreRequisitionDto,
     @Req() req: Request,
@@ -440,7 +441,7 @@ export class StoreRequisitionController extends BaseHttpController {
   @ApiBody({ type: ApproveStoreRequisitionSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async approve(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() payload: ApproveStoreRequisitionByStageRoleDto,
     @Req() req: Request,
@@ -490,7 +491,7 @@ export class StoreRequisitionController extends BaseHttpController {
   @ApiBody({ type: RejectStoreRequisitionSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async reject(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() payload: RejectStoreRequisitionDto,
     @Req() req: Request,
@@ -541,7 +542,7 @@ export class StoreRequisitionController extends BaseHttpController {
   @ApiBody({ type: ReviewStoreRequisitionSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async review(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() payload: ReviewStoreRequisitionDto,
     @Req() req: Request,
@@ -610,7 +611,7 @@ export class StoreRequisitionController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async delete(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -662,7 +663,7 @@ export class StoreRequisitionController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async getWorkflowPermission(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -753,7 +754,7 @@ export class StoreRequisitionController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async getWorkflowPreviousStepList(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

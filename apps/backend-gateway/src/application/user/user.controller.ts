@@ -1,16 +1,17 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Put,
+  Query,
   Req,
   Res,
   UseGuards,
-  Query,
-  Param,
-  Put,
-  Patch,
-  Body,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { UserService } from './user.service';
@@ -329,7 +330,7 @@ export class UserController extends BaseHttpController {
   })
   @ApiBody({ type: UpdateUserProfileRequestDto })
   async updateUserById(
-    @Param('user_id') targetUserId: string,
+    @Param('user_id', new ParseUUIDPipe({ version: '4' })) targetUserId: string,
     @Body() updateData: UpdateUserProfileDto,
     @Res() res: Response,
     @Query('version') version: string = 'latest',

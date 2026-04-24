@@ -1,17 +1,18 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
+  Get,
   HttpCode,
   HttpStatus,
-  Req,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
   Query,
+  Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { PriceListTemplateService } from './price-list-template.service';
@@ -102,7 +103,7 @@ export class PriceListTemplateController extends BaseHttpController {
     'x-description-th': 'ดึงข้อมูลแม่แบบรายการราคารายการเดียวตาม ID',
   } as any)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -291,7 +292,7 @@ export class PriceListTemplateController extends BaseHttpController {
   } as any)
   @ApiBody({ type: PriceListTemplateUpdateRequestDto })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() data: PriceListTemplateUpdateDto,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -362,7 +363,7 @@ export class PriceListTemplateController extends BaseHttpController {
     'x-description-th': 'ลบแม่แบบรายการราคาตาม ID',
   } as any)
   async remove(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -428,7 +429,7 @@ export class PriceListTemplateController extends BaseHttpController {
   } as any)
   @ApiBody({ type: PriceListTemplateUpdateStatusRequestDto })
   async updateStatus(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body('status') status: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,

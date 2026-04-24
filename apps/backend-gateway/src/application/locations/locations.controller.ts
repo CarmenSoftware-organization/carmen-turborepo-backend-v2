@@ -4,6 +4,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Query,
   Req,
   Res,
@@ -209,7 +210,7 @@ export class LocationsController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('product_id') product_id: string,
+    @Param('product_id', new ParseUUIDPipe({ version: '4' })) product_id: string,
     @Query() query: PaginateDto,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
@@ -276,7 +277,7 @@ export class LocationsController extends BaseHttpController {
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Query('withUser') withUser: boolean = true,
     @Query('withProducts') withProducts: boolean = true,
@@ -360,8 +361,8 @@ export class LocationsController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('location_id') location_id: string,
-    @Param('product_id') product_id: string,
+    @Param('location_id', new ParseUUIDPipe({ version: '4' })) location_id: string,
+    @Param('product_id', new ParseUUIDPipe({ version: '4' })) product_id: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(

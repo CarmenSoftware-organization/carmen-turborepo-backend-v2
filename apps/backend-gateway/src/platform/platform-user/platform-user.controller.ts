@@ -1,17 +1,18 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
   Body,
-  Param,
-  Query,
+  Controller,
+  Delete,
+  Get,
   HttpCode,
   HttpStatus,
-  UseGuards,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Query,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { PlatformUserService } from './platform-user.service';
@@ -199,7 +200,7 @@ export class PlatformUserController extends BaseHttpController {
   async getUser(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
@@ -306,7 +307,7 @@ export class PlatformUserController extends BaseHttpController {
   async updateUser(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() data: Record<string, unknown>,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
@@ -356,7 +357,7 @@ export class PlatformUserController extends BaseHttpController {
   async resetUserPassword(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() data: { newPassword: string; temporary?: boolean },
     @Query('version') version: string = 'latest',
   ): Promise<void> {
@@ -407,7 +408,7 @@ export class PlatformUserController extends BaseHttpController {
   async deleteUser(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
@@ -458,7 +459,7 @@ export class PlatformUserController extends BaseHttpController {
   async hardDeleteUser(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(

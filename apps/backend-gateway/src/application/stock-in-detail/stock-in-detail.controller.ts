@@ -1,17 +1,18 @@
 import {
-  Controller,
-  Get,
-  Param,
-  Post,
   Body,
+  Controller,
   Delete,
-  UseGuards,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
   Req,
   Res,
-  Query,
-  HttpStatus,
-  HttpCode,
-  Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { StockInDetailService } from './stock-in-detail.service';
@@ -117,7 +118,7 @@ export class StockInDetailController extends BaseHttpController {
     },
   })
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -199,7 +200,7 @@ export class StockInDetailController extends BaseHttpController {
   })
   @ApiBody({ type: StockInDetailUpdateRequestDto })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() updateDto: StockInDetailUpdateDto,
     @Req() req: Request,
@@ -241,7 +242,7 @@ export class StockInDetailController extends BaseHttpController {
     },
   })
   async delete(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

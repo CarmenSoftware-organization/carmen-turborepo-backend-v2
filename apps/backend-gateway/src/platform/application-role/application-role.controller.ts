@@ -1,16 +1,17 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
   Body,
-  Param,
-  Query,
+  Controller,
+  Delete,
+  Get,
   HttpCode,
   HttpStatus,
-  UseGuards,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Query,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ApplicationRoleService } from './application-role.service';
@@ -161,7 +162,7 @@ export class ApplicationRoleController extends BaseHttpController {
   } as any)
   async findOne(
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
@@ -311,7 +312,7 @@ export class ApplicationRoleController extends BaseHttpController {
   } as any)
   async update(
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateApplicationRoleDto: UpdateApplicationRoleDto,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
@@ -390,7 +391,7 @@ export class ApplicationRoleController extends BaseHttpController {
   } as any)
   async delete(
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(

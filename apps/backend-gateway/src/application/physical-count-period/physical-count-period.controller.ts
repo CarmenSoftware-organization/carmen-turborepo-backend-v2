@@ -1,17 +1,18 @@
 import {
-  Controller,
-  Get,
-  Param,
-  Post,
   Body,
+  Controller,
   Delete,
-  UseGuards,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
   Req,
   Res,
-  Query,
-  HttpStatus,
-  HttpCode,
-  Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { PhysicalCountPeriodService } from './physical-count-period.service';
@@ -146,7 +147,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
     },
   } as any)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -321,7 +322,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
   } as any)
   @ApiBody({ type: PhysicalCountPeriodUpdateRequestDto })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() updateDto: PhysicalCountPeriodUpdateDto,
     @Req() req: Request,
@@ -383,7 +384,7 @@ export class PhysicalCountPeriodController extends BaseHttpController {
     },
   } as any)
   async delete(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

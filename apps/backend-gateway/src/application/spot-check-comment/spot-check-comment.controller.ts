@@ -1,16 +1,17 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
-  Body,
+  ParseUUIDPipe,
+  Patch,
   Post,
   Query,
   Req,
   UseGuards,
-  HttpCode,
-  HttpStatus,
-  Patch,
 } from '@nestjs/common';
 import { SpotCheckCommentService } from './spot-check-comment.service';
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
@@ -57,7 +58,7 @@ export class SpotCheckCommentController {
   @HttpCode(HttpStatus.OK)
   async findAllBySpotCheckId(
     @Param('bu_code') bu_code: string,
-    @Param('spot_check_id') spot_check_id: string,
+    @Param('spot_check_id', new ParseUUIDPipe({ version: '4' })) spot_check_id: string,
     @Req() req: Request,
     @Query() query: IPaginateQuery,
     @Query('version') version: string = 'latest',
@@ -87,7 +88,7 @@ export class SpotCheckCommentController {
   @HttpCode(HttpStatus.OK)
   async findById(
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
@@ -138,7 +139,7 @@ export class SpotCheckCommentController {
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateDto: UpdateSpotCheckCommentDto,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
@@ -167,7 +168,7 @@ export class SpotCheckCommentController {
   @HttpCode(HttpStatus.OK)
   async delete(
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
@@ -190,7 +191,7 @@ export class SpotCheckCommentController {
   @HttpCode(HttpStatus.OK)
   async addAttachment(
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() attachment: AddAttachmentDto,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
@@ -219,7 +220,7 @@ export class SpotCheckCommentController {
   @HttpCode(HttpStatus.OK)
   async removeAttachment(
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('fileToken') fileToken: string,
     @Req() req: Request,
     @Query('version') version: string = 'latest',

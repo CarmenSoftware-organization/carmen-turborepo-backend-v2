@@ -6,12 +6,13 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
+  Query,
   Req,
   Res,
   UseGuards,
-  Query,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Platform_BusinessUnitService as Platform_BusinessUnitService } from './platform_business-unit.service';
@@ -125,7 +126,7 @@ export class Platform_BusinessUnitController extends BaseHttpController {
   } as any)
   @ApiVersionMinRequest()
   async getBusinessUnitById(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -230,7 +231,7 @@ export class Platform_BusinessUnitController extends BaseHttpController {
   async updateBusinessUnit(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateBusinessUnitDto: BusinessUnitUpdateDto,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
@@ -283,7 +284,7 @@ export class Platform_BusinessUnitController extends BaseHttpController {
   async deleteBusinessUnit(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(

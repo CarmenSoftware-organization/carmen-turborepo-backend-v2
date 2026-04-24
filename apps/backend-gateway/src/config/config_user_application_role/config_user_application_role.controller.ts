@@ -1,4 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { KeycloakGuard } from 'src/auth';
 import { ConfigUserApplicationRoleService } from './config_user_application_role.service';
@@ -44,7 +59,7 @@ export class ConfigUserApplicationRoleController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('user_id') targetUserId: string,
+    @Param('user_id', new ParseUUIDPipe({ version: '4' })) targetUserId: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(

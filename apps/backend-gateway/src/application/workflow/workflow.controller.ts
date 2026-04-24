@@ -1,4 +1,17 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Query, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Query,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { WorkflowService } from './workflow.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -118,7 +131,7 @@ export class WorkflowController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('workflow_id') workflow_id: string,
+    @Param('workflow_id', new ParseUUIDPipe({ version: '4' })) workflow_id: string,
     @Query('stage') stage: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {

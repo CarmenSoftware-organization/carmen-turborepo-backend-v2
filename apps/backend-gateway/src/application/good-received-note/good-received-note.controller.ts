@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   Body,
   Delete,
@@ -153,7 +154,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
     'x-description-th': 'ดึงรายละเอียดทั้งหมดของใบรับสินค้า รวมถึงรายการสินค้าที่รับ จำนวน บันทึกคุณภาพ และใบสั่งซื้อที่เกี่ยวข้อง ใช้สำหรับตรวจสอบว่าสินค้าที่ส่งมาตรงกับที่สั่งซื้อหรือไม่',
   } as any)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -249,7 +250,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('vendor_id') vendor_id: string,
+    @Param('vendor_id', new ParseUUIDPipe({ version: '4' })) vendor_id: string,
     @Query() query: IPaginateQuery,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
@@ -294,7 +295,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('vendor_id') vendor_id: string,
+    @Param('vendor_id', new ParseUUIDPipe({ version: '4' })) vendor_id: string,
     @Query() query: IPaginateQuery,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
@@ -581,7 +582,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
     },
   })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() updateDto: GoodReceivedNoteUpdateDto,
     @Req() req: Request,
@@ -646,7 +647,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
     'x-description-th': 'ลบใบรับสินค้าที่สร้างผิดพลาดหรือไม่ถูกต้อง ใช้ได้เฉพาะกับใบรับสินค้าที่ยังไม่ได้อนุมัติ',
   } as any)
   async delete(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -706,7 +707,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
     'x-description-th': 'ยกเลิกใบรับสินค้าโดยเปลี่ยนสถานะเป็นยกเลิก ป้องกันไม่ให้บันทึกเข้าคลังสินค้า ใช้เมื่อการส่งมอบถูกปฏิเสธหรือบันทึกผิดพลาด',
   } as any)
   async voidGrn(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -778,7 +779,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async exportToExcel(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -866,7 +867,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiBody({ type: RejectGoodReceivedNoteSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async reject(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() body: { reason?: string },
     @Req() req: Request,
@@ -941,7 +942,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async approve(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1003,7 +1004,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async findDetailsByGrnId(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1066,8 +1067,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async findDetailById(
-    @Param('id') id: string,
-    @Param('detail_id') detailId: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('detail_id', new ParseUUIDPipe({ version: '4' })) detailId: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1132,8 +1133,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async deleteDetail(
-    @Param('id') id: string,
-    @Param('detail_id') detailId: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('detail_id', new ParseUUIDPipe({ version: '4' })) detailId: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1248,7 +1249,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiBody({ type: CommitGoodReceivedNoteSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async saveGrn(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() data: Record<string, unknown>,
     @Req() req: Request,
@@ -1301,7 +1302,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
   @ApiBody({ type: CommitGoodReceivedNoteSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async commit(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() data: Record<string, unknown>,
     @Req() req: Request,
@@ -1353,7 +1354,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async findProductsByGrnId(
-    @Param('grn_id') grnId: string,
+    @Param('grn_id', new ParseUUIDPipe({ version: '4' })) grnId: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1405,8 +1406,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async findLocationsByGrnIdAndProductId(
-    @Param('grn_id') grnId: string,
-    @Param('product_id') productId: string,
+    @Param('grn_id', new ParseUUIDPipe({ version: '4' })) grnId: string,
+    @Param('product_id', new ParseUUIDPipe({ version: '4' })) productId: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1458,7 +1459,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async findLocationsByGrnId(
-    @Param('grn_id') grnId: string,
+    @Param('grn_id', new ParseUUIDPipe({ version: '4' })) grnId: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1510,8 +1511,8 @@ export class GoodReceivedNoteController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async findProductsByGrnIdAndLocationId(
-    @Param('grn_id') grnId: string,
-    @Param('location_id') locationId: string,
+    @Param('grn_id', new ParseUUIDPipe({ version: '4' })) grnId: string,
+    @Param('location_id', new ParseUUIDPipe({ version: '4' })) locationId: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1570,7 +1571,7 @@ export class GoodReceivedNoteController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async regenerateTotalsById(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

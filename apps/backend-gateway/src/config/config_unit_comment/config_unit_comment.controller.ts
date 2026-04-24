@@ -1,17 +1,18 @@
 import {
-  Controller,
-  Get,
-  Param,
-  Post,
   Body,
-  Put,
+  Controller,
   Delete,
-  UseGuards,
-  Req,
-  Res,
-  Query,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Query,
+  Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_UnitCommentService as Config_UnitCommentService } from './config_unit_comment.service';
@@ -62,7 +63,7 @@ export class Config_UnitCommentController extends BaseHttpController {
   @ApiOperation({ summary: 'Get a unit comment by ID', description: 'Retrieves a specific predefined comment/note template associated with unit operations. These standardized comments streamline data entry for inventory and procurement transactions.', operationId: 'configUnitComment_findOne', tags: ['Configuration', 'Unit Comment'], 'x-description-th': 'ดึงข้อมูลหมายเหตุหน่วยนับรายการเดียวตาม ID' } as any)
   async findOne(
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -187,7 +188,7 @@ export class Config_UnitCommentController extends BaseHttpController {
   @ApiBody({ type: UnitCommentUpdateRequest })
   async update(
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateDto: UnitCommentUpdateDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -230,7 +231,7 @@ export class Config_UnitCommentController extends BaseHttpController {
   @ApiOperation({ summary: 'Delete a unit comment', description: 'Removes a predefined comment template from the available options. Historical transactions that used this comment are not affected.', operationId: 'configUnitComment_delete', tags: ['Configuration', 'Unit Comment'], 'x-description-th': 'ลบหมายเหตุหน่วยนับตาม ID' } as any)
   async remove(
     @Param('bu_code') bu_code: string,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',

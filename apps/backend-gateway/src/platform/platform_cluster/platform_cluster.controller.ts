@@ -6,12 +6,13 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
+  Query,
   Req,
   Res,
   UseGuards,
-  Query,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Platform_ClusterService } from './platform_cluster.service';
@@ -124,7 +125,7 @@ export class Platform_ClusterController extends BaseHttpController {
     },
   } as any)
   async getClusterById(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Query('version') version: string = 'latest',
@@ -228,7 +229,7 @@ export class Platform_ClusterController extends BaseHttpController {
   async updateCluster(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateClusterDto: ClusterUpdateDto,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
@@ -283,7 +284,7 @@ export class Platform_ClusterController extends BaseHttpController {
   async deleteCluster(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(

@@ -1,17 +1,18 @@
 import {
-  Controller,
-  Get,
-  Param,
-  Post,
   Body,
+  Controller,
   Delete,
-  UseGuards,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
   Req,
   Res,
-  Query,
-  HttpStatus,
-  HttpCode,
-  Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { SpotCheckService } from './spot-check.service';
@@ -192,7 +193,7 @@ export class SpotCheckController extends BaseHttpController {
     },
   } as any)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -353,7 +354,7 @@ export class SpotCheckController extends BaseHttpController {
   } as any)
   @ApiBody({ type: SpotCheckUpdateRequestDto })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() updateDto: SpotCheckUpdateDto,
     @Req() req: Request,
@@ -409,7 +410,7 @@ export class SpotCheckController extends BaseHttpController {
     },
   } as any)
   async delete(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -460,7 +461,7 @@ export class SpotCheckController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async findDetailsBySpotCheckId(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -507,8 +508,8 @@ export class SpotCheckController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async findDetailById(
-    @Param('id') id: string,
-    @Param('detail_id') detailId: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('detail_id', new ParseUUIDPipe({ version: '4' })) detailId: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -556,8 +557,8 @@ export class SpotCheckController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async deleteDetail(
-    @Param('id') id: string,
-    @Param('detail_id') detailId: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('detail_id', new ParseUUIDPipe({ version: '4' })) detailId: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -608,7 +609,7 @@ export class SpotCheckController extends BaseHttpController {
   @ApiBody({ type: SpotCheckSaveItemsRequestDto })
   @HttpCode(HttpStatus.OK)
   async saveItems(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() data: { items: Array<{ id: string; actual_qty: number }> },
     @Req() req: Request,
@@ -658,7 +659,7 @@ export class SpotCheckController extends BaseHttpController {
   @ApiBody({ type: SpotCheckSaveItemsRequestDto })
   @HttpCode(HttpStatus.OK)
   async reviewItems(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() data: { items: Array<{ id: string; actual_qty: number }> },
     @Req() req: Request,
@@ -705,7 +706,7 @@ export class SpotCheckController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async getReview(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -752,7 +753,7 @@ export class SpotCheckController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async submit(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -799,7 +800,7 @@ export class SpotCheckController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async reset(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -845,7 +846,7 @@ export class SpotCheckController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async getProductsByLocationId(
-    @Param('location_id') locationId: string,
+    @Param('location_id', new ParseUUIDPipe({ version: '4' })) locationId: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

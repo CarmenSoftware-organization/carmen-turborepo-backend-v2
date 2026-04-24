@@ -1,17 +1,18 @@
 import {
-  Controller,
-  Get,
-  Param,
-  Post,
   Body,
-  Put,
+  Controller,
   Delete,
-  UseGuards,
-  Req,
-  Res,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
   Query,
+  Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_WorkflowsService } from './config_workflows.service';
@@ -80,7 +81,7 @@ export class Config_WorkflowsController extends BaseHttpController {
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
@@ -226,7 +227,7 @@ export class Config_WorkflowsController extends BaseHttpController {
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateDto: WorkflowUpdateDto,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
@@ -279,7 +280,7 @@ export class Config_WorkflowsController extends BaseHttpController {
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(

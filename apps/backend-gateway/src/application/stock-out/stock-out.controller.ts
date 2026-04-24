@@ -1,18 +1,19 @@
 import {
-  Controller,
-  Get,
-  Param,
-  Post,
   Body,
-  Put,
+  Controller,
   Delete,
-  UseGuards,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Put,
+  Query,
   Req,
   Res,
-  Query,
-  HttpStatus,
-  HttpCode,
-  Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { StockOutService } from './stock-out.service';
@@ -91,7 +92,7 @@ export class StockOutController extends BaseHttpController {
     },
   } as any)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -213,7 +214,7 @@ export class StockOutController extends BaseHttpController {
   } as any)
   @ApiBody({ type: UpdateStockOutSwaggerDto })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() updateDto: StockOutUpdateDto,
     @Req() req: Request,
@@ -256,7 +257,7 @@ export class StockOutController extends BaseHttpController {
     },
   } as any)
   async delete(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -289,7 +290,7 @@ export class StockOutController extends BaseHttpController {
     },
   } as any)
   async voidStockOut(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() data: Record<string, unknown>,
     @Req() req: Request,
@@ -334,7 +335,7 @@ export class StockOutController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async findDetailsByStockOutId(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -378,8 +379,8 @@ export class StockOutController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async findDetailById(
-    @Param('id') id: string,
-    @Param('detail_id') detailId: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('detail_id', new ParseUUIDPipe({ version: '4' })) detailId: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -425,7 +426,7 @@ export class StockOutController extends BaseHttpController {
   @ApiBody({ type: CreateStockOutDetailSwaggerDto })
   @HttpCode(HttpStatus.CREATED)
   async createDetail(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() data: StockOutDetailCreateDto,
     @Req() req: Request,
@@ -474,8 +475,8 @@ export class StockOutController extends BaseHttpController {
   @ApiBody({ type: UpdateStockOutDetailSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async updateDetail(
-    @Param('id') id: string,
-    @Param('detail_id') detailId: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('detail_id', new ParseUUIDPipe({ version: '4' })) detailId: string,
     @Param('bu_code') bu_code: string,
     @Body() data: StockOutDetailUpdateDto,
     @Req() req: Request,
@@ -522,8 +523,8 @@ export class StockOutController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async deleteDetail(
-    @Param('id') id: string,
-    @Param('detail_id') detailId: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('detail_id', new ParseUUIDPipe({ version: '4' })) detailId: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

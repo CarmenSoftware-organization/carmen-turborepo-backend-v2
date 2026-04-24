@@ -1,18 +1,19 @@
 import {
-  Controller,
-  Get,
-  Param,
-  Post,
   Body,
-  Put,
+  Controller,
   Delete,
-  UseGuards,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Put,
+  Query,
   Req,
   Res,
-  Query,
-  HttpStatus,
-  HttpCode,
-  Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { TransferService } from './transfer.service';
@@ -91,7 +92,7 @@ export class TransferController extends BaseHttpController {
     },
   } as any)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -213,7 +214,7 @@ export class TransferController extends BaseHttpController {
   } as any)
   @ApiBody({ type: UpdateTransferSwaggerDto })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() updateDto: TransferUpdateDto,
     @Req() req: Request,
@@ -256,7 +257,7 @@ export class TransferController extends BaseHttpController {
     },
   } as any)
   async delete(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -300,7 +301,7 @@ export class TransferController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async findDetailsByTransferId(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -344,8 +345,8 @@ export class TransferController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async findDetailById(
-    @Param('id') id: string,
-    @Param('detail_id') detailId: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('detail_id', new ParseUUIDPipe({ version: '4' })) detailId: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -391,7 +392,7 @@ export class TransferController extends BaseHttpController {
   @ApiBody({ type: CreateTransferDetailSwaggerDto })
   @HttpCode(HttpStatus.CREATED)
   async createDetail(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() data: TransferDetailCreateDto,
     @Req() req: Request,
@@ -440,8 +441,8 @@ export class TransferController extends BaseHttpController {
   @ApiBody({ type: UpdateTransferDetailSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async updateDetail(
-    @Param('id') id: string,
-    @Param('detail_id') detailId: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('detail_id', new ParseUUIDPipe({ version: '4' })) detailId: string,
     @Param('bu_code') bu_code: string,
     @Body() data: TransferDetailUpdateDto,
     @Req() req: Request,
@@ -488,8 +489,8 @@ export class TransferController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async deleteDetail(
-    @Param('id') id: string,
-    @Param('detail_id') detailId: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('detail_id', new ParseUUIDPipe({ version: '4' })) detailId: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,

@@ -1,4 +1,18 @@
-import { Controller, Delete, Get, Param, Body, Post, Query, Req, UseGuards, HttpCode, HttpStatus, Patch } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { VendorBusinessTypeCommentService } from './vendor-business-type-comment.service';
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
 import { ApiVersionMinRequest, ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator';
@@ -26,7 +40,7 @@ export class VendorBusinessTypeCommentController {
   @ApiUserFilterQueries()
   @ApiOperation({ summary: 'Get all comments for a vendor-business-type', operationId: 'findAllVendorBusinessTypeComments', tags: ['Master', 'VendorBusinessType Comment'], responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
-  async findAllByVendorBusinessTypeId(@Param('bu_code') bu_code: string, @Param('vendor_business_type_id') vendor_business_type_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
+  async findAllByVendorBusinessTypeId(@Param('bu_code') bu_code: string, @Param('vendor_business_type_id', new ParseUUIDPipe({ version: '4' })) vendor_business_type_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
     return this.vendorBusinessTypeCommentService.findAllByVendorBusinessTypeId(vendor_business_type_id, user_id, bu_code, paginate, version);
@@ -37,7 +51,7 @@ export class VendorBusinessTypeCommentController {
   @ApiVersionMinRequest()
   @ApiOperation({ summary: 'Get a vendor-business-type comment by ID', operationId: 'findOneVendorBusinessTypeComment', tags: ['Master', 'VendorBusinessType Comment'], responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
-  async findById(@Param('bu_code') bu_code: string, @Param('id') id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
+  async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     return this.vendorBusinessTypeCommentService.findById(id, user_id, bu_code, version);
   }
@@ -59,7 +73,7 @@ export class VendorBusinessTypeCommentController {
   @ApiOperation({ summary: 'Update a vendor-business-type comment', operationId: 'updateVendorBusinessTypeComment', tags: ['Master', 'VendorBusinessType Comment'], responses: { 200: { description: 'Comment updated successfully' } } } as any)
   @ApiBody({ type: UpdateVendorBusinessTypeCommentDto })
   @HttpCode(HttpStatus.OK)
-  async update(@Param('bu_code') bu_code: string, @Param('id') id: string, @Body() updateDto: UpdateVendorBusinessTypeCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
+  async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdateVendorBusinessTypeCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     return this.vendorBusinessTypeCommentService.update(id, { ...updateDto }, user_id, bu_code, version);
   }
@@ -69,7 +83,7 @@ export class VendorBusinessTypeCommentController {
   @ApiVersionMinRequest()
   @ApiOperation({ summary: 'Delete a vendor-business-type comment', operationId: 'deleteVendorBusinessTypeComment', tags: ['Master', 'VendorBusinessType Comment'], responses: { 200: { description: 'Comment deleted successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
-  async delete(@Param('bu_code') bu_code: string, @Param('id') id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
+  async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     return this.vendorBusinessTypeCommentService.delete(id, user_id, bu_code, version);
   }
@@ -80,7 +94,7 @@ export class VendorBusinessTypeCommentController {
   @ApiOperation({ summary: 'Add attachment to a vendor-business-type comment', operationId: 'addAttachmentToVendorBusinessTypeComment', tags: ['Master', 'VendorBusinessType Comment'], responses: { 200: { description: 'Attachment added successfully' } } } as any)
   @ApiBody({ type: AddAttachmentDto })
   @HttpCode(HttpStatus.OK)
-  async addAttachment(@Param('bu_code') bu_code: string, @Param('id') id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
+  async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     return this.vendorBusinessTypeCommentService.addAttachment(id, { ...attachment }, user_id, bu_code, version);
   }
@@ -90,7 +104,7 @@ export class VendorBusinessTypeCommentController {
   @ApiVersionMinRequest()
   @ApiOperation({ summary: 'Remove attachment from a vendor-business-type comment', operationId: 'removeAttachmentFromVendorBusinessTypeComment', tags: ['Master', 'VendorBusinessType Comment'], responses: { 200: { description: 'Attachment removed successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
-  async removeAttachment(@Param('bu_code') bu_code: string, @Param('id') id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
+  async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     return this.vendorBusinessTypeCommentService.removeAttachment(id, fileToken, user_id, bu_code, version);
   }

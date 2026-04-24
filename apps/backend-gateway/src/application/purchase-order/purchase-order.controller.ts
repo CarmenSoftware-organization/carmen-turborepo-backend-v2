@@ -1,18 +1,19 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   Put,
   Query,
   Req,
   Res,
-  Body,
   UseGuards,
-  HttpCode,
-  HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { PurchaseOrderService } from './purchase-order.service';
@@ -163,7 +164,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   async findAllForGrnByVendor(
     @Param('bu_code') bu_code: string,
-    @Param('vendor_id') vendor_id: string,
+    @Param('vendor_id', new ParseUUIDPipe({ version: '4' })) vendor_id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Query() query: IPaginateQuery,
@@ -277,7 +278,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiResponse({ status: 200, description: 'Previous stages retrieved successfully', type: PurchaseOrderPreviousStagesResponseDto })
   @ApiResponse({ status: 404, description: 'Purchase order not found or no workflow assigned' })
   async getPreviousStagesByPoId(
-    @Param('po_id') po_id: string,
+    @Param('po_id', new ParseUUIDPipe({ version: '4' })) po_id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -342,7 +343,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -565,7 +566,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() updateDto: PurchaseOrderUpdateDto,
     @Req() req: Request,
@@ -637,7 +638,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async delete(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -721,7 +722,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiResponse({ status: 404, description: 'The purchase order was not found or not in progress' })
   @HttpCode(HttpStatus.OK)
   async save(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() data: SavePurchaseOrderDto,
     @Req() req: Request,
@@ -766,7 +767,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiBody({ type: SubmitPurchaseOrderSwaggerDto })
   @HttpCode(HttpStatus.OK)
   async submit(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() payload: SubmitPurchaseOrderDto,
     @Req() req: Request,
@@ -843,7 +844,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async approve(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() data: ApprovePurchaseOrderDto,
     @Req() req: Request,
@@ -930,7 +931,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async reject(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() data: RejectPurchaseOrderDto,
     @Req() req: Request,
@@ -1017,7 +1018,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async review(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Body() data: ReviewPurchaseOrderDto,
     @Req() req: Request,
@@ -1093,7 +1094,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async cancel(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1162,7 +1163,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async closePO(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1400,7 +1401,7 @@ export class PurchaseOrderController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async exportToExcel(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1481,7 +1482,7 @@ export class PurchaseOrderController extends BaseHttpController {
   } as any)
   @HttpCode(HttpStatus.OK)
   async printToPdf(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1545,7 +1546,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiResponse({ status: 404, description: 'The purchase order was not found' })
   @HttpCode(HttpStatus.OK)
   async findAllDetails(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1594,8 +1595,8 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiResponse({ status: 404, description: 'The purchase order detail was not found' })
   @HttpCode(HttpStatus.OK)
   async findOneDetail(
-    @Param('id') id: string,
-    @Param('detail_id') detailId: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('detail_id', new ParseUUIDPipe({ version: '4' })) detailId: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
@@ -1647,8 +1648,8 @@ export class PurchaseOrderController extends BaseHttpController {
   @ApiResponse({ status: 404, description: 'The purchase order detail was not found' })
   @HttpCode(HttpStatus.OK)
   async deleteDetail(
-    @Param('id') id: string,
-    @Param('detail_id') detailId: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('detail_id', new ParseUUIDPipe({ version: '4' })) detailId: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
     @Res() res: Response,
