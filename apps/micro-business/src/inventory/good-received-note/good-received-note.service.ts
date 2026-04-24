@@ -225,60 +225,36 @@ export class GoodReceivedNoteService {
           currency_code: true,
           exchange_rate: true,
           exchange_rate_date: true,
+          net_amount: true,
+          base_net_amount: true,
+          total_amount: true,
+          base_total_amount: true,
           created_at: true,
           is_active: true,
-          tb_good_received_note_detail: {
-            select: {
-              tb_good_received_note_detail_item: {
-                select: {
-                  net_amount: true,
-                  base_net_amount: true,
-                  total_price: true,
-                  base_total_price: true,
-                },
-              },
-            },
-          },
         },
       })
       .then((res) => {
-        return res.map((item) => {
-          let net_amount = 0;
-          let base_net_amount = 0;
-          let total_amount = 0;
-          let base_total_amount = 0;
-
-          for (const detail of item.tb_good_received_note_detail) {
-            for (const detailItem of detail.tb_good_received_note_detail_item) {
-              net_amount += Number(detailItem.net_amount ?? 0);
-              base_net_amount += Number(detailItem.base_net_amount ?? 0);
-              total_amount += Number(detailItem.total_price ?? 0);
-              base_total_amount += Number(detailItem.base_total_price ?? 0);
-            }
-          }
-
-          return {
-            id: item.id,
-            grn_no: item.grn_no,
-            grn_date: item.grn_date,
-            doc_type: item.doc_type,
-            doc_status: item.doc_status,
-            invoice_no: item.invoice_no,
-            invoice_date: item.invoice_date,
-            description: item.description,
-            vendor_name: item.vendor_name,
-            currency_id: item.currency_id,
-            currency_code: item.currency_code,
-            exchange_rate: item.exchange_rate !== null && item.exchange_rate !== undefined ? Number(item.exchange_rate) : null,
-            exchange_rate_date: item.exchange_rate_date,
-            net_amount,
-            base_net_amount,
-            total_amount,
-            base_total_amount,
-            created_at: item.created_at,
-            is_active: item.is_active,
-          };
-        });
+        return res.map((item) => ({
+          id: item.id,
+          grn_no: item.grn_no,
+          grn_date: item.grn_date,
+          doc_type: item.doc_type,
+          doc_status: item.doc_status,
+          invoice_no: item.invoice_no,
+          invoice_date: item.invoice_date,
+          description: item.description,
+          vendor_name: item.vendor_name,
+          currency_id: item.currency_id,
+          currency_code: item.currency_code,
+          exchange_rate: item.exchange_rate !== null && item.exchange_rate !== undefined ? Number(item.exchange_rate) : null,
+          exchange_rate_date: item.exchange_rate_date,
+          net_amount: Number(item.net_amount ?? 0),
+          base_net_amount: Number(item.base_net_amount ?? 0),
+          total_amount: Number(item.total_amount ?? 0),
+          base_total_amount: Number(item.base_total_amount ?? 0),
+          created_at: item.created_at,
+          is_active: item.is_active,
+        }));
       });
 
     const total = await prisma.tb_good_received_note.count({
@@ -905,6 +881,8 @@ export class GoodReceivedNoteService {
         }
       }
 
+      await this.recalculateGrnTotals(prisma, createGoodReceivedNote.id);
+
       return { id: createGoodReceivedNote.id, grn_no: createGoodReceivedNote.grn_no };
     });
 
@@ -1363,6 +1341,8 @@ export class GoodReceivedNoteService {
         }
       }
 
+      await this.recalculateGrnTotals(prisma, data.id);
+
       return { id: data.id };
     });
 
@@ -1461,6 +1441,8 @@ export class GoodReceivedNoteService {
         data: { deleted_at: now, deleted_by_id: user_id },
       });
     }
+
+    await this.recalculateGrnTotals(prisma, id);
 
     await prisma.tb_good_received_note.update({
       where: { id: id },
@@ -2197,6 +2179,8 @@ export class GoodReceivedNoteService {
         },
       });
 
+      await this.recalculateGrnTotals(tx, grnId);
+
       return { ...detail, tb_good_received_note_detail_item: [detailItem] };
     });
 
@@ -2309,6 +2293,10 @@ export class GoodReceivedNoteService {
         });
       }
 
+      if (existingDetail.tb_good_received_note?.id) {
+        await this.recalculateGrnTotals(tx, existingDetail.tb_good_received_note.id);
+      }
+
       return updatedDetail;
     });
 
@@ -2377,9 +2365,44 @@ export class GoodReceivedNoteService {
       await tx.tb_good_received_note_detail.delete({
         where: { id: detailId },
       });
+
+      if (existingDetail.tb_good_received_note?.id) {
+        await this.recalculateGrnTotals(tx, existingDetail.tb_good_received_note.id);
+      }
     });
 
     return Result.ok({ id: detailId });
+  }
+
+  /**
+   * Recompute net_amount, base_net_amount, total_amount, base_total_amount on
+   * tb_good_received_note from the current set of (non-deleted) detail items.
+   * เรียกหลังจาก insert / update / soft-delete tb_good_received_note_detail_item
+   * เพื่อให้ list/sort สามารถใช้คอลัมน์ header ได้โดยตรง
+   */
+  async recalculateGrnTotals(tx: any, grnId: string): Promise<void> {
+    const agg = await tx.tb_good_received_note_detail_item.aggregate({
+      where: {
+        deleted_at: null,
+        tb_good_received_note_detail: { good_received_note_id: grnId },
+      },
+      _sum: {
+        net_amount: true,
+        base_net_amount: true,
+        total_price: true,
+        base_total_price: true,
+      },
+    });
+
+    await tx.tb_good_received_note.update({
+      where: { id: grnId },
+      data: {
+        net_amount: agg._sum.net_amount ?? 0,
+        base_net_amount: agg._sum.base_net_amount ?? 0,
+        total_amount: agg._sum.total_price ?? 0,
+        base_total_amount: agg._sum.base_total_price ?? 0,
+      },
+    });
   }
 
   // ==================== Methods used by GoodReceivedNoteLogic ====================

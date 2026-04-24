@@ -401,49 +401,29 @@ export class PurchaseRequestService {
         };
       }
       const purchaseRequests = await prisma.tb_purchase_request
-        .findMany({
-          ...queryFromHeader,
-          include: {
-            tb_purchase_request_detail: true,
-          },
-        })
-        .then((res) => {
-          const mapPr = res.map((pr) => {
-            const purchase_request_detail = pr['tb_purchase_request_detail'];
-            delete pr['tb_purchase_request_detail'];
-            let base_net_amount = 0;
-            let base_total_amount = 0;
-
-            for (const detail of purchase_request_detail) {
-              base_net_amount += Number(detail.base_net_amount || 0);
-              base_total_amount += Number(detail.base_total_price || 0);
-            }
-            const returnPR = {
-              id: pr.id,
-              pr_no: pr.pr_no,
-              pr_date: pr.pr_date,
-              description: pr.description,
-              pr_status: pr.pr_status,
-              requestor_id: pr.requestor_id,
-              requestor_name: pr.requestor_name,
-              department_id: pr.department_id,
-              department_name: pr.department_name,
-              workflow_id: pr.workflow_id,
-              workflow_name: pr.workflow_name,
-              created_at: pr.created_at,
-              base_net_amount,
-              base_total_amount,
-              workflow_current_stage: pr.workflow_current_stage,
-              workflow_next_stage: pr.workflow_next_stage,
-              workflow_previous_stage: pr.workflow_previous_stage,
-              last_action: pr.last_action,
-            };
-
-            return returnPR;
-          });
-
-          return mapPr;
-        });
+        .findMany(queryFromHeader)
+        .then((res) =>
+          res.map((pr) => ({
+            id: pr.id,
+            pr_no: pr.pr_no,
+            pr_date: pr.pr_date,
+            description: pr.description,
+            pr_status: pr.pr_status,
+            requestor_id: pr.requestor_id,
+            requestor_name: pr.requestor_name,
+            department_id: pr.department_id,
+            department_name: pr.department_name,
+            workflow_id: pr.workflow_id,
+            workflow_name: pr.workflow_name,
+            created_at: pr.created_at,
+            base_net_amount: Number(pr.base_net_amount ?? 0),
+            base_total_amount: Number(pr.base_total_amount ?? 0),
+            workflow_current_stage: pr.workflow_current_stage,
+            workflow_next_stage: pr.workflow_next_stage,
+            workflow_previous_stage: pr.workflow_previous_stage,
+            last_action: pr.last_action,
+          })),
+        );
 
       const total = await prisma.tb_purchase_request.count({
         where: queryFromHeader.where,
@@ -869,6 +849,8 @@ export class PurchaseRequestService {
             });
           }
 
+          await this.recalculatePurchaseRequestTotals(prisma, createPurchaseRequest.id);
+
           return { id: createPurchaseRequest.id };
         });
         span.setAttribute('pr.id', result?.id || '');
@@ -1005,6 +987,8 @@ export class PurchaseRequestService {
           },
         });
       }
+
+      await this.recalculatePurchaseRequestTotals(prismatx, id);
 
       return updatePurchaseRequest;
     });
@@ -1162,6 +1146,8 @@ export class PurchaseRequestService {
         }
       }
 
+      await this.recalculatePurchaseRequestTotals(prismatx, id);
+
       return { id: updatePurchaseRequest.id };
     });
 
@@ -1306,6 +1292,8 @@ export class PurchaseRequestService {
         await prismatx.tb_purchase_request_detail.createMany({
           data: duplicatedPRDetails,
         });
+
+        await this.recalculatePurchaseRequestTotals(prismatx, createdPr.id);
       }
 
       return { ids: duplicatedPRs };
@@ -1455,6 +1443,9 @@ export class PurchaseRequestService {
         },
       });
 
+      await this.recalculatePurchaseRequestTotals(prismatx, originalPr.id);
+      await this.recalculatePurchaseRequestTotals(prismatx, newPr.id);
+
       return {
         original_pr_id: originalPr.id,
         new_pr_id: newPr.id,
@@ -1501,6 +1492,7 @@ export class PurchaseRequestService {
         where: { purchase_request_id: id, deleted_at: null },
         data: { deleted_at: now, updated_by_id: this.userId },
       });
+      await this.recalculatePurchaseRequestTotals(prisma, id);
       await prisma.tb_purchase_request.update({
         where: { id },
         data: { deleted_at: now, updated_by_id: this.userId },
@@ -1634,6 +1626,8 @@ export class PurchaseRequestService {
           },
         });
       }
+
+      await this.recalculatePurchaseRequestTotals(txp, id);
 
       return id;
     });
@@ -2959,5 +2953,33 @@ export class PurchaseRequestService {
     }
 
     return Result.ok({ viewer_url: result.url });
+  }
+
+  /**
+   * Recompute base_net_amount, base_total_amount on tb_purchase_request from the
+   * current set of (non-deleted) detail rows. Only base_* totals are stored on
+   * the header because PR details can have mixed currencies.
+   * เรียกหลังจาก insert / update / soft-delete tb_purchase_request_detail
+   * เพื่อให้ list/sort สามารถใช้คอลัมน์ header ได้โดยตรง
+   */
+  async recalculatePurchaseRequestTotals(tx: any, prId: string): Promise<void> {
+    const agg = await tx.tb_purchase_request_detail.aggregate({
+      where: {
+        purchase_request_id: prId,
+        deleted_at: null,
+      },
+      _sum: {
+        base_net_amount: true,
+        base_total_price: true,
+      },
+    });
+
+    await tx.tb_purchase_request.update({
+      where: { id: prId },
+      data: {
+        base_net_amount: agg._sum.base_net_amount ?? 0,
+        base_total_amount: agg._sum.base_total_price ?? 0,
+      },
+    });
   }
 }

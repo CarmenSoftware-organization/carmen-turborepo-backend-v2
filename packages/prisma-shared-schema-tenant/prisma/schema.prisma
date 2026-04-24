@@ -837,6 +837,11 @@ model tb_good_received_note {
   credit_term_days Int?
   payment_due_date DateTime? @db.Timestamptz(6)
 
+  net_amount        Decimal @default(0) @db.Decimal(15, 5)
+  base_net_amount   Decimal @default(0) @db.Decimal(15, 5)
+  total_amount      Decimal @default(0) @db.Decimal(15, 5)
+  base_total_amount Decimal @default(0) @db.Decimal(15, 5)
+
   is_active Boolean? @default(true)
 
   note        String? @db.VarChar
@@ -2132,6 +2137,9 @@ model tb_purchase_request {
 
   department_id   String? @db.Uuid
   department_name String? @db.VarChar
+
+  base_net_amount   Decimal @default(0) @db.Decimal(15, 5)
+  base_total_amount Decimal @default(0) @db.Decimal(15, 5)
 
   note String? @db.VarChar
 

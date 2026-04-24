@@ -5,9 +5,16 @@ meta {
 }
 
 get {
-  url: {{host}}/api/{{bu_code}}/good-received-note
+  url: {{host}}/api/{{bu_code}}/good-received-note?page=1&perpage=10&sort=total_amount%3Aasc
   body: none
   auth: bearer
+}
+
+params:query {
+  page: 1
+  perpage: 10
+  sort: total_amount%3Aasc
+  ~version: 
 }
 
 headers {
@@ -18,20 +25,16 @@ auth:bearer {
   token: {{access_token}}
 }
 
-query {
-  ~version: 
-}
-
 docs {
   ## List All Good Received Notes
   แสดงรายการใบรับสินค้าทั้งหมดของหน่วยธุรกิจ พร้อมการแบ่งหน้าและตัวกรอง ใช้สำหรับเจ้าหน้าที่รับสินค้าและผู้จัดการคลังสินค้าในการติดตามการส่งมอบจากผู้ขาย ตรวจสอบสถานะการรับสินค้า และเปรียบเทียบกับใบสั่งซื้อ
-
+  
   Lists all goods receiving records for the business unit with pagination and filtering. Used by receiving staff and inventory managers to track vendor deliveries, monitor receiving status, and reconcile with purchase orders.
-
+  
   ### Path Parameters
   - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
-
-
+  
+  
   ### Sample Response
   ```json
   {
