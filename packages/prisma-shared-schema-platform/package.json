@@ -29,6 +29,8 @@
     "db:seed.report-template": "ts-node -r tsconfig-paths/register prisma/seed.report-template.ts",
     "db:seed.report-template-upload": "ts-node -r tsconfig-paths/register prisma/seed.report-template-upload.ts",
     "db:seed.report-template-migrate-s3": "ts-node -r tsconfig-paths/register prisma/seed.report-template-migrate-s3.ts",
+    "db:tenant-views:apply": "ts-node -r tsconfig-paths/register prisma/apply-tenant-views.ts",
+    "db:tenant-views:revert": "ts-node -r tsconfig-paths/register prisma/apply-tenant-views.ts -- --down",
     "db:mock": "ts-node -r tsconfig-paths/register prisma/seed.ts && ts-node -r tsconfig-paths/register prisma/mock.ts",
     "db:mock:reset": "prisma migrate reset --force && ts-node -r tsconfig-paths/register prisma/seed.ts && ts-node -r tsconfig-paths/register prisma/mock.ts"
   },

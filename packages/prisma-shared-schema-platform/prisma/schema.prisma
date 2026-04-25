@@ -595,6 +595,14 @@ model tb_report_template {
   dialog  String @db.Text
   content String @db.Text
 
+  // builder_key links a template row to a Go report.Definition key (when set).
+  builder_key String? @db.VarChar
+
+  // view_name is the tenant-schema view that the report executor reads.
+  // Required for the row to be runnable; admins populate it alongside the
+  // CREATE VIEW for new reports. NULL → registry skips the row.
+  view_name String? @db.VarChar
+
   is_standard Boolean @default(true)
 
   allow_business_unit Json? @db.JsonB
