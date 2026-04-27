@@ -1414,7 +1414,7 @@ export class StoreRequisitionService {
             {
               user_action: {
                 path: ['execute'],
-                array_contains: user_id,
+                array_contains: [{ user_id: user_id }],
               },
             },
             {
