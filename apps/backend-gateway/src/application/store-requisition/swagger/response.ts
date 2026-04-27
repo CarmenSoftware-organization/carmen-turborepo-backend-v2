@@ -141,6 +141,14 @@ export class StoreRequisitionResponseDto {
   @ApiPropertyOptional({ description: 'To location name', example: 'Kitchen Store' })
   to_location_name?: string;
 
+  @ApiPropertyOptional({
+    description:
+      "SR type derived from to_location.location_type. 'transfer' when destination is inventory or consignment; 'issue' when destination is direct.",
+    example: 'transfer',
+    enum: ['transfer', 'issue'],
+  })
+  sr_type?: string;
+
   @ApiPropertyOptional({ description: 'Workflow ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   workflow_id?: string;
 

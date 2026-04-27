@@ -11,6 +11,7 @@ import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import {
   enum_last_action,
   enum_doc_status,
+  enum_location_type,
   enum_stage_role,
   Prisma,
   PrismaClient,
@@ -47,6 +48,24 @@ import getPaginationParams from '@/common/helpers/pagination.params';
 
 const ERROR_MISSING_BU_CODE = 'Missing bu_code';
 const ERROR_MISSING_USER_ID = 'Missing user_id';
+
+// SR type is derived from the destination location's location_type:
+// - direct → 'issue' (cannot be transferred back)
+// - inventory | consignment → 'transfer'
+export const SR_TYPE = {
+  TRANSFER: 'transfer',
+  ISSUE: 'issue',
+} as const;
+export type SrType = (typeof SR_TYPE)[keyof typeof SR_TYPE];
+
+const resolveSrType = (
+  toLocationType: enum_location_type | null | undefined,
+): SrType | null => {
+  if (!toLocationType) return null;
+  return toLocationType === enum_location_type.direct
+    ? SR_TYPE.ISSUE
+    : SR_TYPE.TRANSFER;
+};
 
 @Injectable()
 export class StoreRequisitionService {
@@ -194,6 +213,7 @@ export class StoreRequisitionService {
           ...buildQuery,
         },
         include: {
+          tb_location_to: { select: { location_type: true } },
           tb_store_requisition_detail: {
             include: {
               tb_product: {
@@ -231,6 +251,10 @@ export class StoreRequisitionService {
         const store_requisition_detail = res['tb_store_requisition_detail'];
         delete res['tb_store_requisition_detail'];
 
+        const toLocationType =
+          (res as any).tb_location_to?.location_type ?? null;
+        delete (res as any).tb_location_to;
+
         const returningRole = await this.workflowOrchestrator.resolveUserRole(
           res.doc_status === enum_doc_status.draft,
           res.requestor_id === this.userId,
@@ -245,6 +269,7 @@ export class StoreRequisitionService {
           ...res,
           store_requisition_detail,
           role: returningRole,
+          sr_type: resolveSrType(toLocationType),
         };
       });
 
@@ -363,6 +388,7 @@ export class StoreRequisitionService {
             ...permissionQuery,
           },
           include: {
+            tb_location_to: { select: { location_type: true } },
             tb_store_requisition_detail: true,
           },
         })
@@ -370,6 +396,9 @@ export class StoreRequisitionService {
           const mapSr = res.map((sr) => {
             const store_requisition_detail = sr['tb_store_requisition_detail'];
             delete sr['tb_store_requisition_detail'];
+
+            const toLocationType =
+              (sr as any).tb_location_to?.location_type ?? null;
 
             const returnSR = {
               id: sr.id,
@@ -382,6 +411,7 @@ export class StoreRequisitionService {
               department_name: sr.department_name,
               from_location_name: sr.from_location_name,
               to_location_name: sr.to_location_name,
+              sr_type: resolveSrType(toLocationType),
               workflow_name: sr.workflow_name,
               created_at: sr.created_at,
               store_requisition_detail: store_requisition_detail.map((d) => ({
