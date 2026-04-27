@@ -251,9 +251,8 @@ export class StoreRequisitionService {
         const store_requisition_detail = res['tb_store_requisition_detail'];
         delete res['tb_store_requisition_detail'];
 
-        const toLocationType =
-          (res as any).tb_location_to?.location_type ?? null;
-        delete (res as any).tb_location_to;
+        const toLocationType = res.tb_location_to?.location_type ?? null;
+        delete (res as { tb_location_to?: unknown }).tb_location_to;
 
         const returningRole = await this.workflowOrchestrator.resolveUserRole(
           res.doc_status === enum_doc_status.draft,
@@ -397,8 +396,7 @@ export class StoreRequisitionService {
             const store_requisition_detail = sr['tb_store_requisition_detail'];
             delete sr['tb_store_requisition_detail'];
 
-            const toLocationType =
-              (sr as any).tb_location_to?.location_type ?? null;
+            const toLocationType = sr.tb_location_to?.location_type ?? null;
 
             const returnSR = {
               id: sr.id,
@@ -1438,6 +1436,7 @@ export class StoreRequisitionService {
             ...standardQuery,
             where: combinedWhere,
             include: {
+              tb_location_to: { select: { location_type: true } },
               tb_store_requisition_detail: true,
             },
           })
@@ -1445,6 +1444,8 @@ export class StoreRequisitionService {
             const mapSr = res.map((sr) => {
               const store_requisition_detail = sr['tb_store_requisition_detail'];
               delete sr['tb_store_requisition_detail'];
+
+              const toLocationType = sr.tb_location_to?.location_type ?? null;
 
               const returnSR = {
                 id: sr.id,
@@ -1457,6 +1458,7 @@ export class StoreRequisitionService {
                 department_name: sr.department_name,
                 from_location_name: sr.from_location_name,
                 to_location_name: sr.to_location_name,
+                sr_type: resolveSrType(toLocationType),
                 workflow_name: sr.workflow_name,
                 created_at: sr.created_at,
                 store_requisition_detail: store_requisition_detail.map((d) => ({
