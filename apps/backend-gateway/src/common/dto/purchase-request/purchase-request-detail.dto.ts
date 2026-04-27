@@ -8,6 +8,7 @@ export enum stage_status {
   approve = 'approve',
   reject = 'reject',
   review = 'review',
+  'issue' = 'issue'
 }
 
 /* create pr's detail */
