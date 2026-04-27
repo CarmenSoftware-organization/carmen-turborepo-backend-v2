@@ -45,9 +45,10 @@ export class AuthController {
 
     const version: string = payload.version ?? 'latest';
     const loginDto: LoginDto = payload.data;
+    const ip: string = payload.ip_address ?? 'unknown';
 
     const auditContext = this.createAuditContext(payload);
-    return runWithAuditContext(auditContext, () => this.authService.login(loginDto, version));
+    return runWithAuditContext(auditContext, () => this.authService.login(loginDto, version, ip));
   }
 
   /**

@@ -1,0 +1,66 @@
+meta {
+  name: 01.7 - Login fail
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{host}}/api/auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+body:json {
+  {
+    "email": "tt@zebra.com",
+    "password": "tttttt"
+  }
+}
+
+script:post-response {
+  if (res.body.data) {
+    bru.setEnvVar('access_token', res.body.data.access_token);
+    bru.setEnvVar('refresh_token', res.body.data.refresh_token);
+  } else {
+    bru.setEnvVar('access_token', '');
+    bru.setEnvVar('refresh_token', '');
+  }
+}
+
+docs {
+  ## Login Owner (zebra.com)
+  เข้าสู่ระบบด้วยบทบาทเจ้าของ (Owner) สำหรับโดเมน zebra.com
+  
+  Login as an Owner role user for the zebra.com domain.
+  
+  
+  ### Sample Body
+  ```json
+  {
+    "email": "owner@zebra.com",
+    "password": "12345678"
+  }
+  ```
+  
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "access_token": "eyJhbGciOiJSUzI1NiIs...",
+      "refresh_token": "eyJhbGciOiJSUzI1NiIs...",
+      "expires_in": 300,
+      "refresh_expires_in": 1800,
+      "token_type": "Bearer"
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-03-27T00:00:00.000Z"
+  }
+  ```
+}

@@ -8,7 +8,7 @@ export const InviteUserSchema = z.object({
 });
 
 export type IInviteUser = z.infer<typeof InviteUserSchema>;
-export class InviteUserDto extends createZodDto(InviteUserSchema) { }
+export class InviteUserDto extends createZodDto(InviteUserSchema) {}
 
 export const RegisterConfirmSchema = z.object({
   // username: z.string({ required_error: 'Username field is required' }),
@@ -16,7 +16,9 @@ export const RegisterConfirmSchema = z.object({
   //   .string({ required_error: 'Email field is required' })
   //   .email({ message: 'Invalid email address' }),
   email_token: z.string({ required_error: 'Email token field is required' }),
-  reference_code: z.string({ required_error: 'Reference code field is required' }),
+  reference_code: z.string({
+    required_error: 'Reference code field is required',
+  }),
   password: z
     .string({ required_error: 'Password field is required' })
     .min(6, { message: 'Password must be at least 6 characters long' }),
@@ -27,25 +29,22 @@ export const RegisterConfirmSchema = z.object({
   }),
 });
 export type IRegisterConfirm = z.infer<typeof RegisterConfirmSchema>;
-export class RegisterConfirmDto extends createZodDto(RegisterConfirmSchema) { }
+export class RegisterConfirmDto extends createZodDto(RegisterConfirmSchema) {}
 
-export const LoginSchema = z.object({
-  email: z
-    .string()
-    .email({ message: 'Invalid email address' })
-    .optional(),
-  username: z
-    .string()
-    .optional(),
-  password: z
-    .string({ required_error: 'Password field is required' })
-    .min(6, { message: 'Password must be at least 6 characters long' }),
-}).refine((data) => data.email || data.username, {
-  message: 'Either email or username is required',
-});
+export const LoginSchema = z
+  .object({
+    email: z.string().email({ message: 'Invalid email address' }).optional(),
+    username: z.string().optional(),
+    password: z
+      .string({ required_error: 'Password field is required' })
+      .min(1, { message: 'Password must be at least 1 characters long' }),
+  })
+  .refine((data) => data.email || data.username, {
+    message: 'Either email or username is required',
+  });
 
 export type ILogin = z.infer<typeof LoginSchema>;
-export class LoginDto extends createZodDto(LoginSchema) { }
+export class LoginDto extends createZodDto(LoginSchema) {}
 
 export const ResetPasswordSchema = z.object({
   email: z
@@ -57,7 +56,7 @@ export const ResetPasswordSchema = z.object({
 });
 
 export type IResetPassword = z.infer<typeof ResetPasswordSchema>;
-export class ResetPasswordDto extends createZodDto(ResetPasswordSchema) { }
+export class ResetPasswordDto extends createZodDto(ResetPasswordSchema) {}
 
 export const RegisterSchema = z.object({
   username: z.string({ required_error: 'Username field is required' }),
@@ -76,7 +75,7 @@ export const RegisterSchema = z.object({
 });
 
 export type IRegister = z.infer<typeof RegisterSchema>;
-export class RegisterDto extends createZodDto(RegisterSchema) { }
+export class RegisterDto extends createZodDto(RegisterSchema) {}
 
 export const UpdateUserProfileSchema = z.object({
   alias_name: z.string().optional().nullable(),
@@ -87,7 +86,9 @@ export const UpdateUserProfileSchema = z.object({
 });
 
 export type IUpdateUserProfile = z.infer<typeof UpdateUserProfileSchema>;
-export class UpdateUserProfileDto extends createZodDto(UpdateUserProfileSchema) { }
+export class UpdateUserProfileDto extends createZodDto(
+  UpdateUserProfileSchema,
+) {}
 
 export const ForgotPasswordSchema = z.object({
   email: z
@@ -96,7 +97,7 @@ export const ForgotPasswordSchema = z.object({
 });
 
 export type IForgotPassword = z.infer<typeof ForgotPasswordSchema>;
-export class ForgotPasswordDto extends createZodDto(ForgotPasswordSchema) { }
+export class ForgotPasswordDto extends createZodDto(ForgotPasswordSchema) {}
 
 export const ResetPasswordWithTokenSchema = z.object({
   token: z.string({ required_error: 'Token field is required' }),
@@ -105,8 +106,12 @@ export const ResetPasswordWithTokenSchema = z.object({
     .min(6, { message: 'Password must be at least 6 characters long' }),
 });
 
-export type IResetPasswordWithToken = z.infer<typeof ResetPasswordWithTokenSchema>;
-export class ResetPasswordWithTokenDto extends createZodDto(ResetPasswordWithTokenSchema) { }
+export type IResetPasswordWithToken = z.infer<
+  typeof ResetPasswordWithTokenSchema
+>;
+export class ResetPasswordWithTokenDto extends createZodDto(
+  ResetPasswordWithTokenSchema,
+) {}
 
 export const ChangePasswordSchema = z.object({
   current_password: z
@@ -118,4 +123,4 @@ export const ChangePasswordSchema = z.object({
 });
 
 export type IChangePassword = z.infer<typeof ChangePasswordSchema>;
-export class ChangePasswordDto extends createZodDto(ChangePasswordSchema) { }
+export class ChangePasswordDto extends createZodDto(ChangePasswordSchema) {}

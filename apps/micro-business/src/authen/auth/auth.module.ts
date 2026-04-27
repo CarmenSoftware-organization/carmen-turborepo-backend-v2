@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { LoginRateLimitService } from './login-rate-limit.service';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
 import { JwtModule } from '@nestjs/jwt';
@@ -28,6 +29,7 @@ import { TenantModule } from '@/tenant/tenant.module';
   controllers: [AuthController],
   providers: [
     AuthService,
+    LoginRateLimitService,
     {
       provide: 'PRISMA_SYSTEM',
       useValue: PrismaClient_SYSTEM,

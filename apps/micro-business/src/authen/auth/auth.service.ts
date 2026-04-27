@@ -25,6 +25,7 @@ import { PrismaClient_TENANT, Prisma } from '@repo/prisma-shared-schema-tenant';
 import { TenantService } from '@/tenant/tenant.service';
 import { addHours } from 'date-fns';
 import { ChangePasswordDto } from './dto/changepassword';
+import { LoginRateLimitService } from './login-rate-limit.service';
 
 @Injectable()
 export class AuthService {
@@ -39,6 +40,7 @@ export class AuthService {
     private readonly tenantService: TenantService,
     @Inject('KEYCLOAK_SERVICE')
     private readonly keycloakService: ClientProxy,
+    private readonly loginRateLimit: LoginRateLimitService,
   ) {}
 
   /**
@@ -136,15 +138,37 @@ export class AuthService {
    * @param version - API version / เวอร์ชัน API
    * @returns Authentication tokens and user info / โทเค็นยืนยันตัวตนและข้อมูลผู้ใช้
    */
-  async login(loginDto: LoginDto, version: string): Promise<any> {
+  async login(loginDto: LoginDto, version: string, ip: string): Promise<any> {
     this.logger.debug(
-      { function: 'login', loginDto: loginDto, version: version },
+      { function: 'login', loginDto: loginDto, version: version, ip },
       AuthService.name,
     );
 
     try {
       // Resolve login identifier: support both email and username
       const loginIdentifier = (loginDto.email || loginDto.username || '').toLowerCase();
+
+      // Block early if this (email + IP) is currently locked out
+      const lockState = this.loginRateLimit.checkLock(loginIdentifier, ip);
+      if (lockState.locked) {
+        this.logger.warn(
+          {
+            file: AuthService.name,
+            function: this.login.name,
+            loginIdentifier,
+            ip,
+            retryAfterSeconds: lockState.retryAfterSeconds,
+          },
+          'Login blocked: rate limit active',
+        );
+        return {
+          response: {
+            status: HttpStatus.TOO_MANY_REQUESTS,
+            message: `Too many failed login attempts. Try again in ${lockState.retryAfterSeconds}s.`,
+            retry_after: lockState.retryAfterSeconds,
+          },
+        };
+      }
 
       // Call Keycloak via TCP service
       const response = await firstValueFrom(
@@ -172,6 +196,16 @@ export class AuthService {
             version: version,
           },
         );
+        const failure = this.loginRateLimit.recordFailure(loginIdentifier, ip);
+        if (failure.triggeredLock) {
+          return {
+            response: {
+              status: HttpStatus.TOO_MANY_REQUESTS,
+              message: `Too many failed login attempts. Try again in ${failure.retryAfterSeconds}s.`,
+              retry_after: failure.retryAfterSeconds,
+            },
+          };
+        }
         return {
           response: {
             status: HttpStatus.UNAUTHORIZED,
@@ -197,6 +231,16 @@ export class AuthService {
           loginDto: loginDto,
           version: version,
         });
+        const failure = this.loginRateLimit.recordFailure(loginIdentifier, ip);
+        if (failure.triggeredLock) {
+          return {
+            response: {
+              status: HttpStatus.TOO_MANY_REQUESTS,
+              message: `Too many failed login attempts. Try again in ${failure.retryAfterSeconds}s.`,
+              retry_after: failure.retryAfterSeconds,
+            },
+          };
+        }
         return {
           response: {
             status: HttpStatus.UNAUTHORIZED,
@@ -204,6 +248,9 @@ export class AuthService {
           },
         };
       }
+
+      // Successful authentication — clear any stale failure counter
+      this.loginRateLimit.recordSuccess(loginIdentifier, ip);
 
       // Log successful login activity
       try {
