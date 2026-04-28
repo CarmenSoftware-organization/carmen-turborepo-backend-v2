@@ -27,6 +27,7 @@ import {
   BaseHttpController,
   DepartmentsCreateDto,
   DepartmentsUpdateDto,
+  EnrichAuditUsers,
   IUpdateDepartments,
   Serialize,
   DepartmentDetailResponseSchema,
@@ -74,6 +75,7 @@ export class Config_DepartmentsController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('department.findOne'))
   @Serialize(DepartmentDetailResponseSchema)
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
