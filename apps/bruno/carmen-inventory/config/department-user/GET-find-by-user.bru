@@ -1,0 +1,23 @@
+meta {
+  name: Find by user config_department-user
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{host}}/api/config/{{bu_code}}/department-user/user/:user_id
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
