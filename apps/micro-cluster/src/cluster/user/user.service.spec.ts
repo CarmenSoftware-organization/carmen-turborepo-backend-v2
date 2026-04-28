@@ -80,5 +80,11 @@ describe('UserService', () => {
       const result = await service.resolveByIds(['ghost']);
       expect(result).toEqual({ users: [] });
     });
+
+    it('returns { users: [] } and logs a warning when findMany rejects', async () => {
+      mockPrisma.tb_user.findMany.mockRejectedValue(new Error('connection lost'));
+      const result = await service.resolveByIds(['u1']);
+      expect(result).toEqual({ users: [] });
+    });
   });
 });
