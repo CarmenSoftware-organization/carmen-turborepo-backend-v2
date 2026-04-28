@@ -39,10 +39,14 @@ schema's `tb_user` table.
 ```
 Client → backend-gateway → micro-cluster → Platform DB (tb_user)
               ↑
-              └── UserResolverInterceptor (global; no-op without decorator)
-                    ├── UserNameCacheService (in-memory LRU + TTL)
-                    └── UserNameResolverService (TCP → micro-cluster via CLUSTER_SERVICE)
+              ├── EnrichAuditUsersContextInterceptor (global; reads decorator metadata, stashes options into AsyncLocalStorage)
+              └── BaseHttpController.respond()
+                    └── EnrichmentService.enrichIfRequested()
+                          ├── UserNameCacheService (in-memory LRU + TTL)
+                          └── UserNameResolverService (TCP → micro-cluster via CLUSTER_SERVICE)
 ```
+
+**Why not a response interceptor:** Controllers use `@Res()` + `response.send(stdResponse)` for manual response handling, so handler return values are `undefined`. NestJS response interceptors (e.g. `ZodSerializerInterceptor`) skip these responses — see the comment at `apps/backend-gateway/src/common/decorators/zod-serializer.interceptor.ts:44`. We instead enrich inside `BaseHttpController.respond()` (which sees the actual `stdResponse`), driven by metadata stashed into AsyncLocalStorage by a small interceptor.
 
 ### Components
 
@@ -72,8 +76,21 @@ Client → backend-gateway → micro-cluster → Platform DB (tb_user)
 
 - `@EnrichAuditUsers({ paths?: string[] })` — method decorator that stores
   metadata via `SetMetadata`. Default `paths = ['']` (root only).
-- `UserResolverInterceptor` — registered as a global `APP_INTERCEPTOR`. No-op
-  unless the handler has the decorator.
+- `EnrichAuditUsersContextInterceptor` — registered as a global
+  `APP_INTERCEPTOR`. Reads the handler's `EnrichAuditUsersOptions` metadata
+  and stashes it into the `enrichAuditUsersStorage` AsyncLocalStorage for the
+  duration of the request. No response transformation here.
+- `enrichAuditUsersStorage` — `AsyncLocalStorage<EnrichAuditUsersOptions | null>`,
+  defined in `apps/backend-gateway/src/common/context/enrich-audit-users.context.ts`.
+- `EnrichmentService` — exposes
+  `enrichIfRequested(payload: unknown): Promise<unknown>`. Reads options from
+  ALS; if absent, returns the payload unchanged; if present, runs the
+  collect-resolve-mutate pipeline.
+- `BaseHttpController.respond()` — becomes `async`; calls
+  `enrichmentService.enrichIfRequested(stdResponse.data)` (or the legacy
+  `result` body) before `response.send`. Existing call sites
+  (`this.respond(res, result)`) do not need to await — the response is
+  fire-and-forget today and remains so.
 - `UserNameResolverService` — owns the TCP call; checks cache first; caches
   unknown ids as `null` to avoid repeated lookups.
 - `UserNameCacheService` — `Map<string, { value: string|null; expiresAt }>`,
@@ -184,44 +201,31 @@ already registered in `apps/backend-gateway/src/app.module.ts`.
 
 ## Implementation
 
-### UserResolverInterceptor
+### EnrichAuditUsersContextInterceptor
 
 ```ts
-// apps/backend-gateway/src/common/interceptors/user-resolver.interceptor.ts
+// apps/backend-gateway/src/common/interceptors/enrich-audit-users-context.interceptor.ts
 @Injectable()
-export class UserResolverInterceptor implements NestInterceptor {
-  constructor(
-    private readonly reflector: Reflector,
-    private readonly resolver: UserNameResolverService,
-  ) {}
+export class EnrichAuditUsersContextInterceptor implements NestInterceptor {
+  constructor(private readonly reflector: Reflector) {}
 
   intercept(ctx: ExecutionContext, next: CallHandler): Observable<unknown> {
-    const meta = this.reflector.get<EnrichAuditUsersOptions>(
+    if (ctx.getType() !== 'http') return next.handle();
+
+    const options = this.reflector.get<EnrichAuditUsersOptions | undefined>(
       ENRICH_AUDIT_USERS_KEY,
       ctx.getHandler(),
-    );
-    if (!meta) return next.handle();
+    ) ?? null;
 
-    return next.handle().pipe(
-      switchMap(async (response) => {
-        try {
-          const payload = unwrapDataEnvelope(response); // handles { data, status, success, ... }
-          if (payload == null) return response;
-
-          const targets = collectTargetsByPaths(payload, meta.paths!);
-          if (targets.length === 0) return response;
-
-          const ids = uniqueAuditUserIds(targets);
-          const nameMap = await this.resolver.resolveMany(ids);
-
-          for (const target of targets) {
-            mutateToAuditShape(target, nameMap);
-          }
-          return response;
-        } catch (err) {
-          this.logger.warn({ err }, 'audit user enrichment failed; returning original response');
-          return response;
-        }
+    return from(
+      enrichAuditUsersStorage.run(options, () => {
+        return new Promise<unknown>((resolve, reject) => {
+          next.handle().subscribe({
+            next: (value) => resolve(value),
+            error: (err) => reject(err),
+            complete: () => {},
+          });
+        });
       }),
     );
   }
@@ -231,14 +235,93 @@ export class UserResolverInterceptor implements NestInterceptor {
 **Wiring** in `apps/backend-gateway/src/app.module.ts`:
 
 ```ts
-{ provide: APP_INTERCEPTOR, useClass: UserResolverInterceptor }
+{ provide: APP_INTERCEPTOR, useClass: EnrichAuditUsersContextInterceptor }
 ```
 
 Order of global interceptors:
 
 1. `GatewayRequestContextInterceptor` (existing)
 2. `ZodSerializerInterceptor` (existing)
-3. `UserResolverInterceptor` (new) — last, so it transforms after serialization
+3. `EnrichAuditUsersContextInterceptor` (new) — outermost; ALS lives for the whole request, including the `respond()` call.
+
+### BaseHttpController.respond() (updated)
+
+```ts
+// apps/backend-gateway/src/common/http/base-http-controller.ts
+export abstract class BaseHttpController {
+  // Set during AppModule init by ServiceLocator (see below)
+  protected static enrichmentService: EnrichmentService | null = null;
+
+  protected async respond(
+    response: Response,
+    result: Result<unknown> | unknown,
+    customStatus?: HttpStatus,
+  ): Promise<void> {
+    if (result && typeof result === 'object' && 'isOk' in result && typeof (result as any).isOk === 'function') {
+      const typedResult = result as Result<unknown, unknown>;
+      const stdResponse = StdResponse.fromResult<unknown, unknown>(typedResult);
+
+      if (typedResult.isOk() && BaseHttpController.enrichmentService) {
+        try {
+          (stdResponse as { data: unknown }).data =
+            await BaseHttpController.enrichmentService.enrichIfRequested(
+              (stdResponse as { data: unknown }).data,
+            );
+        } catch {
+          // EnrichmentService.enrichIfRequested catches internally and returns input on error.
+          // This catch is purely defensive in case it ever throws.
+        }
+      }
+
+      const status = typedResult.isOk()
+        ? (customStatus ?? stdResponse.status)
+        : stdResponse.status;
+      response.status(status).send(stdResponse);
+    } else {
+      const status = customStatus ?? (result as any)?.status ?? HttpStatus.OK;
+      response.status(status).send(result);
+    }
+  }
+}
+```
+
+**Service locator**: `BaseHttpController.enrichmentService` is set once during
+`AppModule.onApplicationBootstrap()` from the DI container. This avoids
+forcing every subclass constructor to inject the service. If the locator is
+not set (e.g. in narrow unit tests), enrichment is a no-op.
+
+### EnrichmentService
+
+```ts
+// apps/backend-gateway/src/common/enrichment/enrichment.service.ts
+@Injectable()
+export class EnrichmentService {
+  private readonly logger = new BackendLogger(EnrichmentService.name);
+
+  constructor(private readonly resolver: UserNameResolverService) {}
+
+  async enrichIfRequested(payload: unknown): Promise<unknown> {
+    const options = enrichAuditUsersStorage.getStore();
+    if (!options || payload == null) return payload;
+
+    try {
+      const targets = collectTargetsByPaths(payload, options.paths ?? ['']);
+      if (targets.length === 0) return payload;
+
+      const ids = uniqueAuditUserIds(targets);
+      const nameMap = await this.resolver.resolveMany(ids);
+
+      for (const target of targets) {
+        mutateToAuditShape(target, nameMap);
+      }
+      return payload;
+    } catch (err) {
+      this.logger.warn({ err }, 'audit user enrichment failed; returning original payload');
+      return payload;
+    }
+  }
+}
+```
 
 ### UserNameResolverService
 
@@ -347,7 +430,7 @@ that should be enriched in-place:
 | Path missing on response | skip path |
 | Object in path has no audit fields | do not add `audit` key |
 | Some audit fields present | add `audit`, fill missing as `null` |
-| Wrapper envelope `{ data, status, success, message, timestamp }` | unwrap → enrich `data` → return wrapper |
+| Wrapper envelope `{ data, status, success, message, timestamp }` | enrichment runs on `stdResponse.data` only (envelope is owned by `BaseHttpController`) |
 | Root is an array | iterate each element |
 | User soft-deleted (`tb_user.deleted_at != null`) | still resolved (resolver does not filter on `deleted_at`) |
 | Same `id` appears in multiple positions | dedupe before TCP call |
@@ -416,7 +499,9 @@ Because the decorator is opt-in, rollout is incremental and reversible.
 2. `UserNameResolverService` — cache hit, cache miss, partial hit, unknown id, TCP error fallback
 3. `collectTargetsByPaths` — root only, nested array, nested-of-nested, missing path, null safety
 4. `mutateToAuditShape` — every transformation rule above (with/without by_id, with/without at, unknown user, system action, dedup)
-5. `UserResolverInterceptor` — no decorator → no-op; envelope unwrap; array vs object root; resolver error → graceful fallback
+5. `EnrichAuditUsersContextInterceptor` — sets ALS for HTTP only; ALS = null when no decorator; ALS isolated per request
+6. `EnrichmentService.enrichIfRequested` — no ALS → no-op; ALS present + targets present → enriched in place; ALS present + targets empty → no-op; resolver error → returns original
+7. `BaseHttpController.respond` — calls `enrichIfRequested` only on ok results; locator unset → behaves as today; legacy non-Result branch unchanged
 
 **E2E (gateway)**
 
