@@ -10,16 +10,20 @@ get {
   auth: bearer
 }
 
+params:query {
+  ~version: 
+}
+
+params:path {
+  productId: {{product_id}}
+}
+
 headers {
   x-app-id: {{x_app_id}}
 }
 
 auth:bearer {
   token: {{access_token}}
-}
-
-query {
-  ~version: 
 }
 
 vars:pre-request {
@@ -29,10 +33,10 @@ vars:pre-request {
 docs {
   ## Get Available Units
   ดึงการแปลงหน่วยทั้งหมดที่ใช้ได้สำหรับสินค้าตาม Product ID
-
+  
   Retrieves all configured unit conversions available for a specific product.
-
-
+  
+  
   ### Sample Response
   ```json
   {
@@ -47,8 +51,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-params:path {
-  productId: {{product_id}}
 }
