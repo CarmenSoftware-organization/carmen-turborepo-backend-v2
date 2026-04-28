@@ -80,4 +80,25 @@ export class DepartmentUserController extends BaseMicroserviceController {
     const result = await runWithAuditContext(auditContext, () => this.departmentUserService.getHodInDepartment(department_id));
     return this.handleResult(result);
   }
+
+  /**
+   * Find a user's member department and HOD departments by user_id
+   * ค้นหาแผนกที่ user เป็นสมาชิก และแผนกที่ user เป็น HOD ตาม user_id
+   * @param payload - Microservice payload with target_user_id / payload ที่มี target_user_id
+   * @returns Member department + HOD departments / แผนกที่เป็นสมาชิก + รายการแผนกที่เป็น HOD
+   */
+  @MessagePattern({ cmd: 'department-users.find-by-user-id', service: 'department-users' })
+  async findByUserId(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'findByUserId', payload }, DepartmentUserController.name);
+    const target_user_id = payload.target_user_id as string;
+    this.departmentUserService.userId = payload.user_id;
+    this.departmentUserService.bu_code = payload.bu_code;
+    await this.departmentUserService.initializePrismaService(payload.bu_code, payload.user_id);
+
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.departmentUserService.findByUserId(target_user_id),
+    );
+    return this.handleResult(result);
+  }
 }
