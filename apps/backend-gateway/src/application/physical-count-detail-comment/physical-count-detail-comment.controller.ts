@@ -196,7 +196,7 @@ export class PhysicalCountDetailCommentController {
 
   @Post(':bu_code/physical-count-detail-comment/upload')
   @UseGuards(new AppIdGuard('physicalCountDetailComment.createWithFiles'))
-  @UseInterceptors(FilesInterceptor('files', MAX_FILES))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Create a physical-count-detail comment with file uploads',
@@ -218,6 +218,14 @@ export class PhysicalCountDetailCommentController {
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    this.logger.debug(
+      {
+        function: 'createWithFiles',
+        bu_code,
+        file_count: files.length,
+      },
+      PhysicalCountDetailCommentController.name,
+    );
     const parsed = UploadCommentWithFilesBodySchema.safeParse(rawBody);
     if (!parsed.success) {
       throw new BadRequestException({
@@ -230,7 +238,6 @@ export class PhysicalCountDetailCommentController {
       message?: string | null;
       type?: 'user' | 'system';
     };
-
     if (files.length > MAX_FILES) {
       throw new BadRequestException(
         `Too many files (max ${MAX_FILES}, received ${files.length})`,
@@ -249,7 +256,8 @@ export class PhysicalCountDetailCommentController {
       }
     }
 
-    const hasMessage = typeof body.message === 'string' && body.message.length > 0;
+    const hasMessage =
+      typeof body.message === 'string' && body.message.trim().length > 0;
     if (!hasMessage && files.length === 0) {
       throw new BadRequestException(
         'At least one of `message` or `files` must be provided',
