@@ -33,7 +33,7 @@ export interface RoutingRule {
   trigger_stage: string;
   condition: ConditionConfig;
   action: {
-    type: string;
+    type: 'NEXT_STAGE' | 'SKIP_STAGE';
     parameters: {
       target_stage: string;
     };
@@ -45,8 +45,10 @@ export interface RoutingRule {
  */
 export interface ConditionConfig {
   field: string;
-  operator: 'eq' | 'lt' | 'gt' | 'lte' | 'gte' | 'in' | 'not_eq';
+  operator: 'eq' | 'lt' | 'gt' | 'lte' | 'gte' | 'in' | 'not_eq' | 'between';
   value: string[];
+  min_value?: string;
+  max_value?: string;
 }
 
 /**

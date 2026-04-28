@@ -7,11 +7,11 @@ import {
  * Map a Store Requisition record to the canonical WorkflowDocument shape
  * that the WorkflowOrchestratorService consumes.
  *
- * Pure function — SR stores requestor and department directly on the header
- * and does not use amount-based stage routing, so navigation_request_data is
- * always empty.
+ * Async because SR detail rows do not store a price column — total_amount has
+ * to be computed as Σ(qty × current_average_cost) per product. The cost lookup
+ * is injected so this stays unit-testable without a Prisma instance.
  */
-export function srToWorkflowDocument(
+export async function srToWorkflowDocument(
   sr: {
     id: string;
     workflow_id: string | null;
@@ -21,8 +21,19 @@ export function srToWorkflowDocument(
     requestor_id?: string | null;
     department_id?: string | null;
     department_name?: string | null;
+    tb_store_requisition_detail?: {
+      product_id: string;
+      requested_qty?: unknown;
+      approved_qty?: unknown;
+    }[];
+    store_requisition_detail?: {
+      product_id: string;
+      requested_qty?: unknown;
+      approved_qty?: unknown;
+    }[];
   },
-): WorkflowDocument {
+  getAverageCost: (product_id: string) => Promise<number>,
+): Promise<WorkflowDocument> {
   if (!sr.workflow_id) {
     throw new Error(
       `srToWorkflowDocument: SR ${sr.id} has no workflow_id — cannot run workflow actions on an SR without a workflow.`,
@@ -38,6 +49,15 @@ export function srToWorkflowDocument(
       ? { id: sr.department_id, name: sr.department_name ?? '' }
       : null;
 
+  const details = sr.tb_store_requisition_detail ?? sr.store_requisition_detail ?? [];
+  let total_amount = 0;
+  for (const d of details) {
+    const qty = Number(d.approved_qty ?? d.requested_qty ?? 0);
+    if (!qty) continue;
+    const cost = await getAverageCost(d.product_id);
+    total_amount += qty * cost;
+  }
+
   return {
     id: sr.id,
     workflow_id: sr.workflow_id,
@@ -46,6 +66,9 @@ export function srToWorkflowDocument(
     workflow_history: history,
     requestor_id: sr.requestor_id ?? null,
     department,
-    navigation_request_data: {},
+    navigation_request_data: {
+      total_amount,
+      department: sr.department_id ?? null,
+    },
   };
 }

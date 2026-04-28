@@ -62,6 +62,9 @@ export function poToWorkflowDocument(
     workflow_history: history,
     requestor_id,
     department: creatorDepartment,
-    navigation_request_data: { amount },
+    navigation_request_data: {
+      total_amount: amount,
+      department: creatorDepartment?.id ?? null,
+    },
   };
 }

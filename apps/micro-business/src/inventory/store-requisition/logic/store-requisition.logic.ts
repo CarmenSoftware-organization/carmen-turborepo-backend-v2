@@ -11,6 +11,7 @@ import { enum_stage_role } from '@repo/prisma-shared-schema-tenant';
 import { ValidateSRBeforeSubmitSchema } from '../dto/store-requisition.dto';
 import { RejectStoreRequisitionDto, ReviewStoreRequisitionDto } from '../dto/stage_role/store-requisition.stage-role.dto';
 import { InventoryTransactionService } from '@/inventory/inventory-transaction/inventory-transaction.service';
+import { getCurrentAverageCost, ICostLayerReader } from '@/common/helpers/cost-lookup.helper';
 
 // Re-export for backward compatibility
 export { WorkflowHeader, StageStatus } from '@/common/workflow/workflow.interfaces';
@@ -165,7 +166,7 @@ export class StoreRequisitionLogic {
     this.validateBeforeSubmit(storeRequisitionData);
 
     const workflow = await this.workflowOrchestrator.buildSubmitWorkflow(
-      srToWorkflowDocument(storeRequisitionData), user_id, bu_code,
+      await srToWorkflowDocument(storeRequisitionData, this.buildCostLookup()), user_id, bu_code,
     );
 
     const result = await this.storeRequisitionService.submit(id, payload, workflow);
@@ -217,7 +218,7 @@ export class StoreRequisitionLogic {
     const storeRequisitionData = storeRequisitionResult.value;
 
     const { workflow, isFinalApproval } = await this.workflowOrchestrator.buildApproveWorkflow(
-      srToWorkflowDocument(storeRequisitionData), user_id, tenant_id,
+      await srToWorkflowDocument(storeRequisitionData, this.buildCostLookup()), user_id, tenant_id,
     );
 
     this.logger.debug({ function: 'approve', id, stage_role, details, user_id, tenant_id }, StoreRequisitionLogic.name);
@@ -308,7 +309,7 @@ export class StoreRequisitionLogic {
     const storeRequisitionData = storeRequisitionResult.value;
 
     const workflow = await this.workflowOrchestrator.buildRejectWorkflow(
-      srToWorkflowDocument(storeRequisitionData), user_id, bu_code,
+      await srToWorkflowDocument(storeRequisitionData, this.buildCostLookup()), user_id, bu_code,
     );
 
     const result = await this.storeRequisitionService.reject(id, workflow, body);
@@ -334,7 +335,7 @@ export class StoreRequisitionLogic {
     const storeRequisitionData = storeRequisitionResult.value;
 
     const workflow = await this.workflowOrchestrator.buildReviewWorkflow(
-      srToWorkflowDocument(storeRequisitionData), body.des_stage, user_id, bu_code,
+      await srToWorkflowDocument(storeRequisitionData, this.buildCostLookup()), body.des_stage, user_id, bu_code,
     );
 
     const result = await this.storeRequisitionService.review(id, workflow, body);
@@ -399,6 +400,15 @@ export class StoreRequisitionLogic {
 
   private validateBeforeSubmit(storeRequisition: StoreRequisition) {
     ValidateSRBeforeSubmitSchema.parse(storeRequisition);
+  }
+
+  /**
+   * Build a cost-lookup closure bound to the tenant Prisma client. Used by the
+   * SR workflow mapper to compute total_amount = Σ(qty × current_avg_cost).
+   */
+  private buildCostLookup(): (productId: string) => Promise<number> {
+    const prisma = this.storeRequisitionService.prismaService as unknown as ICostLayerReader;
+    return (productId: string) => getCurrentAverageCost(prisma, productId);
   }
 
   // buildUserAction and distinctData removed — now handled by WorkflowOrchestratorService

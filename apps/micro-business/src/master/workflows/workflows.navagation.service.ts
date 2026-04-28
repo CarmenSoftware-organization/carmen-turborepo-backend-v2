@@ -308,7 +308,8 @@ export class WorkflowNavigatorService {
     );
 
     for (const rule of applicableRules) {
-      if (evaluateCondition(rule.condition, requestData) && rule.action.type === 'NEXT_STAGE') {
+      if (!evaluateCondition(rule.condition, requestData)) continue;
+      if (rule.action.type === 'NEXT_STAGE' || rule.action.type === 'SKIP_STAGE') {
         return rule.action.parameters.target_stage;
       }
     }
@@ -379,6 +380,8 @@ function evaluateCondition(condition: ConditionConfig, requestData: Record<strin
   const { field, operator, value } = condition;
   const fieldValue = requestData[field];
 
+  // Missing field returns false. TODO(category): mappers do not emit a
+  // document-level category yet, so any rule on `category` silently never matches.
   if (fieldValue === undefined || fieldValue === null) {
     return false;
   }
@@ -398,6 +401,12 @@ function evaluateCondition(condition: ConditionConfig, requestData: Record<strin
       return numericValue <= compareValue;
     case 'gte':
       return numericValue >= compareValue;
+    case 'between': {
+      const min = parseFloat(condition.min_value ?? '');
+      const max = parseFloat(condition.max_value ?? '');
+      if (Number.isNaN(min) || Number.isNaN(max)) return false;
+      return numericValue >= min && numericValue <= max;
+    }
     case 'in':
       return value.includes(fieldValueStr);
     case 'not_eq':

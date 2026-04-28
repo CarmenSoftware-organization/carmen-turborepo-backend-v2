@@ -53,6 +53,9 @@ export function prToWorkflowDocument(
     workflow_history: history,
     requestor_id: pr.requestor_id ?? null,
     department,
-    navigation_request_data: { amount },
+    navigation_request_data: {
+      total_amount: amount,
+      department: pr.department_id ?? null,
+    },
   };
 }
