@@ -23,8 +23,9 @@ export class EnrichmentService {
       if (targets.length === 0) return payload;
 
       const ids = uniqueAuditUserIds(targets);
-      if (ids.length === 0) return payload;
-      const nameMap = await this.resolver.resolveMany(ids);
+      const nameMap = ids.length > 0
+        ? await this.resolver.resolveMany(ids)
+        : new Map<string, string | null>();
 
       for (const target of targets) {
         mutateToAuditShape(target, nameMap);

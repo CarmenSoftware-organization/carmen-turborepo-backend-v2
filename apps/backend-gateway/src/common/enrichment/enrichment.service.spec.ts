@@ -69,4 +69,27 @@ describe('EnrichmentService', () => {
     // payload not mutated because mutation step never ran
     expect((payload as any).audit).toBeUndefined();
   });
+
+  it('targets with only *_at (no *_by_id): wraps into audit shape with all *_by null', async () => {
+    const payload = {
+      id: 'x',
+      created_at: '2026-04-01T00:00:00Z',
+      updated_at: null,
+    };
+    const out = await enrichAuditUsersStorage.run({ paths: [''] }, () =>
+      service.enrichIfRequested(payload),
+    );
+    expect(out).toBe(payload);
+    expect(resolver.resolveMany).not.toHaveBeenCalled();
+    expect((payload as any).audit).toEqual({
+      created_at: '2026-04-01T00:00:00Z',
+      created_by: null,
+      updated_at: null,
+      updated_by: null,
+      deleted_at: null,
+      deleted_by: null,
+    });
+    expect((payload as any).created_at).toBeUndefined();
+    expect((payload as any).updated_at).toBeUndefined();
+  });
 });
