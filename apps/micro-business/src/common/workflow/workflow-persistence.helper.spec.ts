@@ -381,10 +381,33 @@ describe('WorkflowPersistenceHelper', () => {
   });
 
   describe('buildReviewDetailUpdate', () => {
-    it('should return null (skip) when payload stage_status is approve', () => {
+    it('approve-during-review pushes an approve entry and current_stage_status is empty', () => {
+      const result = WorkflowPersistenceHelper.buildReviewDetailUpdate({
+        payloadDetail: { stage_status: stage_status.approve, stage_message: 'keep' },
+        currentStages: [
+          { seq: 1, status: stage_status.submit, name: 'Requestor', message: '' },
+          { seq: 2, status: stage_status.pending, name: 'HOD', message: '' },
+        ],
+        currentHistory: [],
+        workflowPreviousStage: 'HOD',
+        desStage: 'Requestor',
+        userId: 'user-1',
+      });
+
+      expect(result).not.toBeNull();
+      expect(result!.current_stage_status).toBe('');
+      expect(result!.stages_status).toHaveLength(2);
+      expect(result!.stages_status[1]).toMatchObject({ status: stage_status.approve, name: 'HOD' });
+      expect(result!.history).toHaveLength(1);
+    });
+
+    it('approve-during-review returns null when item already approved at the stage', () => {
       const result = WorkflowPersistenceHelper.buildReviewDetailUpdate({
         payloadDetail: { stage_status: stage_status.approve, stage_message: '' },
-        currentStages: [{ seq: 1, status: stage_status.submit, name: 'Requestor', message: '' }],
+        currentStages: [
+          { seq: 1, status: stage_status.submit, name: 'Requestor', message: '' },
+          { seq: 2, status: stage_status.approve, name: 'HOD', message: '' },
+        ],
         currentHistory: [],
         workflowPreviousStage: 'HOD',
         desStage: 'Requestor',
@@ -392,6 +415,21 @@ describe('WorkflowPersistenceHelper', () => {
       });
 
       expect(result).toBeNull();
+    });
+
+    it('approve-during-review keeps current_stage_status empty when not final', () => {
+      const result = WorkflowPersistenceHelper.buildReviewDetailUpdate({
+        payloadDetail: { stage_status: stage_status.approve, stage_message: '' },
+        currentStages: [{ seq: 1, status: stage_status.pending, name: 'HOD', message: '' }],
+        currentHistory: [],
+        workflowPreviousStage: 'HOD',
+        desStage: 'Requestor',
+        isFinalApproval: false,
+        userId: 'user-1',
+      });
+
+      expect(result).not.toBeNull();
+      expect(result!.current_stage_status).toBe('');
     });
 
     it('should stamp reject on review when payload stage_status is reject', () => {

@@ -402,23 +402,35 @@ export class WorkflowPersistenceHelper {
     currentHistory: Record<string, unknown>[];
     workflowPreviousStage: string;
     desStage: string;
+    isFinalApproval?: boolean;
     userId: string;
     userName?: string;
     action?: string;
   }): { stages_status: StageStatus[]; history: Record<string, unknown>[]; current_stage_status: string } | null {
-    // Skip approved items — they should not be touched during review (send-back).
-    // This fixes the bug where all 3 services updated approved items
-    // unconditionally during review.
-    if (input.payloadDetail.stage_status === stage_status.approve) {
-      return null;
-    }
+    const isApprove = input.payloadDetail.stage_status === stage_status.approve;
+    const isReject = input.payloadDetail.stage_status === stage_status.reject;
 
-    const stages = this.buildReviewDetailStagesStatus(
-      input.currentStages,
-      input.payloadDetail,
-      input.workflowPreviousStage,
-      input.desStage,
-    );
+    let stages: StageStatus[];
+    if (isApprove) {
+      // Approve-during-review: persist the approve entry so future submit/approve
+      // calls dedupe correctly (otherwise the prior approval is silently lost on
+      // resubmit). Honor buildApproveStagesStatus's skipped signal so already-
+      // approved rows stay untouched.
+      const result = this.buildApproveStagesStatus(
+        input.currentStages,
+        input.payloadDetail,
+        input.workflowPreviousStage,
+      );
+      if (result.skipped) return null;
+      stages = result.stages;
+    } else {
+      stages = this.buildReviewDetailStagesStatus(
+        input.currentStages,
+        input.payloadDetail,
+        input.workflowPreviousStage,
+        input.desStage,
+      );
+    }
 
     const history = this.appendHistory(input.currentHistory, {
       status: input.payloadDetail.stage_status,
@@ -429,12 +441,17 @@ export class WorkflowPersistenceHelper {
       action: input.action,
     });
 
+    let currentStageStatus = '';
+    if (isReject) {
+      currentStageStatus = stage_status.reject;
+    } else if (isApprove && input.isFinalApproval) {
+      currentStageStatus = stage_status.approve;
+    }
+
     return {
       stages_status: stages,
       history,
-      current_stage_status: input.payloadDetail.stage_status === stage_status.reject
-        ? stage_status.reject
-        : '',
+      current_stage_status: currentStageStatus,
     };
   }
 

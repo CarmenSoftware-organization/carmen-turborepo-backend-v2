@@ -1145,6 +1145,8 @@ export class StoreRequisitionService {
         });
         if (!bag) continue;
 
+        const isApproveRow = findSR.stage_status === stage_status.approve;
+
         await txp.tb_store_requisition_detail.update({
           where: {
             id: detail.id,
@@ -1154,11 +1156,21 @@ export class StoreRequisitionService {
             history: bag.history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             current_stage_status: bag.current_stage_status,
-            last_action: enum_last_action.reviewed,
-            review_by_id: this.userId,
-            review_by_name: workflow.last_action_by_name,
-            review_date_at: now,
-            review_message: findSR.stage_message || '',
+            ...(isApproveRow
+              ? {
+                  last_action: enum_last_action.approved,
+                  approved_by_id: this.userId,
+                  approved_by_name: workflow.last_action_by_name,
+                  approved_date_at: now,
+                  approved_message: findSR.stage_message || '',
+                }
+              : {
+                  last_action: enum_last_action.reviewed,
+                  review_by_id: this.userId,
+                  review_by_name: workflow.last_action_by_name,
+                  review_date_at: now,
+                  review_message: findSR.stage_message || '',
+                }),
           },
         });
       }
