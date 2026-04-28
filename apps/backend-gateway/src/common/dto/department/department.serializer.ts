@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 // Embedded schemas
 const DepartmentUserEmbeddedSchema = z.object({
@@ -21,8 +22,7 @@ export const DepartmentDetailResponseSchema = z.object({
   hod_users: z.array(DepartmentUserEmbeddedSchema).optional(),
   info: z.any().nullable().optional(),
   dimension: z.any().nullable().optional(),
-  created_at: z.coerce.date().optional(),
-  updated_at: z.coerce.date().optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type DepartmentDetailResponse = z.infer<typeof DepartmentDetailResponseSchema>;
