@@ -1,7 +1,11 @@
-import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, NotImplementedException } from '@nestjs/common';
 import { IPaginate } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ClientProxy } from '@nestjs/microservices';
+import { Observable, firstValueFrom } from 'rxjs';
+import { Result, MicroserviceResponse } from '@/common';
+import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
+import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
 @Injectable()
 export class Config_DepartmentUserService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -144,5 +148,48 @@ export class Config_DepartmentUserService {
       Config_DepartmentUserService.name,
     );
     throw new NotImplementedException('Not implemented');
+  }
+
+  /**
+   * Find a user's member department and HOD departments via microservice
+   * ค้นหาแผนกที่ user เป็นสมาชิก และแผนกที่ user เป็น HOD ผ่านไมโครเซอร์วิส
+   * @param target_user_id - User ID to look up / รหัสผู้ใช้ที่ต้องการค้นหา
+   * @param user_id - Requesting user ID / รหัสผู้ใช้ที่ร้องขอ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Result with member department + HOD departments / ผลลัพธ์ที่มีแผนกสมาชิก + รายการแผนก HOD
+   */
+  async findByUserId(
+    target_user_id: string,
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findByUserId', target_user_id, version },
+      Config_DepartmentUserService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this._masterService.send(
+      { cmd: 'department-users.find-by-user-id', service: 'department-users' },
+      {
+        target_user_id,
+        user_id,
+        bu_code,
+        version,
+        ...getGatewayRequestContext(),
+      },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
   }
 }
