@@ -57,8 +57,8 @@ export class UserNameResolverService {
       }
     } catch (err) {
       this.logger.warn(
-        'user.resolveByIds failed; treating ids as unknown',
-        { err, count: missing.length },
+        { msg: 'user.resolveByIds failed; treating ids as unknown', err, count: missing.length },
+        UserNameResolverService.name,
       );
       for (const id of missing) result.set(id, null);
     }

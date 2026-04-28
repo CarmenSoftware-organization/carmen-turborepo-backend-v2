@@ -33,8 +33,8 @@ export class EnrichmentService {
       return payload;
     } catch (err) {
       this.logger.warn(
-        'audit user enrichment failed; returning original payload',
-        { err },
+        { msg: 'audit user enrichment failed; returning original payload', err },
+        EnrichmentService.name,
       );
       return payload;
     }

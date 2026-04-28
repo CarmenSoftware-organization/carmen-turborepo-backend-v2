@@ -13,6 +13,12 @@ function isPlainObject(value: unknown): value is EnrichmentTarget {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+/**
+ * Collect every plain-object target inside `payload` reachable by any of the
+ * dot-separated `paths`. `''` means the root payload itself (or each element
+ * if root is an array). Missing paths are skipped silently. Used by
+ * EnrichmentService to find the entries that need their audit fields rewritten.
+ */
 export function collectTargetsByPaths(
   payload: unknown,
   paths: string[],
@@ -50,6 +56,10 @@ function collectAt(node: unknown, parts: string[], idx: number, out: EnrichmentT
   collectAt(next, parts, idx + 1, out);
 }
 
+/**
+ * Return the unique, non-empty string ids found in `created_by_id`,
+ * `updated_by_id`, and `deleted_by_id` across all targets.
+ */
 export function uniqueAuditUserIds(targets: EnrichmentTarget[]): string[] {
   const set = new Set<string>();
   for (const t of targets) {
@@ -62,6 +72,13 @@ export function uniqueAuditUserIds(targets: EnrichmentTarget[]): string[] {
   return Array.from(set);
 }
 
+/**
+ * Mutate `target` in place: move `created_at / updated_at / deleted_at` and
+ * convert `created_by_id / updated_by_id / deleted_by_id` into a single
+ * nested `audit` object with `{ id, name }` user references resolved via
+ * `nameMap`. Resolved-but-missing names become `"Unknown"`. No-op if the
+ * target is not a plain object or has none of the six audit fields.
+ */
 export function mutateToAuditShape(
   target: EnrichmentTarget,
   nameMap: Map<string, string | null>,

@@ -579,6 +579,9 @@ export class UserService {
    * On Prisma error, logs and returns { users: [] } so the gateway can
    * degrade gracefully ({ id, name: "Unknown" }) instead of producing an
    * unhandled rejection.
+   *
+   * @param ids - Array of tb_user.id values to resolve. Empty array short-circuits without a DB call.
+   * @returns Object containing a `users` array of `{ id, name }` entries; ids not in tb_user are omitted.
    */
   async resolveByIds(ids: string[]): Promise<{ users: Array<{ id: string; name: string }> }> {
     this.logger.debug({ function: 'resolveByIds', count: ids.length }, UserService.name);
