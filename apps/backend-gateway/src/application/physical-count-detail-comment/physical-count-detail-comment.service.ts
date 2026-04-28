@@ -165,6 +165,72 @@ export class PhysicalCountDetailCommentService {
     return ResponseLib.success(response.data);
   }
 
+  async createWithFiles(
+    files: Express.Multer.File[],
+    dto: {
+      physical_count_detail_id: string;
+      message?: string | null;
+      type?: 'user' | 'system';
+    },
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<unknown> {
+    const uploaded: UploadedAttachment[] = [];
+
+    if (files.length > 0) {
+      const settled = await Promise.allSettled(
+        files.map((f) => this.uploadFile(f, user_id, bu_code)),
+      );
+
+      const failures = settled.filter((s) => s.status === 'rejected');
+      const successes = settled.filter(
+        (s): s is PromiseFulfilledResult<UploadedAttachment> =>
+          s.status === 'fulfilled',
+      );
+
+      uploaded.push(...successes.map((s) => s.value));
+
+      if (failures.length > 0) {
+        // rollback any successful uploads
+        await Promise.all(
+          uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
+        );
+        const firstReason = (failures[0] as PromiseRejectedResult).reason;
+        const msg =
+          firstReason instanceof Error ? firstReason.message : String(firstReason);
+        throw new Error(`File upload failed: ${msg}`);
+      }
+    }
+
+    const data = {
+      physical_count_detail_id: dto.physical_count_detail_id,
+      message: dto.message ?? null,
+      type: dto.type ?? 'user',
+      attachments: uploaded,
+    };
+
+    const res: Observable<MicroserviceResponse> = this.businessService.send(
+      { cmd: 'physical-count-detail-comment.create', service: 'physical-count-detail-comment' },
+      { data, user_id, bu_code, version, ...getGatewayRequestContext() },
+    );
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.CREATED) {
+      // rollback uploaded files since the comment row was not created
+      if (uploaded.length > 0) {
+        await Promise.all(
+          uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
+        );
+      }
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+    return ResponseLib.created(response.data);
+  }
+
   async uploadFile(
     file: Express.Multer.File,
     user_id: string,

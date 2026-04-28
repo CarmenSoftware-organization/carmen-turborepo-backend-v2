@@ -118,4 +118,200 @@ describe('PhysicalCountDetailCommentService', () => {
       expect(ok).toBe(false);
     });
   });
+
+  describe('createWithFiles', () => {
+    const mkFile = (name: string, mime = 'image/jpeg', size = 100) =>
+      ({
+        originalname: name,
+        mimetype: mime,
+        buffer: Buffer.from(name),
+        size,
+      }) as Express.Multer.File;
+
+    const dto = {
+      physical_count_detail_id: '11111111-1111-1111-1111-111111111111',
+      message: 'damage',
+      type: 'user' as const,
+    };
+
+    it('uploads files in parallel and creates comment, returns created result', async () => {
+      mockFileService.send
+        .mockReturnValueOnce(
+          of({
+            success: true,
+            response: { status: 200 },
+            data: {
+              bu_code: 'HQ-001',
+              fileToken: 'tok-1',
+              objectName: 'HQ-001/uuid-a.jpg',
+              originalName: 'a.jpg',
+              contentType: 'image/jpeg',
+              size: 1,
+            },
+          }),
+        )
+        .mockReturnValueOnce(
+          of({
+            success: true,
+            response: { status: 200 },
+            data: {
+              bu_code: 'HQ-001',
+              fileToken: 'tok-2',
+              objectName: 'HQ-001/uuid-b.jpg',
+              originalName: 'b.jpg',
+              contentType: 'image/jpeg',
+              size: 2,
+            },
+          }),
+        );
+
+      mockBusinessService.send.mockReturnValueOnce(
+        of({
+          success: true,
+          response: { status: 201 },
+          data: { id: 'c-1' },
+        }),
+      );
+
+      const result = await service.createWithFiles(
+        [mkFile('a.jpg'), mkFile('b.jpg')],
+        dto,
+        'user-1',
+        'HQ-001',
+        'latest',
+      );
+
+      expect(mockFileService.send).toHaveBeenCalledTimes(2);
+      expect(mockBusinessService.send).toHaveBeenCalledWith(
+        { cmd: 'physical-count-detail-comment.create', service: 'physical-count-detail-comment' },
+        expect.objectContaining({
+          data: expect.objectContaining({
+            physical_count_detail_id: dto.physical_count_detail_id,
+            message: 'damage',
+            type: 'user',
+            attachments: [
+              expect.objectContaining({ fileToken: 'tok-1' }),
+              expect.objectContaining({ fileToken: 'tok-2' }),
+            ],
+          }),
+          user_id: 'user-1',
+          bu_code: 'HQ-001',
+        }),
+      );
+      // ResponseLib.created wraps data; just assert it returned something truthy
+      expect(result).toBeDefined();
+    });
+
+    it('zero files + message: skips upload, calls create with empty attachments', async () => {
+      mockBusinessService.send.mockReturnValueOnce(
+        of({
+          success: true,
+          response: { status: 201 },
+          data: { id: 'c-1' },
+        }),
+      );
+
+      await service.createWithFiles([], dto, 'user-1', 'HQ-001', 'latest');
+
+      expect(mockFileService.send).not.toHaveBeenCalled();
+      expect(mockBusinessService.send).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          data: expect.objectContaining({ attachments: [] }),
+        }),
+      );
+    });
+
+    it('rolls back uploaded files when one upload fails', async () => {
+      // first upload ok, second fails
+      mockFileService.send
+        .mockReturnValueOnce(
+          of({
+            success: true,
+            response: { status: 200 },
+            data: {
+              bu_code: 'HQ-001',
+              fileToken: 'tok-1',
+              objectName: 'HQ-001/uuid-a.jpg',
+              originalName: 'a.jpg',
+              contentType: 'image/jpeg',
+              size: 1,
+            },
+          }),
+        )
+        .mockReturnValueOnce(
+          of({ success: false, response: { status: 500, message: 'boom' } }),
+        )
+        // delete call for tok-1
+        .mockReturnValueOnce(
+          of({ success: true, response: { status: 200 } }),
+        );
+
+      await expect(
+        service.createWithFiles(
+          [mkFile('a.jpg'), mkFile('b.jpg')],
+          dto,
+          'user-1',
+          'HQ-001',
+          'latest',
+        ),
+      ).rejects.toThrow();
+
+      // expect a delete call with tok-1
+      const deleteCall = mockFileService.send.mock.calls.find(
+        ([pattern]) => pattern.cmd === 'file.delete',
+      );
+      expect(deleteCall).toBeDefined();
+      expect(deleteCall![1]).toEqual(
+        expect.objectContaining({ fileToken: 'tok-1' }),
+      );
+
+      expect(mockBusinessService.send).not.toHaveBeenCalled();
+    });
+
+    it('rolls back uploaded files when comment create fails', async () => {
+      mockFileService.send
+        .mockReturnValueOnce(
+          of({
+            success: true,
+            response: { status: 200 },
+            data: {
+              bu_code: 'HQ-001',
+              fileToken: 'tok-1',
+              objectName: 'HQ-001/uuid-a.jpg',
+              originalName: 'a.jpg',
+              contentType: 'image/jpeg',
+              size: 1,
+            },
+          }),
+        )
+        .mockReturnValueOnce(
+          of({ success: true, response: { status: 200 } }), // delete tok-1
+        );
+
+      mockBusinessService.send.mockReturnValueOnce(
+        of({
+          response: { status: 404, message: 'not found' },
+        }),
+      );
+
+      const result = await service.createWithFiles(
+        [mkFile('a.jpg')],
+        dto,
+        'user-1',
+        'HQ-001',
+        'latest',
+      );
+
+      // result should be a Result.error (truthy object). assert delete happened.
+      const deleteCall = mockFileService.send.mock.calls.find(
+        ([pattern]) => pattern.cmd === 'file.delete',
+      );
+      expect(deleteCall).toBeDefined();
+      expect(deleteCall![1]).toEqual(
+        expect.objectContaining({ fileToken: 'tok-1' }),
+      );
+      expect(result).toBeDefined();
+    });
+  });
 });
