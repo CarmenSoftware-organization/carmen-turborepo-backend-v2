@@ -10,6 +10,14 @@ patch {
   auth: bearer
 }
 
+params:query {
+  ~version: 
+}
+
+params:path {
+  id: {{physical_count_id}}
+}
+
 headers {
   x-app-id: {{x_app_id}}
   Content-Type: application/json
@@ -19,30 +27,33 @@ auth:bearer {
   token: {{access_token}}
 }
 
-query {
-  ~version: 
-}
-
 body:json {
-  {}
+  {
+    "items": [
+      {
+        "id": "d155ddd1-fe2f-460b-8fc0-9728fa579d56",
+        "actual_qty": 10
+      }
+    ]
+  }
 }
 
 vars:pre-request {
-  physical_count_id:
-  physical_count_detail_id:
+  physical_count_id: 2d834681-4e3e-461b-8d44-791c9565dd38
+  physical_count_detail_id: 
 }
 
 docs {
   ## Review Physical Count Items
   เปรียบเทียบจำนวนที่นับได้กับจำนวนในระบบ และคำนวณผลต่างของแต่ละรายการ ช่วยให้พนักงานคลังสินค้าตรวจสอบความคลาดเคลื่อนก่อนส่งขั้นสุดท้าย
-
+  
   Compares the counted quantities against system stock levels and calculates variances for each item, enabling warehouse staff to review discrepancies before final submission.
-
+  
   ### Path Parameters
   - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
   - `id` — Physical Count ID / รหัสการตรวจนับสินค้า
-
-
+  
+  
   ### Sample Body
   ```json
   {
@@ -54,7 +65,7 @@ docs {
     ]
   }
   ```
-
+  
   ### Sample Response
   ```json
   {
@@ -69,8 +80,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-params:path {
-  id: {{physical_count_id}}
 }

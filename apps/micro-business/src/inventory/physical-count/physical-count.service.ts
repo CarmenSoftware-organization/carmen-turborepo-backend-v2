@@ -731,39 +731,49 @@ export class PhysicalCountService {
       onHandGrouped.map((item) => [item.product_id, item._sum.qty || new Prisma.Decimal(0)]),
     );
 
-    // Update each detail with actual_qty (actual_qty), computed on_hand_qty, and diff_qty
-    await prisma.$transaction(async (tx) => {
-      for (const detail of details) {
-        const onHandQty = onHandMap.get(detail.product_id) || new Prisma.Decimal(0);
-        const countedQty = actualQtyMap.get(detail.id) || detail.actual_qty;
-        const diffQty = countedQty.minus(onHandQty);
+    // Pre-compute per-detail values outside the transaction to keep it short
+    const updatedAt = new Date().toISOString();
+    const detailUpdates = details.map((detail) => {
+      const onHandQty = onHandMap.get(detail.product_id) || new Prisma.Decimal(0);
+      const countedQty =
+        actualQtyMap.get(detail.id) || detail.actual_qty || new Prisma.Decimal(0);
+      const diffQty = countedQty.minus(onHandQty);
+      return { id: detail.id, onHandQty, countedQty, diffQty };
+    });
 
-        await tx.tb_physical_count_detail.update({
-          where: { id: detail.id },
+    const totalCounted = details.filter(
+      (d) => actualQtyMap.has(d.id) || (d.actual_qty && !d.actual_qty.equals(0)),
+    ).length;
+
+    // Update each detail with actual_qty, computed on_hand_qty, and diff_qty
+    await prisma.$transaction(
+      async (tx) => {
+        await Promise.all(
+          detailUpdates.map((u) =>
+            tx.tb_physical_count_detail.update({
+              where: { id: u.id },
+              data: {
+                actual_qty: u.countedQty,
+                on_hand_qty: u.onHandQty,
+                diff_qty: u.diffQty,
+                updated_by_id: user_id,
+                updated_at: updatedAt,
+              },
+            }),
+          ),
+        );
+
+        await tx.tb_physical_count.update({
+          where: { id },
           data: {
-            actual_qty: countedQty,
-            on_hand_qty: onHandQty,
-            diff_qty: diffQty,
+            product_counted: totalCounted,
             updated_by_id: user_id,
-            updated_at: new Date().toISOString(),
+            updated_at: updatedAt,
           },
         });
-      }
-
-      // Update product_counted
-      const totalCounted = details.filter(
-        (d) => actualQtyMap.has(d.id) || (d.actual_qty && !d.actual_qty.equals(0)),
-      ).length;
-
-      await tx.tb_physical_count.update({
-        where: { id },
-        data: {
-          product_counted: totalCounted,
-          updated_by_id: user_id,
-          updated_at: new Date().toISOString(),
-        },
-      });
-    });
+      },
+      { timeout: 30000, maxWait: 10000 },
+    );
 
     return this.findOne(id, user_id, tenant_id);
   }
