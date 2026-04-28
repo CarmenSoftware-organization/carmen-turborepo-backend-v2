@@ -57,6 +57,6 @@ describe('EnrichAuditUsersContextInterceptor', () => {
     };
     const out = await firstValueFrom(interceptor.intercept(ctx, probe as any));
     expect(out).toBe('ok');
-    expect(observed).toBe('unset'); // ALS not entered
+    expect(observed).toBeUndefined(); // ALS was not entered (getStore() outside .run() returns undefined)
   });
 });
