@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { TenantService } from '@/tenant/tenant.service';
+import { validateSqlSafety } from './sql-validator';
 
 @Injectable()
 export class SqlQueryService {
@@ -20,16 +21,12 @@ export class SqlQueryService {
     if (!sql_text?.trim()) throw new Error('sql_text is required');
     if (!user_id) throw new Error('user_id is required');
 
+    validateSqlSafety(sql_text, {
+      allowedLeading: ['SELECT', 'WITH', 'SHOW', 'EXPLAIN', 'DESCRIBE', 'DESC'],
+      allowMultiple: false,
+    });
+
     const trimmed = sql_text.trim().replace(/;\s*$/, '');
-    const head = trimmed
-      .toLowerCase()
-      .replace(/^\s*(--[^\n]*\n|\/\*[\s\S]*?\*\/)\s*/g, '');
-    const isReadOnly = /^(select|with|show|explain|describe|desc)\b/.test(head);
-    if (!isReadOnly) {
-      throw new Error(
-        'Only SELECT / WITH / SHOW / EXPLAIN / DESCRIBE statements are allowed',
-      );
-    }
 
     const prisma = await this.tenantService.prismaTenantInstance(bu_code, user_id);
 
@@ -111,6 +108,11 @@ export class SqlQueryService {
     let ddlSql = input.sql_text;
     if (!startsWithCreate) {
       if (queryType === 'view') {
+        // Bare SELECT for view — must be a single SELECT/WITH only, no DROP etc.
+        validateSqlSafety(input.sql_text, {
+          allowedLeading: ['SELECT', 'WITH'],
+          allowMultiple: false,
+        });
         const safeName = (input.name || '').trim().replace(/"/g, '""');
         if (!safeName) {
           throw new Error('name is required when sql_text is a bare SELECT');
@@ -122,6 +124,12 @@ export class SqlQueryService {
           'Stored procedure/function SQL must start with CREATE OR REPLACE PROCEDURE/FUNCTION. Please write the full DDL.',
         );
       }
+    } else {
+      // Already CREATE — validate top-level only contains CREATE statements (no DROP injected)
+      validateSqlSafety(input.sql_text, {
+        allowedLeading: ['CREATE'],
+        allowMultiple: true,
+      });
     }
 
     const runDdl = async () => {
