@@ -29,8 +29,9 @@ export class UploadCommentWithFilesDto {
   @ApiPropertyOptional({
     description: 'Comment message (≤ 4000 chars). Required if no files.',
     example: 'Damage on outer carton',
+    nullable: true,
   })
-  message?: string;
+  message?: string | null;
 
   @ApiPropertyOptional({
     description: 'Comment type',
