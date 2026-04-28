@@ -10,14 +10,18 @@ get {
   auth: bearer
 }
 
+params:query {
+  ~version: 
+}
+
+params:path {
+  user_id: 462a3bca-d0cd-4206-81de-db7b05f262d0
+}
+
 headers {
   x-app-id: {{x_app_id}}
 }
 
 auth:bearer {
   token: {{access_token}}
-}
-
-query {
-  ~version: 
 }
