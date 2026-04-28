@@ -6,15 +6,14 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseUUIDPipe,
   Post,
-  Put,
+  Query,
   Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { BaseHttpController } from '@/common';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
@@ -22,21 +21,10 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import { Config_SqlQueryService } from './config_sql_query.service';
 
-interface SqlQueryCreateBody {
-  name: string;
-  description?: string;
-  sql_text: string;
-  query_type?: string;
-  category?: string;
-}
-
-interface SqlQueryUpdateBody {
+interface SaveDdlBody {
   name?: string;
-  description?: string;
-  sql_text?: string;
-  query_type?: string;
-  category?: string;
-  is_active?: boolean;
+  sql_text: string;
+  query_type: string;
 }
 
 @ApiTags('Config: System')
@@ -53,149 +41,138 @@ export class Config_SqlQueryController extends BaseHttpController {
     super();
   }
 
-  @Get()
+  @Post('execute')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'List all SQL queries',
-    description: 'Returns all saved SQL queries / stored procedures for the business unit.',
-    operationId: 'sqlQuery_list',
+    summary: 'Execute a read-only SQL statement',
+    description: 'Runs a SELECT/WITH/SHOW/EXPLAIN statement against the tenant DB and returns rows + columns.',
+    operationId: 'sqlQuery_execute',
     tags: ['SQL Query'],
-    'x-description-th': 'แสดงรายการ SQL query ทั้งหมดของหน่วยธุรกิจ',
-  } as any)
-  async list(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Param('bu_code') bu_code: string,
-  ): Promise<void> {
-    const { user_id } = ExtractRequestHeader(req);
-    const result = await this.service.list(bu_code, user_id);
-    this.respond(res, result);
-  }
-
-  @Get(':id')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary: 'Get SQL query by ID',
-    description: 'Returns a single SQL query by its ID.',
-    operationId: 'sqlQuery_get',
-    tags: ['SQL Query'],
-    'x-description-th': 'ดู SQL query ตาม ID',
-  } as any)
-  async get(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Param('bu_code') bu_code: string,
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): Promise<void> {
-    const { user_id } = ExtractRequestHeader(req);
-    const result = await this.service.get(bu_code, user_id, id);
-    this.respond(res, result);
-  }
-
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({
-    summary: 'Create a new SQL query',
-    description: 'Saves a new SQL query / stored procedure / view definition.',
-    operationId: 'sqlQuery_create',
-    tags: ['SQL Query'],
-    'x-description-th': 'สร้าง SQL query ใหม่',
+    'x-description-th': 'รัน SQL แบบ read-only แล้วคืนผลลัพธ์',
   } as any)
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        name: { type: 'string', example: 'PR Summary Report' },
-        description: { type: 'string', example: 'Monthly PR summary grouped by department' },
-        sql_text: { type: 'string', example: 'SELECT pr_no, pr_date, description FROM tb_purchase_request WHERE deleted_at IS NULL' },
-        query_type: { type: 'string', enum: ['query', 'stored_procedure', 'view'], example: 'query' },
-        category: { type: 'string', example: 'Procurement' },
+        sql_text: { type: 'string', example: 'SELECT * FROM tb_purchase_request LIMIT 10' },
       },
-      required: ['name', 'sql_text'],
+      required: ['sql_text'],
     },
   })
-  async create(
+  async execute(
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Body() body: SqlQueryCreateBody,
+    @Body() body: { sql_text: string },
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.service.create(bu_code, user_id, body as any);
+    const result = await this.service.execute(bu_code, user_id, body?.sql_text);
     this.respond(res, result);
   }
 
-  @Put(':id')
+  @Post('save')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Update a SQL query',
-    description: 'Updates an existing SQL query by ID.',
-    operationId: 'sqlQuery_update',
+    summary: 'Create or replace a view / stored procedure / function',
+    description: 'Executes the provided DDL against the tenant schema. For type=view, a bare SELECT will be auto-wrapped with CREATE OR REPLACE VIEW.',
+    operationId: 'sqlQuery_save',
     tags: ['SQL Query'],
-    'x-description-th': 'แก้ไข SQL query',
+    'x-description-th': 'สร้าง / อัปเดต view / stored procedure / function ลง schema ของ tenant',
   } as any)
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        name: { type: 'string' },
-        description: { type: 'string' },
+        name: { type: 'string', example: 'v_pr_summary' },
         sql_text: { type: 'string' },
-        query_type: { type: 'string', enum: ['query', 'stored_procedure', 'view'] },
-        category: { type: 'string' },
-        is_active: { type: 'boolean' },
+        query_type: { type: 'string', enum: ['view', 'stored_procedure', 'function'] },
       },
+      required: ['sql_text', 'query_type'],
     },
   })
-  async update(
+  async save(
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() body: SqlQueryUpdateBody,
+    @Body() body: SaveDdlBody,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.service.update(bu_code, user_id, id, body as any);
+    const result = await this.service.saveDdl(bu_code, user_id, body);
     this.respond(res, result);
   }
 
-  @Delete(':id')
+  @Get('db-objects')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Delete a SQL query',
-    description: 'Soft-deletes a SQL query by ID.',
-    operationId: 'sqlQuery_delete',
+    summary: 'List database tables, views, and stored procedures/functions',
+    description: 'Returns user-defined tables, views, procedures, functions and their columns from the tenant schema.',
+    operationId: 'sqlQuery_listDbObjects',
     tags: ['SQL Query'],
-    'x-description-th': 'ลบ SQL query (soft delete)',
+    'x-description-th': 'แสดงรายการ table / view / stored procedure / function ของ tenant schema',
   } as any)
-  async delete(
+  async dbObjects(
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.service.delete(bu_code, user_id, id);
+    const result = await this.service.listDbObjects(bu_code, user_id);
     this.respond(res, result);
   }
 
-  @Post(':id/duplicate')
-  @HttpCode(HttpStatus.CREATED)
+  @Get('db-objects/definition')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Duplicate a SQL query',
-    description: 'Creates a copy of an existing SQL query with "(Copy)" appended to the name.',
-    operationId: 'sqlQuery_duplicate',
+    summary: 'Get DDL definition for a view or stored procedure/function',
+    description: 'Returns the CREATE OR REPLACE statement for the given object.',
+    operationId: 'sqlQuery_getDbObjectDefinition',
     tags: ['SQL Query'],
-    'x-description-th': 'คัดลอก SQL query (สร้างสำเนา)',
+    'x-description-th': 'ดู DDL ของ view / stored procedure / function',
   } as any)
-  async duplicate(
+  @ApiQuery({ name: 'type', enum: ['view', 'procedure', 'function'] })
+  @ApiQuery({ name: 'schema', type: 'string', example: 'public' })
+  @ApiQuery({ name: 'name', type: 'string' })
+  async dbObjectDefinition(
     @Req() req: Request,
     @Res() res: Response,
     @Param('bu_code') bu_code: string,
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Query('type') type: string,
+    @Query('schema') schema: string,
+    @Query('name') name: string,
   ): Promise<void> {
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.service.duplicate(bu_code, user_id, id);
+    const result = await this.service.getDbObjectDefinition(
+      bu_code,
+      user_id,
+      type,
+      schema,
+      name,
+    );
+    this.respond(res, result);
+  }
+
+  @Delete('db-objects')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Drop a view or stored procedure/function',
+    description: 'Drops the given object from the tenant schema using DROP IF EXISTS.',
+    operationId: 'sqlQuery_dropDbObject',
+    tags: ['SQL Query'],
+    'x-description-th': 'ลบ view / stored procedure / function',
+  } as any)
+  @ApiQuery({ name: 'type', enum: ['view', 'procedure', 'function'] })
+  @ApiQuery({ name: 'schema', type: 'string' })
+  @ApiQuery({ name: 'name', type: 'string' })
+  async dropDbObject(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('bu_code') bu_code: string,
+    @Query('type') type: string,
+    @Query('schema') schema: string,
+    @Query('name') name: string,
+  ): Promise<void> {
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.service.dropDbObject(bu_code, user_id, type, schema, name);
     this.respond(res, result);
   }
 }

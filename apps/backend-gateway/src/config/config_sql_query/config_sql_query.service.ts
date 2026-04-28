@@ -48,27 +48,51 @@ export class Config_SqlQueryService {
     return Result.ok(response.data);
   }
 
-  async list(bu_code: string, user_id: string) {
-    return this.call('sqlQuery.list', { bu_code, user_id });
+  async execute(bu_code: string, user_id: string, sql_text: string) {
+    return this.call('sqlQuery.execute', { bu_code, user_id, sql_text });
   }
 
-  async get(bu_code: string, user_id: string, id: string) {
-    return this.call('sqlQuery.get', { bu_code, user_id, id });
+  async saveDdl(
+    bu_code: string,
+    user_id: string,
+    body: { name?: string; sql_text: string; query_type: string },
+  ) {
+    return this.call('sqlQuery.saveDdl', { bu_code, user_id, ...body });
   }
 
-  async create(bu_code: string, user_id: string, body: Record<string, unknown>) {
-    return this.call('sqlQuery.create', { bu_code, user_id, ...body }, HttpStatus.CREATED);
+  async listDbObjects(bu_code: string, user_id: string) {
+    return this.call('sqlQuery.dbObjects', { bu_code, user_id });
   }
 
-  async update(bu_code: string, user_id: string, id: string, body: Record<string, unknown>) {
-    return this.call('sqlQuery.update', { bu_code, user_id, id, ...body });
+  async getDbObjectDefinition(
+    bu_code: string,
+    user_id: string,
+    type: string,
+    schema: string,
+    name: string,
+  ) {
+    return this.call('sqlQuery.dbObjectDefinition', {
+      bu_code,
+      user_id,
+      type,
+      schema,
+      name,
+    });
   }
 
-  async delete(bu_code: string, user_id: string, id: string) {
-    return this.call('sqlQuery.delete', { bu_code, user_id, id });
-  }
-
-  async duplicate(bu_code: string, user_id: string, id: string) {
-    return this.call('sqlQuery.duplicate', { bu_code, user_id, id }, HttpStatus.CREATED);
+  async dropDbObject(
+    bu_code: string,
+    user_id: string,
+    type: string,
+    schema: string,
+    name: string,
+  ) {
+    return this.call('sqlQuery.dropDbObject', {
+      bu_code,
+      user_id,
+      type,
+      schema,
+      name,
+    });
   }
 }

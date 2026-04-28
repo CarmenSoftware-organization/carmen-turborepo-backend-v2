@@ -6,8 +6,8 @@ SELECT
     COALESCE(v.name, '')                                            AS vendor_name,
     COALESCE(v.tax_profile_name, '')                                AS tax_id,
     ''::text                                                        AS credit_term,
-    ''::text                                                        AS discount_rate,
-    CASE WHEN v.is_active THEN 'Active' ELSE 'Inactive' END         AS status,
+    ''::text                                                        AS discount,
+    CASE WHEN v.is_active THEN 'Active' ELSE 'Inactive' END         AS doc_status,
     v.is_active                                                     AS is_active
 FROM tb_vendor AS v
 WHERE v.deleted_at IS NULL;

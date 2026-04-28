@@ -10,18 +10,18 @@ SELECT
     COALESCE(p.local_name, '')                                  AS product_desc2,
     cat.code                                                    AS category_code,
     COALESCE(cat.code || ' : ' || cat.name, '')                 AS category_name,
-    sc.code                                                     AS subcategory_code,
+    sc.code                                                     AS sub_category_code,
     COALESCE(sc.code || ' : ' || sc.name, '')                   AS sub_category_name,
     ig.code                                                     AS item_group_code,
     COALESCE(ig.code || ' : ' || ig.name, '')                   AS item_group_name,
-    COALESCE(p.inventory_unit_name, '')                         AS iu_name,
-    COALESCE(uc.from_unit_name, p.inventory_unit_name, '')      AS ou_name,
+    COALESCE(p.inventory_unit_name, '')                         AS inventory_unit,
+    COALESCE(uc.from_unit_name, p.inventory_unit_name, '')      AS order_unit,
     COALESCE(cl.cost_per_unit, 0)                               AS last_cost,
     COALESCE(p.tax_profile_name, '')                            AS tax_type_name,
     COALESCE(p.tax_rate, 0)                                     AS tax_rate,
     ''::text                                                    AS tax_acc_code,
     COALESCE(p.tax_rate::text, '')                              AS tax_type,
-    CASE WHEN p.is_active THEN 'Active' ELSE 'Inactive' END     AS status,
+    CASE WHEN p.is_active THEN 'Active' ELSE 'Inactive' END     AS doc_status,
     p.is_active                                                 AS is_active
 FROM tb_product AS p
 LEFT JOIN tb_product_item_group     AS ig  ON ig.id = p.product_item_group_id       AND ig.deleted_at IS NULL
