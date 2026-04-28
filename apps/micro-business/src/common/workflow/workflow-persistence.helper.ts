@@ -35,9 +35,9 @@ export class WorkflowPersistenceHelper {
       return { stages, skipped: true };
     }
 
-    const latest = stages[stages.length - 1];
-
-    if (latest?.status === stage_status.reject) {
+    // Reject is terminal: once any stage is reject, the row is dead — never
+    // resubmit, never re-review, never re-approve.
+    if (stages.some((s) => s.status === stage_status.reject)) {
       return { stages, skipped: true };
     }
 
@@ -46,6 +46,8 @@ export class WorkflowPersistenceHelper {
     if (stages.some(s => s.status === stage_status.approve)) {
       return { stages, skipped: true };
     }
+
+    const latest = stages[stages.length - 1];
 
     if (
       (latest?.status === stage_status.pending || latest?.status === stage_status.submit) &&
@@ -94,7 +96,8 @@ export class WorkflowPersistenceHelper {
     const stages: StageStatus[] = [...current];
     const latest = stages[stages.length - 1];
 
-    if (latest?.status === stage_status.reject) {
+    // Reject is terminal: never re-approve a rejected row.
+    if (stages.some((s) => s.status === stage_status.reject)) {
       return { stages, skipped: true };
     }
 
@@ -154,18 +157,23 @@ export class WorkflowPersistenceHelper {
    * Build stages_status for REVIEW (send back).
    *
    * Logic:
-   * - Find the LAST entry whose name === desStage and set it to 'pending'.
-   * - Drop pending/submit/review entries past it (they are no longer valid).
-   * - Preserve approve entries past it — those represent permanent achievements
-   *   the row has earned at downstream stages and must survive a multi-stage
-   *   send-back (e.g. DM sends back to Create, the HOD approve must remain so
-   *   resolveCurrentStageStatus can still see it).
+   * - If any stage has been rejected, the row is terminal — return unchanged.
+   * - Find the LAST entry whose name === desStage.
+   * - Preserve approve entries past it (permanent achievements survive rollback).
+   * - If the row has any downstream approve, mark the target stage 'approve'
+   *   too so the row continues to display approved while sitting at the
+   *   rolled-back stage. Otherwise mark the target 'pending'.
+   * - Drop other entries past the target (pending/submit/review become invalid).
    */
   static buildReviewStagesStatus(
     current: StageStatus[],
     desStage: string,
     message?: string,
   ): StageStatus[] {
+    if (current.some((s) => s.status === stage_status.reject)) {
+      return current.map((s) => ({ ...s }));
+    }
+
     let targetIdx = -1;
     for (let i = current.length - 1; i >= 0; i--) {
       if (current[i].name === desStage) { targetIdx = i; break; }
@@ -173,15 +181,16 @@ export class WorkflowPersistenceHelper {
     if (targetIdx === -1) return current.map((s) => ({ ...s }));
 
     const before = current.slice(0, targetIdx).map((s) => ({ ...s }));
-    const target: StageStatus = {
-      ...current[targetIdx],
-      status: stage_status.pending,
-      message: message || '',
-    };
     const afterApproves = current
       .slice(targetIdx + 1)
       .filter((s) => s.status === stage_status.approve)
       .map((s) => ({ ...s }));
+    const hasDownstreamApprove = afterApproves.length > 0;
+    const target: StageStatus = {
+      ...current[targetIdx],
+      status: hasDownstreamApprove ? stage_status.approve : stage_status.pending,
+      message: message || '',
+    };
     return [...before, target, ...afterApproves];
   }
 
@@ -279,11 +288,12 @@ export class WorkflowPersistenceHelper {
     workflowCurrentStage: string;
   }): string {
     if (input.payloadStatus === stage_status.reject) return stage_status.reject;
+    // Reject is terminal: any reject anywhere in the stage history wins.
+    if (input.stages.some((s) => s.status === stage_status.reject)) return stage_status.reject;
     for (let i = input.stages.length - 1; i >= 0; i--) {
       const s = input.stages[i];
       if (s.name !== input.workflowCurrentStage) continue;
       if (s.status === stage_status.approve) return stage_status.approve;
-      if (s.status === stage_status.reject) return stage_status.reject;
       return '';
     }
     return '';
@@ -440,6 +450,11 @@ export class WorkflowPersistenceHelper {
     userName?: string;
     action?: string;
   }): { stages_status: StageStatus[]; history: Record<string, unknown>[]; current_stage_status: string } | null {
+    // Reject is terminal: never modify a row that has any reject in its history.
+    if (input.currentStages.some((s) => s.status === stage_status.reject)) {
+      return null;
+    }
+
     const isApprove = input.payloadDetail.stage_status === stage_status.approve;
 
     let stages: StageStatus[];

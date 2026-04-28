@@ -266,7 +266,7 @@ describe('WorkflowPersistenceHelper', () => {
       expect(result).toHaveLength(2);
     });
 
-    it('should drop pending entries after target but preserve approve entries', () => {
+    it('rolls back to target with downstream approves preserved (target marked approve)', () => {
       const existing: StageStatus[] = [
         { seq: 1, status: stage_status.submit, name: 'Requestor', message: '' },
         { seq: 2, status: stage_status.approve, name: 'HOD', message: '' },
@@ -276,9 +276,9 @@ describe('WorkflowPersistenceHelper', () => {
 
       const result = WorkflowPersistenceHelper.buildReviewStagesStatus(existing, 'HOD');
 
-      // Target HOD becomes pending; downstream approve at Purchaser is preserved;
-      // pending GM is dropped.
-      expect(result.find((s) => s.name === 'HOD')?.status).toBe(stage_status.pending);
+      // Target HOD entry is marked approve (row had downstream approves);
+      // downstream approve at Purchaser preserved; pending GM dropped.
+      expect(result.find((s) => s.name === 'HOD')?.status).toBe(stage_status.approve);
       expect(result.some((s) => s.name === 'Purchaser' && s.status === stage_status.approve)).toBe(true);
       expect(result.some((s) => s.name === 'GM')).toBe(false);
       expect(result).toHaveLength(3);
@@ -556,6 +556,19 @@ describe('WorkflowPersistenceHelper', () => {
       })).toBe(stage_status.reject);
     });
 
+    it('returns "reject" when any stage in stages_status is reject (terminal)', () => {
+      // Even if doc moves to a stage where the row has no entry, a prior reject
+      // sticks because reject is terminal.
+      expect(WorkflowPersistenceHelper.resolveCurrentStageStatus({
+        payloadStatus: stage_status.submit,
+        stages: [
+          { seq: 1, status: stage_status.reject, name: 'Create Request', message: '' },
+          { seq: 2, status: stage_status.reject, name: 'HOD', message: '' },
+        ],
+        workflowCurrentStage: 'Issue',
+      })).toBe(stage_status.reject);
+    });
+
     it('returns "approve" when destination stage entry is approve', () => {
       expect(WorkflowPersistenceHelper.resolveCurrentStageStatus({
         payloadStatus: stage_status.submit,
@@ -612,7 +625,7 @@ describe('WorkflowPersistenceHelper', () => {
   });
 
   describe('buildReviewStagesStatus preserves approve entries on rollback', () => {
-    it('keeps approve entries past the rollback target', () => {
+    it('keeps approve entries past the rollback target and marks target approve', () => {
       // Multi-stage send-back: DM sends back to Create with item already approved at HOD.
       const stages = WorkflowPersistenceHelper.buildReviewStagesStatus(
         [
@@ -625,8 +638,35 @@ describe('WorkflowPersistenceHelper', () => {
       );
 
       expect(stages).toHaveLength(2);
-      expect(stages[0]).toMatchObject({ status: stage_status.pending, name: 'Create Request' });
+      // target Create Request is marked approve because the row has downstream approve at HOD
+      expect(stages[0]).toMatchObject({ status: stage_status.approve, name: 'Create Request' });
       expect(stages[1]).toMatchObject({ status: stage_status.approve, name: 'HOD' });
+    });
+
+    it('marks target pending when no downstream approve exists', () => {
+      const stages = WorkflowPersistenceHelper.buildReviewStagesStatus(
+        [
+          { seq: 1, status: stage_status.submit, name: 'Create Request', message: '' },
+          { seq: 2, status: stage_status.pending, name: 'HOD', message: '' },
+        ],
+        'Create Request',
+        'fix',
+      );
+
+      expect(stages).toHaveLength(1);
+      expect(stages[0]).toMatchObject({ status: stage_status.pending, name: 'Create Request' });
+    });
+
+    it('returns unchanged copy when row has any reject (terminal)', () => {
+      const input: StageStatus[] = [
+        { seq: 1, status: stage_status.reject, name: 'Create Request', message: '' },
+        { seq: 2, status: stage_status.reject, name: 'HOD', message: 'no' },
+      ];
+      const stages = WorkflowPersistenceHelper.buildReviewStagesStatus(input, 'Create Request', 'fix');
+      expect(stages).toHaveLength(2);
+      expect(stages[0].status).toBe(stage_status.reject);
+      expect(stages[1].status).toBe(stage_status.reject);
+      expect(stages).not.toBe(input);
     });
 
     it('drops non-approve entries past the rollback target', () => {
