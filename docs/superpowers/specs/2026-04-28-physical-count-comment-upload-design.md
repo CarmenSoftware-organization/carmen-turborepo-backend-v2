@@ -6,7 +6,7 @@
 
 ## Goal
 
-Allow clients to create a comment on a `physical_count_detail` row and upload attachment files (images) **in a single HTTP request**, instead of the current two-step flow (upload to file service → submit JSON with returned URLs).
+Allow clients to create a comment on a `physical_count_detail` row and upload attachment files (images and PDFs) **in a single HTTP request**, instead of the current two-step flow (upload to file service → submit JSON with returned URLs).
 
 The current schema and JSON-based create/update endpoints already support `message` and `attachments[]` (object shape `{ fileName, fileToken, fileUrl, contentType, size }`). This spec adds an additional **multipart upload endpoint** that wraps the upload + create flow on the gateway side.
 
@@ -65,7 +65,7 @@ x-app-id: <id>
 **Constraints:**
 - Max files per request: **10**
 - Max size per file: **10 MB**
-- Allowed mime types: `image/jpeg`, `image/png`, `image/webp`, `image/gif`
+- Allowed mime types: `image/jpeg`, `image/png`, `image/webp`, `image/gif`, `application/pdf`
 
 **Response 201:** Same shape as existing `create` endpoint — full `PhysicalCountDetailCommentResponse` (id, message, attachments[], timestamps, etc.)
 
@@ -225,7 +225,7 @@ Gateway → Client: 404 "physical_count_detail not found" (original error)
 | `message` length | ≤ 4000 chars | 400 |
 | `files` count | 0–10 | 400 |
 | File size | ≤ 10 MB each | 400 |
-| File mime | `image/jpeg`, `image/png`, `image/webp`, `image/gif` | 400 |
+| File mime | `image/jpeg`, `image/png`, `image/webp`, `image/gif`, `application/pdf` | 400 |
 | At least one of `message`, `files` | required | 400 |
 
 ## Error Handling Summary
@@ -247,6 +247,7 @@ Gateway → Client: 404 "physical_count_detail not found" (original error)
 - Multipart upload with 1 valid image — assert 201, assert attachments[].fileUrl reachable
 - Multipart upload with file > 10MB — assert 400
 - Multipart upload with bad mime (text/plain) — assert 400
+- Multipart upload with valid PDF (application/pdf) — assert 201
 - Empty body, no files — assert 400
 
 ## Documentation
