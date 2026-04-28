@@ -192,7 +192,17 @@ export class PhysicalCountDetailCommentService {
       uploaded.push(...successes.map((s) => s.value));
 
       if (failures.length > 0) {
-        // rollback any successful uploads
+        this.logger.warn(
+          {
+            function: 'createWithFiles',
+            phase: 'upload-rollback',
+            bu_code,
+            physical_count_detail_id: dto.physical_count_detail_id,
+            uploaded_count: uploaded.length,
+            failed_count: failures.length,
+          },
+          PhysicalCountDetailCommentService.name,
+        );
         await Promise.all(
           uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
         );
@@ -217,8 +227,18 @@ export class PhysicalCountDetailCommentService {
     const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.CREATED) {
-      // rollback uploaded files since the comment row was not created
       if (uploaded.length > 0) {
+        this.logger.warn(
+          {
+            function: 'createWithFiles',
+            phase: 'create-rollback',
+            bu_code,
+            physical_count_detail_id: dto.physical_count_detail_id,
+            uploaded_count: uploaded.length,
+            create_status: response.response.status,
+          },
+          PhysicalCountDetailCommentService.name,
+        );
         await Promise.all(
           uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
         );
