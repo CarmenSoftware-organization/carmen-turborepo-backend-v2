@@ -145,7 +145,11 @@ export class DepartmentUserService {
     hod_departments: Array<{ id: string; code: string; name: string }>;
   }>> {
     const memberRecord = await this.prismaService.tb_department_user.findFirst({
-      where: { user_id: target_user_id, is_hod: false, deleted_at: null },
+      where: {
+        user_id: target_user_id,
+        OR: [{ is_hod: false }, { is_hod: null }],
+        deleted_at: null,
+      },
       select: { tb_department: { select: { id: true, code: true, name: true } } },
     });
 

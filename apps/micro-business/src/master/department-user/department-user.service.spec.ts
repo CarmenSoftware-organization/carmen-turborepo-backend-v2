@@ -60,13 +60,34 @@ describe('DepartmentUserService', () => {
         hod_departments: [HOD_DEPT_1, HOD_DEPT_2],
       });
       expect(mockPrismaClient.tb_department_user.findFirst).toHaveBeenCalledWith({
-        where: { user_id: TARGET_USER, is_hod: false, deleted_at: null },
+        where: {
+          user_id: TARGET_USER,
+          OR: [{ is_hod: false }, { is_hod: null }],
+          deleted_at: null,
+        },
         select: { tb_department: { select: { id: true, code: true, name: true } } },
       });
       expect(mockPrismaClient.tb_department_user.findMany).toHaveBeenCalledWith({
         where: { user_id: TARGET_USER, is_hod: true, deleted_at: null },
         select: { tb_department: { select: { id: true, code: true, name: true } } },
       });
+    });
+
+    it('treats null is_hod as a member assignment (legacy data compatibility)', async () => {
+      mockPrismaClient.tb_department_user.findFirst.mockResolvedValue({
+        tb_department: MEMBER_DEPT,
+      });
+      mockPrismaClient.tb_department_user.findMany.mockResolvedValue([]);
+
+      const result = await service.findByUserId(TARGET_USER);
+
+      expect(result.isOk()).toBe(true);
+      expect(result.value).toEqual({
+        department: MEMBER_DEPT,
+        hod_departments: [],
+      });
+      const memberCall = mockPrismaClient.tb_department_user.findFirst.mock.calls[0][0];
+      expect(memberCall.where.OR).toEqual([{ is_hod: false }, { is_hod: null }]);
     });
 
     it('returns null department when user is HOD only', async () => {
