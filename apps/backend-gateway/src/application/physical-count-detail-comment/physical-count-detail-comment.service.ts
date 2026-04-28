@@ -8,6 +8,15 @@ import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
 import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
+
+export interface UploadedAttachment {
+  fileName: string;
+  fileToken: string;
+  fileUrl: string;
+  contentType: string;
+  size: number;
+}
+
 @Injectable()
 export class PhysicalCountDetailCommentService {
   private readonly logger: BackendLogger = new BackendLogger(
@@ -16,6 +25,7 @@ export class PhysicalCountDetailCommentService {
 
   constructor(
     @Inject('BUSINESS_SERVICE') private readonly businessService: ClientProxy,
+    @Inject('FILE_SERVICE') private readonly fileService: ClientProxy,
   ) {}
 
   async findById(
@@ -153,5 +163,69 @@ export class PhysicalCountDetailCommentService {
         httpStatusToErrorCode(response.response.status),
       );
     return ResponseLib.success(response.data);
+  }
+
+  async uploadFile(
+    file: Express.Multer.File,
+    user_id: string,
+    bu_code: string,
+  ): Promise<UploadedAttachment> {
+    const payload = {
+      fileName: file.originalname,
+      mimeType: file.mimetype,
+      buffer: file.buffer.toString('base64'),
+      bu_code,
+      user_id,
+      ...getGatewayRequestContext(),
+    };
+    const res: Observable<MicroserviceResponse> = this.fileService.send(
+      { cmd: 'file.upload', service: 'files' },
+      payload,
+    );
+    const response = (await firstValueFrom(res)) as any;
+    if (!response.success) {
+      const msg = response.response?.message ?? 'File upload failed';
+      throw new Error(msg);
+    }
+    const data = response.data as Partial<UploadedAttachment> | undefined;
+    return {
+      fileName: data?.fileName ?? file.originalname,
+      fileToken: String(data?.fileToken ?? ''),
+      fileUrl: String(data?.fileUrl ?? ''),
+      contentType: data?.contentType ?? file.mimetype,
+      size: typeof data?.size === 'number' ? data.size : file.size,
+    };
+  }
+
+  async deleteFile(
+    fileToken: string,
+    user_id: string,
+    bu_code: string,
+  ): Promise<boolean> {
+    try {
+      const res: Observable<MicroserviceResponse> = this.fileService.send(
+        { cmd: 'file.delete', service: 'files' },
+        { fileToken, user_id, bu_code, ...getGatewayRequestContext() },
+      );
+      const response = (await firstValueFrom(res)) as any;
+      if (!response.success) {
+        this.logger.warn(
+          {
+            function: 'deleteFile',
+            fileToken,
+            reason: response.response?.message,
+          },
+          PhysicalCountDetailCommentService.name,
+        );
+        return false;
+      }
+      return true;
+    } catch (err) {
+      this.logger.error(
+        { function: 'deleteFile', fileToken, error: (err as Error).message },
+        PhysicalCountDetailCommentService.name,
+      );
+      return false;
+    }
   }
 }
