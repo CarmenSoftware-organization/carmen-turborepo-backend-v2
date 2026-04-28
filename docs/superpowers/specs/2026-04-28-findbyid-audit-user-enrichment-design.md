@@ -26,7 +26,7 @@ schema's `tb_user` table.
 | Question | Decision |
 |---|---|
 | Scope | All findById in `backend-gateway` (config + application + platform) |
-| Name source | Join `tb_user` on platform schema; `alias_name || username || email` |
+| Name source | Join `tb_user` (+ `tb_user_profile`) on platform schema; priority: `"firstname [middlename] lastname"` (from profile, when at least one part is non-empty) → `alias_name` → `username` → `email` |
 | Mechanism | New TCP endpoint at `micro-cluster` (owns `tb_user`) + gateway interceptor + in-memory LRU+TTL cache |
 | Output shape | Group into `audit` object with nested `created_by`, `updated_by`, `deleted_by` |
 | Activation | Opt-in via `@EnrichAuditUsers({ paths? })` decorator on controller methods |
@@ -51,15 +51,22 @@ Client → backend-gateway → micro-cluster → Platform DB (tb_user)
 - `UserService.resolveByIds(ids: string[])` (added to existing
   `apps/micro-cluster/src/cluster/user/user.service.ts`) — uses
   `PrismaClient_SYSTEM` from `@repo/prisma-shared-schema-platform` to query
-  `tb_user` selecting only `id, alias_name, username, email`. Includes users
-  where `deleted_at != null` (so historical references still resolve to a
-  name).
+  `tb_user` selecting only `id, alias_name, username, email` and including
+  the related `tb_user_profile_tb_user_profile_user_idTotb_user` (selecting
+  `firstname, middlename, lastname`). Includes users where
+  `deleted_at != null` (so historical references still resolve to a name).
 - `UserController` (existing) registers a new
   `@MessagePattern({ cmd: 'user.resolveByIds', service: 'user' })`.
 - Returns `MicroserviceResponse` whose `data` is
-  `{ users: Array<{ id: string; name: string }> }` where
-  `name = alias_name || username || email`. Ids that do not exist are simply
-  absent from the result array; the gateway treats absence as "unknown".
+  `{ users: Array<{ id: string; name: string }> }`. The name is computed by
+  the helper `formatUserName(user)`:
+  1. If profile exists and any of `firstname/middlename/lastname` is
+     non-empty after trim, return `[firstname, middlename, lastname].filter(Boolean).join(' ').trim()`.
+  2. Else if `alias_name` is non-empty, return it.
+  3. Else if `username` is non-empty, return it.
+  4. Else return `email`.
+  Ids that do not exist in `tb_user` are simply absent from the result array;
+  the gateway treats absence as "unknown".
 
 **`backend-gateway` (HTTP server side)**
 
@@ -120,7 +127,7 @@ async findByIdWithItems(...) { ... }
 data = {
   users: Array<{
     id: string;
-    name: string;       // alias_name || username || email
+    name: string;       // formatUserName(): profile name → alias_name → username → email
   }>;
 }
 ```
