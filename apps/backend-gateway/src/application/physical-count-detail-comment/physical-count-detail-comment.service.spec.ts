@@ -1,3 +1,4 @@
+import { BadGatewayException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { of } from 'rxjs';
 import { PhysicalCountDetailCommentService } from './physical-count-detail-comment.service';
@@ -93,7 +94,7 @@ describe('PhysicalCountDetailCommentService', () => {
           'user-1',
           'HQ-001',
         ),
-      ).rejects.toThrow(/boom/);
+      ).rejects.toBeInstanceOf(BadGatewayException);
     });
   });
 
@@ -255,7 +256,7 @@ describe('PhysicalCountDetailCommentService', () => {
           'HQ-001',
           'latest',
         ),
-      ).rejects.toThrow();
+      ).rejects.toBeInstanceOf(BadGatewayException);
 
       // expect a delete call with tok-1
       const deleteCall = mockFileService.send.mock.calls.find(

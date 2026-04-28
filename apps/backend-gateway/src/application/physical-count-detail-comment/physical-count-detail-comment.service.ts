@@ -1,4 +1,9 @@
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  BadGatewayException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
 import { ResponseLib } from 'src/libs/response.lib';
@@ -209,7 +214,7 @@ export class PhysicalCountDetailCommentService {
         const firstReason = (failures[0] as PromiseRejectedResult).reason;
         const msg =
           firstReason instanceof Error ? firstReason.message : String(firstReason);
-        throw new Error(`File upload failed: ${msg}`);
+        throw new BadGatewayException(`File upload failed: ${msg}`);
       }
     }
 
@@ -271,7 +276,7 @@ export class PhysicalCountDetailCommentService {
     const response = (await firstValueFrom(res)) as any;
     if (!response.success) {
       const msg = response.response?.message ?? 'File upload failed';
-      throw new Error(msg);
+      throw new BadGatewayException(msg);
     }
     const data = response.data as
       | {
