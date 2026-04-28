@@ -27,7 +27,7 @@ schema's `tb_user` table.
 |---|---|
 | Scope | All findById in `backend-gateway` (config + application + platform) |
 | Name source | Join `tb_user` on platform schema; `alias_name || username || email` |
-| Mechanism | New TCP endpoint at `micro-business` + gateway interceptor + in-memory LRU+TTL cache |
+| Mechanism | New TCP endpoint at `micro-cluster` (owns `tb_user`) + gateway interceptor + in-memory LRU+TTL cache |
 | Output shape | Group into `audit` object with nested `created_by`, `updated_by`, `deleted_by` |
 | Activation | Opt-in via `@EnrichAuditUsers({ paths? })` decorator on controller methods |
 | Unknown user (id present, user not found) | `{ id, name: "Unknown" }` |
@@ -37,23 +37,27 @@ schema's `tb_user` table.
 ## Architecture
 
 ```
-Client → backend-gateway → micro-business → Platform DB (tb_user)
+Client → backend-gateway → micro-cluster → Platform DB (tb_user)
               ↑
               └── UserResolverInterceptor (global; no-op without decorator)
                     ├── UserNameCacheService (in-memory LRU + TTL)
-                    └── UserNameResolverService (TCP → micro-business)
+                    └── UserNameResolverService (TCP → micro-cluster via CLUSTER_SERVICE)
 ```
 
 ### Components
 
-**`micro-business` (TCP server side)**
+**`micro-cluster` (TCP server side — owns `tb_user`)**
 
-- `Platform_UserService.resolveByIds(ids: string[])` — Prisma platform client
-  query against `tb_user` selecting only `id, alias_name, username, email`.
-  Includes users where `deleted_at != null` (so historical references still
-  resolve to a name).
-- `Platform_UserController` registers `@MessagePattern('platform.user.resolveByIds')`.
-- Returns `{ users: Array<{ id: string; name: string }> }` where
+- `UserService.resolveByIds(ids: string[])` (added to existing
+  `apps/micro-cluster/src/cluster/user/user.service.ts`) — uses
+  `PrismaClient_SYSTEM` from `@repo/prisma-shared-schema-platform` to query
+  `tb_user` selecting only `id, alias_name, username, email`. Includes users
+  where `deleted_at != null` (so historical references still resolve to a
+  name).
+- `UserController` (existing) registers a new
+  `@MessagePattern({ cmd: 'user.resolveByIds', service: 'user' })`.
+- Returns `MicroserviceResponse` whose `data` is
+  `{ users: Array<{ id: string; name: string }> }` where
   `name = alias_name || username || email`. Ids that do not exist are simply
   absent from the result array; the gateway treats absence as "unknown".
 
@@ -106,20 +110,23 @@ async findByIdWithItems(...) { ... }
 ### TCP message pattern
 
 ```ts
-// pattern key
-'platform.user.resolveByIds'
+// pattern (matches existing { cmd, service } convention used across the codebase)
+{ cmd: 'user.resolveByIds', service: 'user' }
 
-// payload
+// payload (gateway includes ...getGatewayRequestContext() like other calls)
 { ids: string[] }
 
-// response
-{
+// response (wrapped in MicroserviceResponse: { response: { status }, data })
+data = {
   users: Array<{
     id: string;
     name: string;       // alias_name || username || email
   }>;
 }
 ```
+
+The gateway client uses the existing `'CLUSTER_SERVICE'` `ClientProxy` token
+already registered in `apps/backend-gateway/src/app.module.ts`.
 
 ### Output shape
 
@@ -232,7 +239,7 @@ Order of global interceptors:
 @Injectable()
 export class UserNameResolverService {
   constructor(
-    @Inject('BUSINESS_SERVICE') private readonly client: ClientProxy,
+    @Inject('CLUSTER_SERVICE') private readonly client: ClientProxy,
     private readonly cache: UserNameCacheService,
   ) {}
 
@@ -252,14 +259,15 @@ export class UserNameResolverService {
     if (missing.length > 0) {
       try {
         const resp = await firstValueFrom(
-          this.client.send<{ users: Array<{ id: string; name: string }> }>(
-            'platform.user.resolveByIds',
-            { ids: missing },
+          this.client.send<MicroserviceResponse>(
+            { cmd: 'user.resolveByIds', service: 'user' },
+            { ids: missing, ...getGatewayRequestContext() },
           ),
         );
 
+        const users = (resp?.data as { users?: Array<{ id: string; name: string }> })?.users ?? [];
         const found = new Set<string>();
-        for (const u of resp.users) {
+        for (const u of users) {
           this.cache.set(u.id, u.name);
           result.set(u.id, u.name);
           found.add(u.id);
@@ -271,7 +279,7 @@ export class UserNameResolverService {
           }
         }
       } catch (err) {
-        this.logger.warn({ err, count: missing.length }, 'platform.user.resolveByIds failed; treating ids as unknown');
+        this.logger.warn({ err, count: missing.length }, 'user.resolveByIds failed; treating ids as unknown');
         for (const id of missing) result.set(id, null);
       }
     }
@@ -337,7 +345,7 @@ that should be enriched in-place:
 | User soft-deleted (`tb_user.deleted_at != null`) | still resolved (resolver does not filter on `deleted_at`) |
 | Same `id` appears in multiple positions | dedupe before TCP call |
 | `ids` empty after dedupe | skip TCP call |
-| TCP timeout / connection error | log warn, all become `{ id, name: "Unknown" }` |
+| TCP timeout / connection error to `CLUSTER_SERVICE` | log warn, all become `{ id, name: "Unknown" }` |
 | Resolver throws | catch, fallback as above |
 | Helper crash (e.g. circular ref) | catch, return original response untouched |
 
@@ -385,7 +393,7 @@ This is a **breaking change** to response shapes for endpoints that opt-in.
 Because the decorator is opt-in, rollout is incremental and reversible.
 
 1. **Sprint 1** — Build infrastructure:
-   - `Platform_UserService.resolveByIds` + `@MessagePattern` in `micro-business`
+   - Add `resolveByIds` to existing `UserService` + `@MessagePattern` in `micro-cluster` (`apps/micro-cluster/src/cluster/user/`)
    - `@EnrichAuditUsers` decorator
    - `UserResolverInterceptor`, `UserNameResolverService`, `UserNameCacheService`
    - Unit + e2e tests
@@ -407,9 +415,9 @@ Because the decorator is opt-in, rollout is incremental and reversible.
 
 - mock `BUSINESS_SERVICE` TCP, hit a real HTTP findById that has the decorator, assert response shape matches the contract.
 
-**Integration (micro-business)**
+**Integration (micro-cluster)**
 
-- `Platform_UserService.resolveByIds` against test DB: includes deleted users, omits non-existent ids, returns selected `name` priority.
+- `UserService.resolveByIds` against test DB: includes deleted users, omits non-existent ids, returns selected `name` priority.
 
 ## Out of scope (YAGNI)
 
