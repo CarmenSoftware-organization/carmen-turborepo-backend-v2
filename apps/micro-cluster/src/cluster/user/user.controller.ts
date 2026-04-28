@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, HttpStatus } from '@nestjs/common';
 import { UserService } from './user.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
@@ -89,5 +89,23 @@ export class UserController extends BaseMicroserviceController {
     const { id } = payload;
     const result = await this.userService.hardDeleteUser(id);
     return this.handleResult(result);
+  }
+
+  @MessagePattern({ cmd: 'user.resolveByIds', service: 'user' })
+  async resolveByIds(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    const ids = Array.isArray(payload?.ids) ? (payload.ids as string[]) : [];
+    this.logger.debug(
+      { function: 'resolveByIds', count: ids.length },
+      UserController.name,
+    );
+    const data = await this.userService.resolveByIds(ids);
+    return {
+      data,
+      response: {
+        status: HttpStatus.OK,
+        message: 'Success',
+        timestamp: new Date().toISOString(),
+      },
+    };
   }
 }
