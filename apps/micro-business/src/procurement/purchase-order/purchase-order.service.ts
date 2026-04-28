@@ -1965,7 +1965,19 @@ export class PurchaseOrderService {
         const { stages, skipped } = WorkflowPersistenceHelper.buildSubmitStagesStatus(
           currentStages, findDetails, workflowHeader.workflow_previous_stage as string,
         );
-        if (skipped) continue;
+
+        if (skipped) {
+          const css = WorkflowPersistenceHelper.resolveCurrentStageStatus({
+            payloadStatus: findDetails.stage_status,
+            stages: currentStages,
+            workflowCurrentStage: workflowHeader.workflow_current_stage as string,
+          });
+          await tx.tb_purchase_order_detail.update({
+            where: { id: poDetail.id },
+            data: { current_stage_status: css, doc_version: { increment: 1 }, updated_by_id: this.userId },
+          });
+          continue;
+        }
 
         const history = WorkflowPersistenceHelper.appendHistory(
           Array.isArray(poDetail.history) ? (poDetail.history as any[]) : [],
@@ -1977,7 +1989,11 @@ export class PurchaseOrderService {
           data: {
             history: history as any,
             stages_status: stages as unknown as Prisma.InputJsonValue,
-            current_stage_status: '',
+            current_stage_status: WorkflowPersistenceHelper.resolveCurrentStageStatus({
+              payloadStatus: findDetails.stage_status,
+              stages,
+              workflowCurrentStage: workflowHeader.workflow_current_stage as string,
+            }),
             doc_version: { increment: 1 },
             updated_by_id: this.userId,
           },
@@ -2030,6 +2046,7 @@ export class PurchaseOrderService {
         const currentStages: StageStatus[] = Array.isArray(findPODoc?.stages_status) ? findPODoc.stages_status as unknown as StageStatus[] : [];
         const isReject = detail.stage_status === stage_status.reject;
         let stages: StageStatus[];
+        let stagesSkipped = false;
         if (isReject) {
           stages = WorkflowPersistenceHelper.buildRejectStagesStatus(
             currentStages, detail, (workflow as any).workflow_previous_stage,
@@ -2038,8 +2055,21 @@ export class PurchaseOrderService {
           const result = WorkflowPersistenceHelper.buildApproveStagesStatus(
             currentStages, detail, (workflow as any).workflow_previous_stage,
           );
-          if (result.skipped) continue;
-          stages = result.stages;
+          stagesSkipped = result.skipped;
+          stages = result.skipped ? currentStages : result.stages;
+        }
+
+        if (stagesSkipped) {
+          const css = WorkflowPersistenceHelper.resolveCurrentStageStatus({
+            payloadStatus: detail.stage_status,
+            stages: currentStages,
+            workflowCurrentStage: (workflow as any).workflow_current_stage,
+          });
+          await txp.tb_purchase_order_detail.update({
+            where: { id: detail.id },
+            data: { current_stage_status: css, doc_version: { increment: 1 }, updated_by_id: this.userId },
+          });
+          continue;
         }
 
         const history = WorkflowPersistenceHelper.appendHistory(
@@ -2047,19 +2077,17 @@ export class PurchaseOrderService {
           { status: detail.stage_status, name: (workflow as any).workflow_previous_stage, userId: this.userId, action: 'approved' },
         );
 
-        // current_stage_status semantics: backend stamps 'reject' (terminal) or
-        // 'approve' ONLY at the final approval stage (workflow_next_stage === '-').
-        // Intermediate approves leave it '' so the next stage can act on the row.
-        const isFinalApproval = (workflow as any).workflow_next_stage === '-';
         await txp.tb_purchase_order_detail.update({
           where: { id: detail.id },
           data: {
             doc_version: { increment: 1 },
             history: history as unknown as Prisma.InputJsonValue,
             stages_status: stages as unknown as Prisma.InputJsonValue,
-            current_stage_status: isReject
-              ? stage_status.reject
-              : (isFinalApproval ? stage_status.approve : ''),
+            current_stage_status: WorkflowPersistenceHelper.resolveCurrentStageStatus({
+              payloadStatus: detail.stage_status,
+              stages,
+              workflowCurrentStage: (workflow as any).workflow_current_stage,
+            }),
             updated_by_id: this.userId,
           },
         });
@@ -2216,16 +2244,33 @@ export class PurchaseOrderService {
         const findPODoc = PODetailDocs.find((d) => d.id === detail.id);
         if (!findPODoc) continue;
 
+        const currentStages: StageStatus[] = Array.isArray(findPODoc.stages_status)
+          ? findPODoc.stages_status as unknown as StageStatus[]
+          : [];
+
         const bag = WorkflowPersistenceHelper.buildReviewDetailUpdate({
           payloadDetail: detail,
-          currentStages: Array.isArray(findPODoc.stages_status) ? findPODoc.stages_status as unknown as StageStatus[] : [],
+          currentStages,
           currentHistory: (findPODoc.history as unknown as Record<string, unknown>[]) || [],
           workflowPreviousStage: desStage,
+          workflowCurrentStage: desStage,
           desStage,
           userId: this.userId,
           action: 'reviewed',
         });
-        if (!bag) continue;
+
+        if (!bag) {
+          const css = WorkflowPersistenceHelper.resolveCurrentStageStatus({
+            payloadStatus: detail.stage_status,
+            stages: currentStages,
+            workflowCurrentStage: desStage,
+          });
+          await txp.tb_purchase_order_detail.update({
+            where: { id: detail.id },
+            data: { current_stage_status: css, doc_version: { increment: 1 }, updated_by_id: this.userId },
+          });
+          continue;
+        }
 
         await txp.tb_purchase_order_detail.update({
           where: { id: detail.id },

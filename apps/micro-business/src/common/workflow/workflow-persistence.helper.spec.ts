@@ -69,7 +69,7 @@ describe('WorkflowPersistenceHelper', () => {
       expect(stages).toHaveLength(3);
     });
 
-    it('should push new entry when approved stage is different', () => {
+    it('should skip when item has prior approve at any stage (different name)', () => {
       const existing: StageStatus[] = [
         { seq: 1, status: stage_status.submit, name: 'Requestor', message: '' },
         { seq: 2, status: stage_status.approve, name: 'HOD', message: '' },
@@ -78,17 +78,16 @@ describe('WorkflowPersistenceHelper', () => {
       const { stages, skipped } = WorkflowPersistenceHelper.buildSubmitStagesStatus(
         existing,
         { stage_status: stage_status.submit, stage_message: 're-submit' },
-        'Purchaser',
+        'Create Request',
       );
 
-      expect(skipped).toBe(false);
-      expect(stages).toHaveLength(3);
+      expect(skipped).toBe(true);
+      expect(stages).toHaveLength(2);
     });
 
-    it('should replace pending entry when re-submitting after review', () => {
+    it('should replace pending entry when re-submitting after review (no prior approve)', () => {
       const existing: StageStatus[] = [
-        { seq: 1, status: stage_status.approve, name: 'HOD', message: '' },
-        { seq: 2, status: stage_status.pending, name: 'Create Request', message: '' },
+        { seq: 1, status: stage_status.pending, name: 'Create Request', message: '' },
       ];
 
       const { stages, skipped } = WorkflowPersistenceHelper.buildSubmitStagesStatus(
@@ -98,9 +97,9 @@ describe('WorkflowPersistenceHelper', () => {
       );
 
       expect(skipped).toBe(false);
-      expect(stages).toHaveLength(2);
-      expect(stages[1]).toEqual({
-        seq: 2,
+      expect(stages).toHaveLength(1);
+      expect(stages[0]).toEqual({
+        seq: 1,
         status: stage_status.submit,
         name: 'Create Request',
         message: 'submit for approval',
@@ -267,7 +266,7 @@ describe('WorkflowPersistenceHelper', () => {
       expect(result).toHaveLength(2);
     });
 
-    it('should trim stages after target when sending back multiple levels', () => {
+    it('should drop pending entries after target but preserve approve entries', () => {
       const existing: StageStatus[] = [
         { seq: 1, status: stage_status.submit, name: 'Requestor', message: '' },
         { seq: 2, status: stage_status.approve, name: 'HOD', message: '' },
@@ -277,12 +276,12 @@ describe('WorkflowPersistenceHelper', () => {
 
       const result = WorkflowPersistenceHelper.buildReviewStagesStatus(existing, 'HOD');
 
-      const hodStage = result.find((s) => s.name === 'HOD');
-      expect(hodStage.status).toBe(stage_status.pending);
-      // Stages after HOD should be trimmed
-      expect(result.some((s) => s.name === 'Purchaser')).toBe(false);
+      // Target HOD becomes pending; downstream approve at Purchaser is preserved;
+      // pending GM is dropped.
+      expect(result.find((s) => s.name === 'HOD')?.status).toBe(stage_status.pending);
+      expect(result.some((s) => s.name === 'Purchaser' && s.status === stage_status.approve)).toBe(true);
       expect(result.some((s) => s.name === 'GM')).toBe(false);
-      expect(result).toHaveLength(2);
+      expect(result).toHaveLength(3);
     });
   });
 
@@ -381,7 +380,7 @@ describe('WorkflowPersistenceHelper', () => {
   });
 
   describe('buildReviewDetailUpdate', () => {
-    it('approve-during-review pushes an approve entry and current_stage_status is empty', () => {
+    it('approve-during-review pushes an approve entry; CSS resolved against destination stage', () => {
       const result = WorkflowPersistenceHelper.buildReviewDetailUpdate({
         payloadDetail: { stage_status: stage_status.approve, stage_message: 'keep' },
         currentStages: [
@@ -390,11 +389,13 @@ describe('WorkflowPersistenceHelper', () => {
         ],
         currentHistory: [],
         workflowPreviousStage: 'HOD',
+        workflowCurrentStage: 'Requestor',
         desStage: 'Requestor',
         userId: 'user-1',
       });
 
       expect(result).not.toBeNull();
+      // doc rolled back to Requestor; Requestor entry is submit, not approve → CSS ''
       expect(result!.current_stage_status).toBe('');
       expect(result!.stages_status).toHaveLength(2);
       expect(result!.stages_status[1]).toMatchObject({ status: stage_status.approve, name: 'HOD' });
@@ -410,26 +411,12 @@ describe('WorkflowPersistenceHelper', () => {
         ],
         currentHistory: [],
         workflowPreviousStage: 'HOD',
+        workflowCurrentStage: 'Requestor',
         desStage: 'Requestor',
         userId: 'user-1',
       });
 
       expect(result).toBeNull();
-    });
-
-    it('approve-during-review keeps current_stage_status empty when not final', () => {
-      const result = WorkflowPersistenceHelper.buildReviewDetailUpdate({
-        payloadDetail: { stage_status: stage_status.approve, stage_message: '' },
-        currentStages: [{ seq: 1, status: stage_status.pending, name: 'HOD', message: '' }],
-        currentHistory: [],
-        workflowPreviousStage: 'HOD',
-        desStage: 'Requestor',
-        isFinalApproval: false,
-        userId: 'user-1',
-      });
-
-      expect(result).not.toBeNull();
-      expect(result!.current_stage_status).toBe('');
     });
 
     it('should stamp reject on review when payload stage_status is reject', () => {
@@ -438,6 +425,7 @@ describe('WorkflowPersistenceHelper', () => {
         currentStages: [{ seq: 1, status: stage_status.submit, name: 'Requestor', message: '' }],
         currentHistory: [],
         workflowPreviousStage: 'HOD',
+        workflowCurrentStage: 'Requestor',
         desStage: 'Requestor',
         userId: 'user-1',
       });
@@ -455,6 +443,7 @@ describe('WorkflowPersistenceHelper', () => {
         ],
         currentHistory: [],
         workflowPreviousStage: 'HOD',
+        workflowCurrentStage: 'Requestor',
         desStage: 'Requestor',
         userId: 'user-1',
       });
@@ -465,13 +454,15 @@ describe('WorkflowPersistenceHelper', () => {
   });
 
   describe('buildApproveDetailUpdate', () => {
-    it('should stamp approve on final approval', () => {
+    it('stamps approve when destination stage entry is approve', () => {
+      // Final-stage scenario: doc moves to '-' (or the same final stage entry).
+      // Here we approve at HOD with final stage = HOD.
       const result = WorkflowPersistenceHelper.buildApproveDetailUpdate({
         payloadDetail: { stage_status: stage_status.approve, stage_message: 'ok' },
         currentStages: [{ seq: 1, status: stage_status.submit, name: 'Requestor', message: '' }],
         currentHistory: [],
         workflowPreviousStage: 'HOD',
-        isFinalApproval: true,
+        workflowCurrentStage: 'HOD',
         userId: 'user-1',
       });
 
@@ -479,13 +470,14 @@ describe('WorkflowPersistenceHelper', () => {
       expect(result.current_stage_status).toBe(stage_status.approve);
     });
 
-    it('should set empty current_stage_status for intermediate approval', () => {
+    it('stamps "" for intermediate approve when destination stage is fresh', () => {
+      // After HOD approves, doc moves forward to DM. DM has no entry yet → ''.
       const result = WorkflowPersistenceHelper.buildApproveDetailUpdate({
         payloadDetail: { stage_status: stage_status.approve, stage_message: 'ok' },
         currentStages: [{ seq: 1, status: stage_status.submit, name: 'Requestor', message: '' }],
         currentHistory: [],
         workflowPreviousStage: 'HOD',
-        isFinalApproval: false,
+        workflowCurrentStage: 'DM',
         userId: 'user-1',
       });
 
@@ -499,7 +491,7 @@ describe('WorkflowPersistenceHelper', () => {
         currentStages: [{ seq: 1, status: stage_status.submit, name: 'Requestor', message: '' }],
         currentHistory: [],
         workflowPreviousStage: 'HOD',
-        isFinalApproval: false,
+        workflowCurrentStage: 'HOD',
         userId: 'user-1',
       });
 
@@ -516,7 +508,7 @@ describe('WorkflowPersistenceHelper', () => {
         ],
         currentHistory: [],
         workflowPreviousStage: 'HOD',
-        isFinalApproval: false,
+        workflowCurrentStage: 'DM',
         userId: 'user-1',
       });
 
@@ -531,18 +523,20 @@ describe('WorkflowPersistenceHelper', () => {
         currentStages: [],
         currentHistory: [],
         workflowPreviousStage: 'Requestor',
+        workflowCurrentStage: 'HOD',
         userId: 'user-1',
       });
 
       expect(result).toBeNull();
     });
 
-    it('should set empty current_stage_status on submit', () => {
+    it('should set empty current_stage_status on submit (fresh row)', () => {
       const result = WorkflowPersistenceHelper.buildSubmitDetailUpdate({
         payloadDetail: { stage_status: stage_status.submit, stage_message: '' },
         currentStages: [],
         currentHistory: [],
         workflowPreviousStage: 'Requestor',
+        workflowCurrentStage: 'HOD',
         userId: 'user-1',
       });
 
@@ -550,6 +544,110 @@ describe('WorkflowPersistenceHelper', () => {
       expect(result.current_stage_status).toBe('');
       expect(result.stages_status).toHaveLength(1);
       expect(result.history).toHaveLength(1);
+    });
+  });
+
+  describe('resolveCurrentStageStatus', () => {
+    it('returns "reject" when payload status is reject regardless of stages', () => {
+      expect(WorkflowPersistenceHelper.resolveCurrentStageStatus({
+        payloadStatus: stage_status.reject,
+        stages: [{ seq: 1, status: stage_status.approve, name: 'HOD', message: '' }],
+        workflowCurrentStage: 'HOD',
+      })).toBe(stage_status.reject);
+    });
+
+    it('returns "approve" when destination stage entry is approve', () => {
+      expect(WorkflowPersistenceHelper.resolveCurrentStageStatus({
+        payloadStatus: stage_status.submit,
+        stages: [
+          { seq: 1, status: stage_status.submit, name: 'Requestor', message: '' },
+          { seq: 2, status: stage_status.approve, name: 'HOD', message: '' },
+        ],
+        workflowCurrentStage: 'HOD',
+      })).toBe(stage_status.approve);
+    });
+
+    it('returns "reject" when destination stage entry is reject', () => {
+      expect(WorkflowPersistenceHelper.resolveCurrentStageStatus({
+        payloadStatus: stage_status.review,
+        stages: [
+          { seq: 1, status: stage_status.submit, name: 'Requestor', message: '' },
+          { seq: 2, status: stage_status.reject, name: 'HOD', message: '' },
+        ],
+        workflowCurrentStage: 'HOD',
+      })).toBe(stage_status.reject);
+    });
+
+    it('returns "" when destination stage entry is missing', () => {
+      expect(WorkflowPersistenceHelper.resolveCurrentStageStatus({
+        payloadStatus: stage_status.approve,
+        stages: [
+          { seq: 1, status: stage_status.submit, name: 'Requestor', message: '' },
+          { seq: 2, status: stage_status.approve, name: 'HOD', message: '' },
+        ],
+        workflowCurrentStage: 'DM',
+      })).toBe('');
+    });
+
+    it('returns "" when destination stage entry is pending or submit', () => {
+      expect(WorkflowPersistenceHelper.resolveCurrentStageStatus({
+        payloadStatus: stage_status.review,
+        stages: [{ seq: 1, status: stage_status.pending, name: 'Requestor', message: '' }],
+        workflowCurrentStage: 'Requestor',
+      })).toBe('');
+    });
+
+    it('uses the latest entry when destination stage appears multiple times', () => {
+      expect(WorkflowPersistenceHelper.resolveCurrentStageStatus({
+        payloadStatus: stage_status.submit,
+        stages: [
+          { seq: 1, status: stage_status.submit, name: 'Requestor', message: '' },
+          { seq: 2, status: stage_status.approve, name: 'HOD', message: '' },
+          { seq: 3, status: stage_status.submit, name: 'Requestor', message: '' },
+        ],
+        // Latest Requestor entry is submit → ''
+        workflowCurrentStage: 'Requestor',
+      })).toBe('');
+    });
+  });
+
+  describe('buildReviewStagesStatus preserves approve entries on rollback', () => {
+    it('keeps approve entries past the rollback target', () => {
+      // Multi-stage send-back: DM sends back to Create with item already approved at HOD.
+      const stages = WorkflowPersistenceHelper.buildReviewStagesStatus(
+        [
+          { seq: 1, status: stage_status.submit, name: 'Create Request', message: '' },
+          { seq: 2, status: stage_status.approve, name: 'HOD', message: '' },
+          { seq: 3, status: stage_status.pending, name: 'DM', message: '' },
+        ],
+        'Create Request',
+        'fix',
+      );
+
+      expect(stages).toHaveLength(2);
+      expect(stages[0]).toMatchObject({ status: stage_status.pending, name: 'Create Request' });
+      expect(stages[1]).toMatchObject({ status: stage_status.approve, name: 'HOD' });
+    });
+
+    it('drops non-approve entries past the rollback target', () => {
+      const stages = WorkflowPersistenceHelper.buildReviewStagesStatus(
+        [
+          { seq: 1, status: stage_status.submit, name: 'Create Request', message: '' },
+          { seq: 2, status: stage_status.pending, name: 'HOD', message: '' },
+        ],
+        'Create Request',
+      );
+
+      expect(stages).toHaveLength(1);
+      expect(stages[0]).toMatchObject({ status: stage_status.pending, name: 'Create Request' });
+    });
+
+    it('returns a copy unchanged when target stage is absent', () => {
+      const input = [{ seq: 1, status: stage_status.submit, name: 'Create Request', message: '' }];
+      const stages = WorkflowPersistenceHelper.buildReviewStagesStatus(input, 'NonExistent');
+      expect(stages).toHaveLength(1);
+      expect(stages[0]).toMatchObject({ status: stage_status.submit, name: 'Create Request' });
+      expect(stages).not.toBe(input);
     });
   });
 });

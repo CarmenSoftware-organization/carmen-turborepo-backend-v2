@@ -653,7 +653,20 @@ export class StoreRequisitionService {
         const { stages, skipped } = WorkflowPersistenceHelper.buildSubmitStagesStatus(
           currentStages, findDetails, workflowHeader.workflow_previous_stage,
         );
-        if (skipped) continue;
+
+        if (skipped) {
+          // Stages unchanged but the doc has moved — refresh CSS against the new current_stage.
+          const css = WorkflowPersistenceHelper.resolveCurrentStageStatus({
+            payloadStatus: findDetails.stage_status,
+            stages: currentStages,
+            workflowCurrentStage: workflowHeader.workflow_current_stage,
+          });
+          await prismatx.tb_store_requisition_detail.update({
+            where: { id: detail.id },
+            data: { current_stage_status: css, updated_by_id: this.userId },
+          });
+          continue;
+        }
 
         const history = WorkflowPersistenceHelper.appendHistory(
           (detail.history as unknown as Record<string, unknown>[]) || [],
@@ -667,7 +680,11 @@ export class StoreRequisitionService {
             history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
             approved_qty: Number(detail.requested_qty),
-            current_stage_status: '',
+            current_stage_status: WorkflowPersistenceHelper.resolveCurrentStageStatus({
+              payloadStatus: findDetails.stage_status,
+              stages,
+              workflowCurrentStage: workflowHeader.workflow_current_stage,
+            }),
             last_action: enum_last_action.submitted,
           },
         });
@@ -942,6 +959,7 @@ export class StoreRequisitionService {
 
         const isReject = detail.stage_status === stage_status.reject;
         let stages: StageStatus[];
+        let stagesSkipped = false;
         if (isReject) {
           stages = WorkflowPersistenceHelper.buildRejectStagesStatus(
             currentStages, detail, workflow.workflow_previous_stage,
@@ -950,17 +968,33 @@ export class StoreRequisitionService {
           const result = WorkflowPersistenceHelper.buildApproveStagesStatus(
             currentStages, detail, workflow.workflow_previous_stage,
           );
-          if (result.skipped) continue;
-          stages = result.stages;
+          stagesSkipped = result.skipped;
+          stages = result.skipped ? currentStages : result.stages;
         }
 
         const now = new Date().toISOString();
+
+        if (stagesSkipped) {
+          // Already approved at this stage — refresh CSS against the new doc current_stage.
+          const css = WorkflowPersistenceHelper.resolveCurrentStageStatus({
+            payloadStatus: detail.stage_status || '',
+            stages: currentStages,
+            workflowCurrentStage: workflow.workflow_current_stage,
+          });
+          await this.prismaService.tb_store_requisition_detail.update({
+            where: { id: detail.id },
+            data: { current_stage_status: css, updated_by_id: this.userId },
+          });
+          continue;
+        }
+
         const history = WorkflowPersistenceHelper.appendHistory(
           (findSRDoc?.history as unknown as Record<string, unknown>[]) || [],
           { status: detail.stage_status || '', name: workflow.workflow_previous_stage, message: detail.stage_message || '', userId: this.userId, userName: workflow.last_action_by_name },
         );
 
         const approvedMessage = detail.stage_message || '';
+        const payloadStatus = detail.stage_status || '';
         delete detail.stage_message;
         delete detail.stage_status;
         delete detail.store_requisition_id;
@@ -972,10 +1006,6 @@ export class StoreRequisitionService {
           }),
         );
 
-        // current_stage_status semantics: backend stamps 'reject' (terminal) or
-        // 'approve' ONLY at the final approval stage (workflow_next_stage === '-').
-        // Intermediate approves leave it '' so the next stage can act on the row.
-        const isFinalApproval = workflow.workflow_next_stage === '-';
         await this.prismaService.tb_store_requisition_detail.update({
           where: { id: detail.id },
           data: {
@@ -984,9 +1014,11 @@ export class StoreRequisitionService {
             stages_status: stages as unknown as Prisma.InputJsonValue,
             history: history as unknown as Prisma.InputJsonValue,
             updated_by_id: this.userId,
-            current_stage_status: isReject
-              ? stage_status.reject
-              : (isFinalApproval ? stage_status.approve : ''),
+            current_stage_status: WorkflowPersistenceHelper.resolveCurrentStageStatus({
+              payloadStatus,
+              stages,
+              workflowCurrentStage: workflow.workflow_current_stage,
+            }),
             last_action: enum_last_action.approved,
             approved_by_id: this.userId,
             approved_by_name: workflow.last_action_by_name,
@@ -1134,16 +1166,34 @@ export class StoreRequisitionService {
         const findSR = payload.details.find((d) => d.id === detail.id);
         if (!findSR) continue;
 
+        const currentStages: StageStatus[] = Array.isArray(detail.stages_status)
+          ? (detail.stages_status as unknown as StageStatus[])
+          : [];
+
         const bag = WorkflowPersistenceHelper.buildReviewDetailUpdate({
           payloadDetail: findSR,
-          currentStages: Array.isArray(detail.stages_status) ? (detail.stages_status as unknown as StageStatus[]) : [],
+          currentStages,
           currentHistory: (detail.history as unknown as Record<string, unknown>[]) || [],
           workflowPreviousStage: workflow.workflow_previous_stage,
+          workflowCurrentStage: workflow.workflow_current_stage,
           desStage: payload.des_stage,
           userId: this.userId,
           userName: workflow.last_action_by_name,
         });
-        if (!bag) continue;
+
+        if (!bag) {
+          // Already-approved row skipped — refresh CSS against new current_stage.
+          const css = WorkflowPersistenceHelper.resolveCurrentStageStatus({
+            payloadStatus: findSR.stage_status,
+            stages: currentStages,
+            workflowCurrentStage: workflow.workflow_current_stage,
+          });
+          await txp.tb_store_requisition_detail.update({
+            where: { id: detail.id },
+            data: { current_stage_status: css, updated_by_id: this.userId },
+          });
+          continue;
+        }
 
         const isApproveRow = findSR.stage_status === stage_status.approve;
 

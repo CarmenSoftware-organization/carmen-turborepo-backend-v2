@@ -41,7 +41,9 @@ export class WorkflowPersistenceHelper {
       return { stages, skipped: true };
     }
 
-    if (stages.some(s => s.status === stage_status.approve && s.name === workflowPreviousStage)) {
+    // Once an item has been approved at any stage, resubmits must not push
+    // another entry — the item has already moved past the submit step.
+    if (stages.some(s => s.status === stage_status.approve)) {
       return { stages, skipped: true };
     }
 
@@ -57,7 +59,7 @@ export class WorkflowPersistenceHelper {
       };
     } else if (detail.stage_status === stage_status.submit) {
       stages.push({
-        seq: 1,
+        seq: stages.length + 1,
         status: detail.stage_status as stage_status,
         name: workflowPreviousStage,
         message: detail.stage_message || 'submit for approval',
@@ -151,29 +153,36 @@ export class WorkflowPersistenceHelper {
   /**
    * Build stages_status for REVIEW (send back).
    *
-   * Logic (identical across PR/PO/SR):
-   * - Walk backward from the end
-   * - When we find the target stage (desStage), set it to 'pending' and stop
-   * - For stages after it, trim them away
+   * Logic:
+   * - Find the LAST entry whose name === desStage and set it to 'pending'.
+   * - Drop pending/submit/review entries past it (they are no longer valid).
+   * - Preserve approve entries past it — those represent permanent achievements
+   *   the row has earned at downstream stages and must survive a multi-stage
+   *   send-back (e.g. DM sends back to Create, the HOD approve must remain so
+   *   resolveCurrentStageStatus can still see it).
    */
   static buildReviewStagesStatus(
     current: StageStatus[],
     desStage: string,
     message?: string,
   ): StageStatus[] {
-    const stages: StageStatus[] = [...current];
-
-    for (let i = stages.length - 1; i >= 0; i--) {
-      if (stages[i].name === desStage) {
-        stages[i] = { ...stages[i], status: stage_status.pending, message: message || '' };
-        stages.splice(i + 1);
-        break;
-      } else {
-        stages.splice(i + 1, stages.length - i - 1);
-      }
+    let targetIdx = -1;
+    for (let i = current.length - 1; i >= 0; i--) {
+      if (current[i].name === desStage) { targetIdx = i; break; }
     }
+    if (targetIdx === -1) return current.map((s) => ({ ...s }));
 
-    return stages;
+    const before = current.slice(0, targetIdx).map((s) => ({ ...s }));
+    const target: StageStatus = {
+      ...current[targetIdx],
+      status: stage_status.pending,
+      message: message || '',
+    };
+    const afterApproves = current
+      .slice(targetIdx + 1)
+      .filter((s) => s.status === stage_status.approve)
+      .map((s) => ({ ...s }));
+    return [...before, target, ...afterApproves];
   }
 
   /**
@@ -256,6 +265,31 @@ export class WorkflowPersistenceHelper {
   }
 
   // ---------------------------------------------------------------------------
+  // current_stage_status resolver
+  //
+  // Single source of truth for the per-row `current_stage_status` field.
+  // Rule: look up the doc's post-action workflow_current_stage in the row's
+  // stages_status. If the entry is 'approve' → 'approve'. If 'reject' → 'reject'.
+  // Otherwise (missing / pending / submit) → ''. Reject in payload always wins.
+  // ---------------------------------------------------------------------------
+
+  static resolveCurrentStageStatus(input: {
+    payloadStatus: string;
+    stages: StageStatus[];
+    workflowCurrentStage: string;
+  }): string {
+    if (input.payloadStatus === stage_status.reject) return stage_status.reject;
+    for (let i = input.stages.length - 1; i >= 0; i--) {
+      const s = input.stages[i];
+      if (s.name !== input.workflowCurrentStage) continue;
+      if (s.status === stage_status.approve) return stage_status.approve;
+      if (s.status === stage_status.reject) return stage_status.reject;
+      return '';
+    }
+    return '';
+  }
+
+  // ---------------------------------------------------------------------------
   // Composite detail-update builders
   //
   // These methods compose the low-level stage/history helpers above and return
@@ -263,9 +297,12 @@ export class WorkflowPersistenceHelper {
   // `tx.tb_X_detail.update({ data: bag })`. The key business rules that MUST
   // live here (not in individual services):
   //
-  // - current_stage_status stamping: 'reject' on rejection, '' otherwise
-  //   (approve stamps 'approve' ONLY at the final stage)
-  // - skip logic: items that have already been approved/rejected aren't touched
+  // - current_stage_status: always computed via resolveCurrentStageStatus
+  //   against the doc's post-action workflow_current_stage.
+  // - skip logic: stages helpers signal `skipped` when the row's stages_status
+  //   shouldn't change (already-approved rows on submit/approve, etc.). The
+  //   composite returns `null`; callers must STILL refresh current_stage_status
+  //   via the resolver (see service caller pattern).
   //
   // Service-specific extra fields (SR's reject_by_id, review_by_id, etc.)
   // are spread ON TOP of this bag by the caller.
@@ -280,6 +317,7 @@ export class WorkflowPersistenceHelper {
     currentStages: StageStatus[];
     currentHistory: Record<string, unknown>[];
     workflowPreviousStage: string;
+    workflowCurrentStage: string;
     userId: string;
     userName?: string;
     action?: string;
@@ -303,7 +341,11 @@ export class WorkflowPersistenceHelper {
     return {
       stages_status: stages,
       history,
-      current_stage_status: '',
+      current_stage_status: this.resolveCurrentStageStatus({
+        payloadStatus: input.payloadDetail.stage_status,
+        stages,
+        workflowCurrentStage: input.workflowCurrentStage,
+      }),
     };
   }
 
@@ -312,7 +354,7 @@ export class WorkflowPersistenceHelper {
     currentStages: StageStatus[];
     currentHistory: Record<string, unknown>[];
     workflowPreviousStage: string;
-    isFinalApproval: boolean;
+    workflowCurrentStage: string;
     userId: string;
     userName?: string;
     action?: string;
@@ -345,21 +387,14 @@ export class WorkflowPersistenceHelper {
       action: input.action,
     });
 
-    // current_stage_status semantics:
-    // - reject items always get 'reject' (terminal stamp)
-    // - approve stamps 'approve' ONLY at the final stage (workflow complete)
-    // - intermediate stages stay ''
-    let currentStageStatus = '';
-    if (isReject) {
-      currentStageStatus = stage_status.reject;
-    } else if (input.isFinalApproval) {
-      currentStageStatus = stage_status.approve;
-    }
-
     return {
       stages_status: stages,
       history,
-      current_stage_status: currentStageStatus,
+      current_stage_status: this.resolveCurrentStageStatus({
+        payloadStatus: input.payloadDetail.stage_status || '',
+        stages,
+        workflowCurrentStage: input.workflowCurrentStage,
+      }),
     };
   }
 
@@ -390,8 +425,6 @@ export class WorkflowPersistenceHelper {
     return {
       stages_status: stages,
       history,
-      // Reject always stamps 'reject' — this fixes the bug where the
-      // standalone reject() methods hardcoded '' across all 3 services.
       current_stage_status: stage_status.reject,
     };
   }
@@ -401,14 +434,13 @@ export class WorkflowPersistenceHelper {
     currentStages: StageStatus[];
     currentHistory: Record<string, unknown>[];
     workflowPreviousStage: string;
+    workflowCurrentStage: string;
     desStage: string;
-    isFinalApproval?: boolean;
     userId: string;
     userName?: string;
     action?: string;
   }): { stages_status: StageStatus[]; history: Record<string, unknown>[]; current_stage_status: string } | null {
     const isApprove = input.payloadDetail.stage_status === stage_status.approve;
-    const isReject = input.payloadDetail.stage_status === stage_status.reject;
 
     let stages: StageStatus[];
     if (isApprove) {
@@ -441,17 +473,14 @@ export class WorkflowPersistenceHelper {
       action: input.action,
     });
 
-    let currentStageStatus = '';
-    if (isReject) {
-      currentStageStatus = stage_status.reject;
-    } else if (isApprove && input.isFinalApproval) {
-      currentStageStatus = stage_status.approve;
-    }
-
     return {
       stages_status: stages,
       history,
-      current_stage_status: currentStageStatus,
+      current_stage_status: this.resolveCurrentStageStatus({
+        payloadStatus: input.payloadDetail.stage_status,
+        stages,
+        workflowCurrentStage: input.workflowCurrentStage,
+      }),
     };
   }
 
