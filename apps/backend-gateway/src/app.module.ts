@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ZodValidationPipe } from 'nestjs-zod';
-import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, Reflector } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, Reflector, ModuleRef } from '@nestjs/core';
 import { ZodSerializerInterceptor } from '@/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule } from '@nestjs/config';
@@ -24,10 +24,15 @@ import { NotificationModule } from './notification/notification.module';
 import { DatabaseModule } from './common/database/database.module';
 import { PriceListTemplateModule } from './application/price-list-template/price-list-template.module';
 import { RequestForPricingModule } from './application/request-for-pricing/request-for-pricing.module';
+import { EnrichmentModule } from './common/enrichment/enrichment.module';
+import { EnrichmentService } from './common/enrichment/enrichment.service';
+import { EnrichAuditUsersContextInterceptor } from './common/interceptors/enrich-audit-users-context.interceptor';
+import { BaseHttpController } from './common/http/base-http-controller';
 
 @Module({
   imports: [
     DatabaseModule,
+    EnrichmentModule,
     ClientsModule.register([
       {
         name: 'BUSINESS_SERVICE',
@@ -100,10 +105,28 @@ import { RequestForPricingModule } from './application/request-for-pricing/reque
       useFactory: (reflector: Reflector) => new ZodSerializerInterceptor(reflector),
       inject: [Reflector],
     },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: EnrichAuditUsersContextInterceptor,
+    },
     // Note: PermissionGuard is NOT registered globally because it needs to run
     // AFTER KeycloakGuard (which sets request.user.permissions).
     // Global guards run before route-level guards, so PermissionGuard must be
     // applied at the route level using @UseGuards(KeycloakGuard, PermissionGuard).
   ],
 })
-export class AppModule { }
+export class AppModule implements OnApplicationBootstrap {
+  constructor(private readonly moduleRef: ModuleRef) {}
+
+  /**
+   * Wire EnrichmentService into BaseHttpController via static locator so that
+   * any controller extending it can opt-in via @EnrichAuditUsers without
+   * forcing every constructor to inject the service.
+   */
+  onApplicationBootstrap(): void {
+    BaseHttpController.enrichmentService = this.moduleRef.get(
+      EnrichmentService,
+      { strict: false },
+    );
+  }
+}
