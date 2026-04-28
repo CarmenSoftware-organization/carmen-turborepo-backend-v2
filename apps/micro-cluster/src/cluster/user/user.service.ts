@@ -10,6 +10,7 @@ import {
   ErrorCode,
   TryCatch,
 } from '@/common';
+import { formatUserName } from './format-user-name';
 
 @Injectable()
 export class UserService {
@@ -569,5 +570,57 @@ export class UserService {
     });
 
     return Result.ok(null);
+  }
+
+  /**
+   * Resolve a batch of user ids to display names. Used by the gateway's
+   * audit-user enrichment. Returns only ids that exist (callers treat
+   * absence as "unknown"). Includes soft-deleted users (no deleted_at filter).
+   * On Prisma error, logs and returns { users: [] } so the gateway can
+   * degrade gracefully ({ id, name: "Unknown" }) instead of producing an
+   * unhandled rejection.
+   *
+   * @param ids - Array of tb_user.id values to resolve. Empty array short-circuits without a DB call.
+   * @returns Object containing a `users` array of `{ id, name }` entries; ids not in tb_user are omitted.
+   */
+  async resolveByIds(ids: string[]): Promise<{ users: Array<{ id: string; name: string }> }> {
+    this.logger.debug({ function: 'resolveByIds', count: ids.length }, UserService.name);
+
+    if (ids.length === 0) {
+      return { users: [] };
+    }
+
+    try {
+      const rows = await this.prismaSystem.tb_user.findMany({
+        where: { id: { in: ids } },
+        select: {
+          id: true,
+          username: true,
+          email: true,
+          alias_name: true,
+          tb_user_profile_tb_user_profile_user_idTotb_user: {
+            select: { firstname: true, middlename: true, lastname: true },
+          },
+        },
+      });
+
+      const users = rows.map((r) => ({
+        id: r.id,
+        name: formatUserName({
+          username: r.username,
+          email: r.email,
+          alias_name: r.alias_name,
+          profile: r.tb_user_profile_tb_user_profile_user_idTotb_user?.[0] ?? null,
+        }),
+      }));
+
+      return { users };
+    } catch (err) {
+      this.logger.warn(
+        { function: 'resolveByIds', err, count: ids.length },
+        UserService.name,
+      );
+      return { users: [] };
+    }
   }
 }
