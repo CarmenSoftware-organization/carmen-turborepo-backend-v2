@@ -47,3 +47,29 @@ export class DepartmentUserMutationResponseDto {
   @ApiProperty({ description: 'Department User ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   id: string;
 }
+
+export class DepartmentRefDto {
+  @ApiProperty({ description: 'Department ID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id: string;
+
+  @ApiProperty({ description: 'Department code', example: 'F&B' })
+  code: string;
+
+  @ApiProperty({ description: 'Department name', example: 'Food & Beverage' })
+  name: string;
+}
+
+export class DepartmentUserByUserResponseDto {
+  @ApiPropertyOptional({
+    description: 'Member department (is_hod=false). Null if user is not a member of any department.',
+    type: DepartmentRefDto,
+    nullable: true,
+  })
+  department: DepartmentRefDto | null;
+
+  @ApiProperty({
+    description: 'Departments where the user is HOD (is_hod=true). Empty array if user is not HOD anywhere.',
+    type: [DepartmentRefDto],
+  })
+  hod_departments: DepartmentRefDto[];
+}
