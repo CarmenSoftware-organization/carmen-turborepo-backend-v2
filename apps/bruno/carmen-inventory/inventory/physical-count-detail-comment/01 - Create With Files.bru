@@ -1,0 +1,72 @@
+meta {
+  name: Create With Files physical-count-detail-comment
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/physical-count-detail-comment/upload
+  body: multipartForm
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: latest
+}
+
+body:multipart-form {
+  physical_count_detail_id: {{physical_count_detail_id}}
+  message: Damage on outer carton
+  type: user
+  files: @file(./samples/photo1.jpg)
+  files: @file(./samples/photo2.jpg)
+}
+
+docs {
+  ## Create comment with file uploads (single request)
+
+  อัปโหลดไฟล์แนบ (image/pdf) พร้อมข้อความ ลงในคอมเมนต์ของ physical-count-detail
+  ใน request เดียว ไม่ต้อง upload file แยกก่อน
+
+  ### Constraints
+  - max 10 files per request
+  - max 10 MB per file
+  - allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf
+  - at least one of `message` or `files` is required
+
+  ### Response 201
+  ```json
+  {
+    "data": {
+      "id": "<uuid>",
+      "physical_count_detail_id": "<uuid>",
+      "message": "Damage on outer carton",
+      "attachments": [
+        {
+          "fileName": "photo1.jpg",
+          "fileToken": "tok-1",
+          "fileUrl": "",
+          "contentType": "image/jpeg",
+          "size": 204800
+        }
+      ],
+      "type": "user",
+      "created_at": "2026-04-28T12:00:00.000Z"
+    },
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-04-28T12:00:00.000Z"
+  }
+  ```
+
+  Note: `fileUrl` is intentionally empty. The frontend should fetch a presigned URL via `GET /api/{bu_code}/documents/presigned-url/{fileToken}` when displaying attachments.
+}
