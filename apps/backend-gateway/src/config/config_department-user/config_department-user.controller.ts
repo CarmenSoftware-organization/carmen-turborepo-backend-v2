@@ -20,6 +20,7 @@ import { BaseHttpController } from '@/common';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -35,6 +36,7 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import { DepartmentUserCreateRequest, DepartmentUserUpdateRequest } from './swagger/request';
+import { DepartmentUserByUserResponseDto } from './swagger/response';
 
 
 @Controller('api/config/:bu_code/department-user')
@@ -51,6 +53,59 @@ export class Config_DepartmentUserController extends BaseHttpController {
     private readonly config_departmentUserService: Config_DepartmentUserService,
   ) {
     super();
+  }
+
+  /**
+   * Find a user's member department and HOD departments by user_id
+   * ค้นหาแผนกที่ user เป็นสมาชิก และแผนกที่ user เป็น HOD ตาม user_id
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @param target_user_id - Target user ID to look up / รหัสผู้ใช้ที่ต้องการค้นหา
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param version - API version / เวอร์ชัน API
+   * @returns Member department + HOD departments / แผนกสมาชิก + รายการแผนก HOD
+   */
+  @Get('user/:user_id')
+  @UseGuards(new AppIdGuard('departmentUser.findByUser'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: "Get a user's department and HOD assignments",
+    description:
+      'Returns the single department where the user is a member (is_hod=false, may be null) and the list of departments where the user is HOD (is_hod=true, may be empty).',
+    operationId: 'configDepartmentUser_findByUser',
+    tags: ['Configuration', 'Department User'],
+    deprecated: false,
+    security: [{ bearerAuth: [] }],
+    parameters: [
+      { name: 'user_id', in: 'path', required: true },
+    ],
+    responses: {
+      200: { description: 'User department assignments retrieved successfully' },
+    },
+    'x-description-th': 'ดึงข้อมูลแผนกสมาชิก และรายการแผนกที่ user เป็น HOD ตาม user_id',
+  } as any)
+  @ApiOkResponse({ type: DepartmentUserByUserResponseDto })
+  async findByUser(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('user_id', new ParseUUIDPipe({ version: '4' })) target_user_id: string,
+    @Param('bu_code') bu_code: string,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'findByUser', target_user_id, version },
+      Config_DepartmentUserController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.config_departmentUserService.findByUserId(
+      target_user_id,
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result);
   }
 
   /**
