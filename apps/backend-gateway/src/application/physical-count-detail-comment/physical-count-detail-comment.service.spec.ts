@@ -37,9 +37,10 @@ describe('PhysicalCountDetailCommentService', () => {
           success: true,
           response: { status: 200 },
           data: {
+            bu_code: 'HQ-001',
             fileToken: 'tok-1',
-            fileName: 'a.jpg',
-            fileUrl: 'https://minio/a.jpg',
+            objectName: 'HQ-001/uuid.jpg',
+            originalName: 'a.jpg',
             contentType: 'image/jpeg',
             size: 123,
           },
@@ -71,7 +72,7 @@ describe('PhysicalCountDetailCommentService', () => {
       expect(result).toEqual({
         fileName: 'a.jpg',
         fileToken: 'tok-1',
-        fileUrl: 'https://minio/a.jpg',
+        fileUrl: '',
         contentType: 'image/jpeg',
         size: 123,
       });

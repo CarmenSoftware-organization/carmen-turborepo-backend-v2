@@ -187,11 +187,19 @@ export class PhysicalCountDetailCommentService {
       const msg = response.response?.message ?? 'File upload failed';
       throw new Error(msg);
     }
-    const data = response.data as Partial<UploadedAttachment> | undefined;
+    const data = response.data as
+      | {
+          fileToken?: string;
+          objectName?: string;
+          originalName?: string;
+          contentType?: string;
+          size?: number;
+        }
+      | undefined;
     return {
-      fileName: data?.fileName ?? file.originalname,
+      fileName: data?.originalName ?? file.originalname,
       fileToken: String(data?.fileToken ?? ''),
-      fileUrl: String(data?.fileUrl ?? ''),
+      fileUrl: '',
       contentType: data?.contentType ?? file.mimetype,
       size: typeof data?.size === 'number' ? data.size : file.size,
     };
