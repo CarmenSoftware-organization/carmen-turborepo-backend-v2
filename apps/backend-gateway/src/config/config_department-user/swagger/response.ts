@@ -60,7 +60,7 @@ export class DepartmentRefDto {
 }
 
 export class DepartmentUserByUserResponseDto {
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: 'Member department (is_hod=false). Null if user is not a member of any department.',
     type: DepartmentRefDto,
     nullable: true,
