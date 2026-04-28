@@ -1,0 +1,25 @@
+meta {
+  name: Drop db object config_sql_query
+  type: http
+  seq: 11
+}
+
+delete {
+  url: {{host}}/api/config/{{bu_code}}/sql-query/db-objects
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~type: 
+  ~schema: 
+  ~name: 
+}

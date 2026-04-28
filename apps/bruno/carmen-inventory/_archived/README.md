@@ -9,3 +9,11 @@ Files moved by bruno-sync when the corresponding gateway endpoint could not be f
 - `procurement/price-list/07 - Check price list.bru` — endpoint not found in gateway controllers
 - `documents-and-reports/notification/01 - List Notifications.bru` — endpoint not found in gateway controllers
 
+## 2026-04-28
+- `config/sql_query/PUT-update.bru` — endpoint not found in gateway controllers
+- `config/sql_query/POST-duplicate.bru` — endpoint not found in gateway controllers
+- `config/sql_query/POST-create.bru` — endpoint not found in gateway controllers
+- `config/sql_query/GET-list.bru` — endpoint not found in gateway controllers
+- `config/sql_query/GET-get.bru` — endpoint not found in gateway controllers
+- `config/sql_query/DELETE-remove.bru` — endpoint not found in gateway controllers
+

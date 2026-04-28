@@ -1,0 +1,24 @@
+meta {
+  name: Backfill zero cost layers inventory-transaction
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/inventory-transaction/admin/backfill/zero-cost-layers
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}

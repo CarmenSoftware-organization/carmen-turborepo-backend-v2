@@ -10,10 +10,6 @@ post {
   auth: bearer
 }
 
-params:path {
-  id: {{grn_id}}
-}
-
 headers {
   x-app-id: {{x_app_id}}
   Content-Type: application/json
@@ -52,4 +48,8 @@ docs {
     "timestamp": "2026-04-24T00:00:00.000Z"
   }
   ```
+}
+
+params:path {
+  id: {{grn_id}}
 }

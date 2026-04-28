@@ -23,20 +23,20 @@ query {
 }
 
 vars:pre-request {
-  physical_count_id:
+  physical_count_id: 2d834681-4e3e-461b-8d44-791c9565dd38
 }
 
 docs {
   ## Get Physical Count Review Result
   ดึงรายงานผลต่างที่คำนวณไว้ก่อนหน้าของการตรวจนับสินค้า แสดงความแตกต่างระหว่างจำนวนในระบบกับจำนวนจริง เพื่อให้ผู้จัดการอนุมัติหรือตรวจสอบความคลาดเคลื่อน
-
+  
   Retrieves the previously calculated variance report for a physical count, showing the differences between system and actual quantities so managers can approve or investigate discrepancies.
-
+  
   ### Path Parameters
   - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
   - `id` — Physical Count ID / รหัสการตรวจนับสินค้า
-
-
+  
+  
   ### Sample Response
   ```json
   {
@@ -59,6 +59,10 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
+}
+
+params:query {
+  ~version: 
 }
 
 params:path {

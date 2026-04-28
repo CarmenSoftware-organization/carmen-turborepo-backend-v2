@@ -10,14 +10,6 @@ patch {
   auth: bearer
 }
 
-params:query {
-  ~version: 
-}
-
-params:path {
-  id: {{physical_count_id}}
-}
-
 headers {
   x-app-id: {{x_app_id}}
   Content-Type: application/json
@@ -27,15 +19,12 @@ auth:bearer {
   token: {{access_token}}
 }
 
+query {
+  ~version: 
+}
+
 body:json {
-  {
-    "items": [
-      {
-        "id": "d155ddd1-fe2f-460b-8fc0-9728fa579d56",
-        "actual_qty": 10
-      }
-    ]
-  }
+  {}
 }
 
 vars:pre-request {
@@ -80,4 +69,12 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
+}
+
+params:query {
+  ~version: 
+}
+
+params:path {
+  id: {{physical_count_id}}
 }

@@ -101,7 +101,7 @@ describe('DepartmentUserService', () => {
       const result = await service.findByUserId(TARGET_USER);
 
       expect(result.isOk()).toBe(true);
-      expect(result.unwrap()).toEqual({
+      expect(result.value).toEqual({
         department: MEMBER_DEPT,
         hod_departments: [HOD_DEPT_1, HOD_DEPT_2],
       });
@@ -124,7 +124,7 @@ describe('DepartmentUserService', () => {
       const result = await service.findByUserId(TARGET_USER);
 
       expect(result.isOk()).toBe(true);
-      expect(result.unwrap()).toEqual({
+      expect(result.value).toEqual({
         department: null,
         hod_departments: [HOD_DEPT_1],
       });
@@ -139,7 +139,7 @@ describe('DepartmentUserService', () => {
       const result = await service.findByUserId(TARGET_USER);
 
       expect(result.isOk()).toBe(true);
-      expect(result.unwrap()).toEqual({
+      expect(result.value).toEqual({
         department: MEMBER_DEPT,
         hod_departments: [],
       });
@@ -152,7 +152,7 @@ describe('DepartmentUserService', () => {
       const result = await service.findByUserId(TARGET_USER);
 
       expect(result.isOk()).toBe(true);
-      expect(result.unwrap()).toEqual({
+      expect(result.value).toEqual({
         department: null,
         hod_departments: [],
       });
@@ -513,7 +513,7 @@ describe('Config_DepartmentUserService', () => {
         }),
       );
       expect(result.isOk()).toBe(true);
-      expect(result.unwrap()).toEqual(mockData);
+      expect(result.value).toEqual(mockData);
     });
 
     it('returns Result.error when microservice responds with non-OK status', async () => {
