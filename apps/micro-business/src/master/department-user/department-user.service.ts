@@ -130,4 +130,33 @@ export class DepartmentUserService {
 
     return Result.ok(hodUsers.map(h => h.user_id));
   }
+
+  /**
+   * Find a user's member department and HOD departments
+   * ค้นหาแผนกที่ user เป็นสมาชิก และแผนกทั้งหมดที่ user เป็น HOD
+   * @param target_user_id - User ID to look up / รหัสผู้ใช้ที่ต้องการค้นหา
+   * @returns Member department (single, nullable) and HOD departments (array)
+   */
+  @TryCatch
+  async findByUserId(
+    target_user_id: string,
+  ): Promise<Result<{
+    department: { id: string; code: string; name: string } | null;
+    hod_departments: Array<{ id: string; code: string; name: string }>;
+  }>> {
+    const memberRecord = await this.prismaService.tb_department_user.findFirst({
+      where: { user_id: target_user_id, is_hod: false, deleted_at: null },
+      select: { tb_department: { select: { id: true, code: true, name: true } } },
+    });
+
+    const hodRecords = await this.prismaService.tb_department_user.findMany({
+      where: { user_id: target_user_id, is_hod: true, deleted_at: null },
+      select: { tb_department: { select: { id: true, code: true, name: true } } },
+    });
+
+    return Result.ok({
+      department: memberRecord?.tb_department ?? null,
+      hod_departments: hodRecords.map((r) => r.tb_department),
+    });
+  }
 }
