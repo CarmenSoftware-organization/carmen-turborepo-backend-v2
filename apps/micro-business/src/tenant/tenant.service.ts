@@ -1,7 +1,7 @@
 import { HttpStatus, Inject, Injectable, Logger, HttpException } from '@nestjs/common';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import { BackendLogger } from '@/common/helpers/backend.logger';
-import { PrismaClient_TENANT, PrismaClient } from '@repo/prisma-shared-schema-tenant';
+import { PrismaClient_TENANT, PrismaClient, enum_business_unit_config_key } from '@repo/prisma-shared-schema-tenant';
 
 @Injectable()
 export class TenantService {
@@ -457,6 +457,33 @@ export class TenantService {
     }
 
     return prisma;
+  }
+
+  /**
+   * Read a value from tb_business_unit.config (JSON array of {key, value})
+   * อ่านค่าจาก config ของ business unit
+   */
+  async getBuConfig<T = unknown>(
+    bu_id: string,
+    key: enum_business_unit_config_key,
+    default_value: T,
+  ): Promise<T> {
+    const bu = await this.prismaSystem.tb_business_unit.findFirst({
+      where: { id: bu_id },
+      select: { config: true },
+    });
+
+    if (!bu || !bu.config) {
+      return default_value;
+    }
+
+    const configArr = bu.config as Array<{ key: string; value: unknown }>;
+    if (!Array.isArray(configArr)) {
+      return default_value;
+    }
+
+    const entry = configArr.find((c) => c.key === key);
+    return entry === undefined ? default_value : (entry.value as T);
   }
 }
 
