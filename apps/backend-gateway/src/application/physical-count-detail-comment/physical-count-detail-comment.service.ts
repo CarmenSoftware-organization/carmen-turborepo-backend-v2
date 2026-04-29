@@ -33,25 +33,6 @@ export class PhysicalCountDetailCommentService {
     @Inject('FILE_SERVICE') private readonly fileService: ClientProxy,
   ) {}
 
-  async findById(
-    id: string,
-    user_id: string,
-    bu_code: string,
-    version: string,
-  ): Promise<unknown> {
-    const res: Observable<MicroserviceResponse> = this.businessService.send(
-      { cmd: 'physical-count-detail-comment.find-by-id', service: 'physical-count' },
-      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
-    );
-    const response = await firstValueFrom(res);
-    if (response.response.status !== HttpStatus.OK)
-      return Result.error(
-        response.response.message,
-        httpStatusToErrorCode(response.response.status),
-      );
-    return ResponseLib.success(response.data);
-  }
-
   async findAllByPhysicalCountDetailId(
     physical_count_detail_id: string,
     user_id: string,

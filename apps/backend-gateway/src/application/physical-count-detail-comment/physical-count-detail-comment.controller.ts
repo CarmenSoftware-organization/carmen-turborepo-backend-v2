@@ -60,7 +60,7 @@ export class PhysicalCountDetailCommentController {
     private readonly physicalCountDetailCommentService: PhysicalCountDetailCommentService,
   ) {}
 
-  @Get(':bu_code/physical-count-detail/:physical_count_detail_id/comments')
+  @Get(':bu_code/physical-count-detail-comment/:physical_count_detail_id')
   @UseGuards(new AppIdGuard('physicalCountDetailComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
@@ -88,27 +88,6 @@ export class PhysicalCountDetailCommentController {
       paginate,
       version,
     );
-  }
-
-  @Get(':bu_code/physical-count-detail-comment/:id')
-  @UseGuards(new AppIdGuard('physicalCountDetailComment.findOne'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Get a physical-count-detail comment by ID',
-    operationId: 'findOnePhysicalCountDetailComment',
-    responses: {
-      200: { description: 'Comment retrieved successfully' },
-    },
-  } as any)
-  @HttpCode(HttpStatus.OK)
-  async findById(
-    @Param('bu_code') bu_code: string,
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Req() req: Request,
-    @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.physicalCountDetailCommentService.findById(id, user_id, bu_code, version);
   }
 
   @Patch(':bu_code/physical-count-detail-comment/:id')
