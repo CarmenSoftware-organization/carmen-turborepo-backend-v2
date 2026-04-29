@@ -164,7 +164,7 @@ const permissionRoleMap = buildPermissionRoleMap(rolePermissions);
 
 // Sort keys for stability
 const sorted = Object.fromEntries(
-  Object.entries(permissionRoleMap).sort(([a], [b]) => a.localeCompare(b)),
+  Object.entries(permissionRoleMap).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
 );
 
 const outputPath = join(import.meta.dir, "permission-role-map.json");

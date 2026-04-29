@@ -144,6 +144,19 @@
     "Purchase",
     "Approval"
   ],
+  "inventory_management.store_requisition:view": [
+    "Requestor",
+    "HOD",
+    "Purchase",
+    "Approval"
+  ],
+  "inventory_management.store_requisition:view_all": [
+    "Purchase",
+    "Approval"
+  ],
+  "inventory_management.store_requisition:view_department": [
+    "HOD"
+  ],
   "inventory_management.store_requisition_template:create": [
     "Requestor",
     "HOD",
@@ -164,19 +177,6 @@
     "HOD",
     "Purchase",
     "Approval"
-  ],
-  "inventory_management.store_requisition:view": [
-    "Requestor",
-    "HOD",
-    "Purchase",
-    "Approval"
-  ],
-  "inventory_management.store_requisition:view_all": [
-    "Purchase",
-    "Approval"
-  ],
-  "inventory_management.store_requisition:view_department": [
-    "HOD"
   ],
   "procurement.credit_note:create": [
     "Purchase"
@@ -215,6 +215,19 @@
     "Purchase",
     "Approval"
   ],
+  "procurement.purchase_request:view": [
+    "Requestor",
+    "HOD",
+    "Purchase",
+    "Approval"
+  ],
+  "procurement.purchase_request:view_all": [
+    "Purchase",
+    "Approval"
+  ],
+  "procurement.purchase_request:view_department": [
+    "HOD"
+  ],
   "procurement.purchase_request_template:create": [
     "Requestor",
     "HOD",
@@ -235,19 +248,6 @@
     "HOD",
     "Purchase",
     "Approval"
-  ],
-  "procurement.purchase_request:view": [
-    "Requestor",
-    "HOD",
-    "Purchase",
-    "Approval"
-  ],
-  "procurement.purchase_request:view_all": [
-    "Purchase",
-    "Approval"
-  ],
-  "procurement.purchase_request:view_department": [
-    "HOD"
   ],
   "procurement.vendor_comparison:view": [
     "HOD",
