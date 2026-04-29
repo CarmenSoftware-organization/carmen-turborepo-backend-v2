@@ -6,17 +6,30 @@ meta {
 
 docs {
   ## Register
-  ลงทะเบียนบัญชีผู้ใช้ใหม่ในระบบ Keycloak และแพลตฟอร์ม Carmen โดยระบุชื่อผู้ใช้ อีเมล และรหัสผ่าน
+  ลงทะเบียนบัญชีผู้ใช้ใหม่ในระบบ Keycloak และแพลตฟอร์ม Carmen สำหรับเพิ่มพนักงานโรงแรมเข้าสู่ระบบ ERP
 
-  Creates a new user account in both Keycloak and the Carmen platform. Requires username, email, and password.
+  Creates a new user account in both Keycloak and the Carmen platform. Used to onboard new hotel staff such as purchasers, department heads, or property managers into the ERP system.
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  Public — no auth required
 
   ### Sample Body
   ```json
   {
-    "username": "",
-    "email": "",
-    "password": ""
+    "username": "johndoe",
+    "email": "john.doe@carmensoftware.com",
+    "password": "P@ssw0rd!23",
+    "user_info": {
+      "first_name": "John",
+      "middle_name": "",
+      "last_name": "Doe",
+      "telephone": "0812345678"
+    }
   }
   ```
 
@@ -24,15 +37,20 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 409 | User with the same email or username already exists |
 }
 
 post {
@@ -47,8 +65,14 @@ headers {
 
 body:json {
   {
-    "username": "",
-    "email": "",
-    "password": ""
+    "username": "johndoe",
+    "email": "john.doe@carmensoftware.com",
+    "password": "P@ssw0rd!23",
+    "user_info": {
+      "first_name": "John",
+      "middle_name": "",
+      "last_name": "Doe",
+      "telephone": "0812345678"
+    }
   }
 }
