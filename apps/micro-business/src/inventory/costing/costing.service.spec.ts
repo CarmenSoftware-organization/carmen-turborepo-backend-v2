@@ -139,4 +139,123 @@ describe('CostingService', () => {
       expect(result.get(costMapKey('p-new', 'loc-a'))).toBeUndefined();
     });
   });
+
+  describe('last', () => {
+    it('returns GRN cost when GRN is newer than stock_in', async () => {
+      const grnDate = new Date('2026-04-29T10:00:00Z');
+      const stockInDate = new Date('2026-04-28T10:00:00Z');
+
+      const prisma: any = {
+        tb_good_received_note_detail: {
+          findMany: jest.fn().mockResolvedValue([
+            {
+              product_id: 'p1',
+              location_id: 'loc-a',
+              tb_good_received_note: { grn_date: grnDate },
+              tb_good_received_note_detail_item: [
+                { net_amount: new Prisma.Decimal(200), received_base_qty: new Prisma.Decimal(10) },
+              ],
+            },
+          ]),
+        },
+        tb_stock_in_detail: {
+          findMany: jest.fn().mockResolvedValue([
+            {
+              product_id: 'p1',
+              cost_per_unit: new Prisma.Decimal(15),
+              created_at: stockInDate,
+              tb_stock_in: { location_id: 'loc-a' },
+            },
+          ]),
+        },
+      };
+
+      const result = await service.getCostsPerUnit({
+        prisma,
+        method: 'last',
+        items: [{ product_id: 'p1', location_id: 'loc-a' }],
+      });
+
+      expect(result.get(costMapKey('p1', 'loc-a'))?.toString()).toBe('20');
+    });
+
+    it('returns stock_in cost when stock_in is newer than GRN', async () => {
+      const grnDate = new Date('2026-04-28T10:00:00Z');
+      const stockInDate = new Date('2026-04-29T10:00:00Z');
+
+      const prisma: any = {
+        tb_good_received_note_detail: {
+          findMany: jest.fn().mockResolvedValue([
+            {
+              product_id: 'p1',
+              location_id: 'loc-a',
+              tb_good_received_note: { grn_date: grnDate },
+              tb_good_received_note_detail_item: [
+                { net_amount: new Prisma.Decimal(200), received_base_qty: new Prisma.Decimal(10) },
+              ],
+            },
+          ]),
+        },
+        tb_stock_in_detail: {
+          findMany: jest.fn().mockResolvedValue([
+            {
+              product_id: 'p1',
+              cost_per_unit: new Prisma.Decimal(15),
+              created_at: stockInDate,
+              tb_stock_in: { location_id: 'loc-a' },
+            },
+          ]),
+        },
+      };
+
+      const result = await service.getCostsPerUnit({
+        prisma,
+        method: 'last',
+        items: [{ product_id: 'p1', location_id: 'loc-a' }],
+      });
+
+      expect(result.get(costMapKey('p1', 'loc-a'))?.toString()).toBe('15');
+    });
+
+    it('returns stock_in cost when no GRN exists', async () => {
+      const prisma: any = {
+        tb_good_received_note_detail: {
+          findMany: jest.fn().mockResolvedValue([]),
+        },
+        tb_stock_in_detail: {
+          findMany: jest.fn().mockResolvedValue([
+            {
+              product_id: 'p1',
+              cost_per_unit: new Prisma.Decimal(7.5),
+              created_at: new Date(),
+              tb_stock_in: { location_id: 'loc-a' },
+            },
+          ]),
+        },
+      };
+
+      const result = await service.getCostsPerUnit({
+        prisma,
+        method: 'last',
+        items: [{ product_id: 'p1', location_id: 'loc-a' }],
+      });
+
+      expect(result.get(costMapKey('p1', 'loc-a'))?.toString()).toBe('7.5');
+    });
+
+    it('omits entry when neither table has match', async () => {
+      const prisma: any = {
+        tb_good_received_note_detail: { findMany: jest.fn().mockResolvedValue([]) },
+        tb_stock_in_detail: { findMany: jest.fn().mockResolvedValue([]) },
+      };
+
+      const result = await service.getCostsPerUnit({
+        prisma,
+        method: 'last',
+        items: [{ product_id: 'p-new', location_id: 'loc-a' }],
+      });
+
+      expect(result.get(costMapKey('p-new', 'loc-a'))).toBeUndefined();
+    });
+  });
 });

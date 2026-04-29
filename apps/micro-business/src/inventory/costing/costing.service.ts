@@ -124,10 +124,94 @@ export class CostingService {
   }
 
   private async lookupLast(
-    _prisma: TenantPrisma,
-    _items: GetCostsBatchInput['items'],
+    prisma: TenantPrisma,
+    items: GetCostsBatchInput['items'],
   ): Promise<Map<string, Prisma.Decimal>> {
-    throw new Error('Not implemented');
+    const result = new Map<string, Prisma.Decimal>();
+    if (items.length === 0) return result;
+
+    const productIds = Array.from(new Set(items.map((i) => i.product_id)));
+    const locationIds = Array.from(new Set(items.map((i) => i.location_id)));
+    const wantedKeys = new Set(items.map((i) => costMapKey(i.product_id, i.location_id)));
+
+    // Run both queries in parallel
+    const [grnRows, stockInRows] = await Promise.all([
+      prisma.tb_good_received_note_detail.findMany({
+        where: {
+          product_id: { in: productIds },
+          location_id: { in: locationIds },
+          tb_good_received_note: { deleted_at: null },
+        },
+        orderBy: { tb_good_received_note: { grn_date: 'desc' } },
+        select: {
+          product_id: true,
+          location_id: true,
+          tb_good_received_note: { select: { grn_date: true } },
+          tb_good_received_note_detail_item: {
+            where: { deleted_at: null },
+            select: { net_amount: true, received_base_qty: true },
+          },
+        },
+      }),
+      prisma.tb_stock_in_detail.findMany({
+        where: {
+          product_id: { in: productIds },
+          deleted_at: null,
+          tb_stock_in: { location_id: { in: locationIds }, deleted_at: null },
+        },
+        orderBy: { created_at: 'desc' },
+        select: {
+          product_id: true,
+          cost_per_unit: true,
+          created_at: true,
+          tb_stock_in: { select: { location_id: true } },
+        },
+      }),
+    ]);
+
+    // Build "newest-per-key" candidates from each source (with derived cost where needed)
+    type Candidate = { cost: Prisma.Decimal; at: Date };
+    const newest = new Map<string, Candidate>();
+
+    for (const row of grnRows) {
+      const key = costMapKey(row.product_id, row.location_id);
+      if (!wantedKeys.has(key)) continue;
+      if (newest.has(key)) continue; // GRN rows already DESC, take first
+
+      let totalNet = new Prisma.Decimal(0);
+      let totalQty = new Prisma.Decimal(0);
+      for (const item of row.tb_good_received_note_detail_item) {
+        totalNet = totalNet.plus(item.net_amount ?? 0);
+        totalQty = totalQty.plus(item.received_base_qty ?? 0);
+      }
+      if (totalQty.isZero()) continue;
+      newest.set(key, {
+        cost: totalNet.dividedBy(totalQty),
+        at: row.tb_good_received_note?.grn_date ?? new Date(0),
+      });
+    }
+
+    for (const row of stockInRows) {
+      const loc = row.tb_stock_in?.location_id;
+      if (!loc) continue;
+      const key = costMapKey(row.product_id, loc);
+      if (!wantedKeys.has(key)) continue;
+
+      const candidate: Candidate = {
+        cost: row.cost_per_unit ?? new Prisma.Decimal(0),
+        at: row.created_at ?? new Date(0),
+      };
+      const existing = newest.get(key);
+      if (!existing || candidate.at > existing.at) {
+        newest.set(key, candidate);
+      }
+    }
+
+    for (const [key, c] of newest) {
+      result.set(key, c.cost);
+    }
+
+    return result;
   }
 
   private async lookupAverage(
