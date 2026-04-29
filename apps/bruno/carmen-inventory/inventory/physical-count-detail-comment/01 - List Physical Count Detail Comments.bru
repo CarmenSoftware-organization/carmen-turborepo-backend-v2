@@ -10,6 +10,14 @@ get {
   auth: bearer
 }
 
+params:query {
+  ~version: 
+}
+
+params:path {
+  physical_count_detail_id: {{test_id}}
+}
+
 headers {
   x-app-id: {{x_app_id}}
 }
@@ -18,20 +26,20 @@ auth:bearer {
   token: {{access_token}}
 }
 
-query {
-  ~version: 
+vars:pre-request {
+  test_id: 5d5fa453-f687-4fcd-bbdb-5956f7e810b3
 }
 
 docs {
   ## List Physical Count Detail Comments
   แสดงความคิดเห็นทั้งหมดของรายละเอียดการนับสินค้าจริง
-
+  
   Retrieves all comments for a physical-count-detail.
-
+  
   ### Path Parameters
   - `physical_count_detail_id` — Physical Count Detail ID
-
-
+  
+  
   ### Sample Response
   ```json
   {
@@ -53,8 +61,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-params:path {
-  physical_count_detail_id: {{test_id}}
 }
