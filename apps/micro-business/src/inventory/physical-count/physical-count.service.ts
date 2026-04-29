@@ -4,6 +4,7 @@ import {
   enum_physical_count_status,
   enum_physical_count_period_status,
   enum_doc_status,
+  enum_business_unit_config_key,
   Prisma,
 } from '@repo/prisma-shared-schema-tenant';
 import { TenantService } from '@/tenant/tenant.service';
@@ -28,6 +29,12 @@ import {
   ErrorCode,
   TryCatch,
 } from '@/common';
+import { CostingService } from '@/inventory/costing/costing.service';
+import {
+  CostingMethod,
+  isCostingMethod,
+  costMapKey,
+} from '@/inventory/costing/costing.types';
 
 @Injectable()
 export class PhysicalCountService {
@@ -43,6 +50,7 @@ export class PhysicalCountService {
     @Inject('MASTER_SERVICE')
     private readonly masterService: ClientProxy,
     private readonly tenantService: TenantService,
+    private readonly costingService: CostingService,
   ) { }
 
   /**
@@ -829,9 +837,7 @@ export class PhysicalCountService {
     const period = await prisma.tb_physical_count_period.findFirst({
       where: { id: physicalCount.physical_count_period_id, deleted_at: null },
       include: {
-        tb_period: {
-          select: { start_at: true, end_at: true },
-        },
+        tb_period: { select: { start_at: true, end_at: true } },
       },
     });
 
@@ -854,6 +860,37 @@ export class PhysicalCountService {
       (d) => d.diff_qty && !d.diff_qty.equals(0),
     );
 
+    // Resolve costing method from BU config (default 'last_receiving')
+    const rawMethod = await this.tenantService.getBuConfig<unknown>(
+      tenant.tenant_id,
+      enum_business_unit_config_key.physical_count_costing_method,
+      'last_receiving',
+    );
+    let method: CostingMethod = 'last_receiving';
+    if (isCostingMethod(rawMethod)) {
+      method = rawMethod;
+    } else {
+      this.logger.warn(
+        {
+          function: 'submit',
+          message: 'Invalid physical_count_costing_method in BU config; falling back to last_receiving',
+          bu_id: tenant.tenant_id,
+          received: rawMethod,
+        },
+        PhysicalCountService.name,
+      );
+    }
+
+    // Batch fetch costs before transaction (read-only)
+    const costMap = await this.costingService.getCostsPerUnit({
+      prisma,
+      method,
+      items: detailsWithVariance.map((d) => ({
+        product_id: d.product_id,
+        location_id: physicalCount.location_id,
+      })),
+    });
+
     const periodNote = period?.tb_period
       ? `Physical Count Adjustment - Period: ${format(period.tb_period.start_at, 'yyyy-MM-dd')} to ${format(period.tb_period.end_at, 'yyyy-MM-dd')}`
       : 'Physical Count Adjustment';
@@ -867,7 +904,11 @@ export class PhysicalCountService {
       );
 
       if (positiveVariance.length > 0) {
-        const siNo = await this.generateSINo(new Date().toISOString(), tenant_id, user_id);
+        const siNo = await this.generateSINo(
+          new Date().toISOString(),
+          tenant_id,
+          user_id,
+        );
 
         const stockIn = await tx.tb_stock_in.create({
           data: {
@@ -875,33 +916,41 @@ export class PhysicalCountService {
             description: periodNote,
             doc_status: enum_doc_status.completed,
             doc_version: 0,
+            location_id: physicalCount.location_id,
+            location_code: physicalCount.location_code,
+            location_name: physicalCount.location_name,
             created_by_id: user_id,
           },
         });
 
         let sequenceNo = 1;
-        const stockInDetails = positiveVariance.map((d) => ({
-          stock_in_id: stockIn.id,
-          sequence_no: sequenceNo++,
-          product_id: d.product_id,
-          product_name: d.product_name,
-          location_id: physicalCount.location_id,
-          location_code: physicalCount.location_code,
-          location_name: physicalCount.location_name,
-          qty: d.diff_qty,
-          cost_per_unit: new Prisma.Decimal(0),
-          total_cost: new Prisma.Decimal(0),
-          note: `Physical Count Adjustment - Variance: +${d.diff_qty}`,
-          created_by_id: user_id,
-        }));
-
-        await tx.tb_stock_in_detail.createMany({
-          data: stockInDetails,
+        const stockInDetails = positiveVariance.map((d) => {
+          const cost =
+            costMap.get(costMapKey(d.product_id, physicalCount.location_id)) ??
+            new Prisma.Decimal(0);
+          const qty = d.diff_qty;
+          return {
+            stock_in_id: stockIn.id,
+            sequence_no: sequenceNo++,
+            product_id: d.product_id,
+            product_name: d.product_name,
+            qty,
+            cost_per_unit: cost,
+            total_cost: cost.mul(qty),
+            note: `Physical Count Adjustment - Variance: +${d.diff_qty} @ ${cost} (${method})`,
+            created_by_id: user_id,
+          };
         });
+
+        await tx.tb_stock_in_detail.createMany({ data: stockInDetails });
       }
 
       if (negativeVariance.length > 0) {
-        const soNo = await this.generateSONo(new Date().toISOString(), tenant_id, user_id);
+        const soNo = await this.generateSONo(
+          new Date().toISOString(),
+          tenant_id,
+          user_id,
+        );
 
         const stockOut = await tx.tb_stock_out.create({
           data: {
@@ -909,29 +958,33 @@ export class PhysicalCountService {
             description: periodNote,
             doc_status: enum_doc_status.completed,
             doc_version: 0,
+            location_id: physicalCount.location_id,
+            location_code: physicalCount.location_code,
+            location_name: physicalCount.location_name,
             created_by_id: user_id,
           },
         });
 
         let sequenceNo = 1;
-        const stockOutDetails = negativeVariance.map((d) => ({
-          stock_out_id: stockOut.id,
-          sequence_no: sequenceNo++,
-          product_id: d.product_id,
-          product_name: d.product_name,
-          location_id: physicalCount.location_id,
-          location_code: physicalCount.location_code,
-          location_name: physicalCount.location_name,
-          qty: d.diff_qty.abs(),
-          cost_per_unit: new Prisma.Decimal(0),
-          total_cost: new Prisma.Decimal(0),
-          note: `Physical Count Adjustment - Variance: ${d.diff_qty}`,
-          created_by_id: user_id,
-        }));
-
-        await tx.tb_stock_out_detail.createMany({
-          data: stockOutDetails,
+        const stockOutDetails = negativeVariance.map((d) => {
+          const cost =
+            costMap.get(costMapKey(d.product_id, physicalCount.location_id)) ??
+            new Prisma.Decimal(0);
+          const qty = d.diff_qty.abs();
+          return {
+            stock_out_id: stockOut.id,
+            sequence_no: sequenceNo++,
+            product_id: d.product_id,
+            product_name: d.product_name,
+            qty,
+            cost_per_unit: cost,
+            total_cost: cost.mul(qty),
+            note: `Physical Count Adjustment - Variance: ${d.diff_qty} @ ${cost} (${method})`,
+            created_by_id: user_id,
+          };
         });
+
+        await tx.tb_stock_out_detail.createMany({ data: stockOutDetails });
       }
 
       await tx.tb_physical_count.update({
