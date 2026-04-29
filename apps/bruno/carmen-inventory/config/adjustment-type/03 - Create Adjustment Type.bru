@@ -37,21 +37,36 @@ body:json {
 }
 
 docs {
-  ## Create Adjustment Type
-  สร้างประเภทการปรับปรุงใหม่
+  ## Create a New Adjustment Type
+  สร้างประเภทการปรับปรุงใหม่ (เช่น เสียหาย แตกหัก สูญหาย)
 
-  Creates a new adjustment type category.
+  Defines a new inventory adjustment category. Once created, warehouse staff can select this type when recording inventory discrepancies.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
   {
     "code": "ADJ-001",
-    "name": "Adjustment Type Test",
+    "name": "Stock Adjustment In",
     "type": "STOCK_IN",
-    "description": "Test adjustment type",
+    "description": "Adjustment for incoming stock discrepancies",
     "is_active": true,
-    "note": ""
+    "note": "Used for inventory corrections",
+    "info": {},
+    "dimension": []
   }
   ```
 
@@ -59,13 +74,17 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  > No service-specific errors thrown by this endpoint.
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }

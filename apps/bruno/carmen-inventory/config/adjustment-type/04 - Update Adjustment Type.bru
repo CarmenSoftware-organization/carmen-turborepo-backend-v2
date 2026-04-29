@@ -37,21 +37,37 @@ body:json {
 }
 
 docs {
-  ## Update Adjustment Type
+  ## Update an Adjustment Type
   อัปเดตข้อมูลประเภทการปรับปรุงที่มีอยู่
 
-  Updates an existing adjustment type category.
+  Modifies an existing inventory adjustment type definition. Changes apply to all future inventory adjustment records.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Adjustment type ID |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
   {
     "code": "ADJ-001",
-    "name": "Adjustment Type Updated",
+    "name": "Stock Adjustment In",
     "type": "STOCK_IN",
-    "description": "Updated adjustment type",
-    "is_active": true,
-    "note": "updated"
+    "description": "Adjustment for incoming stock discrepancies",
+    "is_active": false,
+    "note": "Used for inventory corrections",
+    "info": {},
+    "dimension": []
   }
   ```
 
@@ -59,15 +75,22 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 404 | Adjustment type not found for given ID |
+  | 400 | Invalid UUID format for `id` |
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

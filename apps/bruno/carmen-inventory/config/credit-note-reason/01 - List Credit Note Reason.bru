@@ -26,31 +26,56 @@ docs {
   ## List Credit Note Reasons
   แสดงรายการเหตุผลใบลดหนี้ทั้งหมดพร้อมการแบ่งหน้าและค้นหา
 
-  Returns all configurable reasons for issuing vendor credit notes with pagination and search support.
+  Lists all configurable reasons for issuing vendor credit notes (e.g., damaged goods, short delivery, quality issues).
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `page` | number | No | 1 | Page number |
+  | `perpage` | number | No | 10 | Items per page |
+  | `search` | string | No | — | Search by name |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Response
   ```json
   {
     "data": [
       {
-        "id": "uuid",
-        "name": "Defective Goods",
-        "description": "Goods received were defective",
-        "note": "...",
-        "created_at": "2026-03-27T00:00:00.000Z"
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+        "name": "Damaged goods",
+        "description": "Items received were damaged during transit",
+        "note": "Common for fragile items",
+        "created_at": "2026-04-29T08:30:00.000Z"
       }
     ],
     "paginate": {
-      "total": 100,
       "page": 1,
       "perpage": 10,
-      "pages": 10
+      "pages": 1,
+      "total": 6,
+      "prev": null,
+      "next": null
     },
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  > No service-specific errors thrown by this endpoint.
 }

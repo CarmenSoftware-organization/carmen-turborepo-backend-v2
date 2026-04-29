@@ -24,24 +24,44 @@ query {
 }
 
 body:json {
-  {}
+  {
+    "name": "Damaged goods",
+    "description": "Items received were damaged during transit",
+    "note": "Common for fragile items",
+    "info": {},
+    "dimension": {}
+  }
 }
 
 docs {
-  ## Update Credit Note Reason
+  ## Update a Credit Note Reason
   อัปเดตข้อมูลเหตุผลใบลดหนี้ที่มีอยู่ (แทนที่ทั้งหมด)
 
   Fully replaces a credit note reason configuration.
 
   ### Path Parameters
-  - `id` -- Credit note reason ID (UUID) / รหัสเหตุผลใบลดหนี้
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Credit note reason ID |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
   {
     "name": "Damaged goods",
-    "description": "Items received were damaged during tr..."
+    "description": "Items received were damaged during transit",
+    "note": "Common for fragile items",
+    "info": {},
+    "dimension": {}
   }
   ```
 
@@ -49,15 +69,22 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 404 | Credit note reason not found for given ID |
+  | 400 | Invalid UUID format for `id` |
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

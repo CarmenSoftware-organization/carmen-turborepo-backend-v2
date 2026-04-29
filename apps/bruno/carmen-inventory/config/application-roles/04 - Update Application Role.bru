@@ -36,18 +36,36 @@ body:json {
 }
 
 docs {
-  ## Update Application Role
+  ## Update an Application Role
   อัปเดตข้อมูลบทบาทในระบบที่มีอยู่
 
-  Updates an existing application role.
+  Modifies an existing application role definition. Changes immediately affect all users currently assigned this role.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Application role ID |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
   {
-    "name": "",
-    "code": "",
-    "is_active": true
+    "id": "",
+    "application_role_name": "Inventory Manager",
+    "is_active": false,
+    "permissions": {
+      "add": [],
+      "remove": []
+    }
   }
   ```
 
@@ -55,15 +73,21 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 404 | Application role not found for given ID |
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

@@ -24,65 +24,81 @@ query {
 }
 
 body:json {
-  {}
+  [
+    {
+      "currency_id": "93dabe25-1668-4c5b-bceb-3e0b83b78002",
+      "at_date": "2026-04-28T00:00:00.000Z",
+      "exchange_rate": 35.5
+    },
+    {
+      "currency_id": "93dabe25-1668-4c5b-bceb-3e0b83b78002",
+      "at_date": "2026-04-29T00:00:00.000Z",
+      "exchange_rate": 35.6
+    },
+    {
+      "currency_id": "ef1953fb-d4c9-4c7d-80c0-74d06997b6f2",
+      "at_date": "2026-04-28T00:00:00.000Z",
+      "exchange_rate": 0.03178
+    }
+  ]
 }
 
 docs {
-  ## Create Exchange Rate (Bulk)
+  ## Create Exchange Rates (Bulk)
   สร้างอัตราแลกเปลี่ยนใหม่หลายรายการพร้อมกัน
 
   Creates multiple exchange rate records in a single request for efficient bulk updates.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
-  {
-    "0": {
+  [
+    {
       "currency_id": "93dabe25-1668-4c5b-bceb-3e0b83b78002",
-      "at_date": "2026-01-15T02:50:09.183Z",
-      "exchange_rate": 1
+      "at_date": "2026-04-28T00:00:00.000Z",
+      "exchange_rate": 35.5
     },
-    "1": {
+    {
       "currency_id": "93dabe25-1668-4c5b-bceb-3e0b83b78002",
-      "at_date": "2026-01-16T02:50:09.183Z",
-      "exchange_rate": 1
+      "at_date": "2026-04-29T00:00:00.000Z",
+      "exchange_rate": 35.6
     },
-    "2": {
-      "currency_id": "93dabe25-1668-4c5b-bceb-3e0b83b78002",
-      "at_date": "2026-01-17T02:50:09.183Z",
-      "exchange_rate": 1
-    },
-    "3": {
-      "currency_id": "93dabe25-1668-4c5b-bceb-3e0b83b78002",
-      "at_date": "2026-01-15T02:50:09.183Z",
-      "exchange_rate": 1
-    },
-    "4": {
+    {
       "currency_id": "ef1953fb-d4c9-4c7d-80c0-74d06997b6f2",
-      "at_date": "2026-01-16T02:50:09.184Z",
+      "at_date": "2026-04-28T00:00:00.000Z",
       "exchange_rate": 0.03178
-    },
-    "5": {
-      "currency_id": "ef1953fb-d4c9-4c7d-80c0-74d06997b6f2",
-      "at_date": "2026-01-17T02:50:09.184Z",
-      "exchange_rate": 0.03178
-    },
-    "...": "..."
-  }
+    }
+  ]
   ```
 
   ### Sample Response
   ```json
   {
     "data": {
-      "id": "uuid",
-      "message": "Success"
+      "count": 3
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  > No service-specific errors thrown by this endpoint.
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
