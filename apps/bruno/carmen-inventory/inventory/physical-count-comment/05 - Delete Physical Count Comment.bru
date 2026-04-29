@@ -1,13 +1,21 @@
 meta {
   name: Remove physical-count-comment
   type: http
-  seq: 5
+  seq: 6
 }
 
 delete {
   url: {{host}}/api/{{bu_code}}/physical-count-comment/:id
   body: none
   auth: bearer
+}
+
+params:query {
+  ~version: 
+}
+
+params:path {
+  id: {{test_id}}
 }
 
 headers {
@@ -18,21 +26,29 @@ auth:bearer {
   token: {{access_token}}
 }
 
-query {
-  ~version: 
-}
-
 docs {
   ## Delete Physical Count Comment
-  ลบความคิดเห็นของการนับสินค้าจริง
+  ลบความคิดเห็นของ physical-count (soft delete) พร้อมลบไฟล์แนบจาก S3
 
-  Deletes a physical-count comment. Only the author can delete.
+  ### URL
+  `DELETE {{host}}/api/{{bu_code}}/physical-count-comment/:id`
 
   ### Path Parameters
-  - `id` — Comment ID
+  - `bu_code` — Business unit code
+  - `id` — Comment UUID
 
+  ### Gateway behavior
+  1. ดึงข้อมูล comment ผ่าน `physical-count-comment.find-by-id` เพื่อ
+     อ่าน `attachments[].fileToken`
+  2. ลบไฟล์ทุกตัวออกจาก S3 ผ่าน `file.delete` (best-effort, log warn หากบางตัวล้มเหลว)
+  3. ส่ง `physical-count-comment.delete` ไปยัง business service เพื่อ
+     soft-delete record (set `deleted_at`)
 
-  ### Sample Response
+  > Important: S3 cleanup ทำ **ก่อน** flag delete เพื่อป้องกัน orphan files
+  > หากการ flag-delete ล้มเหลวภายหลัง ไฟล์ใน S3 จะถูกลบไปแล้ว — โปรดระวังในการ
+  > ออกแบบ retry/recovery flow
+
+  ### Sample Response 200
   ```json
   {
     "data": {
@@ -42,11 +58,7 @@ docs {
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T00:00:00.000Z"
   }
   ```
-}
-
-params:path {
-  id: {{test_id}}
 }

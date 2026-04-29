@@ -18,7 +18,10 @@ import {
 } from '@nestjs/common';
 import { PhysicalCountCommentService } from './physical-count-comment.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { UploadCommentWithFilesBodySchema, UploadCommentWithFilesDto } from './dto/upload-comment-with-files.dto';
+import {
+  UploadCommentWithFilesBodySchema,
+  UploadCommentWithFilesDto,
+} from './dto/upload-comment-with-files.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -35,9 +38,9 @@ import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
-  CreatePhysicalCountCommentDto,
   UpdatePhysicalCountCommentDto,
-  AddAttachmentDto,
+  UpdatePhysicalCountCommentBodySchema,
+  AddAttachmentsDto,
 } from './dto/physical-count-comment.dto';
 
 const MAX_FILES = 10;
@@ -64,7 +67,7 @@ export class PhysicalCountCommentController {
     private readonly physicalCountCommentService: PhysicalCountCommentService,
   ) {}
 
-  @Get(':bu_code/physical-count/:physical_count_id/comments')
+  @Get(':bu_code/physical-count-comment/:physical_count_id')
   @UseGuards(new AppIdGuard('physicalCountComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
@@ -94,77 +97,80 @@ export class PhysicalCountCommentController {
     );
   }
 
-  @Get(':bu_code/physical-count-comment/:id')
-  @UseGuards(new AppIdGuard('physicalCountComment.findOne'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Get a physical-count comment by ID',
-    operationId: 'findOnePhysicalCountComment',
-    responses: {
-      200: { description: 'Comment retrieved successfully' },
-    },
-  } as any)
-  @HttpCode(HttpStatus.OK)
-  async findById(
-    @Param('bu_code') bu_code: string,
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Req() req: Request,
-    @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.physicalCountCommentService.findById(id, user_id, bu_code, version);
-  }
-
-  @Post(':bu_code/physical-count-comment')
-  @UseGuards(new AppIdGuard('physicalCountComment.create'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Create a new physical-count comment',
-    operationId: 'createPhysicalCountComment',
-    responses: {
-      201: { description: 'Comment created successfully' },
-    },
-  } as any)
-  @ApiBody({ type: CreatePhysicalCountCommentDto, description: 'Comment data with optional attachments' })
-  @HttpCode(HttpStatus.CREATED)
-  async create(
-    @Param('bu_code') bu_code: string,
-    @Body() createDto: CreatePhysicalCountCommentDto,
-    @Req() req: Request,
-    @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.physicalCountCommentService.create(
-      { ...createDto },
-      user_id,
-      bu_code,
-      version,
-    );
-  }
-
   @Patch(':bu_code/physical-count-comment/:id')
   @UseGuards(new AppIdGuard('physicalCountComment.update'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Update a physical-count comment',
+    summary: 'Update a physical-count comment with attachment add/remove',
     operationId: 'updatePhysicalCountComment',
     responses: {
       200: { description: 'Comment updated successfully' },
+      400: { description: 'Validation failed' },
+      502: { description: 'File service upstream failure' },
     },
   } as any)
-  @ApiBody({ type: UpdatePhysicalCountCommentDto, description: 'Updated comment data' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UpdatePhysicalCountCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('bu_code') bu_code: string,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() updateDto: UpdatePhysicalCountCommentDto,
+    @UploadedFiles() files: Express.Multer.File[] = [],
+    @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    const parsed = UpdatePhysicalCountCommentBodySchema.safeParse(rawBody);
+    if (!parsed.success) {
+      throw new BadRequestException({
+        message: 'Invalid request body',
+        errors: parsed.error.errors,
+      });
+    }
+    const body = parsed.data as {
+      message?: string | null;
+      type?: 'user' | 'system';
+      remove_attachments?: string[];
+    };
+
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
+    const removeTokens = body.remove_attachments ?? [];
+    const hasMessage =
+      typeof body.message === 'string' && body.message.trim().length > 0;
+    const hasType = typeof body.type === 'string';
+    if (!hasMessage && !hasType && files.length === 0 && removeTokens.length === 0) {
+      throw new BadRequestException(
+        'At least one of `message`, `type`, `files`, or `remove_attachments` must be provided',
+      );
+    }
+
     const { user_id } = ExtractRequestHeader(req);
     return this.physicalCountCommentService.update(
       id,
-      { ...updateDto },
+      {
+        message: body.message ?? undefined,
+        type: body.type,
+        addFiles: files,
+        removeFileTokens: removeTokens,
+      },
       user_id,
       bu_code,
       version,
@@ -194,27 +200,52 @@ export class PhysicalCountCommentController {
 
   @Post(':bu_code/physical-count-comment/:id/attachment')
   @UseGuards(new AppIdGuard('physicalCountComment.addAttachment'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Add an attachment to a physical-count comment',
+    summary: 'Add attachments (file uploads) to a physical-count comment',
     operationId: 'addAttachmentToPhysicalCountComment',
     responses: {
-      200: { description: 'Attachment added successfully' },
+      200: { description: 'Attachments added successfully' },
+      400: { description: 'Validation failed' },
+      502: { description: 'File service upstream failure' },
     },
   } as any)
-  @ApiBody({ type: AddAttachmentDto, description: 'Attachment data from file service' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: AddAttachmentsDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(
     @Param('bu_code') bu_code: string,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() attachment: AddAttachmentDto,
+    @UploadedFiles() files: Express.Multer.File[] = [],
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    if (files.length === 0) {
+      throw new BadRequestException('At least one file is required');
+    }
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
     const { user_id } = ExtractRequestHeader(req);
-    return this.physicalCountCommentService.addAttachment(
+    return this.physicalCountCommentService.addAttachments(
       id,
-      { ...attachment },
+      files,
       user_id,
       bu_code,
       version,
@@ -248,7 +279,8 @@ export class PhysicalCountCommentController {
       version,
     );
   }
-  @Post(':bu_code/physical-count-comment/upload')
+
+  @Post(':bu_code/physical-count-comment/:physical_count_id')
   @UseGuards(new AppIdGuard('physicalCountComment.createWithFiles'))
   @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
@@ -266,11 +298,22 @@ export class PhysicalCountCommentController {
   @HttpCode(HttpStatus.CREATED)
   async createWithFiles(
     @Param('bu_code') bu_code: string,
+    @Param('physical_count_id', new ParseUUIDPipe({ version: '4' }))
+    physical_count_id: string,
     @UploadedFiles() files: Express.Multer.File[] = [],
     @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    this.logger.debug(
+      {
+        function: 'createWithFiles',
+        bu_code,
+        physical_count_id,
+        file_count: files.length,
+      },
+      PhysicalCountCommentController.name,
+    );
     const parsed = UploadCommentWithFilesBodySchema.safeParse(rawBody);
     if (!parsed.success) {
       throw new BadRequestException({
@@ -279,7 +322,6 @@ export class PhysicalCountCommentController {
       });
     }
     const body = parsed.data as {
-      physical_count_id: string;
       message?: string | null;
       type?: 'user' | 'system';
     };
@@ -312,7 +354,7 @@ export class PhysicalCountCommentController {
     const { user_id } = ExtractRequestHeader(req);
     return this.physicalCountCommentService.createWithFiles(
       files,
-      body,
+      { ...body, physical_count_id },
       user_id,
       bu_code,
       version,

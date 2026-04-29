@@ -1,17 +1,27 @@
-# Physical Count Detail Comment — Endpoint Logic
+# Comment Endpoint Logic (Physical Count + Physical Count Detail)
 
-ขอบเขตเอกสารนี้: รวม logic ของทุก endpoint ภายใต้
-`apps/backend-gateway/src/application/physical-count-detail-comment/` หลัง
-refactor ในรอบ 2026-04-29 เพื่อใช้อ้างอิงในการดูแลและขยายฟีเจอร์ในอนาคต
+ขอบเขตเอกสารนี้: รวม logic ของทุก endpoint ของ comment modules ที่ refactor ใน
+รอบ 2026-04-29 ใช้รูปแบบเดียวกันทั้งสองโมดูล:
 
-ไฟล์ที่เกี่ยวข้อง:
-- Controller: `physical-count-detail-comment.controller.ts`
-- Service: `physical-count-detail-comment.service.ts`
-- DTOs: `dto/physical-count-detail-comment.dto.ts`,
-  `dto/upload-comment-with-files.dto.ts`
-- Bruno collection: `apps/bruno/carmen-inventory/inventory/physical-count-detail-comment/`
+- `physical-count-comment` (comment ระดับ document)
+- `physical-count-detail-comment` (comment ระดับ line item)
+
+ไฟล์ที่เกี่ยวข้อง (กลุ่ม `<comment-prefix>` แทนได้ทั้ง `physical-count-comment`
+และ `physical-count-detail-comment`):
+- Controller: `apps/backend-gateway/src/application/<comment-prefix>/<comment-prefix>.controller.ts`
+- Service: `apps/backend-gateway/src/application/<comment-prefix>/<comment-prefix>.service.ts`
+- DTOs: `dto/<comment-prefix>.dto.ts`, `dto/upload-comment-with-files.dto.ts`
+- Bruno collection: `apps/bruno/carmen-inventory/inventory/<comment-prefix>/`
 - Business handlers (อ้างอิง): `apps/micro-business/src/inventory/physical-count/physical-count.controller.ts`
-  → `@MessagePattern({ cmd: 'physical-count-detail-comment.<action>', service: 'physical-count' })`
+  → `@MessagePattern({ cmd: '<comment-prefix>.<action>', service: '<comment-prefix>' หรือ 'physical-count' })`
+
+URL pattern (ตัวยึดตัวเองคือ `<parent_id>` = `physical_count_id` หรือ `physical_count_detail_id`):
+- `GET    /api/:bu_code/<comment-prefix>/:<parent_id>` — list (with paginate)
+- `POST   /api/:bu_code/<comment-prefix>/:<parent_id>` — create with files (multipart)
+- `PATCH  /api/:bu_code/<comment-prefix>/:id` — update with attachment add/remove (multipart)
+- `DELETE /api/:bu_code/<comment-prefix>/:id` — soft-delete (S3 cleanup ก่อน)
+- `POST   /api/:bu_code/<comment-prefix>/:id/attachment` — batch add attachments (multipart)
+- `DELETE /api/:bu_code/<comment-prefix>/:id/attachment/:fileToken` — remove single attachment
 
 ค่าคงที่ใช้ร่วมกัน (controller-level):
 - `MAX_FILES = 10`
