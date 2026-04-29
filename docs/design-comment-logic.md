@@ -5,7 +5,8 @@
 
 - `physical-count-comment` (comment ระดับ document ของ physical count)
 - `physical-count-detail-comment` (comment ระดับ line item ของ physical count)
-- `credit-note-comment` (comment ของ credit note ใน procurement)
+- `credit-note-comment` (comment ระดับ document ของ credit note)
+- `credit-note-detail-comment` (comment ระดับ line item ของ credit note)
 - โมดูลใหม่ที่จะเพิ่มในอนาคต — ใช้ pattern เดียวกัน
 
 ไฟล์ที่เกี่ยวข้อง (กลุ่ม `<comment-prefix>` แทนได้ทั้ง `physical-count-comment`
