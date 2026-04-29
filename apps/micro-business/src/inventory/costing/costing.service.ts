@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@repo/prisma-shared-schema-tenant';
 import {
-  CostingMethod,
   GetCostInput,
   GetCostsBatchInput,
   TenantPrisma,

@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
+import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
 
 export type CostingMethod = 'standard' | 'last' | 'average' | 'last_receiving';
 
@@ -13,7 +13,7 @@ export function isCostingMethod(value: unknown): value is CostingMethod {
   return typeof value === 'string' && (COSTING_METHODS as readonly string[]).includes(value);
 }
 
-export type TenantPrisma = Awaited<ReturnType<typeof PrismaClient_TENANT>>;
+export type TenantPrisma = NonNullable<Awaited<ReturnType<typeof PrismaClient_TENANT>>>;
 
 export interface GetCostInput {
   prisma: TenantPrisma;
