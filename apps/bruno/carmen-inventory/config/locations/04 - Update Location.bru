@@ -24,7 +24,43 @@ query {
 }
 
 body:json {
-  {}
+  {
+    "code": "",
+    "name": "",
+    "description": "",
+    "is_active": false,
+    "location_type": "inventory",
+    "delivery_point_id": "",
+    "info": {
+      "floor": 0,
+      "building": "",
+      "capacity": 0,
+      "responsibleDepartment": "",
+      "itemCount": 0,
+      "lastCount": ""
+    },
+    "users": {
+      "add": [
+        {
+          "id": ""
+        }
+      ],
+      "remove": []
+    },
+    "products": {
+      "add": [
+        {
+          "id": "",
+          "min_qty": 0,
+          "max_qty": 0,
+          "re_order_qty": 0,
+          "par_qty": 0
+        }
+      ],
+      "update": [],
+      "remove": []
+    }
+  }
 }
 
 docs {

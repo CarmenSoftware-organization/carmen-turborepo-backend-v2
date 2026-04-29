@@ -24,7 +24,73 @@ query {
 }
 
 body:json {
-  {}
+  {
+    "name": "",
+    "grn_no": "",
+    "invoice_no": "",
+    "invoice_f": null,
+    "description": "",
+    "doc_status": "draft",
+    "doc_type": "manual",
+    "vendor_id": "",
+    "currency_id": "",
+    "currency_rate": 0,
+    "is_consignment": false,
+    "is_cash": false,
+    "signature_image_url": "",
+    "received_by_id": "",
+    "received_at": null,
+    "credit_term_id": "",
+    "payment_due_date": null,
+    "is_active": false,
+    "note": "",
+    "info": null,
+    "dimension": null,
+    "good_received_note_detail": {
+      "add": [
+        {
+          "purchase_order_detail_id": "",
+          "product_id": "",
+          "location_id": "",
+          "tax_profile_id": "",
+          "tax_profile_name": "",
+          "tax_rate": 0,
+          "tax_amount": 0,
+          "is_tax_adjustment": false,
+          "base_tax_amount": 0,
+          "total_amount": 0
+        }
+      ],
+      "update": [],
+      "remove": []
+    },
+    "extra_cost": {
+      "id": "",
+      "name": "",
+      "allocate_extracost_type": "manual",
+      "extra_cost_detail": {
+        "add": [
+          {
+            "extra_cost_type_id": "",
+            "amount": 0,
+            "tax_profile_id": "",
+            "tax_profile_name": "",
+            "tax_rate": 0,
+            "tax_amount": 0,
+            "is_tax_adjustment": false,
+            "base_tax_amount": 0,
+            "total_amount": 0,
+            "tax_type": "none",
+            "note": "",
+            "info": null,
+            "dimension": null
+          }
+        ],
+        "update": [],
+        "remove": []
+      }
+    }
+  }
 }
 
 docs {

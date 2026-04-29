@@ -10,6 +10,15 @@ get {
   auth: bearer
 }
 
+params:query {
+  ~version: 
+}
+
+params:path {
+  bu_code: {{bu_code}}
+  id: {{pr_id}}
+}
+
 headers {
   x-app-id: {{x_app_id}}
 }
@@ -18,21 +27,21 @@ auth:bearer {
   token: {{access_token}}
 }
 
-query {
-  ~version: 
+vars:pre-request {
+  pr_id: 3079b78e-538d-430d-9e4f-886fadd7f4d7
 }
 
 docs {
   ## Get Pending Purchase Request by ID
   ค้นหาใบขอซื้อที่รอดำเนินการรายการเดียวตาม ID พร้อมรายละเอียดทั้งหมด รวมถึงรายการสินค้า จำนวน ราคาประมาณ และสถานะการอนุมัติปัจจุบัน
-
+  
   Retrieves the full details of a specific purchase request pending in the approval pipeline, including requested items, quantities, estimated costs, and current approval status.
-
+  
   ### Path Parameters
   - `bu_code` — Business unit code
   - `id` — Purchase request ID (UUID)
-
-
+  
+  
   ### Sample Response
   ```json
   {
@@ -52,9 +61,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-params:path {
-  bu_code: {{bu_code}}
-  id: {{pr_id}}
 }

@@ -24,7 +24,44 @@ query {
 }
 
 body:json {
-  {}
+  {
+    "code": "",
+    "name": "",
+    "business_type": [],
+    "description": "",
+    "info": [],
+    "vendor_address": {
+      "add": [
+        {
+          "address_type": "contact_address",
+          "address_line1": "",
+          "address_line2": "",
+          "sub_district": "",
+          "district": "",
+          "city": "",
+          "province": "",
+          "postal_code": "",
+          "country": ""
+        }
+      ],
+      "update": [],
+      "remove": []
+    },
+    "vendor_contact": {
+      "add": [
+        {
+          "name": "",
+          "email": "",
+          "phone": "",
+          "is_primary": false,
+          "description": "",
+          "info": []
+        }
+      ],
+      "update": [],
+      "remove": []
+    }
+  }
 }
 
 docs {
