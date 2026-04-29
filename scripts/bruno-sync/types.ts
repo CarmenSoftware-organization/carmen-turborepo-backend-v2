@@ -59,3 +59,90 @@ export interface SyncReport {
   parseErrors: string[];
   dryRun: boolean;
 }
+
+// ───────────────────────────────────────────────────────────────────────────
+// Payload Sync types
+// ───────────────────────────────────────────────────────────────────────────
+
+export type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonValue[]
+  | { [k: string]: JsonValue };
+
+export interface OpenApiSchema {
+  type?: 'string' | 'number' | 'integer' | 'boolean' | 'array' | 'object' | 'null';
+  format?: string;
+  example?: JsonValue;
+  default?: JsonValue;
+  enum?: JsonValue[];
+  nullable?: boolean;
+  required?: string[];
+  properties?: Record<string, OpenApiSchema>;
+  items?: OpenApiSchema;
+  $ref?: string;
+  allOf?: OpenApiSchema[];
+  oneOf?: OpenApiSchema[];
+  anyOf?: OpenApiSchema[];
+  additionalProperties?: boolean | OpenApiSchema;
+}
+
+export interface OpenApiMediaType {
+  schema?: OpenApiSchema;
+  example?: JsonValue;
+}
+
+export interface OpenApiRequestBody {
+  required?: boolean;
+  content?: Record<string, OpenApiMediaType>;
+}
+
+export interface OpenApiOperation {
+  operationId?: string;
+  tags?: string[];
+  requestBody?: OpenApiRequestBody;
+}
+
+export interface OpenApiPathItem {
+  get?: OpenApiOperation;
+  post?: OpenApiOperation;
+  put?: OpenApiOperation;
+  patch?: OpenApiOperation;
+  delete?: OpenApiOperation;
+  head?: OpenApiOperation;
+  options?: OpenApiOperation;
+}
+
+export interface OpenApiDocument {
+  openapi?: string;
+  paths: Record<string, OpenApiPathItem>;
+  components?: {
+    schemas?: Record<string, OpenApiSchema>;
+  };
+}
+
+export type PayloadSyncStatus =
+  | 'UPDATED'
+  | 'SKIPPED_NOT_EMPTY'
+  | 'SKIPPED_NO_BODY'
+  | 'SKIPPED_NON_JSON_BODY'
+  | 'NO_MATCH'
+  | 'NO_REQUEST_BODY'
+  | 'WARNING';
+
+export interface PayloadSyncResult {
+  filePath: string;
+  relativePath: string;
+  status: PayloadSyncStatus;
+  warnings: string[];
+  before?: string;
+  after?: string;
+}
+
+export interface PayloadSyncReport {
+  results: PayloadSyncResult[];
+  staleOpenapi: boolean;
+  dryRun: boolean;
+}
