@@ -29,16 +29,22 @@ auth:bearer {
 
 docs {
   ## Remove Physical Count Detail Comment Attachment
-  ลบไฟล์แนบออกจากความคิดเห็น
-  
-  Removes a file attachment from a comment by file token.
-  
+  ลบไฟล์แนบเดี่ยวออกจากคอมเมนต์ ผ่าน fileToken
+
+  ### URL
+  `DELETE {{host}}/api/{{bu_code}}/physical-count-detail-comment/:id/attachment/:fileToken`
+
   ### Path Parameters
-  - `id` — Comment ID / รหัสความคิดเห็น
-  - `fileToken` — File token of the attachment to remove / โทเคนไฟล์ของไฟล์แนบที่จะลบ
-  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
-  
-  ### Sample Response
+  - `bu_code` — Business unit code
+  - `id` — Comment UUID
+  - `fileToken` — File token (`bu_code/uuid`) ของไฟล์แนบที่จะลบ
+
+  ### Note
+  Endpoint นี้ลบ attachment record ใน DB ของคอมเมนต์
+  ถ้าต้องการลบหลายไฟล์ในคำขอเดียว / ผสมกับการเพิ่มไฟล์ใหม่ ใช้ `04 - Update`
+  ที่รองรับ `attachments: { add, remove }` ในรูปแบบ multipart
+
+  ### Sample Response 200
   ```json
   {
     "data": { "id": "uuid" },
@@ -46,7 +52,7 @@ docs {
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T00:00:00.000Z"
   }
   ```
 }

@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-export { AddAttachmentDto } from 'src/shared-dto/add-attachment.dto';
 
 export const AttachmentSchema = z.object({
   fileName: z.string(),
@@ -73,3 +72,17 @@ export class UpdatePhysicalCountDetailCommentDto {
 export class UpdatePhysicalCountDetailCommentBodyDto extends createZodDto(
   UpdatePhysicalCountDetailCommentBodySchema,
 ) {}
+
+/**
+ * Swagger-only DTO for POST `:id/attachment` (multipart/form-data).
+ * Runtime validation: count/size/mime checks performed in the controller.
+ */
+export class AddAttachmentsDto {
+  @ApiPropertyOptional({
+    description:
+      'Attachments to add (1–10 files). Allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf. Max 10 MB each.',
+    type: 'array',
+    items: { type: 'string', format: 'binary' },
+  })
+  files?: unknown[];
+}

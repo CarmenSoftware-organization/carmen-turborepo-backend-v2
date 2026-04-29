@@ -32,21 +32,38 @@ vars:pre-request {
 
 docs {
   ## List Physical Count Detail Comments
-  แสดงความคิดเห็นทั้งหมดของรายละเอียดการนับสินค้าจริง
-  
-  Retrieves all comments for a physical-count-detail.
-  
+  แสดงความคิดเห็นทั้งหมดของ physical-count-detail (พร้อม pagination)
+
+  ### URL
+  `GET {{host}}/api/{{bu_code}}/physical-count-detail-comment/:physical_count_detail_id`
+
   ### Path Parameters
-  - `physical_count_detail_id` — Physical Count Detail ID
-  
-  
-  ### Sample Response
+  - `bu_code` — Business unit code
+  - `physical_count_detail_id` — Physical Count Detail UUID
+
+  ### Query Parameters
+  - `version` (optional) — API version (default `latest`)
+  - Pagination params (`page`, `perpage`, etc.)
+
+  ### Sample Response 200
   ```json
   {
     "data": [
       {
         "id": "uuid",
-        "message": "comment text"
+        "physical_count_detail_id": "uuid",
+        "message": "comment text",
+        "type": "user",
+        "attachments": [
+          {
+            "fileName": "photo.jpg",
+            "fileToken": "tok-1",
+            "fileUrl": "",
+            "contentType": "image/jpeg",
+            "size": 204800
+          }
+        ],
+        "created_at": "2026-04-29T00:00:00.000Z"
       }
     ],
     "paginate": {
@@ -58,7 +75,10 @@ docs {
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T00:00:00.000Z"
   }
   ```
+
+  Note: `fileUrl` ในการ response จะว่าง — frontend ต้องเรียก
+  `GET /api/{bu_code}/documents/presigned-url/{fileToken}` เพื่อแสดงไฟล์
 }

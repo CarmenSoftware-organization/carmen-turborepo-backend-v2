@@ -220,23 +220,78 @@ export class PhysicalCountDetailCommentService {
     return ResponseLib.success(response.data);
   }
 
-  async addAttachment(
+  async addAttachments(
     id: string,
-    attachment: Record<string, unknown>,
+    files: Express.Multer.File[],
     user_id: string,
     bu_code: string,
     version: string,
   ): Promise<unknown> {
+    // 1. Upload all files to S3 (rollback on partial failure)
+    const settled = await Promise.allSettled(
+      files.map((f) => this.uploadFile(f, user_id, bu_code)),
+    );
+    const failures = settled.filter((s) => s.status === 'rejected');
+    const successes = settled.filter(
+      (s): s is PromiseFulfilledResult<UploadedAttachment> => s.status === 'fulfilled',
+    );
+    const uploaded: UploadedAttachment[] = successes.map((s) => s.value);
+
+    if (failures.length > 0) {
+      this.logger.warn(
+        {
+          function: 'addAttachments',
+          phase: 'upload-rollback',
+          bu_code,
+          comment_id: id,
+          uploaded_count: uploaded.length,
+          failed_count: failures.length,
+        },
+        PhysicalCountDetailCommentService.name,
+      );
+      await Promise.all(
+        uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
+      );
+      const firstReason = (failures[0] as PromiseRejectedResult).reason;
+      const msg = firstReason instanceof Error ? firstReason.message : String(firstReason);
+      throw new BadGatewayException(`File upload failed: ${msg}`);
+    }
+
+    // 2. Forward batched attachments to business service
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'physical-count-detail-comment.add-attachment', service: 'physical-count' },
-      { id, attachment, user_id, bu_code, version, ...getGatewayRequestContext() },
+      {
+        id,
+        attachments: uploaded,
+        user_id,
+        bu_code,
+        version,
+        ...getGatewayRequestContext(),
+      },
     );
     const response = await firstValueFrom(res);
-    if (response.response.status !== HttpStatus.OK)
+
+    if (response.response.status !== HttpStatus.OK) {
+      // Rollback: delete S3 files since the DB update failed
+      this.logger.warn(
+        {
+          function: 'addAttachments',
+          phase: 'business-rollback',
+          bu_code,
+          comment_id: id,
+          uploaded_count: uploaded.length,
+          add_status: response.response.status,
+        },
+        PhysicalCountDetailCommentService.name,
+      );
+      await Promise.all(
+        uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
+      );
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
+    }
     return ResponseLib.success(response.data);
   }
 
