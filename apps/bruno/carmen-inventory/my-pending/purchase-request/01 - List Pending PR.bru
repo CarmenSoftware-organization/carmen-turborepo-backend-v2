@@ -23,27 +23,38 @@ query {
 }
 
 docs {
-  ## List Pending Purchase Requests
-  แสดงรายการใบขอซื้อที่รอดำเนินการทั้งหมดของผู้ใช้ปัจจุบันพร้อมการแบ่งหน้า ช่วยให้ผู้ขอและผู้อนุมัติติดตามและจัดการคำขอจัดซื้อผ่านขั้นตอนอนุมัติ
-  
+  ## Get All Purchase Requests
+  แสดงรายการใบขอซื้อที่รอดำเนินการทั้งหมดของผู้ใช้ปัจจุบันพร้อมการแบ่งหน้า ช่วยให้ผู้ขอและผู้อนุมัติติดตามและจัดการคำขอจัดซื้อผ่านขั้นตอนอนุมัติ Returns only items pending the requesting user's action / แสดงเฉพาะรายการที่รอการดำเนินการของผู้ใช้ปัจจุบัน
+
   Lists all purchase requests in the user's pending queue with pagination, enabling requestors and approvers to track and manage procurement requests through the approval workflow.
-  
+
   ### Query Parameters
-  - `version` — API version (optional)
-  - `page` — Page number (optional)
-  - `perpage` — Items per page (optional)
-  - `search` — Search keyword (optional)
-  - `bu_code` — Business unit code filter (optional)
-  
-  
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `page` | number | No | 1 | Page number |
+  | `perpage` | number | No | 10 | Items per page |
+  | `search` | string | No | — | Search keyword |
+  | `bu_code` | string | No | — | Business unit code filter |
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `procurement.purchase_request:view`
+  - **Roles**: Requestor, HOD, Purchase, Approval
+
   ### Sample Response
   ```json
   {
     "data": [
       {
-        "id": "uuid",
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
         "pr_no": "PR-2026-0001",
-        "pr_date": "2026-03-27T00:00:00.000Z",
+        "pr_date": "2026-04-29T08:30:00.000Z",
         "pr_status": "pending_approval",
         "requestor_name": "John Doe",
         "department_name": "Kitchen",
@@ -51,15 +62,23 @@ docs {
       }
     ],
     "paginate": {
-      "total": 100,
       "page": 1,
       "perpage": 10,
-      "pages": 10
+      "pages": 5,
+      "total": 42,
+      "prev": null,
+      "next": 2
     },
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid Bearer token |
+  | 403 | User lacks `procurement.purchase_request:view` permission |
 }

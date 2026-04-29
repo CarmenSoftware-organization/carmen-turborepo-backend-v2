@@ -99,6 +99,24 @@ Notes:
 - `vendor-product` controller uses `KeycloakGuard` only (no `PermissionGuard`), but the resource logically maps to `vendor_management.vendor:*`.
 - `tax-profile` in master-data uses the same controller as in config context but different path/controller file — `apps/backend-gateway/src/application/tax-profile/`.
 
+### Task 8 — my-pending (2026-04-29)
+
+No orphans found. All 33 `.bru` files in `my-pending/` map to active gateway controllers.
+
+Modules processed (4):
+- `my-approve/` → `my-approve.controller.ts` (`api/my-approve`) — permission key not in seed; `@ApiTags('Workflow: My Approvals')`
+- `purchase-order/` → `my-pending.purchase-order.controller.ts` (`api/my-pending/purchase-order`) — `procurement.purchase_order:view` (all 4 roles)
+- `purchase-request/` → `my-pending.purchase-request.controller.ts` (`api/my-pending/purchase-request`) — `procurement.purchase_request:view` (all 4 roles); create/update/delete not in seed
+- `store-requisition/` → `my-pending.store-requisition.controller.ts` (`api/my-pending/store-requisition`) — `inventory_management.store_requisition:view` (all 4 roles); create/update/delete not in seed
+
+Notes:
+- `my-approve` endpoints are not in the BU-level seed. Marked with `> Permission key not found in seed; review needed.`
+- `purchase-order` module has only 3 files (list, count, workflow-stages) — no find-by-id in the folder. `GET-find-by-id.bru` is misplaced inside `store-requisition/` folder but hits `api/my-pending/purchase-order/:bu_code/:id`.
+- `purchase-request` create/update/delete permission keys are absent from `permission-role-map.json`. Marked with `> Permission key not found in seed; review needed.` for those specific actions.
+- `store-requisition` create/update/delete permission keys are absent from `permission-role-map.json`. Marked with `> Permission key not found in seed; review needed.` for those specific actions.
+- All endpoints use `KeycloakGuard` + `ApiBearerAuth` — no public endpoints in this folder.
+- `GET-find-by-id.bru` (seq: 13) in `store-requisition/` is organizationally misplaced — it calls `api/my-pending/purchase-order/{{bu_code}}/:id`. The file belongs to the purchase-order module but was auto-generated into the wrong folder. Gateway controller is active; not an orphan.
+
 ### Task 7a — master-data (A-N) (2026-04-29)
 
 No orphans found. All `.bru` files in the master-data chunk A-N map to active gateway controllers.

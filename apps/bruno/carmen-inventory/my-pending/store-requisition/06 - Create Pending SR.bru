@@ -54,33 +54,83 @@ body:json {
 }
 
 docs {
-  ## Create Pending Store Requisition
-  สร้างใบเบิกสินค้าใหม่สำหรับแผนกในโรงแรมเพื่อขอเบิกสินค้าจากคลังภายใน เริ่มต้นขั้นตอนอนุมัติก่อนที่คลังจะดำเนินการจ่ายสินค้า
+  ## Create a Store Requisition
+  สร้างใบเบิกสินค้าใหม่สำหรับแผนกในโรงแรมเพื่อขอเบิกสินค้าจากคลังภายใน เริ่มต้นขั้นตอนอนุมัติก่อนที่คลังจะดำเนินการจ่ายสินค้า Returns only items pending the requesting user's action / แสดงเฉพาะรายการที่รอการดำเนินการของผู้ใช้ปัจจุบัน
 
   Creates a new store requisition for a hotel department to request items from internal storage, initiating the approval workflow before the storeroom fulfills the request.
 
   ### Path Parameters
-  - `bu_code` — Business unit code
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
 
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
-  {}
+  {
+    "stage_role": "create",
+    "details": {
+      "sr_date": "2026-04-29T08:30:00.000Z",
+      "expected_date": "2026-04-29T08:30:00.000Z",
+      "description": "Kitchen supplies for the week",
+      "requestor_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "info": null,
+      "dimension": null,
+      "workflow_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "department_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "from_location_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "to_location_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "store_requisition_detail": {
+        "add": [
+          {
+            "description": "Vegetable oil 5L",
+            "current_stage_status": "submit",
+            "product_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+            "requested_qty": 10,
+            "info": null,
+            "dimension": null
+          }
+        ]
+      }
+    }
+  }
   ```
 
   ### Sample Response
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Invalid request body or missing required fields |
+  | 401 | Missing or invalid Bearer token |
+  | 403 | User lacks permission to create store requisitions |
+  | 404 | Referenced workflow, department, or product not found |
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {
