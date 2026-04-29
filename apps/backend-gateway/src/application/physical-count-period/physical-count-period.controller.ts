@@ -69,7 +69,6 @@ export class PhysicalCountPeriodController extends BaseHttpController {
     description:
       'Finds the current physical count period, helping warehouse staff quickly identify the current inventory verification window they should be working on.',
     operationId: 'findCurrentPhysicalCountPeriod',
-    tags: ['Inventory', 'Physical Count Period'],
     'x-description-th': 'ดึงรอบการตรวจนับสินค้าที่กำลังดำเนินอยู่ในปัจจุบัน ช่วยให้พนักงานคลังสินค้าระบุรอบการตรวจนับที่ต้องทำงานได้อย่างรวดเร็ว',
     parameters: [
       {
@@ -125,7 +124,6 @@ export class PhysicalCountPeriodController extends BaseHttpController {
     description:
       'Retrieves the details of a specific physical count time window, including its date range and status, to determine when inventory verification must be completed.',
     operationId: 'findOnePhysicalCountPeriod',
-    tags: ['Inventory', 'Physical Count Period'],
     'x-description-th': 'ดึงรายละเอียดของรอบการตรวจนับสินค้าเฉพาะรอบ รวมถึงช่วงวันที่และสถานะ เพื่อตรวจสอบว่าต้องทำการตรวจนับให้เสร็จเมื่อใด',
     parameters: [
       {
@@ -186,7 +184,6 @@ export class PhysicalCountPeriodController extends BaseHttpController {
     description:
       'Lists all defined physical count periods for the business unit, allowing inventory managers to plan and schedule recurring stock verification cycles.',
     operationId: 'findAllPhysicalCountPeriods',
-    tags: ['Inventory', 'Physical Count Period'],
     'x-description-th': 'ดึงรายการรอบการตรวจนับสินค้าทั้งหมดของหน่วยธุรกิจ ช่วยให้ผู้จัดการคลังสินค้าวางแผนและกำหนดตารางการตรวจสอบสินค้าคงคลังเป็นรอบ',
     parameters: [
       {
@@ -240,7 +237,6 @@ export class PhysicalCountPeriodController extends BaseHttpController {
     description:
       'Defines a new time window during which physical inventory counts must be completed, establishing the schedule for periodic stock verification across storage locations.',
     operationId: 'createPhysicalCountPeriod',
-    tags: ['Inventory', 'Physical Count Period'],
     'x-description-th': 'สร้างรอบการตรวจนับสินค้าใหม่ กำหนดช่วงเวลาที่ต้องทำการตรวจนับสินค้าคงคลังให้เสร็จสิ้น เพื่อวางตารางการตรวจสอบสินค้าเป็นรอบ',
     parameters: [
       {
@@ -299,7 +295,6 @@ export class PhysicalCountPeriodController extends BaseHttpController {
     description:
       'Modifies the date range or status of a physical count period, such as extending the deadline when warehouse staff need additional time to complete stock verification.',
     operationId: 'updatePhysicalCountPeriod',
-    tags: ['Inventory', 'Physical Count Period'],
     'x-description-th': 'แก้ไขช่วงวันที่หรือสถานะของรอบการตรวจนับสินค้า เช่น ขยายกำหนดเวลาเมื่อพนักงานคลังสินค้าต้องการเวลาเพิ่มเติมในการตรวจนับ',
     parameters: [
       {
@@ -362,7 +357,6 @@ export class PhysicalCountPeriodController extends BaseHttpController {
     description:
       'Removes a physical count period that was created in error or is no longer needed. Periods with associated physical counts cannot be deleted.',
     operationId: 'deletePhysicalCountPeriod',
-    tags: ['Inventory', 'Physical Count Period'],
     'x-description-th': 'ลบรอบการตรวจนับสินค้าที่สร้างผิดพลาดหรือไม่จำเป็นแล้ว รอบที่มีการตรวจนับสินค้าที่เชื่อมโยงอยู่จะไม่สามารถลบได้',
     parameters: [
       {

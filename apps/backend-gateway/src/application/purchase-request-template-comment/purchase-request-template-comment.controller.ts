@@ -51,7 +51,6 @@ export class PurchaseRequestTemplateCommentController {
     summary: 'Get all comments for a purchase-request-template',
     description: 'Retrieves all comments for a purchase-request-template.',
     operationId: 'findAllPurchaseRequestTemplateComments',
-    tags: ['Procurement', 'PurchaseRequestTemplate Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
       404: { description: 'PurchaseRequestTemplate not found' },
@@ -82,7 +81,6 @@ export class PurchaseRequestTemplateCommentController {
   @ApiOperation({
     summary: 'Get a purchase-request-template comment by ID',
     operationId: 'findOnePurchaseRequestTemplateComment',
-    tags: ['Procurement', 'PurchaseRequestTemplate Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
       404: { description: 'Comment not found' },
@@ -105,7 +103,6 @@ export class PurchaseRequestTemplateCommentController {
   @ApiOperation({
     summary: 'Create a new purchase-request-template comment',
     operationId: 'createPurchaseRequestTemplateComment',
-    tags: ['Procurement', 'PurchaseRequestTemplate Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
       404: { description: 'PurchaseRequestTemplate not found' },
@@ -129,7 +126,6 @@ export class PurchaseRequestTemplateCommentController {
   @ApiOperation({
     summary: 'Update a purchase-request-template comment',
     operationId: 'updatePurchaseRequestTemplateComment',
-    tags: ['Procurement', 'PurchaseRequestTemplate Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
       404: { description: 'Comment not found' },
@@ -155,7 +151,6 @@ export class PurchaseRequestTemplateCommentController {
   @ApiOperation({
     summary: 'Delete a purchase-request-template comment',
     operationId: 'deletePurchaseRequestTemplateComment',
-    tags: ['Procurement', 'PurchaseRequestTemplate Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
       404: { description: 'Comment not found' },
@@ -179,7 +174,6 @@ export class PurchaseRequestTemplateCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a purchase-request-template comment',
     operationId: 'addAttachmentToPurchaseRequestTemplateComment',
-    tags: ['Procurement', 'PurchaseRequestTemplate Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
       404: { description: 'Comment not found' },
@@ -204,7 +198,6 @@ export class PurchaseRequestTemplateCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a purchase-request-template comment',
     operationId: 'removeAttachmentFromPurchaseRequestTemplateComment',
-    tags: ['Procurement', 'PurchaseRequestTemplate Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
       404: { description: 'Comment not found' },

@@ -68,7 +68,6 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     description: 'Returns the count of store requisitions currently awaiting the user\'s action in the approval pipeline, used for dashboard badge notifications and workload tracking.',
     'x-description-th': 'ดึงจำนวนใบเบิกสินค้าที่รอดำเนินการของผู้ใช้ปัจจุบัน ใช้สำหรับแสดงป้ายแจ้งเตือนบนแดชบอร์ด',
     operationId: 'findAllPendingStoreRequisitionsCount',
-    tags: ['Pending Count', 'Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -156,7 +155,6 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     description: 'Retrieves the approval workflow stages configured for store requisitions in the business unit, showing the sequence of approval steps that internal stock requests must pass through before fulfillment.',
     'x-description-th': 'ดึงขั้นตอนการอนุมัติที่กำหนดไว้สำหรับใบเบิกสินค้าในหน่วยธุรกิจ แสดงลำดับขั้นตอนที่คำขอเบิกสินค้าต้องผ่าน',
     operationId: 'findAllWorkflowStagesBySr',
-    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -246,7 +244,6 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     description: 'Retrieves the full details of a specific store requisition pending in the approval pipeline, including requested items, quantities, requesting department, and current approval status.',
     'x-description-th': 'ค้นหาใบเบิกสินค้าที่รอดำเนินการตาม ID พร้อมรายละเอียดทั้งหมด รวมถึงรายการสินค้า จำนวน และสถานะการอนุมัติ',
     operationId: 'findPendingStoreRequisitionById',
-    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -315,7 +312,6 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     description: 'Lists all store requisitions in the user\'s pending queue with pagination, enabling department staff and approvers to track internal stock requests through the approval and fulfillment process.',
     'x-description-th': 'แสดงรายการใบเบิกสินค้าที่รอดำเนินการทั้งหมดของผู้ใช้ปัจจุบันพร้อมการแบ่งหน้า',
     operationId: 'findAllPendingStoreRequisitions',
-    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -399,7 +395,6 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     description: 'Filters store requisitions by their current status (e.g., draft, pending, approved, rejected), allowing users to view internal stock requests at a specific stage in the approval workflow.',
     'x-description-th': 'ค้นหารายการใบเบิกสินค้าตามสถานะ (เช่น ร่าง รออนุมัติ อนุมัติแล้ว ปฏิเสธ)',
     operationId: 'findStoreRequisitionsByStatus',
-    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     responses: {
       200: { description: 'Store requisitions retrieved successfully' },
     },
@@ -450,7 +445,6 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     description: 'Creates a new store requisition for a hotel department to request items from internal storage, initiating the approval workflow before the storeroom fulfills the request.',
     'x-description-th': 'สร้างใบเบิกสินค้าใหม่สำหรับแผนกในโรงแรมเพื่อขอเบิกสินค้าจากคลังภายใน',
     operationId: 'createPendingStoreRequisition',
-    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -513,7 +507,6 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     description: 'Saves changes to a draft store requisition, allowing the requestor to modify requested items, quantities, or delivery details before submitting for approval.',
     'x-description-th': 'บันทึกการเปลี่ยนแปลงใบเบิกสินค้าฉบับร่าง ช่วยให้ผู้ขอแก้ไขรายการสินค้า จำนวน หรือรายละเอียดก่อนส่งอนุมัติ',
     operationId: 'updatePendingStoreRequisition',
-    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -577,7 +570,6 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     description: 'Submits a draft store requisition into the approval workflow, moving it from draft status to the first approval stage for designated approvers to review.',
     'x-description-th': 'ส่งใบเบิกสินค้าฉบับร่างเข้าสู่ขั้นตอนอนุมัติ สถานะจะเปลี่ยนจากร่างไปยังขั้นตอนอนุมัติแรก',
     operationId: 'submitPendingStoreRequisition',
-    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -638,7 +630,6 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     description: 'Approves a store requisition at the current user\'s workflow stage, advancing it to the next approval level or marking it as fully approved for storeroom fulfillment.',
     'x-description-th': 'อนุมัติใบเบิกสินค้าในขั้นตอนเวิร์กโฟลว์ปัจจุบัน เลื่อนไปยังขั้นตอนถัดไปหรืออนุมัติครบถ้วนเพื่อให้คลังดำเนินการ',
     operationId: 'approvePendingStoreRequisition',
-    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -699,7 +690,6 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     description: 'Rejects a store requisition at the current approval stage, sending it back to the requesting department for revision or cancellation.',
     'x-description-th': 'ปฏิเสธใบเบิกสินค้าในขั้นตอนอนุมัติปัจจุบัน ส่งกลับไปยังแผนกที่ขอเพื่อแก้ไขหรือยกเลิก',
     operationId: 'rejectPendingStoreRequisition',
-    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -760,7 +750,6 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     description: 'Allows an approver to review a store requisition and provide feedback or modifications before making a final approve/reject decision on the internal stock request.',
     'x-description-th': 'ส่งใบเบิกสินค้ากลับตรวจสอบ ช่วยให้ผู้อนุมัติให้ข้อเสนอแนะหรือขอแก้ไขก่อนตัดสินใจอนุมัติหรือปฏิเสธ',
     operationId: 'reviewPendingStoreRequisition',
-    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {
@@ -821,7 +810,6 @@ export class MyPendingStoreRequisitionController extends BaseHttpController {
     description: 'Removes a store requisition that is no longer needed, typically a draft or rejected request that the department has decided to discard rather than resubmit.',
     'x-description-th': 'ลบใบเบิกสินค้าที่ไม่ต้องการ โดยทั่วไปเป็นใบเบิกฉบับร่างหรือที่ถูกปฏิเสธ',
     operationId: 'deletePendingStoreRequisition',
-    tags: ['Workflow & Approval', 'My Pending - Store Requisition'],
     deprecated: false,
     parameters: [
       {

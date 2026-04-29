@@ -68,7 +68,6 @@ export class ProductsController extends BaseHttpController {
     description:
       'Retrieves the last committed good received note detail for a product on or before the specified date. Used to check the most recent purchase price and receiving information.',
     operationId: 'getLastPurchaseByProduct',
-    tags: ['Master Data', 'Products'],
     parameters: [
       {
         name: 'product_id',
@@ -135,7 +134,6 @@ export class ProductsController extends BaseHttpController {
     description:
       'Retrieves the on-hand inventory balance for a product across all locations, or filtered by a specific location. Returns quantity, average cost, and total value.',
     operationId: 'getOnHandByProduct',
-    tags: ['Master Data', 'Products'],
     parameters: [
       {
         name: 'product_id',
@@ -196,7 +194,6 @@ export class ProductsController extends BaseHttpController {
     summary: 'Get on-order quantity by product',
     description: 'Retrieves the on-order quantity for a product from active purchase orders (in_progress, sent, partial). Shows pending quantity per PO.',
     operationId: 'getOnOrderByProduct',
-    tags: ['Master Data', 'Products'],
     parameters: [
       { name: 'product_id', in: 'path', required: true, description: 'Product UUID' },
     ],
@@ -243,7 +240,6 @@ export class ProductsController extends BaseHttpController {
     description:
       'Retrieves the cost breakdown for a product at a specific location based on inventory transaction cost layers (FIFO). Returns total cost, cost per unit per lot, and lot numbers.',
     operationId: 'getProductCost',
-    tags: ['Master Data', 'Products'],
     responses: {
       200: { description: 'Product cost retrieved successfully' },
       404: { description: 'Product or location not found' },
@@ -299,7 +295,6 @@ export class ProductsController extends BaseHttpController {
     description:
       'Retrieves all products assigned to a specific storage location or warehouse, used for inventory operations such as stock-in, physical counts, and requisition fulfillment.',
     operationId: 'findAllProductsByLocationId',
-    tags: ['Master Data', 'Products'],
     deprecated: false,
     security: [
       {

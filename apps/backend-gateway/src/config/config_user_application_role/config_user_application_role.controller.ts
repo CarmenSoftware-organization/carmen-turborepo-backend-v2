@@ -54,7 +54,7 @@ export class ConfigUserApplicationRoleController extends BaseHttpController {
   @Get(':user_id')
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get application roles by user ID', description: 'Retrieves all application roles assigned to a specific user, determining their system access permissions (e.g., Admin, Manager, Purchaser, Requestor).', operationId: 'configUserApplicationRole_findByUser', tags: ['Configuration', 'User Application Role'], 'x-description-th': 'ดึงข้อมูลบทบาทของผู้ใช้ในระบบทั้งหมดตาม User ID' } as any)
+  @ApiOperation({ summary: 'Get application roles by user ID', description: 'Retrieves all application roles assigned to a specific user, determining their system access permissions (e.g., Admin, Manager, Purchaser, Requestor).', operationId: 'configUserApplicationRole_findByUser', 'x-description-th': 'ดึงข้อมูลบทบาทของผู้ใช้ในระบบทั้งหมดตาม User ID' } as any)
   async findByUser(
     @Req() req: Request,
     @Res() res: Response,
@@ -90,7 +90,7 @@ export class ConfigUserApplicationRoleController extends BaseHttpController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Assign application roles to a user', description: 'Assigns one or more application roles to a user, granting them the associated permissions and access rights within the procurement and inventory system.', operationId: 'configUserApplicationRole_assign', tags: ['Configuration', 'User Application Role'], 'x-description-th': 'สร้างบทบาทของผู้ใช้ในระบบใหม่' } as any)
+  @ApiOperation({ summary: 'Assign application roles to a user', description: 'Assigns one or more application roles to a user, granting them the associated permissions and access rights within the procurement and inventory system.', operationId: 'configUserApplicationRole_assign', 'x-description-th': 'สร้างบทบาทของผู้ใช้ในระบบใหม่' } as any)
   @ApiBody({ type: AssignUserApplicationRoleRequest })
   async assign(
     @Req() req: Request,
@@ -127,7 +127,7 @@ export class ConfigUserApplicationRoleController extends BaseHttpController {
   @Patch()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update user application role assignments', description: 'Modifies the application role assignments for a user, such as changing their role level or adjusting permissions within the system.', operationId: 'configUserApplicationRole_update', tags: ['Configuration', 'User Application Role'], 'x-description-th': 'อัปเดตข้อมูลบทบาทของผู้ใช้ในระบบที่มีอยู่' } as any)
+  @ApiOperation({ summary: 'Update user application role assignments', description: 'Modifies the application role assignments for a user, such as changing their role level or adjusting permissions within the system.', operationId: 'configUserApplicationRole_update', 'x-description-th': 'อัปเดตข้อมูลบทบาทของผู้ใช้ในระบบที่มีอยู่' } as any)
   @ApiBody({ type: UpdateUserApplicationRoleRequest })
   async update(
     @Req() req: Request,
@@ -164,7 +164,7 @@ export class ConfigUserApplicationRoleController extends BaseHttpController {
   @Delete()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove application roles from a user', description: 'Revokes one or more application roles from a user, removing the associated permissions and system access rights. The user loses access to features granted by those roles.', operationId: 'configUserApplicationRole_remove', tags: ['Configuration', 'User Application Role'], 'x-description-th': 'ลบบทบาทของผู้ใช้ในระบบตาม ID' } as any)
+  @ApiOperation({ summary: 'Remove application roles from a user', description: 'Revokes one or more application roles from a user, removing the associated permissions and system access rights. The user loses access to features granted by those roles.', operationId: 'configUserApplicationRole_remove', 'x-description-th': 'ลบบทบาทของผู้ใช้ในระบบตาม ID' } as any)
   @ApiBody({ type: RemoveUserApplicationRoleRequest })
   async remove(
     @Req() req: Request,

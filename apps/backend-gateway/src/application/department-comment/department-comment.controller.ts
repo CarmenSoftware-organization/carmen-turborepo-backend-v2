@@ -38,7 +38,7 @@ export class DepartmentCommentController {
   @UseGuards(new AppIdGuard('departmentComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all comments for a department', operationId: 'findAllDepartmentComments', tags: ['Master', 'Department Comment'], responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get all comments for a department', operationId: 'findAllDepartmentComments', responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findAllByDepartmentId(@Param('bu_code') bu_code: string, @Param('department_id', new ParseUUIDPipe({ version: '4' })) department_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -49,7 +49,7 @@ export class DepartmentCommentController {
   @Get(':bu_code/department-comment/:id')
   @UseGuards(new AppIdGuard('departmentComment.findOne'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a department comment by ID', operationId: 'findOneDepartmentComment', tags: ['Master', 'Department Comment'], responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get a department comment by ID', operationId: 'findOneDepartmentComment', responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -59,7 +59,7 @@ export class DepartmentCommentController {
   @Post(':bu_code/department-comment')
   @UseGuards(new AppIdGuard('departmentComment.create'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new department comment', operationId: 'createDepartmentComment', tags: ['Master', 'Department Comment'], responses: { 201: { description: 'Comment created successfully' } } } as any)
+  @ApiOperation({ summary: 'Create a new department comment', operationId: 'createDepartmentComment', responses: { 201: { description: 'Comment created successfully' } } } as any)
   @ApiBody({ type: CreateDepartmentCommentDto })
   @HttpCode(HttpStatus.CREATED)
   async create(@Param('bu_code') bu_code: string, @Body() createDto: CreateDepartmentCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -70,7 +70,7 @@ export class DepartmentCommentController {
   @Patch(':bu_code/department-comment/:id')
   @UseGuards(new AppIdGuard('departmentComment.update'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a department comment', operationId: 'updateDepartmentComment', tags: ['Master', 'Department Comment'], responses: { 200: { description: 'Comment updated successfully' } } } as any)
+  @ApiOperation({ summary: 'Update a department comment', operationId: 'updateDepartmentComment', responses: { 200: { description: 'Comment updated successfully' } } } as any)
   @ApiBody({ type: UpdateDepartmentCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdateDepartmentCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -81,7 +81,7 @@ export class DepartmentCommentController {
   @Delete(':bu_code/department-comment/:id')
   @UseGuards(new AppIdGuard('departmentComment.delete'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a department comment', operationId: 'deleteDepartmentComment', tags: ['Master', 'Department Comment'], responses: { 200: { description: 'Comment deleted successfully' } } } as any)
+  @ApiOperation({ summary: 'Delete a department comment', operationId: 'deleteDepartmentComment', responses: { 200: { description: 'Comment deleted successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -91,7 +91,7 @@ export class DepartmentCommentController {
   @Post(':bu_code/department-comment/:id/attachment')
   @UseGuards(new AppIdGuard('departmentComment.addAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Add attachment to a department comment', operationId: 'addAttachmentToDepartmentComment', tags: ['Master', 'Department Comment'], responses: { 200: { description: 'Attachment added successfully' } } } as any)
+  @ApiOperation({ summary: 'Add attachment to a department comment', operationId: 'addAttachmentToDepartmentComment', responses: { 200: { description: 'Attachment added successfully' } } } as any)
   @ApiBody({ type: AddAttachmentDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -102,7 +102,7 @@ export class DepartmentCommentController {
   @Delete(':bu_code/department-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('departmentComment.removeAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove attachment from a department comment', operationId: 'removeAttachmentFromDepartmentComment', tags: ['Master', 'Department Comment'], responses: { 200: { description: 'Attachment removed successfully' } } } as any)
+  @ApiOperation({ summary: 'Remove attachment from a department comment', operationId: 'removeAttachmentFromDepartmentComment', responses: { 200: { description: 'Attachment removed successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);

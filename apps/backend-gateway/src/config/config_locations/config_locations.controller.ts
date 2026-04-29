@@ -82,7 +82,6 @@ export class Config_LocationsController extends BaseHttpController {
     summary: 'Get a location by ID',
     description: 'Retrieves details of a specific storage location, warehouse, or store within the property, including assigned users and stocked products. Locations are the physical points where inventory is tracked.',
     operationId: 'configLocations_findOne',
-    tags: ['Configuration', 'Locations'],
     deprecated: false,
     // security: [
     //   {
@@ -155,7 +154,6 @@ export class Config_LocationsController extends BaseHttpController {
     summary: 'Get all locations',
     description: 'Returns all storage locations, warehouses, and stores configured for the business unit. These locations are used for inventory tracking, stock transfers, and goods receiving.',
     operationId: 'configLocations_findAll',
-    tags: ['Configuration', 'Locations'],
     deprecated: false,
     // security: [
     //   {
@@ -237,7 +235,6 @@ export class Config_LocationsController extends BaseHttpController {
     summary: 'Create a new location',
     description: 'Defines a new storage location, warehouse, or store within the property. Once created, products can be assigned to it and inventory movements (stock-in, stock-out, transfers) can be recorded.',
     operationId: 'configLocations_create',
-    tags: ['Configuration', 'Locations'],
     deprecated: false,
     // security: [
     //   {
@@ -305,7 +302,6 @@ export class Config_LocationsController extends BaseHttpController {
     summary: 'Update a location',
     description: 'Modifies an existing storage location configuration, such as its name, type, or capacity settings. Changes affect how inventory is organized and tracked at this location.',
     operationId: 'configLocations_update',
-    tags: ['Configuration', 'Locations'],
     deprecated: false,
     // security: [
     //   {
@@ -378,7 +374,6 @@ export class Config_LocationsController extends BaseHttpController {
     summary: 'Delete a location',
     description: 'Removes a storage location from active use. The location will no longer accept new inventory transactions, but historical stock movement records at this location are preserved.',
     operationId: 'configLocations_delete',
-    tags: ['Configuration', 'Locations'],
     deprecated: false,
     // security: [
     //   {

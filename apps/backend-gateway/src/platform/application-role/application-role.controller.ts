@@ -65,7 +65,6 @@ export class ApplicationRoleController extends BaseHttpController {
     description: 'Lists all named role bundles defined in the ERP platform, such as Admin, Purchaser, HOD, or General Manager. These roles group permissions together to simplify user access management across hotel properties.',
     'x-description-th': 'แสดงรายการบทบาททั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'platformRole_findAll',
-    tags: ['Platform Admin', 'Application Role'],
     deprecated: false,
     security: [
       {
@@ -127,7 +126,6 @@ export class ApplicationRoleController extends BaseHttpController {
     description: 'Retrieves the details of a specific application role, including its name and associated metadata. Used to inspect role configuration before assigning it to users or modifying its permissions.',
     'x-description-th': 'ดึงข้อมูลบทบาทรายการเดียวตาม ID',
     operationId: 'platformRole_findOne',
-    tags: ['Platform Admin', 'Application Role'],
     deprecated: false,
     security: [
       {
@@ -199,7 +197,6 @@ export class ApplicationRoleController extends BaseHttpController {
     description: 'Creates a new named role bundle in the ERP platform, such as a custom department head or property-specific role. After creation, permissions can be assigned to this role to define what actions users with this role can perform.',
     'x-description-th': 'สร้างบทบาทใหม่',
     operationId: 'platformRole_create',
-    tags: ['Platform Admin', 'Application Role'],
     deprecated: false,
     security: [
       {
@@ -274,7 +271,6 @@ export class ApplicationRoleController extends BaseHttpController {
     description: 'Modifies an existing application role definition, such as renaming it or updating its metadata. This affects all users assigned to this role across the platform.',
     'x-description-th': 'อัปเดตข้อมูลบทบาทที่มีอยู่',
     operationId: 'platformRole_update',
-    tags: ['Platform Admin', 'Application Role'],
     deprecated: false,
     security: [
       {
@@ -356,7 +352,6 @@ export class ApplicationRoleController extends BaseHttpController {
     description: 'Removes an application role from the platform. Users previously assigned this role will lose the associated permissions, so ensure affected users are reassigned to appropriate roles beforehand.',
     'x-description-th': 'ลบบทบาทตาม ID',
     operationId: 'platformRole_delete',
-    tags: ['Platform Admin', 'Application Role'],
     deprecated: false,
     security: [
       {

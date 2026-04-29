@@ -81,7 +81,6 @@ export class StockOutController extends BaseHttpController {
     summary: 'Get a Stock Out by ID',
     description: 'Retrieves the full details of a stock-out transaction including all items removed from inventory, their quantities, and the reason for removal (e.g., kitchen consumption, department usage, waste, or spoilage).',
     operationId: 'findOneStockOut',
-    tags: ['Inventory', 'Stock Out'],
     'x-description-th': 'ดึงรายละเอียดทั้งหมดของรายการเบิกสินค้าออกจากคลังตาม ID รวมถึงรายการสินค้า จำนวน และเหตุผลในการเบิกจ่าย',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock Out ID' },
@@ -122,7 +121,6 @@ export class StockOutController extends BaseHttpController {
     summary: 'Get all Stock Out records',
     description: 'Lists all inventory removal records for the business unit with pagination and filtering. Used by inventory managers to track consumption by kitchens and departments, monitor waste levels, and analyze usage patterns.',
     operationId: 'findAllStockOut',
-    tags: ['Inventory', 'Stock Out'],
     'x-description-th': 'ดึงรายการเบิกสินค้าออกจากคลังทั้งหมดของหน่วยธุรกิจ พร้อมการแบ่งหน้าและตัวกรอง ใช้สำหรับติดตามการเบิกจ่ายสินค้าไปยังครัวและแผนกต่างๆ',
     responses: {
       200: { description: 'Stock Out records retrieved successfully' },
@@ -162,7 +160,6 @@ export class StockOutController extends BaseHttpController {
     summary: 'Create a Stock Out',
     description: 'Records an inventory removal to decrease stock levels. Used for issuing items to kitchens or departments, recording waste and spoilage, or correcting inventory discrepancies found during physical counts.',
     operationId: 'createStockOut',
-    tags: ['Inventory', 'Stock Out'],
     'x-description-th': 'สร้างรายการเบิกสินค้าออกจากคลังใหม่เพื่อลดจำนวนสินค้าคงคลัง ใช้สำหรับการเบิกจ่ายสินค้าไปยังครัวหรือแผนก บันทึกของเสียและของหมดอายุ',
     responses: {
       201: { description: 'The Stock Out was successfully created' },
@@ -202,7 +199,6 @@ export class StockOutController extends BaseHttpController {
     summary: 'Update a Stock Out',
     description: 'Modifies an existing stock-out record to correct quantities, items, or removal reasons before the transaction is finalized. Used when staff need to amend an inventory deduction.',
     operationId: 'updateStockOut',
-    tags: ['Inventory', 'Stock Out'],
     'x-description-th': 'แก้ไขรายการเบิกสินค้าออกจากคลังที่มีอยู่เพื่อปรับจำนวน รายการสินค้า หรือเหตุผลในการเบิกก่อนที่รายการจะถูกยืนยัน',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock Out ID' },
@@ -246,7 +242,6 @@ export class StockOutController extends BaseHttpController {
     summary: 'Delete a Stock Out',
     description: 'Removes a stock-out record that was created in error. Only applicable to draft transactions that have not yet been committed to inventory.',
     operationId: 'deleteStockOut',
-    tags: ['Inventory', 'Stock Out'],
     'x-description-th': 'ลบรายการเบิกสินค้าออกจากคลังที่สร้างผิดพลาด ใช้ได้เฉพาะรายการที่ยังเป็นร่างและยังไม่ถูกยืนยันหักจากคลังสินค้า',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock Out ID' },
@@ -279,7 +274,6 @@ export class StockOutController extends BaseHttpController {
     summary: 'Void a Stock Out',
     description: 'Voids a completed stock-out record by creating a reverse adjustment-in transaction to restore inventory.',
     operationId: 'voidStockOut',
-    tags: ['Inventory', 'Stock Out'],
     'x-description-th': 'ยกเลิกรายการเบิกสินค้าออกจากคลัง โดยสร้างรายการปรับเพิ่มเข้าเพื่อคืนสินค้าคงเหลือ',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock Out ID' },
@@ -321,7 +315,6 @@ export class StockOutController extends BaseHttpController {
     summary: 'Get all details for a Stock Out',
     description: 'Lists all individual items being removed from inventory in this stock-out transaction, including product details, quantities, and the department or purpose receiving the items.',
     operationId: 'findAllStockOutDetails',
-    tags: ['Inventory', 'Stock Out'],
     'x-description-th': 'ดึงรายการย่อยทั้งหมดของรายการเบิกสินค้าออกจากคลัง รวมถึงรายละเอียดสินค้า จำนวน และแผนกหรือวัตถุประสงค์ที่รับสินค้า',
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -364,7 +357,6 @@ export class StockOutController extends BaseHttpController {
     summary: 'Get a specific Stock Out detail by ID',
     description: 'Retrieves a specific item line from a stock-out transaction with full product, quantity, and cost details. Used to inspect or verify a particular inventory removal.',
     operationId: 'findStockOutDetailById',
-    tags: ['Inventory', 'Stock Out'],
     'x-description-th': 'ดึงรายการย่อยเฉพาะรายการจากรายการเบิกสินค้าออกจากคลัง พร้อมรายละเอียดสินค้า จำนวน และต้นทุนทั้งหมด',
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -410,7 +402,6 @@ export class StockOutController extends BaseHttpController {
     summary: 'Create a new Stock Out detail',
     description: 'Adds a new item line to a draft stock-out transaction, specifying the product and quantity to be removed from inventory for department use, kitchen consumption, or waste recording.',
     operationId: 'createStockOutDetail',
-    tags: ['Inventory', 'Stock Out'],
     'x-description-th': 'เพิ่มรายการสินค้าใหม่ในรายการเบิกสินค้าออกจากคลังที่เป็นร่าง โดยระบุสินค้าและจำนวนที่จะเบิกออกจากคลัง',
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -458,7 +449,6 @@ export class StockOutController extends BaseHttpController {
     summary: 'Update a Stock Out detail',
     description: 'Modifies an item line on a draft stock-out transaction to correct the product, quantity, or other details before the inventory deduction is committed.',
     operationId: 'updateStockOutDetail',
-    tags: ['Inventory', 'Stock Out'],
     'x-description-th': 'แก้ไขรายการย่อยของรายการเบิกสินค้าออกจากคลังที่เป็นร่าง เพื่อปรับสินค้า จำนวน หรือรายละเอียดอื่นๆ ก่อนที่การหักสินค้าคงคลังจะถูกยืนยัน',
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -507,7 +497,6 @@ export class StockOutController extends BaseHttpController {
     summary: 'Delete a Stock Out detail',
     description: 'Removes an item line from a draft stock-out transaction when the item was added in error or is no longer needed in this inventory removal.',
     operationId: 'deleteStockOutDetail',
-    tags: ['Inventory', 'Stock Out'],
     'x-description-th': 'ลบรายการย่อยจากรายการเบิกสินค้าออกจากคลังที่เป็นร่าง เมื่อรายการถูกเพิ่มผิดพลาดหรือไม่ต้องการอีกต่อไป',
     deprecated: false,
     security: [{ bearerAuth: [] }],

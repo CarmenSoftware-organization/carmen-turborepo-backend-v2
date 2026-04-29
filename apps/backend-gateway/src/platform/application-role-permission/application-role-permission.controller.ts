@@ -65,7 +65,6 @@ export class ApplicationRolePermissionController {
     description: 'Lists all feature permissions currently assigned to a specific role, showing exactly what actions (e.g., create PO, approve PR) users with this role are authorized to perform in the ERP system.',
     'x-description-th': 'ดึงรายการสิทธิ์ตามบทบาททั้งหมดที่กำหนดให้บทบาทที่ระบุ',
     operationId: 'platformRolePermission_getPermissionsByRole',
-    tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [
       {
@@ -138,7 +137,6 @@ export class ApplicationRolePermissionController {
     description: 'Finds all application roles that include a specific permission, enabling administrators to audit which roles grant a particular capability such as inventory adjustments or purchase approvals.',
     'x-description-th': 'ดึงรายการบทบาททั้งหมดที่มีสิทธิ์ตามบทบาทที่ระบุ',
     operationId: 'platformRolePermission_getRolesByPermission',
-    tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [
       {
@@ -210,7 +208,6 @@ export class ApplicationRolePermissionController {
     description: 'Grants multiple feature permissions to an application role in a single operation, enabling bulk configuration of role capabilities such as giving a Purchaser role access to create POs, view vendors, and manage stock-in records.',
     'x-description-th': 'กำหนดสิทธิ์ตามบทบาทหลายรายการให้บทบาทพร้อมกัน',
     operationId: 'platformRolePermission_assignPermissions',
-    tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [
       {
@@ -276,7 +273,6 @@ export class ApplicationRolePermissionController {
     description: 'Grants a single feature permission to an application role, allowing fine-grained incremental updates to role capabilities without replacing the entire permission set.',
     'x-description-th': 'กำหนดสิทธิ์ตามบทบาทรายการเดียวให้บทบาท',
     operationId: 'platformRolePermission_assignPermission',
-    tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [
       {
@@ -342,7 +338,6 @@ export class ApplicationRolePermissionController {
     description: 'Revokes multiple feature permissions from an application role in a single operation, useful when restructuring role access or restricting capabilities across procurement and inventory modules.',
     'x-description-th': 'ถอนสิทธิ์ตามบทบาทหลายรายการจากบทบาทพร้อมกัน',
     operationId: 'platformRolePermission_removePermissions',
-    tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [
       {
@@ -408,7 +403,6 @@ export class ApplicationRolePermissionController {
     description: 'Revokes a single feature permission from an application role, allowing precise removal of a specific capability without affecting other permissions assigned to the role.',
     'x-description-th': 'ถอนสิทธิ์ตามบทบาทรายการเดียวจากบทบาท',
     operationId: 'platformRolePermission_removePermission',
-    tags: ['Platform Admin', 'Application Role Permission'],
     deprecated: false,
     security: [
       {

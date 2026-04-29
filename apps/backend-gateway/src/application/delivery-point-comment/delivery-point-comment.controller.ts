@@ -38,7 +38,7 @@ export class DeliveryPointCommentController {
   @UseGuards(new AppIdGuard('deliveryPointComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all comments for a delivery-point', operationId: 'findAllDeliveryPointComments', tags: ['Master', 'DeliveryPoint Comment'], responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get all comments for a delivery-point', operationId: 'findAllDeliveryPointComments', responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findAllByDeliveryPointId(@Param('bu_code') bu_code: string, @Param('delivery_point_id', new ParseUUIDPipe({ version: '4' })) delivery_point_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -49,7 +49,7 @@ export class DeliveryPointCommentController {
   @Get(':bu_code/delivery-point-comment/:id')
   @UseGuards(new AppIdGuard('deliveryPointComment.findOne'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a delivery-point comment by ID', operationId: 'findOneDeliveryPointComment', tags: ['Master', 'DeliveryPoint Comment'], responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get a delivery-point comment by ID', operationId: 'findOneDeliveryPointComment', responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -59,7 +59,7 @@ export class DeliveryPointCommentController {
   @Post(':bu_code/delivery-point-comment')
   @UseGuards(new AppIdGuard('deliveryPointComment.create'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new delivery-point comment', operationId: 'createDeliveryPointComment', tags: ['Master', 'DeliveryPoint Comment'], responses: { 201: { description: 'Comment created successfully' } } } as any)
+  @ApiOperation({ summary: 'Create a new delivery-point comment', operationId: 'createDeliveryPointComment', responses: { 201: { description: 'Comment created successfully' } } } as any)
   @ApiBody({ type: CreateDeliveryPointCommentDto })
   @HttpCode(HttpStatus.CREATED)
   async create(@Param('bu_code') bu_code: string, @Body() createDto: CreateDeliveryPointCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -70,7 +70,7 @@ export class DeliveryPointCommentController {
   @Patch(':bu_code/delivery-point-comment/:id')
   @UseGuards(new AppIdGuard('deliveryPointComment.update'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a delivery-point comment', operationId: 'updateDeliveryPointComment', tags: ['Master', 'DeliveryPoint Comment'], responses: { 200: { description: 'Comment updated successfully' } } } as any)
+  @ApiOperation({ summary: 'Update a delivery-point comment', operationId: 'updateDeliveryPointComment', responses: { 200: { description: 'Comment updated successfully' } } } as any)
   @ApiBody({ type: UpdateDeliveryPointCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdateDeliveryPointCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -81,7 +81,7 @@ export class DeliveryPointCommentController {
   @Delete(':bu_code/delivery-point-comment/:id')
   @UseGuards(new AppIdGuard('deliveryPointComment.delete'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a delivery-point comment', operationId: 'deleteDeliveryPointComment', tags: ['Master', 'DeliveryPoint Comment'], responses: { 200: { description: 'Comment deleted successfully' } } } as any)
+  @ApiOperation({ summary: 'Delete a delivery-point comment', operationId: 'deleteDeliveryPointComment', responses: { 200: { description: 'Comment deleted successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -91,7 +91,7 @@ export class DeliveryPointCommentController {
   @Post(':bu_code/delivery-point-comment/:id/attachment')
   @UseGuards(new AppIdGuard('deliveryPointComment.addAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Add attachment to a delivery-point comment', operationId: 'addAttachmentToDeliveryPointComment', tags: ['Master', 'DeliveryPoint Comment'], responses: { 200: { description: 'Attachment added successfully' } } } as any)
+  @ApiOperation({ summary: 'Add attachment to a delivery-point comment', operationId: 'addAttachmentToDeliveryPointComment', responses: { 200: { description: 'Attachment added successfully' } } } as any)
   @ApiBody({ type: AddAttachmentDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -102,7 +102,7 @@ export class DeliveryPointCommentController {
   @Delete(':bu_code/delivery-point-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('deliveryPointComment.removeAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove attachment from a delivery-point comment', operationId: 'removeAttachmentFromDeliveryPointComment', tags: ['Master', 'DeliveryPoint Comment'], responses: { 200: { description: 'Attachment removed successfully' } } } as any)
+  @ApiOperation({ summary: 'Remove attachment from a delivery-point comment', operationId: 'removeAttachmentFromDeliveryPointComment', responses: { 200: { description: 'Attachment removed successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);

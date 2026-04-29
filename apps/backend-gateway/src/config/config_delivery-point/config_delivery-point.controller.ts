@@ -77,7 +77,6 @@ export class Config_DeliveryPointController extends BaseHttpController {
     summary: 'Get a delivery point by ID',
     description: 'Retrieves a specific delivery point where vendors deliver goods to the property. Delivery points are used in purchase orders to specify the exact receiving location for vendor shipments.',
     operationId: 'configDeliveryPoint_findOne',
-    tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [
       {
@@ -150,7 +149,6 @@ export class Config_DeliveryPointController extends BaseHttpController {
     summary: 'Get all delivery points',
     description: 'Returns all delivery points configured for the property. These represent physical locations (e.g., loading dock, back entrance, kitchen door) where vendors can deliver goods.',
     operationId: 'configDeliveryPoint_findAll',
-    tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [
       {
@@ -220,7 +218,6 @@ export class Config_DeliveryPointController extends BaseHttpController {
     summary: 'Create a new delivery point',
     description: 'Defines a new delivery location at the property where vendors can deliver goods. Once created, it can be specified in purchase orders to direct vendor shipments.',
     operationId: 'configDeliveryPoint_create',
-    tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [
       {
@@ -287,7 +284,6 @@ export class Config_DeliveryPointController extends BaseHttpController {
     summary: 'Update a delivery point',
     description: 'Modifies an existing delivery point configuration, such as updating its name, address, or operating hours. Changes affect how future purchase orders reference this delivery location.',
     operationId: 'configDeliveryPoint_update',
-    tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [
       {
@@ -368,7 +364,6 @@ export class Config_DeliveryPointController extends BaseHttpController {
     summary: 'Partially update a delivery point',
     description: 'Partially updates specific fields of a delivery point without replacing the entire record. Useful for toggling active status or making minor adjustments.',
     operationId: 'configDeliveryPoint_patch',
-    tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [
       {
@@ -448,7 +443,6 @@ export class Config_DeliveryPointController extends BaseHttpController {
     summary: 'Delete a delivery point',
     description: 'Removes a delivery point from active use. It will no longer be selectable in new purchase orders, but historical procurement records referencing this delivery point are preserved.',
     operationId: 'configDeliveryPoint_delete',
-    tags: ['Configuration', 'Delivery Point'],
     deprecated: false,
     security: [
       {

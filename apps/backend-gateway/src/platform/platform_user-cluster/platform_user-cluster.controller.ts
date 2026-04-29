@@ -67,7 +67,6 @@ export class Platform_UserClusterController extends BaseHttpController {
     description: 'Retrieves the details of a specific user-to-organization membership, showing which user belongs to which hotel chain or company and their role within it.',
     'x-description-th': 'ดึงข้อมูลคลัสเตอร์ของผู้ใช้รายการเดียวตาม ID',
     operationId: 'platformUserCluster_findOne',
-    tags: ['Platform Admin', 'User Cluster'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {
@@ -119,7 +118,6 @@ export class Platform_UserClusterController extends BaseHttpController {
     description: 'Lists all user-to-organization memberships across the platform, showing which users belong to which hotel chains or companies. Used to manage and audit organizational-level access control.',
     'x-description-th': 'แสดงรายการคลัสเตอร์ของผู้ใช้ทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'platformUserCluster_findAll',
-    tags: ['Platform Admin', 'User Cluster'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {
@@ -171,7 +169,6 @@ export class Platform_UserClusterController extends BaseHttpController {
     description: 'Adds a user to a hotel chain or company organization, granting them membership at the cluster level. This is typically the first step before assigning the user to individual business units (properties) within that cluster.',
     'x-description-th': 'สร้างคลัสเตอร์ของผู้ใช้ใหม่',
     operationId: 'platformUserCluster_create',
-    tags: ['Platform Admin', 'User Cluster'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {
@@ -225,7 +222,6 @@ export class Platform_UserClusterController extends BaseHttpController {
     description: 'Modifies an existing user-to-organization membership, such as changing the user\'s role or access level within a hotel chain or company.',
     'x-description-th': 'อัปเดตข้อมูลคลัสเตอร์ของผู้ใช้ที่มีอยู่',
     operationId: 'platformUserCluster_update',
-    tags: ['Platform Admin', 'User Cluster'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {
@@ -284,7 +280,6 @@ export class Platform_UserClusterController extends BaseHttpController {
     description: 'Removes a user\'s membership from a hotel chain or company organization. This revokes their organizational-level access and may cascade to remove their business unit assignments within that cluster.',
     'x-description-th': 'ลบคลัสเตอร์ของผู้ใช้ตาม ID',
     operationId: 'platformUserCluster_delete',
-    tags: ['Platform Admin', 'User Cluster'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {

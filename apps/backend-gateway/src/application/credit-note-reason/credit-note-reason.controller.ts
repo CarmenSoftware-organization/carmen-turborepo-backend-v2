@@ -68,7 +68,6 @@ export class CreditNoteReasonController extends BaseHttpController {
     summary: 'Get all credit note reasons',
     description: 'Lists all configurable reasons for issuing vendor credit notes (e.g., damaged goods, short delivery, quality issues), used to populate reason dropdowns when creating credit notes.',
     operationId: 'findAllCreditNoteReasons',
-    tags: ['Procurement', 'Credit Note Reason'],
     'x-description-th': 'แสดงรายการเหตุผลทั้งหมดสำหรับการออกใบลดหนี้ให้ผู้ขาย (เช่น สินค้าเสียหาย ส่งไม่ครบ ปัญหาด้านคุณภาพ) ใช้สำหรับแสดงตัวเลือกเหตุผลในดรอปดาวน์เมื่อสร้างใบลดหนี้',
   } as any)
   @HttpCode(HttpStatus.OK)
@@ -105,7 +104,6 @@ export class CreditNoteReasonController extends BaseHttpController {
     summary: 'Create a credit note reason',
     description: 'Creates a new reason that can be selected when issuing vendor credit notes, such as damaged goods, short delivery, or quality issues.',
     operationId: 'createCreditNoteReason',
-    tags: ['Procurement', 'Credit Note Reason'],
     responses: {
       201: { description: 'Credit note reason created successfully' },
       400: { description: 'Invalid request body' },

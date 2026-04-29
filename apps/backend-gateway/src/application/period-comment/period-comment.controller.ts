@@ -38,7 +38,7 @@ export class PeriodCommentController {
   @UseGuards(new AppIdGuard('periodComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all comments for a period', operationId: 'findAllPeriodComments', tags: ['Master', 'Period Comment'], responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get all comments for a period', operationId: 'findAllPeriodComments', responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findAllByPeriodId(@Param('bu_code') bu_code: string, @Param('period_id', new ParseUUIDPipe({ version: '4' })) period_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -49,7 +49,7 @@ export class PeriodCommentController {
   @Get(':bu_code/period-comment/:id')
   @UseGuards(new AppIdGuard('periodComment.findOne'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a period comment by ID', operationId: 'findOnePeriodComment', tags: ['Master', 'Period Comment'], responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get a period comment by ID', operationId: 'findOnePeriodComment', responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -59,7 +59,7 @@ export class PeriodCommentController {
   @Post(':bu_code/period-comment')
   @UseGuards(new AppIdGuard('periodComment.create'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new period comment', operationId: 'createPeriodComment', tags: ['Master', 'Period Comment'], responses: { 201: { description: 'Comment created successfully' } } } as any)
+  @ApiOperation({ summary: 'Create a new period comment', operationId: 'createPeriodComment', responses: { 201: { description: 'Comment created successfully' } } } as any)
   @ApiBody({ type: CreatePeriodCommentDto })
   @HttpCode(HttpStatus.CREATED)
   async create(@Param('bu_code') bu_code: string, @Body() createDto: CreatePeriodCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -70,7 +70,7 @@ export class PeriodCommentController {
   @Patch(':bu_code/period-comment/:id')
   @UseGuards(new AppIdGuard('periodComment.update'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a period comment', operationId: 'updatePeriodComment', tags: ['Master', 'Period Comment'], responses: { 200: { description: 'Comment updated successfully' } } } as any)
+  @ApiOperation({ summary: 'Update a period comment', operationId: 'updatePeriodComment', responses: { 200: { description: 'Comment updated successfully' } } } as any)
   @ApiBody({ type: UpdatePeriodCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdatePeriodCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -81,7 +81,7 @@ export class PeriodCommentController {
   @Delete(':bu_code/period-comment/:id')
   @UseGuards(new AppIdGuard('periodComment.delete'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a period comment', operationId: 'deletePeriodComment', tags: ['Master', 'Period Comment'], responses: { 200: { description: 'Comment deleted successfully' } } } as any)
+  @ApiOperation({ summary: 'Delete a period comment', operationId: 'deletePeriodComment', responses: { 200: { description: 'Comment deleted successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -91,7 +91,7 @@ export class PeriodCommentController {
   @Post(':bu_code/period-comment/:id/attachment')
   @UseGuards(new AppIdGuard('periodComment.addAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Add attachment to a period comment', operationId: 'addAttachmentToPeriodComment', tags: ['Master', 'Period Comment'], responses: { 200: { description: 'Attachment added successfully' } } } as any)
+  @ApiOperation({ summary: 'Add attachment to a period comment', operationId: 'addAttachmentToPeriodComment', responses: { 200: { description: 'Attachment added successfully' } } } as any)
   @ApiBody({ type: AddAttachmentDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -102,7 +102,7 @@ export class PeriodCommentController {
   @Delete(':bu_code/period-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('periodComment.removeAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove attachment from a period comment', operationId: 'removeAttachmentFromPeriodComment', tags: ['Master', 'Period Comment'], responses: { 200: { description: 'Attachment removed successfully' } } } as any)
+  @ApiOperation({ summary: 'Remove attachment from a period comment', operationId: 'removeAttachmentFromPeriodComment', responses: { 200: { description: 'Attachment removed successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);

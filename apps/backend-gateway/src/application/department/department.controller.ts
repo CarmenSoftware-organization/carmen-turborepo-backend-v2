@@ -67,7 +67,6 @@ export class DepartmentController extends BaseHttpController {
     summary: 'Get all departments',
     description: 'Lists all hotel departments (e.g., Kitchen, F&B, Housekeeping) within the business unit, used to assign requisitions, track departmental consumption, and allocate procurement costs.',
     operationId: 'findAllDepartments',
-    tags: ['Master Data', 'Department'],
     'x-description-th': 'แสดงรายการแผนกทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
   } as any)
   @HttpCode(HttpStatus.OK)
@@ -117,7 +116,6 @@ export class DepartmentController extends BaseHttpController {
     summary: 'Get a department by id',
     description: 'Retrieves the details of a specific hotel department, including its code, name, and active status, for use in procurement and inventory assignment workflows.',
     operationId: 'findOneDepartment',
-    tags: ['Master Data', 'Department'],
     'x-description-th': 'ดึงข้อมูลแผนกรายการเดียวตาม ID',
   } as any)
   @HttpCode(HttpStatus.OK)

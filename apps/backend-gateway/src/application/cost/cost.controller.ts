@@ -55,7 +55,6 @@ export class CostController extends BaseHttpController {
     description:
       'Returns FIFO cost breakdown for deducting the given qty of a product from a specific location. Each entry in lots describes how much was pulled from which lot and at what cost.',
     operationId: 'getProductCostEstimate',
-    tags: ['Inventory', 'Cost'],
     'x-description-th': 'ประมาณต้นทุนการตัดสต็อกแบบ FIFO พร้อมรายละเอียดต่อ lot',
   } as any)
   @ApiResponse({ status: 200, description: 'Cost estimate retrieved successfully', type: ProductCostEstimateResponseDto })
@@ -99,7 +98,6 @@ export class CostController extends BaseHttpController {
     description:
       'Returns the most recent inbound inventory transaction (good_received_note or stock_in) for a product so the caller can check last received cost.',
     operationId: 'getLastReceiving',
-    tags: ['Inventory', 'Cost'],
     'x-description-th': 'ดึงธุรกรรมรับเข้าล่าสุดของสินค้าเพื่อตรวจสอบต้นทุนล่าสุด',
   } as any)
   @ApiResponse({ status: 200, description: 'Last receiving transaction retrieved successfully', type: LastReceivingResponseDto })

@@ -72,7 +72,6 @@ export class StockInDetailController extends BaseHttpController {
     summary: 'Get all Stock In Details with pagination',
     description: 'Lists all line items across stock-in transactions, showing individual products and quantities received into inventory from vendors or inter-location transfers.',
     operationId: 'findAllStockInDetails',
-    tags: ['Inventory', 'Stock In Detail'],
     responses: {
       200: { description: 'Stock In Details retrieved successfully' },
     },
@@ -108,7 +107,6 @@ export class StockInDetailController extends BaseHttpController {
     summary: 'Get a Stock In Detail by ID',
     description: 'Retrieves a specific line item from a stock-in transaction, including the product, received quantity, unit of measure, and cost details for inventory valuation.',
     operationId: 'findOneStockInDetail',
-    tags: ['Inventory', 'Stock In Detail'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock In Detail ID' },
     ],
@@ -148,7 +146,6 @@ export class StockInDetailController extends BaseHttpController {
     summary: 'Create a new Stock In Detail',
     description: 'Adds a new product line item to a draft stock-in transaction, specifying the product, quantity received, and unit of measure for goods being received into a storage location.',
     operationId: 'createStockInDetail',
-    tags: ['Inventory', 'Stock In Detail'],
     responses: {
       201: { description: 'Stock In Detail created successfully' },
       400: { description: 'Cannot add detail to non-draft Stock In' },
@@ -188,7 +185,6 @@ export class StockInDetailController extends BaseHttpController {
     summary: 'Update a Stock In Detail',
     description: 'Modifies a product line item in a draft stock-in transaction, allowing corrections to received quantities, units, or cost before the stock-in is finalized and inventory balances are updated.',
     operationId: 'updateStockInDetail',
-    tags: ['Inventory', 'Stock In Detail'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock In Detail ID' },
     ],
@@ -231,7 +227,6 @@ export class StockInDetailController extends BaseHttpController {
     summary: 'Delete a Stock In Detail',
     description: 'Removes a product line item from a draft stock-in transaction, used when an item was added in error or is no longer part of the goods being received.',
     operationId: 'deleteStockInDetail',
-    tags: ['Inventory', 'Stock In Detail'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock In Detail ID' },
     ],

@@ -73,7 +73,6 @@ export class Config_VendorsController extends BaseHttpController {
     summary: 'Get a vendor by ID',
     description: 'Retrieves complete vendor/supplier master data including company details, contact information, and payment terms. Used to view a specific supplier profile for procurement operations.',
     operationId: 'configVendors_findOne',
-    tags: ['Configuration', 'Vendors'],
     responses: { 200: { description: 'Vendor retrieved successfully' } },
     'x-description-th': 'ดึงข้อมูลผู้ขายรายการเดียวตาม ID',
   } as any)
@@ -117,7 +116,6 @@ export class Config_VendorsController extends BaseHttpController {
     summary: 'Get all vendors',
     description: 'Returns a paginated list of all registered vendors/suppliers. Used by procurement staff and administrators to browse the approved vendor directory for sourcing and purchase order creation.',
     operationId: 'configVendors_findAll',
-    tags: ['Configuration', 'Vendors'],
     responses: { 200: { description: 'Vendors retrieved successfully' } },
     'x-description-th': 'แสดงรายการผู้ขายทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
   } as any)
@@ -166,7 +164,6 @@ export class Config_VendorsController extends BaseHttpController {
     summary: 'Create a new vendor',
     description: 'Registers a new vendor/supplier in the system with their company details, contact information, and payment terms. Once created, the vendor becomes available for selection in purchase orders and price lists.',
     operationId: 'configVendors_create',
-    tags: ['Configuration', 'Vendors'],
     responses: { 201: { description: 'Vendor created successfully' } },
     'x-description-th': 'สร้างผู้ขายใหม่',
   } as any)
@@ -216,7 +213,6 @@ export class Config_VendorsController extends BaseHttpController {
     summary: 'Update a vendor',
     description: 'Updates an existing vendor/supplier record, such as modifying contact details, payment terms, or business classification. Changes apply to all future procurement transactions with this vendor.',
     operationId: 'configVendors_update',
-    tags: ['Configuration', 'Vendors'],
     responses: { 200: { description: 'Vendor updated successfully' } },
     'x-description-th': 'อัปเดตข้อมูลผู้ขายที่มีอยู่',
   } as any)
@@ -266,7 +262,6 @@ export class Config_VendorsController extends BaseHttpController {
     summary: 'Delete a vendor',
     description: 'Removes a vendor/supplier from the active directory. The vendor will no longer be available for new purchase orders, but historical procurement records are preserved.',
     operationId: 'configVendors_delete',
-    tags: ['Configuration', 'Vendors'],
     responses: { 200: { description: 'Vendor deleted successfully' } },
     'x-description-th': 'ลบผู้ขายตาม ID',
   } as any)

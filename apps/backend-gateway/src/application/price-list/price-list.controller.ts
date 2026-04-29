@@ -79,7 +79,6 @@ export class PriceListController extends BaseHttpController {
     summary: 'Compare price list',
     description: 'Compares vendor prices for a specific product across all active price lists, enabling procurement staff to identify the best-value supplier for purchase orders.',
     operationId: 'priceCompare',
-    tags: ['Procurement', 'Price List'],
     deprecated: false,
     security: [
       {
@@ -150,7 +149,6 @@ export class PriceListController extends BaseHttpController {
     summary: 'Get price list by ID',
     description: 'Retrieves the full details of a vendor price list including all product prices, validity dates, and terms, used when reviewing or editing procurement pricing agreements.',
     operationId: 'findOnePriceListByBusinessUnit',
-    tags: ['Procurement', 'Price List'],
     deprecated: false,
     security: [
       {
@@ -216,7 +214,6 @@ export class PriceListController extends BaseHttpController {
     description:
       'Lists all active vendor price lists for the business unit, allowing procurement staff to browse current pricing agreements and compare vendor offerings.',
     operationId: 'findAllPriceListsByBusinessUnit',
-    tags: ['Procurement', 'Price List'],
     deprecated: false,
     parameters: [
       {
@@ -275,7 +272,6 @@ export class PriceListController extends BaseHttpController {
     summary: 'Create a new price list',
     description: 'Records a new vendor price list with product prices and validity dates, establishing the pricing basis for procurement purchase orders and cost comparison.',
     operationId: 'createPriceListByBusinessUnit',
-    tags: ['Procurement', 'Price List'],
     deprecated: false,
     security: [
       {
@@ -334,7 +330,6 @@ export class PriceListController extends BaseHttpController {
     summary: 'Update a price list',
     description: 'Modifies an existing vendor price list, such as adjusting product prices, extending validity dates, or correcting pricing errors in procurement agreements.',
     operationId: 'updatePriceListByBusinessUnit',
-    tags: ['Procurement', 'Price List'],
     deprecated: false,
     security: [
       {
@@ -401,7 +396,6 @@ export class PriceListController extends BaseHttpController {
     summary: 'Delete a price list',
     description: 'Removes an outdated or incorrect vendor price list from active use. Historical pricing data is retained for audit purposes.',
     operationId: 'deletePriceListByBusinessUnit',
-    tags: ['Procurement', 'Price List'],
     deprecated: false,
     security: [
       {

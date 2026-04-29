@@ -38,7 +38,7 @@ export class DimensionCommentController {
   @UseGuards(new AppIdGuard('dimensionComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all comments for a dimension', operationId: 'findAllDimensionComments', tags: ['Master', 'Dimension Comment'], responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get all comments for a dimension', operationId: 'findAllDimensionComments', responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findAllByDimensionId(@Param('bu_code') bu_code: string, @Param('dimension_id', new ParseUUIDPipe({ version: '4' })) dimension_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -49,7 +49,7 @@ export class DimensionCommentController {
   @Get(':bu_code/dimension-comment/:id')
   @UseGuards(new AppIdGuard('dimensionComment.findOne'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a dimension comment by ID', operationId: 'findOneDimensionComment', tags: ['Master', 'Dimension Comment'], responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get a dimension comment by ID', operationId: 'findOneDimensionComment', responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -59,7 +59,7 @@ export class DimensionCommentController {
   @Post(':bu_code/dimension-comment')
   @UseGuards(new AppIdGuard('dimensionComment.create'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new dimension comment', operationId: 'createDimensionComment', tags: ['Master', 'Dimension Comment'], responses: { 201: { description: 'Comment created successfully' } } } as any)
+  @ApiOperation({ summary: 'Create a new dimension comment', operationId: 'createDimensionComment', responses: { 201: { description: 'Comment created successfully' } } } as any)
   @ApiBody({ type: CreateDimensionCommentDto })
   @HttpCode(HttpStatus.CREATED)
   async create(@Param('bu_code') bu_code: string, @Body() createDto: CreateDimensionCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -70,7 +70,7 @@ export class DimensionCommentController {
   @Patch(':bu_code/dimension-comment/:id')
   @UseGuards(new AppIdGuard('dimensionComment.update'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a dimension comment', operationId: 'updateDimensionComment', tags: ['Master', 'Dimension Comment'], responses: { 200: { description: 'Comment updated successfully' } } } as any)
+  @ApiOperation({ summary: 'Update a dimension comment', operationId: 'updateDimensionComment', responses: { 200: { description: 'Comment updated successfully' } } } as any)
   @ApiBody({ type: UpdateDimensionCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdateDimensionCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -81,7 +81,7 @@ export class DimensionCommentController {
   @Delete(':bu_code/dimension-comment/:id')
   @UseGuards(new AppIdGuard('dimensionComment.delete'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a dimension comment', operationId: 'deleteDimensionComment', tags: ['Master', 'Dimension Comment'], responses: { 200: { description: 'Comment deleted successfully' } } } as any)
+  @ApiOperation({ summary: 'Delete a dimension comment', operationId: 'deleteDimensionComment', responses: { 200: { description: 'Comment deleted successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -91,7 +91,7 @@ export class DimensionCommentController {
   @Post(':bu_code/dimension-comment/:id/attachment')
   @UseGuards(new AppIdGuard('dimensionComment.addAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Add attachment to a dimension comment', operationId: 'addAttachmentToDimensionComment', tags: ['Master', 'Dimension Comment'], responses: { 200: { description: 'Attachment added successfully' } } } as any)
+  @ApiOperation({ summary: 'Add attachment to a dimension comment', operationId: 'addAttachmentToDimensionComment', responses: { 200: { description: 'Attachment added successfully' } } } as any)
   @ApiBody({ type: AddAttachmentDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -102,7 +102,7 @@ export class DimensionCommentController {
   @Delete(':bu_code/dimension-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('dimensionComment.removeAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove attachment from a dimension comment', operationId: 'removeAttachmentFromDimensionComment', tags: ['Master', 'Dimension Comment'], responses: { 200: { description: 'Attachment removed successfully' } } } as any)
+  @ApiOperation({ summary: 'Remove attachment from a dimension comment', operationId: 'removeAttachmentFromDimensionComment', responses: { 200: { description: 'Attachment removed successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);

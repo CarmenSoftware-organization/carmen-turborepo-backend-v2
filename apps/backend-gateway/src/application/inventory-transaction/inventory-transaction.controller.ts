@@ -61,7 +61,6 @@ export class InventoryTransactionController extends BaseHttpController {
     summary: 'List all inventory transactions',
     description: 'Lists all inventory transactions with type, location, product, qty, cost details.',
     operationId: 'findAllInventoryTransactions',
-    tags: ['Inventory', 'Inventory Transaction'],
     'x-description-th': 'ดึงรายการเคลื่อนไหวสินค้าคงคลังทั้งหมดพร้อมประเภท สถานที่ สินค้า จำนวน และต้นทุน',
   } as any)
   async findAll(
@@ -87,7 +86,6 @@ export class InventoryTransactionController extends BaseHttpController {
   @ApiOperation({
     summary: 'View cost layers for a product',
     operationId: 'getCostLayers',
-    tags: ['Inventory', 'Inventory Transaction'],
     'x-description-th': 'ดูชั้นต้นทุนของสินค้า แสดงรายการต้นทุนแต่ละชั้นตามสถานที่และสินค้าที่กำหนด',
   } as any)
   @ApiQuery({ name: 'product_id', required: false, type: String })
@@ -115,7 +113,6 @@ export class InventoryTransactionController extends BaseHttpController {
   @ApiOperation({
     summary: 'View aggregated stock balance per product/location',
     operationId: 'getStockBalance',
-    tags: ['Inventory', 'Inventory Transaction'],
     'x-description-th': 'ดูยอดคงเหลือสินค้ารวมตามสินค้าและสถานที่ แสดงจำนวนคงเหลือปัจจุบันของสินค้าในแต่ละคลัง',
   } as any)
   @ApiQuery({ name: 'product_id', required: false, type: String })
@@ -141,7 +138,6 @@ export class InventoryTransactionController extends BaseHttpController {
   @ApiOperation({
     summary: 'List active locations',
     operationId: 'getLocations',
-    tags: ['Inventory', 'Inventory Transaction'],
     'x-description-th': 'ดึงรายการสถานที่/คลังสินค้าที่ใช้งานอยู่ทั้งหมดของหน่วยธุรกิจ',
   } as any)
   async getLocations(
@@ -165,7 +161,6 @@ export class InventoryTransactionController extends BaseHttpController {
   @ApiOperation({
     summary: 'List all products',
     operationId: 'getProducts',
-    tags: ['Inventory', 'Inventory Transaction'],
     'x-description-th': 'ดึงรายการสินค้าทั้งหมดของหน่วยธุรกิจ',
   } as any)
   async getProducts(
@@ -189,7 +184,6 @@ export class InventoryTransactionController extends BaseHttpController {
   @ApiOperation({
     summary: 'List products at a location',
     operationId: 'getProductsByLocation',
-    tags: ['Inventory', 'Inventory Transaction'],
     'x-description-th': 'ดึงรายการสินค้าที่จัดเก็บในสถานที่/คลังสินค้าที่กำหนด',
   } as any)
   async getProductsByLocation(
@@ -212,7 +206,6 @@ export class InventoryTransactionController extends BaseHttpController {
   @ApiOperation({
     summary: 'Get calculation method (fifo/average) for this BU',
     operationId: 'getCalculationMethod',
-    tags: ['Inventory', 'Inventory Transaction'],
     'x-description-th': 'ดึงวิธีการคำนวณต้นทุนสินค้า (FIFO/ค่าเฉลี่ย) ที่ตั้งค่าไว้สำหรับหน่วยธุรกิจนี้',
   } as any)
   async getCalculationMethod(

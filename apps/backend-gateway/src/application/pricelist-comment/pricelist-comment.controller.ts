@@ -38,7 +38,7 @@ export class PricelistCommentController {
   @UseGuards(new AppIdGuard('pricelistComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all comments for a pricelist', operationId: 'findAllPricelistComments', tags: ['Master', 'Pricelist Comment'], responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get all comments for a pricelist', operationId: 'findAllPricelistComments', responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findAllByPricelistId(@Param('bu_code') bu_code: string, @Param('pricelist_id', new ParseUUIDPipe({ version: '4' })) pricelist_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -49,7 +49,7 @@ export class PricelistCommentController {
   @Get(':bu_code/pricelist-comment/:id')
   @UseGuards(new AppIdGuard('pricelistComment.findOne'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a pricelist comment by ID', operationId: 'findOnePricelistComment', tags: ['Master', 'Pricelist Comment'], responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get a pricelist comment by ID', operationId: 'findOnePricelistComment', responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -59,7 +59,7 @@ export class PricelistCommentController {
   @Post(':bu_code/pricelist-comment')
   @UseGuards(new AppIdGuard('pricelistComment.create'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new pricelist comment', operationId: 'createPricelistComment', tags: ['Master', 'Pricelist Comment'], responses: { 201: { description: 'Comment created successfully' } } } as any)
+  @ApiOperation({ summary: 'Create a new pricelist comment', operationId: 'createPricelistComment', responses: { 201: { description: 'Comment created successfully' } } } as any)
   @ApiBody({ type: CreatePricelistCommentDto })
   @HttpCode(HttpStatus.CREATED)
   async create(@Param('bu_code') bu_code: string, @Body() createDto: CreatePricelistCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -70,7 +70,7 @@ export class PricelistCommentController {
   @Patch(':bu_code/pricelist-comment/:id')
   @UseGuards(new AppIdGuard('pricelistComment.update'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a pricelist comment', operationId: 'updatePricelistComment', tags: ['Master', 'Pricelist Comment'], responses: { 200: { description: 'Comment updated successfully' } } } as any)
+  @ApiOperation({ summary: 'Update a pricelist comment', operationId: 'updatePricelistComment', responses: { 200: { description: 'Comment updated successfully' } } } as any)
   @ApiBody({ type: UpdatePricelistCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdatePricelistCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -81,7 +81,7 @@ export class PricelistCommentController {
   @Delete(':bu_code/pricelist-comment/:id')
   @UseGuards(new AppIdGuard('pricelistComment.delete'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a pricelist comment', operationId: 'deletePricelistComment', tags: ['Master', 'Pricelist Comment'], responses: { 200: { description: 'Comment deleted successfully' } } } as any)
+  @ApiOperation({ summary: 'Delete a pricelist comment', operationId: 'deletePricelistComment', responses: { 200: { description: 'Comment deleted successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -91,7 +91,7 @@ export class PricelistCommentController {
   @Post(':bu_code/pricelist-comment/:id/attachment')
   @UseGuards(new AppIdGuard('pricelistComment.addAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Add attachment to a pricelist comment', operationId: 'addAttachmentToPricelistComment', tags: ['Master', 'Pricelist Comment'], responses: { 200: { description: 'Attachment added successfully' } } } as any)
+  @ApiOperation({ summary: 'Add attachment to a pricelist comment', operationId: 'addAttachmentToPricelistComment', responses: { 200: { description: 'Attachment added successfully' } } } as any)
   @ApiBody({ type: AddAttachmentDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -102,7 +102,7 @@ export class PricelistCommentController {
   @Delete(':bu_code/pricelist-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('pricelistComment.removeAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove attachment from a pricelist comment', operationId: 'removeAttachmentFromPricelistComment', tags: ['Master', 'Pricelist Comment'], responses: { 200: { description: 'Attachment removed successfully' } } } as any)
+  @ApiOperation({ summary: 'Remove attachment from a pricelist comment', operationId: 'removeAttachmentFromPricelistComment', responses: { 200: { description: 'Attachment removed successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);

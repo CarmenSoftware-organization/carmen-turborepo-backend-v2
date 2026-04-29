@@ -78,7 +78,6 @@ export class PriceListTemplateController extends BaseHttpController {
     summary: 'Get price list template by ID',
     description: 'Retrieves the full details of a reusable price list template, including its product lineup and configuration, used when generating new vendor price lists from a standard template.',
     operationId: 'findOnePriceListTemplate',
-    tags: ['Procurement', 'Price List Template'],
     deprecated: false,
     security: [
       {
@@ -143,7 +142,6 @@ export class PriceListTemplateController extends BaseHttpController {
     summary: 'Get all price list templates',
     description: 'Lists all available price list templates for the business unit, enabling procurement staff to select a standard template when requesting pricing from vendors.',
     operationId: 'findAllPriceListTemplates',
-    tags: ['Procurement', 'Price List Template'],
     deprecated: false,
     parameters: [
       {
@@ -207,7 +205,6 @@ export class PriceListTemplateController extends BaseHttpController {
     summary: 'Create a new price list template',
     description: 'Creates a reusable price list template with a predefined set of products, streamlining the process of requesting standardized pricing from multiple vendors.',
     operationId: 'createPriceListTemplate',
-    tags: ['Procurement', 'Price List Template'],
     deprecated: false,
     security: [
       {
@@ -266,7 +263,6 @@ export class PriceListTemplateController extends BaseHttpController {
     summary: 'Update a price list template',
     description: 'Modifies a price list template to add or remove products, or update its configuration to reflect changing procurement requirements.',
     operationId: 'updatePriceListTemplate',
-    tags: ['Procurement', 'Price List Template'],
     deprecated: false,
     security: [
       {
@@ -338,7 +334,6 @@ export class PriceListTemplateController extends BaseHttpController {
     summary: 'Delete a price list template',
     description: 'Removes a price list template that is no longer needed for vendor pricing requests. Existing price lists generated from this template are not affected.',
     operationId: 'deletePriceListTemplate',
-    tags: ['Procurement', 'Price List Template'],
     deprecated: false,
     security: [
       {
@@ -403,7 +398,6 @@ export class PriceListTemplateController extends BaseHttpController {
     summary: 'Update price list template status',
     description: 'Changes the lifecycle status of a price list template (draft, active, or inactive), controlling whether it is available for generating new vendor price requests.',
     operationId: 'updatePriceListTemplateStatus',
-    tags: ['Procurement', 'Price List Template'],
     deprecated: false,
     security: [
       {

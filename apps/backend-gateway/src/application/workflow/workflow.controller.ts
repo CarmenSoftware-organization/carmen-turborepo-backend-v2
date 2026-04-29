@@ -66,7 +66,6 @@ export class WorkflowController extends BaseHttpController {
     summary: 'Get workflow by type',
     description: 'Retrieves the configurable approval workflow for a given document type (e.g., purchase request, store requisition), including approval stages and assigned roles.',
     operationId: 'findWorkflowByType',
-    tags: ['Workflow & Approval', 'Workflow'],
     responses: {
       200: { description: 'Workflow retrieved successfully' },
       404: { description: 'Workflow not found for the specified type' },
@@ -120,7 +119,6 @@ export class WorkflowController extends BaseHttpController {
     summary: 'Get previous stages of a workflow',
     description: 'Retrieves the previous approval stages of a workflow relative to the current stage, used to determine revert/return-to options in the approval chain.',
     operationId: 'getWorkflowPreviousStages',
-    tags: ['Workflow & Approval', 'Workflow'],
     responses: {
       200: { description: 'Previous workflow stages retrieved successfully' },
       404: { description: 'Workflow not found' },
@@ -168,7 +166,6 @@ export class WorkflowController extends BaseHttpController {
     summary: 'Patch user_action on a document',
     description: 'Manually override the user_action field on any workflow-enabled document (po, pr, sr, grn, cn, si, so, tf, jv). Use this to fix broken workflow assignments so the approval process can continue.',
     operationId: 'patchUserAction',
-    tags: ['Workflow & Approval', 'Workflow'],
     responses: {
       200: { description: 'user_action updated successfully' },
       400: { description: 'Invalid doc_type' },

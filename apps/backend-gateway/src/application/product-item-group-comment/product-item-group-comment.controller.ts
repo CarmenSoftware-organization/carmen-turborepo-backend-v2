@@ -38,7 +38,7 @@ export class ProductItemGroupCommentController {
   @UseGuards(new AppIdGuard('productItemGroupComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all comments for a product-item-group', operationId: 'findAllProductItemGroupComments', tags: ['Master', 'ProductItemGroup Comment'], responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get all comments for a product-item-group', operationId: 'findAllProductItemGroupComments', responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findAllByProductItemGroupId(@Param('bu_code') bu_code: string, @Param('product_item_group_id', new ParseUUIDPipe({ version: '4' })) product_item_group_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -49,7 +49,7 @@ export class ProductItemGroupCommentController {
   @Get(':bu_code/product-item-group-comment/:id')
   @UseGuards(new AppIdGuard('productItemGroupComment.findOne'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a product-item-group comment by ID', operationId: 'findOneProductItemGroupComment', tags: ['Master', 'ProductItemGroup Comment'], responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get a product-item-group comment by ID', operationId: 'findOneProductItemGroupComment', responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -59,7 +59,7 @@ export class ProductItemGroupCommentController {
   @Post(':bu_code/product-item-group-comment')
   @UseGuards(new AppIdGuard('productItemGroupComment.create'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new product-item-group comment', operationId: 'createProductItemGroupComment', tags: ['Master', 'ProductItemGroup Comment'], responses: { 201: { description: 'Comment created successfully' } } } as any)
+  @ApiOperation({ summary: 'Create a new product-item-group comment', operationId: 'createProductItemGroupComment', responses: { 201: { description: 'Comment created successfully' } } } as any)
   @ApiBody({ type: CreateProductItemGroupCommentDto })
   @HttpCode(HttpStatus.CREATED)
   async create(@Param('bu_code') bu_code: string, @Body() createDto: CreateProductItemGroupCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -70,7 +70,7 @@ export class ProductItemGroupCommentController {
   @Patch(':bu_code/product-item-group-comment/:id')
   @UseGuards(new AppIdGuard('productItemGroupComment.update'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a product-item-group comment', operationId: 'updateProductItemGroupComment', tags: ['Master', 'ProductItemGroup Comment'], responses: { 200: { description: 'Comment updated successfully' } } } as any)
+  @ApiOperation({ summary: 'Update a product-item-group comment', operationId: 'updateProductItemGroupComment', responses: { 200: { description: 'Comment updated successfully' } } } as any)
   @ApiBody({ type: UpdateProductItemGroupCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdateProductItemGroupCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -81,7 +81,7 @@ export class ProductItemGroupCommentController {
   @Delete(':bu_code/product-item-group-comment/:id')
   @UseGuards(new AppIdGuard('productItemGroupComment.delete'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a product-item-group comment', operationId: 'deleteProductItemGroupComment', tags: ['Master', 'ProductItemGroup Comment'], responses: { 200: { description: 'Comment deleted successfully' } } } as any)
+  @ApiOperation({ summary: 'Delete a product-item-group comment', operationId: 'deleteProductItemGroupComment', responses: { 200: { description: 'Comment deleted successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -91,7 +91,7 @@ export class ProductItemGroupCommentController {
   @Post(':bu_code/product-item-group-comment/:id/attachment')
   @UseGuards(new AppIdGuard('productItemGroupComment.addAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Add attachment to a product-item-group comment', operationId: 'addAttachmentToProductItemGroupComment', tags: ['Master', 'ProductItemGroup Comment'], responses: { 200: { description: 'Attachment added successfully' } } } as any)
+  @ApiOperation({ summary: 'Add attachment to a product-item-group comment', operationId: 'addAttachmentToProductItemGroupComment', responses: { 200: { description: 'Attachment added successfully' } } } as any)
   @ApiBody({ type: AddAttachmentDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -102,7 +102,7 @@ export class ProductItemGroupCommentController {
   @Delete(':bu_code/product-item-group-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('productItemGroupComment.removeAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove attachment from a product-item-group comment', operationId: 'removeAttachmentFromProductItemGroupComment', tags: ['Master', 'ProductItemGroup Comment'], responses: { 200: { description: 'Attachment removed successfully' } } } as any)
+  @ApiOperation({ summary: 'Remove attachment from a product-item-group comment', operationId: 'removeAttachmentFromProductItemGroupComment', responses: { 200: { description: 'Attachment removed successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);

@@ -74,7 +74,6 @@ export class Config_DepartmentUserController extends BaseHttpController {
     description:
       'Returns the single department where the user is a member (is_hod=false, may be null) and the list of departments where the user is HOD (is_hod=true, may be empty).',
     operationId: 'configDepartmentUser_findByUser',
-    tags: ['Configuration', 'Department User'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -126,7 +125,6 @@ export class Config_DepartmentUserController extends BaseHttpController {
     summary: 'Get a department-user assignment by ID',
     description: 'Retrieves a specific department-user assignment record, showing which users are assigned to a particular hotel department for requisition and approval permissions.',
     operationId: 'configDepartmentUser_findOne',
-    tags: ['Configuration', 'Department User'],
     deprecated: false,
     security: [
       {
@@ -192,7 +190,6 @@ export class Config_DepartmentUserController extends BaseHttpController {
     summary: 'Get all department-user assignments',
     description: 'Returns all department-user assignments for the business unit. Used by administrators to manage which staff members belong to each hotel department for requisition routing.',
     operationId: 'configDepartmentUser_findAll',
-    tags: ['Configuration', 'Department User'],
     deprecated: false,
     security: [
       {
@@ -258,7 +255,6 @@ export class Config_DepartmentUserController extends BaseHttpController {
     summary: 'Create a new department-user assignment',
     description: 'Creates a new department-user assignment, linking a user to a hotel department. This determines which department the user can create requisitions for and participate in approval workflows.',
     operationId: 'configDepartmentUser_create',
-    tags: ['Configuration', 'Department User'],
     deprecated: false,
     security: [
       {
@@ -325,7 +321,6 @@ export class Config_DepartmentUserController extends BaseHttpController {
     summary: 'Update a department-user assignment',
     description: 'Modifies an existing department-user assignment, such as changing the user role within the department or updating assignment details.',
     operationId: 'configDepartmentUser_update',
-    tags: ['Configuration', 'Department User'],
     deprecated: false,
     security: [
       {
@@ -394,7 +389,6 @@ export class Config_DepartmentUserController extends BaseHttpController {
     summary: 'Delete a department-user assignment',
     description: 'Removes a department-user assignment, unlinking a user from a hotel department. The user will no longer be able to create requisitions for or approve documents in that department.',
     operationId: 'configDepartmentUser_delete',
-    tags: ['Configuration', 'Department User'],
     deprecated: false,
     security: [
       {

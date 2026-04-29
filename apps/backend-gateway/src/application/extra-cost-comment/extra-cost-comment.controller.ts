@@ -51,7 +51,6 @@ export class ExtraCostCommentController {
     summary: 'Get all comments for a extra-cost',
     description: 'Retrieves all comments for a extra-cost.',
     operationId: 'findAllExtraCostComments',
-    tags: ['Procurement', 'ExtraCost Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
       404: { description: 'ExtraCost not found' },
@@ -82,7 +81,6 @@ export class ExtraCostCommentController {
   @ApiOperation({
     summary: 'Get a extra-cost comment by ID',
     operationId: 'findOneExtraCostComment',
-    tags: ['Procurement', 'ExtraCost Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
       404: { description: 'Comment not found' },
@@ -105,7 +103,6 @@ export class ExtraCostCommentController {
   @ApiOperation({
     summary: 'Create a new extra-cost comment',
     operationId: 'createExtraCostComment',
-    tags: ['Procurement', 'ExtraCost Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
       404: { description: 'ExtraCost not found' },
@@ -129,7 +126,6 @@ export class ExtraCostCommentController {
   @ApiOperation({
     summary: 'Update a extra-cost comment',
     operationId: 'updateExtraCostComment',
-    tags: ['Procurement', 'ExtraCost Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
       404: { description: 'Comment not found' },
@@ -155,7 +151,6 @@ export class ExtraCostCommentController {
   @ApiOperation({
     summary: 'Delete a extra-cost comment',
     operationId: 'deleteExtraCostComment',
-    tags: ['Procurement', 'ExtraCost Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
       404: { description: 'Comment not found' },
@@ -179,7 +174,6 @@ export class ExtraCostCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a extra-cost comment',
     operationId: 'addAttachmentToExtraCostComment',
-    tags: ['Procurement', 'ExtraCost Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
       404: { description: 'Comment not found' },
@@ -204,7 +198,6 @@ export class ExtraCostCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a extra-cost comment',
     operationId: 'removeAttachmentFromExtraCostComment',
-    tags: ['Procurement', 'ExtraCost Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
       404: { description: 'Comment not found' },

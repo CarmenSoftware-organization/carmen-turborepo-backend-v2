@@ -58,7 +58,6 @@ export class Config_LocationProductController extends BaseHttpController {
     summary: 'Get all locations with their products (paginated)',
     description: 'Retrieves active locations with their assigned products, including category hierarchy, current stock, par level, need qty, and stock status. Paginated by location. Supports search by product name/code/sku and location name/code, and filter by category_id (item group).',
     operationId: 'configLocationProduct_findAll',
-    tags: ['Configuration', 'Location Product'],
     'x-description-th': 'แสดงรายการสถานที่ตามสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
   } as any)
   async findAllLocationsWithProducts(
@@ -106,7 +105,6 @@ export class Config_LocationProductController extends BaseHttpController {
     summary: 'Get product-location mappings by location ID',
     description: 'Retrieves paginated product-location records for a specific location, including product_code, product_name, product_local_name, product_sku, inventory_unit_id, inventory_unit_name.',
     operationId: 'configLocationProduct_findByLocationId',
-    tags: ['Configuration', 'Location Product'],
     'x-description-th': 'ดึงข้อมูลสถานที่ตามสินค้าโดยใช้รหัสสถานที่',
   } as any)
   async getProductByLocationId(
@@ -151,7 +149,6 @@ export class Config_LocationProductController extends BaseHttpController {
     summary: 'Compare products between two locations',
     description: 'Returns paginated products that exist in both locations (intersection).',
     operationId: 'configLocationProduct_compareProducts',
-    tags: ['Configuration', 'Location Product'],
     'x-description-th': 'เปรียบเทียบสินค้าระหว่าง 2 สถานที่ แสดงเฉพาะสินค้าที่อยู่ในทั้ง 2 สถานที่',
   } as any)
   @ApiParam({ name: 'location_1', description: 'First location UUID', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
@@ -195,7 +192,6 @@ export class Config_LocationProductController extends BaseHttpController {
     summary: 'Refresh product-location denormalized fields',
     description: 'Regenerates location_code, location_name, product_name, product_code, product_local_name, product_sku in tb_product_location by looking up actual values from tb_product and tb_location using product_id and location_id.',
     operationId: 'configLocationProduct_refresh',
-    tags: ['Configuration', 'Location Product'],
     'x-description-th': 'รีเฟรชข้อมูล denormalized ของสถานที่ตามสินค้า',
   } as any)
   async refreshProductLocations(

@@ -73,7 +73,7 @@ export class Config_ProductCategoryController extends BaseHttpController {
   @Serialize(ProductCategoryDetailResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get a product category by ID', description: 'Retrieves a specific product category used to classify products in the master catalog (e.g., Fresh Produce, Dry Goods, Beverages, Cleaning Supplies). Categories form the top level of the product classification hierarchy.', operationId: 'configProductCategory_findOne', tags: ['Configuration', 'Product Category'], 'x-description-th': 'ดึงข้อมูลหมวดหมู่สินค้ารายการเดียวตาม ID' } as any)
+  @ApiOperation({ summary: 'Get a product category by ID', description: 'Retrieves a specific product category used to classify products in the master catalog (e.g., Fresh Produce, Dry Goods, Beverages, Cleaning Supplies). Categories form the top level of the product classification hierarchy.', operationId: 'configProductCategory_findOne', 'x-description-th': 'ดึงข้อมูลหมวดหมู่สินค้ารายการเดียวตาม ID' } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -116,7 +116,7 @@ export class Config_ProductCategoryController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all product categories', description: 'Returns all product categories configured for the business unit. Categories provide the primary classification for organizing the product catalog and generating procurement reports by product type.', operationId: 'configProductCategory_findAll', tags: ['Configuration', 'Product Category'], 'x-description-th': 'แสดงรายการหมวดหมู่สินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา' } as any)
+  @ApiOperation({ summary: 'Get all product categories', description: 'Returns all product categories configured for the business unit. Categories provide the primary classification for organizing the product catalog and generating procurement reports by product type.', operationId: 'configProductCategory_findAll', 'x-description-th': 'แสดงรายการหมวดหมู่สินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา' } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -159,7 +159,7 @@ export class Config_ProductCategoryController extends BaseHttpController {
   @Serialize(ProductCategoryMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new product category', description: 'Defines a new top-level product category for classifying items in the master catalog. Sub-categories can then be created under this category for more granular classification.', operationId: 'configProductCategory_create', tags: ['Configuration', 'Product Category'], 'x-description-th': 'สร้างหมวดหมู่สินค้าใหม่' } as any)
+  @ApiOperation({ summary: 'Create a new product category', description: 'Defines a new top-level product category for classifying items in the master catalog. Sub-categories can then be created under this category for more granular classification.', operationId: 'configProductCategory_create', 'x-description-th': 'สร้างหมวดหมู่สินค้าใหม่' } as any)
   @ApiBody({ type: ProductCategoryCreateRequest })
   async create(
     @Req() req: Request,
@@ -203,7 +203,7 @@ export class Config_ProductCategoryController extends BaseHttpController {
   @Serialize(ProductCategoryMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update a product category', description: 'Modifies an existing product category, such as renaming it or adjusting its display order. Changes affect how products are organized in the catalog and categorized in procurement reports.', operationId: 'configProductCategory_update', tags: ['Configuration', 'Product Category'], 'x-description-th': 'อัปเดตข้อมูลหมวดหมู่สินค้าที่มีอยู่' } as any)
+  @ApiOperation({ summary: 'Update a product category', description: 'Modifies an existing product category, such as renaming it or adjusting its display order. Changes affect how products are organized in the catalog and categorized in procurement reports.', operationId: 'configProductCategory_update', 'x-description-th': 'อัปเดตข้อมูลหมวดหมู่สินค้าที่มีอยู่' } as any)
   @ApiBody({ type: ProductCategoryUpdateRequest })
   async update(
     @Req() req: Request,
@@ -252,7 +252,7 @@ export class Config_ProductCategoryController extends BaseHttpController {
   @Serialize(ProductCategoryMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete a product category', description: 'Removes a product category from the classification hierarchy. Products currently assigned to this category should be reassigned before deletion.', operationId: 'configProductCategory_delete', tags: ['Configuration', 'Product Category'], 'x-description-th': 'ลบหมวดหมู่สินค้าตาม ID' } as any)
+  @ApiOperation({ summary: 'Delete a product category', description: 'Removes a product category from the classification hierarchy. Products currently assigned to this category should be reassigned before deletion.', operationId: 'configProductCategory_delete', 'x-description-th': 'ลบหมวดหมู่สินค้าตาม ID' } as any)
   async delete(
     @Req() req: Request,
     @Res() res: Response,

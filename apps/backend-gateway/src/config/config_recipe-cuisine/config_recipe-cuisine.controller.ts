@@ -58,7 +58,7 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   @Serialize(RecipeCuisineResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get a recipe cuisine by ID', description: 'Retrieves a specific cuisine type definition (e.g., Thai, Italian, Japanese, Continental) used to classify recipes by culinary origin for menu diversity management.', operationId: 'configRecipeCuisine_findOne', tags: ['Configuration', 'Recipe Cuisine'], 'x-description-th': 'ดึงข้อมูลประเภทอาหารเดียวตาม ID สำหรับจำแนกสูตรอาหารตามต้นกำเนิดการทำอาหาร' } as any)
+  @ApiOperation({ summary: 'Get a recipe cuisine by ID', description: 'Retrieves a specific cuisine type definition (e.g., Thai, Italian, Japanese, Continental) used to classify recipes by culinary origin for menu diversity management.', operationId: 'configRecipeCuisine_findOne', 'x-description-th': 'ดึงข้อมูลประเภทอาหารเดียวตาม ID สำหรับจำแนกสูตรอาหารตามต้นกำเนิดการทำอาหาร' } as any)
   async findOne(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'findOne', id, version }, Config_RecipeCuisineController.name);
     const { user_id } = ExtractRequestHeader(req);
@@ -80,7 +80,7 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   @Serialize(RecipeCuisineResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all recipe cuisines', description: 'Returns all cuisine types configured for recipe classification. Used to tag recipes by culinary tradition for menu planning and kitchen specialization management.', operationId: 'configRecipeCuisine_findAll', tags: ['Configuration', 'Recipe Cuisine'], 'x-description-th': 'ดึงรายการประเภทอาหารทั้งหมดสำหรับการจัดหมวดหมู่สูตรอาหารและการวางแผนเมนู' } as any)
+  @ApiOperation({ summary: 'Get all recipe cuisines', description: 'Returns all cuisine types configured for recipe classification. Used to tag recipes by culinary tradition for menu planning and kitchen specialization management.', operationId: 'configRecipeCuisine_findAll', 'x-description-th': 'ดึงรายการประเภทอาหารทั้งหมดสำหรับการจัดหมวดหมู่สูตรอาหารและการวางแผนเมนู' } as any)
   @ApiUserFilterQueries()
   async findAll(@Req() req: Request, @Res() res: Response, @Param('bu_code') bu_code: string, @Query() query?: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'findAll', query, version }, Config_RecipeCuisineController.name);
@@ -104,7 +104,7 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   @Serialize(RecipeCuisineResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new recipe cuisine', description: 'Defines a new cuisine type for recipe classification (e.g., Mediterranean, Mexican). Recipes can then be tagged with this cuisine for organized menu planning.', operationId: 'configRecipeCuisine_create', tags: ['Configuration', 'Recipe Cuisine'], 'x-description-th': 'สร้างประเภทอาหารใหม่สำหรับจัดหมวดหมู่สูตรอาหาร' } as any)
+  @ApiOperation({ summary: 'Create a new recipe cuisine', description: 'Defines a new cuisine type for recipe classification (e.g., Mediterranean, Mexican). Recipes can then be tagged with this cuisine for organized menu planning.', operationId: 'configRecipeCuisine_create', 'x-description-th': 'สร้างประเภทอาหารใหม่สำหรับจัดหมวดหมู่สูตรอาหาร' } as any)
   @ApiBody({ type: RecipeCuisineCreateRequest })
   async create(@Req() req: Request, @Res() res: Response, @Param('bu_code') bu_code: string, @Body() createDto: RecipeCuisineCreateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'create', createDto, version }, Config_RecipeCuisineController.name);
@@ -128,7 +128,7 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   @Serialize(RecipeCuisineResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update a recipe cuisine', description: 'Fully updates an existing cuisine type definition. Changes affect how recipes tagged with this cuisine are categorized.', operationId: 'configRecipeCuisine_update', tags: ['Configuration', 'Recipe Cuisine'], 'x-description-th': 'อัปเดตประเภทอาหารทั้งหมด การเปลี่ยนแปลงส่งผลต่อสูตรอาหารที่ใช้ประเภทนี้' } as any)
+  @ApiOperation({ summary: 'Update a recipe cuisine', description: 'Fully updates an existing cuisine type definition. Changes affect how recipes tagged with this cuisine are categorized.', operationId: 'configRecipeCuisine_update', 'x-description-th': 'อัปเดตประเภทอาหารทั้งหมด การเปลี่ยนแปลงส่งผลต่อสูตรอาหารที่ใช้ประเภทนี้' } as any)
   @ApiBody({ type: RecipeCuisineUpdateRequest })
   async update(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeCuisineUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'update', id, updateDto, version }, Config_RecipeCuisineController.name);
@@ -153,7 +153,7 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   @Serialize(RecipeCuisineResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Patch a recipe cuisine', description: 'Partially updates specific fields of a cuisine type definition without replacing the entire record.', operationId: 'configRecipeCuisine_patch', tags: ['Configuration', 'Recipe Cuisine'], 'x-description-th': 'อัปเดตบางฟิลด์ของประเภทอาหารโดยไม่แทนที่ข้อมูลทั้งหมด' } as any)
+  @ApiOperation({ summary: 'Patch a recipe cuisine', description: 'Partially updates specific fields of a cuisine type definition without replacing the entire record.', operationId: 'configRecipeCuisine_patch', 'x-description-th': 'อัปเดตบางฟิลด์ของประเภทอาหารโดยไม่แทนที่ข้อมูลทั้งหมด' } as any)
   @ApiBody({ type: RecipeCuisineUpdateRequest })
   async patch(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeCuisineUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'patch', id, updateDto, version }, Config_RecipeCuisineController.name);
@@ -177,7 +177,7 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   @Serialize(RecipeCuisineResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete a recipe cuisine', description: 'Removes a cuisine type from the system. Recipes currently tagged with this cuisine should be reassigned before deletion.', operationId: 'configRecipeCuisine_delete', tags: ['Configuration', 'Recipe Cuisine'], 'x-description-th': 'ลบประเภทอาหารออกจากระบบ ควรย้ายสูตรอาหารไปประเภทอื่นก่อนลบ' } as any)
+  @ApiOperation({ summary: 'Delete a recipe cuisine', description: 'Removes a cuisine type from the system. Recipes currently tagged with this cuisine should be reassigned before deletion.', operationId: 'configRecipeCuisine_delete', 'x-description-th': 'ลบประเภทอาหารออกจากระบบ ควรย้ายสูตรอาหารไปประเภทอื่นก่อนลบ' } as any)
   async delete(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'delete', id, version }, Config_RecipeCuisineController.name);
     const { user_id } = ExtractRequestHeader(req);

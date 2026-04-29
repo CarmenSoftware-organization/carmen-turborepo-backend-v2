@@ -50,7 +50,6 @@ export class StockInCommentController {
   @ApiOperation({
     summary: 'Get all comments for a stock-in',
     operationId: 'findAllStockInComments',
-    tags: ['Inventory', 'StockIn Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
     },
@@ -80,7 +79,6 @@ export class StockInCommentController {
   @ApiOperation({
     summary: 'Get a stock-in comment by ID',
     operationId: 'findOneStockInComment',
-    tags: ['Inventory', 'StockIn Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
     },
@@ -102,7 +100,6 @@ export class StockInCommentController {
   @ApiOperation({
     summary: 'Create a new stock-in comment',
     operationId: 'createStockInComment',
-    tags: ['Inventory', 'StockIn Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
     },
@@ -130,7 +127,6 @@ export class StockInCommentController {
   @ApiOperation({
     summary: 'Update a stock-in comment',
     operationId: 'updateStockInComment',
-    tags: ['Inventory', 'StockIn Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
     },
@@ -160,7 +156,6 @@ export class StockInCommentController {
   @ApiOperation({
     summary: 'Delete a stock-in comment',
     operationId: 'deleteStockInComment',
-    tags: ['Inventory', 'StockIn Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
     },
@@ -182,7 +177,6 @@ export class StockInCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a stock-in comment',
     operationId: 'addAttachmentToStockInComment',
-    tags: ['Inventory', 'StockIn Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
     },
@@ -212,7 +206,6 @@ export class StockInCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a stock-in comment',
     operationId: 'removeAttachmentFromStockInComment',
-    tags: ['Inventory', 'StockIn Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
     },

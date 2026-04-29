@@ -71,7 +71,7 @@ export class Config_ProductSubCategoryController extends BaseHttpController {
   @Serialize(ProductSubCategoryDetailResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a product sub-category by ID', description: 'Retrieves a specific product sub-category that provides a second level of classification under a parent category (e.g., Dairy under Fresh Produce, Spirits under Beverages).', operationId: 'configProductSubCategory_findOne', tags: ['Configuration', 'Product Sub Category'], 'x-description-th': 'ดึงข้อมูลหมวดหมู่ย่อยสินค้ารายการเดียวตาม ID' } as any)
+  @ApiOperation({ summary: 'Get a product sub-category by ID', description: 'Retrieves a specific product sub-category that provides a second level of classification under a parent category (e.g., Dairy under Fresh Produce, Spirits under Beverages).', operationId: 'configProductSubCategory_findOne', 'x-description-th': 'ดึงข้อมูลหมวดหมู่ย่อยสินค้ารายการเดียวตาม ID' } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -114,7 +114,7 @@ export class Config_ProductSubCategoryController extends BaseHttpController {
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all product sub-categories', description: 'Returns all product sub-categories configured for the business unit. Sub-categories provide granular classification within parent categories for detailed product organization and reporting.', operationId: 'configProductSubCategory_findAll', tags: ['Configuration', 'Product Sub Category'], 'x-description-th': 'แสดงรายการหมวดหมู่ย่อยสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา' } as any)
+  @ApiOperation({ summary: 'Get all product sub-categories', description: 'Returns all product sub-categories configured for the business unit. Sub-categories provide granular classification within parent categories for detailed product organization and reporting.', operationId: 'configProductSubCategory_findAll', 'x-description-th': 'แสดงรายการหมวดหมู่ย่อยสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา' } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -157,7 +157,7 @@ export class Config_ProductSubCategoryController extends BaseHttpController {
   @Serialize(ProductSubCategoryMutationResponseSchema)
   @HttpCode(HttpStatus.CREATED)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new product sub-category', description: 'Defines a new product sub-category under an existing parent category. Products can then be assigned to this sub-category for more detailed classification and reporting.', operationId: 'configProductSubCategory_create', tags: ['Configuration', 'Product Sub Category'], 'x-description-th': 'สร้างหมวดหมู่ย่อยสินค้าใหม่' } as any)
+  @ApiOperation({ summary: 'Create a new product sub-category', description: 'Defines a new product sub-category under an existing parent category. Products can then be assigned to this sub-category for more detailed classification and reporting.', operationId: 'configProductSubCategory_create', 'x-description-th': 'สร้างหมวดหมู่ย่อยสินค้าใหม่' } as any)
   @ApiBody({ type: ProductSubCategoryCreateRequest })
   async create(
     @Req() req: Request,
@@ -201,7 +201,7 @@ export class Config_ProductSubCategoryController extends BaseHttpController {
   @Serialize(ProductSubCategoryMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a product sub-category', description: 'Modifies an existing product sub-category, such as renaming it or reassigning it to a different parent category. Changes affect product classification and reporting.', operationId: 'configProductSubCategory_update', tags: ['Configuration', 'Product Sub Category'], 'x-description-th': 'อัปเดตข้อมูลหมวดหมู่ย่อยสินค้าที่มีอยู่' } as any)
+  @ApiOperation({ summary: 'Update a product sub-category', description: 'Modifies an existing product sub-category, such as renaming it or reassigning it to a different parent category. Changes affect product classification and reporting.', operationId: 'configProductSubCategory_update', 'x-description-th': 'อัปเดตข้อมูลหมวดหมู่ย่อยสินค้าที่มีอยู่' } as any)
   @ApiBody({ type: ProductSubCategoryUpdateRequest })
   async update(
     @Req() req: Request,
@@ -250,7 +250,7 @@ export class Config_ProductSubCategoryController extends BaseHttpController {
   @Serialize(ProductSubCategoryMutationResponseSchema)
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a product sub-category', description: 'Removes a product sub-category from the classification hierarchy. Products assigned to this sub-category should be reassigned before deletion.', operationId: 'configProductSubCategory_delete', tags: ['Configuration', 'Product Sub Category'], 'x-description-th': 'ลบหมวดหมู่ย่อยสินค้าตาม ID' } as any)
+  @ApiOperation({ summary: 'Delete a product sub-category', description: 'Removes a product sub-category from the classification hierarchy. Products assigned to this sub-category should be reassigned before deletion.', operationId: 'configProductSubCategory_delete', 'x-description-th': 'ลบหมวดหมู่ย่อยสินค้าตาม ID' } as any)
   async remove(
     @Req() req: Request,
     @Res() res: Response,

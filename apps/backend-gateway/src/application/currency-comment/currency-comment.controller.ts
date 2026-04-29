@@ -38,7 +38,7 @@ export class CurrencyCommentController {
   @UseGuards(new AppIdGuard('currencyComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all comments for a currency', operationId: 'findAllCurrencyComments', tags: ['Master', 'Currency Comment'], responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get all comments for a currency', operationId: 'findAllCurrencyComments', responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findAllByCurrencyId(@Param('bu_code') bu_code: string, @Param('currency_id', new ParseUUIDPipe({ version: '4' })) currency_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -49,7 +49,7 @@ export class CurrencyCommentController {
   @Get(':bu_code/currency-comment/:id')
   @UseGuards(new AppIdGuard('currencyComment.findOne'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a currency comment by ID', operationId: 'findOneCurrencyComment', tags: ['Master', 'Currency Comment'], responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get a currency comment by ID', operationId: 'findOneCurrencyComment', responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -59,7 +59,7 @@ export class CurrencyCommentController {
   @Post(':bu_code/currency-comment')
   @UseGuards(new AppIdGuard('currencyComment.create'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new currency comment', operationId: 'createCurrencyComment', tags: ['Master', 'Currency Comment'], responses: { 201: { description: 'Comment created successfully' } } } as any)
+  @ApiOperation({ summary: 'Create a new currency comment', operationId: 'createCurrencyComment', responses: { 201: { description: 'Comment created successfully' } } } as any)
   @ApiBody({ type: CreateCurrencyCommentDto })
   @HttpCode(HttpStatus.CREATED)
   async create(@Param('bu_code') bu_code: string, @Body() createDto: CreateCurrencyCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -70,7 +70,7 @@ export class CurrencyCommentController {
   @Patch(':bu_code/currency-comment/:id')
   @UseGuards(new AppIdGuard('currencyComment.update'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a currency comment', operationId: 'updateCurrencyComment', tags: ['Master', 'Currency Comment'], responses: { 200: { description: 'Comment updated successfully' } } } as any)
+  @ApiOperation({ summary: 'Update a currency comment', operationId: 'updateCurrencyComment', responses: { 200: { description: 'Comment updated successfully' } } } as any)
   @ApiBody({ type: UpdateCurrencyCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdateCurrencyCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -81,7 +81,7 @@ export class CurrencyCommentController {
   @Delete(':bu_code/currency-comment/:id')
   @UseGuards(new AppIdGuard('currencyComment.delete'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a currency comment', operationId: 'deleteCurrencyComment', tags: ['Master', 'Currency Comment'], responses: { 200: { description: 'Comment deleted successfully' } } } as any)
+  @ApiOperation({ summary: 'Delete a currency comment', operationId: 'deleteCurrencyComment', responses: { 200: { description: 'Comment deleted successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -91,7 +91,7 @@ export class CurrencyCommentController {
   @Post(':bu_code/currency-comment/:id/attachment')
   @UseGuards(new AppIdGuard('currencyComment.addAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Add attachment to a currency comment', operationId: 'addAttachmentToCurrencyComment', tags: ['Master', 'Currency Comment'], responses: { 200: { description: 'Attachment added successfully' } } } as any)
+  @ApiOperation({ summary: 'Add attachment to a currency comment', operationId: 'addAttachmentToCurrencyComment', responses: { 200: { description: 'Attachment added successfully' } } } as any)
   @ApiBody({ type: AddAttachmentDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -102,7 +102,7 @@ export class CurrencyCommentController {
   @Delete(':bu_code/currency-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('currencyComment.removeAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove attachment from a currency comment', operationId: 'removeAttachmentFromCurrencyComment', tags: ['Master', 'Currency Comment'], responses: { 200: { description: 'Attachment removed successfully' } } } as any)
+  @ApiOperation({ summary: 'Remove attachment from a currency comment', operationId: 'removeAttachmentFromCurrencyComment', responses: { 200: { description: 'Attachment removed successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);

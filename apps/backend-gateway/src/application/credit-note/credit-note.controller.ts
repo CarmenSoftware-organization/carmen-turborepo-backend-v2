@@ -79,7 +79,6 @@ export class CreditNoteController extends BaseHttpController {
     summary: 'Get a credit note by ID',
     description: 'Retrieves the full details of a vendor credit note, including the returned/damaged items and credited amounts, for review during accounts payable reconciliation.',
     operationId: 'findOneCreditNote',
-    tags: ['Procurement', 'Credit Note'],
     'x-description-th': 'ดึงรายละเอียดทั้งหมดของใบลดหนี้ รวมถึงรายการสินค้าที่ส่งคืน/เสียหายและจำนวนเงินเครดิต สำหรับตรวจสอบระหว่างกระบวนการกระทบยอดบัญชีเจ้าหนี้',
   } as any)
   @HttpCode(HttpStatus.OK)
@@ -121,7 +120,6 @@ export class CreditNoteController extends BaseHttpController {
     summary: 'Get all credit notes',
     description: 'Lists all vendor credit notes for the business unit, enabling procurement and finance staff to track credits received for returned or damaged goods.',
     operationId: 'findAllCreditNotes',
-    tags: ['Procurement', 'Credit Note'],
     'x-description-th': 'แสดงรายการใบลดหนี้ของผู้ขายทั้งหมดของหน่วยธุรกิจ ช่วยให้เจ้าหน้าที่จัดซื้อและการเงินติดตามเครดิตที่ได้รับจากสินค้าที่ส่งคืนหรือเสียหาย',
   } as any)
   @HttpCode(HttpStatus.OK)
@@ -169,7 +167,6 @@ export class CreditNoteController extends BaseHttpController {
     summary: 'Create a credit note',
     description: 'Issues a new credit note against a vendor for returned, damaged, or incorrect goods received, adjusting the payable balance and triggering inventory corrections.',
     operationId: 'createCreditNote',
-    tags: ['Procurement', 'Credit Note'],
     'x-description-th': 'ออกใบลดหนี้ใหม่สำหรับผู้ขายกรณีสินค้าส่งคืน เสียหาย หรือไม่ถูกต้อง เพื่อปรับยอดบัญชีเจ้าหนี้และสร้างรายการปรับปรุงสินค้าคงคลัง',
   } as any)
   @ApiBody({
@@ -225,7 +222,6 @@ export class CreditNoteController extends BaseHttpController {
     summary: 'Update a credit note',
     description: 'Modifies a credit note before it is finalized, such as correcting item quantities, amounts, or the reason for the credit against the vendor.',
     operationId: 'updateCreditNote',
-    tags: ['Procurement', 'Credit Note'],
     'x-description-th': 'แก้ไขใบลดหนี้ก่อนการดำเนินการขั้นสุดท้าย เช่น แก้ไขจำนวนสินค้า จำนวนเงิน หรือเหตุผลในการออกใบลดหนี้ให้ผู้ขาย',
   } as any)
   @ApiBody({
@@ -281,7 +277,6 @@ export class CreditNoteController extends BaseHttpController {
     summary: 'Delete a credit note',
     description: 'Removes a credit note that was created in error. Historical credit note data is retained for audit and financial reporting purposes.',
     operationId: 'deleteCreditNote',
-    tags: ['Procurement', 'Credit Note'],
     'x-description-th': 'ลบใบลดหนี้ที่สร้างผิดพลาด ข้อมูลใบลดหนี้ในอดีตจะถูกเก็บรักษาไว้สำหรับการตรวจสอบและรายงานทางการเงิน',
   } as any)
   @HttpCode(HttpStatus.OK)
@@ -317,7 +312,6 @@ export class CreditNoteController extends BaseHttpController {
     summary: 'Confirm a credit note',
     description: 'Confirms a draft credit note and triggers inventory: quantity_return deducts stock from GRN lots, amount_discount adjusts cost without stock movement.',
     operationId: 'confirmCreditNote',
-    tags: ['Procurement', 'Credit Note'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Credit Note ID' },
     ],

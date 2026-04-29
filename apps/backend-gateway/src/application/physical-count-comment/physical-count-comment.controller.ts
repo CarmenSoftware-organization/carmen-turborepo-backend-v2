@@ -50,7 +50,6 @@ export class PhysicalCountCommentController {
   @ApiOperation({
     summary: 'Get all comments for a physical-count',
     operationId: 'findAllPhysicalCountComments',
-    tags: ['Inventory', 'PhysicalCount Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
     },
@@ -80,7 +79,6 @@ export class PhysicalCountCommentController {
   @ApiOperation({
     summary: 'Get a physical-count comment by ID',
     operationId: 'findOnePhysicalCountComment',
-    tags: ['Inventory', 'PhysicalCount Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
     },
@@ -102,7 +100,6 @@ export class PhysicalCountCommentController {
   @ApiOperation({
     summary: 'Create a new physical-count comment',
     operationId: 'createPhysicalCountComment',
-    tags: ['Inventory', 'PhysicalCount Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
     },
@@ -130,7 +127,6 @@ export class PhysicalCountCommentController {
   @ApiOperation({
     summary: 'Update a physical-count comment',
     operationId: 'updatePhysicalCountComment',
-    tags: ['Inventory', 'PhysicalCount Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
     },
@@ -160,7 +156,6 @@ export class PhysicalCountCommentController {
   @ApiOperation({
     summary: 'Delete a physical-count comment',
     operationId: 'deletePhysicalCountComment',
-    tags: ['Inventory', 'PhysicalCount Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
     },
@@ -182,7 +177,6 @@ export class PhysicalCountCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a physical-count comment',
     operationId: 'addAttachmentToPhysicalCountComment',
-    tags: ['Inventory', 'PhysicalCount Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
     },
@@ -212,7 +206,6 @@ export class PhysicalCountCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a physical-count comment',
     operationId: 'removeAttachmentFromPhysicalCountComment',
-    tags: ['Inventory', 'PhysicalCount Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
     },

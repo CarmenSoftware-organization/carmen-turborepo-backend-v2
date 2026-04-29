@@ -82,7 +82,6 @@ export class Config_DepartmentsController extends BaseHttpController {
     summary: 'Get a department by ID',
     description: 'Retrieves a specific hotel department record (e.g., Kitchen, F&B, Housekeeping, Engineering). Department details include cost center information used for budget allocation and purchase request routing.',
     operationId: 'configDepartments_findOne',
-    tags: ['Configuration', 'Departments'],
     deprecated: false,
     security: [
       {
@@ -149,7 +148,6 @@ export class Config_DepartmentsController extends BaseHttpController {
     summary: 'Get all departments',
     description: 'Returns all hotel departments configured in the business unit. Departments are used to organize purchase requests, assign users, and track costs by operational area.',
     operationId: 'configDepartments_findAll',
-    tags: ['Configuration', 'Departments'],
     deprecated: false,
     security: [
       {
@@ -216,7 +214,6 @@ export class Config_DepartmentsController extends BaseHttpController {
     summary: 'Create a new department',
     description: 'Creates a new hotel department (e.g., Kitchen, Housekeeping, Spa). The department can then be assigned users and used as a cost center for procurement and inventory requisitions.',
     operationId: 'configDepartments_create',
-    tags: ['Configuration', 'Departments'],
     deprecated: false,
     security: [
       {
@@ -284,7 +281,6 @@ export class Config_DepartmentsController extends BaseHttpController {
     summary: 'Update a department',
     description: 'Modifies an existing department configuration, such as its name or cost center settings. Changes affect how future purchase requests and inventory transactions are categorized.',
     operationId: 'configDepartments_update',
-    tags: ['Configuration', 'Departments'],
     deprecated: false,
     security: [
       {
@@ -357,7 +353,6 @@ export class Config_DepartmentsController extends BaseHttpController {
     summary: 'Delete a department',
     description: 'Removes a department from the active configuration. The department will no longer be available for new requisitions or user assignments, but historical records are retained.',
     operationId: 'configDepartments_delete',
-    tags: ['Configuration', 'Departments'],
     deprecated: false,
     security: [
       {

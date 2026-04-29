@@ -79,7 +79,6 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
       'Retrieves the details of a specific user-to-property access assignment, showing which user has access to which hotel property and with what role.',
     'x-description-th': 'ดึงข้อมูลหน่วยธุรกิจของผู้ใช้รายการเดียวตาม ID',
     operationId: 'platformUserBusinessUnit_findOne',
-    tags: ['Platform Admin', 'User Business Unit'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {
@@ -131,7 +130,6 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
       'Lists all user-to-property access assignments across the platform, showing which users have been granted access to which hotel properties. Used for multi-tenant access management and auditing.',
     'x-description-th': 'แสดงรายการหน่วยธุรกิจของผู้ใช้ทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'platformUserBusinessUnit_findAll',
-    tags: ['Platform Admin', 'User Business Unit'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {
@@ -188,7 +186,6 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
       "Grants a user access to a specific hotel property or operational unit, enabling them to perform procurement, inventory, and other ERP operations within that business unit's tenant context.",
     'x-description-th': 'สร้างหน่วยธุรกิจของผู้ใช้ใหม่',
     operationId: 'platformUserBusinessUnit_create',
-    tags: ['Platform Admin', 'User Business Unit'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {
@@ -249,7 +246,6 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
       "Modifies an existing user-to-property access assignment, such as changing the user's role or permissions within a specific hotel property.",
     'x-description-th': 'อัปเดตข้อมูลหน่วยธุรกิจของผู้ใช้ที่มีอยู่',
     operationId: 'platformUserBusinessUnit_update',
-    tags: ['Platform Admin', 'User Business Unit'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {
@@ -312,7 +308,6 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
       "Revokes a user's access to a specific hotel property or operational unit. The user will no longer be able to perform any ERP operations within that business unit's tenant context.",
     'x-description-th': 'ลบหน่วยธุรกิจของผู้ใช้ตาม ID',
     operationId: 'platformUserBusinessUnit_delete',
-    tags: ['Platform Admin', 'User Business Unit'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {

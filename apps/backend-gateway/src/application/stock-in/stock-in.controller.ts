@@ -81,7 +81,6 @@ export class StockInController extends BaseHttpController {
     summary: 'Get a Stock In by ID',
     description: 'Retrieves the full details of a stock-in transaction including all items added to inventory, their quantities, costs, and the reason for the addition (e.g., GRN receipt, return, or manual adjustment).',
     operationId: 'findOneStockIn',
-    tags: ['Inventory', 'Stock In'],
     'x-description-th': 'ดึงรายละเอียดทั้งหมดของรายการรับสินค้าเข้าคลังตาม ID รวมถึงรายการสินค้า จำนวน ต้นทุน และเหตุผลในการรับสินค้า',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock In ID' },
@@ -122,7 +121,6 @@ export class StockInController extends BaseHttpController {
     summary: 'Get all Stock In records',
     description: 'Lists all inventory addition records for the business unit with pagination and filtering. Used by inventory managers to track all stock additions from goods receiving, returns, and manual adjustments.',
     operationId: 'findAllStockIn',
-    tags: ['Inventory', 'Stock In'],
     'x-description-th': 'ดึงรายการรับสินค้าเข้าคลังทั้งหมดของหน่วยธุรกิจ พร้อมการแบ่งหน้าและตัวกรอง ใช้สำหรับผู้จัดการคลังสินค้าในการติดตามการรับสินค้าเข้าคลังทั้งหมด',
     responses: {
       200: { description: 'Stock In records retrieved successfully' },
@@ -162,7 +160,6 @@ export class StockInController extends BaseHttpController {
     summary: 'Create a Stock In',
     description: 'Records an inventory addition to increase stock levels. Used for manual adjustments such as recording returned items, correcting inventory discrepancies found during physical counts, or adding opening stock balances.',
     operationId: 'createStockIn',
-    tags: ['Inventory', 'Stock In'],
     'x-description-th': 'สร้างรายการรับสินค้าเข้าคลังใหม่เพื่อเพิ่มจำนวนสินค้าคงคลัง ใช้สำหรับการปรับปรุงด้วยตนเอง เช่น บันทึกสินค้าคืน แก้ไขความคลาดเคลื่อนจากการนับสต็อก หรือเพิ่มยอดเปิดต้น',
     responses: {
       201: { description: 'The Stock In was successfully created' },
@@ -202,7 +199,6 @@ export class StockInController extends BaseHttpController {
     summary: 'Update a Stock In',
     description: 'Modifies an existing stock-in record to correct quantities, costs, or item details before the transaction is finalized. Used when receiving staff need to amend an inventory addition.',
     operationId: 'updateStockIn',
-    tags: ['Inventory', 'Stock In'],
     'x-description-th': 'แก้ไขรายการรับสินค้าเข้าคลังที่มีอยู่เพื่อปรับจำนวน ต้นทุน หรือรายละเอียดสินค้าก่อนที่รายการจะถูกยืนยัน',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock In ID' },
@@ -246,7 +242,6 @@ export class StockInController extends BaseHttpController {
     summary: 'Delete a Stock In',
     description: 'Removes a stock-in record that was created in error. Only applicable to draft transactions that have not yet been committed to inventory.',
     operationId: 'deleteStockIn',
-    tags: ['Inventory', 'Stock In'],
     'x-description-th': 'ลบรายการรับสินค้าเข้าคลังที่สร้างผิดพลาด ใช้ได้เฉพาะรายการที่ยังเป็นร่างและยังไม่ถูกยืนยันเข้าคลังสินค้า',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock In ID' },
@@ -279,7 +274,6 @@ export class StockInController extends BaseHttpController {
     summary: 'Void a Stock In',
     description: 'Voids a completed stock-in record by creating a reverse adjustment-out transaction. Checks that sufficient on-hand quantity exists before voiding.',
     operationId: 'voidStockIn',
-    tags: ['Inventory', 'Stock In'],
     'x-description-th': 'ยกเลิกรายการรับสินค้าเข้าคลัง โดยสร้างรายการปรับลดออก ตรวจสอบว่ามีสินค้าคงเหลือเพียงพอก่อนยกเลิก',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock In ID' },
@@ -322,7 +316,6 @@ export class StockInController extends BaseHttpController {
     summary: 'Get all details for a Stock In',
     description: 'Lists all individual items being added to inventory in this stock-in transaction, including product details, quantities, unit costs, and storage locations.',
     operationId: 'findAllStockInDetails',
-    tags: ['Inventory', 'Stock In'],
     'x-description-th': 'ดึงรายการย่อยทั้งหมดของรายการรับสินค้าเข้าคลัง รวมถึงรายละเอียดสินค้า จำนวน ต้นทุนต่อหน่วย และสถานที่จัดเก็บ',
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -365,7 +358,6 @@ export class StockInController extends BaseHttpController {
     summary: 'Get a specific Stock In detail by ID',
     description: 'Retrieves a specific item line from a stock-in transaction with full product, quantity, and cost details. Used to inspect or verify a particular inventory addition.',
     operationId: 'findStockInDetailById',
-    tags: ['Inventory', 'Stock In'],
     'x-description-th': 'ดึงรายการย่อยเฉพาะรายการจากรายการรับสินค้าเข้าคลัง พร้อมรายละเอียดสินค้า จำนวน และต้นทุนทั้งหมด',
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -411,7 +403,6 @@ export class StockInController extends BaseHttpController {
     summary: 'Create a new Stock In detail',
     description: 'Adds a new item line to a draft stock-in transaction, specifying the product, quantity, and cost to be added to inventory.',
     operationId: 'createStockInDetail',
-    tags: ['Inventory', 'Stock In'],
     'x-description-th': 'เพิ่มรายการสินค้าใหม่ในรายการรับสินค้าเข้าคลังที่เป็นร่าง โดยระบุสินค้า จำนวน และต้นทุนที่จะเพิ่มเข้าคลังสินค้า',
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -459,7 +450,6 @@ export class StockInController extends BaseHttpController {
     summary: 'Update a Stock In detail',
     description: 'Modifies an item line on a draft stock-in transaction to correct the product, quantity, or cost details before the transaction is committed to inventory.',
     operationId: 'updateStockInDetail',
-    tags: ['Inventory', 'Stock In'],
     'x-description-th': 'แก้ไขรายการย่อยของรายการรับสินค้าเข้าคลังที่เป็นร่าง เพื่อปรับสินค้า จำนวน หรือรายละเอียดต้นทุนก่อนที่รายการจะถูกยืนยันเข้าคลัง',
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -508,7 +498,6 @@ export class StockInController extends BaseHttpController {
     summary: 'Delete a Stock In detail',
     description: 'Removes an item line from a draft stock-in transaction when the item was added in error or is no longer needed in this inventory addition.',
     operationId: 'deleteStockInDetail',
-    tags: ['Inventory', 'Stock In'],
     'x-description-th': 'ลบรายการย่อยจากรายการรับสินค้าเข้าคลังที่เป็นร่าง เมื่อรายการถูกเพิ่มผิดพลาดหรือไม่ต้องการอีกต่อไป',
     deprecated: false,
     security: [{ bearerAuth: [] }],

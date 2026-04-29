@@ -38,7 +38,7 @@ export class PricelistTemplateDetailCommentController {
   @UseGuards(new AppIdGuard('pricelistTemplateDetailComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all comments for a pricelist-template-detail', operationId: 'findAllPricelistTemplateDetailComments', tags: ['Master', 'PricelistTemplateDetail Comment'], responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get all comments for a pricelist-template-detail', operationId: 'findAllPricelistTemplateDetailComments', responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findAllByPricelistTemplateDetailId(@Param('bu_code') bu_code: string, @Param('pricelist_template_detail_id', new ParseUUIDPipe({ version: '4' })) pricelist_template_detail_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -49,7 +49,7 @@ export class PricelistTemplateDetailCommentController {
   @Get(':bu_code/pricelist-template-detail-comment/:id')
   @UseGuards(new AppIdGuard('pricelistTemplateDetailComment.findOne'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a pricelist-template-detail comment by ID', operationId: 'findOnePricelistTemplateDetailComment', tags: ['Master', 'PricelistTemplateDetail Comment'], responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get a pricelist-template-detail comment by ID', operationId: 'findOnePricelistTemplateDetailComment', responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -59,7 +59,7 @@ export class PricelistTemplateDetailCommentController {
   @Post(':bu_code/pricelist-template-detail-comment')
   @UseGuards(new AppIdGuard('pricelistTemplateDetailComment.create'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new pricelist-template-detail comment', operationId: 'createPricelistTemplateDetailComment', tags: ['Master', 'PricelistTemplateDetail Comment'], responses: { 201: { description: 'Comment created successfully' } } } as any)
+  @ApiOperation({ summary: 'Create a new pricelist-template-detail comment', operationId: 'createPricelistTemplateDetailComment', responses: { 201: { description: 'Comment created successfully' } } } as any)
   @ApiBody({ type: CreatePricelistTemplateDetailCommentDto })
   @HttpCode(HttpStatus.CREATED)
   async create(@Param('bu_code') bu_code: string, @Body() createDto: CreatePricelistTemplateDetailCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -70,7 +70,7 @@ export class PricelistTemplateDetailCommentController {
   @Patch(':bu_code/pricelist-template-detail-comment/:id')
   @UseGuards(new AppIdGuard('pricelistTemplateDetailComment.update'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a pricelist-template-detail comment', operationId: 'updatePricelistTemplateDetailComment', tags: ['Master', 'PricelistTemplateDetail Comment'], responses: { 200: { description: 'Comment updated successfully' } } } as any)
+  @ApiOperation({ summary: 'Update a pricelist-template-detail comment', operationId: 'updatePricelistTemplateDetailComment', responses: { 200: { description: 'Comment updated successfully' } } } as any)
   @ApiBody({ type: UpdatePricelistTemplateDetailCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdatePricelistTemplateDetailCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -81,7 +81,7 @@ export class PricelistTemplateDetailCommentController {
   @Delete(':bu_code/pricelist-template-detail-comment/:id')
   @UseGuards(new AppIdGuard('pricelistTemplateDetailComment.delete'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a pricelist-template-detail comment', operationId: 'deletePricelistTemplateDetailComment', tags: ['Master', 'PricelistTemplateDetail Comment'], responses: { 200: { description: 'Comment deleted successfully' } } } as any)
+  @ApiOperation({ summary: 'Delete a pricelist-template-detail comment', operationId: 'deletePricelistTemplateDetailComment', responses: { 200: { description: 'Comment deleted successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -91,7 +91,7 @@ export class PricelistTemplateDetailCommentController {
   @Post(':bu_code/pricelist-template-detail-comment/:id/attachment')
   @UseGuards(new AppIdGuard('pricelistTemplateDetailComment.addAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Add attachment to a pricelist-template-detail comment', operationId: 'addAttachmentToPricelistTemplateDetailComment', tags: ['Master', 'PricelistTemplateDetail Comment'], responses: { 200: { description: 'Attachment added successfully' } } } as any)
+  @ApiOperation({ summary: 'Add attachment to a pricelist-template-detail comment', operationId: 'addAttachmentToPricelistTemplateDetailComment', responses: { 200: { description: 'Attachment added successfully' } } } as any)
   @ApiBody({ type: AddAttachmentDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -102,7 +102,7 @@ export class PricelistTemplateDetailCommentController {
   @Delete(':bu_code/pricelist-template-detail-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('pricelistTemplateDetailComment.removeAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove attachment from a pricelist-template-detail comment', operationId: 'removeAttachmentFromPricelistTemplateDetailComment', tags: ['Master', 'PricelistTemplateDetail Comment'], responses: { 200: { description: 'Attachment removed successfully' } } } as any)
+  @ApiOperation({ summary: 'Remove attachment from a pricelist-template-detail comment', operationId: 'removeAttachmentFromPricelistTemplateDetailComment', responses: { 200: { description: 'Attachment removed successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);

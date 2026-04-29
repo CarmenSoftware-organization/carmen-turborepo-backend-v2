@@ -87,7 +87,6 @@ export class Config_ExchangeRateController extends BaseHttpController {
     summary: 'Get an exchange rate by ID',
     description: 'Retrieves a specific currency exchange rate record with its effective date and conversion factor. Exchange rates are used to convert foreign currency amounts in procurement documents to the base currency.',
     operationId: 'configExchangeRate_findOne',
-    tags: ['Configuration', 'Exchange Rate'],
     'x-description-th': 'ดึงข้อมูลอัตราแลกเปลี่ยนรายการเดียวตาม ID',
   } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })
@@ -138,7 +137,6 @@ export class Config_ExchangeRateController extends BaseHttpController {
     summary: 'Get all exchange rates',
     description: 'Returns all configured currency exchange rates with their effective dates. Used by the procurement system to convert multi-currency purchase orders and invoices to the base currency.',
     operationId: 'configExchangeRate_findAll',
-    tags: ['Configuration', 'Exchange Rate'],
     'x-description-th': 'แสดงรายการอัตราแลกเปลี่ยนทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
   } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })
@@ -188,7 +186,6 @@ export class Config_ExchangeRateController extends BaseHttpController {
     summary: 'Get exchange rate by date and currency code',
     description: 'Retrieves the exchange rate for a specific date and currency code. If the currency code matches the business unit default currency, returns exchange_rate = 1 without querying the exchange rate table.',
     operationId: 'configExchangeRate_findByDateAndCurrency',
-    tags: ['Configuration', 'Exchange Rate'],
     'x-description-th': 'ดึงข้อมูลอัตราแลกเปลี่ยนตามวันที่และรหัสสกุลเงิน',
   } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })
@@ -243,7 +240,6 @@ export class Config_ExchangeRateController extends BaseHttpController {
     summary: 'Create a new exchange rate',
     description: 'Records a new currency exchange rate with its effective date. Supports single or bulk creation. currency_code and currency_name are automatically populated from the currency_id.',
     operationId: 'configExchangeRate_create',
-    tags: ['Configuration', 'Exchange Rate'],
     'x-description-th': 'สร้างอัตราแลกเปลี่ยนใหม่',
   } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })
@@ -294,7 +290,6 @@ export class Config_ExchangeRateController extends BaseHttpController {
     summary: 'Update an exchange rate',
     description: 'Modifies an existing exchange rate record, such as correcting the conversion factor or adjusting the effective date. Changes affect future currency conversions in procurement documents.',
     operationId: 'configExchangeRate_update',
-    tags: ['Configuration', 'Exchange Rate'],
     'x-description-th': 'อัปเดตข้อมูลอัตราแลกเปลี่ยนที่มีอยู่',
   } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })
@@ -351,7 +346,6 @@ export class Config_ExchangeRateController extends BaseHttpController {
     summary: 'Delete an exchange rate',
     description: 'Removes an exchange rate record from the system (soft delete). Historical procurement documents that used this rate are unaffected, but it will no longer be available for future currency conversions.',
     operationId: 'configExchangeRate_delete',
-    tags: ['Configuration', 'Exchange Rate'],
     'x-description-th': 'ลบอัตราแลกเปลี่ยนตาม ID',
   } as any)
   @ApiParam({ name: 'bu_code', description: 'Business unit code', example: 'BLAVG' })

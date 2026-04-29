@@ -51,7 +51,6 @@ export class RequestForPricingCommentController {
     summary: 'Get all comments for a request-for-pricing',
     description: 'Retrieves all comments for a request-for-pricing.',
     operationId: 'findAllRequestForPricingComments',
-    tags: ['Procurement', 'RequestForPricing Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
       404: { description: 'RequestForPricing not found' },
@@ -82,7 +81,6 @@ export class RequestForPricingCommentController {
   @ApiOperation({
     summary: 'Get a request-for-pricing comment by ID',
     operationId: 'findOneRequestForPricingComment',
-    tags: ['Procurement', 'RequestForPricing Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
       404: { description: 'Comment not found' },
@@ -105,7 +103,6 @@ export class RequestForPricingCommentController {
   @ApiOperation({
     summary: 'Create a new request-for-pricing comment',
     operationId: 'createRequestForPricingComment',
-    tags: ['Procurement', 'RequestForPricing Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
       404: { description: 'RequestForPricing not found' },
@@ -129,7 +126,6 @@ export class RequestForPricingCommentController {
   @ApiOperation({
     summary: 'Update a request-for-pricing comment',
     operationId: 'updateRequestForPricingComment',
-    tags: ['Procurement', 'RequestForPricing Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
       404: { description: 'Comment not found' },
@@ -155,7 +151,6 @@ export class RequestForPricingCommentController {
   @ApiOperation({
     summary: 'Delete a request-for-pricing comment',
     operationId: 'deleteRequestForPricingComment',
-    tags: ['Procurement', 'RequestForPricing Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
       404: { description: 'Comment not found' },
@@ -179,7 +174,6 @@ export class RequestForPricingCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a request-for-pricing comment',
     operationId: 'addAttachmentToRequestForPricingComment',
-    tags: ['Procurement', 'RequestForPricing Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
       404: { description: 'Comment not found' },
@@ -204,7 +198,6 @@ export class RequestForPricingCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a request-for-pricing comment',
     operationId: 'removeAttachmentFromRequestForPricingComment',
-    tags: ['Procurement', 'RequestForPricing Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
       404: { description: 'Comment not found' },

@@ -80,7 +80,6 @@ export class AuthController {
     summary: 'Login',
     description: 'Authenticates a user against Keycloak using email or username with password credentials, returning JWT access and refresh tokens for subsequent API requests across all ERP modules.',
     operationId: 'login',
-    tags: ['Authentication'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -144,7 +143,6 @@ export class AuthController {
     summary: 'Logout',
     description: 'Terminates the user\'s authenticated session by invalidating their Keycloak tokens, ensuring they can no longer access ERP resources until they log in again.',
     operationId: 'logout',
-    tags: ['Authentication'],
     deprecated: false,
     security: [
       {
@@ -224,7 +222,6 @@ export class AuthController {
     summary: 'Register',
     description: 'Creates a new user account in both Keycloak and the Carmen platform. Used to onboard new hotel staff such as purchasers, department heads, or property managers into the ERP system.',
     operationId: 'register',
-    tags: ['Authentication'],
     deprecated: false,
     security: [
       {
@@ -285,7 +282,6 @@ export class AuthController {
     summary: 'Invite User',
     description: 'Sends an invitation to a new user to join the Carmen ERP platform. The invited user receives a registration link to complete their account setup and gain access to assigned hotel properties.',
     operationId: 'inviteUser',
-    tags: ['Authentication'],
     deprecated: false,
     security: [
       {
@@ -344,7 +340,6 @@ export class AuthController {
     summary: 'Register Confirm',
     description: 'Completes the registration process for an invited user by verifying their invitation token and activating their account in the Carmen ERP platform.',
     operationId: 'registerConfirm',
-    tags: ['Authentication'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -417,7 +412,6 @@ export class AuthController {
     summary: 'Refresh Token',
     description: 'Exchanges an expired or expiring access token for a new one using the refresh token, maintaining the user\'s authenticated session without requiring them to log in again.',
     operationId: 'refreshToken',
-    tags: ['Authentication'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -479,7 +473,6 @@ export class AuthController {
     description:
       'Initiates the password recovery flow for a user who has forgotten their credentials. Sends a password reset email with a secure token link to the registered email address.',
     operationId: 'forgotPassword',
-    tags: ['Authentication'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -541,7 +534,6 @@ export class AuthController {
     summary: 'Reset Password with Token',
     description: 'Completes the password recovery process by setting a new password using the secure token received via the forgot-password email. The token is single-use and time-limited for security.',
     operationId: 'resetPasswordWithToken',
-    tags: ['Authentication'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -630,7 +622,6 @@ export class AuthController {
     summary: 'Reset Password',
     description: 'Allows a platform administrator to forcibly reset another user\'s password without requiring the user\'s current password. Used for support scenarios when hotel staff are locked out of their accounts.',
     operationId: 'resetPassword',
-    tags: ['Authentication'],
     deprecated: false,
     security: [{}],
     parameters: [
@@ -699,7 +690,6 @@ export class AuthController {
     description:
       'Allows an authenticated user to change their own password by providing their current password for verification. This is the standard self-service password update flow for ERP users.',
     operationId: 'changePassword',
-    tags: ['Authentication'],
     deprecated: false,
     security: [
       {
@@ -776,7 +766,6 @@ export class AuthController {
     summary: 'Get all users (test)',
     description: 'Retrieves all platform users for notification testing purposes. This is a development/test endpoint.',
     operationId: 'getAllUsersTest',
-    tags: ['Authentication'],
     deprecated: true,
     responses: {
       200: {

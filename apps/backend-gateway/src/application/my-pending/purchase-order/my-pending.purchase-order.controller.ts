@@ -53,7 +53,6 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
     summary: 'Get count of all pending purchase orders',
     description: 'Returns the count of purchase orders currently awaiting the user\'s action in the approval pipeline, used for dashboard badge notifications and workload indicators.',
     operationId: 'findAllPendingPurchaseOrdersCount',
-    tags: ['Pending Count', 'Workflow & Approval', 'My Pending - Purchase Order'],
     deprecated: false,
     parameters: [
       {
@@ -137,7 +136,6 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
     summary: 'Get workflow stages of purchase orders',
     description: 'Retrieves the approval workflow stages configured for purchase orders in the business unit, showing the sequence of approval steps that a purchase order must pass through.',
     operationId: 'findAllMyPendingPoWorkflowStages',
-    tags: ['Workflow & Approval', 'My Pending - Purchase Order'],
     'x-description-th': 'ดึงขั้นตอนการอนุมัติที่กำหนดไว้สำหรับใบสั่งซื้อในหน่วยธุรกิจ แสดงลำดับขั้นตอนที่ใบสั่งซื้อต้องผ่าน',
   } as any)
   @ApiResponse({ status: 200, description: 'Workflow stages retrieved successfully' })
@@ -180,7 +178,6 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
     summary: 'Get a purchase order by ID',
     description: 'Retrieves the full details of a specific purchase order pending approval, including vendor information, ordered items, quantities, pricing, and current approval workflow stage.',
     operationId: 'findPendingPurchaseOrderById',
-    tags: ['Workflow & Approval', 'My Pending - Purchase Order'],
     deprecated: false,
     parameters: [
       {
@@ -250,7 +247,6 @@ export class MyPendingPurchaseOrderController extends BaseHttpController {
     summary: 'Get all purchase orders',
     description: 'Lists all purchase orders in the user\'s pending approval queue with pagination, allowing approvers to review and process vendor orders awaiting authorization before goods are procured.',
     operationId: 'findAllPendingPurchaseOrders',
-    tags: ['Workflow & Approval', 'My Pending - Purchase Order'],
     deprecated: false,
     parameters: [
       {

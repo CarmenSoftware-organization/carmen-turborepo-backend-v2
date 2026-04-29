@@ -64,7 +64,6 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
     summary: 'Get all purchase request templates',
     description: 'Lists all reusable purchase request templates available in the business unit, such as recurring weekly kitchen supply orders or standard housekeeping stock replenishments, enabling quick creation of routine procurement requests.',
     operationId: 'findAllPurchaseRequestTemplates',
-    tags: ['Procurement', 'Purchase Request Template'],
     responses: {
       200: { description: 'Templates retrieved successfully' },
     },
@@ -113,7 +112,6 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
     summary: 'Get a purchase request template by ID',
     description: 'Retrieves a specific purchase request template with its predefined item list and quantities, allowing users to review or use the template for creating a new procurement request.',
     operationId: 'findOnePurchaseRequestTemplate',
-    tags: ['Procurement', 'Purchase Request Template'],
     responses: {
       200: { description: 'Template retrieved successfully' },
       404: { description: 'Template not found' },
@@ -162,7 +160,6 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
     summary: 'Create a new purchase request template',
     description: 'Creates a new reusable purchase request template with a predefined set of items and quantities, streamlining repetitive procurement tasks such as weekly kitchen supply orders or periodic maintenance material requests.',
     operationId: 'createPurchaseRequestTemplate',
-    tags: ['Procurement', 'Purchase Request Template'],
     responses: {
       201: { description: 'Template created successfully' },
       400: { description: 'Bad request' },
@@ -212,7 +209,6 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
     summary: 'Update a purchase request template',
     description: 'Modifies an existing purchase request template to adjust the predefined item list, quantities, or template name, keeping reusable procurement templates aligned with current ordering needs.',
     operationId: 'updatePurchaseRequestTemplate',
-    tags: ['Procurement', 'Purchase Request Template'],
     responses: {
       200: { description: 'Template updated successfully' },
       404: { description: 'Template not found' },
@@ -263,7 +259,6 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
     summary: 'Delete a purchase request template',
     description: 'Removes a reusable purchase request template that is no longer needed, preventing staff from using outdated or discontinued item sets for new procurement requests.',
     operationId: 'deletePurchaseRequestTemplate',
-    tags: ['Procurement', 'Purchase Request Template'],
     responses: {
       200: { description: 'Template deleted successfully' },
       404: { description: 'Template not found' },

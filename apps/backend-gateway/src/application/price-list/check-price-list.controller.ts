@@ -54,7 +54,6 @@ export class CheckPriceListController extends BaseHttpController {
     description:
       'Validates a secure URL token sent to vendors for price list confirmation, allowing external vendors to review and verify their submitted pricing without requiring system login.',
     operationId: 'checkPriceListByUrlToken',
-    tags: ['Procurement', 'Price List'],
     deprecated: false,
     parameters: [
       {

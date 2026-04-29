@@ -73,7 +73,6 @@ export class Config_WorkflowsController extends BaseHttpController {
     summary: 'Get a workflow by ID',
     description: 'Retrieves a specific approval workflow template including its stages, approver roles, and routing rules. Workflows define the approval chain for procurement documents like purchase requests and purchase orders.',
     operationId: 'configWorkflows_findOne',
-    tags: ['Configuration', 'Workflows'],
     responses: { 200: { description: 'Workflow retrieved successfully' } },
     'x-description-th': 'ดึงข้อมูลขั้นตอนการทำงานเดียวตาม ID รวมถึงขั้นตอนการอนุมัติและบทบาทผู้อนุมัติ',
   } as any)
@@ -121,7 +120,6 @@ export class Config_WorkflowsController extends BaseHttpController {
     summary: 'Get all workflows',
     description: 'Returns all configured approval workflow templates for the business unit. Administrators use these to manage document approval chains for purchase requests, purchase orders, and other procurement documents.',
     operationId: 'configWorkflows_findAll',
-    tags: ['Configuration', 'Workflows'],
     responses: { 200: { description: 'Workflows retrieved successfully' } },
     'x-description-th': 'ดึงรายการขั้นตอนการทำงานทั้งหมดสำหรับการจัดการห่วงโซ่การอนุมัติเอกสาร',
   } as any)
@@ -169,7 +167,6 @@ export class Config_WorkflowsController extends BaseHttpController {
     summary: 'Create a new workflow',
     description: 'Creates a new approval workflow template defining the stages, approver roles (e.g., HOD, Purchaser, FC, GM), and routing rules for document approvals in the procurement process.',
     operationId: 'configWorkflows_create',
-    tags: ['Configuration', 'Workflows'],
     responses: { 201: { description: 'Workflow created successfully' } },
     'x-description-th': 'สร้างขั้นตอนการทำงานใหม่สำหรับการอนุมัติเอกสารจัดซื้อ',
   } as any)
@@ -218,7 +215,6 @@ export class Config_WorkflowsController extends BaseHttpController {
     summary: 'Update a workflow',
     description: 'Modifies an existing approval workflow template, such as adding/removing approval stages or changing approver role assignments. Changes affect all future documents using this workflow.',
     operationId: 'configWorkflows_update',
-    tags: ['Configuration', 'Workflows'],
     responses: { 200: { description: 'Workflow updated successfully' } },
     'x-description-th': 'อัปเดตขั้นตอนการทำงานที่มีอยู่ เช่น เพิ่ม/ลบขั้นตอนหรือเปลี่ยนบทบาทผู้อนุมัติ',
   } as any)
@@ -272,7 +268,6 @@ export class Config_WorkflowsController extends BaseHttpController {
     summary: 'Delete a workflow',
     description: 'Removes an approval workflow template from active use. Documents currently in progress using this workflow are not affected, but no new documents will use this workflow.',
     operationId: 'configWorkflows_delete',
-    tags: ['Configuration', 'Workflows'],
     responses: { 200: { description: 'Workflow deleted successfully' } },
     'x-description-th': 'ลบขั้นตอนการทำงานออกจากการใช้งาน เอกสารที่กำลังดำเนินการไม่ได้รับผลกระทบ',
   } as any)

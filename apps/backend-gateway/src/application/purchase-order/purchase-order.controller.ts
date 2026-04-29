@@ -111,7 +111,6 @@ export class PurchaseOrderController extends BaseHttpController {
     summary: 'List vendors with POs for GRN',
     description: 'Lists distinct vendors that have purchase orders with sent or partial status, for GRN creation.',
     operationId: 'findVendorsForGrn',
-    tags: ['Procurement', 'Purchase Order', 'Good Received Note'],
     responses: {
       200: { description: 'Vendor list retrieved successfully' },
     },
@@ -153,7 +152,6 @@ export class PurchaseOrderController extends BaseHttpController {
     summary: 'List purchase orders for GRN by vendor',
     description: 'Lists purchase orders (sent/partial status) filtered by vendor ID, with detail lines broken down by delivery location. Used by GRN creation to list POs for a specific vendor.',
     operationId: 'findAllPurchaseOrdersForGrnByVendor',
-    tags: ['Procurement', 'Purchase Order', 'Good Received Note'],
     responses: {
       200: { description: 'PO list for vendor retrieved successfully' },
     },
@@ -189,7 +187,6 @@ export class PurchaseOrderController extends BaseHttpController {
     summary: 'List purchase orders for GRN creation',
     description: 'Lists purchase orders (sent/partial status) with detail lines broken down by delivery location from the linked purchase request details. Used by the GRN creation flow to select a PO and see which items go to which locations with remaining quantities.',
     operationId: 'findAllPurchaseOrdersForGrn',
-    tags: ['Procurement', 'Purchase Order', 'Good Received Note'],
     responses: {
       200: { description: 'PO list with location breakdown retrieved successfully' },
     },
@@ -228,7 +225,6 @@ export class PurchaseOrderController extends BaseHttpController {
     summary: 'Get all workflow stages for purchase orders',
     description: 'Returns the configured approval workflow stages (e.g., HOD, Purchaser, FC, GM) for purchase orders in this business unit. Used to display workflow progress and filter by stage.',
     operationId: 'findAllWorkflowStagesByPo',
-    tags: ['Procurement', 'Purchase Order', 'Workflow & Approval'],
     'x-description-th': 'แสดงขั้นตอนเวิร์กโฟลว์การอนุมัติสำหรับใบสั่งซื้อในหน่วยธุรกิจ',
   } as any)
   @ApiResponse({ status: 200, description: 'Workflow stages retrieved successfully' })
@@ -268,7 +264,6 @@ export class PurchaseOrderController extends BaseHttpController {
     description:
       'Retrieves all workflow stages before the current stage of a purchase order. Used to determine revert/return-to options in the approval chain.',
     operationId: 'getPreviousStagesByPoId',
-    tags: ['Procurement', 'Purchase Order', 'Workflow & Approval'],
     responses: {
       200: { description: 'Previous stages retrieved successfully' },
       404: { description: 'Purchase order not found or no workflow assigned' },
@@ -315,7 +310,6 @@ export class PurchaseOrderController extends BaseHttpController {
     summary: 'Get a purchase order by ID',
     description: 'Retrieves the full details of a specific purchase order including vendor information, line items, pricing, delivery dates, workflow status, and the authenticated user\'s role (create, approve, purchase, view_only, issue) for this PO.',
     operationId: 'findOnePurchaseOrder',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -381,7 +375,6 @@ export class PurchaseOrderController extends BaseHttpController {
     summary: 'Get all purchase orders',
     description: 'Lists all purchase orders for the business unit with pagination and search. Optionally filter by vendor_id. Used by purchasers and managers to track outstanding orders, monitor delivery status, and manage vendor commitments.',
     operationId: 'findAllPurchaseOrders',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -458,7 +451,6 @@ export class PurchaseOrderController extends BaseHttpController {
     description:
       'Creates a new purchase order to formalize procurement from a vendor. The PO groups approved PR line items by vendor, delivery date, and currency, establishing a binding order commitment that can be sent to the vendor.',
     operationId: 'createPurchaseOrder',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -537,7 +529,6 @@ export class PurchaseOrderController extends BaseHttpController {
     summary: 'Update a purchase order',
     description: 'Updates purchase order header and line item details such as quantities, pricing, delivery dates, or vendor terms. Only applicable to POs that have not yet been fully received or closed.',
     operationId: 'updatePurchaseOrder',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -610,7 +601,6 @@ export class PurchaseOrderController extends BaseHttpController {
     summary: 'Delete a purchase order',
     description: 'Removes a purchase order that is no longer needed. Typically used for draft POs that were created in error before being sent to a vendor.',
     operationId: 'deletePurchaseOrder',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -676,7 +666,6 @@ export class PurchaseOrderController extends BaseHttpController {
     description:
       'Saves incremental changes to a purchase order that is still being prepared, including adding new items, modifying quantities or pricing, and removing line items. Used by purchasers to finalize PO details before submitting for approval.',
     operationId: 'savePurchaseOrder',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -761,7 +750,6 @@ export class PurchaseOrderController extends BaseHttpController {
     summary: 'Submit a purchase order',
     description: 'Submits a draft purchase order into the approval workflow. Once submitted, the PO moves from draft to in_progress status and enters the configured approval chain.',
     operationId: 'submitPurchaseOrder',
-    tags: ['Procurement', 'Purchase Order'],
     'x-description-th': 'ส่งใบสั่งซื้อฉบับร่างเข้าสู่ขั้นตอนอนุมัติ เมื่อส่งแล้วสถานะจะเปลี่ยนจากร่างเป็นอยู่ระหว่างดำเนินการและเข้าสู่สายการอนุมัติที่กำหนดไว้',
   } as any)
   @ApiBody({ type: SubmitPurchaseOrderSwaggerDto })
@@ -802,7 +790,6 @@ export class PurchaseOrderController extends BaseHttpController {
     description:
       'Advances a purchase order through its approval workflow at the current stage. Each authorized approver (e.g., FC, GM) signs off to authorize the vendor commitment and expenditure.',
     operationId: 'approvePurchaseOrder',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -889,7 +876,6 @@ export class PurchaseOrderController extends BaseHttpController {
     description:
       'Rejects a purchase order at the current approval stage, closing it and preventing it from being sent to the vendor. Used when an approver determines the order should not proceed due to budget, pricing, or business reasons.',
     operationId: 'rejectPurchaseOrder',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -976,7 +962,6 @@ export class PurchaseOrderController extends BaseHttpController {
     description:
       'Returns a purchase order to a previous workflow stage for corrections, such as adjusting vendor terms, quantities, or pricing. Allows approvers to request changes before giving final authorization.',
     operationId: 'reviewPurchaseOrder',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -1062,7 +1047,6 @@ export class PurchaseOrderController extends BaseHttpController {
     description:
       'Cancels a purchase order that has not been fully received, withdrawing the commitment to the vendor. Only draft, in-progress, or sent POs can be cancelled. Cancelled quantities are tracked on line items for reporting.',
     operationId: 'cancelPurchaseOrder',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -1131,7 +1115,6 @@ export class PurchaseOrderController extends BaseHttpController {
     description:
       'Finalizes a purchase order after all expected goods have been received or when no further deliveries are expected. Notifies the buyer and sends an email to the vendor. Unreceived quantities are recorded as cancelled for inventory and financial reconciliation.',
     operationId: 'closePurchaseOrder',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -1199,7 +1182,6 @@ export class PurchaseOrderController extends BaseHttpController {
     description:
       'Previews how approved purchase request line items will be grouped into purchase orders by vendor, delivery date, and currency. Optionally accepts a workflow_id; if omitted, auto-resolves the default purchase_order_workflow. Used by purchasers to review the PO structure before confirming the conversion from PRs to POs.',
     operationId: 'groupPrForPo',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -1283,7 +1265,6 @@ export class PurchaseOrderController extends BaseHttpController {
     description:
       'Converts approved purchase requests into purchase orders by grouping PR line items by vendor, delivery date, and currency. Optionally accepts a workflow_id; if omitted, auto-resolves the default purchase_order_workflow. Created POs are linked to the resolved workflow.',
     operationId: 'confirmPrToPo',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -1366,7 +1347,6 @@ export class PurchaseOrderController extends BaseHttpController {
     summary: 'Export a purchase order to Excel',
     description: 'Generates an Excel spreadsheet of the purchase order with vendor details, all line items, pricing, and delivery information. Used for record-keeping, sharing with finance, or sending to vendors who require spreadsheet formats.',
     operationId: 'exportPurchaseOrder',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -1447,7 +1427,6 @@ export class PurchaseOrderController extends BaseHttpController {
     summary: 'Print a purchase order to PDF',
     description: 'Generates a printable PDF of the purchase order for sending to the vendor, obtaining physical signatures, or filing. Includes vendor details, line items, totals, terms, and approval signatures.',
     operationId: 'printPurchaseOrder',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [
       {
@@ -1530,7 +1509,6 @@ export class PurchaseOrderController extends BaseHttpController {
     summary: 'Get all details for a purchase order',
     description: 'Lists all line items on a purchase order including product details, ordered quantities, unit prices, and received quantities. Used to review what has been ordered and track partial deliveries.',
     operationId: 'findAllPurchaseOrderDetails',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -1578,7 +1556,6 @@ export class PurchaseOrderController extends BaseHttpController {
     summary: 'Get a single purchase order detail by ID',
     description: 'Retrieves a single line item from a purchase order with full product, pricing, and delivery details. Used to inspect a specific item when creating a Good Received Note or resolving discrepancies.',
     operationId: 'findOnePurchaseOrderDetail',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -1629,7 +1606,6 @@ export class PurchaseOrderController extends BaseHttpController {
     summary: 'Delete a purchase order detail',
     description: 'Removes a line item from a draft purchase order before it is sent to the vendor. Used when an item is no longer needed or was added in error.',
     operationId: 'deletePurchaseOrderDetail',
-    tags: ['Procurement', 'Purchase Order'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [

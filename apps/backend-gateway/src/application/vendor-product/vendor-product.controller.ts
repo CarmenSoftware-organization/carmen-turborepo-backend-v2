@@ -63,7 +63,6 @@ export class VendorProductController extends BaseHttpController {
     summary: 'Get vendor product by ID',
     description: 'Retrieves a specific vendor-product mapping including the vendor\'s pricing, lead time, and supply terms for a particular product, used for procurement decision-making and purchase order generation.',
     operationId: 'getVendorProductById',
-    tags: ['Procurement', 'Vendor Product'],
     deprecated: false,
     security: [
       {
@@ -125,7 +124,6 @@ export class VendorProductController extends BaseHttpController {
     summary: 'Get all vendor products',
     description: 'Lists all vendor-product mappings within the business unit, showing which products each vendor supplies along with pricing information, enabling procurement staff to compare vendor offerings.',
     operationId: 'getAllVendorProducts',
-    tags: ['Procurement', 'Vendor Product'],
     deprecated: false,
     security: [
       {
@@ -185,7 +183,6 @@ export class VendorProductController extends BaseHttpController {
     summary: 'Create a vendor product',
     description: 'Creates a new vendor-product mapping, registering that a specific vendor supplies a particular product with its pricing and supply terms for use in procurement operations.',
     operationId: 'createVendorProduct',
-    tags: ['Procurement', 'Vendor Product'],
     deprecated: false,
     security: [
       {
@@ -246,7 +243,6 @@ export class VendorProductController extends BaseHttpController {
     summary: 'Update a vendor product',
     description: 'Updates a vendor-product mapping to reflect changes in pricing, supply terms, or availability, keeping vendor catalog information current for accurate procurement.',
     operationId: 'updateVendorProduct',
-    tags: ['Procurement', 'Vendor Product'],
     deprecated: false,
     security: [
       {
@@ -309,7 +305,6 @@ export class VendorProductController extends BaseHttpController {
     summary: 'Delete a vendor product',
     description: 'Removes a vendor-product mapping when a vendor no longer supplies a particular product, preventing it from appearing in procurement workflows and purchase order creation.',
     operationId: 'deleteVendorProduct',
-    tags: ['Procurement', 'Vendor Product'],
     deprecated: false,
     security: [
       {

@@ -72,7 +72,6 @@ export class StockOutDetailController extends BaseHttpController {
     summary: 'Get all Stock Out Details with pagination',
     description: 'Lists all line items across stock-out transactions, showing individual products and quantities issued from inventory to hotel departments or operational areas.',
     operationId: 'findAllStockOutDetails',
-    tags: ['Inventory', 'Stock Out Detail'],
     responses: {
       200: { description: 'Stock Out Details retrieved successfully' },
     },
@@ -108,7 +107,6 @@ export class StockOutDetailController extends BaseHttpController {
     summary: 'Get a Stock Out Detail by ID',
     description: 'Retrieves a specific line item from a stock-out transaction, including the product, issued quantity, unit of measure, and the department or cost center consuming the inventory.',
     operationId: 'findOneStockOutDetail',
-    tags: ['Inventory', 'Stock Out Detail'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock Out Detail ID' },
     ],
@@ -148,7 +146,6 @@ export class StockOutDetailController extends BaseHttpController {
     summary: 'Create a new Stock Out Detail',
     description: 'Adds a new product line item to a draft stock-out transaction, specifying the product and quantity being issued from a storage location to a requesting department such as kitchen or housekeeping.',
     operationId: 'createStockOutDetail',
-    tags: ['Inventory', 'Stock Out Detail'],
     responses: {
       201: { description: 'Stock Out Detail created successfully' },
       400: { description: 'Cannot add detail to non-draft Stock Out' },
@@ -188,7 +185,6 @@ export class StockOutDetailController extends BaseHttpController {
     summary: 'Update a Stock Out Detail',
     description: 'Modifies a product line item in a draft stock-out transaction, allowing corrections to issued quantities or units before the stock-out is finalized and inventory balances are deducted.',
     operationId: 'updateStockOutDetail',
-    tags: ['Inventory', 'Stock Out Detail'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock Out Detail ID' },
     ],
@@ -231,7 +227,6 @@ export class StockOutDetailController extends BaseHttpController {
     summary: 'Delete a Stock Out Detail',
     description: 'Removes a product line item from a draft stock-out transaction, used when an item was added in error or is no longer needed for the issuance.',
     operationId: 'deleteStockOutDetail',
-    tags: ['Inventory', 'Stock Out Detail'],
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Stock Out Detail ID' },
     ],

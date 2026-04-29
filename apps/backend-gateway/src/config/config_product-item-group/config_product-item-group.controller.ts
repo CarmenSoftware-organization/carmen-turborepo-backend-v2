@@ -71,7 +71,7 @@ export class Config_ProductItemGroupController extends BaseHttpController {
   @Serialize(ProductItemGroupDetailResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get a product item group by ID', description: 'Retrieves a specific product item group definition used to group products for procurement reporting and analysis (e.g., Food Items, Beverage Items, Operating Supplies).', operationId: 'configProductItemGroup_findOne', tags: ['Configuration', 'Product Item Group'], 'x-description-th': 'ดึงข้อมูลกลุ่มรายการสินค้ารายการเดียวตาม ID' } as any)
+  @ApiOperation({ summary: 'Get a product item group by ID', description: 'Retrieves a specific product item group definition used to group products for procurement reporting and analysis (e.g., Food Items, Beverage Items, Operating Supplies).', operationId: 'configProductItemGroup_findOne', 'x-description-th': 'ดึงข้อมูลกลุ่มรายการสินค้ารายการเดียวตาม ID' } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -114,7 +114,7 @@ export class Config_ProductItemGroupController extends BaseHttpController {
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all product item groups', description: 'Returns all product item groups configured for the business unit. Item groups are used to classify products for aggregated procurement reporting, spend analysis, and inventory valuation.', operationId: 'configProductItemGroup_findAll', tags: ['Configuration', 'Product Item Group'], 'x-description-th': 'แสดงรายการกลุ่มรายการสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา' } as any)
+  @ApiOperation({ summary: 'Get all product item groups', description: 'Returns all product item groups configured for the business unit. Item groups are used to classify products for aggregated procurement reporting, spend analysis, and inventory valuation.', operationId: 'configProductItemGroup_findAll', 'x-description-th': 'แสดงรายการกลุ่มรายการสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา' } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -157,7 +157,7 @@ export class Config_ProductItemGroupController extends BaseHttpController {
   @Serialize(ProductItemGroupMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new product item group', description: 'Defines a new product grouping for reporting and procurement analysis. Products assigned to this group will be aggregated together in spend reports and inventory summaries.', operationId: 'configProductItemGroup_create', tags: ['Configuration', 'Product Item Group'], 'x-description-th': 'สร้างกลุ่มรายการสินค้าใหม่' } as any)
+  @ApiOperation({ summary: 'Create a new product item group', description: 'Defines a new product grouping for reporting and procurement analysis. Products assigned to this group will be aggregated together in spend reports and inventory summaries.', operationId: 'configProductItemGroup_create', 'x-description-th': 'สร้างกลุ่มรายการสินค้าใหม่' } as any)
   @ApiBody({ type: ProductItemGroupCreateRequest })
   async create(
     @Req() req: Request,
@@ -201,7 +201,7 @@ export class Config_ProductItemGroupController extends BaseHttpController {
   @Serialize(ProductItemGroupMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update a product item group', description: 'Modifies an existing product item group, such as renaming it or adjusting its classification. Changes affect how products are grouped in procurement and inventory reports.', operationId: 'configProductItemGroup_update', tags: ['Configuration', 'Product Item Group'], 'x-description-th': 'อัปเดตข้อมูลกลุ่มรายการสินค้าที่มีอยู่' } as any)
+  @ApiOperation({ summary: 'Update a product item group', description: 'Modifies an existing product item group, such as renaming it or adjusting its classification. Changes affect how products are grouped in procurement and inventory reports.', operationId: 'configProductItemGroup_update', 'x-description-th': 'อัปเดตข้อมูลกลุ่มรายการสินค้าที่มีอยู่' } as any)
   @ApiBody({ type: ProductItemGroupUpdateRequest })
   async update(
     @Req() req: Request,
@@ -250,7 +250,7 @@ export class Config_ProductItemGroupController extends BaseHttpController {
   @Serialize(ProductItemGroupMutationResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete a product item group', description: 'Removes a product item group from the system. Products currently assigned to this group should be reassigned before deletion to maintain reporting accuracy.', operationId: 'configProductItemGroup_delete', tags: ['Configuration', 'Product Item Group'], 'x-description-th': 'ลบกลุ่มรายการสินค้าตาม ID' } as any)
+  @ApiOperation({ summary: 'Delete a product item group', description: 'Removes a product item group from the system. Products currently assigned to this group should be reassigned before deletion to maintain reporting accuracy.', operationId: 'configProductItemGroup_delete', 'x-description-th': 'ลบกลุ่มรายการสินค้าตาม ID' } as any)
   async delete(
     @Req() req: Request,
     @Res() res: Response,

@@ -51,7 +51,6 @@ export class GoodReceivedNoteDetailCommentController {
     summary: 'Get all comments for a good-received-note-detail',
     description: 'Retrieves all comments for a good-received-note-detail.',
     operationId: 'findAllGoodReceivedNoteDetailComments',
-    tags: ['Procurement', 'GoodReceivedNoteDetail Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
       404: { description: 'GoodReceivedNoteDetail not found' },
@@ -82,7 +81,6 @@ export class GoodReceivedNoteDetailCommentController {
   @ApiOperation({
     summary: 'Get a good-received-note-detail comment by ID',
     operationId: 'findOneGoodReceivedNoteDetailComment',
-    tags: ['Procurement', 'GoodReceivedNoteDetail Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
       404: { description: 'Comment not found' },
@@ -105,7 +103,6 @@ export class GoodReceivedNoteDetailCommentController {
   @ApiOperation({
     summary: 'Create a new good-received-note-detail comment',
     operationId: 'createGoodReceivedNoteDetailComment',
-    tags: ['Procurement', 'GoodReceivedNoteDetail Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
       404: { description: 'GoodReceivedNoteDetail not found' },
@@ -129,7 +126,6 @@ export class GoodReceivedNoteDetailCommentController {
   @ApiOperation({
     summary: 'Update a good-received-note-detail comment',
     operationId: 'updateGoodReceivedNoteDetailComment',
-    tags: ['Procurement', 'GoodReceivedNoteDetail Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
       404: { description: 'Comment not found' },
@@ -155,7 +151,6 @@ export class GoodReceivedNoteDetailCommentController {
   @ApiOperation({
     summary: 'Delete a good-received-note-detail comment',
     operationId: 'deleteGoodReceivedNoteDetailComment',
-    tags: ['Procurement', 'GoodReceivedNoteDetail Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
       404: { description: 'Comment not found' },
@@ -179,7 +174,6 @@ export class GoodReceivedNoteDetailCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a good-received-note-detail comment',
     operationId: 'addAttachmentToGoodReceivedNoteDetailComment',
-    tags: ['Procurement', 'GoodReceivedNoteDetail Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
       404: { description: 'Comment not found' },
@@ -204,7 +198,6 @@ export class GoodReceivedNoteDetailCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a good-received-note-detail comment',
     operationId: 'removeAttachmentFromGoodReceivedNoteDetailComment',
-    tags: ['Procurement', 'GoodReceivedNoteDetail Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
       404: { description: 'Comment not found' },

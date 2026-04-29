@@ -48,7 +48,6 @@ export class UserLocationController extends BaseHttpController {
     description: 'Retrieves all storage locations (e.g., main warehouse, kitchen storeroom, bar stock) that the current user has access permissions for, controlling which inventory locations the user can perform stock-in, stock-out, and transfer operations on.',
     'x-description-th': 'ดึงรายการสถานที่ของผู้ใช้ทั้งหมดที่ผู้ใช้ปัจจุบันเข้าถึงได้',
     operationId: 'findAllUserLocations',
-    tags: ['User & Access', 'User Location'],
     responses: {
       200: { description: 'User locations retrieved successfully' },
     },

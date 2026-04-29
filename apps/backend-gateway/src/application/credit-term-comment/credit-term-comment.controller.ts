@@ -38,7 +38,7 @@ export class CreditTermCommentController {
   @UseGuards(new AppIdGuard('creditTermComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all comments for a credit-term', operationId: 'findAllCreditTermComments', tags: ['Master', 'CreditTerm Comment'], responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get all comments for a credit-term', operationId: 'findAllCreditTermComments', responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findAllByCreditTermId(@Param('bu_code') bu_code: string, @Param('credit_term_id', new ParseUUIDPipe({ version: '4' })) credit_term_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -49,7 +49,7 @@ export class CreditTermCommentController {
   @Get(':bu_code/credit-term-comment/:id')
   @UseGuards(new AppIdGuard('creditTermComment.findOne'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a credit-term comment by ID', operationId: 'findOneCreditTermComment', tags: ['Master', 'CreditTerm Comment'], responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get a credit-term comment by ID', operationId: 'findOneCreditTermComment', responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -59,7 +59,7 @@ export class CreditTermCommentController {
   @Post(':bu_code/credit-term-comment')
   @UseGuards(new AppIdGuard('creditTermComment.create'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new credit-term comment', operationId: 'createCreditTermComment', tags: ['Master', 'CreditTerm Comment'], responses: { 201: { description: 'Comment created successfully' } } } as any)
+  @ApiOperation({ summary: 'Create a new credit-term comment', operationId: 'createCreditTermComment', responses: { 201: { description: 'Comment created successfully' } } } as any)
   @ApiBody({ type: CreateCreditTermCommentDto })
   @HttpCode(HttpStatus.CREATED)
   async create(@Param('bu_code') bu_code: string, @Body() createDto: CreateCreditTermCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -70,7 +70,7 @@ export class CreditTermCommentController {
   @Patch(':bu_code/credit-term-comment/:id')
   @UseGuards(new AppIdGuard('creditTermComment.update'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a credit-term comment', operationId: 'updateCreditTermComment', tags: ['Master', 'CreditTerm Comment'], responses: { 200: { description: 'Comment updated successfully' } } } as any)
+  @ApiOperation({ summary: 'Update a credit-term comment', operationId: 'updateCreditTermComment', responses: { 200: { description: 'Comment updated successfully' } } } as any)
   @ApiBody({ type: UpdateCreditTermCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdateCreditTermCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -81,7 +81,7 @@ export class CreditTermCommentController {
   @Delete(':bu_code/credit-term-comment/:id')
   @UseGuards(new AppIdGuard('creditTermComment.delete'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a credit-term comment', operationId: 'deleteCreditTermComment', tags: ['Master', 'CreditTerm Comment'], responses: { 200: { description: 'Comment deleted successfully' } } } as any)
+  @ApiOperation({ summary: 'Delete a credit-term comment', operationId: 'deleteCreditTermComment', responses: { 200: { description: 'Comment deleted successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -91,7 +91,7 @@ export class CreditTermCommentController {
   @Post(':bu_code/credit-term-comment/:id/attachment')
   @UseGuards(new AppIdGuard('creditTermComment.addAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Add attachment to a credit-term comment', operationId: 'addAttachmentToCreditTermComment', tags: ['Master', 'CreditTerm Comment'], responses: { 200: { description: 'Attachment added successfully' } } } as any)
+  @ApiOperation({ summary: 'Add attachment to a credit-term comment', operationId: 'addAttachmentToCreditTermComment', responses: { 200: { description: 'Attachment added successfully' } } } as any)
   @ApiBody({ type: AddAttachmentDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -102,7 +102,7 @@ export class CreditTermCommentController {
   @Delete(':bu_code/credit-term-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('creditTermComment.removeAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove attachment from a credit-term comment', operationId: 'removeAttachmentFromCreditTermComment', tags: ['Master', 'CreditTerm Comment'], responses: { 200: { description: 'Attachment removed successfully' } } } as any)
+  @ApiOperation({ summary: 'Remove attachment from a credit-term comment', operationId: 'removeAttachmentFromCreditTermComment', responses: { 200: { description: 'Attachment removed successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);

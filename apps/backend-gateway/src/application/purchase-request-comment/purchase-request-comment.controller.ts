@@ -61,7 +61,6 @@ export class PurchaseRequestCommentController {
     description:
       'Retrieves the full discussion thread on a purchase request, enabling requestors and approvers to review collaboration notes, clarification requests, and approval-related feedback.',
     operationId: 'findAllPurchaseRequestComments',
-    tags: ['Procurement', 'Purchase Request Comment'],
     responses: {
       200: {
         description: 'Comments retrieved successfully',
@@ -117,7 +116,6 @@ export class PurchaseRequestCommentController {
     summary: 'Get a comment by ID',
     description: 'Retrieves a specific comment from a purchase request discussion thread, including its content, author, timestamp, and any attached supporting documents.',
     operationId: 'findOnePurchaseRequestComment',
-    tags: ['Procurement', 'Purchase Request Comment'],
     responses: {
       200: {
         description: 'Comment retrieved successfully',
@@ -169,7 +167,6 @@ export class PurchaseRequestCommentController {
     summary: 'Create a new comment',
     description: 'Posts a new comment on a purchase request discussion thread, allowing requestors and approvers to collaborate by asking questions, providing justifications, or requesting changes before approval.',
     operationId: 'createPurchaseRequestComment',
-    tags: ['Procurement', 'Purchase Request Comment'],
     responses: {
       201: {
         description: 'Comment created successfully',
@@ -226,7 +223,6 @@ export class PurchaseRequestCommentController {
     summary: 'Update a comment',
     description: 'Edits an existing comment in a purchase request discussion thread. Only the comment author can modify their own remarks, preserving accountability in the procurement collaboration process.',
     operationId: 'updatePurchaseRequestComment',
-    tags: ['Procurement', 'Purchase Request Comment'],
     responses: {
       200: {
         description: 'Comment updated successfully',
@@ -288,7 +284,6 @@ export class PurchaseRequestCommentController {
     summary: 'Delete a comment',
     description: 'Removes a comment from a purchase request discussion thread. Only the comment author can delete their own remarks, maintaining an auditable collaboration history.',
     operationId: 'deletePurchaseRequestComment',
-    tags: ['Procurement', 'Purchase Request Comment'],
     responses: {
       200: {
         description: 'Comment deleted successfully',
@@ -345,7 +340,6 @@ export class PurchaseRequestCommentController {
     description:
       'Attaches a supporting document (e.g., quotation, specification sheet, or photo) to a purchase request comment, enabling stakeholders to share evidence and documentation during the procurement review process.',
     operationId: 'addAttachmentToPurchaseRequestComment',
-    tags: ['Procurement', 'Purchase Request Comment'],
     responses: {
       200: {
         description: 'Attachment added successfully',
@@ -409,7 +403,6 @@ export class PurchaseRequestCommentController {
     description:
       'Removes a previously attached supporting document from a purchase request comment, allowing the comment author to clean up outdated or incorrect attachments from the discussion thread.',
     operationId: 'removeAttachmentFromPurchaseRequestComment',
-    tags: ['Procurement', 'Purchase Request Comment'],
     responses: {
       200: {
         description: 'Attachment removed successfully',

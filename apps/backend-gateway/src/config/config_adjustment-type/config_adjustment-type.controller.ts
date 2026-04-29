@@ -68,7 +68,7 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('adjustment-type.findOne'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get an adjustment type by ID', description: 'Retrieves a specific inventory adjustment type definition (e.g., spoilage, breakage, theft, expiration). Adjustment types categorize the reason for inventory quantity changes outside normal operations.', operationId: 'configAdjustmentType_findOne', tags: ['Configuration', 'Adjustment Type'], 'x-description-th': 'ดึงข้อมูลประเภทการปรับปรุงรายการเดียวตาม ID' } as any)
+  @ApiOperation({ summary: 'Get an adjustment type by ID', description: 'Retrieves a specific inventory adjustment type definition (e.g., spoilage, breakage, theft, expiration). Adjustment types categorize the reason for inventory quantity changes outside normal operations.', operationId: 'configAdjustmentType_findOne', 'x-description-th': 'ดึงข้อมูลประเภทการปรับปรุงรายการเดียวตาม ID' } as any)
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
@@ -107,7 +107,7 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('adjustment-type.findAll'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all adjustment types', description: 'Returns all configured inventory adjustment type categories. These types are used when recording inventory adjustments to classify the reason for stock discrepancies.', operationId: 'configAdjustmentType_findAll', tags: ['Configuration', 'Adjustment Type'], 'x-description-th': 'แสดงรายการประเภทการปรับปรุงทั้งหมดพร้อมการแบ่งหน้าและค้นหา' } as any)
+  @ApiOperation({ summary: 'Get all adjustment types', description: 'Returns all configured inventory adjustment type categories. These types are used when recording inventory adjustments to classify the reason for stock discrepancies.', operationId: 'configAdjustmentType_findAll', 'x-description-th': 'แสดงรายการประเภทการปรับปรุงทั้งหมดพร้อมการแบ่งหน้าและค้นหา' } as any)
   @ApiUserFilterQueries()
   @ApiQuery({ name: 'type', required: false, enum: ['stock-in', 'stock-out'], description: 'Filter by adjustment type: stock-in or stock-out' })
   async findAll(
@@ -162,7 +162,7 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('adjustment-type.create'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new adjustment type', description: 'Defines a new inventory adjustment category (e.g., spoilage, breakage, theft). Once created, warehouse staff can select this type when recording inventory discrepancies.', operationId: 'configAdjustmentType_create', tags: ['Configuration', 'Adjustment Type'], 'x-description-th': 'สร้างประเภทการปรับปรุงใหม่' } as any)
+  @ApiOperation({ summary: 'Create a new adjustment type', description: 'Defines a new inventory adjustment category (e.g., spoilage, breakage, theft). Once created, warehouse staff can select this type when recording inventory discrepancies.', operationId: 'configAdjustmentType_create', 'x-description-th': 'สร้างประเภทการปรับปรุงใหม่' } as any)
   @ApiBody({ type: AdjustmentTypeCreateRequest })
   async create(
     @Req() req: Request,
@@ -203,7 +203,7 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('adjustment-type.update'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update an adjustment type', description: 'Modifies an existing inventory adjustment type definition, such as renaming or updating its classification. Changes apply to all future inventory adjustment records.', operationId: 'configAdjustmentType_update', tags: ['Configuration', 'Adjustment Type'], 'x-description-th': 'อัปเดตข้อมูลประเภทการปรับปรุงที่มีอยู่' } as any)
+  @ApiOperation({ summary: 'Update an adjustment type', description: 'Modifies an existing inventory adjustment type definition, such as renaming or updating its classification. Changes apply to all future inventory adjustment records.', operationId: 'configAdjustmentType_update', 'x-description-th': 'อัปเดตข้อมูลประเภทการปรับปรุงที่มีอยู่' } as any)
   @ApiBody({ type: AdjustmentTypeUpdateRequest })
   async update(
     @Req() req: Request,
@@ -249,7 +249,7 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
   @UseGuards(new AppIdGuard('adjustment-type.delete'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete an adjustment type', description: 'Removes an inventory adjustment type from active use. Historical adjustment records using this type are preserved, but it will no longer appear as an option for new adjustments.', operationId: 'configAdjustmentType_delete', tags: ['Configuration', 'Adjustment Type'], 'x-description-th': 'ลบประเภทการปรับปรุงตาม ID' } as any)
+  @ApiOperation({ summary: 'Delete an adjustment type', description: 'Removes an inventory adjustment type from active use. Historical adjustment records using this type are preserved, but it will no longer appear as an option for new adjustments.', operationId: 'configAdjustmentType_delete', 'x-description-th': 'ลบประเภทการปรับปรุงตาม ID' } as any)
   async delete(
     @Req() req: Request,
     @Res() res: Response,

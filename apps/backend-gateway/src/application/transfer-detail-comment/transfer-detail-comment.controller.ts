@@ -50,7 +50,6 @@ export class TransferDetailCommentController {
   @ApiOperation({
     summary: 'Get all comments for a transfer-detail',
     operationId: 'findAllTransferDetailComments',
-    tags: ['Inventory', 'TransferDetail Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
     },
@@ -80,7 +79,6 @@ export class TransferDetailCommentController {
   @ApiOperation({
     summary: 'Get a transfer-detail comment by ID',
     operationId: 'findOneTransferDetailComment',
-    tags: ['Inventory', 'TransferDetail Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
     },
@@ -102,7 +100,6 @@ export class TransferDetailCommentController {
   @ApiOperation({
     summary: 'Create a new transfer-detail comment',
     operationId: 'createTransferDetailComment',
-    tags: ['Inventory', 'TransferDetail Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
     },
@@ -130,7 +127,6 @@ export class TransferDetailCommentController {
   @ApiOperation({
     summary: 'Update a transfer-detail comment',
     operationId: 'updateTransferDetailComment',
-    tags: ['Inventory', 'TransferDetail Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
     },
@@ -160,7 +156,6 @@ export class TransferDetailCommentController {
   @ApiOperation({
     summary: 'Delete a transfer-detail comment',
     operationId: 'deleteTransferDetailComment',
-    tags: ['Inventory', 'TransferDetail Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
     },
@@ -182,7 +177,6 @@ export class TransferDetailCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a transfer-detail comment',
     operationId: 'addAttachmentToTransferDetailComment',
-    tags: ['Inventory', 'TransferDetail Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
     },
@@ -212,7 +206,6 @@ export class TransferDetailCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a transfer-detail comment',
     operationId: 'removeAttachmentFromTransferDetailComment',
-    tags: ['Inventory', 'TransferDetail Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
     },

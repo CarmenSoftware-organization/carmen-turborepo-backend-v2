@@ -50,7 +50,6 @@ export class SpotCheckDetailCommentController {
   @ApiOperation({
     summary: 'Get all comments for a spot-check-detail',
     operationId: 'findAllSpotCheckDetailComments',
-    tags: ['Inventory', 'SpotCheckDetail Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
     },
@@ -80,7 +79,6 @@ export class SpotCheckDetailCommentController {
   @ApiOperation({
     summary: 'Get a spot-check-detail comment by ID',
     operationId: 'findOneSpotCheckDetailComment',
-    tags: ['Inventory', 'SpotCheckDetail Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
     },
@@ -102,7 +100,6 @@ export class SpotCheckDetailCommentController {
   @ApiOperation({
     summary: 'Create a new spot-check-detail comment',
     operationId: 'createSpotCheckDetailComment',
-    tags: ['Inventory', 'SpotCheckDetail Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
     },
@@ -130,7 +127,6 @@ export class SpotCheckDetailCommentController {
   @ApiOperation({
     summary: 'Update a spot-check-detail comment',
     operationId: 'updateSpotCheckDetailComment',
-    tags: ['Inventory', 'SpotCheckDetail Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
     },
@@ -160,7 +156,6 @@ export class SpotCheckDetailCommentController {
   @ApiOperation({
     summary: 'Delete a spot-check-detail comment',
     operationId: 'deleteSpotCheckDetailComment',
-    tags: ['Inventory', 'SpotCheckDetail Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
     },
@@ -182,7 +177,6 @@ export class SpotCheckDetailCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a spot-check-detail comment',
     operationId: 'addAttachmentToSpotCheckDetailComment',
-    tags: ['Inventory', 'SpotCheckDetail Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
     },
@@ -212,7 +206,6 @@ export class SpotCheckDetailCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a spot-check-detail comment',
     operationId: 'removeAttachmentFromSpotCheckDetailComment',
-    tags: ['Inventory', 'SpotCheckDetail Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
     },

@@ -85,7 +85,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Returns the number of goods deliveries awaiting receiving action by the current user. Used on dashboards to alert receiving staff about pending vendor deliveries that need to be inspected and recorded.',
     operationId: 'findAllPendingGoodReceivedNoteCount',
-    tags: ['Pending Count', 'Procurement', 'Good Received Note'],
     responses: {
       200: { description: 'Pending GRN count retrieved successfully' },
     },
@@ -132,7 +131,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Retrieves the full details of a goods receiving record including received items, quantities, quality notes, and the associated purchase order. Used to verify what was delivered against what was ordered.',
     operationId: 'findOneGoodReceivedNote',
-    tags: ['Procurement', 'Good Received Note'],
     parameters: [
       {
         name: 'id',
@@ -197,7 +195,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Lists all goods receiving records for the business unit with pagination and filtering. Used by receiving staff and inventory managers to track vendor deliveries, monitor receiving status, and reconcile with purchase orders.',
     operationId: 'findAllGoodReceivedNotes',
-    tags: ['Procurement', 'Good Received Note'],
     responses: {
       200: { description: 'Good Received Notes retrieved successfully' },
       404: { description: 'No Good Received Notes found' },
@@ -242,7 +239,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Lists all goods receiving records for a specific vendor with pagination and filtering.',
     operationId: 'findGoodReceivedNotesByVendorId',
-    tags: ['Procurement', 'Good Received Note'],
     'x-description-th': 'แสดงรายการใบรับสินค้าทั้งหมดของผู้ขายรายหนึ่งพร้อมการแบ่งหน้าและตัวกรอง',
   } as any)
   @HttpCode(HttpStatus.OK)
@@ -287,7 +283,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Lists goods receiving records for a specific vendor filtered to doc_status "saved" or "committed" only. Used as the selectable list when creating a Credit Note against a vendor — draft and voided GRNs are excluded.',
     operationId: 'findGoodReceivedNotesByVendorIdForCn',
-    tags: ['Procurement', 'Good Received Note'],
     'x-description-th': 'แสดงรายการใบรับสินค้าของผู้ขายรายหนึ่งเฉพาะสถานะ saved หรือ committed สำหรับใช้เลือกตอนสร้างใบลดหนี้ (Credit Note) โดยไม่รวม draft และ voided',
   } as any)
   @HttpCode(HttpStatus.OK)
@@ -327,7 +322,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Looks up a purchase order by scanning its QR code to begin the goods receiving process. Used by receiving staff at the loading dock to quickly pull up PO details when a delivery arrives.',
     operationId: 'scanPO',
-    tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     parameters: [
       {
@@ -398,7 +392,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Records a new goods delivery from a vendor against a purchase order. Captures received quantities, quality inspection results, and any discrepancies between ordered and delivered items. This is the first step in updating inventory levels from vendor deliveries.',
     operationId: 'createGoodReceivedNote',
-    tags: ['Procurement', 'Good Received Note'],
     responses: {
       201: { description: 'The Good Received Note was successfully created' },
       400: { description: 'Invalid request body' },
@@ -515,7 +508,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Modifies a goods receiving record to correct quantities, update quality notes, or adjust line items before the GRN is approved. Used when receiving staff need to amend details after the initial entry.',
     operationId: 'updateGoodReceivedNote',
-    tags: ['Procurement', 'Good Received Note'],
     parameters: [
       {
         name: 'id',
@@ -631,7 +623,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Removes a goods receiving record that was created in error or is no longer valid. Only applicable to GRNs that have not been approved, as approved GRNs have already updated inventory levels.',
     operationId: 'deleteGoodReceivedNote',
-    tags: ['Procurement', 'Good Received Note'],
     parameters: [
       {
         name: 'id',
@@ -690,7 +681,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Voids a goods receiving record, setting its status to voided. This prevents the GRN from being committed to inventory. Used when a delivery is rejected or the GRN was created with incorrect information.',
     operationId: 'voidGoodReceivedNote',
-    tags: ['Procurement', 'Good Received Note'],
     parameters: [
       {
         name: 'id',
@@ -744,7 +734,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Exports a goods receiving record to Excel with all received items, quantities, and vendor details. Used for record-keeping, sharing with accounts payable for invoice matching, or vendor dispute resolution.',
     operationId: 'exportGoodReceivedNote',
-    tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [
       {
@@ -836,7 +825,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Rejects a goods receiving record when the delivery does not meet quality standards or the received goods are incorrect. Voids the GRN so it does not affect inventory levels, and the delivery can be handled through the vendor returns process.',
     operationId: 'rejectGoodReceivedNote',
-    tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [
       {
@@ -912,7 +900,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Approves a goods receiving record, committing the received quantities into inventory. This creates inventory transactions and establishes FIFO cost layers for the received items, updating stock levels and enabling the items for use by departments.',
     operationId: 'approveGoodReceivedNote',
-    tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [
       {
@@ -985,7 +972,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Lists all received items on a GRN including product details, ordered vs. received quantities, and inspection notes. Used to review what was actually delivered and compare against the purchase order.',
     operationId: 'findAllGRNDetails',
-    tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -1042,7 +1028,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Retrieves a single received item line from a GRN with full quantity, pricing, and quality details. Used to inspect a specific delivery item when resolving quantity or quality discrepancies.',
     operationId: 'findGRNDetailById',
-    tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -1107,7 +1092,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Removes a line item from a draft GRN when an item was recorded in error or was not actually part of the delivery. Only applicable before the GRN is approved.',
     operationId: 'deleteGRNDetail',
-    tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -1173,7 +1157,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Looks up a purchase order by its document number to start the goods receiving process. Used when receiving staff need to manually enter a PO number (instead of scanning a QR code) to begin recording a delivery.',
     operationId: 'manualCheckPO',
-    tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -1232,7 +1215,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Saves the goods receiving record, creating inventory transactions (FIFO/Average cost layers) and updating PO received quantities. Changes status from draft to saved.',
     operationId: 'saveGoodReceivedNote',
-    tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -1285,7 +1267,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Commits a saved goods receiving record, changing its status from saved to committed.',
     operationId: 'commitGoodReceivedNote',
-    tags: ['Procurement', 'Good Received Note'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -1341,7 +1322,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Lists all distinct products received on a GRN with pagination and filtering. Used by frontend to show a summary of what products were received and to power product-based drill-down views.',
     operationId: 'findProductsByGrnId',
-    tags: ['Procurement', 'Good Received Note'],
     parameters: [
       { name: 'grn_id', in: 'path', required: true, description: 'Good Received Note ID' },
       { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
@@ -1392,7 +1372,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Lists distinct locations where a given product was received on a GRN with pagination and filtering. Used to drill down from a product summary to see where each product was placed.',
     operationId: 'findLocationsByGrnIdAndProductId',
-    tags: ['Procurement', 'Good Received Note'],
     parameters: [
       { name: 'grn_id', in: 'path', required: true, description: 'Good Received Note ID' },
       { name: 'product_id', in: 'path', required: true, description: 'Product ID' },
@@ -1446,7 +1425,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Lists all distinct locations where items were received on a GRN with pagination and filtering. Used by frontend to show a summary of receiving locations and to power location-based drill-down views.',
     operationId: 'findLocationsByGrnId',
-    tags: ['Procurement', 'Good Received Note'],
     parameters: [
       { name: 'grn_id', in: 'path', required: true, description: 'Good Received Note ID' },
       { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
@@ -1497,7 +1475,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Lists distinct products received at a given location on a GRN with pagination and filtering. Used to drill down from a location summary to see what products arrived at each location.',
     operationId: 'findProductsByGrnIdAndLocationId',
-    tags: ['Procurement', 'Good Received Note'],
     parameters: [
       { name: 'grn_id', in: 'path', required: true, description: 'Good Received Note ID' },
       { name: 'location_id', in: 'path', required: true, description: 'Location ID' },
@@ -1547,7 +1524,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Recomputes net_amount, base_net_amount, total_amount, base_total_amount on every non-deleted Good Received Note in the business unit by aggregating from detail items. Use after manual DB edits or schema migrations to repair drift.',
     operationId: 'regenerateAllGoodReceivedNoteTotals',
-    tags: ['Procurement', 'Good Received Note'],
   } as any)
   @HttpCode(HttpStatus.OK)
   async regenerateAllTotals(
@@ -1567,7 +1543,6 @@ export class GoodReceivedNoteController extends BaseHttpController {
     description:
       'Recomputes net_amount, base_net_amount, total_amount, base_total_amount on a single Good Received Note by aggregating from detail items.',
     operationId: 'regenerateGoodReceivedNoteTotals',
-    tags: ['Procurement', 'Good Received Note'],
   } as any)
   @HttpCode(HttpStatus.OK)
   async regenerateTotalsById(

@@ -51,7 +51,6 @@ export class CreditNoteDetailCommentController {
     summary: 'Get all comments for a credit-note-detail',
     description: 'Retrieves all comments for a credit-note-detail.',
     operationId: 'findAllCreditNoteDetailComments',
-    tags: ['Procurement', 'CreditNoteDetail Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
       404: { description: 'CreditNoteDetail not found' },
@@ -82,7 +81,6 @@ export class CreditNoteDetailCommentController {
   @ApiOperation({
     summary: 'Get a credit-note-detail comment by ID',
     operationId: 'findOneCreditNoteDetailComment',
-    tags: ['Procurement', 'CreditNoteDetail Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
       404: { description: 'Comment not found' },
@@ -105,7 +103,6 @@ export class CreditNoteDetailCommentController {
   @ApiOperation({
     summary: 'Create a new credit-note-detail comment',
     operationId: 'createCreditNoteDetailComment',
-    tags: ['Procurement', 'CreditNoteDetail Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
       404: { description: 'CreditNoteDetail not found' },
@@ -129,7 +126,6 @@ export class CreditNoteDetailCommentController {
   @ApiOperation({
     summary: 'Update a credit-note-detail comment',
     operationId: 'updateCreditNoteDetailComment',
-    tags: ['Procurement', 'CreditNoteDetail Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
       404: { description: 'Comment not found' },
@@ -155,7 +151,6 @@ export class CreditNoteDetailCommentController {
   @ApiOperation({
     summary: 'Delete a credit-note-detail comment',
     operationId: 'deleteCreditNoteDetailComment',
-    tags: ['Procurement', 'CreditNoteDetail Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
       404: { description: 'Comment not found' },
@@ -179,7 +174,6 @@ export class CreditNoteDetailCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a credit-note-detail comment',
     operationId: 'addAttachmentToCreditNoteDetailComment',
-    tags: ['Procurement', 'CreditNoteDetail Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
       404: { description: 'Comment not found' },
@@ -204,7 +198,6 @@ export class CreditNoteDetailCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a credit-note-detail comment',
     operationId: 'removeAttachmentFromCreditNoteDetailComment',
-    tags: ['Procurement', 'CreditNoteDetail Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
       404: { description: 'Comment not found' },

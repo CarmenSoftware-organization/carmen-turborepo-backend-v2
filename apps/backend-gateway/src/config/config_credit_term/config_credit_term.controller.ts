@@ -80,7 +80,6 @@ export class Config_CreditTermController extends BaseHttpController {
     summary: 'Get a credit term by ID',
     description: 'Retrieves a specific payment term definition (e.g., Net 30, Net 60, COD) including its due day calculation rules. Credit terms are assigned to vendors to determine invoice payment deadlines.',
     operationId: 'configCreditTerm_findOne',
-    tags: ['Configuration', 'Credit Term'],
     responses: {
       200: { description: 'Credit term retrieved successfully' },
       404: { description: 'Credit term not found' },
@@ -133,7 +132,6 @@ export class Config_CreditTermController extends BaseHttpController {
     summary: 'Get all credit terms',
     description: 'Returns all payment term definitions configured for the business unit. These terms are used when setting up vendor agreements and calculating invoice due dates for accounts payable.',
     operationId: 'configCreditTerm_findAll',
-    tags: ['Configuration', 'Credit Term'],
     responses: { 200: { description: 'Credit terms retrieved successfully' } },
     'x-description-th': 'แสดงรายการเงื่อนไขการชำระเงินทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
   } as any)
@@ -183,7 +181,6 @@ export class Config_CreditTermController extends BaseHttpController {
     summary: 'Create a new credit term',
     description: 'Defines a new payment term (e.g., Net 30, Net 60, COD) with its due date calculation rules. Once created, the credit term can be assigned to vendors for invoice payment scheduling.',
     operationId: 'configCreditTerm_create',
-    tags: ['Configuration', 'Credit Term'],
     responses: { 201: { description: 'Credit term created successfully' } },
     'x-description-th': 'สร้างเงื่อนไขการชำระเงินใหม่',
   } as any)
@@ -234,7 +231,6 @@ export class Config_CreditTermController extends BaseHttpController {
     summary: 'Update a credit term',
     description: 'Modifies an existing payment term definition, such as adjusting the number of credit days or payment conditions. Changes affect future invoice due date calculations for vendors using this term.',
     operationId: 'configCreditTerm_update',
-    tags: ['Configuration', 'Credit Term'],
     responses: {
       200: { description: 'Credit term updated successfully' },
       404: { description: 'Credit term not found' },
@@ -293,7 +289,6 @@ export class Config_CreditTermController extends BaseHttpController {
     summary: 'Delete a credit term',
     description: 'Removes a payment term from active use. The term will no longer be assignable to vendors, but existing vendor agreements and historical invoices using this term are preserved.',
     operationId: 'configCreditTerm_delete',
-    tags: ['Configuration', 'Credit Term'],
     responses: {
       200: { description: 'Credit term deleted successfully' },
       404: { description: 'Credit term not found' },

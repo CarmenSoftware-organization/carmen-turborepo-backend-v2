@@ -38,7 +38,7 @@ export class VendorCommentController {
   @UseGuards(new AppIdGuard('vendorComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all comments for a vendor', operationId: 'findAllVendorComments', tags: ['Master', 'Vendor Comment'], responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get all comments for a vendor', operationId: 'findAllVendorComments', responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findAllByVendorId(@Param('bu_code') bu_code: string, @Param('vendor_id', new ParseUUIDPipe({ version: '4' })) vendor_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -49,7 +49,7 @@ export class VendorCommentController {
   @Get(':bu_code/vendor-comment/:id')
   @UseGuards(new AppIdGuard('vendorComment.findOne'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a vendor comment by ID', operationId: 'findOneVendorComment', tags: ['Master', 'Vendor Comment'], responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get a vendor comment by ID', operationId: 'findOneVendorComment', responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -59,7 +59,7 @@ export class VendorCommentController {
   @Post(':bu_code/vendor-comment')
   @UseGuards(new AppIdGuard('vendorComment.create'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new vendor comment', operationId: 'createVendorComment', tags: ['Master', 'Vendor Comment'], responses: { 201: { description: 'Comment created successfully' } } } as any)
+  @ApiOperation({ summary: 'Create a new vendor comment', operationId: 'createVendorComment', responses: { 201: { description: 'Comment created successfully' } } } as any)
   @ApiBody({ type: CreateVendorCommentDto })
   @HttpCode(HttpStatus.CREATED)
   async create(@Param('bu_code') bu_code: string, @Body() createDto: CreateVendorCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -70,7 +70,7 @@ export class VendorCommentController {
   @Patch(':bu_code/vendor-comment/:id')
   @UseGuards(new AppIdGuard('vendorComment.update'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a vendor comment', operationId: 'updateVendorComment', tags: ['Master', 'Vendor Comment'], responses: { 200: { description: 'Comment updated successfully' } } } as any)
+  @ApiOperation({ summary: 'Update a vendor comment', operationId: 'updateVendorComment', responses: { 200: { description: 'Comment updated successfully' } } } as any)
   @ApiBody({ type: UpdateVendorCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdateVendorCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -81,7 +81,7 @@ export class VendorCommentController {
   @Delete(':bu_code/vendor-comment/:id')
   @UseGuards(new AppIdGuard('vendorComment.delete'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a vendor comment', operationId: 'deleteVendorComment', tags: ['Master', 'Vendor Comment'], responses: { 200: { description: 'Comment deleted successfully' } } } as any)
+  @ApiOperation({ summary: 'Delete a vendor comment', operationId: 'deleteVendorComment', responses: { 200: { description: 'Comment deleted successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -91,7 +91,7 @@ export class VendorCommentController {
   @Post(':bu_code/vendor-comment/:id/attachment')
   @UseGuards(new AppIdGuard('vendorComment.addAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Add attachment to a vendor comment', operationId: 'addAttachmentToVendorComment', tags: ['Master', 'Vendor Comment'], responses: { 200: { description: 'Attachment added successfully' } } } as any)
+  @ApiOperation({ summary: 'Add attachment to a vendor comment', operationId: 'addAttachmentToVendorComment', responses: { 200: { description: 'Attachment added successfully' } } } as any)
   @ApiBody({ type: AddAttachmentDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -102,7 +102,7 @@ export class VendorCommentController {
   @Delete(':bu_code/vendor-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('vendorComment.removeAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove attachment from a vendor comment', operationId: 'removeAttachmentFromVendorComment', tags: ['Master', 'Vendor Comment'], responses: { 200: { description: 'Attachment removed successfully' } } } as any)
+  @ApiOperation({ summary: 'Remove attachment from a vendor comment', operationId: 'removeAttachmentFromVendorComment', responses: { 200: { description: 'Attachment removed successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);

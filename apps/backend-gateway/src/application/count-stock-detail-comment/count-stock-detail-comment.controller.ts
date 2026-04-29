@@ -50,7 +50,6 @@ export class CountStockDetailCommentController {
   @ApiOperation({
     summary: 'Get all comments for a count-stock-detail',
     operationId: 'findAllCountStockDetailComments',
-    tags: ['Inventory', 'CountStockDetail Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
     },
@@ -80,7 +79,6 @@ export class CountStockDetailCommentController {
   @ApiOperation({
     summary: 'Get a count-stock-detail comment by ID',
     operationId: 'findOneCountStockDetailComment',
-    tags: ['Inventory', 'CountStockDetail Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
     },
@@ -102,7 +100,6 @@ export class CountStockDetailCommentController {
   @ApiOperation({
     summary: 'Create a new count-stock-detail comment',
     operationId: 'createCountStockDetailComment',
-    tags: ['Inventory', 'CountStockDetail Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
     },
@@ -130,7 +127,6 @@ export class CountStockDetailCommentController {
   @ApiOperation({
     summary: 'Update a count-stock-detail comment',
     operationId: 'updateCountStockDetailComment',
-    tags: ['Inventory', 'CountStockDetail Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
     },
@@ -160,7 +156,6 @@ export class CountStockDetailCommentController {
   @ApiOperation({
     summary: 'Delete a count-stock-detail comment',
     operationId: 'deleteCountStockDetailComment',
-    tags: ['Inventory', 'CountStockDetail Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
     },
@@ -182,7 +177,6 @@ export class CountStockDetailCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a count-stock-detail comment',
     operationId: 'addAttachmentToCountStockDetailComment',
-    tags: ['Inventory', 'CountStockDetail Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
     },
@@ -212,7 +206,6 @@ export class CountStockDetailCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a count-stock-detail comment',
     operationId: 'removeAttachmentFromCountStockDetailComment',
-    tags: ['Inventory', 'CountStockDetail Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
     },

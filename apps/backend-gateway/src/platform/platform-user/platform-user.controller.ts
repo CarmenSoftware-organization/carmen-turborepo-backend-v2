@@ -71,7 +71,6 @@ export class PlatformUserController extends BaseHttpController {
     description: 'Synchronizes user accounts from the Keycloak identity provider into the Carmen platform database. This ensures that all hotel staff and administrators provisioned in Keycloak are available for assignment to clusters, business units, and roles within the ERP system.',
     'x-description-th': 'ซิงค์ข้อมูลผู้ใช้จาก Keycloak เข้าสู่ระบบแพลตฟอร์ม',
     operationId: 'platformUser_fetchFromKeycloak',
-    tags: ['Platform Admin', 'Platform User'],
     deprecated: false,
     security: [
       {
@@ -136,7 +135,6 @@ export class PlatformUserController extends BaseHttpController {
     description: 'Lists all system-wide user accounts across all tenants with pagination support. Used by platform administrators to manage hotel staff, procurement officers, and other ERP users across the entire organization.',
     'x-description-th': 'แสดงรายการผู้ใช้ทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'platformUser_findAll',
-    tags: ['Platform Admin', 'Platform User'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {
@@ -188,7 +186,6 @@ export class PlatformUserController extends BaseHttpController {
     description: 'Retrieves detailed information about a specific platform user, including their profile, role assignments, and associated business units. Used to review or audit individual user access across the ERP system.',
     'x-description-th': 'ดึงข้อมูลผู้ใช้รายการเดียวตาม ID',
     operationId: 'platformUser_findOne',
-    tags: ['Platform Admin', 'Platform User'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {
@@ -240,7 +237,6 @@ export class PlatformUserController extends BaseHttpController {
     description: 'Provisions a new system-wide user account in the Carmen ERP platform. The user can subsequently be assigned to clusters and business units to grant them access to specific hotel properties and procurement workflows.',
     'x-description-th': 'สร้างผู้ใช้ใหม่',
     operationId: 'platformUser_create',
-    tags: ['Platform Admin', 'Platform User'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {
@@ -294,7 +290,6 @@ export class PlatformUserController extends BaseHttpController {
     description: 'Updates the profile or account details of an existing platform user, such as name, contact information, or status. Used by administrators to maintain accurate user records across the hotel management system.',
     'x-description-th': 'อัปเดตข้อมูลผู้ใช้ที่มีอยู่',
     operationId: 'platformUser_update',
-    tags: ['Platform Admin', 'Platform User'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {
@@ -345,7 +340,6 @@ export class PlatformUserController extends BaseHttpController {
     description: 'Admin-only password reset for a platform user via Keycloak. Body: { newPassword: string, temporary?: boolean }.',
     'x-description-th': 'รีเซ็ตรหัสผ่านผู้ใช้โดยผู้ดูแลระบบผ่าน Keycloak',
     operationId: 'platformUser_resetPassword',
-    tags: ['Platform Admin', 'Platform User'],
     security: [{ bearerAuth: [] }],
     responses: {
       200: { description: 'Password reset successfully' },
@@ -396,7 +390,6 @@ export class PlatformUserController extends BaseHttpController {
     description: 'Deactivates or removes a user account from the Carmen platform. This revokes the user\'s access to all business units and clusters, effectively removing them from all hotel properties and procurement workflows.',
     'x-description-th': 'ลบผู้ใช้ตาม ID',
     operationId: 'platformUser_delete',
-    tags: ['Platform Admin', 'Platform User'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     responses: {
@@ -448,7 +441,6 @@ export class PlatformUserController extends BaseHttpController {
     description: 'Permanently removes a user from tb_user, tb_user_profile, and Keycloak. This action cannot be undone.',
     'x-description-th': 'ลบผู้ใช้อย่างถาวร (ลบออกจากฐานข้อมูลและ Keycloak)',
     operationId: 'platformUser_hardDelete',
-    tags: ['Platform Admin', 'Platform User'],
     security: [{ bearerAuth: [] }],
     responses: {
       200: { description: 'User permanently deleted' },

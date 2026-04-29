@@ -69,7 +69,6 @@ export class Config_RecipeController extends BaseHttpController {
     summary: 'Get a recipe by ID',
     description: 'Retrieves a specific recipe with its full ingredient list, quantities, preparation steps, and yield information. Used by kitchen and F&B teams to manage standardized recipes for cost control.',
     operationId: 'configRecipe_findOne',
-    tags: ['Configuration', 'Recipe'],
     responses: { 200: { description: 'Recipe retrieved successfully' } },
     'x-description-th': 'ดึงข้อมูลสูตรอาหารเดียวตาม ID พร้อมรายการส่วนผสม ปริมาณ และขั้นตอนการเตรียม',
   } as any)
@@ -107,7 +106,6 @@ export class Config_RecipeController extends BaseHttpController {
     summary: 'Get all recipes',
     description: 'Returns all configured recipes with their ingredient compositions. Used by administrators and chefs to manage the recipe catalog for menu costing and ingredient demand forecasting.',
     operationId: 'configRecipe_findAll',
-    tags: ['Configuration', 'Recipe'],
     responses: { 200: { description: 'Recipes retrieved successfully' } },
     'x-description-th': 'ดึงรายการสูตรอาหารทั้งหมดพร้อมส่วนผสมสำหรับการคำนวณต้นทุนเมนู',
   } as any)
@@ -147,7 +145,6 @@ export class Config_RecipeController extends BaseHttpController {
     summary: 'Create a new recipe',
     description: 'Creates a new recipe linking products as ingredients with specified quantities and preparation steps. The recipe can then be used for menu costing, food cost analysis, and inventory consumption tracking.',
     operationId: 'configRecipe_create',
-    tags: ['Configuration', 'Recipe'],
     responses: { 201: { description: 'Recipe created successfully' } },
     'x-description-th': 'สร้างสูตรอาหารใหม่เชื่อมโยงสินค้าเป็นส่วนผสมพร้อมปริมาณและขั้นตอนการเตรียม',
   } as any)
@@ -187,7 +184,6 @@ export class Config_RecipeController extends BaseHttpController {
     summary: 'Update a recipe',
     description: 'Fully updates a recipe including its ingredient list, quantities, and preparation instructions. Changes are reflected in menu cost calculations and ingredient demand projections.',
     operationId: 'configRecipe_update',
-    tags: ['Configuration', 'Recipe'],
     responses: { 200: { description: 'Recipe updated successfully' } },
     'x-description-th': 'อัปเดตสูตรอาหารทั้งหมดรวมถึงรายการส่วนผสม ปริมาณ และคำแนะนำการเตรียม',
   } as any)
@@ -229,7 +225,6 @@ export class Config_RecipeController extends BaseHttpController {
     summary: 'Patch a recipe',
     description: 'Partially updates specific fields of a recipe without replacing the entire record. Useful for adjusting individual ingredient quantities or toggling active status.',
     operationId: 'configRecipe_patch',
-    tags: ['Configuration', 'Recipe'],
     responses: { 200: { description: 'Recipe patched successfully' } },
     'x-description-th': 'อัปเดตบางฟิลด์ของสูตรอาหาร เช่น ปริมาณส่วนผสมหรือสถานะการใช้งาน',
   } as any)
@@ -270,7 +265,6 @@ export class Config_RecipeController extends BaseHttpController {
     summary: 'Delete a recipe',
     description: 'Removes a recipe from the active catalog. The recipe will no longer be used for menu costing or ingredient consumption calculations, but historical cost data is preserved.',
     operationId: 'configRecipe_delete',
-    tags: ['Configuration', 'Recipe'],
     responses: { 200: { description: 'Recipe deleted successfully' } },
     'x-description-th': 'ลบสูตรอาหารออกจากแค็ตตาล็อก ข้อมูลต้นทุนในอดีตยังคงอยู่',
   } as any)

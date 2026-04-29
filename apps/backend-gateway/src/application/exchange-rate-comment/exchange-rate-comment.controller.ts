@@ -38,7 +38,7 @@ export class ExchangeRateCommentController {
   @UseGuards(new AppIdGuard('exchangeRateComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all comments for a exchange-rate', operationId: 'findAllExchangeRateComments', tags: ['Master', 'ExchangeRate Comment'], responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get all comments for a exchange-rate', operationId: 'findAllExchangeRateComments', responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findAllByExchangeRateId(@Param('bu_code') bu_code: string, @Param('exchange_rate_id', new ParseUUIDPipe({ version: '4' })) exchange_rate_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -49,7 +49,7 @@ export class ExchangeRateCommentController {
   @Get(':bu_code/exchange-rate-comment/:id')
   @UseGuards(new AppIdGuard('exchangeRateComment.findOne'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a exchange-rate comment by ID', operationId: 'findOneExchangeRateComment', tags: ['Master', 'ExchangeRate Comment'], responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get a exchange-rate comment by ID', operationId: 'findOneExchangeRateComment', responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -59,7 +59,7 @@ export class ExchangeRateCommentController {
   @Post(':bu_code/exchange-rate-comment')
   @UseGuards(new AppIdGuard('exchangeRateComment.create'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new exchange-rate comment', operationId: 'createExchangeRateComment', tags: ['Master', 'ExchangeRate Comment'], responses: { 201: { description: 'Comment created successfully' } } } as any)
+  @ApiOperation({ summary: 'Create a new exchange-rate comment', operationId: 'createExchangeRateComment', responses: { 201: { description: 'Comment created successfully' } } } as any)
   @ApiBody({ type: CreateExchangeRateCommentDto })
   @HttpCode(HttpStatus.CREATED)
   async create(@Param('bu_code') bu_code: string, @Body() createDto: CreateExchangeRateCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -70,7 +70,7 @@ export class ExchangeRateCommentController {
   @Patch(':bu_code/exchange-rate-comment/:id')
   @UseGuards(new AppIdGuard('exchangeRateComment.update'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a exchange-rate comment', operationId: 'updateExchangeRateComment', tags: ['Master', 'ExchangeRate Comment'], responses: { 200: { description: 'Comment updated successfully' } } } as any)
+  @ApiOperation({ summary: 'Update a exchange-rate comment', operationId: 'updateExchangeRateComment', responses: { 200: { description: 'Comment updated successfully' } } } as any)
   @ApiBody({ type: UpdateExchangeRateCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdateExchangeRateCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -81,7 +81,7 @@ export class ExchangeRateCommentController {
   @Delete(':bu_code/exchange-rate-comment/:id')
   @UseGuards(new AppIdGuard('exchangeRateComment.delete'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a exchange-rate comment', operationId: 'deleteExchangeRateComment', tags: ['Master', 'ExchangeRate Comment'], responses: { 200: { description: 'Comment deleted successfully' } } } as any)
+  @ApiOperation({ summary: 'Delete a exchange-rate comment', operationId: 'deleteExchangeRateComment', responses: { 200: { description: 'Comment deleted successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -91,7 +91,7 @@ export class ExchangeRateCommentController {
   @Post(':bu_code/exchange-rate-comment/:id/attachment')
   @UseGuards(new AppIdGuard('exchangeRateComment.addAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Add attachment to a exchange-rate comment', operationId: 'addAttachmentToExchangeRateComment', tags: ['Master', 'ExchangeRate Comment'], responses: { 200: { description: 'Attachment added successfully' } } } as any)
+  @ApiOperation({ summary: 'Add attachment to a exchange-rate comment', operationId: 'addAttachmentToExchangeRateComment', responses: { 200: { description: 'Attachment added successfully' } } } as any)
   @ApiBody({ type: AddAttachmentDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -102,7 +102,7 @@ export class ExchangeRateCommentController {
   @Delete(':bu_code/exchange-rate-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('exchangeRateComment.removeAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove attachment from a exchange-rate comment', operationId: 'removeAttachmentFromExchangeRateComment', tags: ['Master', 'ExchangeRate Comment'], responses: { 200: { description: 'Attachment removed successfully' } } } as any)
+  @ApiOperation({ summary: 'Remove attachment from a exchange-rate comment', operationId: 'removeAttachmentFromExchangeRateComment', responses: { 200: { description: 'Attachment removed successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);

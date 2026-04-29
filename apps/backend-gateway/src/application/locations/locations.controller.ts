@@ -69,7 +69,6 @@ export class LocationsController extends BaseHttpController {
     description:
       'Lists all active storage locations and warehouses accessible to the current user, used to select destinations for stock-in, stock-out, transfers, and physical count operations.',
     operationId: 'findAllLocationsByUserId',
-    tags: ['Master Data', 'Location'],
     deprecated: false,
     parameters: [
       {
@@ -151,7 +150,6 @@ export class LocationsController extends BaseHttpController {
     description:
       'Lists all active storage locations assigned to a specific product, used to see where a product is stocked.',
     operationId: 'findAllLocationsByProductId',
-    tags: ['Master Data', 'Location'],
     deprecated: false,
     parameters: [
       {
@@ -271,7 +269,6 @@ export class LocationsController extends BaseHttpController {
     summary: 'Get location by ID',
     description: 'Retrieves the full details of a storage location including its assigned users and stocked products, used for managing warehouse configuration and inventory assignments.',
     operationId: 'findOneLocation',
-    tags: ['Master Data', 'Location'],
     'x-description-th': 'ดึงข้อมูลสถานที่/คลังสินค้ารายการเดียวตาม ID',
   } as any)
   async findOne(
@@ -326,7 +323,6 @@ export class LocationsController extends BaseHttpController {
     summary: 'Get product inventory by location ID and product ID',
     description: 'Retrieves real-time inventory levels for a specific product at a given storage location, including on-hand, on-order, reorder, and restock quantities for procurement and replenishment decisions.',
     operationId: 'getProductInventory',
-    tags: ['Master Data', 'Location'],
     deprecated: false,
     parameters: [
       {

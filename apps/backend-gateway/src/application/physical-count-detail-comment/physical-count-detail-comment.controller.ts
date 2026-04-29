@@ -68,7 +68,6 @@ export class PhysicalCountDetailCommentController {
   @ApiOperation({
     summary: 'Get all comments for a physical-count-detail',
     operationId: 'findAllPhysicalCountDetailComments',
-    tags: ['Inventory', 'PhysicalCountDetail Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
     },
@@ -98,7 +97,6 @@ export class PhysicalCountDetailCommentController {
   @ApiOperation({
     summary: 'Get a physical-count-detail comment by ID',
     operationId: 'findOnePhysicalCountDetailComment',
-    tags: ['Inventory', 'PhysicalCountDetail Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
     },
@@ -120,7 +118,6 @@ export class PhysicalCountDetailCommentController {
   @ApiOperation({
     summary: 'Create a new physical-count-detail comment',
     operationId: 'createPhysicalCountDetailComment',
-    tags: ['Inventory', 'PhysicalCountDetail Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
     },
@@ -148,7 +145,6 @@ export class PhysicalCountDetailCommentController {
   @ApiOperation({
     summary: 'Update a physical-count-detail comment',
     operationId: 'updatePhysicalCountDetailComment',
-    tags: ['Inventory', 'PhysicalCountDetail Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
     },
@@ -178,7 +174,6 @@ export class PhysicalCountDetailCommentController {
   @ApiOperation({
     summary: 'Delete a physical-count-detail comment',
     operationId: 'deletePhysicalCountDetailComment',
-    tags: ['Inventory', 'PhysicalCountDetail Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
     },
@@ -201,7 +196,6 @@ export class PhysicalCountDetailCommentController {
   @ApiOperation({
     summary: 'Create a physical-count-detail comment with file uploads',
     operationId: 'createPhysicalCountDetailCommentWithFiles',
-    tags: ['Inventory', 'PhysicalCountDetail Comment'],
     responses: {
       201: { description: 'Comment created with attachments' },
       400: { description: 'Validation failed' },
@@ -280,7 +274,6 @@ export class PhysicalCountDetailCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a physical-count-detail comment',
     operationId: 'addAttachmentToPhysicalCountDetailComment',
-    tags: ['Inventory', 'PhysicalCountDetail Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
     },
@@ -310,7 +303,6 @@ export class PhysicalCountDetailCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a physical-count-detail comment',
     operationId: 'removeAttachmentFromPhysicalCountDetailComment',
-    tags: ['Inventory', 'PhysicalCountDetail Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
     },

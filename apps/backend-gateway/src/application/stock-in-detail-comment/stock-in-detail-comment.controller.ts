@@ -50,7 +50,6 @@ export class StockInDetailCommentController {
   @ApiOperation({
     summary: 'Get all comments for a stock-in-detail',
     operationId: 'findAllStockInDetailComments',
-    tags: ['Inventory', 'StockInDetail Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
     },
@@ -80,7 +79,6 @@ export class StockInDetailCommentController {
   @ApiOperation({
     summary: 'Get a stock-in-detail comment by ID',
     operationId: 'findOneStockInDetailComment',
-    tags: ['Inventory', 'StockInDetail Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
     },
@@ -102,7 +100,6 @@ export class StockInDetailCommentController {
   @ApiOperation({
     summary: 'Create a new stock-in-detail comment',
     operationId: 'createStockInDetailComment',
-    tags: ['Inventory', 'StockInDetail Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
     },
@@ -130,7 +127,6 @@ export class StockInDetailCommentController {
   @ApiOperation({
     summary: 'Update a stock-in-detail comment',
     operationId: 'updateStockInDetailComment',
-    tags: ['Inventory', 'StockInDetail Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
     },
@@ -160,7 +156,6 @@ export class StockInDetailCommentController {
   @ApiOperation({
     summary: 'Delete a stock-in-detail comment',
     operationId: 'deleteStockInDetailComment',
-    tags: ['Inventory', 'StockInDetail Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
     },
@@ -182,7 +177,6 @@ export class StockInDetailCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a stock-in-detail comment',
     operationId: 'addAttachmentToStockInDetailComment',
-    tags: ['Inventory', 'StockInDetail Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
     },
@@ -212,7 +206,6 @@ export class StockInDetailCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a stock-in-detail comment',
     operationId: 'removeAttachmentFromStockInDetailComment',
-    tags: ['Inventory', 'StockInDetail Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
     },

@@ -50,7 +50,6 @@ export class CountStockCommentController {
   @ApiOperation({
     summary: 'Get all comments for a count-stock',
     operationId: 'findAllCountStockComments',
-    tags: ['Inventory', 'CountStock Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
     },
@@ -80,7 +79,6 @@ export class CountStockCommentController {
   @ApiOperation({
     summary: 'Get a count-stock comment by ID',
     operationId: 'findOneCountStockComment',
-    tags: ['Inventory', 'CountStock Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
     },
@@ -102,7 +100,6 @@ export class CountStockCommentController {
   @ApiOperation({
     summary: 'Create a new count-stock comment',
     operationId: 'createCountStockComment',
-    tags: ['Inventory', 'CountStock Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
     },
@@ -130,7 +127,6 @@ export class CountStockCommentController {
   @ApiOperation({
     summary: 'Update a count-stock comment',
     operationId: 'updateCountStockComment',
-    tags: ['Inventory', 'CountStock Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
     },
@@ -160,7 +156,6 @@ export class CountStockCommentController {
   @ApiOperation({
     summary: 'Delete a count-stock comment',
     operationId: 'deleteCountStockComment',
-    tags: ['Inventory', 'CountStock Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
     },
@@ -182,7 +177,6 @@ export class CountStockCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a count-stock comment',
     operationId: 'addAttachmentToCountStockComment',
-    tags: ['Inventory', 'CountStock Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
     },
@@ -212,7 +206,6 @@ export class CountStockCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a count-stock comment',
     operationId: 'removeAttachmentFromCountStockComment',
-    tags: ['Inventory', 'CountStock Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
     },

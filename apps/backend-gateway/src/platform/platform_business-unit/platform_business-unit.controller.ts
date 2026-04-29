@@ -66,7 +66,6 @@ export class Platform_BusinessUnitController extends BaseHttpController {
     description: 'Lists all hotel properties and operational units within the organization, with filtering and pagination. Each business unit represents a distinct tenant (e.g., a hotel, resort, or property) that operates its own inventory and procurement workflows.',
     'x-description-th': 'แสดงรายการหน่วยธุรกิจทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'platformBusinessUnit_findAll',
-    tags: ['Platform Admin', 'Business Unit'],
     responses: {
       200: { description: 'Business units retrieved successfully' },
       401: { description: 'Unauthorized' },
@@ -117,7 +116,6 @@ export class Platform_BusinessUnitController extends BaseHttpController {
     description: 'Retrieves the full details of a specific hotel property or operational unit, including its configuration, cluster membership, and tenant settings.',
     'x-description-th': 'ดึงข้อมูลหน่วยธุรกิจรายการเดียวตาม ID',
     operationId: 'platformBusinessUnit_findOne',
-    tags: ['Platform Admin', 'Business Unit'],
     responses: {
       200: { description: 'Business unit retrieved successfully' },
       401: { description: 'Unauthorized' },
@@ -166,7 +164,6 @@ export class Platform_BusinessUnitController extends BaseHttpController {
     description: 'Registers a new hotel property or operational unit in the platform. This creates a new tenant context with its own isolated inventory, procurement, and recipe data, and associates it with a cluster (hotel chain or company).',
     'x-description-th': 'สร้างหน่วยธุรกิจใหม่',
     operationId: 'platformBusinessUnit_create',
-    tags: ['Platform Admin', 'Business Unit'],
     responses: {
       201: { description: 'Business unit created successfully' },
       400: { description: 'Bad request' },
@@ -218,7 +215,6 @@ export class Platform_BusinessUnitController extends BaseHttpController {
     description: 'Modifies the configuration or details of an existing hotel property or operational unit, such as its name, address, or cluster association.',
     'x-description-th': 'อัปเดตข้อมูลหน่วยธุรกิจที่มีอยู่',
     operationId: 'platformBusinessUnit_update',
-    tags: ['Platform Admin', 'Business Unit'],
     responses: {
       200: { description: 'Business unit updated successfully' },
       400: { description: 'Bad request' },
@@ -273,7 +269,6 @@ export class Platform_BusinessUnitController extends BaseHttpController {
     description: 'Soft-deletes a hotel property or operational unit from the platform. The business unit and its associated tenant data are retained for audit purposes but become inactive, preventing further operations.',
     'x-description-th': 'ลบหน่วยธุรกิจตาม ID',
     operationId: 'platformBusinessUnit_delete',
-    tags: ['Platform Admin', 'Business Unit'],
     responses: {
       200: { description: 'Business unit deleted successfully' },
       401: { description: 'Unauthorized' },

@@ -76,7 +76,6 @@ export class Config_ProductsController extends BaseHttpController {
     summary: 'Get a product by ID',
     description: 'Retrieves the complete details of a product from the master catalog, including SKU, description, category, and unit of measure configurations used across procurement and inventory.',
     operationId: 'configProducts_findOne',
-    tags: ['Configuration', 'Products'],
     responses: { 200: { description: 'Product retrieved successfully' } },
     'x-description-th': 'ดึงข้อมูลสินค้ารายการเดียวตาม ID',
   } as any)
@@ -121,7 +120,6 @@ export class Config_ProductsController extends BaseHttpController {
     summary: 'Get all products',
     description: 'Returns a paginated list of all products in the master catalog. Used by administrators to browse and manage SKUs, ingredients, and supplies available for procurement and inventory operations.',
     operationId: 'configProducts_findAll',
-    tags: ['Configuration', 'Products'],
     responses: { 200: { description: 'Products retrieved successfully' } },
     'x-description-th': 'แสดงรายการสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
   } as any)
@@ -172,7 +170,6 @@ export class Config_ProductsController extends BaseHttpController {
     summary: 'Get product item group by ID',
     description: 'Retrieves the item group classification for a specific product, which determines how the product is grouped for reporting, procurement analysis, and inventory categorization.',
     operationId: 'configProducts_findItemGroup',
-    tags: ['Configuration', 'Products'],
     responses: { 200: { description: 'Product item group retrieved successfully' } },
     'x-description-th': 'ดึงข้อมูลกลุ่มรายการสินค้าตาม ID',
   } as any)
@@ -248,7 +245,6 @@ export class Config_ProductsController extends BaseHttpController {
     summary: 'Create a new product',
     description: 'Adds a new product to the master catalog with its SKU, description, category, and unit definitions. The product becomes available for use in purchase requests, purchase orders, and inventory transactions.',
     operationId: 'configProducts_create',
-    tags: ['Configuration', 'Products'],
     responses: { 201: { description: 'Product created successfully' } },
     'x-description-th': 'สร้างสินค้าใหม่',
   } as any)
@@ -299,7 +295,6 @@ export class Config_ProductsController extends BaseHttpController {
     summary: 'Update a product',
     description: 'Modifies an existing product in the master catalog, such as updating its description, category assignment, or unit configurations. Changes affect all future procurement and inventory transactions referencing this product.',
     operationId: 'configProducts_update',
-    tags: ['Configuration', 'Products'],
     responses: { 200: { description: 'Product updated successfully' } },
     'x-description-th': 'อัปเดตข้อมูลสินค้าที่มีอยู่',
   } as any)
@@ -355,7 +350,6 @@ export class Config_ProductsController extends BaseHttpController {
     summary: 'Delete a product',
     description: 'Soft-deletes a product from the master catalog. The product will no longer be available for new procurement or inventory transactions, but historical records referencing it are preserved.',
     operationId: 'configProducts_delete',
-    tags: ['Configuration', 'Products'],
     responses: { 200: { description: 'Product deleted successfully' } },
     'x-description-th': 'ลบสินค้าตาม ID',
   } as any)

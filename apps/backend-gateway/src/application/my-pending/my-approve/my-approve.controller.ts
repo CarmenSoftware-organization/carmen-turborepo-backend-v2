@@ -51,7 +51,6 @@ export class MyApproveController extends BaseHttpController {
       'Provides a dashboard summary count of all documents awaiting the current user\'s approval across store requisitions, purchase requests, and purchase orders, helping approvers prioritize their workload.',
     'x-description-th': 'ดึงจำนวนรวมของเอกสารที่รออนุมัติทั้งหมด (ใบเบิกสินค้า + ใบขอซื้อ + ใบสั่งซื้อ) ช่วยให้ผู้อนุมัติจัดลำดับความสำคัญของงาน',
     operationId: 'findAllPendingApprovalsCount',
-    tags: ['Pending Count', 'Workflow & Approval', 'My Approve'],
     deprecated: false,
     parameters: [
       {
@@ -126,7 +125,6 @@ export class MyApproveController extends BaseHttpController {
       'Retrieves the full list of procurement documents pending the current user\'s approval, grouped by document type (store requisitions, purchase requests, purchase orders), serving as the approver\'s central task queue.',
     'x-description-th': 'แสดงรายการเอกสารจัดซื้อทั้งหมดที่รออนุมัติ จัดกลุ่มตามประเภท (ใบเบิกสินค้า ใบขอซื้อ ใบสั่งซื้อ) เป็นคิวงานหลักของผู้อนุมัติ',
     operationId: 'findAllPendingApprovals',
-    tags: ['Workflow & Approval', 'My Approve'],
     deprecated: false,
     parameters: [
       {

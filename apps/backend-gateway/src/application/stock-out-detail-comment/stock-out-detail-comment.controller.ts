@@ -50,7 +50,6 @@ export class StockOutDetailCommentController {
   @ApiOperation({
     summary: 'Get all comments for a stock-out-detail',
     operationId: 'findAllStockOutDetailComments',
-    tags: ['Inventory', 'StockOutDetail Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
     },
@@ -80,7 +79,6 @@ export class StockOutDetailCommentController {
   @ApiOperation({
     summary: 'Get a stock-out-detail comment by ID',
     operationId: 'findOneStockOutDetailComment',
-    tags: ['Inventory', 'StockOutDetail Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
     },
@@ -102,7 +100,6 @@ export class StockOutDetailCommentController {
   @ApiOperation({
     summary: 'Create a new stock-out-detail comment',
     operationId: 'createStockOutDetailComment',
-    tags: ['Inventory', 'StockOutDetail Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
     },
@@ -130,7 +127,6 @@ export class StockOutDetailCommentController {
   @ApiOperation({
     summary: 'Update a stock-out-detail comment',
     operationId: 'updateStockOutDetailComment',
-    tags: ['Inventory', 'StockOutDetail Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
     },
@@ -160,7 +156,6 @@ export class StockOutDetailCommentController {
   @ApiOperation({
     summary: 'Delete a stock-out-detail comment',
     operationId: 'deleteStockOutDetailComment',
-    tags: ['Inventory', 'StockOutDetail Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
     },
@@ -182,7 +177,6 @@ export class StockOutDetailCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a stock-out-detail comment',
     operationId: 'addAttachmentToStockOutDetailComment',
-    tags: ['Inventory', 'StockOutDetail Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
     },
@@ -212,7 +206,6 @@ export class StockOutDetailCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a stock-out-detail comment',
     operationId: 'removeAttachmentFromStockOutDetailComment',
-    tags: ['Inventory', 'StockOutDetail Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
     },

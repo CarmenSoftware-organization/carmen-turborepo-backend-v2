@@ -38,7 +38,7 @@ export class LocationCommentController {
   @UseGuards(new AppIdGuard('locationComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all comments for a location', operationId: 'findAllLocationComments', tags: ['Master', 'Location Comment'], responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get all comments for a location', operationId: 'findAllLocationComments', responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findAllByLocationId(@Param('bu_code') bu_code: string, @Param('location_id', new ParseUUIDPipe({ version: '4' })) location_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -49,7 +49,7 @@ export class LocationCommentController {
   @Get(':bu_code/location-comment/:id')
   @UseGuards(new AppIdGuard('locationComment.findOne'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a location comment by ID', operationId: 'findOneLocationComment', tags: ['Master', 'Location Comment'], responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get a location comment by ID', operationId: 'findOneLocationComment', responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -59,7 +59,7 @@ export class LocationCommentController {
   @Post(':bu_code/location-comment')
   @UseGuards(new AppIdGuard('locationComment.create'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new location comment', operationId: 'createLocationComment', tags: ['Master', 'Location Comment'], responses: { 201: { description: 'Comment created successfully' } } } as any)
+  @ApiOperation({ summary: 'Create a new location comment', operationId: 'createLocationComment', responses: { 201: { description: 'Comment created successfully' } } } as any)
   @ApiBody({ type: CreateLocationCommentDto })
   @HttpCode(HttpStatus.CREATED)
   async create(@Param('bu_code') bu_code: string, @Body() createDto: CreateLocationCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -70,7 +70,7 @@ export class LocationCommentController {
   @Patch(':bu_code/location-comment/:id')
   @UseGuards(new AppIdGuard('locationComment.update'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a location comment', operationId: 'updateLocationComment', tags: ['Master', 'Location Comment'], responses: { 200: { description: 'Comment updated successfully' } } } as any)
+  @ApiOperation({ summary: 'Update a location comment', operationId: 'updateLocationComment', responses: { 200: { description: 'Comment updated successfully' } } } as any)
   @ApiBody({ type: UpdateLocationCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdateLocationCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -81,7 +81,7 @@ export class LocationCommentController {
   @Delete(':bu_code/location-comment/:id')
   @UseGuards(new AppIdGuard('locationComment.delete'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a location comment', operationId: 'deleteLocationComment', tags: ['Master', 'Location Comment'], responses: { 200: { description: 'Comment deleted successfully' } } } as any)
+  @ApiOperation({ summary: 'Delete a location comment', operationId: 'deleteLocationComment', responses: { 200: { description: 'Comment deleted successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -91,7 +91,7 @@ export class LocationCommentController {
   @Post(':bu_code/location-comment/:id/attachment')
   @UseGuards(new AppIdGuard('locationComment.addAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Add attachment to a location comment', operationId: 'addAttachmentToLocationComment', tags: ['Master', 'Location Comment'], responses: { 200: { description: 'Attachment added successfully' } } } as any)
+  @ApiOperation({ summary: 'Add attachment to a location comment', operationId: 'addAttachmentToLocationComment', responses: { 200: { description: 'Attachment added successfully' } } } as any)
   @ApiBody({ type: AddAttachmentDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -102,7 +102,7 @@ export class LocationCommentController {
   @Delete(':bu_code/location-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('locationComment.removeAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove attachment from a location comment', operationId: 'removeAttachmentFromLocationComment', tags: ['Master', 'Location Comment'], responses: { 200: { description: 'Attachment removed successfully' } } } as any)
+  @ApiOperation({ summary: 'Remove attachment from a location comment', operationId: 'removeAttachmentFromLocationComment', responses: { 200: { description: 'Attachment removed successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);

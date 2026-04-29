@@ -76,7 +76,6 @@ export class Config_CurrenciesController extends BaseHttpController {
     summary: 'Get a currency by ID',
     description: 'Retrieves a specific currency configuration including its code, symbol, and base currency status. Currencies are used in multi-currency procurement for purchase orders and vendor price lists.',
     operationId: 'configCurrencies_findOne',
-    tags: ['Configuration', 'Currencies'],
     deprecated: false,
     security: [
       {
@@ -150,7 +149,6 @@ export class Config_CurrenciesController extends BaseHttpController {
     summary: 'Get all currencies',
     description: 'Returns all supported currencies configured for the business unit, including the base currency. Used to manage multi-currency support for international procurement and vendor payments.',
     operationId: 'configCurrencies_findAll',
-    tags: ['Configuration', 'Currencies'],
     deprecated: false,
     security: [
       {
@@ -221,7 +219,6 @@ export class Config_CurrenciesController extends BaseHttpController {
     summary: 'Create a new currency',
     description: 'Adds a new currency to the system for use in multi-currency procurement. Once created, the currency can be assigned exchange rates and used in purchase orders and vendor price lists.',
     operationId: 'configCurrencies_create',
-    tags: ['Configuration', 'Currencies'],
     deprecated: false,
     security: [
       {
@@ -289,7 +286,6 @@ export class Config_CurrenciesController extends BaseHttpController {
     summary: 'Update a currency (full replacement)',
     description: 'Fully replaces a currency configuration, such as updating its symbol, decimal precision, or base currency designation. Changes affect how amounts are displayed and calculated in procurement documents.',
     operationId: 'configCurrencies_update',
-    tags: ['Configuration', 'Currencies'],
     deprecated: false,
     security: [
       {
@@ -371,7 +367,6 @@ export class Config_CurrenciesController extends BaseHttpController {
     summary: 'Partially update a currency',
     description: 'Partially updates specific fields of a currency configuration without replacing the entire record. Useful for toggling active status or adjusting display settings.',
     operationId: 'configCurrencies_patch',
-    tags: ['Configuration', 'Currencies'],
     deprecated: false,
     security: [
       {
@@ -452,7 +447,6 @@ export class Config_CurrenciesController extends BaseHttpController {
     summary: 'Delete a currency',
     description: 'Removes a currency from active use. The currency will no longer be available for new procurement transactions, but historical records using this currency are preserved.',
     operationId: 'configCurrencies_delete',
-    tags: ['Configuration', 'Currencies'],
     deprecated: false,
     security: [
       {

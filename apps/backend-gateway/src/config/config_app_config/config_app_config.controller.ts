@@ -50,7 +50,6 @@ export class Config_AppConfigController extends BaseHttpController {
     description:
       'Returns all tb_application_config rows for the business unit. Sensitive fields (e.g. SMTP password) are masked.',
     operationId: 'configAppConfig_list',
-    tags: ['Configuration', 'App Config'],
     'x-description-th': 'แสดงรายการ tb_application_config ทั้งหมดของหน่วยธุรกิจ (mask password)',
   } as any)
   async list(
@@ -74,7 +73,6 @@ export class Config_AppConfigController extends BaseHttpController {
     summary: 'Get application config entry by key',
     description: 'Returns one tb_application_config row by key. Sensitive fields are masked.',
     operationId: 'configAppConfig_get',
-    tags: ['Configuration', 'App Config'],
     'x-description-th': 'ดู tb_application_config รายการเดียวตาม key',
   } as any)
   async get(
@@ -100,7 +98,6 @@ export class Config_AppConfigController extends BaseHttpController {
     description:
       'Upserts a tb_application_config row by key. For key="report_email", the SMTP password is automatically encrypted before storage.',
     operationId: 'configAppConfig_upsert',
-    tags: ['Configuration', 'App Config'],
     'x-description-th': 'สร้าง/อัปเดต tb_application_config — auto encrypt password',
   } as any)
   @ApiBody({
@@ -151,7 +148,6 @@ export class Config_AppConfigController extends BaseHttpController {
     summary: 'Delete application config entry',
     description: 'Soft-deletes a tb_application_config row by key (sets deleted_at).',
     operationId: 'configAppConfig_delete',
-    tags: ['Configuration', 'App Config'],
     'x-description-th': 'ลบ tb_application_config (soft delete)',
   } as any)
   async delete(
@@ -178,7 +174,6 @@ export class Config_AppConfigController extends BaseHttpController {
     description:
       'Returns deduplicated users assigned to approval stages in tb_workflow for the given doc_type (pr | po | sr). Used by frontend signature config select.',
     operationId: 'configAppConfig_signatureCandidates',
-    tags: ['Configuration', 'App Config'],
     'x-description-th': 'รายชื่อ user ที่มีสิทธิ์ลงนาม (จาก workflow) ใช้กับ select บนฟอร์ม signature config',
   } as any)
   async signatureCandidates(
@@ -211,7 +206,6 @@ export class Config_AppConfigController extends BaseHttpController {
     description:
       'Sends a test email through the normal BU notification flow (load config → decrypt → send) so the result mirrors production behavior.',
     operationId: 'configAppConfig_testEmail',
-    tags: ['Configuration', 'App Config'],
     'x-description-th': 'ส่งเมลทดสอบด้วย config ปัจจุบัน',
   } as any)
   async testEmail(

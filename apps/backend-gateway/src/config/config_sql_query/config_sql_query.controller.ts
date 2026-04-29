@@ -47,7 +47,6 @@ export class Config_SqlQueryController extends BaseHttpController {
     summary: 'Execute a read-only SQL statement',
     description: 'Runs a SELECT/WITH/SHOW/EXPLAIN statement against the tenant DB and returns rows + columns.',
     operationId: 'sqlQuery_execute',
-    tags: ['SQL Query'],
     'x-description-th': 'รัน SQL แบบ read-only แล้วคืนผลลัพธ์',
   } as any)
   @ApiBody({
@@ -76,7 +75,6 @@ export class Config_SqlQueryController extends BaseHttpController {
     summary: 'Create or replace a view / stored procedure / function',
     description: 'Executes the provided DDL against the tenant schema. For type=view, a bare SELECT will be auto-wrapped with CREATE OR REPLACE VIEW.',
     operationId: 'sqlQuery_save',
-    tags: ['SQL Query'],
     'x-description-th': 'สร้าง / อัปเดต view / stored procedure / function ลง schema ของ tenant',
   } as any)
   @ApiBody({
@@ -107,7 +105,6 @@ export class Config_SqlQueryController extends BaseHttpController {
     summary: 'List database tables, views, and stored procedures/functions',
     description: 'Returns user-defined tables, views, procedures, functions and their columns from the tenant schema.',
     operationId: 'sqlQuery_listDbObjects',
-    tags: ['SQL Query'],
     'x-description-th': 'แสดงรายการ table / view / stored procedure / function ของ tenant schema',
   } as any)
   async dbObjects(
@@ -126,7 +123,6 @@ export class Config_SqlQueryController extends BaseHttpController {
     summary: 'Get DDL definition for a view or stored procedure/function',
     description: 'Returns the CREATE OR REPLACE statement for the given object.',
     operationId: 'sqlQuery_getDbObjectDefinition',
-    tags: ['SQL Query'],
     'x-description-th': 'ดู DDL ของ view / stored procedure / function',
   } as any)
   @ApiQuery({ name: 'type', enum: ['view', 'procedure', 'function'] })
@@ -157,7 +153,6 @@ export class Config_SqlQueryController extends BaseHttpController {
     summary: 'Drop a view or stored procedure/function',
     description: 'Drops the given object from the tenant schema using DROP IF EXISTS.',
     operationId: 'sqlQuery_dropDbObject',
-    tags: ['SQL Query'],
     'x-description-th': 'ลบ view / stored procedure / function',
   } as any)
   @ApiQuery({ name: 'type', enum: ['view', 'procedure', 'function'] })

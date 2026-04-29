@@ -74,7 +74,6 @@ export class Config_PriceListController extends BaseHttpController {
     summary: 'Upload price list from Excel',
     description: 'Bulk imports vendor price lists from an Excel file, enabling administrators to efficiently update product pricing from multiple suppliers for procurement cost control.',
     operationId: 'configPriceList_uploadExcel',
-    tags: ['Configuration', 'Price List'],
     responses: { 201: { description: 'Price list uploaded successfully' } },
     'x-description-th': 'อัปโหลดรายการราคาจากไฟล์ Excel',
   } as any)
@@ -124,7 +123,6 @@ export class Config_PriceListController extends BaseHttpController {
     summary: 'Download price list as Excel',
     description: 'Exports a vendor price list to Excel format for offline review, comparison, or sharing with stakeholders for procurement cost analysis and budget planning.',
     operationId: 'configPriceList_downloadExcel',
-    tags: ['Configuration', 'Price List'],
     responses: { 200: { description: 'Price list Excel downloaded successfully' } },
     'x-description-th': 'ดาวน์โหลดรายการราคาเป็นไฟล์ Excel',
   } as any)
@@ -173,7 +171,6 @@ export class Config_PriceListController extends BaseHttpController {
     summary: 'Create a new price list',
     description: 'Creates a new vendor price list with product-level pricing details. Price lists are used during purchase order creation to automatically populate agreed vendor prices for cost control.',
     operationId: 'configPriceList_create',
-    tags: ['Configuration', 'Price List'],
     responses: { 201: { description: 'Price list created successfully' } },
     'x-description-th': 'สร้างรายการราคาใหม่',
   } as any)
@@ -221,7 +218,6 @@ export class Config_PriceListController extends BaseHttpController {
     summary: 'Get all price lists',
     description: 'Returns all vendor price lists configured for the business unit. Used by procurement staff to compare supplier pricing and manage cost agreements across vendors.',
     operationId: 'configPriceList_findAll',
-    tags: ['Configuration', 'Price List'],
     responses: { 200: { description: 'Price lists retrieved successfully' } },
     'x-description-th': 'แสดงรายการราคาทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
   } as any)
@@ -271,7 +267,6 @@ export class Config_PriceListController extends BaseHttpController {
     summary: 'Get a price list by ID',
     description: 'Retrieves a specific vendor price list with all its line-item pricing details. Used to review agreed product prices from a particular vendor for procurement decisions.',
     operationId: 'configPriceList_findOne',
-    tags: ['Configuration', 'Price List'],
     responses: { 200: { description: 'Price list retrieved successfully' } },
     'x-description-th': 'ดึงข้อมูลรายการราคารายการเดียวตาม ID',
   } as any)
@@ -316,7 +311,6 @@ export class Config_PriceListController extends BaseHttpController {
     summary: 'Update a price list',
     description: 'Modifies an existing vendor price list, such as updating product prices, validity dates, or adding new product lines. Updated prices are used in subsequent purchase order creation.',
     operationId: 'configPriceList_update',
-    tags: ['Configuration', 'Price List'],
     responses: { 200: { description: 'Price list updated successfully' } },
     'x-description-th': 'อัปเดตข้อมูลรายการราคาที่มีอยู่',
   } as any)
@@ -369,7 +363,6 @@ export class Config_PriceListController extends BaseHttpController {
     summary: 'Delete a price list',
     description: 'Removes a vendor price list from the system. The price list will no longer be used for automated pricing in purchase orders, but historical procurement records are unaffected.',
     operationId: 'configPriceList_delete',
-    tags: ['Configuration', 'Price List'],
     responses: { 200: { description: 'Price list deleted successfully' } },
     'x-description-th': 'ลบรายการราคาตาม ID',
   } as any)
@@ -414,7 +407,6 @@ export class Config_PriceListController extends BaseHttpController {
     summary: 'Import price lists from CSV',
     description: 'Bulk imports vendor price list data from a CSV file, creating or updating price lists and their line items. Invalid rows are skipped and reported, enabling efficient mass updates of procurement pricing.',
     operationId: 'configPriceList_importCsv',
-    tags: ['Configuration', 'Price List'],
     responses: { 201: { description: 'Price list CSV imported successfully' } },
     'x-description-th': 'นำเข้ารายการราคาจากไฟล์ CSV',
   } as any)

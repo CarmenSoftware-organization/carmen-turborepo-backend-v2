@@ -63,7 +63,6 @@ export class NewsController extends BaseHttpController {
     description: 'Retrieves all internal announcements and news articles published within the business unit, used to communicate operational updates, policy changes, and important notices to hotel staff.',
     'x-description-th': 'แสดงรายการข่าวสารทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'findAllNews',
-    tags: ['Document & Log', 'News'],
     responses: {
       200: { description: 'News list retrieved successfully' },
     },
@@ -108,7 +107,6 @@ export class NewsController extends BaseHttpController {
     description: 'Retrieves a specific internal announcement or news article by its ID, including its full content, publication date, and target audience within the business unit.',
     'x-description-th': 'ดึงข้อมูลข่าวสารรายการเดียวตาม ID',
     operationId: 'findOneNews',
-    tags: ['Document & Log', 'News'],
     responses: {
       200: { description: 'News article retrieved successfully' },
       404: { description: 'News article not found' },
@@ -152,7 +150,6 @@ export class NewsController extends BaseHttpController {
     description: 'Publishes a new internal announcement or news article to inform business unit users about operational updates, procurement policy changes, or other important hotel-wide notices.',
     'x-description-th': 'สร้างข่าวสารใหม่',
     operationId: 'createNews',
-    tags: ['Document & Log', 'News'],
     responses: {
       201: { description: 'News article created successfully' },
       400: { description: 'Bad request' },
@@ -202,7 +199,6 @@ export class NewsController extends BaseHttpController {
     description: 'Modifies an existing internal announcement or news article, allowing administrators to correct content, update details, or change the publication scope within the business unit.',
     'x-description-th': 'อัปเดตข้อมูลข่าวสารที่มีอยู่',
     operationId: 'updateNews',
-    tags: ['Document & Log', 'News'],
     responses: {
       200: { description: 'News article updated successfully' },
       404: { description: 'News article not found' },
@@ -254,7 +250,6 @@ export class NewsController extends BaseHttpController {
     description: 'Removes an internal announcement or news article from the business unit, archiving it so it is no longer visible to staff.',
     'x-description-th': 'ลบข่าวสารตาม ID',
     operationId: 'deleteNews',
-    tags: ['Document & Log', 'News'],
     responses: {
       200: { description: 'News article deleted successfully' },
       404: { description: 'News article not found' },

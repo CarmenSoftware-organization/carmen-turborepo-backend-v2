@@ -38,7 +38,7 @@ export class ProductCommentController {
   @UseGuards(new AppIdGuard('productComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all comments for a product', operationId: 'findAllProductComments', tags: ['Master', 'Product Comment'], responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get all comments for a product', operationId: 'findAllProductComments', responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findAllByProductId(@Param('bu_code') bu_code: string, @Param('product_id', new ParseUUIDPipe({ version: '4' })) product_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -49,7 +49,7 @@ export class ProductCommentController {
   @Get(':bu_code/product-comment/:id')
   @UseGuards(new AppIdGuard('productComment.findOne'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a product comment by ID', operationId: 'findOneProductComment', tags: ['Master', 'Product Comment'], responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get a product comment by ID', operationId: 'findOneProductComment', responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -59,7 +59,7 @@ export class ProductCommentController {
   @Post(':bu_code/product-comment')
   @UseGuards(new AppIdGuard('productComment.create'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new product comment', operationId: 'createProductComment', tags: ['Master', 'Product Comment'], responses: { 201: { description: 'Comment created successfully' } } } as any)
+  @ApiOperation({ summary: 'Create a new product comment', operationId: 'createProductComment', responses: { 201: { description: 'Comment created successfully' } } } as any)
   @ApiBody({ type: CreateProductCommentDto })
   @HttpCode(HttpStatus.CREATED)
   async create(@Param('bu_code') bu_code: string, @Body() createDto: CreateProductCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -70,7 +70,7 @@ export class ProductCommentController {
   @Patch(':bu_code/product-comment/:id')
   @UseGuards(new AppIdGuard('productComment.update'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a product comment', operationId: 'updateProductComment', tags: ['Master', 'Product Comment'], responses: { 200: { description: 'Comment updated successfully' } } } as any)
+  @ApiOperation({ summary: 'Update a product comment', operationId: 'updateProductComment', responses: { 200: { description: 'Comment updated successfully' } } } as any)
   @ApiBody({ type: UpdateProductCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdateProductCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -81,7 +81,7 @@ export class ProductCommentController {
   @Delete(':bu_code/product-comment/:id')
   @UseGuards(new AppIdGuard('productComment.delete'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a product comment', operationId: 'deleteProductComment', tags: ['Master', 'Product Comment'], responses: { 200: { description: 'Comment deleted successfully' } } } as any)
+  @ApiOperation({ summary: 'Delete a product comment', operationId: 'deleteProductComment', responses: { 200: { description: 'Comment deleted successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -91,7 +91,7 @@ export class ProductCommentController {
   @Post(':bu_code/product-comment/:id/attachment')
   @UseGuards(new AppIdGuard('productComment.addAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Add attachment to a product comment', operationId: 'addAttachmentToProductComment', tags: ['Master', 'Product Comment'], responses: { 200: { description: 'Attachment added successfully' } } } as any)
+  @ApiOperation({ summary: 'Add attachment to a product comment', operationId: 'addAttachmentToProductComment', responses: { 200: { description: 'Attachment added successfully' } } } as any)
   @ApiBody({ type: AddAttachmentDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -102,7 +102,7 @@ export class ProductCommentController {
   @Delete(':bu_code/product-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('productComment.removeAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove attachment from a product comment', operationId: 'removeAttachmentFromProductComment', tags: ['Master', 'Product Comment'], responses: { 200: { description: 'Attachment removed successfully' } } } as any)
+  @ApiOperation({ summary: 'Remove attachment from a product comment', operationId: 'removeAttachmentFromProductComment', responses: { 200: { description: 'Attachment removed successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);

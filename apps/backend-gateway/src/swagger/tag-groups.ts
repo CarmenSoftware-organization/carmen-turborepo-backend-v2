@@ -58,6 +58,7 @@ export const SWAGGER_TAGS: SwaggerTag[] = [
   { name: 'Inventory: Adjustments',      description: 'Inventory adjustments' },
   { name: 'Inventory: Transactions',     description: 'Read-only ledger of all stock movements' },
   { name: 'Inventory: Periods',          description: 'Inventory period open/close' },
+  { name: 'Inventory: Cost',             description: 'Inventory cost lookups (product/location/qty)' },
 
   // Group 6 — Workflow & Approval
   { name: 'Workflow: Operations',   description: 'Runtime workflow state transitions and comments' },
@@ -138,6 +139,7 @@ export const SWAGGER_TAG_GROUPS: SwaggerTagGroup[] = [
       'Inventory: Adjustments',
       'Inventory: Transactions',
       'Inventory: Periods',
+      'Inventory: Cost',
     ],
   },
   {

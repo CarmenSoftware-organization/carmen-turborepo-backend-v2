@@ -50,7 +50,6 @@ export class StockOutCommentController {
   @ApiOperation({
     summary: 'Get all comments for a stock-out',
     operationId: 'findAllStockOutComments',
-    tags: ['Inventory', 'StockOut Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
     },
@@ -80,7 +79,6 @@ export class StockOutCommentController {
   @ApiOperation({
     summary: 'Get a stock-out comment by ID',
     operationId: 'findOneStockOutComment',
-    tags: ['Inventory', 'StockOut Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
     },
@@ -102,7 +100,6 @@ export class StockOutCommentController {
   @ApiOperation({
     summary: 'Create a new stock-out comment',
     operationId: 'createStockOutComment',
-    tags: ['Inventory', 'StockOut Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
     },
@@ -130,7 +127,6 @@ export class StockOutCommentController {
   @ApiOperation({
     summary: 'Update a stock-out comment',
     operationId: 'updateStockOutComment',
-    tags: ['Inventory', 'StockOut Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
     },
@@ -160,7 +156,6 @@ export class StockOutCommentController {
   @ApiOperation({
     summary: 'Delete a stock-out comment',
     operationId: 'deleteStockOutComment',
-    tags: ['Inventory', 'StockOut Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
     },
@@ -182,7 +177,6 @@ export class StockOutCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a stock-out comment',
     operationId: 'addAttachmentToStockOutComment',
-    tags: ['Inventory', 'StockOut Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
     },
@@ -212,7 +206,6 @@ export class StockOutCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a stock-out comment',
     operationId: 'removeAttachmentFromStockOutComment',
-    tags: ['Inventory', 'StockOut Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
     },

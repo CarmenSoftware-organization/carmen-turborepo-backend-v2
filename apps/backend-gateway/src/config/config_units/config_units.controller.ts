@@ -73,7 +73,6 @@ export class Config_UnitsController extends BaseHttpController {
     summary: 'Get a unit by ID',
     description: 'Retrieves a specific unit of measurement definition (e.g., kg, litre, piece, case) used for product ordering, inventory counting, and recipe ingredient quantities.',
     operationId: 'configUnits_findOne',
-    tags: ['Configuration', 'Units'],
     responses: { 200: { description: 'Unit retrieved successfully' } },
     'x-description-th': 'ดึงข้อมูลหน่วยนับรายการเดียวตาม ID',
   } as any)
@@ -117,7 +116,6 @@ export class Config_UnitsController extends BaseHttpController {
     summary: 'Get all units',
     description: 'Returns all configured units of measurement available in the system. These units are referenced by products, recipes, and procurement documents to ensure consistent quantity tracking.',
     operationId: 'configUnits_findAll',
-    tags: ['Configuration', 'Units'],
     responses: { 200: { description: 'Units retrieved successfully' } },
     'x-description-th': 'แสดงรายการหน่วยนับทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
   } as any)
@@ -166,7 +164,6 @@ export class Config_UnitsController extends BaseHttpController {
     summary: 'Create a new unit',
     description: 'Defines a new unit of measurement (e.g., kg, litre, dozen, case) in the system. The unit becomes available for assignment to products, recipe ingredients, and procurement documents.',
     operationId: 'configUnits_create',
-    tags: ['Configuration', 'Units'],
     responses: { 201: { description: 'Unit created successfully' } },
     'x-description-th': 'สร้างหน่วยนับใหม่',
   } as any)
@@ -216,7 +213,6 @@ export class Config_UnitsController extends BaseHttpController {
     summary: 'Update a unit',
     description: 'Modifies an existing unit of measurement definition, such as updating its name or conversion factors. Changes affect how quantities are displayed across procurement and inventory modules.',
     operationId: 'configUnits_update',
-    tags: ['Configuration', 'Units'],
     responses: { 200: { description: 'Unit updated successfully' } },
     'x-description-th': 'อัปเดตข้อมูลหน่วยนับที่มีอยู่',
   } as any)
@@ -266,7 +262,6 @@ export class Config_UnitsController extends BaseHttpController {
     summary: 'Delete a unit',
     description: 'Removes a unit of measurement from the system. The unit will no longer be available for new product or procurement configurations, but existing references in historical data are preserved.',
     operationId: 'configUnits_delete',
-    tags: ['Configuration', 'Units'],
     responses: { 200: { description: 'Unit deleted successfully' } },
     'x-description-th': 'ลบหน่วยนับตาม ID',
   } as any)

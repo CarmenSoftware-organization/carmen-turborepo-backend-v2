@@ -50,7 +50,6 @@ export class TransferCommentController {
   @ApiOperation({
     summary: 'Get all comments for a transfer',
     operationId: 'findAllTransferComments',
-    tags: ['Inventory', 'Transfer Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
     },
@@ -80,7 +79,6 @@ export class TransferCommentController {
   @ApiOperation({
     summary: 'Get a transfer comment by ID',
     operationId: 'findOneTransferComment',
-    tags: ['Inventory', 'Transfer Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
     },
@@ -102,7 +100,6 @@ export class TransferCommentController {
   @ApiOperation({
     summary: 'Create a new transfer comment',
     operationId: 'createTransferComment',
-    tags: ['Inventory', 'Transfer Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
     },
@@ -130,7 +127,6 @@ export class TransferCommentController {
   @ApiOperation({
     summary: 'Update a transfer comment',
     operationId: 'updateTransferComment',
-    tags: ['Inventory', 'Transfer Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
     },
@@ -160,7 +156,6 @@ export class TransferCommentController {
   @ApiOperation({
     summary: 'Delete a transfer comment',
     operationId: 'deleteTransferComment',
-    tags: ['Inventory', 'Transfer Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
     },
@@ -182,7 +177,6 @@ export class TransferCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a transfer comment',
     operationId: 'addAttachmentToTransferComment',
-    tags: ['Inventory', 'Transfer Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
     },
@@ -212,7 +206,6 @@ export class TransferCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a transfer comment',
     operationId: 'removeAttachmentFromTransferComment',
-    tags: ['Inventory', 'Transfer Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
     },

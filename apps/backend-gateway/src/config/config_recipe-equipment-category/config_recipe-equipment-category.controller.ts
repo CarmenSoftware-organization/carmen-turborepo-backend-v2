@@ -49,7 +49,7 @@ export class Config_RecipeEquipmentCategoryController extends BaseHttpController
   @Serialize(RecipeEquipmentCategoryResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get a recipe equipment category by ID', operationId: 'configRecipeEquipmentCategory_findOne', tags: ['Configuration', 'Recipe Equipment Category'], 'x-description-th': 'ดึงข้อมูลหมวดหมู่อุปกรณ์ทำอาหารเดียวตาม ID' } as any)
+  @ApiOperation({ summary: 'Get a recipe equipment category by ID', operationId: 'configRecipeEquipmentCategory_findOne', 'x-description-th': 'ดึงข้อมูลหมวดหมู่อุปกรณ์ทำอาหารเดียวตาม ID' } as any)
   async findOne(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'findOne', id, version }, Config_RecipeEquipmentCategoryController.name);
     const { user_id } = ExtractRequestHeader(req);
@@ -62,7 +62,7 @@ export class Config_RecipeEquipmentCategoryController extends BaseHttpController
   @Serialize(RecipeEquipmentCategoryResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all recipe equipment categories', operationId: 'configRecipeEquipmentCategory_findAll', tags: ['Configuration', 'Recipe Equipment Category'], 'x-description-th': 'ดึงรายการหมวดหมู่อุปกรณ์ทำอาหารทั้งหมด' } as any)
+  @ApiOperation({ summary: 'Get all recipe equipment categories', operationId: 'configRecipeEquipmentCategory_findAll', 'x-description-th': 'ดึงรายการหมวดหมู่อุปกรณ์ทำอาหารทั้งหมด' } as any)
   @ApiUserFilterQueries()
   async findAll(@Req() req: Request, @Res() res: Response, @Param('bu_code') bu_code: string, @Query() query?: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'findAll', query, version }, Config_RecipeEquipmentCategoryController.name);
@@ -77,7 +77,7 @@ export class Config_RecipeEquipmentCategoryController extends BaseHttpController
   @Serialize(RecipeEquipmentCategoryResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new recipe equipment category', operationId: 'configRecipeEquipmentCategory_create', tags: ['Configuration', 'Recipe Equipment Category'], 'x-description-th': 'สร้างหมวดหมู่อุปกรณ์ทำอาหารใหม่' } as any)
+  @ApiOperation({ summary: 'Create a new recipe equipment category', operationId: 'configRecipeEquipmentCategory_create', 'x-description-th': 'สร้างหมวดหมู่อุปกรณ์ทำอาหารใหม่' } as any)
   @ApiBody({ type: RecipeEquipmentCategoryCreateRequest })
   async create(@Req() req: Request, @Res() res: Response, @Param('bu_code') bu_code: string, @Body() createDto: RecipeEquipmentCategoryCreateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'create', createDto, version }, Config_RecipeEquipmentCategoryController.name);
@@ -91,7 +91,7 @@ export class Config_RecipeEquipmentCategoryController extends BaseHttpController
   @Serialize(RecipeEquipmentCategoryResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update a recipe equipment category', operationId: 'configRecipeEquipmentCategory_update', tags: ['Configuration', 'Recipe Equipment Category'], 'x-description-th': 'อัปเดตหมวดหมู่อุปกรณ์ทำอาหารทั้งหมด' } as any)
+  @ApiOperation({ summary: 'Update a recipe equipment category', operationId: 'configRecipeEquipmentCategory_update', 'x-description-th': 'อัปเดตหมวดหมู่อุปกรณ์ทำอาหารทั้งหมด' } as any)
   @ApiBody({ type: RecipeEquipmentCategoryUpdateRequest })
   async update(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeEquipmentCategoryUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'update', id, updateDto, version }, Config_RecipeEquipmentCategoryController.name);
@@ -106,7 +106,7 @@ export class Config_RecipeEquipmentCategoryController extends BaseHttpController
   @Serialize(RecipeEquipmentCategoryResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Patch a recipe equipment category', operationId: 'configRecipeEquipmentCategory_patch', tags: ['Configuration', 'Recipe Equipment Category'], 'x-description-th': 'อัปเดตบางฟิลด์ของหมวดหมู่อุปกรณ์ทำอาหาร' } as any)
+  @ApiOperation({ summary: 'Patch a recipe equipment category', operationId: 'configRecipeEquipmentCategory_patch', 'x-description-th': 'อัปเดตบางฟิลด์ของหมวดหมู่อุปกรณ์ทำอาหาร' } as any)
   @ApiBody({ type: RecipeEquipmentCategoryUpdateRequest })
   async patch(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Body() updateDto: RecipeEquipmentCategoryUpdateDto, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'patch', id, updateDto, version }, Config_RecipeEquipmentCategoryController.name);
@@ -121,7 +121,7 @@ export class Config_RecipeEquipmentCategoryController extends BaseHttpController
   @Serialize(RecipeEquipmentCategoryResponseSchema)
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete a recipe equipment category', operationId: 'configRecipeEquipmentCategory_delete', tags: ['Configuration', 'Recipe Equipment Category'], 'x-description-th': 'ลบหมวดหมู่อุปกรณ์ทำอาหารออกจากระบบ' } as any)
+  @ApiOperation({ summary: 'Delete a recipe equipment category', operationId: 'configRecipeEquipmentCategory_delete', 'x-description-th': 'ลบหมวดหมู่อุปกรณ์ทำอาหารออกจากระบบ' } as any)
   async delete(@Req() req: Request, @Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('bu_code') bu_code: string, @Query('version') version: string = 'latest'): Promise<void> {
     this.logger.debug({ function: 'delete', id, version }, Config_RecipeEquipmentCategoryController.name);
     const { user_id } = ExtractRequestHeader(req);

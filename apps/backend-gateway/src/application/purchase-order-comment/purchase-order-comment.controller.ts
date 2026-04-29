@@ -51,7 +51,6 @@ export class PurchaseOrderCommentController {
     summary: 'Get all comments for a purchase-order',
     description: 'Retrieves all comments for a purchase-order.',
     operationId: 'findAllPurchaseOrderComments',
-    tags: ['Procurement', 'PurchaseOrder Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
       404: { description: 'PurchaseOrder not found' },
@@ -82,7 +81,6 @@ export class PurchaseOrderCommentController {
   @ApiOperation({
     summary: 'Get a purchase-order comment by ID',
     operationId: 'findOnePurchaseOrderComment',
-    tags: ['Procurement', 'PurchaseOrder Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
       404: { description: 'Comment not found' },
@@ -105,7 +103,6 @@ export class PurchaseOrderCommentController {
   @ApiOperation({
     summary: 'Create a new purchase-order comment',
     operationId: 'createPurchaseOrderComment',
-    tags: ['Procurement', 'PurchaseOrder Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
       404: { description: 'PurchaseOrder not found' },
@@ -129,7 +126,6 @@ export class PurchaseOrderCommentController {
   @ApiOperation({
     summary: 'Update a purchase-order comment',
     operationId: 'updatePurchaseOrderComment',
-    tags: ['Procurement', 'PurchaseOrder Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
       404: { description: 'Comment not found' },
@@ -155,7 +151,6 @@ export class PurchaseOrderCommentController {
   @ApiOperation({
     summary: 'Delete a purchase-order comment',
     operationId: 'deletePurchaseOrderComment',
-    tags: ['Procurement', 'PurchaseOrder Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
       404: { description: 'Comment not found' },
@@ -179,7 +174,6 @@ export class PurchaseOrderCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a purchase-order comment',
     operationId: 'addAttachmentToPurchaseOrderComment',
-    tags: ['Procurement', 'PurchaseOrder Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
       404: { description: 'Comment not found' },
@@ -204,7 +198,6 @@ export class PurchaseOrderCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a purchase-order comment',
     operationId: 'removeAttachmentFromPurchaseOrderComment',
-    tags: ['Procurement', 'PurchaseOrder Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
       404: { description: 'Comment not found' },

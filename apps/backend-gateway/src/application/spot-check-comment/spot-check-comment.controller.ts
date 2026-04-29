@@ -50,7 +50,6 @@ export class SpotCheckCommentController {
   @ApiOperation({
     summary: 'Get all comments for a spot-check',
     operationId: 'findAllSpotCheckComments',
-    tags: ['Inventory', 'SpotCheck Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
     },
@@ -80,7 +79,6 @@ export class SpotCheckCommentController {
   @ApiOperation({
     summary: 'Get a spot-check comment by ID',
     operationId: 'findOneSpotCheckComment',
-    tags: ['Inventory', 'SpotCheck Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
     },
@@ -102,7 +100,6 @@ export class SpotCheckCommentController {
   @ApiOperation({
     summary: 'Create a new spot-check comment',
     operationId: 'createSpotCheckComment',
-    tags: ['Inventory', 'SpotCheck Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
     },
@@ -130,7 +127,6 @@ export class SpotCheckCommentController {
   @ApiOperation({
     summary: 'Update a spot-check comment',
     operationId: 'updateSpotCheckComment',
-    tags: ['Inventory', 'SpotCheck Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
     },
@@ -160,7 +156,6 @@ export class SpotCheckCommentController {
   @ApiOperation({
     summary: 'Delete a spot-check comment',
     operationId: 'deleteSpotCheckComment',
-    tags: ['Inventory', 'SpotCheck Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
     },
@@ -182,7 +177,6 @@ export class SpotCheckCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a spot-check comment',
     operationId: 'addAttachmentToSpotCheckComment',
-    tags: ['Inventory', 'SpotCheck Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
     },
@@ -212,7 +206,6 @@ export class SpotCheckCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a spot-check comment',
     operationId: 'removeAttachmentFromSpotCheckComment',
-    tags: ['Inventory', 'SpotCheck Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
     },

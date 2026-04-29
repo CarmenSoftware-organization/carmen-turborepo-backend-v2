@@ -89,7 +89,6 @@ export class StoreRequisitionController extends BaseHttpController {
     description: 'Retrieves the full details of a store requisition including requested items, quantities, requesting department, and current approval status. Used to review an internal stock request before approving or issuing items from the store.',
     'x-description-th': 'ค้นหาใบเบิกสินค้าตาม ID พร้อมรายละเอียดทั้งหมด รวมถึงรายการสินค้าที่ขอเบิก จำนวน แผนกที่ขอ และสถานะการอนุมัติปัจจุบัน',
     operationId: 'findOneStoreRequisition',
-    tags: ['Procurement', 'Store Requisition'],
     deprecated: false,
     security: [
       {
@@ -165,7 +164,6 @@ export class StoreRequisitionController extends BaseHttpController {
     description: 'Lists all store requisitions across business units with pagination and filtering. Used by department staff to track their internal stock requests and by store managers to view pending issuance requests.',
     'x-description-th': 'แสดงรายการใบเบิกสินค้าทั้งหมดพร้อมการแบ่งหน้าและตัวกรอง ใช้โดยเจ้าหน้าที่แผนกเพื่อติดตามคำขอเบิกสินค้าภายใน',
     operationId: 'findAllStoreRequisitions',
-    tags: ['Procurement', 'Store Requisition'],
     deprecated: false,
     security: [
       {
@@ -245,7 +243,6 @@ export class StoreRequisitionController extends BaseHttpController {
     description: 'Creates a new internal store requisition for a department to request items from inventory (e.g., kitchen supplies, cleaning materials, office supplies). The SR starts in draft status and must be submitted for approval before items can be issued.',
     'x-description-th': 'สร้างใบเบิกสินค้าใหม่ในสถานะร่าง สำหรับแผนกที่ต้องการขอเบิกสินค้าจากคลัง ต้องส่งเข้าขั้นตอนอนุมัติก่อนจึงจะเบิกสินค้าได้',
     operationId: 'createStoreRequisition',
-    tags: ['Procurement', 'Store Requisition'],
     deprecated: false,
     security: [
       {
@@ -314,7 +311,6 @@ export class StoreRequisitionController extends BaseHttpController {
     description: 'Modifies a store requisition to adjust requested items, quantities, or other details. Used by department staff to refine their internal stock request before submitting for approval.',
     'x-description-th': 'อัปเดตใบเบิกสินค้าเพื่อปรับรายการสินค้า จำนวน หรือรายละเอียดอื่น ๆ ก่อนส่งเข้าขั้นตอนอนุมัติ',
     operationId: 'updateStoreRequisition',
-    tags: ['Procurement', 'Store Requisition'],
     deprecated: false,
     security: [
       {
@@ -386,7 +382,6 @@ export class StoreRequisitionController extends BaseHttpController {
     description: 'Submits a draft store requisition into the approval workflow, making it visible to approvers. Once submitted, the SR moves from draft to pending status and enters the configured approval chain.',
     'x-description-th': 'ส่งใบเบิกสินค้าฉบับร่างเข้าสู่ขั้นตอนอนุมัติ สถานะจะเปลี่ยนจากร่างเป็นรออนุมัติ',
     operationId: 'submitStoreRequisition',
-    tags: ['Procurement', 'Store Requisition'],
   } as any)
   @ApiBody({ type: SubmitStoreRequisitionSwaggerDto })
   @HttpCode(HttpStatus.OK)
@@ -436,7 +431,6 @@ export class StoreRequisitionController extends BaseHttpController {
     description: 'Advances a store requisition through its approval workflow at the current stage. Once fully approved, items can be issued from the store to the requesting department, triggering inventory deductions.',
     'x-description-th': 'อนุมัติใบเบิกสินค้าในขั้นตอนปัจจุบันของเวิร์กโฟลว์ เมื่ออนุมัติครบถ้วนจะเบิกสินค้าจากคลังและหักยอดสินค้าคงคลัง',
     operationId: 'approveStoreRequisition',
-    tags: ['Procurement', 'Store Requisition'],
   } as any)
   @ApiBody({ type: ApproveStoreRequisitionSwaggerDto })
   @HttpCode(HttpStatus.OK)
@@ -486,7 +480,6 @@ export class StoreRequisitionController extends BaseHttpController {
     description: 'Rejects a store requisition at the current approval stage, preventing items from being issued. Used when the request exceeds budget, items are unavailable, or the request is not justified.',
     'x-description-th': 'ปฏิเสธใบเบิกสินค้าในขั้นตอนอนุมัติปัจจุบัน ใช้เมื่อคำขอเกินงบประมาณ สินค้าไม่พร้อม หรือคำขอไม่มีเหตุผลเพียงพอ',
     operationId: 'rejectStoreRequisition',
-    tags: ['Procurement', 'Store Requisition'],
   } as any)
   @ApiBody({ type: RejectStoreRequisitionSwaggerDto })
   @HttpCode(HttpStatus.OK)
@@ -537,7 +530,6 @@ export class StoreRequisitionController extends BaseHttpController {
     description: 'Returns a store requisition to a previous workflow stage for corrections, such as adjusting quantities or replacing unavailable items. Allows approvers to request changes before granting final authorization.',
     'x-description-th': 'ส่งใบเบิกสินค้ากลับไปยังขั้นตอนก่อนหน้าเพื่อแก้ไข เช่น ปรับจำนวนหรือเปลี่ยนสินค้าที่ไม่พร้อมใช้งาน',
     operationId: 'reviewStoreRequisition',
-    tags: ['Procurement', 'Store Requisition'],
   } as any)
   @ApiBody({ type: ReviewStoreRequisitionSwaggerDto })
   @HttpCode(HttpStatus.OK)
@@ -586,7 +578,6 @@ export class StoreRequisitionController extends BaseHttpController {
     description: 'Removes a store requisition that is no longer needed. Typically used for draft SRs that were created in error or when the department no longer requires the requested items.',
     'x-description-th': 'ลบใบเบิกสินค้าที่ไม่ต้องการ โดยทั่วไปใช้สำหรับใบเบิกฉบับร่างที่สร้างผิดพลาด',
     operationId: 'deleteStoreRequisition',
-    tags: ['Procurement', 'Store Requisition'],
     deprecated: false,
     security: [
       {
@@ -649,7 +640,6 @@ export class StoreRequisitionController extends BaseHttpController {
     description: 'Checks what workflow actions (approve, reject, review) the current user is authorized to perform on a specific store requisition based on their role and the SR current stage.',
     'x-description-th': 'ตรวจสอบสิทธิ์การดำเนินการเวิร์กโฟลว์ (อนุมัติ ปฏิเสธ ส่งกลับตรวจสอบ) ที่ผู้ใช้ปัจจุบันสามารถทำได้กับใบเบิกสินค้านี้',
     operationId: 'getStoreRequisitionWorkflowPermission',
-    tags: ['Procurement', 'Store Requisition'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [
@@ -701,7 +691,6 @@ export class StoreRequisitionController extends BaseHttpController {
     summary: 'Get all workflow stages for store requisitions',
     description: 'Returns the configured approval workflow stages (e.g., HOD, Issuer) for store requisitions in this business unit. Used to display workflow progress and filter by stage.',
     operationId: 'findAllWorkflowStagesBySr',
-    tags: ['Procurement', 'Store Requisition', 'Workflow & Approval'],
     'x-description-th': 'แสดงขั้นตอนเวิร์กโฟลว์การอนุมัติสำหรับใบเบิกสินค้าในหน่วยธุรกิจ ใช้เพื่อแสดงความคืบหน้าและกรองตามขั้นตอน',
   } as any)
   @ApiResponse({ status: 200, description: 'Workflow stages retrieved successfully' })
@@ -740,7 +729,6 @@ export class StoreRequisitionController extends BaseHttpController {
     description: 'Returns the list of earlier workflow stages that a store requisition can be sent back to for review. Used to populate the review target selection when an approver needs to return the SR for corrections.',
     'x-description-th': 'ดึงรายการขั้นตอนเวิร์กโฟลว์ก่อนหน้าที่สามารถส่งใบเบิกสินค้ากลับไปตรวจสอบได้',
     operationId: 'getStoreRequisitionWorkflowPreviousStepList',
-    tags: ['Procurement', 'Store Requisition'],
     deprecated: false,
     security: [{ bearerAuth: [] }],
     parameters: [

@@ -60,7 +60,6 @@ export class Platform_ReportTemplateController extends BaseHttpController {
     description: 'Lists all report templates with pagination. Each template contains dialog (XML) for parameter configuration and content (XML converted from .frx) for report layout.',
     'x-description-th': 'แสดงรายการแม่แบบรายงานทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'platformReportTemplate_findAll',
-    tags: ['Platform Admin', 'Report Template'],
     responses: {
       200: { description: 'Report templates retrieved successfully' },
       401: { description: 'Unauthorized' },
@@ -101,7 +100,6 @@ export class Platform_ReportTemplateController extends BaseHttpController {
     description: 'Retrieves a specific report template including its dialog (XML) and content (XML from .frx file).',
     'x-description-th': 'ดึงข้อมูลแม่แบบรายงานรายการเดียวตาม ID',
     operationId: 'platformReportTemplate_findOne',
-    tags: ['Platform Admin', 'Report Template'],
     responses: {
       200: { description: 'Report template retrieved successfully' },
       401: { description: 'Unauthorized' },
@@ -142,7 +140,6 @@ export class Platform_ReportTemplateController extends BaseHttpController {
     description: 'Creates a new report template. The dialog field stores XML for parameter dialog configuration. The content field stores XML converted from .frx report layout file.',
     'x-description-th': 'สร้างแม่แบบรายงานใหม่',
     operationId: 'platformReportTemplate_create',
-    tags: ['Platform Admin', 'Report Template'],
     responses: {
       201: { description: 'Report template created successfully' },
       400: { description: 'Bad request' },
@@ -184,7 +181,6 @@ export class Platform_ReportTemplateController extends BaseHttpController {
     description: 'Updates an existing report template. Can update dialog (XML), content (XML from .frx), and other metadata.',
     'x-description-th': 'อัปเดตข้อมูลแม่แบบรายงานที่มีอยู่',
     operationId: 'platformReportTemplate_update',
-    tags: ['Platform Admin', 'Report Template'],
     responses: {
       200: { description: 'Report template updated successfully' },
       400: { description: 'Bad request' },
@@ -228,7 +224,6 @@ export class Platform_ReportTemplateController extends BaseHttpController {
     description: 'Soft-deletes a report template by setting deleted_at timestamp.',
     'x-description-th': 'ลบแม่แบบรายงานตาม ID',
     operationId: 'platformReportTemplate_delete',
-    tags: ['Platform Admin', 'Report Template'],
     responses: {
       200: { description: 'Report template deleted successfully' },
       401: { description: 'Unauthorized' },

@@ -70,7 +70,6 @@ export class RequestForPricingController extends BaseHttpController {
     description: 'Retrieves a specific Request for Pricing (RFP) document sent to vendors, including the requested items, vendor responses, and quoted prices used for competitive procurement comparison.',
     'x-description-th': 'ดึงข้อมูลใบขอราคารายการเดียวตาม ID',
     operationId: 'findOneRequestForPricing',
-    tags: ['Procurement', 'Request For Pricing'],
     deprecated: false,
     security: [
       {
@@ -133,7 +132,6 @@ export class RequestForPricingController extends BaseHttpController {
     description: 'Lists all Request for Pricing (RFP) documents within the business unit, allowing procurement staff to track and compare competitive pricing submissions from multiple vendors.',
     'x-description-th': 'แสดงรายการใบขอราคาทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'findAllRequestForPricing',
-    tags: ['Procurement', 'Request For Pricing'],
     deprecated: false,
     parameters: [
       {
@@ -194,7 +192,6 @@ export class RequestForPricingController extends BaseHttpController {
     description: 'Creates a new Request for Pricing (RFP) to solicit competitive quotes from vendors for specified items, initiating the price comparison process before purchase order generation.',
     'x-description-th': 'สร้างใบขอราคาใหม่',
     operationId: 'createRequestForPricing',
-    tags: ['Procurement', 'Request For Pricing'],
     deprecated: false,
     security: [
       {
@@ -250,7 +247,6 @@ export class RequestForPricingController extends BaseHttpController {
     description: 'Updates an existing Request for Pricing (RFP) to modify requested items, adjust quantities, or record vendor pricing responses during the competitive bidding process.',
     'x-description-th': 'อัปเดตข้อมูลใบขอราคาที่มีอยู่',
     operationId: 'updateRequestForPricing',
-    tags: ['Procurement', 'Request For Pricing'],
     deprecated: false,
     security: [
       {
@@ -319,7 +315,6 @@ export class RequestForPricingController extends BaseHttpController {
     description: 'Removes a Request for Pricing (RFP) document that is no longer needed, such as cancelled procurement inquiries or duplicate vendor pricing requests.',
     'x-description-th': 'ลบใบขอราคาตาม ID',
     operationId: 'deleteRequestForPricing',
-    tags: ['Procurement', 'Request For Pricing'],
     deprecated: false,
     security: [
       {

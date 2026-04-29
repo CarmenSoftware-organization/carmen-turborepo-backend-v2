@@ -46,7 +46,6 @@ export class UnitConversionController extends BaseHttpController {
     summary: 'Get order units for a product',
     description: 'Retrieves the available ordering units for a specific product (e.g., case, carton, bag), used when creating purchase orders to select the appropriate unit for vendor ordering.',
     operationId: 'getOrderUnitProduct',
-    tags: ['Master Data', 'Unit Conversion'],
     responses: {
       200: { description: 'Order units retrieved successfully' },
       404: { description: 'Product not found' },
@@ -95,7 +94,6 @@ export class UnitConversionController extends BaseHttpController {
     summary: 'Get ingredient units for a product',
     description: 'Retrieves the available ingredient-level units for a specific product (e.g., grams, milliliters, pieces), used in recipe management to define ingredient quantities in cooking measurements.',
     operationId: 'getIngredientUnitProduct',
-    tags: ['Master Data', 'Unit Conversion'],
     responses: {
       200: { description: 'Ingredient units retrieved successfully' },
       404: { description: 'Product not found' },
@@ -144,7 +142,6 @@ export class UnitConversionController extends BaseHttpController {
     summary: 'Get available units for a product',
     description: 'Retrieves all configured unit conversion rules for a specific product (e.g., kg to g, case to piece), enabling accurate quantity conversion across procurement, inventory, and recipe operations.',
     operationId: 'getAvailableUnitProduct',
-    tags: ['Master Data', 'Unit Conversion'],
     responses: {
       200: { description: 'Available units retrieved successfully' },
       404: { description: 'Product not found' },

@@ -54,7 +54,7 @@ export class ConfigApplicationRoleController extends BaseHttpController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all application roles', description: 'Returns all defined application roles (e.g., Admin, Manager, Purchaser, Requestor) used for access control. Roles determine which system features and data each user can access.', operationId: 'configApplicationRole_findAll', tags: ['Configuration', 'Application Role'], 'x-description-th': 'แสดงรายการบทบาทในระบบทั้งหมดพร้อมการแบ่งหน้าและค้นหา' } as any)
+  @ApiOperation({ summary: 'Get all application roles', description: 'Returns all defined application roles (e.g., Admin, Manager, Purchaser, Requestor) used for access control. Roles determine which system features and data each user can access.', operationId: 'configApplicationRole_findAll', 'x-description-th': 'แสดงรายการบทบาทในระบบทั้งหมดพร้อมการแบ่งหน้าและค้นหา' } as any)
   async findAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -90,7 +90,7 @@ export class ConfigApplicationRoleController extends BaseHttpController {
    */
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get an application role by ID', description: 'Retrieves a specific application role definition with its associated permissions. Used to review what system capabilities are granted to users assigned this role.', operationId: 'configApplicationRole_findOne', tags: ['Configuration', 'Application Role'], 'x-description-th': 'ดึงข้อมูลบทบาทในระบบรายการเดียวตาม ID' } as any)
+  @ApiOperation({ summary: 'Get an application role by ID', description: 'Retrieves a specific application role definition with its associated permissions. Used to review what system capabilities are granted to users assigned this role.', operationId: 'configApplicationRole_findOne', 'x-description-th': 'ดึงข้อมูลบทบาทในระบบรายการเดียวตาม ID' } as any)
   async findOne(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,
@@ -115,7 +115,7 @@ export class ConfigApplicationRoleController extends BaseHttpController {
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new application role', description: 'Defines a new application role for access control (e.g., Department Head, Finance Controller). Once created, the role can be assigned permissions and then assigned to users.', operationId: 'configApplicationRole_create', tags: ['Configuration', 'Application Role'], 'x-description-th': 'สร้างบทบาทในระบบใหม่' } as any)
+  @ApiOperation({ summary: 'Create a new application role', description: 'Defines a new application role for access control (e.g., Department Head, Finance Controller). Once created, the role can be assigned permissions and then assigned to users.', operationId: 'configApplicationRole_create', 'x-description-th': 'สร้างบทบาทในระบบใหม่' } as any)
   @ApiBody({ type: CreateApplicationRoleRequest })
   async create(
     @Req() req: Request,
@@ -142,7 +142,7 @@ export class ConfigApplicationRoleController extends BaseHttpController {
    */
   @Put(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update an application role', description: 'Modifies an existing application role definition, such as updating its name or permission set. Changes immediately affect all users currently assigned this role.', operationId: 'configApplicationRole_update', tags: ['Configuration', 'Application Role'], 'x-description-th': 'อัปเดตข้อมูลบทบาทในระบบที่มีอยู่' } as any)
+  @ApiOperation({ summary: 'Update an application role', description: 'Modifies an existing application role definition, such as updating its name or permission set. Changes immediately affect all users currently assigned this role.', operationId: 'configApplicationRole_update', 'x-description-th': 'อัปเดตข้อมูลบทบาทในระบบที่มีอยู่' } as any)
   @ApiBody({ type: UpdateApplicationRoleRequest })
   async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
@@ -169,7 +169,7 @@ export class ConfigApplicationRoleController extends BaseHttpController {
    */
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete an application role', description: 'Removes an application role from the system. Users previously assigned this role will lose its associated permissions. Ensure users are reassigned to appropriate roles before deletion.', operationId: 'configApplicationRole_delete', tags: ['Configuration', 'Application Role'], 'x-description-th': 'ลบบทบาทในระบบตาม ID' } as any)
+  @ApiOperation({ summary: 'Delete an application role', description: 'Removes an application role from the system. Users previously assigned this role will lose its associated permissions. Ensure users are reassigned to appropriate roles before deletion.', operationId: 'configApplicationRole_delete', 'x-description-th': 'ลบบทบาทในระบบตาม ID' } as any)
   async remove(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Req() req: Request,

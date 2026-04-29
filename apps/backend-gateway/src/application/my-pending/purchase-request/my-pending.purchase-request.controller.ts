@@ -80,7 +80,6 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     description: 'Returns the count of purchase requests currently awaiting the user\'s action in the approval pipeline, used for dashboard badge notifications and workload tracking.',
     'x-description-th': 'ดึงจำนวนใบขอซื้อที่รอดำเนินการของผู้ใช้ปัจจุบัน ใช้สำหรับแสดงป้ายแจ้งเตือนบนแดชบอร์ด',
     operationId: 'findAllPendingPurchaseRequestsCount',
-    tags: ['Pending Count', 'Workflow & Approval', 'My Pending - Purchase Request'],
     deprecated: false,
     parameters: [
       {
@@ -168,7 +167,6 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     description: 'Retrieves the approval workflow stages configured for purchase requests in the business unit, showing the sequence of approval steps (e.g., HOD, Finance Controller, GM) that a purchase request must pass through.',
     'x-description-th': 'ดึงขั้นตอนการอนุมัติที่กำหนดไว้สำหรับใบขอซื้อในหน่วยธุรกิจ แสดงลำดับขั้นตอนที่ใบขอซื้อต้องผ่าน',
     operationId: 'findPendingPurchaseRequestWorkflowStages',
-    tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
     deprecated: false,
     parameters: [
       {
@@ -257,7 +255,6 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     description: 'Retrieves the full details of a specific purchase request pending in the approval pipeline, including requested items, quantities, estimated costs, and current approval status.',
     'x-description-th': 'ค้นหาใบขอซื้อที่รอดำเนินการตาม ID พร้อมรายละเอียดทั้งหมด รวมถึงรายการสินค้า จำนวน ราคาประมาณ และสถานะการอนุมัติ',
     operationId: 'findOnePendingPurchaseRequest',
-    tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
     deprecated: false,
     security: [
       {
@@ -330,7 +327,6 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     description: 'Lists all purchase requests in the user\'s pending queue with pagination, enabling requestors and approvers to track and manage procurement requests through the approval workflow.',
     'x-description-th': 'แสดงรายการใบขอซื้อที่รอดำเนินการทั้งหมดของผู้ใช้ปัจจุบันพร้อมการแบ่งหน้า',
     operationId: 'findAllPendingPurchaseRequests',
-    tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
     deprecated: false,
     parameters: [
       {
@@ -423,7 +419,6 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     description: 'Filters purchase requests by their current approval status (e.g., draft, pending, approved, rejected), allowing users to view requests at a specific stage in the procurement workflow.',
     'x-description-th': 'ค้นหารายการใบขอซื้อตามสถานะการอนุมัติ (เช่น ร่าง รออนุมัติ อนุมัติแล้ว ปฏิเสธ)',
     operationId: 'findPurchaseRequestsByStatus',
-    tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
     responses: {
       200: { description: 'Purchase requests retrieved successfully' },
     },
@@ -474,7 +469,6 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     description: 'Creates a new purchase request for items needed by a hotel department, initiating the procurement approval workflow where the request will be routed to designated approvers (HOD, FC, GM).',
     'x-description-th': 'สร้างใบขอซื้อใหม่สำหรับสินค้าที่แผนกในโรงแรมต้องการ เริ่มต้นขั้นตอนอนุมัติการจัดซื้อ',
     operationId: 'createPendingPurchaseRequest',
-    tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
     deprecated: false,
     parameters: [
       {
@@ -555,7 +549,6 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     description: 'Submits a draft purchase request into the approval workflow, moving it from draft status to the first approval stage where designated approvers will review the procurement request.',
     'x-description-th': 'ส่งใบขอซื้อฉบับร่างเข้าสู่ขั้นตอนอนุมัติ สถานะจะเปลี่ยนจากร่างไปยังขั้นตอนอนุมัติแรก',
     operationId: 'submitPendingPurchaseRequest',
-    tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
     responses: {
       200: { description: 'Purchase request submitted successfully' },
       404: { description: 'Purchase request not found' },
@@ -607,7 +600,6 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     description: 'Approves a purchase request at the current user\'s workflow stage, advancing it to the next approval level or marking it as fully approved for purchase order generation.',
     'x-description-th': 'อนุมัติใบขอซื้อในขั้นตอนเวิร์กโฟลว์ปัจจุบัน เลื่อนไปยังขั้นตอนถัดไปหรืออนุมัติครบถ้วนเพื่อสร้างใบสั่งซื้อ',
     operationId: 'approvePendingPurchaseRequest',
-    tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
     responses: {
       200: { description: 'Purchase request approved successfully' },
       404: { description: 'Purchase request not found' },
@@ -661,7 +653,6 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     description: 'Rejects a purchase request at the current approval stage, sending it back to the requestor for revision or cancellation with the reason for rejection.',
     'x-description-th': 'ปฏิเสธใบขอซื้อในขั้นตอนอนุมัติปัจจุบัน ส่งกลับไปยังผู้ขอเพื่อแก้ไขหรือยกเลิกพร้อมเหตุผล',
     operationId: 'rejectPendingPurchaseRequest',
-    tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
     responses: {
       200: { description: 'Purchase request rejected successfully' },
       404: { description: 'Purchase request not found' },
@@ -713,7 +704,6 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     description: 'Allows an approver to review a purchase request and provide feedback or modifications before making a final approve/reject decision, supporting collaborative procurement review.',
     'x-description-th': 'ส่งใบขอซื้อกลับตรวจสอบ ช่วยให้ผู้อนุมัติให้ข้อเสนอแนะหรือขอแก้ไขก่อนตัดสินใจอนุมัติหรือปฏิเสธ',
     operationId: 'reviewPendingPurchaseRequest',
-    tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
     responses: {
       200: { description: 'Purchase request reviewed successfully' },
       404: { description: 'Purchase request not found' },
@@ -768,7 +758,6 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     description: 'Saves changes to a draft purchase request, allowing the requestor to modify items, quantities, or justification before submitting it for approval.',
     'x-description-th': 'บันทึกการเปลี่ยนแปลงใบขอซื้อฉบับร่าง ช่วยให้ผู้ขอแก้ไขรายการสินค้า จำนวน หรือเหตุผลก่อนส่งอนุมัติ',
     operationId: 'updatePendingPurchaseRequest',
-    tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
     deprecated: false,
     security: [
       {
@@ -840,7 +829,6 @@ export class MyPendingPurchaseRequestController extends BaseHttpController {
     description: 'Removes a purchase request that is no longer needed, typically a draft or rejected request that the requestor has decided to discard rather than resubmit.',
     'x-description-th': 'ลบใบขอซื้อที่ไม่ต้องการ โดยทั่วไปเป็นใบขอฉบับร่างหรือที่ถูกปฏิเสธ',
     operationId: 'deletePendingPurchaseRequest',
-    tags: ['Workflow & Approval', 'My Pending - Purchase Request'],
     deprecated: false,
     parameters: [
       {

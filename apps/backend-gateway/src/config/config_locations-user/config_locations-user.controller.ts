@@ -45,7 +45,7 @@ export class Config_LocationsUserController extends BaseHttpController {
   @UseGuards(new AppIdGuard('locationUser.getLocationByUserId'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get locations by user ID', description: 'Retrieves all storage locations accessible to a specific user.', operationId: 'configLocationUser_findByUserId', tags: ['Configuration', 'Location User'], 'x-description-th': 'ดึงข้อมูลสถานที่ทั้งหมดที่ผู้ใช้สามารถเข้าถึงได้ตาม User ID' } as any)
+  @ApiOperation({ summary: 'Get locations by user ID', description: 'Retrieves all storage locations accessible to a specific user.', operationId: 'configLocationUser_findByUserId', 'x-description-th': 'ดึงข้อมูลสถานที่ทั้งหมดที่ผู้ใช้สามารถเข้าถึงได้ตาม User ID' } as any)
   async getLocationByUserId(
     @Param('userId') userId: string,
     @Param('bu_code') bu_code: string,
@@ -67,7 +67,7 @@ export class Config_LocationsUserController extends BaseHttpController {
   @UseGuards(new AppIdGuard('locationUser.managerLocationUser'))
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Manage location-user assignments', description: 'Updates the set of storage locations a user has access to.', operationId: 'configLocationUser_manageAssignments', tags: ['Configuration', 'Location User'], 'x-description-th': 'อัปเดตการกำหนดสถานที่ให้กับผู้ใช้' } as any)
+  @ApiOperation({ summary: 'Manage location-user assignments', description: 'Updates the set of storage locations a user has access to.', operationId: 'configLocationUser_manageAssignments', 'x-description-th': 'อัปเดตการกำหนดสถานที่ให้กับผู้ใช้' } as any)
   @ApiBody({ type: LocationUserUpdateRequest })
   async managerLocationUser(
     @Param('userId') userId: string,

@@ -50,7 +50,6 @@ export class PhysicalCountPeriodCommentController {
   @ApiOperation({
     summary: 'Get all comments for a physical-count-period',
     operationId: 'findAllPhysicalCountPeriodComments',
-    tags: ['Inventory', 'PhysicalCountPeriod Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
     },
@@ -80,7 +79,6 @@ export class PhysicalCountPeriodCommentController {
   @ApiOperation({
     summary: 'Get a physical-count-period comment by ID',
     operationId: 'findOnePhysicalCountPeriodComment',
-    tags: ['Inventory', 'PhysicalCountPeriod Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
     },
@@ -102,7 +100,6 @@ export class PhysicalCountPeriodCommentController {
   @ApiOperation({
     summary: 'Create a new physical-count-period comment',
     operationId: 'createPhysicalCountPeriodComment',
-    tags: ['Inventory', 'PhysicalCountPeriod Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
     },
@@ -130,7 +127,6 @@ export class PhysicalCountPeriodCommentController {
   @ApiOperation({
     summary: 'Update a physical-count-period comment',
     operationId: 'updatePhysicalCountPeriodComment',
-    tags: ['Inventory', 'PhysicalCountPeriod Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
     },
@@ -160,7 +156,6 @@ export class PhysicalCountPeriodCommentController {
   @ApiOperation({
     summary: 'Delete a physical-count-period comment',
     operationId: 'deletePhysicalCountPeriodComment',
-    tags: ['Inventory', 'PhysicalCountPeriod Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
     },
@@ -182,7 +177,6 @@ export class PhysicalCountPeriodCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a physical-count-period comment',
     operationId: 'addAttachmentToPhysicalCountPeriodComment',
-    tags: ['Inventory', 'PhysicalCountPeriod Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
     },
@@ -212,7 +206,6 @@ export class PhysicalCountPeriodCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a physical-count-period comment',
     operationId: 'removeAttachmentFromPhysicalCountPeriodComment',
-    tags: ['Inventory', 'PhysicalCountPeriod Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
     },

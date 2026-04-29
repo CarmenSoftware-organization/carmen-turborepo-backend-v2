@@ -68,7 +68,6 @@ export class TaxProfileController extends BaseHttpController {
     summary: 'Get a tax profile by ID',
     description: 'Retrieves a specific tax configuration profile including VAT rates, withholding tax rules, and tax calculation parameters applied to procurement transactions and vendor invoices.',
     operationId: 'findOneTaxProfile',
-    tags: ['Master Data', 'Tax Profile'],
     responses: {
       200: { description: 'Tax profile retrieved successfully' },
       404: { description: 'Tax profile not found' },
@@ -122,7 +121,6 @@ export class TaxProfileController extends BaseHttpController {
     summary: 'Get all tax profiles',
     description: 'Lists all tax configuration profiles available in the business unit, including VAT rates and withholding tax settings used for calculating taxes on purchase orders and vendor payments.',
     operationId: 'findAllTaxProfiles',
-    tags: ['Master Data', 'Tax Profile'],
     responses: {
       200: { description: 'Tax profiles retrieved successfully' },
     },

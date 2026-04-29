@@ -76,7 +76,6 @@ export class SpotCheckController extends BaseHttpController {
     summary: 'Get pending spot check count',
     description: 'Returns the count of random inventory spot checks awaiting the current user, used to drive dashboard alerts for quality-control verification tasks.',
     operationId: 'findAllPendingSpotCheckCount',
-    tags: ['Pending Count', 'Inventory', 'Spot Check'],
     'x-description-th': 'ดึงจำนวนการตรวจสอบสินค้าเฉพาะจุดที่รอดำเนินการของผู้ใช้ปัจจุบัน ใช้สำหรับแสดงการแจ้งเตือนบนแดชบอร์ดสำหรับงานตรวจสอบคุณภาพ',
     responses: {
       200: { description: 'Pending spot check count retrieved successfully' },
@@ -120,7 +119,6 @@ export class SpotCheckController extends BaseHttpController {
     description:
       'Lists all inventory locations with their spot check status for the current open period. Similar to the physical count current endpoint. Use include_not_count=true to include locations with physical_count_type=no.',
     operationId: 'findCurrentSpotCheckByLocation',
-    tags: ['Inventory', 'Spot Check'],
     'x-description-th': 'ดึงรายการสถานที่จัดเก็บทั้งหมดพร้อมสถานะการตรวจสอบสินค้าเฉพาะจุดสำหรับงวดปัจจุบันที่เปิดอยู่ ใช้ include_not_count=true เพื่อรวมสถานที่ที่ไม่ต้องตรวจนับ',
     parameters: [
       {
@@ -181,7 +179,6 @@ export class SpotCheckController extends BaseHttpController {
     summary: 'Get a spot check by ID',
     description: 'Retrieves the full details of a random inventory spot check, including the target location, selected products, and recorded quantities for quality-control review.',
     operationId: 'findOneSpotCheck',
-    tags: ['Inventory', 'Spot Check'],
     'x-description-th': 'ดึงรายละเอียดทั้งหมดของการตรวจสอบสินค้าเฉพาะจุด รวมถึงสถานที่เป้าหมาย สินค้าที่เลือก และจำนวนที่บันทึก สำหรับการตรวจสอบคุณภาพ',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Spot Check ID' },
@@ -235,7 +232,6 @@ export class SpotCheckController extends BaseHttpController {
     summary: 'Get all spot checks',
     description: 'Lists all inventory spot checks for a business unit with pagination, enabling managers to track the frequency and results of random stock verification activities.',
     operationId: 'findAllSpotChecks',
-    tags: ['Inventory', 'Spot Check'],
     'x-description-th': 'ดึงรายการตรวจสอบสินค้าเฉพาะจุดทั้งหมดของหน่วยธุรกิจพร้อมการแบ่งหน้า ช่วยให้ผู้จัดการติดตามความถี่และผลลัพธ์ของการตรวจสอบสินค้าแบบสุ่ม',
     parameters: [
       { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
@@ -287,7 +283,6 @@ export class SpotCheckController extends BaseHttpController {
     summary: 'Create a new spot check',
     description: 'Initiates a random inventory spot check at a specific storage location, selecting products either randomly or manually to verify actual stock against system records for quality control.',
     operationId: 'createSpotCheck',
-    tags: ['Inventory', 'Spot Check'],
     'x-description-th': 'สร้างรายการตรวจสอบสินค้าเฉพาะจุดใหม่ที่สถานที่จัดเก็บเฉพาะ เลือกสินค้าแบบสุ่มหรือเลือกเองเพื่อตรวจสอบสินค้าจริงเทียบกับข้อมูลในระบบ',
     parameters: [
       { name: 'bu_code', in: 'path', required: true, description: 'Business Unit Code' },
@@ -341,7 +336,6 @@ export class SpotCheckController extends BaseHttpController {
     summary: 'Update a spot check',
     description: 'Modifies a spot check record before submission, such as updating the location or adjusting which products are included in the verification.',
     operationId: 'updateSpotCheck',
-    tags: ['Inventory', 'Spot Check'],
     'x-description-th': 'แก้ไขรายการตรวจสอบสินค้าเฉพาะจุดก่อนการส่ง เช่น อัปเดตสถานที่หรือปรับสินค้าที่ต้องการตรวจสอบ',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Spot Check ID' },
@@ -398,7 +392,6 @@ export class SpotCheckController extends BaseHttpController {
     summary: 'Delete a spot check',
     description: 'Removes a spot check that was created in error or is no longer required for inventory quality control.',
     operationId: 'deleteSpotCheck',
-    tags: ['Inventory', 'Spot Check'],
     'x-description-th': 'ลบรายการตรวจสอบสินค้าเฉพาะจุดที่สร้างผิดพลาดหรือไม่จำเป็นสำหรับการควบคุมคุณภาพสินค้าคงคลังอีกต่อไป',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Spot Check ID' },
@@ -447,7 +440,6 @@ export class SpotCheckController extends BaseHttpController {
     summary: 'Get all details for a Spot Check',
     description: 'Returns all product line items selected for a spot check, showing system quantities and any recorded actual quantities for variance analysis.',
     operationId: 'findAllSpotCheckDetails',
-    tags: ['Inventory', 'Spot Check'],
     'x-description-th': 'ดึงรายการสินค้าทั้งหมดที่เลือกสำหรับการตรวจสอบสินค้าเฉพาะจุด แสดงจำนวนในระบบและจำนวนที่นับได้จริง สำหรับการวิเคราะห์ผลต่าง',
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -493,7 +485,6 @@ export class SpotCheckController extends BaseHttpController {
     summary: 'Get a specific Spot Check detail by ID',
     description: 'Retrieves a specific product line item from a spot check, including its system quantity, actual counted quantity, and variance for detailed investigation.',
     operationId: 'findSpotCheckDetailById',
-    tags: ['Inventory', 'Spot Check'],
     'x-description-th': 'ดึงรายการสินค้าเฉพาะรายการจากการตรวจสอบสินค้าเฉพาะจุด รวมถึงจำนวนในระบบ จำนวนที่นับได้จริง และผลต่าง สำหรับการตรวจสอบรายละเอียด',
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -541,7 +532,6 @@ export class SpotCheckController extends BaseHttpController {
     summary: 'Delete a Spot Check detail',
     description: 'Removes a product from a draft spot check, used when a product was incorrectly selected for the random verification.',
     operationId: 'deleteSpotCheckDetail',
-    tags: ['Inventory', 'Spot Check'],
     'x-description-th': 'ลบสินค้าจากการตรวจสอบสินค้าเฉพาะจุดสถานะร่าง ใช้เมื่อสินค้าถูกเลือกผิดพลาดสำหรับการตรวจสอบแบบสุ่ม',
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -592,7 +582,6 @@ export class SpotCheckController extends BaseHttpController {
     summary: 'Save Spot Check items',
     description: 'Persists the counted quantities entered by staff on a mobile device as a draft, allowing them to pause and resume the spot check without finalizing results.',
     operationId: 'saveSpotCheckItems',
-    tags: ['Inventory', 'Spot Check'],
     'x-description-th': 'บันทึกจำนวนที่นับได้จากอุปกรณ์มือถือเป็นร่าง ช่วยให้พนักงานหยุดพักและดำเนินการตรวจสอบต่อได้โดยไม่ต้องสรุปผลลัพธ์',
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -642,7 +631,6 @@ export class SpotCheckController extends BaseHttpController {
     summary: 'Review Spot Check items',
     description: 'Compares the counted quantities against system stock levels and calculates variances for each spot-checked item, enabling staff to review discrepancies before submission.',
     operationId: 'reviewSpotCheckItems',
-    tags: ['Inventory', 'Spot Check'],
     'x-description-th': 'เปรียบเทียบจำนวนที่นับได้กับจำนวนในระบบ และคำนวณผลต่างของแต่ละรายการ ช่วยให้พนักงานตรวจสอบความคลาดเคลื่อนก่อนส่ง',
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -691,7 +679,6 @@ export class SpotCheckController extends BaseHttpController {
     summary: 'Get Spot Check review result',
     description: 'Retrieves the previously calculated variance report for a spot check, showing differences between system and actual quantities for management review.',
     operationId: 'getSpotCheckReview',
-    tags: ['Inventory', 'Spot Check'],
     'x-description-th': 'ดึงรายงานผลต่างที่คำนวณไว้ก่อนหน้าของการตรวจสอบสินค้าเฉพาะจุด แสดงความแตกต่างระหว่างจำนวนในระบบกับจำนวนจริง สำหรับการตรวจสอบโดยผู้จัดการ',
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -737,7 +724,6 @@ export class SpotCheckController extends BaseHttpController {
     summary: 'Submit Spot Check',
     description: 'Finalizes a spot check by recording the verified quantities as the official result. Discrepancies found may trigger further investigation or inventory adjustments.',
     operationId: 'submitSpotCheck',
-    tags: ['Inventory', 'Spot Check'],
     'x-description-th': 'ส่งการตรวจสอบสินค้าเฉพาะจุดขั้นสุดท้าย บันทึกจำนวนที่ตรวจสอบแล้วเป็นผลลัพธ์อย่างเป็นทางการ ความคลาดเคลื่อนที่พบอาจนำไปสู่การตรวจสอบเพิ่มเติมหรือการปรับปรุงสินค้าคงคลัง',
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -784,7 +770,6 @@ export class SpotCheckController extends BaseHttpController {
     summary: 'Reset Spot Check',
     description: 'Clears all recorded actual quantities and resets the spot check to draft state, allowing staff to restart the verification process from scratch if counts were inaccurate.',
     operationId: 'resetSpotCheck',
-    tags: ['Inventory', 'Spot Check'],
     'x-description-th': 'ล้างจำนวนที่บันทึกทั้งหมดและรีเซ็ตการตรวจสอบสินค้าเฉพาะจุดกลับเป็นสถานะร่าง ช่วยให้พนักงานเริ่มกระบวนการตรวจสอบใหม่ตั้งแต่ต้น',
     deprecated: false,
     security: [{ bearerAuth: [] }],
@@ -831,7 +816,6 @@ export class SpotCheckController extends BaseHttpController {
     summary: 'Get products by location',
     description: 'Retrieves the list of products stocked at a specific storage location, enabling staff to select items for a new spot check or verify location inventory assignments.',
     operationId: 'getProductsByLocationId',
-    tags: ['Inventory', 'Spot Check'],
     'x-description-th': 'ดึงรายการสินค้าที่จัดเก็บในสถานที่เฉพาะ ช่วยให้พนักงานเลือกรายการสำหรับการตรวจสอบสินค้าเฉพาะจุดใหม่หรือตรวจสอบการกำหนดสินค้าของสถานที่',
     deprecated: false,
     security: [{ bearerAuth: [] }],

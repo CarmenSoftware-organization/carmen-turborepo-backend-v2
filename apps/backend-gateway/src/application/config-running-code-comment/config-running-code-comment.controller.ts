@@ -38,7 +38,7 @@ export class ConfigRunningCodeCommentController {
   @UseGuards(new AppIdGuard('configRunningCodeComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all comments for a config-running-code', operationId: 'findAllConfigRunningCodeComments', tags: ['Master', 'ConfigRunningCode Comment'], responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get all comments for a config-running-code', operationId: 'findAllConfigRunningCodeComments', responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findAllByConfigRunningCodeId(@Param('bu_code') bu_code: string, @Param('config_running_code_id', new ParseUUIDPipe({ version: '4' })) config_running_code_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -49,7 +49,7 @@ export class ConfigRunningCodeCommentController {
   @Get(':bu_code/config-running-code-comment/:id')
   @UseGuards(new AppIdGuard('configRunningCodeComment.findOne'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a config-running-code comment by ID', operationId: 'findOneConfigRunningCodeComment', tags: ['Master', 'ConfigRunningCode Comment'], responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get a config-running-code comment by ID', operationId: 'findOneConfigRunningCodeComment', responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -59,7 +59,7 @@ export class ConfigRunningCodeCommentController {
   @Post(':bu_code/config-running-code-comment')
   @UseGuards(new AppIdGuard('configRunningCodeComment.create'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new config-running-code comment', operationId: 'createConfigRunningCodeComment', tags: ['Master', 'ConfigRunningCode Comment'], responses: { 201: { description: 'Comment created successfully' } } } as any)
+  @ApiOperation({ summary: 'Create a new config-running-code comment', operationId: 'createConfigRunningCodeComment', responses: { 201: { description: 'Comment created successfully' } } } as any)
   @ApiBody({ type: CreateConfigRunningCodeCommentDto })
   @HttpCode(HttpStatus.CREATED)
   async create(@Param('bu_code') bu_code: string, @Body() createDto: CreateConfigRunningCodeCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -70,7 +70,7 @@ export class ConfigRunningCodeCommentController {
   @Patch(':bu_code/config-running-code-comment/:id')
   @UseGuards(new AppIdGuard('configRunningCodeComment.update'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a config-running-code comment', operationId: 'updateConfigRunningCodeComment', tags: ['Master', 'ConfigRunningCode Comment'], responses: { 200: { description: 'Comment updated successfully' } } } as any)
+  @ApiOperation({ summary: 'Update a config-running-code comment', operationId: 'updateConfigRunningCodeComment', responses: { 200: { description: 'Comment updated successfully' } } } as any)
   @ApiBody({ type: UpdateConfigRunningCodeCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdateConfigRunningCodeCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -81,7 +81,7 @@ export class ConfigRunningCodeCommentController {
   @Delete(':bu_code/config-running-code-comment/:id')
   @UseGuards(new AppIdGuard('configRunningCodeComment.delete'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a config-running-code comment', operationId: 'deleteConfigRunningCodeComment', tags: ['Master', 'ConfigRunningCode Comment'], responses: { 200: { description: 'Comment deleted successfully' } } } as any)
+  @ApiOperation({ summary: 'Delete a config-running-code comment', operationId: 'deleteConfigRunningCodeComment', responses: { 200: { description: 'Comment deleted successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -91,7 +91,7 @@ export class ConfigRunningCodeCommentController {
   @Post(':bu_code/config-running-code-comment/:id/attachment')
   @UseGuards(new AppIdGuard('configRunningCodeComment.addAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Add attachment to a config-running-code comment', operationId: 'addAttachmentToConfigRunningCodeComment', tags: ['Master', 'ConfigRunningCode Comment'], responses: { 200: { description: 'Attachment added successfully' } } } as any)
+  @ApiOperation({ summary: 'Add attachment to a config-running-code comment', operationId: 'addAttachmentToConfigRunningCodeComment', responses: { 200: { description: 'Attachment added successfully' } } } as any)
   @ApiBody({ type: AddAttachmentDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -102,7 +102,7 @@ export class ConfigRunningCodeCommentController {
   @Delete(':bu_code/config-running-code-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('configRunningCodeComment.removeAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove attachment from a config-running-code comment', operationId: 'removeAttachmentFromConfigRunningCodeComment', tags: ['Master', 'ConfigRunningCode Comment'], responses: { 200: { description: 'Attachment removed successfully' } } } as any)
+  @ApiOperation({ summary: 'Remove attachment from a config-running-code comment', operationId: 'removeAttachmentFromConfigRunningCodeComment', responses: { 200: { description: 'Attachment removed successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);

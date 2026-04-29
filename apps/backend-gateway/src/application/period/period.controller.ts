@@ -66,7 +66,6 @@ export class PeriodController extends BaseHttpController {
     description: 'Retrieves the current fiscal/accounting period with status open or locked. Returns the earliest open/locked period ordered by fiscal year and month.',
     'x-description-th': 'ดึงข้อมูลรอบบัญชีปัจจุบัน',
     operationId: 'findCurrentPeriod',
-    tags: ['Inventory', 'Period'],
     responses: {
       200: { description: 'Current period retrieved successfully' },
       404: { description: 'No current period found' },
@@ -111,7 +110,6 @@ export class PeriodController extends BaseHttpController {
     description: 'Retrieves the details of a fiscal/accounting period, including its open/closed status and date range, used to verify whether inventory transactions and valuations can be posted.',
     'x-description-th': 'ดึงข้อมูลรอบบัญชีรายการเดียวตาม ID',
     operationId: 'findOnePeriod',
-    tags: ['Inventory', 'Period'],
     responses: {
       200: { description: 'Period retrieved successfully' },
       404: { description: 'Period not found' },
@@ -159,7 +157,6 @@ export class PeriodController extends BaseHttpController {
     description: 'Lists all fiscal/accounting periods for the business unit, enabling finance staff to manage month-end closing cycles and control when inventory transactions can be recorded.',
     'x-description-th': 'แสดงรายการรอบบัญชีทั้งหมดพร้อมการแบ่งหน้าและค้นหา',
     operationId: 'findAllPeriods',
-    tags: ['Inventory', 'Period'],
     responses: {
       200: { description: 'Periods retrieved successfully' },
     },
@@ -206,7 +203,6 @@ export class PeriodController extends BaseHttpController {
     description: 'Creates a new fiscal/accounting period that controls when inventory transactions and valuations can be posted, typically aligned with the hotel monthly closing schedule.',
     'x-description-th': 'สร้างรอบบัญชีใหม่',
     operationId: 'createPeriod',
-    tags: ['Inventory', 'Period'],
     responses: {
       201: { description: 'Period created successfully' },
       409: { description: 'Period or fiscal year/month already exists' },
@@ -258,7 +254,6 @@ export class PeriodController extends BaseHttpController {
     description: 'Modifies an existing fiscal period, such as opening or closing it for inventory transactions, which is essential for month-end closing and inventory valuation control.',
     'x-description-th': 'อัปเดตข้อมูลรอบบัญชีที่มีอยู่',
     operationId: 'updatePeriod',
-    tags: ['Inventory', 'Period'],
     responses: {
       200: { description: 'Period updated successfully' },
       404: { description: 'Period not found' },
@@ -312,7 +307,6 @@ export class PeriodController extends BaseHttpController {
       'Bulk-generates upcoming fiscal periods for forward planning, automatically creating the next N monthly periods so inventory and procurement operations can be scheduled in advance.',
     'x-description-th': 'สร้างรอบบัญชีถัดไปจำนวน N รอบแบบอัตโนมัติ',
     operationId: 'generateNextPeriods',
-    tags: ['Inventory', 'Period'],
     responses: {
       201: { description: 'Periods generated successfully' },
     },
@@ -361,7 +355,6 @@ export class PeriodController extends BaseHttpController {
     description: 'Removes a fiscal period that was created in error. Periods with existing inventory transactions cannot be deleted to preserve financial integrity.',
     'x-description-th': 'ลบรอบบัญชีตาม ID',
     operationId: 'deletePeriod',
-    tags: ['Inventory', 'Period'],
     responses: {
       200: { description: 'Period deleted successfully' },
       404: { description: 'Period not found' },

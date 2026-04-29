@@ -64,7 +64,6 @@ export class UserBusinessUnitController extends BaseHttpController {
     description: 'Sets the user\'s default business unit (tenant), determining which hotel property\'s data and procurement operations are loaded upon login.',
     'x-description-th': 'ตั้งค่าหน่วยธุรกิจเริ่มต้นของผู้ใช้',
     operationId: 'setDefaultTenant',
-    tags: ['User & Access', 'User Business Unit'],
     deprecated: false,
     security: [
       {

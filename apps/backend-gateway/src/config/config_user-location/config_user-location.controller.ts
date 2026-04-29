@@ -48,7 +48,7 @@ export class Config_UserLocationController {
   @UseGuards(new AppIdGuard('userLocation.getUsersByLocationId'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get users by location ID', description: 'Retrieves all users who have access to a specific storage location. This determines which staff members can perform inventory operations (stock-in, stock-out, transfers) at this location.', operationId: 'configUserLocation_findByLocationId', tags: ['Configuration', 'User Location'], 'x-description-th': 'ดึงข้อมูลผู้ใช้ทั้งหมดที่ผูกกับสถานที่ตาม Location ID' } as any)
+  @ApiOperation({ summary: 'Get users by location ID', description: 'Retrieves all users who have access to a specific storage location. This determines which staff members can perform inventory operations (stock-in, stock-out, transfers) at this location.', operationId: 'configUserLocation_findByLocationId', 'x-description-th': 'ดึงข้อมูลผู้ใช้ทั้งหมดที่ผูกกับสถานที่ตาม Location ID' } as any)
   async getUsersByLocationId(
     @Param('bu_code') bu_code: string,
     @Param('locationId') locationId: string,
@@ -86,7 +86,7 @@ export class Config_UserLocationController {
   @UseGuards(new AppIdGuard('userLocation.managerUserLocation'))
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Manage user-location assignments', description: 'Updates the set of users assigned to a specific storage location. Controls which staff members can perform inventory operations at this warehouse or store.', operationId: 'configUserLocation_manageAssignments', tags: ['Configuration', 'User Location'], 'x-description-th': 'อัปเดตการกำหนดผู้ใช้ให้กับสถานที่' } as any)
+  @ApiOperation({ summary: 'Manage user-location assignments', description: 'Updates the set of users assigned to a specific storage location. Controls which staff members can perform inventory operations at this warehouse or store.', operationId: 'configUserLocation_manageAssignments', 'x-description-th': 'อัปเดตการกำหนดผู้ใช้ให้กับสถานที่' } as any)
   @ApiBody({ type: UserLocationUpdateRequest })
   async managerUserLocation(
     @Param('bu_code') bu_code: string,

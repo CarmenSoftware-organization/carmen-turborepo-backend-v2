@@ -50,7 +50,6 @@ export class StoreRequisitionDetailCommentController {
   @ApiOperation({
     summary: 'Get all comments for a store-requisition-detail',
     operationId: 'findAllStoreRequisitionDetailComments',
-    tags: ['Inventory', 'StoreRequisitionDetail Comment'],
     responses: {
       200: { description: 'Comments retrieved successfully' },
     },
@@ -80,7 +79,6 @@ export class StoreRequisitionDetailCommentController {
   @ApiOperation({
     summary: 'Get a store-requisition-detail comment by ID',
     operationId: 'findOneStoreRequisitionDetailComment',
-    tags: ['Inventory', 'StoreRequisitionDetail Comment'],
     responses: {
       200: { description: 'Comment retrieved successfully' },
     },
@@ -102,7 +100,6 @@ export class StoreRequisitionDetailCommentController {
   @ApiOperation({
     summary: 'Create a new store-requisition-detail comment',
     operationId: 'createStoreRequisitionDetailComment',
-    tags: ['Inventory', 'StoreRequisitionDetail Comment'],
     responses: {
       201: { description: 'Comment created successfully' },
     },
@@ -130,7 +127,6 @@ export class StoreRequisitionDetailCommentController {
   @ApiOperation({
     summary: 'Update a store-requisition-detail comment',
     operationId: 'updateStoreRequisitionDetailComment',
-    tags: ['Inventory', 'StoreRequisitionDetail Comment'],
     responses: {
       200: { description: 'Comment updated successfully' },
     },
@@ -160,7 +156,6 @@ export class StoreRequisitionDetailCommentController {
   @ApiOperation({
     summary: 'Delete a store-requisition-detail comment',
     operationId: 'deleteStoreRequisitionDetailComment',
-    tags: ['Inventory', 'StoreRequisitionDetail Comment'],
     responses: {
       200: { description: 'Comment deleted successfully' },
     },
@@ -182,7 +177,6 @@ export class StoreRequisitionDetailCommentController {
   @ApiOperation({
     summary: 'Add an attachment to a store-requisition-detail comment',
     operationId: 'addAttachmentToStoreRequisitionDetailComment',
-    tags: ['Inventory', 'StoreRequisitionDetail Comment'],
     responses: {
       200: { description: 'Attachment added successfully' },
     },
@@ -212,7 +206,6 @@ export class StoreRequisitionDetailCommentController {
   @ApiOperation({
     summary: 'Remove an attachment from a store-requisition-detail comment',
     operationId: 'removeAttachmentFromStoreRequisitionDetailComment',
-    tags: ['Inventory', 'StoreRequisitionDetail Comment'],
     responses: {
       200: { description: 'Attachment removed successfully' },
     },

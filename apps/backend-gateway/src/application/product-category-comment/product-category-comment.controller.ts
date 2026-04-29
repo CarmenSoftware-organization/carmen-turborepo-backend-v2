@@ -38,7 +38,7 @@ export class ProductCategoryCommentController {
   @UseGuards(new AppIdGuard('productCategoryComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all comments for a product-category', operationId: 'findAllProductCategoryComments', tags: ['Master', 'ProductCategory Comment'], responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get all comments for a product-category', operationId: 'findAllProductCategoryComments', responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findAllByProductCategoryId(@Param('bu_code') bu_code: string, @Param('product_category_id', new ParseUUIDPipe({ version: '4' })) product_category_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -49,7 +49,7 @@ export class ProductCategoryCommentController {
   @Get(':bu_code/product-category-comment/:id')
   @UseGuards(new AppIdGuard('productCategoryComment.findOne'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a product-category comment by ID', operationId: 'findOneProductCategoryComment', tags: ['Master', 'ProductCategory Comment'], responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
+  @ApiOperation({ summary: 'Get a product-category comment by ID', operationId: 'findOneProductCategoryComment', responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -59,7 +59,7 @@ export class ProductCategoryCommentController {
   @Post(':bu_code/product-category-comment')
   @UseGuards(new AppIdGuard('productCategoryComment.create'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new product-category comment', operationId: 'createProductCategoryComment', tags: ['Master', 'ProductCategory Comment'], responses: { 201: { description: 'Comment created successfully' } } } as any)
+  @ApiOperation({ summary: 'Create a new product-category comment', operationId: 'createProductCategoryComment', responses: { 201: { description: 'Comment created successfully' } } } as any)
   @ApiBody({ type: CreateProductCategoryCommentDto })
   @HttpCode(HttpStatus.CREATED)
   async create(@Param('bu_code') bu_code: string, @Body() createDto: CreateProductCategoryCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -70,7 +70,7 @@ export class ProductCategoryCommentController {
   @Patch(':bu_code/product-category-comment/:id')
   @UseGuards(new AppIdGuard('productCategoryComment.update'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a product-category comment', operationId: 'updateProductCategoryComment', tags: ['Master', 'ProductCategory Comment'], responses: { 200: { description: 'Comment updated successfully' } } } as any)
+  @ApiOperation({ summary: 'Update a product-category comment', operationId: 'updateProductCategoryComment', responses: { 200: { description: 'Comment updated successfully' } } } as any)
   @ApiBody({ type: UpdateProductCategoryCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdateProductCategoryCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -81,7 +81,7 @@ export class ProductCategoryCommentController {
   @Delete(':bu_code/product-category-comment/:id')
   @UseGuards(new AppIdGuard('productCategoryComment.delete'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a product-category comment', operationId: 'deleteProductCategoryComment', tags: ['Master', 'ProductCategory Comment'], responses: { 200: { description: 'Comment deleted successfully' } } } as any)
+  @ApiOperation({ summary: 'Delete a product-category comment', operationId: 'deleteProductCategoryComment', responses: { 200: { description: 'Comment deleted successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
@@ -91,7 +91,7 @@ export class ProductCategoryCommentController {
   @Post(':bu_code/product-category-comment/:id/attachment')
   @UseGuards(new AppIdGuard('productCategoryComment.addAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Add attachment to a product-category comment', operationId: 'addAttachmentToProductCategoryComment', tags: ['Master', 'ProductCategory Comment'], responses: { 200: { description: 'Attachment added successfully' } } } as any)
+  @ApiOperation({ summary: 'Add attachment to a product-category comment', operationId: 'addAttachmentToProductCategoryComment', responses: { 200: { description: 'Attachment added successfully' } } } as any)
   @ApiBody({ type: AddAttachmentDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
@@ -102,7 +102,7 @@ export class ProductCategoryCommentController {
   @Delete(':bu_code/product-category-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('productCategoryComment.removeAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove attachment from a product-category comment', operationId: 'removeAttachmentFromProductCategoryComment', tags: ['Master', 'ProductCategory Comment'], responses: { 200: { description: 'Attachment removed successfully' } } } as any)
+  @ApiOperation({ summary: 'Remove attachment from a product-category comment', operationId: 'removeAttachmentFromProductCategoryComment', responses: { 200: { description: 'Attachment removed successfully' } } } as any)
   @HttpCode(HttpStatus.OK)
   async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
