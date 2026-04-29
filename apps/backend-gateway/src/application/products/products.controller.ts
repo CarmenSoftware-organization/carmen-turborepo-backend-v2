@@ -183,6 +183,61 @@ export class ProductsController extends BaseHttpController {
   }
 
   /**
+   * Get inventory movement (stock card) for a product
+   * ดึงรายการเคลื่อนไหวสินค้าตามช่วงวันที่
+   */
+  @Get(':bu_code/products/:product_id/inventory-movement')
+  @UseGuards(new AppIdGuard('product.inventory-movement'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'Get inventory movement by product and date range',
+    description:
+      'Returns the stock-card movement history for a product over [start_at, end_at]. Each row is one cost-layer event with running on-hand qty/value. cost_average is suffixed with "*" when the BU uses FIFO costing to indicate the value shifts as different lots are consumed.',
+    operationId: 'getInventoryMovementByProduct',
+    parameters: [
+      { name: 'product_id', in: 'path', required: true, description: 'Product UUID' },
+      { name: 'start_at', in: 'query', required: true, description: 'Start date (YYYY-MM-DD or ISO)' },
+      { name: 'end_at', in: 'query', required: true, description: 'End date (YYYY-MM-DD or ISO)' },
+      { name: 'location_id', in: 'query', required: false, description: 'Optional location UUID to filter' },
+    ],
+    responses: {
+      200: { description: 'Inventory movement retrieved successfully' },
+      404: { description: 'Product not found' },
+    },
+    'x-description-th': 'ดึงรายการเคลื่อนไหวสินค้า (สมุดสต็อก) ในช่วงวันที่ที่กำหนด',
+  } as any)
+  @ApiResponse({ status: 200, description: 'Inventory movement retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Product not found' })
+  async getInventoryMovement(
+    @Param('product_id', new ParseUUIDPipe({ version: '4' })) product_id: string,
+    @Param('bu_code') bu_code: string,
+    @Query('start_at') start_at: string,
+    @Query('end_at') end_at: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+    @Query('location_id') location_id?: string,
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'getInventoryMovement', product_id, start_at, end_at, location_id, version },
+      ProductsController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.productService.getInventoryMovement(
+      product_id,
+      start_at,
+      end_at,
+      user_id,
+      bu_code,
+      version,
+      location_id,
+    );
+    this.respond(res, result);
+  }
+
+  /**
    * Get on-order quantity for a product
    * ดึงจำนวนสินค้าที่สั่งซื้อแล้วแต่ยังไม่ได้รับครบ
    */

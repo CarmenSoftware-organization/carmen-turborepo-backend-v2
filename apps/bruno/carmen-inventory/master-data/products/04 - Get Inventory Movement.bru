@@ -1,0 +1,91 @@
+meta {
+  name: Get inventory movement
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{host}}/api/{{bu_code}}/products/:product_id/inventory-movement?start_at=&end_at=
+  body: none
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  start_at:
+  end_at:
+  ~location_id:
+  ~version:
+}
+
+params:query {
+  start_at:
+  end_at:
+  ~location_id:
+}
+
+params:path {
+  product_id: bb96415b-dff0-40ec-aa2f-2b4099418314
+}
+
+docs {
+  ## Get Inventory Movement (Stock Card) by Product
+  ดึงรายการเคลื่อนไหวสินค้า (สมุดสต็อก) ในช่วงวันที่ที่กำหนด
+
+  Returns the stock-card movement history for a product across the date range
+  [start_at, end_at]. Each row represents one inventory cost-layer event with
+  running on-hand qty and value carried forward from before the window.
+
+  - In **FIFO** mode, `cost_average` is suffixed with `*` to indicate the value
+    shifts as different lots are consumed.
+  - In **AVG** mode, `cost_average` has no suffix (system maintains a single
+    moving average per location).
+
+  ### Path Parameters
+  - `product_id` — Product UUID (รหัสสินค้า)
+
+  ### Query Parameters
+  - `start_at` — Start date, `YYYY-MM-DD` or ISO (วันที่เริ่มต้น)
+  - `end_at` — End date, `YYYY-MM-DD` or ISO (วันที่สิ้นสุด)
+  - `location_id` — Optional location UUID to filter (รหัสสถานที่สำหรับกรอง)
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "calculation_method": "FIFO",
+      "data": [
+        {
+          "location_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+          "location_name": "Main Warehouse",
+          "location_code": "WH-001",
+          "data": [
+            {
+              "date": "2026-04-15T03:00:00.000Z",
+              "status": "good_received_note",
+              "in_qty": 10,
+              "out_qty": 0,
+              "total_qty": 10,
+              "cost": 11,
+              "total_cost": 110,
+              "cost_average": "11*"
+            }
+          ]
+        }
+      ]
+    },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-04-29T00:00:00.000Z"
+  }
+  ```
+}

@@ -1,6 +1,7 @@
-import { HttpStatus, Injectable, Logger, HttpException } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger, HttpException } from '@nestjs/common';
 import { TenantService } from '@/tenant/tenant.service';
-import { enum_product_status_type, enum_unit_type, PrismaClient } from '@repo/prisma-shared-schema-tenant';
+import { enum_calculation_method, enum_product_status_type, enum_unit_type, PrismaClient } from '@repo/prisma-shared-schema-tenant';
+import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import {
   ICreateProduct,
   IProductInfo,
@@ -80,6 +81,8 @@ export class ProductsService {
 
   constructor(
     private readonly tenantService: TenantService,
+    @Inject('PRISMA_SYSTEM')
+    private readonly prismaSystem: typeof PrismaClient_SYSTEM,
   ) { }
 
   /**
@@ -546,38 +549,37 @@ export class ProductsService {
       // Fetch full product_location data for selected products
       const productLocations = selectedProductIds.size > 0
         ? await this.prismaService.tb_product_location.findMany({
-            where: {
-              location_id: loc.id,
-              product_id: { in: [...selectedProductIds] },
-              deleted_at: null,
-            },
-            select: {
-              id: true,
-              product_id: true,
-              min_qty: true,
-              max_qty: true,
-              re_order_qty: true,
-              par_qty: true,
-              note: true,
-              tb_product: {
-                select: {
-                  code: true,
-                  name: true,
-                  local_name: true,
-                  sku: true,
-                  is_active: true,
-                  product_item_group_id: true,
-                  tb_product_item_group: {
-                    select: {
-                      id: true,
-                      name: true,
-                      tb_product_sub_category: {
-                        select: {
-                          id: true,
-                          name: true,
-                          tb_product_category: {
-                            select: { id: true, name: true },
-                          },
+          where: {
+            location_id: loc.id,
+            product_id: { in: [...selectedProductIds] },
+            deleted_at: null,
+          },
+          select: {
+            id: true,
+            product_id: true,
+            min_qty: true,
+            max_qty: true,
+            re_order_qty: true,
+            par_qty: true,
+            note: true,
+            tb_product: {
+              select: {
+                code: true,
+                name: true,
+                local_name: true,
+                sku: true,
+                is_active: true,
+                product_item_group_id: true,
+                tb_product_item_group: {
+                  select: {
+                    id: true,
+                    name: true,
+                    tb_product_sub_category: {
+                      select: {
+                        id: true,
+                        name: true,
+                        tb_product_category: {
+                          select: { id: true, name: true },
                         },
                       },
                     },
@@ -585,7 +587,8 @@ export class ProductsService {
                 },
               },
             },
-          })
+          },
+        })
         : [];
 
       const products = productLocations.map((pl) => {
@@ -921,11 +924,11 @@ export class ProductsService {
         ...(productItemGroupId ? { id: productItemGroupId } : {}),
         ...(productSubCategoryId || productCategoryId
           ? {
-              tb_product_sub_category: {
-                ...(productSubCategoryId ? { id: productSubCategoryId } : {}),
-                ...(productCategoryId ? { product_category_id: productCategoryId } : {}),
-              },
-            }
+            tb_product_sub_category: {
+              ...(productSubCategoryId ? { id: productSubCategoryId } : {}),
+              ...(productCategoryId ? { product_category_id: productCategoryId } : {}),
+            },
+          }
           : {}),
       };
     }
@@ -1894,7 +1897,7 @@ export class ProductsService {
     }
 
     // Fetch product-location settings (min/max qty)
-     
+
     const plWhere: any = { product_id, deleted_at: null };
     if (location_id) plWhere.location_id = location_id;
 
@@ -1921,7 +1924,7 @@ export class ProductsService {
     }]));
 
     // Fetch cost layers
-     
+
     const layerWhere: any = { product_id, deleted_at: null };
     if (location_id) layerWhere.location_id = location_id;
 
@@ -2452,11 +2455,11 @@ export class ProductsService {
 
     const locationName = lastReceipt.location_id
       ? (
-          await this.prismaService.tb_location.findFirst({
-            where: { id: lastReceipt.location_id },
-            select: { name: true },
-          })
-        )?.name ?? null
+        await this.prismaService.tb_location.findFirst({
+          where: { id: lastReceipt.location_id },
+          select: { name: true },
+        })
+      )?.name ?? null
       : null;
 
     return Result.ok({
@@ -2476,6 +2479,169 @@ export class ProductsService {
       qty: Number(lastReceipt.qty),
       cost_per_unit: Number(lastReceipt.cost_per_unit),
       total_cost: Number(lastReceipt.total_cost),
+    });
+  }
+
+  /**
+   * Get inventory movement (stock card) for a product over a date range.
+   * Returns one row per cost-layer entry within [start_at, end_at], with
+   * running on-hand qty/value carried forward from before the window.
+   * In FIFO mode, cost_average is suffixed with "*" to flag that it shifts
+   * as different lots are consumed.
+   * ดึงรายการเคลื่อนไหวสินค้าในช่วงวันที่ที่กำหนด
+   */
+  @TryCatch
+  async getInventoryMovement(
+    product_id: string,
+    start_at: string,
+    end_at: string,
+    location_id?: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'getInventoryMovement', product_id, start_at, end_at, location_id, user_id: this.userId, tenant_id: this.bu_code },
+      ProductsService.name,
+    );
+
+    const product = await this.prismaService.tb_product.findFirst({
+      where: { id: product_id, deleted_at: null },
+      select: { id: true },
+    });
+    if (!product) {
+      return Result.error('Product not found', ErrorCode.NOT_FOUND);
+    }
+
+    const startDate = new Date(start_at);
+    const endDate = new Date(end_at);
+    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+      return Result.error('Invalid start_at or end_at', ErrorCode.INVALID_ARGUMENT);
+    }
+    // YYYY-MM-DD without time → treat as inclusive end-of-day
+    if (/^\d{4}-\d{2}-\d{2}$/.test(end_at)) {
+      endDate.setHours(23, 59, 59, 999);
+    }
+
+    const businessUnit = await this.prismaSystem.tb_business_unit.findFirst({
+      where: { code: this.bu_code, deleted_at: null },
+      select: { calculation_method: true },
+    });
+    const calculationMethod = businessUnit?.calculation_method ?? enum_calculation_method.FIFO;
+    const isFifo = calculationMethod === enum_calculation_method.FIFO;
+
+
+    const layerWhere: any = {
+      product_id,
+      deleted_at: null,
+      lot_at_date: { lte: endDate },
+    };
+    if (location_id) layerWhere.location_id = location_id;
+
+    const layers = await this.prismaService.tb_inventory_transaction_cost_layer.findMany({
+      where: layerWhere,
+      orderBy: [
+        { lot_at_date: 'asc' },
+        { lot_seq_no: 'asc' },
+        { lot_index: 'asc' },
+        { created_at: 'asc' },
+      ],
+      include: {
+        tb_inventory_transaction_detail: {
+          select: {
+            tb_inventory_transaction: {
+              select: {
+                inventory_doc_type: true,
+                inventory_doc_no: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const locationIds = [
+      ...new Set(layers.map((l) => l.location_id).filter((id): id is string => !!id)),
+    ];
+    const locations = locationIds.length > 0
+      ? await this.prismaService.tb_location.findMany({
+        where: { id: { in: locationIds } },
+        select: { id: true, code: true, name: true },
+      })
+      : [];
+    const locationMap = new Map(locations.map((l) => [l.id, l]));
+
+    const balanceMap = new Map<string, { qty: number; value: number }>();
+    const round2 = (n: number): number => Math.round(n * 100) / 100;
+
+    type MovementRow = {
+      date: Date | null;
+      status: string | null;
+      in_qty: number;
+      out_qty: number;
+      total_qty: number;
+      cost: number;
+      total_cost: number;
+      cost_average: string;
+    };
+    type LocationGroup = {
+      location_id: string | null;
+      location_name: string | null;
+      location_code: string | null;
+      inventory_movement: MovementRow[];
+    };
+    const groupMap = new Map<string, LocationGroup>();
+
+    for (const layer of layers) {
+      const inQty = Number(layer.in_qty) || 0;
+      const outQty = Number(layer.out_qty) || 0;
+      const cost = Number(layer.cost_per_unit) || 0;
+      const locKey = layer.location_id || '_no_location_';
+
+      const prev = balanceMap.get(locKey) || { qty: 0, value: 0 };
+      const newQty = prev.qty + inQty - outQty;
+      // Outflows leave at the layer's recorded cost (FIFO lot cost or AVG cost)
+      const newValue = prev.value + inQty * cost - outQty * cost;
+      balanceMap.set(locKey, { qty: newQty, value: newValue });
+
+      if (layer.lot_at_date && layer.lot_at_date < startDate) continue;
+
+      const txDetail = layer.tb_inventory_transaction_detail as
+        | { tb_inventory_transaction?: { inventory_doc_type?: string | null } | null }
+        | null;
+      const docType = txDetail?.tb_inventory_transaction?.inventory_doc_type ?? null;
+
+      const storedAvg = Number(layer.average_cost_per_unit) || 0;
+      const computedAvg = newQty > 0 ? newValue / newQty : 0;
+      const avgCost = round2(storedAvg || computedAvg);
+      const totalQty = round2(newQty);
+      const totalCost = round2(totalQty * avgCost);
+      const cost_average = isFifo ? `${avgCost}*` : `${avgCost}`;
+
+      const loc = layer.location_id ? locationMap.get(layer.location_id) : undefined;
+
+      let group = groupMap.get(locKey);
+      if (!group) {
+        group = {
+          location_id: layer.location_id,
+          location_name: loc?.name ?? null,
+          location_code: loc?.code ?? layer.location_code ?? null,
+          inventory_movement: [],
+        };
+        groupMap.set(locKey, group);
+      }
+      group.inventory_movement.push({
+        date: layer.lot_at_date,
+        status: docType,
+        in_qty: round2(inQty),
+        out_qty: round2(outQty),
+        total_qty: totalQty,
+        cost: round2(cost),
+        total_cost: totalCost,
+        cost_average,
+      });
+    }
+
+    return Result.ok({
+      calculation_method: calculationMethod,
+      locations: [...groupMap.values()],
     });
   }
 }

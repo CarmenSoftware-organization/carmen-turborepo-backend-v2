@@ -373,4 +373,28 @@ export class ProductsController extends BaseMicroserviceController {
     );
     return this.handleResult(result);
   }
+
+  /**
+   * Get inventory movement (stock card) for a product over a date range
+   * ดึงรายการเคลื่อนไหวสินค้าตามช่วงวันที่ (สมุดสต็อก)
+   */
+  @MessagePattern({ cmd: 'product.get-inventory-movement', service: 'product' })
+  async getInventoryMovement(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'getInventoryMovement', payload }, ProductsController.name);
+    const bu_code = payload.bu_code;
+    const user_id = payload.user_id;
+    this.productsService.userId = user_id;
+    this.productsService.bu_code = bu_code;
+    await this.productsService.initializePrismaService(bu_code, user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.productsService.getInventoryMovement(
+        payload.product_id,
+        payload.start_at,
+        payload.end_at,
+        payload.location_id,
+      ),
+    );
+    return this.handleResult(result);
+  }
 }
