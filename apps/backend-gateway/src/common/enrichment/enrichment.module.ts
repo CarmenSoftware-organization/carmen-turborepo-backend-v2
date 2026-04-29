@@ -19,7 +19,14 @@ import { EnrichmentService } from './enrichment.service';
       },
     ]),
   ],
-  providers: [UserNameCacheService, UserNameResolverService, EnrichmentService],
+  providers: [
+    {
+      provide: UserNameCacheService,
+      useFactory: () => new UserNameCacheService(),
+    },
+    UserNameResolverService,
+    EnrichmentService,
+  ],
   exports: [EnrichmentService],
 })
 export class EnrichmentModule {}
