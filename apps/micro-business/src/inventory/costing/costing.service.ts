@@ -44,10 +44,28 @@ export class CostingService {
   }
 
   private async lookupStandard(
-    _prisma: TenantPrisma,
-    _items: GetCostsBatchInput['items'],
+    prisma: TenantPrisma,
+    items: GetCostsBatchInput['items'],
   ): Promise<Map<string, Prisma.Decimal>> {
-    throw new Error('Not implemented');
+    const productIds = Array.from(new Set(items.map((i) => i.product_id)));
+    const products = await prisma.tb_product.findMany({
+      where: { id: { in: productIds }, deleted_at: null },
+      select: { id: true, standard_cost: true },
+    });
+
+    const productCost = new Map<string, Prisma.Decimal>();
+    for (const p of products) {
+      productCost.set(p.id, p.standard_cost ?? new Prisma.Decimal(0));
+    }
+
+    const result = new Map<string, Prisma.Decimal>();
+    for (const item of items) {
+      const cost = productCost.get(item.product_id);
+      if (cost !== undefined) {
+        result.set(costMapKey(item.product_id, item.location_id), cost);
+      }
+    }
+    return result;
   }
 
   private async lookupLastReceiving(
