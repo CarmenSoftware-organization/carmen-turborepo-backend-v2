@@ -69,10 +69,58 @@ export class CostingService {
   }
 
   private async lookupLastReceiving(
-    _prisma: TenantPrisma,
-    _items: GetCostsBatchInput['items'],
+    prisma: TenantPrisma,
+    items: GetCostsBatchInput['items'],
   ): Promise<Map<string, Prisma.Decimal>> {
-    throw new Error('Not implemented');
+    const result = new Map<string, Prisma.Decimal>();
+    if (items.length === 0) return result;
+
+    const productIds = Array.from(new Set(items.map((i) => i.product_id)));
+    const locationIds = Array.from(new Set(items.map((i) => i.location_id)));
+    const wantedKeys = new Set(items.map((i) => costMapKey(i.product_id, i.location_id)));
+
+    // Fetch GRN details for all (product, location) pairs of interest, newest first.
+    // We over-fetch then filter in-memory by exact pair to avoid N queries.
+    // Soft-delete + ordering live on the parent tb_good_received_note (the
+    // detail row itself has neither column).
+    const rows = await prisma.tb_good_received_note_detail.findMany({
+      where: {
+        product_id: { in: productIds },
+        location_id: { in: locationIds },
+        tb_good_received_note: { deleted_at: null },
+      },
+      orderBy: { tb_good_received_note: { grn_date: 'desc' } },
+      select: {
+        product_id: true,
+        location_id: true,
+        tb_good_received_note_detail_item: {
+          where: { deleted_at: null },
+          select: {
+            net_amount: true,
+            received_base_qty: true,
+          },
+        },
+      },
+    });
+
+    for (const row of rows) {
+      const key = costMapKey(row.product_id, row.location_id);
+      if (!wantedKeys.has(key)) continue;
+      if (result.has(key)) continue; // already took the newest
+
+      // Sum across items on the same detail row (rare but safe), then derive cost-per-unit
+      let totalNet = new Prisma.Decimal(0);
+      let totalQty = new Prisma.Decimal(0);
+      for (const item of row.tb_good_received_note_detail_item) {
+        totalNet = totalNet.plus(item.net_amount ?? 0);
+        totalQty = totalQty.plus(item.received_base_qty ?? 0);
+      }
+
+      if (totalQty.isZero()) continue; // skip — caller falls back to 0
+      result.set(key, totalNet.dividedBy(totalQty));
+    }
+
+    return result;
   }
 
   private async lookupLast(

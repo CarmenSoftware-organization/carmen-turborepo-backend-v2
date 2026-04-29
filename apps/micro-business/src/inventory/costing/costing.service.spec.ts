@@ -56,4 +56,87 @@ describe('CostingService', () => {
       expect(result.get(costMapKey('p-missing', 'loc-a'))).toBeUndefined();
     });
   });
+
+  describe('last_receiving', () => {
+    it('returns latest GRN cost per (product, location), derived as net_amount/received_base_qty', async () => {
+      // Two GRN details, second is newer. Mock returns rows ordered DESC.
+      const prisma: any = {
+        tb_good_received_note_detail: {
+          findMany: jest.fn().mockResolvedValue([
+            {
+              product_id: 'p1',
+              location_id: 'loc-a',
+              created_at: new Date('2026-04-29T10:00:00Z'),
+              tb_good_received_note_detail_item: [
+                {
+                  net_amount: new Prisma.Decimal(200),
+                  received_base_qty: new Prisma.Decimal(10),
+                },
+              ],
+            },
+            {
+              product_id: 'p1',
+              location_id: 'loc-a',
+              created_at: new Date('2026-04-28T10:00:00Z'),
+              tb_good_received_note_detail_item: [
+                {
+                  net_amount: new Prisma.Decimal(150),
+                  received_base_qty: new Prisma.Decimal(10),
+                },
+              ],
+            },
+          ]),
+        },
+      };
+
+      const result = await service.getCostsPerUnit({
+        prisma,
+        method: 'last_receiving',
+        items: [{ product_id: 'p1', location_id: 'loc-a' }],
+      });
+
+      expect(result.get(costMapKey('p1', 'loc-a'))?.toString()).toBe('20');
+    });
+
+    it('returns no entry when GRN has zero received_base_qty (caller falls back to 0)', async () => {
+      const prisma: any = {
+        tb_good_received_note_detail: {
+          findMany: jest.fn().mockResolvedValue([
+            {
+              product_id: 'p1',
+              location_id: 'loc-a',
+              created_at: new Date(),
+              tb_good_received_note_detail_item: [
+                { net_amount: new Prisma.Decimal(100), received_base_qty: new Prisma.Decimal(0) },
+              ],
+            },
+          ]),
+        },
+      };
+
+      const result = await service.getCostsPerUnit({
+        prisma,
+        method: 'last_receiving',
+        items: [{ product_id: 'p1', location_id: 'loc-a' }],
+      });
+
+      expect(result.get(costMapKey('p1', 'loc-a'))).toBeUndefined();
+    });
+
+    it('omits entry when no GRN exists', async () => {
+      const prisma: any = {
+        tb_good_received_note_detail: {
+          findMany: jest.fn().mockResolvedValue([]),
+        },
+      };
+
+      const result = await service.getCostsPerUnit({
+        prisma,
+        method: 'last_receiving',
+        items: [{ product_id: 'p-new', location_id: 'loc-a' }],
+      });
+
+      expect(result.get(costMapKey('p-new', 'loc-a'))).toBeUndefined();
+    });
+  });
 });
