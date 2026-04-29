@@ -6,8 +6,12 @@ meta {
 
 post {
   url: {{host}}/api/{{bu_code}}/credit-note-detail-comment/upload
-  body: json
+  body: multipartForm
   auth: bearer
+}
+
+params:query {
+  ~version: 
 }
 
 headers {
@@ -17,10 +21,6 @@ headers {
 
 auth:bearer {
   token: {{access_token}}
-}
-
-query {
-  ~version: 
 }
 
 body:json {
