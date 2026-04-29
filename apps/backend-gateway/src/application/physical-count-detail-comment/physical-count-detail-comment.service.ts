@@ -40,7 +40,7 @@ export class PhysicalCountDetailCommentService {
     version: string,
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
-      { cmd: 'physical-count-detail-comment.find-by-id', service: 'physical-count-detail-comment' },
+      { cmd: 'physical-count-detail-comment.find-by-id', service: 'physical-count' },
       { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
@@ -60,7 +60,7 @@ export class PhysicalCountDetailCommentService {
     version: string,
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
-      { cmd: 'physical-count-detail-comment.find-all-by-physical-count-detail-id', service: 'physical-count-detail-comment' },
+      { cmd: 'physical-count-detail-comment.find-all-by-physical-count-detail-id', service: 'physical-count' },
       { physical_count_detail_id, user_id, bu_code, paginate, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
@@ -79,7 +79,7 @@ export class PhysicalCountDetailCommentService {
     version: string,
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
-      { cmd: 'physical-count-detail-comment.create', service: 'physical-count-detail-comment' },
+      { cmd: 'physical-count-detail-comment.create', service: 'physical-count' },
       { data, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
@@ -99,7 +99,7 @@ export class PhysicalCountDetailCommentService {
     version: string,
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
-      { cmd: 'physical-count-detail-comment.update', service: 'physical-count-detail-comment' },
+      { cmd: 'physical-count-detail-comment.update', service: 'physical-count' },
       { id, data, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
@@ -118,7 +118,7 @@ export class PhysicalCountDetailCommentService {
     version: string,
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
-      { cmd: 'physical-count-detail-comment.delete', service: 'physical-count-detail-comment' },
+      { cmd: 'physical-count-detail-comment.delete', service: 'physical-count' },
       { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
@@ -138,7 +138,7 @@ export class PhysicalCountDetailCommentService {
     version: string,
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
-      { cmd: 'physical-count-detail-comment.add-attachment', service: 'physical-count-detail-comment' },
+      { cmd: 'physical-count-detail-comment.add-attachment', service: 'physical-count' },
       { id, attachment, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
@@ -158,7 +158,7 @@ export class PhysicalCountDetailCommentService {
     version: string,
   ): Promise<unknown> {
     const res: Observable<MicroserviceResponse> = this.businessService.send(
-      { cmd: 'physical-count-detail-comment.remove-attachment', service: 'physical-count-detail-comment' },
+      { cmd: 'physical-count-detail-comment.remove-attachment', service: 'physical-count' },
       { id, fileToken, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
@@ -226,7 +226,7 @@ export class PhysicalCountDetailCommentService {
     };
 
     const res: Observable<MicroserviceResponse> = this.businessService.send(
-      { cmd: 'physical-count-detail-comment.create', service: 'physical-count-detail-comment' },
+      { cmd: 'physical-count-detail-comment.create', service: 'physical-count' },
       { data, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);

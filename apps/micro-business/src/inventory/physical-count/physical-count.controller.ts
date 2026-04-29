@@ -7,6 +7,7 @@ import {
   IPhysicalCountSubmit,
   IPhysicalCountDetailCommentCreate,
   IPhysicalCountDetailCommentUpdate,
+  IPhysicalCountDetailCommentAttachment,
 } from './interface/physical-count.interface';
 import { BackendLogger } from '@/common/helpers/backend.logger';
 import { runWithAuditContext, AuditContext } from '@repo/log-events-library';
@@ -219,15 +220,33 @@ export class PhysicalCountController extends BaseMicroserviceController {
    * @param payload - Contains physical_count_detail_id, user_id, tenant_id / ประกอบด้วย physical_count_detail_id, user_id, tenant_id
    * @returns List of detail comments / รายการความคิดเห็นของรายละเอียด
    */
-  @MessagePattern({ cmd: 'physical-count-detail-comment.findAll', service: 'physical-count' })
+  @MessagePattern({ cmd: 'physical-count-detail-comment.find-all-by-physical-count-detail-id', service: 'physical-count' })
   async findDetailComments(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
     this.logger.debug({ function: 'findDetailComments', payload }, PhysicalCountController.name);
     const physical_count_detail_id = payload.physical_count_detail_id;
     const user_id = payload.user_id;
     const tenant_id = payload.tenant_id || payload.bu_code;
+    const paginate = payload.paginate;
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.physicalCountService.findDetailComments(physical_count_detail_id, user_id, tenant_id),
+      this.physicalCountService.findDetailComments(physical_count_detail_id, user_id, tenant_id, paginate),
+    );
+    return this.handlePaginatedResult(result);
+  }
+
+  /**
+   * Find a physical-count-detail comment by ID
+   * ค้นหาความคิดเห็นของรายละเอียดการตรวจนับด้วย ID
+   */
+  @MessagePattern({ cmd: 'physical-count-detail-comment.find-by-id', service: 'physical-count' })
+  async findDetailCommentById(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'findDetailCommentById', payload }, PhysicalCountController.name);
+    const id = payload.id;
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.physicalCountService.findDetailCommentById(id, user_id, tenant_id),
     );
     return this.handleResult(result);
   }
@@ -285,6 +304,42 @@ export class PhysicalCountController extends BaseMicroserviceController {
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
       this.physicalCountService.deleteDetailComment(id, user_id, tenant_id),
+    );
+    return this.handleResult(result);
+  }
+
+  /**
+   * Add an attachment to a physical-count-detail comment
+   * เพิ่มไฟล์แนบให้กับความคิดเห็นในรายละเอียดการตรวจนับ
+   */
+  @MessagePattern({ cmd: 'physical-count-detail-comment.add-attachment', service: 'physical-count' })
+  async addAttachmentToDetailComment(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'addAttachmentToDetailComment', payload }, PhysicalCountController.name);
+    const id = payload.id;
+    const attachment: IPhysicalCountDetailCommentAttachment = payload.attachment;
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.physicalCountService.addAttachmentToDetailComment(id, attachment, user_id, tenant_id),
+    );
+    return this.handleResult(result);
+  }
+
+  /**
+   * Remove an attachment from a physical-count-detail comment
+   * ลบไฟล์แนบออกจากความคิดเห็นในรายละเอียดการตรวจนับ
+   */
+  @MessagePattern({ cmd: 'physical-count-detail-comment.remove-attachment', service: 'physical-count' })
+  async removeAttachmentFromDetailComment(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'removeAttachmentFromDetailComment', payload }, PhysicalCountController.name);
+    const id = payload.id;
+    const fileToken = payload.fileToken;
+    const user_id = payload.user_id;
+    const tenant_id = payload.tenant_id || payload.bu_code;
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.physicalCountService.removeAttachmentFromDetailComment(id, fileToken, user_id, tenant_id),
     );
     return this.handleResult(result);
   }

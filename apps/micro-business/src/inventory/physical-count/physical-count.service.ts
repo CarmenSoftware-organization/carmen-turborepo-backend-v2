@@ -14,6 +14,7 @@ import {
   IPhysicalCountSubmit,
   IPhysicalCountDetailCommentCreate,
   IPhysicalCountDetailCommentUpdate,
+  IPhysicalCountDetailCommentAttachment,
 } from './interface/physical-count.interface';
 import { ClientProxy } from '@nestjs/microservices';
 import { BackendLogger } from '@/common/helpers/backend.logger';
@@ -1031,9 +1032,10 @@ export class PhysicalCountService {
     physical_count_detail_id: string,
     user_id: string,
     tenant_id: string,
+    paginate?: IPaginate,
   ): Promise<Result<unknown>> {
     this.logger.debug(
-      { function: 'findDetailComments', physical_count_detail_id, user_id, tenant_id },
+      { function: 'findDetailComments', physical_count_detail_id, user_id, tenant_id, paginate },
       PhysicalCountService.name,
     );
 
@@ -1050,12 +1052,67 @@ export class PhysicalCountService {
       tenant.db_connection,
     );
 
+    const page = paginate?.page && paginate.page > 0 ? paginate.page : 1;
+    const perpage = paginate?.perpage && paginate.perpage > 0 ? paginate.perpage : 10;
+    const where = { physical_count_detail_id, deleted_at: null };
+
     const comments = await prisma.tb_physical_count_detail_comment.findMany({
-      where: { physical_count_detail_id, deleted_at: null },
+      where,
       orderBy: { created_at: 'asc' },
+      skip: (page - 1) * perpage,
+      take: perpage,
     });
 
-    return Result.ok(comments);
+    const total = await prisma.tb_physical_count_detail_comment.count({ where });
+
+    return Result.ok({
+      data: comments,
+      paginate: {
+        total,
+        page,
+        perpage,
+        pages: total === 0 ? 1 : Math.ceil(total / perpage),
+      },
+    });
+  }
+
+  /**
+   * Find a physical count detail comment by ID
+   * ค้นหาความคิดเห็นในรายการรายละเอียดการตรวจนับด้วย ID
+   */
+  @TryCatch
+  async findDetailCommentById(
+    id: string,
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'findDetailCommentById', id, user_id, tenant_id },
+      PhysicalCountService.name,
+    );
+
+    const tenant = await this.tenantService.getdb_connection(
+      user_id,
+      tenant_id,
+    );
+    if (!tenant) {
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+    }
+
+    const prisma = await this.prismaTenant(
+      tenant.tenant_id,
+      tenant.db_connection,
+    );
+
+    const comment = await prisma.tb_physical_count_detail_comment.findFirst({
+      where: { id, deleted_at: null },
+    });
+
+    if (!comment) {
+      return Result.error('Comment not found', ErrorCode.NOT_FOUND);
+    }
+
+    return Result.ok(comment);
   }
 
   @TryCatch
@@ -1101,10 +1158,10 @@ export class PhysicalCountService {
     const comment = await prisma.tb_physical_count_detail_comment.create({
       data: {
         physical_count_detail_id: data.physical_count_detail_id,
-        type: 'user',
+        type: data.type ?? 'user',
         user_id: user_id,
-        message: data.message || null,
-        attachments: data.attachments || [],
+        message: data.message ?? null,
+        attachments: (data.attachments ?? []) as unknown as Prisma.InputJsonValue,
         created_by_id: user_id,
       },
     });
@@ -1215,6 +1272,109 @@ export class PhysicalCountService {
     });
 
     return Result.ok({ id });
+  }
+
+  /**
+   * Add an attachment entry to a comment's attachments JSON array
+   * เพิ่มไฟล์แนบเข้าใน array ของความคิดเห็น
+   */
+  @TryCatch
+  async addAttachmentToDetailComment(
+    id: string,
+    attachment: IPhysicalCountDetailCommentAttachment,
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'addAttachmentToDetailComment', id, attachment, user_id, tenant_id },
+      PhysicalCountService.name,
+    );
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) {
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+    }
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    const existing = await prisma.tb_physical_count_detail_comment.findFirst({
+      where: { id, deleted_at: null },
+    });
+    if (!existing) {
+      return Result.error('Comment not found', ErrorCode.NOT_FOUND);
+    }
+
+    const current = Array.isArray(existing.attachments)
+      ? (existing.attachments as unknown as IPhysicalCountDetailCommentAttachment[])
+      : [];
+
+    if (current.some((a) => a.fileToken === attachment.fileToken)) {
+      return Result.error('Attachment with this fileToken already exists', ErrorCode.ALREADY_EXISTS);
+    }
+
+    const next = [...current, attachment];
+
+    const updated = await prisma.tb_physical_count_detail_comment.update({
+      where: { id },
+      data: {
+        attachments: next as unknown as Prisma.InputJsonValue,
+        updated_by_id: user_id,
+        updated_at: new Date().toISOString(),
+      },
+    });
+
+    return Result.ok(updated);
+  }
+
+  /**
+   * Remove an attachment from a comment's attachments JSON array by fileToken
+   * ลบไฟล์แนบจาก array ของความคิดเห็นด้วย fileToken
+   */
+  @TryCatch
+  async removeAttachmentFromDetailComment(
+    id: string,
+    fileToken: string,
+    user_id: string,
+    tenant_id: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'removeAttachmentFromDetailComment', id, fileToken, user_id, tenant_id },
+      PhysicalCountService.name,
+    );
+
+    const tenant = await this.tenantService.getdb_connection(user_id, tenant_id);
+    if (!tenant) {
+      return Result.error('Tenant not found', ErrorCode.NOT_FOUND);
+    }
+
+    const prisma = await this.prismaTenant(tenant.tenant_id, tenant.db_connection);
+
+    const existing = await prisma.tb_physical_count_detail_comment.findFirst({
+      where: { id, deleted_at: null },
+    });
+    if (!existing) {
+      return Result.error('Comment not found', ErrorCode.NOT_FOUND);
+    }
+
+    const current = Array.isArray(existing.attachments)
+      ? (existing.attachments as unknown as IPhysicalCountDetailCommentAttachment[])
+      : [];
+
+    const next = current.filter((a) => a.fileToken !== fileToken);
+    if (next.length === current.length) {
+      return Result.error('Attachment not found', ErrorCode.NOT_FOUND);
+    }
+
+    const updated = await prisma.tb_physical_count_detail_comment.update({
+      where: { id },
+      data: {
+        attachments: next as unknown as Prisma.InputJsonValue,
+        updated_by_id: user_id,
+        updated_at: new Date().toISOString(),
+      },
+    });
+
+    return Result.ok(updated);
   }
 
   // ==================== Private Helper Methods ====================

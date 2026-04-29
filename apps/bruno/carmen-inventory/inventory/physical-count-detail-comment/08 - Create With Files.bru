@@ -6,25 +6,31 @@ meta {
 
 post {
   url: {{host}}/api/{{bu_code}}/physical-count-detail-comment/upload
-  body: json
+  body: multipartForm
   auth: bearer
+}
+
+params:query {
+  ~version: latest
 }
 
 headers {
   x-app-id: {{x_app_id}}
-  Content-Type: application/json
 }
 
 auth:bearer {
   token: {{access_token}}
 }
 
-query {
-  ~version: 
-}
-
 body:json {
   {}
+}
+
+body:multipart-form {
+  physical_count_detail_id: {{physical_count_detail_id}}
+  message: Damage on outer carton
+  type: user
+  files: @file(/Users/samutpra/Pictures/logo.png)
 }
 
 vars:pre-request {
@@ -70,16 +76,4 @@ docs {
   ```
   
   Note: `fileUrl` is intentionally empty. The frontend should fetch a presigned URL via `GET /api/{bu_code}/documents/presigned-url/{fileToken}` when displaying attachments.
-}
-
-params:query {
-  ~version: latest
-}
-
-body:multipart-form {
-  physical_count_detail_id: {{physical_count_detail_id}}
-  message: Damage on outer carton
-  type: user
-  files: @file(/Users/samutpra/Pictures/logo.png)
-  files: @file(/Users/samutpra/Pictures/logo_CARMEN_Classic-Blue_low-res.png)
 }

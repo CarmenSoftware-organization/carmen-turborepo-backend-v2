@@ -16,14 +16,23 @@ export interface IPhysicalCountSubmit {
   id: string;
 }
 
+export interface IPhysicalCountDetailCommentAttachment {
+  fileName: string;
+  fileToken: string;
+  fileUrl?: string;
+  contentType: string;
+  size?: number;
+}
+
 export interface IPhysicalCountDetailCommentCreate {
   physical_count_detail_id: string;
-  message?: string;
-  attachments?: string[];
+  message?: string | null;
+  type?: 'user' | 'system';
+  attachments?: IPhysicalCountDetailCommentAttachment[];
 }
 
 export interface IPhysicalCountDetailCommentUpdate {
   id: string;
-  message?: string;
-  attachments?: string[];
+  message?: string | null;
+  attachments?: IPhysicalCountDetailCommentAttachment[];
 }
