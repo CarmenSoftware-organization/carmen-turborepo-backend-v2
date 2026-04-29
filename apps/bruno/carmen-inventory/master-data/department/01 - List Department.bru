@@ -26,28 +26,65 @@ docs {
   ## List Departments
   แสดงรายการแผนกทั้งหมดพร้อมการแบ่งหน้าและค้นหา
 
-  Retrieves all departments in the business unit with pagination and search support.
+  Lists all hotel departments (e.g., Kitchen, F&B, Housekeeping) within the business unit, used to assign requisitions, track departmental consumption, and allocate procurement costs.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `page` | number | No | 1 | Page number |
+  | `perpage` | number | No | 10 | Items per page |
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `configuration.department:view`
+  - **Roles**: Requestor, HOD, Purchase, Approval
 
   ### Sample Response
   ```json
   {
     "data": [
       {
-        "id": "uuid",
-        "name": "Item Name"
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+        "code": "DEPT-001",
+        "name": "Food & Beverage",
+        "is_active": true
+      },
+      {
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4e",
+        "code": "DEPT-002",
+        "name": "Housekeeping",
+        "is_active": true
       }
     ],
     "paginate": {
-      "total": 100,
       "page": 1,
       "perpage": 10,
-      "pages": 10
+      "pages": 2,
+      "total": 15,
+      "prev": null,
+      "next": 2
     },
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `configuration.department:view` permission |
 }

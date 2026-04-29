@@ -70,3 +70,32 @@ Notes:
 - `unit-conversion` permission keys are absent from `permission-role-map.json`. Marked with `> Permission key not found in seed; review needed.`
 - `GET /api/store-requisition` (01-List) has no `bu_code` path param — cross-tenant endpoint; `bu_code` is a query param filter only.
 - Flat-name `.bru` files in `stock-in-detail-comment/` and `stock-out-detail-comment/` folders are misplaced organizationally but map to valid standalone `stock-in-detail` and `stock-out-detail` controllers respectively.
+
+### Task 7a — master-data (A-N) (2026-04-29)
+
+No orphans found. All `.bru` files in the master-data chunk A-N map to active gateway controllers.
+
+Modules processed (16):
+- `config-running-code-comment/` → `config-running-code-comment.controller.ts` (`api/:bu_code/config-running-code-comment`) — permission key not in seed
+- `credit-term-comment/` → `credit-term-comment.controller.ts` (`api/:bu_code/credit-term-comment`) — permission key not in seed
+- `currencies/` → `currencies.controller.ts` (`api/:bu_code/currencies`) — `configuration.currency:view`; ISO endpoint has no bu_code (`GET /api/iso`)
+- `currency-comment/` → `currency-comment.controller.ts` (`api/:bu_code/currency-comment`) — permission key not in seed
+- `delivery-point-comment/` → `delivery-point-comment.controller.ts` (`api/:bu_code/delivery-point-comment`) — permission key not in seed
+- `department/` → `department.controller.ts` (`api/:bu_code/department`) — `configuration.department:view`
+- `department-comment/` → `department-comment.controller.ts` (`api/:bu_code/department-comment`) — permission key not in seed
+- `dimension-comment/` → `dimension-comment.controller.ts` (`api/:bu_code/dimension-comment`) — permission key not in seed
+- `exchange-rate-comment/` → `exchange-rate-comment.controller.ts` (`api/:bu_code/exchange-rate-comment`) — permission key not in seed
+- `location-comment/` → `location-comment.controller.ts` (`api/:bu_code/location-comment`) — permission key not in seed
+- `locations/` → `locations.controller.ts` (`api/:bu_code/locations`) — `configuration.location:view`; includes product inventory sub-endpoint
+- `news/` → `news.controller.ts` (`/api/news`, no bu_code) — permission key not in seed
+- `period/` → `period.controller.ts` (`api/:bu_code/period`) — `inventory_management.period_end:view` (list/get) and `inventory_management.period_end:execute` (create/update/delete/generate)
+- `period-comment/` → `period-comment.controller.ts` (`api/:bu_code/period-comment`) — permission key not in seed
+- `pricelist-comment/` → `pricelist-comment.controller.ts` (`api/:bu_code/pricelist-comment`) — permission key not in seed
+- `pricelist-detail-comment/` → `pricelist-detail-comment.controller.ts` (`api/:bu_code/pricelist-detail-comment`) — permission key not in seed
+
+Notes:
+- `news` controller is mounted at `/api/news` with no `bu_code` path segment — cross-tenant endpoint.
+- 12 of 16 modules are `*-comment` modules following the unified comment pattern from `docs/design-comment-logic.md`.
+- `currencies`, `department`, `locations`, `period` overlap conceptually with `config/` folder modules but use different controller paths (master-data context).
+- `dimension-comment`, `exchange-rate-comment`, `credit-term-comment`, `pricelist-comment`, `pricelist-detail-comment` parent entities are defined elsewhere; these are comment-side-only endpoints in master-data.
+- All `*-comment` permission keys are absent from `permission-role-map.json`. Marked with `> Permission key not found in seed; review needed.`

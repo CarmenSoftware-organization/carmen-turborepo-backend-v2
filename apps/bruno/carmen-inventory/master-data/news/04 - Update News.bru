@@ -24,22 +24,46 @@ query {
 }
 
 body:json {
-  {}
+  {
+    "title": "Updated inventory policy",
+    "content": "Updated content for the news item.",
+    "category": "announcement",
+    "is_published": true
+  }
 }
 
 docs {
   ## Update News
   อัปเดตข้อมูลข่าวสารที่มีอยู่
 
-  Update an existing news article.
+  Modifies an existing internal announcement or news article, allowing administrators to correct content, update details, or change the publication scope within the business unit.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | string (UUID) | News article ID |
+
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
   {
-    "title": "",
-    "content": "",
-    "is_active": true
+    "title": "Updated inventory policy",
+    "content": "Updated content for the news item.",
+    "category": "announcement",
+    "is_published": true
   }
   ```
 
@@ -47,15 +71,23 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid bearer token |
+  | 404 | News article not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {
