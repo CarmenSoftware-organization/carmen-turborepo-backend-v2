@@ -36,43 +36,65 @@ body:multipart-form {
 }
 
 docs {
-  ## Add Attachments to Request For Pricing Comment (multipart, batch upload)
+  ## Add Attachments to Request For Pricing Comment
   อัปโหลดไฟล์แนบหลายไฟล์เข้ากับคอมเมนต์ที่มีอยู่แล้วใน request เดียว
 
-  ### URL
-  `POST {{host}}/api/{{bu_code}}/request-for-pricing-comment/:id/attachment`
+  Batch-uploads one or more file attachments to an existing request-for-pricing comment without changing its message text.
 
   ### Path Parameters
-  - `bu_code` — Business unit code
-  - `id` — Comment UUID
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Comment ID |
 
-  ### Body (multipart/form-data)
-  - `files` (binary, repeatable) — ไฟล์แนบ (ต้องมีอย่างน้อย 1 ไฟล์)
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
 
-  ### Constraints
-  - 1–10 files per request
-  - max 10 MB per file
-  - allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
-  ### Gateway behavior
-  1. Upload ทุกไฟล์ไป S3 ผ่าน `file.upload` (parallel)
-  2. หาก upload ใดล้มเหลว — rollback (ลบไฟล์ที่ upload สำเร็จออกจาก S3) แล้วตอบ 502
-  3. ส่ง `{ id, attachments: [...] }` ไปยัง business service ผ่าน
-     `request-for-pricing-comment.add-attachment`
-  4. หาก business ตอบ error — rollback ลบไฟล์ที่ upload ไปแล้วออกจาก S3
+  ### Sample Body (multipart/form-data)
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | `files` | binary (repeatable) | Yes | Attachments (1–10 files, max 10 MB each) |
 
-  ### Sample Response 200
+  Allowed MIME types: image/jpeg, image/png, image/webp, image/gif, application/pdf.
+
+  ### Sample Response
   ```json
   {
-    "data": { "id": "uuid", "attachments": [...] },
+    "data": {
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "attachments": [
+        {
+          "fileName": "photo.jpg",
+          "fileToken": "tok-abc-123",
+          "fileUrl": "",
+          "contentType": "image/jpeg",
+          "size": 204800
+        }
+      ]
+    },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-04-29T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
 
-  Note: `fileUrl` ใน response จะว่าง — frontend ต้องเรียก
-  `GET /api/{bu_code}/documents/presigned-url/{fileToken}` เพื่อแสดงไฟล์
+  > Note: `fileUrl` ใน response จะว่าง — frontend ต้องเรียก
+  > `GET /api/{bu_code}/documents/presigned-url/{fileToken}` เพื่อแสดงไฟล์
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | No files provided; file count/size/mime exceeds limit |
+  | 401 | Missing or invalid Bearer token |
+  | 502 | File service (S3 upload) upstream failure |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }

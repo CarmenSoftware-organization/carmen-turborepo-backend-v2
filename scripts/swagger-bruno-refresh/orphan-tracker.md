@@ -225,3 +225,24 @@ Notes:
 - `currencies`, `department`, `locations`, `period` overlap conceptually with `config/` folder modules but use different controller paths (master-data context).
 - `dimension-comment`, `exchange-rate-comment`, `credit-term-comment`, `pricelist-comment`, `pricelist-detail-comment` parent entities are defined elsewhere; these are comment-side-only endpoints in master-data.
 - All `*-comment` permission keys are absent from `permission-role-map.json`. Marked with `> Permission key not found in seed; review needed.`
+
+### Task 10b second half — procurement (purchase-request-detail-comment, purchase-request-template, purchase-request-template-comment, request-for-pricing, request-for-pricing-comment, request-for-pricing-detail-comment) (2026-04-29)
+
+No orphans found. All `.bru` files in these 6 modules map to active gateway controllers.
+
+Modules processed (6):
+- `purchase-request-detail-comment/` (6 files) → `purchase-request-detail-comment.controller.ts` (`api/:bu_code/purchase-request-detail-comment`) — permission key not in seed; full unified comment pattern
+- `purchase-request-template/` (5 files) → `purchase-request-template.controller.ts` (`api/:bu_code/purchase-request-template`) — `procurement.purchase_request_template:{view,create,update,delete}`; view → Requestor, HOD, Purchase, Approval; create/update/delete → Purchase only
+- `purchase-request-template-comment/` (6 files) → `purchase-request-template-comment.controller.ts` (`api/:bu_code/purchase-request-template-comment`) — permission key not in seed; full unified comment pattern
+- `request-for-pricing/` (5 files) → `request-for-pricing.controller.ts` (`api/:bu_code/request-for-pricing`) — permission key not in seed
+- `request-for-pricing-comment/` (6 files) → `request-for-pricing-comment.controller.ts` (`api/:bu_code/request-for-pricing-comment`) — permission key not in seed; full unified comment pattern
+- `request-for-pricing-detail-comment/` (6 files) → `request-for-pricing-detail-comment.controller.ts` (`api/:bu_code/request-for-pricing-detail-comment`) — permission key not in seed; full unified comment pattern
+
+Notes:
+- `purchase-request-template` uses `KeycloakGuard` only (no `PermissionGuard`) in the gateway controller, but the resource `procurement.purchase_request_template` exists in `permission-role-map.json` with role mappings — docs blocks use seed-derived role assignments.
+- `request-for-pricing` and all 4 comment modules (`purchase-request-detail-comment`, `purchase-request-template-comment`, `request-for-pricing-comment`, `request-for-pricing-detail-comment`) have no permission keys in the BU-level seed. All docs blocks carry `> Permission key not found in seed; review needed.`
+- `purchase-request-template` body uses `purchase_request_template_detail: { add: [...] }` on create and `{ add, update, delete }` on update — same `details.add` pattern documented in `feedback_details_add_pattern.md`.
+- `request-for-pricing` body fields: `name`, `pricelist_template_id`, `start_date`, `end_date`, `custom_message`.
+- PATCH verb endpoints in comment modules titled "Patch X" per convention.
+- All 34 `.bru` files refreshed with full R7 docs template. body:json blocks filled with realistic request bodies where previously empty (`{}`).
+- Sample responses updated to use UUID v7 (`019638a6-2a00-7c4f-8e46-9b7a52c80c4d`) and timestamp `2026-04-29T08:30:00.000Z`. Paginate format updated to 6-field `{ page, perpage, pages, total, prev, next }`.
