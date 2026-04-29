@@ -78,21 +78,46 @@ body:json {
 }
 
 docs {
-  ## Update Credit Note
+  ## Patch Credit Note
   แก้ไขใบลดหนี้ก่อนการดำเนินการขั้นสุดท้าย เช่น แก้ไขจำนวนสินค้า จำนวนเงิน หรือเหตุผลในการออกใบลดหนี้ให้ผู้ขาย
 
   Modifies a credit note before it is finalized, such as correcting item quantities, amounts, or the reason for the credit against the vendor.
 
   ### Path Parameters
-  - `id` — Credit note ID / รหัสใบลดหนี้
-  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Credit note ID |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `procurement.credit_note:update`
+  - **Roles**: Purchase
 
   ### Sample Body
   ```json
   {
-    "description": "",
-    "note": ""
+    "cn_no": "CN-2026-0001",
+    "cn_date": "2026-04-29T08:30:00.000Z",
+    "description": "Return of damaged goods — updated description",
+    "cn_reason_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "credit_note_detail": {
+      "add": [],
+      "update": [
+        {
+          "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+          "requested_qty": 3,
+          "approved_qty": 3,
+          "amount": 300.00
+        }
+      ],
+      "delete": []
+    }
   }
   ```
 
@@ -100,15 +125,24 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Invalid request body |
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `procurement.credit_note:update` permission |
+  | 404 | Credit note not found |
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

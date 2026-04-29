@@ -25,40 +25,67 @@ query {
 docs {
   ## List All Credit Notes
   แสดงรายการใบลดหนี้ของผู้ขายทั้งหมดของหน่วยธุรกิจ ช่วยให้เจ้าหน้าที่จัดซื้อและการเงินติดตามเครดิตที่ได้รับจากสินค้าที่ส่งคืนหรือเสียหาย
-  
+
   Lists all vendor credit notes for the business unit, enabling procurement and finance staff to track credits received for returned or damaged goods.
-  
+
   ### Path Parameters
-  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
-  
-  
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `page` | number | No | 1 | Page number |
+  | `perpage` | number | No | 10 | Items per page |
+  | `sort` | string | No | — | Sort field and direction (e.g. `total_amount:asc`) |
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `procurement.credit_note:view`
+  - **Roles**: HOD, Purchase, Approval
+
   ### Sample Response
   ```json
   {
     "data": [
       {
-        "id": "uuid",
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
         "cn_no": "CN-2026-0001",
-        "cn_date": "2026-03-27T00:00:00.000Z",
-        "credit_note_type": "return",
+        "cn_date": "2026-04-29T08:30:00.000Z",
+        "credit_note_type": "quantity_return",
         "doc_status": "draft",
-        "vendor_name": "Vendor Name",
-        "total_amount": 3000,
-        "created_at": "2026-03-27T00:00:00.000Z"
+        "vendor_name": "Bangkok Food Supplies Co., Ltd.",
+        "total_amount": 3000.00,
+        "created_at": "2026-04-29T08:30:00.000Z"
       }
     ],
     "paginate": {
-      "total": 100,
       "page": 1,
       "perpage": 10,
-      "pages": 10
+      "pages": 5,
+      "total": 42,
+      "prev": null,
+      "next": 2
     },
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `procurement.credit_note:view` permission |
 }
 
 params:query {

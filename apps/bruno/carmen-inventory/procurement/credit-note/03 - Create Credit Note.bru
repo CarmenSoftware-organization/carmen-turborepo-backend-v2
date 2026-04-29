@@ -81,14 +81,51 @@ docs {
   Issues a new credit note against a vendor for returned, damaged, or incorrect goods received, adjusting the payable balance and triggering inventory corrections.
 
   ### Path Parameters
-  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `procurement.credit_note:create`
+  - **Roles**: Purchase
 
   ### Sample Body
   ```json
   {
-    "description": "",
-    "note": ""
+    "cn_no": "CN-2026-0001",
+    "cn_date": "2026-04-29T08:30:00.000Z",
+    "doc_status": "draft",
+    "credit_note_type": "quantity_return",
+    "description": "Return of damaged goods from GRN-2026-0042",
+    "cn_reason_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "vendor_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "currency_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "exchange_rate": 1,
+    "grn_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "credit_note_detail": {
+      "add": [
+        {
+          "inventory_transaction_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+          "amount": 500.00,
+          "requested_qty": 5,
+          "approved_qty": 5,
+          "location_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+          "tax_profile_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+          "tax_rate": 7,
+          "tax_amount": 35.00,
+          "total_amount": 535.00,
+          "return_base_qty": 5,
+          "return_unit_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+          "return_unit_conversion_factor": 1
+        }
+      ]
+    }
   }
   ```
 
@@ -96,13 +133,21 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Invalid request body or missing required fields |
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `procurement.credit_note:create` permission |
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
