@@ -71,6 +71,34 @@ Notes:
 - `GET /api/store-requisition` (01-List) has no `bu_code` path param — cross-tenant endpoint; `bu_code` is a query param filter only.
 - Flat-name `.bru` files in `stock-in-detail-comment/` and `stock-out-detail-comment/` folders are misplaced organizationally but map to valid standalone `stock-in-detail` and `stock-out-detail` controllers respectively.
 
+### Task 7b — master-data (O-Z) (2026-04-30)
+
+No orphans found. All `.bru` files in the master-data chunk O-Z map to active gateway controllers.
+
+Modules processed (15):
+- `pricelist-template-comment/` → `pricelist-template-comment.controller.ts` (`api/:bu_code/pricelist-template-comment`) — permission key not in seed
+- `pricelist-template-detail-comment/` → `pricelist-template-detail-comment.controller.ts` (`api/:bu_code/pricelist-template-detail-comment`) — permission key not in seed
+- `product-category-comment/` → `product-category-comment.controller.ts` (`api/:bu_code/product-category-comment`) — permission key not in seed
+- `product-comment/` → `product-comment.controller.ts` (`api/:bu_code/product-comment`) — permission key not in seed
+- `product-item-group-comment/` → `product-item-group-comment.controller.ts` (`api/:bu_code/product-item-group-comment`) — permission key not in seed
+- `product-sub-category-comment/` → `product-sub-category-comment.controller.ts` (`api/:bu_code/product-sub-category-comment`) — permission key not in seed
+- `products/` → `products.controller.ts` (`api/:bu_code/products`) — `product_management.product:view`; GET endpoints for on-hand, on-order, last-purchase, inventory-movement; POST for cost calculation
+- `tax-profile/` → `tax-profile.controller.ts` (`api/:bu_code/tax-profile`) — `configuration.tax_profile:view`
+- `tax-profile-comment/` → `tax-profile-comment.controller.ts` (`api/:bu_code/tax-profile-comment`) — permission key not in seed
+- `unit-comment/` → `unit-comment.controller.ts` (`api/:bu_code/unit-comment`) — permission key not in seed
+- `vendor-business-type-comment/` → `vendor-business-type-comment.controller.ts` (`api/:bu_code/vendor-business-type-comment`) — permission key not in seed
+- `vendor-comment/` → `vendor-comment.controller.ts` (`api/:bu_code/vendor-comment`) — permission key not in seed
+- `vendor-product/` → `vendor-product.controller.ts` (`api/:bu_code/vendor-product`) — `vendor_management.vendor:{view,create,update,delete}`
+- `workflow/` → `workflow.controller.ts` (`api/:bu_code/workflow`) — permission key not in seed; `patch-user-action` is an admin-override endpoint
+- `workflow-comment/` → `workflow-comment.controller.ts` (`api/:bu_code/workflow-comment`) — permission key not in seed
+
+Notes:
+- All 10 `*-comment` modules have no permission key in the BU-level seed. Marked with `> Permission key not found in seed; review needed.`
+- `workflow.patch-user-action` endpoint is an admin tool to fix broken workflow assignments; no permission key in seed.
+- `products/` Bruno folder contains product analytics endpoints (on-hand, on-order, last-purchase, inventory-movement, cost) — NOT the CRUD product master. These are read-only (GET) except POST-get-product-cost which is a query endpoint.
+- `vendor-product` controller uses `KeycloakGuard` only (no `PermissionGuard`), but the resource logically maps to `vendor_management.vendor:*`.
+- `tax-profile` in master-data uses the same controller as in config context but different path/controller file — `apps/backend-gateway/src/application/tax-profile/`.
+
 ### Task 7a — master-data (A-N) (2026-04-29)
 
 No orphans found. All `.bru` files in the master-data chunk A-N map to active gateway controllers.
