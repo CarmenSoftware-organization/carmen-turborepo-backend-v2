@@ -26,40 +26,58 @@ query {
 docs {
   ## List Inventory Adjustments
   ดึงรายการปรับปรุงสินค้าคงคลังทั้งหมด (ทั้งรับเข้าและจ่ายออก) ของหน่วยธุรกิจ ช่วยให้ผู้จัดการตรวจสอบการปรับปรุงที่ทำขึ้นเพื่อแก้ไขความคลาดเคลื่อนจากการตรวจนับ สินค้าเสียหาย หรือการเคลื่อนไหวสินค้าที่ไม่เป็นมาตรฐาน
-  
+
   Lists all manual inventory corrections (stock-in additions and stock-out deductions) for the business unit, enabling managers to review adjustments made to resolve discrepancies from physical counts, spoilage, or other non-standard inventory movements.
-  
+
   ### Path Parameters
-  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
-  
-  
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `page` | number | No | 1 | Page number |
+  | `perpage` | number | No | 10 | Items per page |
+  | `type` | string | No | — | Filter by adjustment type: `stock-in` or `stock-out` |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
+
   ### Sample Response
   ```json
   {
     "data": [
       {
-        "id": "uuid",
-        "type": "adjustment",
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+        "type": "stock-in",
         "doc_no": "ADJ-2026-0001",
-        "doc_date": "2026-03-27T00:00:00.000Z",
+        "doc_date": "2026-04-29T08:30:00.000Z",
         "doc_status": "draft",
-        "location_id": "uuid",
+        "location_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
         "location_name": "Main Store",
-        "created_at": "2026-03-27T00:00:00.000Z"
+        "created_at": "2026-04-29T08:30:00.000Z"
       }
     ],
-    "paginate": {
-      "total": 100,
-      "page": 1,
-      "perpage": 10,
-      "pages": 10
-    },
+    "paginate": { "page": 1, "perpage": 10, "pages": 5, "total": 48, "prev": null, "next": 2 },
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | `type` query value is not `stock-in` or `stock-out` |
+  | 401 | Missing or invalid bearer token |
 }
 
 params:query {

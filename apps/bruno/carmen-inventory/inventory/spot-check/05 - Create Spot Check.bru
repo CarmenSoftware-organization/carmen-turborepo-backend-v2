@@ -25,14 +25,11 @@ query {
 
 body:json {
   {
-    "location_id": "",
+    "location_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     "method": "random",
-    "items": 0,
-    "product_id": [],
-    "description": "",
-    "note": "",
-    "info": null,
-    "dimension": null
+    "items": 10,
+    "description": "Weekly spot check for dry goods storage",
+    "note": "Focus on high-value items"
   }
 }
 
@@ -42,38 +39,57 @@ vars:pre-request {
 
 docs {
   ## Create Spot Check
-  สร้างรายการตรวจสอบสินค้าเฉพาะจุดใหม่ที่สถานที่จัดเก็บเฉพาะ เลือกสินค้าแบบสุ่มหรือเลือกเองเพื่อตรวจสอบสินค้าจริงเทียบกับข้อมูลในระบบ
+  สร้างรายการตรวจสอบสินค้าเฉพาะจุดใหม่ที่สถานที่จัดเก็บที่กำหนด
 
-  Initiates a random inventory spot check at a specific storage location, selecting products either randomly or manually to verify actual stock against system records for quality control.
+  Initiates a spot check at a specific location, selecting products randomly or manually.
 
   ### Path Parameters
-  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `inventory_management.spot_check:create`
+  - **Roles**: Purchase
 
   ### Sample Body
-  ```json
-  {
-    "location_id": "{{location_id}}",
-    "method": "random",
-    "items": 10,
-    "description": "Weekly spot check for dry goods storage",
-    "note": "Focus on high-value items"
-  }
-  ```
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | `location_id` | string (UUID) | Yes | Target location |
+  | `method` | string | No | `random` or `manual` (default: `random`) |
+  | `items` | number | No | Number of items to check (for random method) |
+  | `product_id` | string[] | No | Product IDs to check (for manual method) |
+  | `description` | string | No | Description |
+  | `note` | string | No | Additional note |
 
   ### Sample Response
   ```json
   {
     "data": {
-      "id": "uuid",
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
       "spot_check_no": "SC-2026-0001",
-      "doc_status": "draft"
+      "doc_status": "draft",
+      "location_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "method": "random",
+      "size": 10
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Invalid request body |
+  | 403 | User lacks `inventory_management.spot_check:create` permission |
 }

@@ -24,7 +24,14 @@ query {
 }
 
 body:json {
-  {}
+  {
+    "items": [
+      {
+        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "actual_qty": 42.5
+      }
+    ]
+  }
 }
 
 vars:pre-request {
@@ -34,32 +41,38 @@ vars:pre-request {
 
 docs {
   ## Save Spot Check Items
-  บันทึกจำนวนที่นับได้จากอุปกรณ์มือถือเป็นร่าง ช่วยให้พนักงานหยุดพักและดำเนินการตรวจสอบต่อได้โดยไม่ต้องสรุปผลลัพธ์
+  บันทึกจำนวนที่นับได้เป็นร่าง ช่วยให้พนักงานหยุดพักและดำเนินการต่อได้ในภายหลัง
 
-  Persists the counted quantities entered by staff on a mobile device as a draft, allowing them to pause and resume the spot check without finalizing results.
+  Saves counted quantities as draft, allowing staff to pause and resume without finalizing.
 
   ### Path Parameters
-  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
-  - `id` — Spot Check ID / รหัสการตรวจสอบสินค้าเฉพาะจุด
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Spot Check ID |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `inventory_management.spot_check:update`
+  - **Roles**: Purchase
 
   ### Sample Body
-  ```json
-  {
-    "items": [
-      {
-        "id": "{{spot_check_detail_id}}",
-        "actual_qty": 42.5
-      }
-    ]
-  }
-  ```
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | `items` | array | Yes | Items with counted quantities |
+  | `items[].id` | string (UUID) | Yes | Spot check detail ID |
+  | `items[].actual_qty` | number | Yes | Counted quantity |
 
   ### Sample Response
   ```json
   {
     "data": {
-      "id": "uuid",
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
       "spot_check_no": "SC-2026-0001",
       "doc_status": "draft"
     },
@@ -67,9 +80,15 @@ docs {
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 404 | Spot check not found |
+  | 403 | User lacks `inventory_management.spot_check:update` permission |
 }
 
 params:path {

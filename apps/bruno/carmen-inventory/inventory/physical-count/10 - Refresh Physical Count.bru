@@ -32,30 +32,49 @@ vars:pre-request {
 }
 
 docs {
-  ## Refresh Physical Count
+  ## Patch Refresh Physical Count
   รีเฟรชรายการสินค้าจากสถานที่จัดเก็บ (product_location + inventory transactions) และเพิ่มสินค้าใหม่ที่ยังไม่อยู่ในรายการตรวจนับ รายการที่นับแล้วจะถูกเก็บรักษาไว้
 
   Re-fetches the product list from the location (product_location + inventory transactions) and adds any new products that are not yet in the physical count detail list. Existing counted items are preserved.
 
   ### Path Parameters
-  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
-  - `id` — Physical Count ID / รหัสการตรวจนับสินค้า
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Physical Count ID |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `inventory_management.physical_count:update`
+  - **Roles**: Purchase
 
   ### Sample Response
   ```json
   {
     "data": {
-      "id": "uuid",
-      "status": "counting"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "status": "counting",
+      "product_total": 55
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Physical count is already completed |
+  | 404 | Physical count not found |
+  | 403 | User lacks `inventory_management.physical_count:update` permission |
 }
 
 params:path {

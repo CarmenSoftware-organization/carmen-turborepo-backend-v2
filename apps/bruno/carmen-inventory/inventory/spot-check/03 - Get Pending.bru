@@ -24,32 +24,34 @@ query {
 
 docs {
   ## Get Pending Spot Check Count
-  ดึงจำนวนการตรวจสอบสินค้าเฉพาะจุดที่รอดำเนินการของผู้ใช้ปัจจุบัน ใช้สำหรับแสดงการแจ้งเตือนบนแดชบอร์ดสำหรับงานตรวจสอบคุณภาพ
+  ดึงจำนวนการตรวจสอบสินค้าเฉพาะจุดที่รอดำเนินการ ใช้สำหรับแสดงการแจ้งเตือนบนแดชบอร์ด
 
-  Returns the count of random inventory spot checks awaiting the current user, used to drive dashboard alerts for quality-control verification tasks.
+  Returns the count of spot checks awaiting action. No `bu_code` path parameter — cross-tenant endpoint.
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `inventory_management.spot_check:view`
+  - **Roles**: HOD, Purchase, Approval
 
   ### Sample Response
   ```json
   {
-    "data": {
-      "id": "uuid",
-      "spot_check_no": "SC-2026-0001",
-      "start_date": "2026-03-27T00:00:00.000Z",
-      "location_id": "uuid",
-      "location_name": "Main Store",
-      "doc_status": "draft",
-      "method": "random",
-      "size": 10,
-      "tb_spot_check_detail": [],
-      "created_at": "2026-03-27T00:00:00.000Z",
-      "updated_at": "2026-03-27T00:00:00.000Z"
-    },
+    "data": { "count": 3 },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 403 | User lacks `inventory_management.spot_check:view` permission |
 }

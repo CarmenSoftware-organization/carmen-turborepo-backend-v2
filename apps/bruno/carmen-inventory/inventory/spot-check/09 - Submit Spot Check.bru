@@ -33,30 +33,47 @@ vars:pre-request {
 
 docs {
   ## Submit Spot Check
-  ส่งการตรวจสอบสินค้าเฉพาะจุดขั้นสุดท้าย บันทึกจำนวนที่ตรวจสอบแล้วเป็นผลลัพธ์อย่างเป็นทางการ ความคลาดเคลื่อนที่พบอาจนำไปสู่การตรวจสอบเพิ่มเติมหรือการปรับปรุงสินค้าคงคลัง
+  ส่งการตรวจสอบสินค้าเฉพาะจุดขั้นสุดท้าย บันทึกผลลัพธ์อย่างเป็นทางการ
 
-  Finalizes a spot check by recording the verified quantities as the official result. Discrepancies found may trigger further investigation or inventory adjustments.
+  Finalizes a spot check by recording the verified quantities as the official result.
 
   ### Path Parameters
-  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
-  - `id` — Spot Check ID / รหัสการตรวจสอบสินค้าเฉพาะจุด
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Spot Check ID |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `inventory_management.spot_check:update`
+  - **Roles**: Purchase
 
   ### Sample Response
   ```json
   {
     "data": {
-      "id": "uuid",
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
       "spot_check_no": "SC-2026-0001",
-      "doc_status": "draft"
+      "doc_status": "submitted"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 404 | Spot check not found |
+  | 403 | User lacks `inventory_management.spot_check:update` permission |
 }
 
 params:path {
