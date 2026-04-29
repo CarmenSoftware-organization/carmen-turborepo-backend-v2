@@ -258,4 +258,51 @@ describe('CostingService', () => {
       expect(result.get(costMapKey('p-new', 'loc-a'))).toBeUndefined();
     });
   });
+
+  describe('average', () => {
+    it('returns average_cost_per_unit from latest cost layer per (product, location)', async () => {
+      const prisma: any = {
+        tb_inventory_transaction_cost_layer: {
+          findMany: jest.fn().mockResolvedValue([
+            {
+              product_id: 'p1',
+              location_id: 'loc-a',
+              average_cost_per_unit: new Prisma.Decimal(12.5),
+              lot_at_date: new Date('2026-04-29T00:00:00Z'),
+            },
+            {
+              product_id: 'p1',
+              location_id: 'loc-a',
+              average_cost_per_unit: new Prisma.Decimal(10),
+              lot_at_date: new Date('2026-04-25T00:00:00Z'),
+            },
+          ]),
+        },
+      };
+
+      const result = await service.getCostsPerUnit({
+        prisma,
+        method: 'average',
+        items: [{ product_id: 'p1', location_id: 'loc-a' }],
+      });
+
+      expect(result.get(costMapKey('p1', 'loc-a'))?.toString()).toBe('12.5');
+    });
+
+    it('omits entry when no cost layer exists', async () => {
+      const prisma: any = {
+        tb_inventory_transaction_cost_layer: {
+          findMany: jest.fn().mockResolvedValue([]),
+        },
+      };
+
+      const result = await service.getCostsPerUnit({
+        prisma,
+        method: 'average',
+        items: [{ product_id: 'p-new', location_id: 'loc-a' }],
+      });
+
+      expect(result.get(costMapKey('p-new', 'loc-a'))).toBeUndefined();
+    });
+  });
 });

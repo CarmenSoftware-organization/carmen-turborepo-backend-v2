@@ -215,9 +215,41 @@ export class CostingService {
   }
 
   private async lookupAverage(
-    _prisma: TenantPrisma,
-    _items: GetCostsBatchInput['items'],
+    prisma: TenantPrisma,
+    items: GetCostsBatchInput['items'],
   ): Promise<Map<string, Prisma.Decimal>> {
-    throw new Error('Not implemented');
+    const result = new Map<string, Prisma.Decimal>();
+    if (items.length === 0) return result;
+
+    const productIds = Array.from(new Set(items.map((i) => i.product_id)));
+    const locationIds = Array.from(new Set(items.map((i) => i.location_id)));
+    const wantedKeys = new Set(items.map((i) => costMapKey(i.product_id, i.location_id)));
+
+    const rows = await prisma.tb_inventory_transaction_cost_layer.findMany({
+      where: {
+        product_id: { in: productIds },
+        location_id: { in: locationIds },
+        deleted_at: null,
+      },
+      orderBy: { lot_at_date: 'desc' },
+      select: {
+        product_id: true,
+        location_id: true,
+        average_cost_per_unit: true,
+      },
+    });
+
+    for (const row of rows) {
+      if (!row.product_id || !row.location_id) continue;
+      const key = costMapKey(row.product_id, row.location_id);
+      if (!wantedKeys.has(key)) continue;
+      if (result.has(key)) continue; // newest already taken
+
+      const cost = row.average_cost_per_unit ?? new Prisma.Decimal(0);
+      if (cost.isZero()) continue;
+      result.set(key, cost);
+    }
+
+    return result;
   }
 }
