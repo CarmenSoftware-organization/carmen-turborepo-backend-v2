@@ -133,7 +133,9 @@ Each module folder under a top-level Bruno folder contains one or more `.bru` fi
 
      ### Permissions
      - **Permission key**: `configuration.currency:create`
-     - **Roles**: HOD, Purchaser, FC, GM, Owner
+     - **Roles**: HOD, Purchase, Approval
+
+     > Role names come from `seed.role-permission.ts`. The full set is **Requestor, HOD, Purchase, Approval** (4 roles, not the persona names from `auth/login/`). Always look up the actual role list from `scripts/swagger-bruno-refresh/permission-role-map.json` — do not hand-pick.
 
      ### Sample Body
      ```json
