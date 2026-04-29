@@ -61,13 +61,32 @@ docs {
 
   Fully updates an existing kitchen equipment type definition. Changes affect how recipes reference this equipment.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Recipe equipment ID |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
   {
-    "name": "",
-    "code": "",
-    "is_active": true
+    "code": "EQ-001",
+    "name": "Commercial Oven",
+    "description": "Large capacity commercial oven for high-volume baking",
+    "category_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "brand": "Rational",
+    "model": "SCC-61",
+    "is_active": true,
+    "total_qty": 2
   }
   ```
 
@@ -75,15 +94,22 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks permission to update recipe equipment |
+  | 404 | Recipe equipment not found |
 }
 
 params:path {

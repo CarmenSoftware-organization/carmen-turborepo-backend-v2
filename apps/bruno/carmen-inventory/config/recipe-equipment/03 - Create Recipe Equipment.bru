@@ -25,27 +25,27 @@ query {
 
 body:json {
   {
-    "code": "",
-    "name": "",
-    "description": "",
-    "category_id": "",
-    "brand": "",
-    "model": "",
-    "serial_no": "",
-    "capacity": "",
-    "power_rating": "",
-    "station": "",
-    "operation_instructions": "",
-    "safety_notes": "",
-    "cleaning_instructions": "",
-    "maintenance_schedule": "",
-    "last_maintenance_date": "2026-04-29T00:00:00.000Z",
-    "next_maintenance_date": "2026-04-29T00:00:00.000Z",
-    "note": "",
+    "code": "EQ-001",
+    "name": "Commercial Oven",
+    "description": "Large capacity commercial oven for high-volume baking",
+    "category_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "brand": "Rational",
+    "model": "SCC-61",
+    "serial_no": "SN-2026-001",
+    "capacity": "6 trays",
+    "power_rating": "10kW",
+    "station": "Hot Kitchen",
+    "operation_instructions": "Preheat for 15 minutes before use",
+    "safety_notes": "Wear heat-resistant gloves when operating",
+    "cleaning_instructions": "Run self-cleaning cycle daily after service",
+    "maintenance_schedule": "Monthly filter cleaning",
+    "last_maintenance_date": "2026-03-01T00:00:00.000Z",
+    "next_maintenance_date": "2026-04-01T00:00:00.000Z",
+    "note": "Primary oven for pastry section",
     "is_active": true,
     "is_poolable": false,
-    "available_qty": 0,
-    "total_qty": 0,
+    "available_qty": 1,
+    "total_qty": 2,
     "usage_count": 0,
     "average_usage_time": 0,
     "attachments": null,
@@ -61,13 +61,35 @@ docs {
 
   Defines a new kitchen equipment type that can be associated with recipes to track required tools and appliances.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
   {
-    "name": "",
-    "code": "",
-    "is_active": true
+    "code": "EQ-001",
+    "name": "Commercial Oven",
+    "description": "Large capacity commercial oven for high-volume baking",
+    "category_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "brand": "Rational",
+    "model": "SCC-61",
+    "serial_no": "SN-2026-001",
+    "capacity": "6 trays",
+    "power_rating": "10kW",
+    "station": "Hot Kitchen",
+    "is_active": true,
+    "total_qty": 2
   }
   ```
 
@@ -75,13 +97,20 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | `code` is empty or already exists in this business unit |
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks permission to create recipe equipment |
 }

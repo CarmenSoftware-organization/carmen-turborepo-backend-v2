@@ -25,13 +25,13 @@ query {
 
 body:json {
   {
-    "type": "",
+    "type": "purchase_request",
     "config": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": "",
-      "format": ""
+      "A": "PR",
+      "B": "YYYY",
+      "C": "MM",
+      "D": "0001",
+      "format": "{A}{B}{C}{D}"
     }
   }
 }
@@ -42,13 +42,31 @@ docs {
 
   Defines a new auto-numbering rule for a document type, specifying the prefix, format pattern, starting number, and reset frequency.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
   {
-    "name": "",
-    "code": "",
-    "is_active": true
+    "type": "purchase_request",
+    "config": {
+      "A": "PR",
+      "B": "YYYY",
+      "C": "MM",
+      "D": "0001",
+      "format": "{A}{B}{C}{D}"
+    }
   }
   ```
 
@@ -56,13 +74,20 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | `type` is missing or already exists for this business unit |
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks permission to create running codes |
 }
