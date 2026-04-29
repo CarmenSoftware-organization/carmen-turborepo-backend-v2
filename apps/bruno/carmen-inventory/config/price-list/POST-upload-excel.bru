@@ -20,42 +20,42 @@ auth:bearer {
 }
 
 query {
-  ~version: 
+  ~version:
 }
 
 body:json {
   {
-    "name": "",
-    "description": "",
-    "status": "",
-    "vendor_name": "",
-    "currency_id": "",
-    "currency_code": "",
-    "effective_from_date": null,
-    "effective_to_date": null,
+    "name": "Q2 2026 Vendor Price List",
+    "description": "Quarterly price agreement for dry goods",
+    "status": "active",
+    "vendor_name": "Bangkok Supplier Co., Ltd.",
+    "currency_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "currency_code": "THB",
+    "effective_from_date": "2026-04-01T00:00:00.000Z",
+    "effective_to_date": "2026-06-30T00:00:00.000Z",
     "is_active": true,
-    "vendor_id": "",
-    "note": "",
+    "vendor_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "note": "Agreed rates for Q2 2026",
     "info": null,
     "dimension": null,
     "pricelist_detail": {
       "add": [
         {
-          "sequence_no": 0,
-          "product_id": "",
-          "product_name": "",
-          "unit_id": "",
-          "unit_name": "",
-          "tax_profile_id": "",
-          "tax_profile_name": "",
-          "tax_rate": 0,
-          "moq_qty": 0,
-          "price_without_tax": 0,
-          "tax_amt": 0,
-          "price": 0,
-          "lead_time_days": 0,
-          "is_active": false,
-          "description": "",
+          "sequence_no": 1,
+          "product_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+          "product_name": "Olive Oil 1L",
+          "unit_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+          "unit_name": "Bottle",
+          "tax_profile_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+          "tax_profile_name": "VAT 7%",
+          "tax_rate": 7,
+          "moq_qty": 10,
+          "price_without_tax": 250.00,
+          "tax_amt": 17.50,
+          "price": 267.50,
+          "lead_time_days": 3,
+          "is_active": true,
+          "description": "Extra virgin olive oil 1 liter",
           "note": "",
           "info": null,
           "dimension": null
@@ -65,4 +65,69 @@ body:json {
       "delete": []
     }
   }
+}
+
+docs {
+  ## Upload Price List from Excel
+  อัปโหลดรายการราคาจากไฟล์ Excel
+
+  Bulk imports vendor price lists from an Excel file, enabling administrators to efficiently update product pricing from multiple suppliers for procurement cost control.
+
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `vendor_management.price_list:create`
+  - **Roles**: Purchase
+
+  ### Sample Body
+  ```json
+  {
+    "name": "Q2 2026 Vendor Price List",
+    "description": "Quarterly price agreement for dry goods",
+    "status": "active",
+    "vendor_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "currency_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "currency_code": "THB",
+    "effective_from_date": "2026-04-01T00:00:00.000Z",
+    "effective_to_date": "2026-06-30T00:00:00.000Z",
+    "is_active": true,
+    "pricelist_detail": {
+      "add": [{"sequence_no": 1, "product_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d", "price": 267.50, "is_active": true}],
+      "update": [],
+      "delete": []
+    }
+  }
+  ```
+
+  ### Sample Response
+  ```json
+  {
+    "data": {
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
+    },
+    "paginate": null,
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-04-29T08:30:00.000Z"
+  }
+  ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Request body fails validation |
+  | 401 | Bearer token is missing or invalid |
+  | 403 | User lacks `vendor_management.price_list:create` permission |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }

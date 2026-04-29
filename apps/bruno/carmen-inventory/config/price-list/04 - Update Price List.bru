@@ -20,76 +20,85 @@ auth:bearer {
 }
 
 query {
-  ~version: 
+  ~version:
 }
 
 body:json {
   {
-    "id": "",
-    "pricelist_no": "",
-    "name": "",
-    "description": "",
-    "status": "",
-    "vendor_name": "",
-    "currency_id": "",
-    "currency_code": "",
-    "effective_from_date": null,
-    "effective_to_date": null,
+    "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "pricelist_no": "PL-2026-0001",
+    "name": "Q2 2026 Vendor Price List (Revised)",
+    "description": "Quarterly price agreement for dry goods — revised",
+    "status": "active",
+    "vendor_name": "Bangkok Supplier Co., Ltd.",
+    "currency_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "currency_code": "THB",
+    "effective_from_date": "2026-04-01T00:00:00.000Z",
+    "effective_to_date": "2026-06-30T00:00:00.000Z",
     "is_active": true,
-    "doc_version": 0,
-    "vendor_id": "",
-    "note": "",
+    "doc_version": 1,
+    "vendor_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "note": "Revised rates for Q2 2026",
     "info": null,
     "dimension": null,
     "pricelist_detail": {
-      "add": [
+      "add": [],
+      "update": [
         {
-          "sequence_no": 0,
-          "product_id": "",
-          "product_name": "",
-          "unit_id": "",
-          "unit_name": "",
-          "tax_profile_id": "",
-          "tax_profile_name": "",
-          "tax_rate": 0,
-          "moq_qty": 0,
-          "price_without_tax": 0,
-          "tax_amt": 0,
-          "price": 0,
-          "lead_time_days": 0,
-          "is_active": false,
-          "description": "",
-          "note": "",
-          "info": null,
-          "dimension": null
+          "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+          "price_without_tax": 260.00,
+          "tax_amt": 18.20,
+          "price": 278.20,
+          "is_active": true
         }
       ],
-      "update": [],
       "delete": []
     }
   }
 }
 
 docs {
-  ## Update Price List (Config)
+  ## Patch Price List (Config)
   อัปเดตข้อมูลรายการราคาที่มีอยู่
 
-  Updates an existing vendor price list including product prices and validity dates.
+  Modifies an existing vendor price list, such as updating product prices, validity dates, or adding new product lines. Updated prices are used in subsequent purchase order creation.
 
   ### Path Parameters
-  - `id` -- Price list ID (UUID) / รหัสรายการราคา
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Price list ID |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `vendor_management.price_list:update`
+  - **Roles**: Purchase
 
   ### Sample Body
   ```json
   {
-    "vendor_id": "6085434b-45e5-48f2-8fd4-fc10f35a4f57",
-    "name": "ลูกชิ้น",
-    "description": "",
+    "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "pricelist_no": "PL-2026-0001",
+    "name": "Q2 2026 Vendor Price List (Revised)",
+    "description": "Quarterly price agreement for dry goods — revised",
     "status": "active",
-    "currency_id": "ec203445-3dd8-4511-a2a9-f54ca4d1b714",
-    "effective_from_date": "2026-03-31T00:00:00.000Z",
-    "...": "..."
+    "vendor_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "currency_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "currency_code": "THB",
+    "effective_from_date": "2026-04-01T00:00:00.000Z",
+    "effective_to_date": "2026-06-30T00:00:00.000Z",
+    "is_active": true,
+    "doc_version": 1,
+    "pricelist_detail": {
+      "add": [],
+      "update": [{"id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d", "price_without_tax": 260.00, "price": 278.20}],
+      "delete": []
+    }
   }
   ```
 
@@ -97,15 +106,25 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Request body fails validation |
+  | 401 | Bearer token is missing or invalid |
+  | 403 | User lacks `vendor_management.price_list:update` permission |
+  | 404 | Price list with the specified ID not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {
