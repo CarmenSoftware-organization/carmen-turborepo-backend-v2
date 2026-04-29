@@ -1,13 +1,21 @@
 meta {
   name: Add attachment physical-count-detail-comment
   type: http
-  seq: 6
+  seq: 5
 }
 
 post {
   url: {{host}}/api/{{bu_code}}/physical-count-detail-comment/:id/attachment
   body: json
   auth: bearer
+}
+
+params:query {
+  ~version: 
+}
+
+params:path {
+  id: {{test_id}}
 }
 
 headers {
@@ -17,10 +25,6 @@ headers {
 
 auth:bearer {
   token: {{access_token}}
-}
-
-query {
-  ~version: 
 }
 
 body:json {
@@ -36,20 +40,20 @@ body:json {
 docs {
   ## Add Physical Count Detail Comment Attachment
   แนบไฟล์เข้ากับความคิดเห็น
-
+  
   Adds a file attachment to a comment. Requires the file to be uploaded first (via the file service) so that `fileToken` is available.
-
+  
   ### Path Parameters
   - `id` — Comment ID / รหัสความคิดเห็น
   - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
-
+  
   ### Request Body (AddAttachmentDto)
   - `fileName` — Original file name / ชื่อไฟล์ต้นฉบับ (required)
   - `fileToken` — File token (`bu_code/uuid`) / โทเคนไฟล์ (required)
   - `fileUrl` — Presigned URL (optional)
   - `contentType` — MIME content type (required)
   - `size` — File size in bytes (optional)
-
+  
   ### Sample Response
   ```json
   {
@@ -61,8 +65,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-params:path {
-  id: {{test_id}}
 }

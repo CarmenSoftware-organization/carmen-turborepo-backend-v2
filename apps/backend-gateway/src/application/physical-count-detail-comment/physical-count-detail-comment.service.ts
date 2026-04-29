@@ -55,21 +55,113 @@ export class PhysicalCountDetailCommentService {
 
   async update(
     id: string,
-    data: Record<string, unknown>,
+    dto: {
+      message?: string | null;
+      type?: 'user' | 'system';
+      addFiles?: Express.Multer.File[];
+      removeFileTokens?: string[];
+    },
     user_id: string,
     bu_code: string,
     version: string,
   ): Promise<unknown> {
+    const addFiles = dto.addFiles ?? [];
+    const removeTokens = dto.removeFileTokens ?? [];
+
+    // 1. Upload new files to S3 (rollback on partial failure)
+    const uploaded: UploadedAttachment[] = [];
+    if (addFiles.length > 0) {
+      const settled = await Promise.allSettled(
+        addFiles.map((f) => this.uploadFile(f, user_id, bu_code)),
+      );
+      const failures = settled.filter((s) => s.status === 'rejected');
+      const successes = settled.filter(
+        (s): s is PromiseFulfilledResult<UploadedAttachment> => s.status === 'fulfilled',
+      );
+      uploaded.push(...successes.map((s) => s.value));
+
+      if (failures.length > 0) {
+        this.logger.warn(
+          {
+            function: 'update',
+            phase: 'upload-rollback',
+            bu_code,
+            comment_id: id,
+            uploaded_count: uploaded.length,
+            failed_count: failures.length,
+          },
+          PhysicalCountDetailCommentService.name,
+        );
+        await Promise.all(
+          uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
+        );
+        const firstReason = (failures[0] as PromiseRejectedResult).reason;
+        const msg = firstReason instanceof Error ? firstReason.message : String(firstReason);
+        throw new BadGatewayException(`File upload failed: ${msg}`);
+      }
+    }
+
+    // 2. Delete removed files from S3 (best-effort, log on failure)
+    if (removeTokens.length > 0) {
+      const results = await Promise.all(
+        removeTokens.map((tok) => this.deleteFile(tok, user_id, bu_code)),
+      );
+      const failedTokens = removeTokens.filter((_, i) => !results[i]);
+      if (failedTokens.length > 0) {
+        this.logger.warn(
+          {
+            function: 'update',
+            phase: 's3-delete-partial',
+            bu_code,
+            comment_id: id,
+            failed_count: failedTokens.length,
+            failed_tokens: failedTokens,
+          },
+          PhysicalCountDetailCommentService.name,
+        );
+      }
+    }
+
+    // 3. Forward to business service with attachments: { add, remove }
+    const data: Record<string, unknown> = {};
+    if (dto.message !== undefined) data.message = dto.message;
+    if (dto.type !== undefined) data.type = dto.type;
+    if (uploaded.length > 0 || removeTokens.length > 0) {
+      data.attachments = {
+        add: uploaded,
+        remove: removeTokens,
+      };
+    }
+
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'physical-count-detail-comment.update', service: 'physical-count' },
       { id, data, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
-    if (response.response.status !== HttpStatus.OK)
+
+    if (response.response.status !== HttpStatus.OK) {
+      // Rollback: delete the files we just uploaded since the DB update failed
+      if (uploaded.length > 0) {
+        this.logger.warn(
+          {
+            function: 'update',
+            phase: 'update-rollback',
+            bu_code,
+            comment_id: id,
+            uploaded_count: uploaded.length,
+            update_status: response.response.status,
+          },
+          PhysicalCountDetailCommentService.name,
+        );
+        await Promise.all(
+          uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
+        );
+      }
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
+    }
     return ResponseLib.success(response.data);
   }
 

@@ -12,22 +12,64 @@ export const AttachmentSchema = z.object({
 });
 export type Attachment = z.infer<typeof AttachmentSchema>;
 
-export const UpdatePhysicalCountDetailCommentSchema = z.object({
-  message: z.string().optional().nullable(),
-  attachments: z.array(AttachmentSchema).optional(),
+/**
+ * Multipart body schema for PATCH update.
+ * - `message` and `type` are plain text fields.
+ * - `remove_attachments` is sent as a JSON-encoded string array of fileTokens
+ *   (multipart cannot carry nested JSON natively).
+ * - New files arrive via the `files` field (handled by FilesInterceptor).
+ */
+export const UpdatePhysicalCountDetailCommentBodySchema = z.object({
+  message: z.string().max(4000).optional().nullable(),
+  type: z.enum(['user', 'system']).optional(),
+  remove_attachments: z
+    .preprocess((v) => {
+      if (typeof v !== 'string') return v;
+      const trimmed = v.trim();
+      if (trimmed === '') return undefined;
+      try {
+        return JSON.parse(trimmed);
+      } catch {
+        return v;
+      }
+    }, z.array(z.string().min(1)).optional())
+    .optional(),
 });
 
-export class UpdatePhysicalCountDetailCommentDto extends createZodDto(UpdatePhysicalCountDetailCommentSchema) {
+export type UpdatePhysicalCountDetailCommentBody = z.infer<
+  typeof UpdatePhysicalCountDetailCommentBodySchema
+>;
+
+export class UpdatePhysicalCountDetailCommentDto {
   @ApiPropertyOptional({
-    description: 'Updated comment message',
+    description: 'Updated comment message (≤ 4000 chars)',
     example: 'Updated comment',
+    nullable: true,
   })
   message?: string | null;
 
   @ApiPropertyOptional({
-    description: 'Updated file attachments',
-    type: 'array',
-    items: { type: 'object' },
+    description: 'Comment type',
+    enum: ['user', 'system'],
   })
-  attachments?: Attachment[];
+  type?: 'user' | 'system';
+
+  @ApiPropertyOptional({
+    description:
+      'JSON-encoded string array of fileTokens to remove, e.g. `["tok-1","tok-2"]`',
+    example: '["tok-1","tok-2"]',
+  })
+  remove_attachments?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'New attachments to add (0–10 files). Allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf. Max 10 MB each.',
+    type: 'array',
+    items: { type: 'string', format: 'binary' },
+  })
+  files?: unknown[];
 }
+
+export class UpdatePhysicalCountDetailCommentBodyDto extends createZodDto(
+  UpdatePhysicalCountDetailCommentBodySchema,
+) {}

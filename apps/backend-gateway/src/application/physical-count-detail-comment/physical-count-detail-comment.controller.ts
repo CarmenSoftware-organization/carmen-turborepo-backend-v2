@@ -29,6 +29,7 @@ import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
   UpdatePhysicalCountDetailCommentDto,
+  UpdatePhysicalCountDetailCommentBodySchema,
   AddAttachmentDto,
 } from './dto/physical-count-detail-comment.dto';
 import {
@@ -92,27 +93,78 @@ export class PhysicalCountDetailCommentController {
 
   @Patch(':bu_code/physical-count-detail-comment/:id')
   @UseGuards(new AppIdGuard('physicalCountDetailComment.update'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Update a physical-count-detail comment',
+    summary: 'Update a physical-count-detail comment with attachment add/remove',
     operationId: 'updatePhysicalCountDetailComment',
     responses: {
       200: { description: 'Comment updated successfully' },
+      400: { description: 'Validation failed' },
+      502: { description: 'File service upstream failure' },
     },
   } as any)
-  @ApiBody({ type: UpdatePhysicalCountDetailCommentDto, description: 'Updated comment data' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UpdatePhysicalCountDetailCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('bu_code') bu_code: string,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() updateDto: UpdatePhysicalCountDetailCommentDto,
+    @UploadedFiles() files: Express.Multer.File[] = [],
+    @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    const parsed = UpdatePhysicalCountDetailCommentBodySchema.safeParse(rawBody);
+    if (!parsed.success) {
+      throw new BadRequestException({
+        message: 'Invalid request body',
+        errors: parsed.error.errors,
+      });
+    }
+    const body = parsed.data as {
+      message?: string | null;
+      type?: 'user' | 'system';
+      remove_attachments?: string[];
+    };
+
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
+    const removeTokens = body.remove_attachments ?? [];
+    const hasMessage =
+      typeof body.message === 'string' && body.message.trim().length > 0;
+    const hasType = typeof body.type === 'string';
+    if (!hasMessage && !hasType && files.length === 0 && removeTokens.length === 0) {
+      throw new BadRequestException(
+        'At least one of `message`, `type`, `files`, or `remove_attachments` must be provided',
+      );
+    }
+
     const { user_id } = ExtractRequestHeader(req);
     return this.physicalCountDetailCommentService.update(
       id,
-      { ...updateDto },
+      {
+        message: body.message ?? undefined,
+        type: body.type,
+        addFiles: files,
+        removeFileTokens: removeTokens,
+      },
       user_id,
       bu_code,
       version,

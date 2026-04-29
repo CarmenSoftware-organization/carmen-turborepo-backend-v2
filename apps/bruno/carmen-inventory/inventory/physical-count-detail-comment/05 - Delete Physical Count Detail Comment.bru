@@ -1,13 +1,21 @@
 meta {
   name: Remove physical-count-detail-comment
   type: http
-  seq: 5
+  seq: 4
 }
 
 delete {
   url: {{host}}/api/{{bu_code}}/physical-count-detail-comment/:id
   body: none
   auth: bearer
+}
+
+params:query {
+  ~version: 
+}
+
+params:path {
+  id: {{test_id}}
 }
 
 headers {
@@ -18,20 +26,16 @@ auth:bearer {
   token: {{access_token}}
 }
 
-query {
-  ~version: 
-}
-
 docs {
   ## Delete Physical Count Detail Comment
   ลบความคิดเห็นของรายละเอียดการนับสินค้าจริง
-
+  
   Deletes a physical-count-detail comment. Only the author can delete.
-
+  
   ### Path Parameters
   - `id` — Comment ID
-
-
+  
+  
   ### Sample Response
   ```json
   {
@@ -45,8 +49,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-params:path {
-  id: {{test_id}}
 }
