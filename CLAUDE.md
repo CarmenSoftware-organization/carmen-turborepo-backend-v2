@@ -146,8 +146,6 @@ API collections for testing are located at `apps/bruno/carmen-inventory/`. Uses 
 ### Syncing with gateway
 When adding or renaming gateway endpoints, run `bun run bruno:sync` before opening a PR so the Bruno collection stays in sync with `apps/backend-gateway/src/`. `_archived/` holds orphan files whose endpoints no longer exist in the gateway — review and delete periodically. The sync tool preserves `environments/`, `auth/`, and user-authored `script:*`, `tests`, `docs` sections on updates. See `scripts/bruno-sync/README.md`.
 
-To sync sample request bodies from Swagger into `.bru` files, run `bun run bruno:sync:payloads`. This fills empty `body:json` blocks from `apps/backend-gateway/swagger.json`; non-empty bodies are preserved. Use `bun run bruno:sync:payloads:dry` to preview. See `scripts/bruno-sync/README.md` for details.
-
 ## Gotchas
 
 Non-obvious behaviors to know before touching the code. Entries marked

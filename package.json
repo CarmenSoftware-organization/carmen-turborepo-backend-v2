@@ -20,8 +20,6 @@
     "build:package": "turbo run build:package",
     "bruno:sync": "bun run scripts/bruno-sync/index.ts",
     "bruno:sync:dry": "bun run scripts/bruno-sync/index.ts --dry-run",
-    "bruno:sync:payloads": "bun run scripts/bruno-sync/payloads.ts --apply",
-    "bruno:sync:payloads:dry": "bun run scripts/bruno-sync/payloads.ts",
     "swagger:retag": "bun run scripts/swagger-sync/retag.ts --apply",
     "swagger:retag:dry": "bun run scripts/swagger-sync/retag.ts",
     "swagger:verify": "cd apps/backend-gateway && bun run scripts/verify-swagger.ts",
