@@ -249,10 +249,20 @@ export class SpotCheckService {
         break;
       }
       case 'high_value': {
-        return Result.error(
-          'high_value method is not yet implemented',
-          ErrorCode.INVALID_ARGUMENT,
+        const period = await this.spotCheckLogic.getActivePeriod(prisma);
+        if (!period) {
+          return Result.error('No active period found', ErrorCode.NOT_FOUND);
+        }
+        const count = Math.min(productCount, productTotal);
+        selectedProducts = await this.spotCheckLogic.selectHighValue(
+          prisma,
+          allProducts,
+          count,
+          data.location_id,
+          period.start_at,
+          period.end_at,
         );
+        break;
       }
       default:
         return Result.error(
