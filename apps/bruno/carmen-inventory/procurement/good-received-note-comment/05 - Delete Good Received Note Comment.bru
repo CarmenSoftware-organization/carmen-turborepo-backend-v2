@@ -28,33 +28,47 @@ params:path {
 
 docs {
   ## Delete Good Received Note Comment
-  ลบความคิดเห็นของ good-received-note (soft delete) พร้อมลบไฟล์แนบจาก S3
+  ลบความคิดเห็นของใบรับสินค้า (soft delete) พร้อมล้างไฟล์แนบจาก S3
 
-  ### URL
-  `DELETE {{host}}/api/{{bu_code}}/good-received-note-comment/:id`
+  Soft-deletes a good-received-note comment and removes all associated S3 attachments. S3 cleanup is performed before the database soft-delete to prevent orphaned files.
 
   ### Path Parameters
-  - `bu_code` — Business unit code
-  - `id` — Comment UUID
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Comment ID |
 
-  ### Gateway behavior
-  1. ดึงข้อมูล comment ผ่าน `good-received-note-comment.find-by-id` เพื่อ
-     อ่าน `attachments[].fileToken`
-  2. ลบไฟล์ทุกตัวออกจาก S3 ผ่าน `file.delete` (best-effort, log warn หากบางตัวล้มเหลว)
-  3. ส่ง `good-received-note-comment.delete` ไปยัง business service เพื่อ
-     soft-delete record (set `deleted_at`)
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
 
-  > Important: S3 cleanup ทำ **ก่อน** flag delete เพื่อป้องกัน orphan files
+  ### Permissions
+  - **Permission key**: `procurement.goods_received_note:update`
+  - **Roles**: Purchase
 
-  ### Sample Response 200
+  ### Sample Response
   ```json
   {
-    "data": { "id": "uuid" },
+    "data": {
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
+    },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-04-29T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | `id` is not a valid UUID v4 |
+  | 401 | Bearer token missing or invalid |
+  | 403 | User lacks `procurement.goods_received_note:update` permission |
+  | 404 | Comment not found |
+
+  > S3 file deletion is best-effort. Failures are logged but do not prevent the soft-delete from completing.
 }

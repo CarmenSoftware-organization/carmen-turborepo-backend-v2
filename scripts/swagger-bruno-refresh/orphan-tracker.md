@@ -161,6 +161,22 @@ Notes:
 - Sub-resource endpoints (22–25: products, locations by GRN) use `grn_id` path param instead of `id`.
 - Regenerate-totals endpoints (26, 27) are admin/repair tools with no specific permission key beyond `goods_received_note:update`.
 
+### Task 10a final — procurement (good-received-note-comment, good-received-note-detail-comment, price-list, price-list-template) (2026-04-29)
+
+No orphans found. All `.bru` files in these 4 modules map to active gateway controllers.
+
+Modules processed (4):
+- `good-received-note-comment/` (6 files) → `good-received-note-comment.controller.ts` (`api/:bu_code/good-received-note-comment`) — permission key `procurement.goods_received_note:{view,update}` (view → HOD, Purchase, Approval; update → Purchase)
+- `good-received-note-detail-comment/` (6 files) → `good-received-note-detail-comment.controller.ts` (`api/:bu_code/good-received-note-detail-comment`) — same permission mapping as above
+- `price-list/` (7 files including POST-check-price-list) → `price-list.controller.ts` (`api/:bu_code/price-list`) + `check-price-list.controller.ts` (`api/check-price-list`) — `vendor_management.price_list:{view,create,update,delete}`; check-price-list uses `UrlTokenGuard` (no Keycloak auth)
+- `price-list-template/` (7 files) → `price-list-template.controller.ts` (`api/:bu_code/price-list-template`) — `vendor_management.price_list:{view,create,update,delete}` (same resource key as price-list)
+
+Notes:
+- `good-received-note-comment` and `good-received-note-detail-comment` have no dedicated comment-specific permission keys in the seed. Both modules use the parent resource `procurement.goods_received_note` — `view` for list, `update` for create/update/delete/attachment operations.
+- `POST /api/check-price-list/:url_token` uses `UrlTokenGuard` (not `KeycloakGuard`) — `Authorization` header is not required for that endpoint. Docs block marks it as "Public — authenticated via URL token".
+- `price-list-template` uses the same `vendor_management.price_list` resource key as `price-list` — no dedicated template key in the seed.
+- All 26 `.bru` files refreshed with full R7 docs template (Path Parameters table, Headers table, Permissions bullet, Sample Body/Response, Error Responses table).
+
 ### Task 7a — master-data (A-N) (2026-04-29)
 
 No orphans found. All `.bru` files in the master-data chunk A-N map to active gateway controllers.
