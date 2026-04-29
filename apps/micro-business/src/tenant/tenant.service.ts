@@ -469,7 +469,7 @@ export class TenantService {
     default_value: T,
   ): Promise<T> {
     const bu = await this.prismaSystem.tb_business_unit.findFirst({
-      where: { id: bu_id },
+      where: { id: bu_id, deleted_at: null },
       select: { config: true },
     });
 

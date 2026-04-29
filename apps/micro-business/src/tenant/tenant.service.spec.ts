@@ -97,4 +97,18 @@ describe('TenantService.getBuConfig', () => {
 
     expect(result).toBe('last_receiving');
   });
+
+  it('returns null (not default) when key is present with value: null', async () => {
+    mockPrismaSystem.tb_business_unit.findFirst.mockResolvedValue({
+      config: [{ key: 'physical_count_costing_method', value: null }],
+    });
+
+    const result = await service.getBuConfig(
+      'bu-id-123',
+      'physical_count_costing_method' as any,
+      'last_receiving',
+    );
+
+    expect(result).toBeNull();
+  });
 });
