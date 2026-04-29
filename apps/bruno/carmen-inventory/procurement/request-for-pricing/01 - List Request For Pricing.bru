@@ -26,32 +26,62 @@ docs {
   ## List Request For Pricing
   แสดงรายการใบขอราคาทั้งหมดพร้อมการแบ่งหน้าและค้นหา
 
-  Retrieve all request for pricing documents with pagination and search support.
+  Lists all Request for Pricing (RFP) documents within the business unit, allowing procurement staff to track and compare competitive pricing submissions from multiple vendors.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `page` | number | No | 1 | Page number |
+  | `perpage` | number | No | 10 | Items per page |
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Response
   ```json
   {
     "data": [
       {
-        "id": "uuid",
-        "name": "RFP March 2026",
-        "start_date": "2026-03-01",
-        "end_date": "2026-03-31",
-        "vendor_count": 5,
-        "created_at": "2026-03-27T00:00:00.000Z"
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+        "name": "Q1 2026 Pricing Request",
+        "pricelist_template_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4e",
+        "start_date": "2026-04-01T00:00:00.000Z",
+        "end_date": "2026-04-30T23:59:59.000Z",
+        "workflow_current_stage": "draft",
+        "created_at": "2026-04-29T08:30:00.000Z"
       }
     ],
     "paginate": {
-      "total": 100,
       "page": 1,
       "perpage": 10,
-      "pages": 10
+      "pages": 5,
+      "total": 42,
+      "prev": null,
+      "next": 2
     },
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid Bearer token |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }

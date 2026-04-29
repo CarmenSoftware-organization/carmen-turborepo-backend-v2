@@ -25,31 +25,45 @@ query {
 
 body:json {
   {
-    "code": "",
-    "name": "",
-    "symbol": "",
-    "description": "",
-    "is_active": false,
-    "exchange_rate": 0
+    "code": "USD",
+    "name": "US Dollar",
+    "symbol": "$",
+    "description": "United States Dollar",
+    "is_active": true,
+    "exchange_rate": 35.5
   }
 }
 
 docs {
-  ## Update Currency
+  ## Update a Currency
   อัปเดตข้อมูลสกุลเงินที่มีอยู่ (แทนที่ทั้งหมด)
 
   Fully replaces an existing currency configuration.
 
   ### Path Parameters
-  - `id` -- Currency ID (UUID) / รหัสสกุลเงิน
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Currency ID |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
   {
-    "name": "",
-    "code": "",
-    "is_active": true
+    "code": "USD",
+    "name": "US Dollar",
+    "symbol": "$",
+    "description": "United States Dollar",
+    "is_active": true,
+    "exchange_rate": 35.5
   }
   ```
 
@@ -57,15 +71,22 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 404 | Currency not found for given ID |
+  | 400 | Invalid UUID format for `id` |
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

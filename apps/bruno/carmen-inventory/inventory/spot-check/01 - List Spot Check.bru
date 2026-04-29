@@ -24,46 +24,59 @@ query {
 }
 
 docs {
-  ## List Spot Check (Current Period)
-  ดึงรายการตรวจสอบสินค้าเฉพาะจุดทั้งหมดในงวดปัจจุบัน จัดกลุ่มตามสถานที่จัดเก็บ ใช้สำหรับให้ผู้จัดการติดตามความถี่และผลลัพธ์ของการตรวจสอบสินค้าแบบสุ่ม
+  ## Get Current Spot Checks
+  ดึงรายการตรวจสอบสินค้าเฉพาะจุดในงวดปัจจุบัน จัดกลุ่มตามสถานที่
 
-  Lists all inventory spot checks for the current open period grouped by location, enabling managers to track the frequency and results of random stock verification activities.
+  Lists all inventory spot checks for the current open period grouped by location.
 
   ### Path Parameters
-  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
 
   ### Query Parameters
-  - `include_not_count` — รวมสถานที่ที่ไม่ตรวจนับ (default: false) / Include locations with physical_count_type=no
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `include_not_count` | boolean | No | false | Include locations with `physical_count_type=no` |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `inventory_management.spot_check:view`
+  - **Roles**: HOD, Purchase, Approval
 
   ### Sample Response
   ```json
   {
     "data": [
       {
-        "id": "uuid",
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
         "spot_check_no": "SC-2026-0001",
-        "start_date": "2026-03-27T00:00:00.000Z",
-        "location_id": "uuid",
+        "start_date": "2026-04-29T08:30:00.000Z",
+        "location_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
         "location_name": "Main Store",
         "doc_status": "draft",
         "method": "random",
         "size": 10,
-        "created_at": "2026-03-27T00:00:00.000Z"
+        "created_at": "2026-04-29T08:30:00.000Z"
       }
     ],
-    "paginate": {
-      "total": 100,
-      "page": 1,
-      "perpage": 10,
-      "pages": 10
-    },
+    "paginate": { "page": 1, "perpage": 10, "pages": 3, "total": 25, "prev": null, "next": 2 },
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 403 | User lacks `inventory_management.spot_check:view` permission |
 }
 
 params:query {

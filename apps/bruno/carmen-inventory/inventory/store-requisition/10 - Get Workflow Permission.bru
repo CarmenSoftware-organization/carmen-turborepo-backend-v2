@@ -24,42 +24,58 @@ query {
 
 docs {
   ## Get Workflow Permission
-  ตรวจสอบสิทธิ์การดำเนินการเวิร์กโฟลว์ (อนุมัติ ปฏิเสธ ส่งกลับตรวจสอบ) ที่ผู้ใช้ปัจจุบันสามารถทำได้กับใบเบิกสินค้านี้ ตามบทบาทและขั้นตอนปัจจุบัน
+  ตรวจสอบสิทธิ์การดำเนินการเวิร์กโฟลว์ที่ผู้ใช้ปัจจุบันสามารถทำได้กับใบเบิกสินค้านี้
 
   Checks what workflow actions (approve, reject, review) the current user is authorized to perform on a specific store requisition based on their role and the SR current stage.
 
   ### Path Parameters
-  - `id` — Store requisition ID (UUID)
-  - `bu_code` — Business unit code
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Store Requisition ID |
 
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `inventory_management.store_requisition:view`
+  - **Roles**: Requestor, HOD, Purchase, Approval
 
   ### Sample Response
   ```json
   {
     "data": {
-      "id": "uuid",
-      "sr_no": "SR-2026-0001",
-      "sr_date": "2026-03-27T00:00:00.000Z",
-      "expected_date": "2026-03-28T00:00:00.000Z",
-      "description": "Store requisition",
-      "doc_status": "draft",
-      "from_location_id": "uuid",
-      "from_location_name": "Main Store",
-      "to_location_id": "uuid",
-      "to_location_name": "Kitchen",
-      "requestor_name": "John Doe",
-      "department_name": "Kitchen",
-      "store_requisition_detail": [],
-      "created_at": "2026-03-27T00:00:00.000Z",
-      "updated_at": "2026-03-27T00:00:00.000Z"
+      "can_submit": true,
+      "can_approve": false,
+      "can_reject": false,
+      "can_review": false,
+      "current_stage": "draft",
+      "sr_no": "SR-2026-0001"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `inventory_management.store_requisition:view` permission |
+  | 404 | Store Requisition not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

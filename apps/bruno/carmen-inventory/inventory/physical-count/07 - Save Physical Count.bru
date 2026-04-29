@@ -24,7 +24,14 @@ query {
 }
 
 body:json {
-  {}
+  {
+    "items": [
+      {
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+        "actual_qty": 95
+      }
+    ]
+  }
 }
 
 vars:pre-request {
@@ -39,17 +46,28 @@ docs {
   Persists the counted quantities entered by warehouse staff on a mobile device as a draft, allowing them to pause and resume the physical count without finalizing it.
 
   ### Path Parameters
-  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
-  - `id` — Physical Count ID / รหัสการตรวจนับสินค้า
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Physical Count ID |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `inventory_management.physical_count:update`
+  - **Roles**: Purchase
 
   ### Sample Body
   ```json
   {
     "items": [
       {
-        "id": "71b7a98d-f244-458d-b281-a921d42ca55d",
-        "actual_qty": 10
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+        "actual_qty": 95
       }
     ]
   }
@@ -59,16 +77,23 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid",
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
       "status": "counting"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Invalid request body |
+  | 404 | Physical count not found |
+  | 403 | User lacks `inventory_management.physical_count:update` permission |
 }
 
 params:path {

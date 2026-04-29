@@ -28,33 +28,49 @@ params:path {
 
 docs {
   ## Delete Department Comment
-  ลบความคิดเห็นของ department (soft delete) พร้อมลบไฟล์แนบจาก S3
+  ลบความคิดเห็นของ department (soft delete พร้อมล้างไฟล์ใน S3)
 
-  ### URL
-  `DELETE {{host}}/api/{{bu_code}}/department-comment/:id`
+  Soft-deletes a comment. S3 attachments are deleted first (best-effort); then the DB record is soft-deleted (sets `deleted_at`).
 
   ### Path Parameters
-  - `bu_code` — Business unit code
-  - `id` — Comment UUID
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Comment ID |
 
-  ### Gateway behavior
-  1. ดึงข้อมูล comment ผ่าน `department-comment.find-by-id` เพื่อ
-     อ่าน `attachments[].fileToken`
-  2. ลบไฟล์ทุกตัวออกจาก S3 ผ่าน `file.delete` (best-effort, log warn หากบางตัวล้มเหลว)
-  3. ส่ง `department-comment.delete` ไปยัง business service เพื่อ
-     soft-delete record (set `deleted_at`)
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `version` | string | No | latest | API version |
 
-  > Important: S3 cleanup ทำ **ก่อน** flag delete เพื่อป้องกัน orphan files
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
 
-  ### Sample Response 200
+  ### Permissions
+  > Permission key not found in seed; review needed.
+
+  ### Sample Response
   ```json
   {
-    "data": { "id": "uuid" },
+    "data": {
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
+    },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-04-29T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | `id` is not a valid UUID v4 |
+  | 404 | Comment not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }

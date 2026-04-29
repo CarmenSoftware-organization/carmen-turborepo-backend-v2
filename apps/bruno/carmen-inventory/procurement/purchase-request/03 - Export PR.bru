@@ -29,22 +29,41 @@ docs {
   Generates an Excel spreadsheet of the purchase request with all line items, pricing, and approval details. Used for offline review, sharing with stakeholders, or archival purposes.
 
   ### Path Parameters
-  - `id` — Purchase request ID
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Purchase request ID |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `procurement.purchase_request:view`
+  - **Roles**: Requestor, HOD, Purchase, Approval
 
   ### Sample Response
+  Returns a binary Excel file stream (`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`).
+
   ```json
   {
-    "data": {
-      "id": "uuid"
-    },
+    "data": "<binary stream>",
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `procurement.purchase_request:view` permission |
+  | 404 | Purchase request not found |
 }
 
 params:path {

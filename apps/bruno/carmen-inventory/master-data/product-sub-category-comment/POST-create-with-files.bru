@@ -39,47 +39,70 @@ vars:pre-request {
 
 docs {
   ## Create Product Sub Category Comment (with file uploads)
-  สร้างความคิดเห็นใหม่สำหรับ product-sub-category พร้อมแนบไฟล์ใน request เดียว
-  ไม่ต้อง upload file แยกก่อน
+  สร้างความคิดเห็นใหม่พร้อมแนบไฟล์ใน request เดียว ไม่ต้อง upload file แยกก่อน
 
-  `product_sub_category_id` ระบุผ่าน URL path parameter (ไม่ใช่ body field)
-
-  ### URL
-  `POST {{host}}/api/{{bu_code}}/product-sub-category-comment/:product_sub_category_id`
+  Creates a new comment. Accepts optional file attachments in the same multipart request.
 
   ### Path Parameters
-  - `bu_code` — Business unit code
-  - `product_sub_category_id` — Product Sub Category UUID
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `product_sub_category_id` | string (UUID) | Product Sub Category ID |
 
-  ### Body (multipart/form-data)
-  - `message` (text, optional) — ข้อความคอมเมนต์ ≤ 4000 ตัวอักษร
-  - `type` (text, optional, default `user`) — `user` | `system`
-  - `files` (binary, optional, repeatable) — ไฟล์แนบ
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
 
-  ต้องส่งอย่างน้อยหนึ่งใน `message` หรือ `files`
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
-  ### Constraints
-  - max 10 files per request
-  - max 10 MB per file
-  - allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf
+  ### Sample Body (multipart/form-data)
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | `message` | text | No* | Comment text (≤ 4000 chars) |
+  | `type` | text | No | `user` (default) or `system` |
+  | `files` | binary (repeatable) | No* | Attached files (0–10) |
 
-  ### Gateway behavior
-  1. Upload ทุกไฟล์ไป S3 ผ่าน `file.upload`
-  2. หาก upload ใดล้มเหลว — rollback (ลบไฟล์ที่ upload สำเร็จออกจาก S3) แล้วตอบ 502
-  3. Forward `{ product_sub_category_id, message, type, attachments: [...] }` ไปยัง business service
-  4. หาก business service ตอบ error — rollback ลบไฟล์ที่ upload ไปแล้วออกจาก S3
+  *At least one of `message` or `files` must be provided.
+  Max 10 files, 10 MB each. Allowed: image/jpeg, image/png, image/webp, image/gif, application/pdf.
 
-  ### Response 201
+  ### Sample Response
   ```json
   {
-    "data": { "id": "<uuid>", "product_sub_category_id": "<uuid>", "attachments": [...] },
+    "data": {
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "product_sub_category_id": "5d5fa453-f687-4fcd-bbdb-5956f7e810b3",
+      "message": "Comment with attached photos",
+      "type": "user",
+      "attachments": [
+        {
+          "fileName": "logo.png",
+          "fileToken": "tok-abc123",
+          "fileUrl": "",
+          "contentType": "image/png",
+          "size": 204800
+        }
+      ],
+      "created_at": "2026-04-29T08:30:00.000Z",
+      "created_by_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
+    },
+    "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-04-29T12:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
 
-  Note: `fileUrl` ใน response จะว่าง — frontend ต้องเรียก
-  `GET /api/{bu_code}/documents/presigned-url/{fileToken}` เพื่อแสดงไฟล์
+  > `fileUrl` in response will be empty — frontend must call
+  > `GET /api/{bu_code}/documents/presigned-url/{fileToken}` to display the file.
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Neither `message` nor `files` provided; file exceeds 10 MB; unsupported mime type; more than 10 files |
+  | 401 | Missing or invalid bearer token |
+  | 502 | S3 file upload failure (rolled back) |
 }

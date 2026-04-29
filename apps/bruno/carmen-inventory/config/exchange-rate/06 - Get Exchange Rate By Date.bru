@@ -23,38 +23,56 @@ query {
 }
 
 docs {
-  ## Get Exchange Rate By Date
+  ## Get Exchange Rate by Date and Currency Code
   ดึงข้อมูลอัตราแลกเปลี่ยนตามวันที่และรหัสสกุลเงิน
 
   Retrieves the exchange rate for a specific date and currency code.
 
   ### Path Parameters
-  - `date` -- Exchange rate date (yyyy-MM-dd) / วันที่อัตราแลกเปลี่ยน
-  - `currency_code` -- Currency code (ISO 4217, e.g. USD) / รหัสสกุลเงิน
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `date` | string (yyyy-MM-dd) | Exchange rate date |
+  | `currency_code` | string | Currency code (ISO 4217, e.g. USD) |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `configuration.exchange_rate:view`
+  - **Roles**: Requestor, HOD, Purchase, Approval
 
   ### Sample Response
   ```json
   {
     "data": {
-      "id": "uuid",
-      "at_date": "2026-03-27",
-      "currency_id": "uuid",
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "at_date": "2026-01-16",
+      "currency_id": "93dabe25-1668-4c5b-bceb-3e0b83b78002",
       "currency_code": "USD",
       "currency_name": "US Dollar",
-      "exchange_rate": 34.5,
-      "note": "...",
-      "info": [],
-      "created_at": "2026-03-27T00:00:00.000Z",
-      "updated_at": "2026-03-27T00:00:00.000Z"
+      "exchange_rate": 35.5,
+      "note": "Daily rate update",
+      "info": null,
+      "created_at": "2026-04-29T08:30:00.000Z",
+      "updated_at": "2026-04-29T08:30:00.000Z"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 404 | No exchange rate found for given date and currency code |
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

@@ -20,40 +20,40 @@ auth:bearer {
 }
 
 query {
-  ~version: 
+  ~version:
 }
 
 body:json {
   {
-    "code": "",
-    "name": "",
+    "code": "LOC-001",
+    "name": "Main Store",
     "location_type": "inventory",
-    "description": "",
+    "description": "Primary inventory store for dry goods",
     "is_active": true,
-    "delivery_point_id": "",
+    "delivery_point_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
     "info": {
-      "floor": 0,
-      "building": "",
-      "capacity": 0,
-      "responsibleDepartment": "",
+      "floor": 1,
+      "building": "Block A",
+      "capacity": 500,
+      "responsibleDepartment": "Purchasing",
       "itemCount": 0,
-      "lastCount": ""
+      "lastCount": "2026-04-29"
     },
     "users": {
       "add": [
         {
-          "id": ""
+          "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
         }
       ]
     },
     "products": {
       "add": [
         {
-          "id": "",
-          "min_qty": 0,
-          "max_qty": 0,
-          "re_order_qty": 0,
-          "par_qty": 0
+          "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+          "min_qty": 5.0,
+          "max_qty": 100.0,
+          "re_order_qty": 20.0,
+          "par_qty": 50.0
         }
       ]
     }
@@ -64,15 +64,58 @@ docs {
   ## Create Location
   สร้างสถานที่/คลังสินค้าใหม่
 
-  Creates a new location/warehouse in the business unit.
+  Defines a new storage location, warehouse, or store within the property. Once created, products can be assigned to it and inventory movements (stock-in, stock-out, transfers) can be recorded.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `configuration.location:create`
+  - **Roles**: Purchase
 
   ### Sample Body
   ```json
   {
-    "name": "",
-    "code": "",
-    "is_active": true
+    "code": "LOC-001",
+    "name": "Main Store",
+    "location_type": "inventory",
+    "description": "Primary inventory store for dry goods",
+    "is_active": true,
+    "delivery_point_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "info": {
+      "floor": 1,
+      "building": "Block A",
+      "capacity": 500,
+      "responsibleDepartment": "Purchasing",
+      "itemCount": 0,
+      "lastCount": "2026-04-29"
+    },
+    "users": {
+      "add": [
+        {
+          "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
+        }
+      ]
+    },
+    "products": {
+      "add": [
+        {
+          "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+          "min_qty": 5.0,
+          "max_qty": 100.0,
+          "re_order_qty": 20.0,
+          "par_qty": 50.0
+        }
+      ]
+    }
   }
   ```
 
@@ -80,13 +123,22 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Request body fails validation (e.g. missing required fields) |
+  | 401 | Bearer token is missing or invalid |
+  | 403 | User lacks `configuration.location:create` permission |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }

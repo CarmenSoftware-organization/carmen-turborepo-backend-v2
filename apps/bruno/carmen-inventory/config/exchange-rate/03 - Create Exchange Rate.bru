@@ -5,11 +5,24 @@ meta {
 }
 
 docs {
-  ## Create Exchange Rate
+  ## Create an Exchange Rate
   สร้างอัตราแลกเปลี่ยนใหม่ (รายการเดียว)
 
   Creates a new single exchange rate record with effective date and conversion factor.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
@@ -24,16 +37,19 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid",
-      "message": "Success"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  > No service-specific errors thrown by this endpoint.
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 post {

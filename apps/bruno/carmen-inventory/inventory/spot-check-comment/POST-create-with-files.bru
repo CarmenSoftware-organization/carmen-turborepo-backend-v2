@@ -38,48 +38,66 @@ vars:pre-request {
 }
 
 docs {
-  ## Create Spot Check Comment (with file uploads)
-  สร้างความคิดเห็นใหม่สำหรับ spot-check พร้อมแนบไฟล์ใน request เดียว
-  ไม่ต้อง upload file แยกก่อน
+  ## Create Spot Check Comment with Files
+  สร้างความคิดเห็นใหม่สำหรับ spot-check พร้อมแนบไฟล์ใน request เดียว ไม่ต้อง upload file แยกก่อน
 
-  `spot_check_id` ระบุผ่าน URL path parameter (ไม่ใช่ body field)
-
-  ### URL
-  `POST {{host}}/api/{{bu_code}}/spot-check-comment/:spot_check_id`
+  Creates a new comment for a spot check with optional file attachments in a single multipart request.
 
   ### Path Parameters
-  - `bu_code` — Business unit code
-  - `spot_check_id` — Spot Check UUID
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `spot_check_id` | string (UUID) | Spot Check UUID |
 
-  ### Body (multipart/form-data)
-  - `message` (text, optional) — ข้อความคอมเมนต์ ≤ 4000 ตัวอักษร
-  - `type` (text, optional, default `user`) — `user` | `system`
-  - `files` (binary, optional, repeatable) — ไฟล์แนบ
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
 
-  ต้องส่งอย่างน้อยหนึ่งใน `message` หรือ `files`
+  ### Permissions
+  - **Permission key**: `inventory_management.spot_check:update`
+  - **Roles**: Purchase
 
-  ### Constraints
-  - max 10 files per request
-  - max 10 MB per file
-  - allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf
+  ### Sample Body (multipart/form-data)
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | `message` | string | No* | Comment text (≤ 4000 chars) |
+  | `type` | string | No | `user` or `system` (default: `user`) |
+  | `files` | file[] | No* | One or more attachment files |
 
-  ### Gateway behavior
-  1. Upload ทุกไฟล์ไป S3 ผ่าน `file.upload`
-  2. หาก upload ใดล้มเหลว — rollback (ลบไฟล์ที่ upload สำเร็จออกจาก S3) แล้วตอบ 502
-  3. Forward `{ spot_check_id, message, type, attachments: [...] }` ไปยัง business service
-  4. หาก business service ตอบ error — rollback ลบไฟล์ที่ upload ไปแล้วออกจาก S3
+  *At least one of `message` or `files` is required.
 
-  ### Response 201
+  Constraints: max 10 files, max 10 MB per file. Allowed MIME: image/jpeg, image/png, image/webp, image/gif, application/pdf.
+
+  ### Sample Response
   ```json
   {
-    "data": { "id": "<uuid>", "spot_check_id": "<uuid>", "attachments": [...] },
+    "data": {
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "spot_check_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "message": "Comment with attached photos",
+      "type": "user",
+      "attachments": [
+        { "fileName": "logo.png", "fileToken": "tok-abc123", "fileUrl": "", "contentType": "image/png", "size": 12345 }
+      ],
+      "created_at": "2026-04-29T08:30:00.000Z",
+      "created_by_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
+    },
+    "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-04-29T12:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
 
-  Note: `fileUrl` ใน response จะว่าง — frontend ต้องเรียก
-  `GET /api/{bu_code}/documents/presigned-url/{fileToken}` เพื่อแสดงไฟล์
+  > Note: `fileUrl` ใน response จะว่าง — frontend ต้องเรียก `GET /api/{bu_code}/documents/presigned-url/{fileToken}` เพื่อแสดงไฟล์
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Neither message nor files provided |
+  | 502 | S3 upload failed |
+  | 403 | User lacks `inventory_management.spot_check:update` permission |
 }

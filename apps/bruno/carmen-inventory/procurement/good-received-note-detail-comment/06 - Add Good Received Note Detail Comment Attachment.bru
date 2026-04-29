@@ -36,43 +36,64 @@ body:multipart-form {
 }
 
 docs {
-  ## Add Attachments to Good Received Note Detail Comment (multipart, batch upload)
-  อัปโหลดไฟล์แนบหลายไฟล์เข้ากับคอมเมนต์ที่มีอยู่แล้วใน request เดียว
+  ## Add Attachments to Good Received Note Detail Comment
+  อัปโหลดไฟล์แนบหลายไฟล์เข้ากับคอมเมนต์รายการในใบรับสินค้าที่มีอยู่แล้ว ใน request เดียว
 
-  ### URL
-  `POST {{host}}/api/{{bu_code}}/good-received-note-detail-comment/:id/attachment`
+  Batch-uploads one or more files to an existing good-received-note-detail comment. Files are uploaded to S3 first; a failure in any upload rolls back all uploads for that request.
 
   ### Path Parameters
-  - `bu_code` — Business unit code
-  - `id` — Comment UUID
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Comment ID |
 
-  ### Body (multipart/form-data)
-  - `files` (binary, repeatable) — ไฟล์แนบ (ต้องมีอย่างน้อย 1 ไฟล์)
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
 
-  ### Constraints
-  - 1–10 files per request
-  - max 10 MB per file
-  - allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf
+  ### Permissions
+  - **Permission key**: `procurement.goods_received_note:update`
+  - **Roles**: Purchase
 
-  ### Gateway behavior
-  1. Upload ทุกไฟล์ไป S3 ผ่าน `file.upload` (parallel)
-  2. หาก upload ใดล้มเหลว — rollback (ลบไฟล์ที่ upload สำเร็จออกจาก S3) แล้วตอบ 502
-  3. ส่ง `{ id, attachments: [...] }` ไปยัง business service ผ่าน
-     `good-received-note-detail-comment.add-attachment`
-  4. หาก business ตอบ error — rollback ลบไฟล์ที่ upload ไปแล้วออกจาก S3
+  ### Sample Body (multipart/form-data)
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | `files` | binary (repeatable) | Yes | 1–10 files to attach |
 
-  ### Sample Response 200
+  Allowed types: image/jpeg, image/png, image/webp, image/gif, application/pdf. Max 10 MB each.
+
+  ### Sample Response
   ```json
   {
-    "data": { "id": "uuid", "attachments": [...] },
+    "data": {
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "attachments": [
+        {
+          "fileName": "detail-photo.jpg",
+          "fileToken": "bu001/019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+          "fileUrl": "",
+          "contentType": "image/jpeg",
+          "size": 153600
+        }
+      ]
+    },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-04-29T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
 
-  Note: `fileUrl` ใน response จะว่าง — frontend ต้องเรียก
-  `GET /api/{bu_code}/documents/presigned-url/{fileToken}` เพื่อแสดงไฟล์
+  > `fileUrl` is always empty. Use `GET /api/{bu_code}/documents/presigned-url/{fileToken}` to obtain a download URL.
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | No files provided; file exceeds size/type constraints |
+  | 401 | Bearer token missing or invalid |
+  | 403 | User lacks `procurement.goods_received_note:update` permission |
+  | 502 | File service upstream failure during S3 upload |
 }

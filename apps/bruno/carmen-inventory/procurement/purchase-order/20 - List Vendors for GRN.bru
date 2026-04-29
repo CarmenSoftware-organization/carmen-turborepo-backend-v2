@@ -28,33 +28,50 @@ docs {
 
   Lists distinct vendors that have purchase orders with sent or partial status, for GRN creation.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `procurement.purchase_order:view`
+  - **Roles**: Requestor, HOD, Purchase, Approval
 
   ### Sample Response
   ```json
   {
     "data": [
       {
-        "id": "uuid",
-        "po_no": "PO-2026-0001",
-        "po_status": "draft",
-        "description": "Purchase order",
-        "order_date": "2026-03-27T00:00:00.000Z",
-        "vendor_name": "Vendor Name",
-        "currency_code": "THB",
-        "total_amount": 15000,
-        "created_at": "2026-03-27T00:00:00.000Z"
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+        "vendor_name": "ABC Food Supplies Co., Ltd.",
+        "vendor_code": "VND-001",
+        "po_count": 3
       }
     ],
     "paginate": {
-      "total": 100,
       "page": 1,
       "perpage": 10,
-      "pages": 10
+      "pages": 1,
+      "total": 5,
+      "prev": null,
+      "next": null
     },
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `procurement.purchase_order:view` permission |
 }

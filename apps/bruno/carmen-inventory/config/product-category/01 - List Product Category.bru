@@ -26,32 +26,63 @@ docs {
   ## List Product Categories
   แสดงรายการหมวดหมู่สินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา
 
-  Returns all product categories configured for the business unit.
+  Returns all product categories configured for the business unit. Categories provide the primary classification for organizing the product catalog and generating procurement reports by product type.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `page` | number | No | 1 | Page number |
+  | `perpage` | number | No | 10 | Items per page |
+  | `search` | string | No | — | Search keyword |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `product_management.category:view`
+  - **Roles**: Requestor, HOD, Purchase, Approval
 
   ### Sample Response
   ```json
   {
     "data": [
       {
-        "id": "uuid",
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
         "code": "CAT-001",
         "name": "Fresh Food",
-        "description": "Fresh food category",
+        "description": "Fresh food and perishables",
         "is_active": true,
-        "created_at": "2026-03-27T00:00:00.000Z"
+        "created_at": "2026-04-29T08:30:00.000Z"
       }
     ],
     "paginate": {
-      "total": 100,
       "page": 1,
       "perpage": 10,
-      "pages": 10
+      "pages": 5,
+      "total": 48,
+      "prev": null,
+      "next": 2
     },
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Bearer token is missing or invalid |
+  | 403 | User lacks `product_management.category:view` permission |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }

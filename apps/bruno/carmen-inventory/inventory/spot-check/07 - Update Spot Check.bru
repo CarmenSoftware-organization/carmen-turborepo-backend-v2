@@ -25,10 +25,8 @@ query {
 
 body:json {
   {
-    "description": "",
-    "note": "",
-    "info": null,
-    "dimension": null
+    "description": "Updated spot check description",
+    "note": "Updated note - check expiry dates"
   }
 }
 
@@ -37,29 +35,40 @@ vars:pre-request {
 }
 
 docs {
-  ## Update Spot Check
-  แก้ไขรายการตรวจสอบสินค้าเฉพาะจุดก่อนการส่ง เช่น อัปเดตสถานที่หรือปรับสินค้าที่ต้องการตรวจสอบ
+  ## Patch Spot Check
+  แก้ไขรายการตรวจสอบสินค้าเฉพาะจุดก่อนการส่ง
 
-  Modifies a spot check record before submission, such as updating the location or adjusting which products are included in the verification.
+  Modifies a spot check record before submission.
 
   ### Path Parameters
-  - `bu_code` — Business Unit Code / รหัสหน่วยธุรกิจ
-  - `id` — Spot Check ID / รหัสการตรวจสอบสินค้าเฉพาะจุด
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Spot Check ID |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `inventory_management.spot_check:update`
+  - **Roles**: Purchase
 
   ### Sample Body
-  ```json
-  {
-    "description": "Updated spot check description",
-    "note": "Updated note - check expiry dates"
-  }
-  ```
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | `description` | string | No | Updated description |
+  | `note` | string | No | Updated note |
+  | `info` | object | No | Additional info (JSON) |
+  | `dimension` | array | No | Dimension data |
 
   ### Sample Response
   ```json
   {
     "data": {
-      "id": "uuid",
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
       "spot_check_no": "SC-2026-0001",
       "doc_status": "draft"
     },
@@ -67,9 +76,15 @@ docs {
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 404 | Spot check not found |
+  | 403 | User lacks `inventory_management.spot_check:update` permission |
 }
 
 params:path {

@@ -28,31 +28,57 @@ docs {
 
   Returns all exchange rates configured for the business unit with pagination and search support.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `page` | number | No | 1 | Page number |
+  | `perpage` | number | No | 10 | Items per page |
+  | `search` | string | No | — | Search by currency code or name |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `configuration.exchange_rate:view`
+  - **Roles**: Requestor, HOD, Purchase, Approval
 
   ### Sample Response
   ```json
   {
     "data": [
       {
-        "id": "uuid",
-        "at_date": "2026-03-27",
-        "currency_id": "uuid",
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+        "at_date": "2026-04-29",
+        "currency_id": "93dabe25-1668-4c5b-bceb-3e0b83b78002",
         "currency_code": "USD",
         "currency_name": "US Dollar",
-        "exchange_rate": 34.5,
-        "created_at": "2026-03-27T00:00:00.000Z"
+        "exchange_rate": 35.5,
+        "created_at": "2026-04-29T08:30:00.000Z"
       }
     ],
     "paginate": {
-      "total": 100,
       "page": 1,
       "perpage": 10,
-      "pages": 10
+      "pages": 1,
+      "total": 30,
+      "prev": null,
+      "next": null
     },
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  > No service-specific errors thrown by this endpoint.
 }

@@ -23,35 +23,54 @@ query {
 }
 
 docs {
-  ## Get Credit Term
+  ## Get a Credit Term by ID
   ดึงข้อมูลเงื่อนไขการชำระเงินรายการเดียวตาม ID
 
   Retrieves a specific payment term definition by its unique identifier.
 
   ### Path Parameters
-  - `id` -- Credit term ID (UUID) / รหัสเงื่อนไขการชำระเงิน
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Credit term ID |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Response
   ```json
   {
     "data": {
-      "id": "uuid",
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
       "name": "Net 30",
       "value": 30,
       "description": "Payment due in 30 days",
       "is_active": true,
-      "info": [],
-      "created_at": "2026-03-27T00:00:00.000Z",
-      "updated_at": "2026-03-27T00:00:00.000Z"
+      "note": "Standard vendor payment term",
+      "info": null,
+      "created_at": "2026-04-29T08:30:00.000Z",
+      "updated_at": "2026-04-29T08:30:00.000Z"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 404 | Credit term not found for given ID |
+  | 400 | Invalid UUID format for `id` |
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

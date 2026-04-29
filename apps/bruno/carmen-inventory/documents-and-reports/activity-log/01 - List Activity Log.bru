@@ -19,40 +19,82 @@ auth:bearer {
 }
 
 query {
-  ~entity_type: 
-  ~entity_id: 
-  ~actor_id: 
-  ~action: 
-  ~start_date: 
-  ~end_date: 
+  ~entity_type:
+  ~entity_id:
+  ~actor_id:
+  ~action:
+  ~start_date:
+  ~end_date:
 }
 
 docs {
-  ## List Activity Log
+  ## Get All Activity Logs
   แสดงรายการบันทึกกิจกรรมทั้งหมดพร้อมการแบ่งหน้าและค้นหา
 
-  Retrieve all activity logs with pagination and search support.
+  Lists all user activity records for the business unit with filtering by entity type, user, action, and date range. Used for audit trail review, compliance reporting, and investigating who performed what actions on procurement and inventory documents.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `page` | number | No | 1 | Page number |
+  | `perpage` | number | No | 10 | Items per page |
+  | `entity_type` | string | No | — | Filter by entity type (e.g. `purchase_request`) |
+  | `entity_id` | string | No | — | Filter by entity ID (UUID) |
+  | `actor_id` | string | No | — | Filter by actor (user) ID |
+  | `action` | string | No | — | Filter by action (`create`, `update`, `delete`, etc.) |
+  | `start_date` | string | No | — | Filter from date (ISO 8601) |
+  | `end_date` | string | No | — | Filter to date (ISO 8601) |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Response
   ```json
   {
     "data": [
       {
-        "id": "uuid",
-        "name": "Item Name"
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+        "action": "create",
+        "entity_type": "purchase_request",
+        "entity_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+        "actor_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+        "actor_username": "john.doe",
+        "actor_firstname": "John",
+        "actor_lastname": "Doe",
+        "description": "Created purchase request PR-2026-0001",
+        "ip_address": "192.168.1.1",
+        "created_at": "2026-04-29T08:30:00.000Z"
       }
     ],
     "paginate": {
-      "total": 100,
       "page": 1,
       "perpage": 10,
-      "pages": 10
+      "pages": 5,
+      "total": 42,
+      "prev": null,
+      "next": 2
     },
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid Bearer token |
+  | 403 | User lacks permission to view activity logs |
 }

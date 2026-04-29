@@ -32,19 +32,25 @@ body:json {
 }
 
 docs {
-  ## Review Purchase Order
+  ## Review Purchase Order (Send Back)
   ส่งใบสั่งซื้อกลับไปยังขั้นตอนก่อนหน้าเพื่อแก้ไข เช่น ปรับเงื่อนไขผู้ขาย จำนวน หรือราคา
 
   Returns a purchase order to a previous workflow stage for corrections, such as adjusting vendor terms, quantities, or pricing. Allows approvers to request changes before giving final authorization.
 
   ### Path Parameters
-  - `id` — Purchase order UUID
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Purchase order ID |
 
-  ### Body
-  - `stage_role` — Role of the reviewer
-  - `des_stage` — Target stage to return to (e.g., "purchase")
-  - `details[]` — Line items with `id`, `stage_status`, and `stage_message`
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
 
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
@@ -53,7 +59,7 @@ docs {
     "des_stage": "purchase",
     "details": [
       {
-        "id": "<po_detail_uuid>",
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
         "stage_status": "review",
         "stage_message": "Please verify the delivery date with vendor"
       }
@@ -65,15 +71,25 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | `des_stage` is invalid or PO cannot be returned at current stage |
+  | 401 | Missing or invalid bearer token |
+  | 403 | User does not have the approver role for this stage |
+  | 404 | Purchase order not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

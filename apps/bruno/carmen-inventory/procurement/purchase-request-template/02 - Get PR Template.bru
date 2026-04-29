@@ -29,30 +29,65 @@ docs {
   Retrieves a specific purchase request template with its predefined item list and quantities, allowing users to review or use the template for creating a new procurement request.
 
   ### Path Parameters
-  - `id` — Template ID
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Purchase Request Template ID |
 
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `procurement.purchase_request_template:view`
+  - **Roles**: Requestor, HOD, Purchase, Approval
 
   ### Sample Response
   ```json
   {
     "data": {
-      "id": "uuid",
-      "name": "Weekly Kitchen PR",
-      "description": "Template for weekly kitchen orders",
-      "workflow_id": "uuid",
-      "workflow_name": "PR Approval",
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "name": "Weekly Kitchen Supplies",
+      "description": "Standard weekly order template for kitchen department",
+      "workflow_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4e",
+      "workflow_name": "Purchase Approval Workflow",
       "is_active": true,
-      "purchase_request_template_detail": [],
-      "created_at": "2026-03-27T00:00:00.000Z",
-      "updated_at": "2026-03-27T00:00:00.000Z"
+      "tb_purchase_request_template_detail": [
+        {
+          "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4f",
+          "product_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c50",
+          "product_name": "Chicken Breast",
+          "inventory_unit_name": "kg",
+          "requested_qty": 10,
+          "is_active": true
+        }
+      ],
+      "created_at": "2026-04-29T08:30:00.000Z",
+      "updated_at": "2026-04-29T08:30:00.000Z"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid Bearer token |
+  | 403 | User lacks `procurement.purchase_request_template:view` permission |
+  | 404 | Template not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

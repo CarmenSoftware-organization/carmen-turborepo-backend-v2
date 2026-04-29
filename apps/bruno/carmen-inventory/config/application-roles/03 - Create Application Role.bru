@@ -25,8 +25,8 @@ query {
 
 body:json {
   {
-    "application_role_name": "",
-    "description": "",
+    "application_role_name": "Inventory Manager",
+    "description": "Manages inventory operations",
     "is_active": false,
     "permissions": {
       "add": []
@@ -35,18 +35,34 @@ body:json {
 }
 
 docs {
-  ## Create Application Role
-  สร้างบทบาทในระบบใหม่
+  ## Create a New Application Role
+  สร้างบทบาทในระบบใหม่ (เช่น หัวหน้าแผนก ผู้ควบคุมการเงิน)
 
-  Creates a new application role for access control.
+  Defines a new application role for access control. Once created, the role can be assigned permissions and then assigned to users.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
   {
-    "name": "",
-    "code": "",
-    "is_active": true
+    "application_role_name": "Inventory Manager",
+    "description": "Manages inventory operations",
+    "is_active": false,
+    "permissions": {
+      "add": []
+    }
   }
   ```
 
@@ -54,13 +70,17 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  > No service-specific errors thrown by this endpoint.
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }

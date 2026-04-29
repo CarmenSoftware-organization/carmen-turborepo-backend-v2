@@ -25,9 +25,11 @@ query {
 
 body:json {
   {
-    "name": "",
-    "description": "",
-    "is_active": true
+    "name": "Kilogram",
+    "description": "Standard metric unit of mass",
+    "is_active": true,
+    "decimal_place": 2,
+    "note": "Used for dry goods"
   }
 }
 
@@ -37,14 +39,29 @@ docs {
 
   Creates a new unit of measurement in the business unit.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `product_management.unit:create`
+  - **Roles**: Purchase
 
   ### Sample Body
   ```json
   {
-    "name": "",
-    "code": "",
+    "name": "Kilogram",
+    "description": "Standard metric unit of mass",
     "is_active": true,
-    "decimal_place": 2
+    "decimal_place": 2,
+    "note": "Used for dry goods"
   }
   ```
 
@@ -52,13 +69,20 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | `name` is empty or already exists in this business unit |
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `product_management.unit:create` permission |
 }

@@ -44,17 +44,29 @@ docs {
 
   `purchase_request_id` ระบุผ่าน URL path parameter (ไม่ใช่ body field)
 
-  ### URL
-  `POST {{host}}/api/{{bu_code}}/purchase-request-comment/:purchase_request_id`
-
   ### Path Parameters
-  - `bu_code` — Business unit code
-  - `purchase_request_id` — Purchase Request UUID
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `purchase_request_id` | string (UUID) | Purchase Request UUID |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+  | `Content-Type` | Yes | `multipart/form-data` |
+
+  ### Permissions
+  - **Permission key**: `procurement.purchase_request:view`
+  - **Roles**: Requestor, HOD, Purchase, Approval
 
   ### Body (multipart/form-data)
-  - `message` (text, optional) — ข้อความคอมเมนต์ ≤ 4000 ตัวอักษร
-  - `type` (text, optional, default `user`) — `user` | `system`
-  - `files` (binary, optional, repeatable) — ไฟล์แนบ
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | `message` | text | No | ข้อความคอมเมนต์ ≤ 4000 ตัวอักษร |
+  | `type` | text | No | `user` \| `system` (default: `user`) |
+  | `files` | binary (repeatable) | No | ไฟล์แนบ |
 
   ต้องส่งอย่างน้อยหนึ่งใน `message` หรือ `files`
 
@@ -69,17 +81,38 @@ docs {
   3. Forward `{ purchase_request_id, message, type, attachments: [...] }` ไปยัง business service
   4. หาก business service ตอบ error — rollback ลบไฟล์ที่ upload ไปแล้วออกจาก S3
 
-  ### Response 201
+  ### Sample Response
   ```json
   {
-    "data": { "id": "<uuid>", "purchase_request_id": "<uuid>", "attachments": [...] },
+    "data": {
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "purchase_request_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4e",
+      "attachments": [
+        {
+          "fileName": "photo.jpg",
+          "fileToken": "019638a6-2a00-7c4f-8e46-9b7a52c80c4f/019638a6-2a00-7c4f-8e46-9b7a52c80c50",
+          "fileUrl": "",
+          "contentType": "image/jpeg",
+          "size": 204800
+        }
+      ]
+    },
+    "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-04-29T12:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
 
   Note: `fileUrl` ใน response จะว่าง — frontend ต้องเรียก
   `GET /api/{bu_code}/documents/presigned-url/{fileToken}` เพื่อแสดงไฟล์
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Neither message nor files provided |
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks permission |
+  | 502 | S3 upload failure |
 }

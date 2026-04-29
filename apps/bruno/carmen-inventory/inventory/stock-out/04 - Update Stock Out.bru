@@ -55,32 +55,42 @@ body:json {
 }
 
 docs {
-  ## Update Stock Out
-  แก้ไขรายการเบิกสินค้าออกจากคลังที่มีอยู่เพื่อปรับจำนวน รายการสินค้า หรือเหตุผลในการเบิกก่อนที่รายการจะถูกยืนยัน ใช้เมื่อเจ้าหน้าที่ต้องแก้ไขรายการหักสินค้าคงคลัง
+  ## Patch Stock Out
+  แก้ไขรายการเบิกสินค้าออกจากคลังที่มีอยู่เพื่อปรับจำนวน รายการสินค้า หรือเหตุผลในการเบิกก่อนที่รายการจะถูกยืนยัน
 
   Modifies an existing stock-out record to correct quantities, items, or removal reasons before the transaction is finalized. Used when staff need to amend an inventory deduction.
 
   ### Path Parameters
-  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
-  - `id` — Stock Out ID / รหัสรายการเบิกสินค้าออกจากคลัง
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Stock Out ID |
 
-  ### Body Fields
-  - `so_date` — Stock Out date (ISO 8601) / วันที่เบิกสินค้าออกจากคลัง
-  - `description` — Description / รายละเอียด
-  - `doc_status` — Document status / สถานะเอกสาร
-  - `note` — Note / หมายเหตุ
-  - `stock_out_detail.add[]` — Line items to add / รายการสินค้าที่จะเพิ่ม
-  - `stock_out_detail.update[]` — Line items to update / รายการสินค้าที่จะแก้ไข
-  - `stock_out_detail.remove[]` — Line items to remove / รายการสินค้าที่จะลบ
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `version` | string | No | latest | API version |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `inventory_management.stock_out:update`
+  - **Roles**: Purchase
 
   ### Sample Body
   ```json
   {
-    "so_date": "2026-03-26T00:00:00.000Z",
-    "description": "Stock Out Updated",
+    "description": "Kitchen daily consumption (updated)",
+    "adjustment_type_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "adjustment_type_code": "ADJ-OUT",
     "doc_status": "draft",
-    "note": "updated note",
+    "note": "Updated stock out note",
+    "info": null,
+    "dimension": null,
     "stock_out_detail": {
       "add": [],
       "update": [],
@@ -93,16 +103,26 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid",
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
       "so_no": "SO-2026-0001"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Invalid request body |
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `inventory_management.stock_out:update` permission |
+  | 404 | Stock Out not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

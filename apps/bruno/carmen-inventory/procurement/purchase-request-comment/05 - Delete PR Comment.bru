@@ -30,12 +30,21 @@ docs {
   ## Delete Purchase Request Comment
   ลบความคิดเห็นของ purchase-request (soft delete) พร้อมลบไฟล์แนบจาก S3
 
-  ### URL
-  `DELETE {{host}}/api/{{bu_code}}/purchase-request-comment/:id`
-
   ### Path Parameters
-  - `bu_code` — Business unit code
-  - `id` — Comment UUID
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Comment UUID |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `procurement.purchase_request:view`
+  - **Roles**: Requestor, HOD, Purchase, Approval
 
   ### Gateway behavior
   1. ดึงข้อมูล comment ผ่าน `purchase-request-comment.find-by-id` เพื่อ
@@ -46,15 +55,24 @@ docs {
 
   > Important: S3 cleanup ทำ **ก่อน** flag delete เพื่อป้องกัน orphan files
 
-  ### Sample Response 200
+  ### Sample Response
   ```json
   {
-    "data": { "id": "uuid" },
+    "data": {
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
+    },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-04-29T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks permission |
+  | 404 | Comment not found |
 }

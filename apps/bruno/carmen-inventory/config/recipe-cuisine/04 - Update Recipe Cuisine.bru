@@ -25,10 +25,10 @@ query {
 
 body:json {
   {
-    "name": "",
-    "description": "",
-    "note": "",
-    "is_active": false,
+    "name": "Thai (Updated)",
+    "description": "Thai cuisine known for its balance of spicy, sour, sweet and salty flavors — updated",
+    "note": "Popular in hospitality menus",
+    "is_active": true,
     "region": "ASIA",
     "popular_dishes": null,
     "key_ingredients": null,
@@ -41,15 +41,35 @@ docs {
   ## Update Recipe Cuisine
   อัปเดตประเภทอาหารทั้งหมด การเปลี่ยนแปลงส่งผลต่อสูตรอาหารที่ใช้ประเภทนี้
 
-  Fully updates an existing cuisine type definition. Changes affect how recipes tagged with this cuisine are categorized.
+  Fully replaces an existing cuisine type definition. All fields must be provided. Changes affect how recipes tagged with this cuisine are categorized.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Recipe cuisine ID |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
   {
-    "name": "",
-    "code": "",
-    "is_active": true
+    "name": "Thai (Updated)",
+    "description": "Thai cuisine known for its balance of spicy, sour, sweet and salty flavors — updated",
+    "note": "Popular in hospitality menus",
+    "is_active": true,
+    "region": "ASIA",
+    "popular_dishes": null,
+    "key_ingredients": null,
+    "info": null,
+    "dimension": null
   }
   ```
 
@@ -57,17 +77,27 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Request body fails validation |
+  | 401 | Bearer token is missing or invalid |
+  | 403 | User lacks recipe cuisine update permission |
+  | 404 | Recipe cuisine not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {
-  id: 
+  id: 019638a6-2a00-7c4f-8e46-9b7a52c80c4d
 }

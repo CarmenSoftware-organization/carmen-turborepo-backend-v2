@@ -20,29 +20,29 @@ auth:bearer {
 }
 
 query {
-  ~version: 
+  ~version:
 }
 
 body:json {
   {
-    "code": "",
-    "name": "",
-    "description": "",
-    "is_active": false,
+    "code": "LOC-001",
+    "name": "Main Store Updated",
+    "description": "Primary inventory store for dry goods — updated",
+    "is_active": true,
     "location_type": "inventory",
-    "delivery_point_id": "",
+    "delivery_point_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
     "info": {
-      "floor": 0,
-      "building": "",
-      "capacity": 0,
-      "responsibleDepartment": "",
-      "itemCount": 0,
-      "lastCount": ""
+      "floor": 1,
+      "building": "Block A",
+      "capacity": 600,
+      "responsibleDepartment": "Purchasing",
+      "itemCount": 50,
+      "lastCount": "2026-04-29"
     },
     "users": {
       "add": [
         {
-          "id": ""
+          "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
         }
       ],
       "remove": []
@@ -50,11 +50,11 @@ body:json {
     "products": {
       "add": [
         {
-          "id": "",
-          "min_qty": 0,
-          "max_qty": 0,
-          "re_order_qty": 0,
-          "par_qty": 0
+          "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+          "min_qty": 5.0,
+          "max_qty": 100.0,
+          "re_order_qty": 20.0,
+          "par_qty": 50.0
         }
       ],
       "update": [],
@@ -64,22 +64,53 @@ body:json {
 }
 
 docs {
-  ## Update Location
+  ## Patch Location
   อัปเดตข้อมูลสถานที่/คลังสินค้าที่มีอยู่
 
-  Updates an existing location/warehouse record.
+  Modifies an existing storage location configuration, such as its name, type, or capacity settings. Changes affect how inventory is organized and tracked at this location.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Location ID |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `configuration.location:update`
+  - **Roles**: Purchase
 
   ### Sample Body
   ```json
   {
-    "code": "1AG01",
-    "name": "A&G-Accounting",
-    "location_type": "inventory",
-    "physical_count_type": "yes",
-    "description": "",
+    "code": "LOC-001",
+    "name": "Main Store Updated",
+    "description": "Primary inventory store for dry goods — updated",
     "is_active": true,
-    "...": "..."
+    "location_type": "inventory",
+    "delivery_point_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "info": {
+      "floor": 1,
+      "building": "Block A",
+      "capacity": 600,
+      "responsibleDepartment": "Purchasing",
+      "itemCount": 50,
+      "lastCount": "2026-04-29"
+    },
+    "users": {
+      "add": [{"id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"}],
+      "remove": []
+    },
+    "products": {
+      "add": [{"id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d", "min_qty": 5.0, "max_qty": 100.0, "re_order_qty": 20.0, "par_qty": 50.0}],
+      "update": [],
+      "remove": []
+    }
   }
   ```
 
@@ -87,15 +118,25 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Request body fails validation |
+  | 401 | Bearer token is missing or invalid |
+  | 403 | User lacks `configuration.location:update` permission |
+  | 404 | Location with the specified ID not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

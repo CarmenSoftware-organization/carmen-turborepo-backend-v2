@@ -24,42 +24,67 @@ query {
 
 docs {
   ## Get Store Requisition by ID
-  ค้นหาใบเบิกสินค้าตาม ID พร้อมรายละเอียดทั้งหมด รวมถึงรายการสินค้าที่ขอเบิก จำนวน แผนกที่ขอ และสถานะการอนุมัติปัจจุบัน
+  ค้นหาใบเบิกสินค้าตาม ID พร้อมรายละเอียดทั้งหมด
 
-  Retrieves the full details of a store requisition including requested items, quantities, requesting department, and current approval status. Used to review an internal stock request before approving or issuing items from the store.
+  Retrieves the full details of a store requisition including requested items, quantities, requesting department, and current approval status.
 
   ### Path Parameters
-  - `id` — Store requisition ID (UUID)
-  - `bu_code` — Business unit code
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Store Requisition ID |
 
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `inventory_management.store_requisition:view`
+  - **Roles**: Requestor, HOD, Purchase, Approval
 
   ### Sample Response
   ```json
   {
     "data": {
-      "id": "uuid",
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
       "sr_no": "SR-2026-0001",
-      "sr_date": "2026-03-27T00:00:00.000Z",
-      "expected_date": "2026-03-28T00:00:00.000Z",
-      "description": "Store requisition",
+      "sr_date": "2026-04-29T08:30:00.000Z",
+      "expected_date": "2026-04-30T08:30:00.000Z",
+      "description": "Kitchen supplies for April",
       "doc_status": "draft",
-      "from_location_id": "uuid",
+      "from_location_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
       "from_location_name": "Main Store",
-      "to_location_id": "uuid",
+      "to_location_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
       "to_location_name": "Kitchen",
       "requestor_name": "John Doe",
       "department_name": "Kitchen",
       "store_requisition_detail": [],
-      "created_at": "2026-03-27T00:00:00.000Z",
-      "updated_at": "2026-03-27T00:00:00.000Z"
+      "created_at": "2026-04-29T08:30:00.000Z",
+      "updated_at": "2026-04-29T08:30:00.000Z"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `inventory_management.store_requisition:view` permission |
+  | 404 | Store Requisition not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

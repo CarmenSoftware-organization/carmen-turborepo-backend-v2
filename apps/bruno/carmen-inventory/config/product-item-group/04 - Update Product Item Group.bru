@@ -25,18 +25,18 @@ query {
 
 body:json {
   {
-    "code": "",
-    "name": "",
-    "description": "",
-    "price_deviation_limit": 0,
-    "qty_deviation_limit": 0,
-    "is_used_in_recipe": false,
-    "is_used_in_purchase_order": false,
-    "is_active": false,
-    "product_subcategory_id": "",
-    "tax_profile_id": "",
-    "tax_profile_name": "",
-    "tax_profile_rate": 0,
+    "code": "GRP-001",
+    "name": "Dairy (Updated)",
+    "description": "Dairy and refrigerated products — updated",
+    "price_deviation_limit": 5.0,
+    "qty_deviation_limit": 10.0,
+    "is_used_in_recipe": true,
+    "is_used_in_purchase_order": true,
+    "is_active": true,
+    "product_subcategory_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "tax_profile_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "tax_profile_name": "VAT 7%",
+    "tax_profile_rate": 7,
     "cascade_deviation": true
   }
 }
@@ -45,18 +45,39 @@ docs {
   ## Update Product Item Group
   อัปเดตข้อมูลกลุ่มรายการสินค้าที่มีอยู่
 
-  Modifies an existing product item group, such as renaming it or adjusting its classification.
+  Modifies an existing product item group, such as renaming it or adjusting its classification. Changes affect how products are grouped in procurement and inventory reports.
 
   ### Path Parameters
-  - `id` — Product Item Group UUID (รหัสกลุ่มรายการสินค้า)
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Product item group ID |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
   {
-    "name": "",
-    "code": "",
-    "is_active": true
+    "code": "GRP-001",
+    "name": "Dairy (Updated)",
+    "description": "Dairy and refrigerated products — updated",
+    "price_deviation_limit": 5.0,
+    "qty_deviation_limit": 10.0,
+    "is_used_in_recipe": true,
+    "is_used_in_purchase_order": true,
+    "is_active": true,
+    "product_subcategory_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "tax_profile_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "tax_profile_name": "VAT 7%",
+    "tax_profile_rate": 7,
+    "cascade_deviation": true
   }
   ```
 
@@ -64,18 +85,26 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid",
-      "message": "Success"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Request body fails validation |
+  | 401 | Bearer token is missing or invalid |
+  | 404 | Product item group not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {
-  id: 
+  id: 019638a6-2a00-7c4f-8e46-9b7a52c80c4d
 }

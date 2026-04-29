@@ -25,34 +25,40 @@ query {
 
 body:json {
   {
-    "code": "",
-    "name": "",
-    "business_type": [],
-    "description": "",
-    "info": [],
+    "code": "VND-2024-0001",
+    "name": "Siam Fresh Co., Ltd.",
+    "business_type": ["019638a6-2a00-7c4f-8e46-9b7a52c80c4e"],
+    "description": "Fresh produce and food ingredients supplier",
+    "info": [
+      {
+        "label": "Tax ID",
+        "value": "0105562034871",
+        "data_type": "string"
+      }
+    ],
     "vendor_address": {
       "add": [
         {
-          "address_type": "contact_address",
-          "address_line1": "",
-          "address_line2": "",
-          "sub_district": "",
-          "district": "",
-          "city": "",
-          "province": "",
-          "postal_code": "",
-          "country": ""
+          "address_type": "mailing_address",
+          "address_line1": "88/12 Mu 4, Phahonyothin Road",
+          "address_line2": "Khlong Nueng",
+          "sub_district": "Khlong Nueng",
+          "district": "Khlong Luang",
+          "city": "Pathum Thani",
+          "province": "Pathum Thani",
+          "postal_code": "12120",
+          "country": "Thailand"
         }
       ]
     },
     "vendor_contact": {
       "add": [
         {
-          "name": "",
-          "email": "",
-          "phone": "",
-          "is_primary": false,
-          "description": "",
+          "name": "Wannapa Srisuwan",
+          "email": "wannapa.s@siamfresh.co.th",
+          "phone": "0812345678",
+          "is_primary": true,
+          "description": "Primary sales contact",
           "info": []
         }
       ]
@@ -66,40 +72,38 @@ docs {
 
   Creates a new vendor/supplier in the business unit.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `vendor_management.vendor:create`
+  - **Roles**: Purchase
 
   ### Sample Body
   ```json
   {
-    "name": "บริษัท เดี่ยว จำกัด 7",
-    "code": "VND-2024-0047",
-    "description": "ผู้จำหน่ายวัตถุดิบสดและผักผลไม้ออร์แก...",
+    "code": "VND-2024-0001",
+    "name": "Siam Fresh Co., Ltd.",
+    "business_type": ["019638a6-2a00-7c4f-8e46-9b7a52c80c4e"],
+    "description": "Fresh produce and food ingredients supplier",
     "info": [
-      {
-        "label": "เลขประจำตัวผู้เสียภาษี",
-        "value": "0105562034871",
-        "data_type": "string"
-      }
+      { "label": "Tax ID", "value": "0105562034871", "data_type": "string" }
     ],
     "vendor_address": {
       "add": [
         {
           "address_type": "mailing_address",
-          "address_line1": "88/12 หมู่ 4 ถนนพหลโยธิน",
-          "address_line2": "ตำบลคลองหนึ่ง",
-          "district": "คลองหลวง",
-          "province": "ปทุมธานี",
-          "city": "ปทุมธานี",
+          "address_line1": "88/12 Mu 4, Phahonyothin Road",
+          "city": "Pathum Thani",
           "postal_code": "12120",
-          "country": "Thailand"
-        },
-        {
-          "address_type": "register_address",
-          "address_line1": "222 อาคารสยามทาวเวอร์ ชั้น 8 ถนนพระราม 1",
-          "address_line2": "แขวงปทุมวัน",
-          "district": "ปทุมวัน",
-          "province": "กรุงเทพมหานคร",
-          "city": "กรุงเทพมหานคร",
-          "postal_code": "10330",
           "country": "Thailand"
         }
       ]
@@ -107,16 +111,10 @@ docs {
     "vendor_contact": {
       "add": [
         {
-          "name": "คุณวรรณภา ศรีสุวรรณ",
+          "name": "Wannapa Srisuwan",
           "email": "wannapa.s@siamfresh.co.th",
           "phone": "0812345678",
           "is_primary": true
-        },
-        {
-          "name": "คุณอนุชา มีทรัพย์",
-          "email": "anucha.m@siamfresh.co.th",
-          "phone": "0898765432",
-          "is_primary": false
         }
       ]
     }
@@ -127,13 +125,20 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | `name` or `code` is missing or invalid |
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `vendor_management.vendor:create` permission |
 }

@@ -24,29 +24,55 @@ query {
 
 docs {
   ## Delete GRN Detail
-  ลบรายการสินค้าจากใบรับสินค้าฉบับร่าง ใช้เมื่อรายการถูกบันทึกผิดพลาดหรือไม่ได้เป็นส่วนหนึ่งของการส่งมอบจริง ใช้ได้เฉพาะก่อนการอนุมัติใบรับสินค้าเท่านั้น
+  ลบรายการสินค้าจากใบรับสินค้าฉบับร่าง ใช้เมื่อรายการถูกบันทึกผิดพลาด ใช้ได้เฉพาะก่อนการอนุมัติเท่านั้น
 
   Removes a line item from a draft GRN when an item was recorded in error or was not actually part of the delivery. Only applicable before the GRN is approved.
 
   ### Path Parameters
-  - `id` — Good Received Note ID / รหัสใบรับสินค้า
-  - `detail_id` — GRN Detail ID / รหัสรายละเอียดใบรับสินค้า
-  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Good Received Note ID |
+  | `detail_id` | string (UUID) | GRN Detail line item ID |
 
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `procurement.goods_received_note:update`
+  - **Roles**: Purchase
 
   ### Sample Response
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Cannot delete detail of a non-draft GRN |
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `procurement.goods_received_note:update` permission |
+  | 404 | GRN detail not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

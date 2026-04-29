@@ -19,40 +19,71 @@ auth:bearer {
 }
 
 query {
-  ~version: 
+  ~version:
 }
 
 docs {
   ## List Locations
   แสดงรายการสถานที่/คลังสินค้าทั้งหมดพร้อมการแบ่งหน้าและค้นหา
 
-  Retrieves all locations/warehouses configured in the business unit with pagination and search support.
+  Returns all storage locations, warehouses, and stores configured for the business unit. These locations are used for inventory tracking, stock transfers, and goods receiving.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `page` | number | No | 1 | Page number |
+  | `perpage` | number | No | 10 | Items per page |
+  | `search` | string | No | — | Search keyword |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `configuration.location:view`
+  - **Roles**: Requestor, HOD, Purchase, Approval
 
   ### Sample Response
   ```json
   {
     "data": [
       {
-        "id": "uuid",
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
         "code": "LOC-001",
         "name": "Main Store",
-        "location_type": "store",
+        "location_type": "inventory",
         "physical_count_type": "daily",
-        "description": "...",
+        "description": "Primary inventory store for dry goods",
         "is_active": true
       }
     ],
     "paginate": {
-      "total": 100,
       "page": 1,
       "perpage": 10,
-      "pages": 10
+      "pages": 5,
+      "total": 48,
+      "prev": null,
+      "next": 2
     },
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Bearer token is missing or invalid |
+  | 403 | User lacks `configuration.location:view` permission |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }

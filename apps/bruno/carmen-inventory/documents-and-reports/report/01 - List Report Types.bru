@@ -19,41 +19,67 @@ auth:bearer {
 }
 
 query {
-  ~category: 
+  ~category:
+}
+
+params:query {
+  ~category:
 }
 
 docs {
   ## List Report Types
   แสดงรายการประเภทรายงานที่มีทั้งหมด
 
-  Retrieve all available report types with metadata.
+  Returns all available report types with metadata including supported formats and category. Used to populate the report type selector in the report generation UI.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `category` | string | No | — | Filter by report category (e.g. `inventory`, `procurement`) |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Response
   ```json
   {
     "data": [
       {
-        "id": "uuid",
-        "name": "Stock Report",
-        "report_group": "inventory",
-        "is_active": true
+        "report_type": "inventory_summary",
+        "name": "Inventory Summary",
+        "description": "Summary of current inventory levels by location",
+        "category": 1,
+        "supported_formats": [1, 2, 3, 4]
+      },
+      {
+        "report_type": "purchase_request_list",
+        "name": "Purchase Request List",
+        "description": "List of purchase requests within a date range",
+        "category": 2,
+        "supported_formats": [1, 2, 3]
       }
     ],
-    "paginate": {
-      "total": 100,
-      "page": 1,
-      "perpage": 10,
-      "pages": 10
-    },
+    "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
-}
 
-params:query {
-  ~category:
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid Bearer token |
 }

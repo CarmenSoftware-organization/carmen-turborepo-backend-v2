@@ -57,34 +57,77 @@ body:json {
 }
 
 docs {
-  ## Save Pending Store Requisition
-  บันทึกการเปลี่ยนแปลงใบเบิกสินค้าฉบับร่าง ช่วยให้ผู้ขอสามารถแก้ไขรายการสินค้า จำนวน หรือรายละเอียดการจัดส่งก่อนส่งเข้าขั้นตอนอนุมัติ
+  ## Patch Update a Store Requisition
+  บันทึกการเปลี่ยนแปลงใบเบิกสินค้าฉบับร่าง ช่วยให้ผู้ขอสามารถแก้ไขรายการสินค้า จำนวน หรือรายละเอียดการจัดส่งก่อนส่งเข้าขั้นตอนอนุมัติ Returns only items pending the requesting user's action / แสดงเฉพาะรายการที่รอการดำเนินการของผู้ใช้ปัจจุบัน
 
   Saves changes to a draft store requisition, allowing the requestor to modify requested items, quantities, or delivery details before submitting for approval.
 
   ### Path Parameters
-  - `bu_code` — Business unit code
-  - `id` — Store requisition ID (UUID)
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Store requisition ID |
 
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
-  {}
+  {
+    "stage_role": "create",
+    "details": {
+      "sr_date": "2026-04-29T08:30:00.000Z",
+      "expected_date": "2026-04-29T08:30:00.000Z",
+      "description": "Updated kitchen supplies",
+      "requestor_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "info": null,
+      "dimension": null,
+      "workflow_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "department_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "from_location_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "to_location_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "store_requisition_detail": {
+        "add": [],
+        "update": [],
+        "remove": []
+      },
+      "doc_version": 1
+    }
+  }
   ```
 
   ### Sample Response
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid Bearer token |
+  | 403 | User lacks permission to update store requisitions |
+  | 404 | Store requisition not found |
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

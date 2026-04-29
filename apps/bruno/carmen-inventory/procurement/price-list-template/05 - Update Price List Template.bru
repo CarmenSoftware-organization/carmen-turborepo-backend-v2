@@ -49,20 +49,56 @@ body:json {
 }
 
 docs {
-  ## Update Price List Template
-  อัปเดตข้อมูลแม่แบบรายการราคาที่มีอยู่
+  ## Patch Price List Template
+  อัปเดตข้อมูลแม่แบบรายการราคาที่มีอยู่ เพิ่ม/ลบสินค้า หรือปรับการตั้งค่า
 
-  Modifies a price list template to add or remove products or update its configuration.
+  Modifies a price list template to add or remove products, or update its configuration to reflect changing procurement requirements.
 
   ### Path Parameters
-  - `id` -- Price list template ID (UUID) / รหัสแม่แบบรายการราคา
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Price list template ID |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `vendor_management.price_list:update`
+  - **Roles**: Purchase
 
   ### Sample Body
   ```json
   {
-    "name": "",
-    "description": ""
+    "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "name": "Standard Beverage Template (Revised)",
+    "description": "Updated product lineup for beverage vendor RFP",
+    "note": "",
+    "status": "active",
+    "currency_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "currency_code": "THB",
+    "validity_period": 30,
+    "vendor_instructions": "Please quote in THB inclusive of VAT.",
+    "send_reminders": true,
+    "reminder_days": [7, 3, 1],
+    "escalation_after_days": 14,
+    "doc_version": 1,
+    "products": {
+      "add": [],
+      "remove": [],
+      "update": [
+        {
+          "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+          "product_name": "Sparkling Water 500ml",
+          "unit_name": "Bottle"
+        }
+      ]
+    },
+    "info": null,
+    "dimension": null
   }
   ```
 
@@ -70,15 +106,25 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Invalid field values |
+  | 401 | Bearer token missing or invalid |
+  | 403 | User lacks `vendor_management.price_list:update` permission |
+  | 404 | Price list template not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {
