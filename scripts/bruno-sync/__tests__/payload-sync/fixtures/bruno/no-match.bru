@@ -1,0 +1,19 @@
+meta {
+  name: Zombie
+  type: http
+  seq: 99
+}
+
+post {
+  url: {{host}}/api/zombie
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+}
+
+body:json {
+  {}
+}

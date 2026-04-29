@@ -24,7 +24,40 @@ query {
 }
 
 body:json {
-  {}
+  {
+    "stage_role": "create",
+    "details": {
+      "pr_date": null,
+      "description": "",
+      "requestor_id": "",
+      "workflow_id": "",
+      "department_id": "",
+      "purchase_request_detail": {
+        "add": [
+          {
+            "description": "",
+            "comment": "",
+            "current_stage_status": "submit",
+            "product_id": "",
+            "location_id": "",
+            "delivery_point_id": "",
+            "delivery_date": null,
+            "requested_qty": 0,
+            "requested_unit_id": "",
+            "requested_unit_conversion_factor": 0,
+            "currency_id": "",
+            "exchange_rate": 0,
+            "exchange_rate_date": null,
+            "foc_qty": 0,
+            "foc_unit_id": "",
+            "foc_unit_conversion_rate": 0,
+            "foc_base_qty": 0,
+            "inventory_unit_id": ""
+          }
+        ]
+      }
+    }
+  }
 }
 
 docs {

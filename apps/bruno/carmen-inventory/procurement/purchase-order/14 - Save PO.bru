@@ -24,7 +24,59 @@ query {
 }
 
 body:json {
-  {}
+  {
+    "vendor_id": "",
+    "vendor_name": "",
+    "delivery_date": "",
+    "currency_id": "",
+    "currency_code": "",
+    "exchange_rate": 0,
+    "description": "",
+    "order_date": "",
+    "credit_term_id": "",
+    "credit_term_name": "",
+    "credit_term_value": 0,
+    "buyer_id": "",
+    "buyer_name": "",
+    "email": "user@example.com",
+    "remarks": "",
+    "note": "",
+    "details": {
+      "add": [
+        {
+          "sequence": 0,
+          "product_id": "",
+          "product_name": "",
+          "product_local_name": "",
+          "order_unit_id": "",
+          "order_unit_name": "",
+          "order_unit_conversion_factor": 1,
+          "order_qty": 0,
+          "base_unit_id": "",
+          "base_unit_name": "",
+          "base_qty": 0,
+          "price": 0,
+          "sub_total_price": 0,
+          "net_amount": 0,
+          "total_price": 0,
+          "tax_profile_id": "",
+          "tax_profile_name": "",
+          "tax_rate": 0,
+          "tax_amount": 0,
+          "is_tax_adjustment": false,
+          "discount_rate": 0,
+          "discount_amount": 0,
+          "is_discount_adjustment": false,
+          "is_foc": false,
+          "pr_detail": [],
+          "description": "",
+          "note": ""
+        }
+      ],
+      "update": [],
+      "remove": []
+    }
+  }
 }
 
 vars:pre-request {

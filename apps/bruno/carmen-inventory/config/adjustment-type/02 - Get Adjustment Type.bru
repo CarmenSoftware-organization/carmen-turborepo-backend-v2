@@ -10,6 +10,14 @@ get {
   auth: bearer
 }
 
+params:query {
+  ~version: 
+}
+
+params:path {
+  id: {{adjustment_type_id}}
+}
+
 headers {
   x-app-id: {{x_app_id}}
 }
@@ -18,17 +26,17 @@ auth:bearer {
   token: {{access_token}}
 }
 
-query {
-  ~version: 
+vars:pre-request {
+  adjustment_type_id: b5939f7c-d059-4d92-b0ab-1d9a6a0c06de
 }
 
 docs {
   ## Get Adjustment Type
   ดึงข้อมูลประเภทการปรับปรุงรายการเดียวตาม ID
-
+  
   Retrieves a single adjustment type by its unique identifier.
-
-
+  
+  
   ### Sample Response
   ```json
   {
@@ -51,8 +59,4 @@ docs {
     "timestamp": "2026-03-27T00:00:00.000Z"
   }
   ```
-}
-
-params:path {
-  id: {{adjustment_type_id}}
 }
