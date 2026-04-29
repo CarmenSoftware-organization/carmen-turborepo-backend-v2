@@ -140,6 +140,27 @@ Notes:
 - `role-permission/` GET endpoints (`01`, `02`) have no body; bulk assign/remove bodies use `permission_ids[]` array; single assign/remove use single `permission_id`.
 - `report-template` body:json includes XML strings in `dialog` and `content` fields — stored as text in DB.
 
+### Task 10a — procurement (credit-term, extra-cost-comment, extra-cost-detail-comment, good-received-note) (2026-04-29)
+
+No true orphans found (no Bruno files whose gateway controller no longer exists).
+
+Two URL-mismatched files found in `good-received-note/`:
+- `09 - List GRN Comments.bru` — uses legacy URL `GET /api/:bu_code/good-received-note/:good_received_note_id/comments`. The active controller is `GET /api/:bu_code/good-received-note-comment/:good_received_note_id`. Controller exists but URL path doesn't match the file. Docs block updated with prominent `> Note` explaining the mismatch and pointing to the correct URL. File retained (not archived).
+- `14 - Create GRN Comment.bru` — uses legacy pattern `POST /api/:bu_code/good-received-note-comment` with JSON body `{ good_received_note_id }`. The active controller is `POST /api/:bu_code/good-received-note-comment/:good_received_note_id` (multipart form). Docs block updated with prominent `> Note` marking as legacy. File retained (not archived).
+
+Modules processed (4):
+- `credit-term/` (2 files) → `credit-term.controller.ts` (`api/:bu_code/credit-term`) — `KeycloakGuard` only (no `PermissionGuard`); permission key not in seed for either action
+- `extra-cost-comment/` (6 files) → `extra-cost-comment.controller.ts` (`api/:bu_code/extra-cost-comment`) — permission key not in seed; full unified comment pattern (list, create multipart, update multipart, delete, add attachment, remove attachment)
+- `extra-cost-detail-comment/` (6 files) → `extra-cost-detail-comment.controller.ts` (`api/:bu_code/extra-cost-detail-comment`) — permission key not in seed; same unified comment pattern
+- `good-received-note/` (27 files) → `good-received-note.controller.ts` (`api/:bu_code/good-received-note`) — `procurement.goods_received_note:{view,create,update,delete,commit}` fully in seed
+
+Notes:
+- `credit-term`, `extra-cost-comment`, `extra-cost-detail-comment` permission keys are absent from `permission-role-map.json`. All docs blocks carry `> Permission key not found in seed; review needed.`
+- `good-received-note` has the full permission key set in seed: `view → [HOD, Purchase, Approval]`; `create/update/delete/commit → [Purchase]`.
+- `GET /api/good-received-note/pending` (03 - Get Pending GRN) has no `bu_code` — cross-tenant endpoint.
+- Sub-resource endpoints (22–25: products, locations by GRN) use `grn_id` path param instead of `id`.
+- Regenerate-totals endpoints (26, 27) are admin/repair tools with no specific permission key beyond `goods_received_note:update`.
+
 ### Task 7a — master-data (A-N) (2026-04-29)
 
 No orphans found. All `.bru` files in the master-data chunk A-N map to active gateway controllers.

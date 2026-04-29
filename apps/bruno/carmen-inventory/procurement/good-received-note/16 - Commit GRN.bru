@@ -32,34 +32,60 @@ vars:pre-request {
 }
 
 docs {
-  ## Commit Good Received Note
-  ยืนยันใบรับสินค้าเพื่อสรุปการตรวจรับและบันทึกเข้าคลังสินค้า ใช้โดยเจ้าหน้าที่รับสินค้าเพื่อระบุว่าการส่งมอบได้รับการตรวจสอบครบถ้วนและพร้อมบันทึกเข้าระบบคลังสินค้า
-  
-  Commits the goods receiving record, finalizing the delivery inspection and posting to inventory. Used by receiving staff to mark a delivery as fully checked and ready for inventory posting.
-  
+  ## Patch Good Received Note — Commit
+  ยืนยันใบรับสินค้า เปลี่ยนสถานะจาก `saved` เป็น `committed`
+
+  Commits a saved goods receiving record, changing its status from `saved` to `committed`. GRN must be in `saved` status before committing.
+
   ### Path Parameters
-  - `id` — Good Received Note ID / รหัสใบรับสินค้า
-  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
-  
-  
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Good Received Note ID |
+
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `procurement.goods_received_note:commit`
+  - **Roles**: Purchase
+
   ### Sample Body
   ```json
   {}
   ```
-  
+
   ### Sample Response
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | GRN must be in `saved` status to commit |
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `procurement.goods_received_note:commit` permission |
+  | 404 | Good Received Note not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

@@ -102,24 +102,57 @@ body:json {
 
 docs {
   ## Create Good Received Note
-  บันทึกการส่งมอบสินค้าใหม่จากผู้ขายตามใบสั่งซื้อ โดยบันทึกจำนวนที่รับ ผลการตรวจสอบคุณภาพ และความแตกต่างระหว่างสินค้าที่สั่งกับที่ส่งมา ขั้นตอนนี้เป็นจุดเริ่มต้นของการอัปเดตระดับสินค้าคงคลังจากการรับสินค้า
+  บันทึกการส่งมอบสินค้าใหม่จากผู้ขายตามใบสั่งซื้อ โดยบันทึกจำนวนที่รับ ผลการตรวจสอบคุณภาพ และความแตกต่างระหว่างสินค้าที่สั่งกับที่ส่งมา
 
   Records a new goods delivery from a vendor against a purchase order. Captures received quantities, quality inspection results, and any discrepancies between ordered and delivered items. This is the first step in updating inventory levels from vendor deliveries.
 
   ### Path Parameters
-  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
 
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `procurement.goods_received_note:create`
+  - **Roles**: Purchase
 
   ### Sample Body
   ```json
   {
-    "grn_date": "2026-03-25T09:00:00.000Z",
-    "invoice_no": "INV-2026-001",
-    "invoice_date": "2026-03-24T17:00:00.000Z",
-    "description": "Received goods from vendor",
-    "doc_status": "draft",
     "doc_type": "purchase_order",
-    "...": "..."
+    "grn_date": "2026-04-29T08:30:00.000Z",
+    "invoice_no": "INV-2026-0100",
+    "invoice_date": "2026-04-28T00:00:00.000Z",
+    "description": "Goods received from ABC Supplies",
+    "received_by_id": "019638a6-2a00-7c4f-8e46-9b7a52c80ca0",
+    "received_at": "2026-04-29T08:30:00.000Z",
+    "credit_term_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "vendor_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4e",
+    "currency_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4f",
+    "exchange_rate": 1,
+    "good_received_note_detail": {
+      "add": [
+        {
+          "purchase_order_detail_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c50",
+          "product_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c51",
+          "location_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c52",
+          "received_qty": 10.5,
+          "received_unit_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c53",
+          "received_unit_conversion_factor": 1,
+          "received_base_qty": 10.5
+        }
+      ]
+    }
   }
   ```
 
@@ -127,13 +160,22 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Invalid request body or missing required fields |
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `procurement.goods_received_note:create` permission |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }

@@ -5,25 +5,36 @@ meta {
 }
 
 docs {
-  ## Create GRN Comment
-  เพิ่มความคิดเห็นหรือบันทึกในใบรับสินค้า สำหรับบันทึกปัญหาการส่งมอบ ข้อสังเกตด้านคุณภาพ หรือการสื่อสารระหว่างเจ้าหน้าที่รับสินค้าและผู้จัดการ
+  ## Create GRN Comment (Legacy JSON)
+  เพิ่มความคิดเห็นหรือบันทึกในใบรับสินค้า
 
   Adds a comment or note to a goods receiving record for documenting delivery issues, quality observations, or communication between receiving staff and managers.
 
-  ### Path Parameters
-  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  > **Note**: This file posts JSON to `/api/:bu_code/good-received-note-comment` (legacy pattern).
+  > The current multipart endpoint is `POST /api/:bu_code/good-received-note-comment/:good_received_note_id`
+  > which accepts `multipart/form-data` with `message`, `type`, and `files` fields.
+  > See the `good-received-note-comment/` folder for the canonical implementation.
 
-  ### Request Body
-  - `good_received_note_id` — GRN ID / รหัสใบรับสินค้า (required)
-  - `message` — Comment text / ข้อความความคิดเห็น (optional)
-  - `type` — `user` หรือ `system` (default `user`)
-  - `attachments` — รายการไฟล์แนบ (optional)
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `procurement.goods_received_note:update`
+  - **Roles**: Purchase
 
   ### Sample Body
   ```json
   {
-    "good_received_note_id": "123e4567-e89b-12d3-a456-426614174000",
-    "message": "This is a comment",
+    "good_received_note_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4e",
+    "message": "Delivery arrived 2 hours late — vendor notified",
     "type": "user",
     "attachments": []
   }
@@ -33,15 +44,24 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Missing required fields |
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks permission |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 post {

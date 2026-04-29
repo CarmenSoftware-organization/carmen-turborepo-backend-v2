@@ -23,46 +23,73 @@ query {
 }
 
 docs {
-  ## List products at a specific location in a GRN
+  ## List Products at a Specific Location in a GRN
   แสดงรายการสินค้าแบบไม่ซ้ำที่รับในตำแหน่งจัดเก็บหนึ่งของใบรับสินค้า ใช้สำหรับดูว่าแต่ละตำแหน่งจัดเก็บมีสินค้าอะไรบ้าง
-  
+
   Lists distinct products received at a given location on a GRN with pagination and filtering.
-  
+
   ### Path Parameters
-  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
-  - `grn_id` — Good Received Note ID / รหัสใบรับสินค้า
-  - `location_id` — Location ID / รหัสตำแหน่งจัดเก็บ
-  
-  ### Query Parameters (optional)
-  - `page`, `perpage` — pagination
-  - `search` — full-text search
-  - `searchfields` — comma-separated fields to search (default: `product_code,product_name,product_sku`)
-  - `filter` — comma-separated `field:value` pairs
-  - `sort` — comma-separated `field:asc|desc` (default: `product_code:asc`)
-  
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `grn_id` | string (UUID) | Good Received Note ID |
+  | `location_id` | string (UUID) | Location ID |
+
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `page` | number | No | 1 | Page number |
+  | `perpage` | number | No | 10 | Items per page |
+  | `search` | string | No | — | Full-text search |
+  | `searchfields` | string | No | `product_code,product_name,product_sku` | Comma-separated fields to search |
+  | `filter` | string | No | — | Comma-separated `field:value` pairs |
+  | `sort` | string | No | `product_code:asc` | Comma-separated `field:asc\|desc` |
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `procurement.goods_received_note:view`
+  - **Roles**: HOD, Purchase, Approval
+
   ### Sample Response
   ```json
   {
     "data": [
       {
-        "product_id": "uuid",
-        "product_code": "P001",
-        "product_name": "Product Name",
-        "product_sku": "SKU-001"
+        "product_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+        "product_code": "P-0042",
+        "product_name": "Jasmine Rice 5 kg",
+        "product_sku": "RICE-5KG-042"
       }
     ],
     "paginate": {
-      "total": 1,
       "page": 1,
       "perpage": 10,
-      "pages": 1
+      "pages": 1,
+      "total": 1,
+      "prev": null,
+      "next": null
     },
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-04-22T08:41:09.468Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `procurement.goods_received_note:view` permission |
+  | 404 | Good Received Note or location not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

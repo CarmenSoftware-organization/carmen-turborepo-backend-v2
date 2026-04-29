@@ -24,28 +24,44 @@ query {
 
 docs {
   ## Export Good Received Note to Excel
-  ส่งออกใบรับสินค้าเป็นไฟล์ Excel พร้อมรายการสินค้าที่รับทั้งหมด จำนวน และรายละเอียดผู้ขาย ใช้สำหรับการเก็บเอกสาร แชร์กับแผนกบัญชีเพื่อจับคู่ใบแจ้งหนี้ หรือแก้ไขข้อพิพาทกับผู้ขาย
+  ส่งออกใบรับสินค้าเป็นไฟล์ Excel พร้อมรายการสินค้าที่รับทั้งหมด จำนวน และรายละเอียดผู้ขาย ใช้สำหรับการเก็บเอกสาร แชร์กับแผนกบัญชีเพื่อจับคู่ใบแจ้งหนี้
 
-  Exports a goods receiving record to Excel with all received items, quantities, and vendor details. Used for record-keeping, sharing with accounts payable for invoice matching, or vendor dispute resolution.
+  Exports a goods receiving record to Excel with all received items, quantities, and vendor details. Returns a binary file download (Content-Disposition: attachment).
 
   ### Path Parameters
-  - `id` — Good Received Note ID / รหัสใบรับสินค้า
-  - `bu_code` — Business unit code / รหัสหน่วยธุรกิจ
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Good Received Note ID |
 
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `procurement.goods_received_note:view`
+  - **Roles**: HOD, Purchase, Approval
 
   ### Sample Response
-  ```json
-  {
-    "data": {
-      "id": "uuid"
-    },
-    "paginate": null,
-    "status": 200,
-    "success": true,
-    "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
-  }
-  ```
+  Returns an Excel file binary stream with headers:
+  - `Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`
+  - `Content-Disposition: attachment; filename="GRN-2026-0042.xlsx"`
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks permission |
+  | 404 | Good Received Note not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {
