@@ -39,39 +39,67 @@ docs {
   ## Add Attachments to Stock In Detail Comment (multipart, batch upload)
   อัปโหลดไฟล์แนบหลายไฟล์เข้ากับคอมเมนต์ที่มีอยู่แล้วใน request เดียว
 
-  ### URL
-  `POST {{host}}/api/{{bu_code}}/stock-in-detail-comment/:id/attachment`
+  Batch-uploads one or more files to an existing stock-in detail comment. Files are uploaded to S3 first with automatic rollback on failure.
 
   ### Path Parameters
-  - `bu_code` — Business unit code
-  - `id` — Comment UUID
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Comment ID |
 
-  ### Body (multipart/form-data)
-  - `files` (binary, repeatable) — ไฟล์แนบ (ต้องมีอย่างน้อย 1 ไฟล์)
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `version` | string | No | latest | API version |
 
-  ### Constraints
-  - 1–10 files per request
-  - max 10 MB per file
-  - allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
 
-  ### Gateway behavior
-  1. Upload ทุกไฟล์ไป S3 ผ่าน `file.upload` (parallel)
-  2. หาก upload ใดล้มเหลว — rollback (ลบไฟล์ที่ upload สำเร็จออกจาก S3) แล้วตอบ 502
-  3. ส่ง `{ id, attachments: [...] }` ไปยัง business service ผ่าน
-     `stock-in-detail-comment.add-attachment`
-  4. หาก business ตอบ error — rollback ลบไฟล์ที่ upload ไปแล้วออกจาก S3
+  ### Permissions
+  - **Permission key**: `inventory_management.stock_in:update`
+  - **Roles**: Purchase
 
-  ### Sample Response 200
+  ### Sample Body (multipart/form-data)
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | `files` | file[] | Yes | One or more attachment files (1–10 files) |
+
+  Constraints: max 10 MB each, allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf
+
+  ### Sample Response
   ```json
   {
-    "data": { "id": "uuid", "attachments": [...] },
+    "data": {
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "attachments": [
+        {
+          "fileName": "delivery-note.pdf",
+          "fileToken": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d/delivery-note.pdf",
+          "fileUrl": "",
+          "contentType": "application/pdf",
+          "size": 102400
+        }
+      ]
+    },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-04-29T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | No files provided; file validation failed |
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `inventory_management.stock_in:update` permission |
+  | 404 | Comment not found |
+  | 502 | S3 upload failed (all uploaded files rolled back) |
 
   Note: `fileUrl` ใน response จะว่าง — frontend ต้องเรียก
   `GET /api/{bu_code}/documents/presigned-url/{fileToken}` เพื่อแสดงไฟล์

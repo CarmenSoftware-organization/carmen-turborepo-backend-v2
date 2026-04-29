@@ -32,33 +32,62 @@ body:json {
 
 docs {
   ## Submit Store Requisition
-  ส่งใบเบิกสินค้าฉบับร่างเข้าสู่ขั้นตอนอนุมัติ เมื่อส่งแล้วสถานะจะเปลี่ยนจากร่างเป็นรออนุมัติ และเข้าสู่ลำดับการอนุมัติที่กำหนดไว้
+  ส่งใบเบิกสินค้าฉบับร่างเข้าสู่ขั้นตอนอนุมัติ
 
-  Submits a draft store requisition into the approval workflow, making it visible to approvers. Once submitted, the SR moves from draft to pending status and enters the configured approval chain.
+  Submits a draft store requisition into the approval workflow. SR moves from draft to pending and enters the configured approval chain.
 
   ### Path Parameters
-  - `id` — Store requisition ID (UUID)
-  - `bu_code` — Business unit code
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Store Requisition ID |
 
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
-  {}
+  {
+    "stage_role": "create",
+    "details": []
+  }
   ```
 
   ### Sample Response
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "sr_no": "SR-2026-0001"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Cannot submit non-draft Store Requisition |
+  | 401 | Missing or invalid bearer token |
+  | 403 | Insufficient permissions |
+  | 404 | Store Requisition not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

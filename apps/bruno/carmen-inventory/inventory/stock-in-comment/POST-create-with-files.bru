@@ -39,46 +39,75 @@ vars:pre-request {
 
 docs {
   ## Create Stock In Comment (with file uploads)
-  สร้างความคิดเห็นใหม่สำหรับ stock-in พร้อมแนบไฟล์ใน request เดียว
-  ไม่ต้อง upload file แยกก่อน
+  สร้างความคิดเห็นใหม่สำหรับ stock-in พร้อมแนบไฟล์ใน request เดียว ไม่ต้อง upload file แยกก่อน
 
-  `stock_in_id` ระบุผ่าน URL path parameter (ไม่ใช่ body field)
-
-  ### URL
-  `POST {{host}}/api/{{bu_code}}/stock-in-comment/:stock_in_id`
+  Creates a new comment on a stock-in record. Supports multipart file uploads in a single request with automatic S3 upload and rollback.
 
   ### Path Parameters
-  - `bu_code` — Business unit code
-  - `stock_in_id` — Stock In UUID
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `stock_in_id` | string (UUID) | Stock In ID |
 
-  ### Body (multipart/form-data)
-  - `message` (text, optional) — ข้อความคอมเมนต์ ≤ 4000 ตัวอักษร
-  - `type` (text, optional, default `user`) — `user` | `system`
-  - `files` (binary, optional, repeatable) — ไฟล์แนบ
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `version` | string | No | latest | API version |
 
-  ต้องส่งอย่างน้อยหนึ่งใน `message` หรือ `files`
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
 
-  ### Constraints
-  - max 10 files per request
-  - max 10 MB per file
-  - allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf
+  ### Permissions
+  - **Permission key**: `inventory_management.stock_in:update`
+  - **Roles**: Purchase
 
-  ### Gateway behavior
-  1. Upload ทุกไฟล์ไป S3 ผ่าน `file.upload`
-  2. หาก upload ใดล้มเหลว — rollback (ลบไฟล์ที่ upload สำเร็จออกจาก S3) แล้วตอบ 502
-  3. Forward `{ stock_in_id, message, type, attachments: [...] }` ไปยัง business service
-  4. หาก business service ตอบ error — rollback ลบไฟล์ที่ upload ไปแล้วออกจาก S3
+  ### Sample Body (multipart/form-data)
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | `message` | string | No* | Comment text (≤ 4000 chars) |
+  | `type` | string | No | `user` or `system` (default: `user`) |
+  | `files` | file[] | No* | One or more attachment files |
 
-  ### Response 201
+  *Must send at least one of `message` or `files`.
+
+  Constraints: max 10 files, max 10 MB each, allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf
+
+  ### Sample Response
   ```json
   {
-    "data": { "id": "<uuid>", "stock_in_id": "<uuid>", "attachments": [...] },
+    "data": {
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "stock_in_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "message": "Quantity confirmed by warehouse team",
+      "type": "user",
+      "attachments": [
+        {
+          "fileName": "receipt.jpg",
+          "fileToken": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d/receipt.jpg",
+          "fileUrl": "",
+          "contentType": "image/jpeg",
+          "size": 204800
+        }
+      ]
+    },
+    "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-04-29T12:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Neither `message` nor `files` provided; file validation failed |
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `inventory_management.stock_in:update` permission |
+  | 502 | S3 upload failed (all successfully uploaded files rolled back) |
 
   Note: `fileUrl` ใน response จะว่าง — frontend ต้องเรียก
   `GET /api/{bu_code}/documents/presigned-url/{fileToken}` เพื่อแสดงไฟล์

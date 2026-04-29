@@ -24,43 +24,57 @@ query {
 
 docs {
   ## Get Workflow Previous Step List
-  ดึงรายการขั้นตอนเวิร์กโฟลว์ก่อนหน้าที่สามารถส่งใบเบิกสินค้ากลับไปตรวจสอบได้ ใช้เพื่อเลือกขั้นตอนเป้าหมายเมื่อผู้อนุมัติต้องการส่งกลับแก้ไข
+  ดึงรายการขั้นตอนเวิร์กโฟลว์ก่อนหน้าที่สามารถส่งใบเบิกสินค้ากลับไปตรวจสอบได้
 
   Returns the list of earlier workflow stages that a store requisition can be sent back to for review. Used to populate the review target selection when an approver needs to return the SR for corrections.
 
   ### Path Parameters
-  - `id` — Store requisition ID (UUID)
-  - `bu_code` — Business unit code
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Store Requisition ID |
 
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `inventory_management.store_requisition:view`
+  - **Roles**: HOD, Approval
 
   ### Sample Response
   ```json
   {
     "data": [
       {
-        "id": "uuid",
-        "sr_no": "SR-2026-0001",
-        "sr_date": "2026-03-27T00:00:00.000Z",
-        "expected_date": "2026-03-28T00:00:00.000Z",
-        "description": "Store requisition",
-        "doc_status": "draft",
-        "requestor_name": "John Doe",
-        "department_name": "Kitchen",
-        "created_at": "2026-03-27T00:00:00.000Z"
+        "stage_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+        "stage_name": "HOD",
+        "stage_order": 1
       }
     ],
-    "paginate": {
-      "total": 100,
-      "page": 1,
-      "perpage": 10,
-      "pages": 10
-    },
+    "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `inventory_management.store_requisition:view` permission |
+  | 404 | Store Requisition not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

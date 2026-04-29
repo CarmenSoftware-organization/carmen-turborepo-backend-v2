@@ -48,3 +48,25 @@ Notes:
 - `inventory-adjustment` and `inventory-transaction` resource keys are absent from `permission-role-map.json`. Marked with `> Permission key not found in seed; review needed.`
 - `GET /api/spot-check/pending` and `GET /api/physical-count/pending` have no `bu_code` path param — cross-tenant endpoints.
 - `GET-get-products-by-location-id.bru` under `spot-check/` maps to `api/:bu_code/locations/:location_id/products` in the spot-check controller.
+
+### Task 6b — inventory (O-Z) (2026-04-29)
+
+No orphans found. All `.bru` files in the inventory chunk O-Z map to active gateway controllers.
+
+Modules processed:
+- `stock-in/` → `stock-in.controller.ts` (`api/:bu_code/stock-in`) — `inventory_management.stock_in:{view,create,update,delete}`
+- `stock-in-comment/` → `stock-in-comment.controller.ts` — `inventory_management.stock_in:{view,update}`
+- `stock-in-detail-comment/` — comment files → `stock-in-detail-comment.controller.ts`; flat-name files (GET-list, GET-by-id, POST-create, PATCH-update, DELETE-remove) → `stock-in-detail.controller.ts` (`api/:bu_code/stock-in-detail`) — misplaced in folder but gateway routes are active
+- `stock-out/` → `stock-out.controller.ts` (`api/:bu_code/stock-out`) — `inventory_management.stock_out:{view,create,update,delete}`
+- `stock-out-comment/` → `stock-out-comment.controller.ts` — `inventory_management.stock_out:{view,update}`
+- `stock-out-detail-comment/` — comment files → `stock-out-detail-comment.controller.ts`; flat-name files → `stock-out-detail.controller.ts` (`api/:bu_code/stock-out-detail`) — same misplacement pattern as stock-in-detail-comment
+- `store-requisition/` → `store-requisition.controller.ts` — `inventory_management.store_requisition:{view,view_all,view_department}`; create/update/delete keys not in seed (marked for review)
+- `store-requisition-comment/` → `store-requisition-comment.controller.ts` — `inventory_management.store_requisition:{view}` (with write access for mutations)
+- `store-requisition-detail-comment/` → `store-requisition-detail-comment.controller.ts` — same as store-requisition-comment
+- `unit-conversion/` → `unit-conversion.controller.ts` (`api/:bu_code/unit`) — permission key not in seed
+
+Notes:
+- `store-requisition` create/update/delete permission keys are absent from `permission-role-map.json`. Marked with `> Permission key not found in seed; review needed.`
+- `unit-conversion` permission keys are absent from `permission-role-map.json`. Marked with `> Permission key not found in seed; review needed.`
+- `GET /api/store-requisition` (01-List) has no `bu_code` path param — cross-tenant endpoint; `bu_code` is a query param filter only.
+- Flat-name `.bru` files in `stock-in-detail-comment/` and `stock-out-detail-comment/` folders are misplaced organizationally but map to valid standalone `stock-in-detail` and `stock-out-detail` controllers respectively.
