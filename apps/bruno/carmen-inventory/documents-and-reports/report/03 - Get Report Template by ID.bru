@@ -18,33 +18,57 @@ auth:bearer {
   token: {{access_token}}
 }
 
+params:path {
+  id: 019638a6-2a00-7c4f-8e46-9b7a52c80c4d
+}
+
 docs {
   ## Get Report Template by ID
   ดึงข้อมูลแม่แบบรายงานรายการเดียวตาม ID
 
-  Retrieve a single report template by its ID.
+  Returns a single report template by ID with full configuration including dialog and content. Used when rendering a specific template in the report viewer.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Report template ID |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Response
   ```json
   {
     "data": {
-      "id": "uuid",
-      "name": "Stock Report",
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "name": "Standard Inventory Report",
+      "description": "Default inventory summary template for all locations",
       "report_group": "inventory",
-      "description": "...",
-      "is_active": true,
-      "content": {}
+      "dialog": "{\"fields\":[{\"name\":\"date_from\",\"type\":\"date\"},{\"name\":\"date_to\",\"type\":\"date\"}]}",
+      "content": "{\"version\":\"1.0\",\"sections\":[]}",
+      "is_standard": true,
+      "allow_business_unit": [],
+      "deny_business_unit": [],
+      "is_active": true
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
-}
 
-params:path {
-  id:
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid Bearer token |
+  | 404 | Report template not found |
 }

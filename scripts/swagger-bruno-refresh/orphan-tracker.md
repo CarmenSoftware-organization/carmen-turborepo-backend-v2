@@ -18,3 +18,12 @@ map to active gateway controllers.
 - `recipe-equipment-category/` uses flat file names (e.g. `GET-list.bru`) instead of
   numbered names — created by `bun run bruno:sync` auto-discovery.
 - `sql_query/` uses flat file names aligned with the SQL query routes.
+
+### Task 5 — documents-and-reports (2026-04-29)
+
+No orphans found. All 29 `.bru` files in `documents-and-reports/` map to active gateway controllers:
+- `activity-log/` → `apps/backend-gateway/src/application/activity-log/activity-log.controller.ts` (`api/:bu_code/activity-log`)
+- `documents/` → `apps/backend-gateway/src/application/document-management/document-management.controller.ts` (`api/:bu_code/documents`)
+- `report/` → `apps/backend-gateway/src/application/report/report.controller.ts` (`api/:bu_code/report`)
+
+Permission keys for all three modules are **not found in the BU-level seed** (`permission-role-map.json`). Each `.bru` docs block carries `> Permission key not found in seed; review needed.`

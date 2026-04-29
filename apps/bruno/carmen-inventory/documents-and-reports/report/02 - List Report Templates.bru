@@ -19,41 +19,65 @@ auth:bearer {
 }
 
 query {
-  ~report_group: 
+  ~report_group:
+}
+
+params:query {
+  ~report_group:
 }
 
 docs {
   ## List Report Templates
   แสดงรายการแม่แบบรายงานทั้งหมด
 
-  Retrieve all active report templates.
+  Returns all active report templates, optionally filtered by report_group. Templates define the structure, dialog configuration, and rendering content for reports.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `report_group` | string | No | — | Filter by report group (e.g. `inventory`, `procurement`) |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Response
   ```json
   {
     "data": [
       {
-        "id": "uuid",
-        "name": "Stock Report",
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+        "name": "Standard Inventory Report",
+        "description": "Default inventory summary template",
         "report_group": "inventory",
+        "dialog": "{}",
+        "content": "{}",
+        "is_standard": true,
+        "allow_business_unit": [],
+        "deny_business_unit": [],
         "is_active": true
       }
     ],
-    "paginate": {
-      "total": 100,
-      "page": 1,
-      "perpage": 10,
-      "pages": 10
-    },
+    "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
-}
 
-params:query {
-  ~report_group:
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid Bearer token |
 }
