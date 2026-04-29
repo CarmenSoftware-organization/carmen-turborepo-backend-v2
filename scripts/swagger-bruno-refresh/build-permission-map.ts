@@ -1,13 +1,15 @@
 /**
  * build-permission-map.ts
  *
- * One-time script: inverts the role-permission seed literal into a flat
+ * Regeneration script: inverts the role-permission seed literal into a flat
  * "resource:action" → [role names] map and writes permission-role-map.json.
+ * Idempotent — re-running with no seed change produces zero diff.
  *
- * Run:  bun scripts/swagger-bruno-refresh/build-permission-map.ts
+ * Run:  bun run swagger-bruno-refresh:build-map
  *
  * No database connection required — works purely off the static literal below,
  * which is copied from packages/prisma-shared-schema-platform/prisma/seed.role-permission.ts.
+ * If that seed file changes, copy the updated literal here and re-run the script.
  */
 
 import { writeFileSync } from "fs";
