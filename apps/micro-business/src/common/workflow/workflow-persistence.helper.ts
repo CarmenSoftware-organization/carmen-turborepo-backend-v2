@@ -55,7 +55,7 @@ export class WorkflowPersistenceHelper {
     ) {
       stages[stages.length - 1] = {
         seq: stages.length,
-        status: detail.stage_status as stage_status,
+        status: detail.stage_status === stage_status.submit ? stage_status.approve : detail.stage_status as stage_status,
         name: workflowPreviousStage,
         message: detail.stage_message || (detail.stage_status === stage_status.submit ? 'submit for approval' : ''),
       };
