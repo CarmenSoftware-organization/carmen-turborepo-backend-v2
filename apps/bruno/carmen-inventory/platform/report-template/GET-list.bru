@@ -19,5 +19,61 @@ auth:bearer {
 }
 
 query {
-  ~version: 
+  ~version:
+}
+
+docs {
+  ## List Report Templates
+  แสดงรายการแม่แบบรายงานทั้งหมดพร้อมการแบ่งหน้าและค้นหา
+
+  Lists all report templates with pagination. Each template contains dialog (XML) for parameter configuration and content (XML converted from .frx) for report layout.
+
+  ### Query Parameters
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `page` | number | No | 1 | Page number |
+  | `perpage` | number | No | 10 | Items per page |
+  | `search` | string | No | — | Search by name or report_group |
+  | `version` | string | No | latest | API version |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  Platform admin only — managed at Keycloak realm role level
+
+  ### Sample Response
+  ```json
+  {
+    "data": [
+      {
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+        "name": "Purchase Request Summary",
+        "report_group": "Procurement",
+        "is_standard": true,
+        "is_active": true
+      }
+    ],
+    "paginate": {
+      "page": 1,
+      "perpage": 10,
+      "pages": 4,
+      "total": 38,
+      "prev": null,
+      "next": 2
+    },
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-04-29T08:30:00.000Z"
+  }
+  ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid bearer token |
 }

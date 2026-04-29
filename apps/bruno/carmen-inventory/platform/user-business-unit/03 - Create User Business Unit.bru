@@ -25,10 +25,10 @@ query {
 
 body:json {
   {
-    "user_id": "",
-    "business_unit_id": "",
-    "role": "admin",
-    "is_default": false,
+    "user_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "business_unit_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "role": "member",
+    "is_default": true,
     "is_active": true
   }
 }
@@ -37,16 +37,24 @@ docs {
   ## Create User Business Unit
   สร้างหน่วยธุรกิจของผู้ใช้ใหม่
 
-  Create a new user-business unit mapping.
+  Grants a user access to a specific hotel property or operational unit, enabling them to perform procurement, inventory, and other ERP operations within that business unit's tenant context.
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  Platform admin only — managed at Keycloak realm role level
 
   ### Sample Body
   ```json
   {
-    "user_id": "",
-    "business_unit_id": "",
+    "user_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "business_unit_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
     "role": "member",
-    "is_default": false,
+    "is_default": true,
     "is_active": true
   }
   ```
@@ -55,13 +63,19 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | `user_id`, `business_unit_id`, or `role` is missing |
+  | 401 | Missing or invalid bearer token |
 }

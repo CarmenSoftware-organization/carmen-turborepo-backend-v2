@@ -25,13 +25,18 @@ query {
 
 body:json {
   {
-    "cluster_id": "",
-    "code": "",
-    "name": "",
-    "alias_name": "",
-    "default_currency_id": "",
-    "is_hq": false,
-    "is_active": false
+    "cluster_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "code": "BU-001",
+    "name": "Bangkok Grand Hotel",
+    "alias_name": "BGH",
+    "description": "Main property in Bangkok CBD",
+    "default_currency_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "is_hq": true,
+    "is_active": true,
+    "timezone": "Asia/Bangkok",
+    "hotel_name": "Bangkok Grand Hotel",
+    "hotel_email": "info@bangkokgrandhotel.com",
+    "hotel_tel": "+66-2-000-0000"
   }
 }
 
@@ -39,19 +44,32 @@ docs {
   ## Create Business Unit
   สร้างหน่วยธุรกิจใหม่
 
-  Create a new business unit.
+  Registers a new hotel property or operational unit in the platform. This creates a new tenant context with its own isolated inventory, procurement, and recipe data, and associates it with a cluster (hotel chain or company).
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  Platform admin only — managed at Keycloak realm role level
 
   ### Sample Body
   ```json
   {
-    "cluster_id": "",
+    "cluster_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
     "code": "BU-001",
-    "name": "Business Unit 01",
-    "alias_name": "",
-    "description": "",
-    "info": null,
-    "...": "..."
+    "name": "Bangkok Grand Hotel",
+    "alias_name": "BGH",
+    "description": "Main property in Bangkok CBD",
+    "default_currency_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "is_hq": true,
+    "is_active": true,
+    "timezone": "Asia/Bangkok",
+    "hotel_name": "Bangkok Grand Hotel",
+    "hotel_email": "info@bangkokgrandhotel.com",
+    "hotel_tel": "+66-2-000-0000"
   }
   ```
 
@@ -59,13 +77,19 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | `code` is missing or validation fails |
+  | 401 | Missing or invalid bearer token |
 }

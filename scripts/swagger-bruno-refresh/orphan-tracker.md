@@ -117,6 +117,29 @@ Notes:
 - All endpoints use `KeycloakGuard` + `ApiBearerAuth` — no public endpoints in this folder.
 - `GET-find-by-id.bru` (seq: 13) in `store-requisition/` is organizationally misplaced — it calls `api/my-pending/purchase-order/{{bu_code}}/:id`. The file belongs to the purchase-order module but was auto-generated into the wrong folder. Gateway controller is active; not an orphan.
 
+### Task 9 — platform (2026-04-29)
+
+No orphans found. All 49 `.bru` files across 10 modules in `platform/` map to active gateway controllers.
+
+Modules processed (10):
+- `business-unit/` → `platform_business-unit.controller.ts` (`api-system/business-unit`) — platform admin only; no BU-level permission key
+- `cluster/` → `platform_cluster.controller.ts` (`api-system/cluster`) — platform admin only; no BU-level permission key
+- `permission/` → `application-permission.controller.ts` (`api-system/permission`) — platform admin only; no BU-level permission key
+- `platform-user/` → `platform-user.controller.ts` (`api-system`) — special endpoints: `POST fetch-user`, `PUT user/:id/reset-password`, `DELETE user/:id/hard`; platform admin only
+- `report-template/` → `platform_report-template.controller.ts` (`api-system/report-template`) — platform admin only; no BU-level permission key
+- `role/` → `application-role.controller.ts` (`api-system/role`) — platform admin only; no BU-level permission key
+- `role-permission/` → `application-role-permission.controller.ts` (`api-system/role-permission`) — 6 files covering assign/remove bulk+single, list by role/permission; platform admin only
+- `user/` → `platform-user.controller.ts` (`api-system`) — standard CRUD: `GET /api-system/user`, `GET /api-system/user/:id`, `POST /api-system/user`, `PUT /api-system/user/:id`, `DELETE /api-system/user/:id`; platform admin only
+- `user-business-unit/` → `platform_user-business-unit.controller.ts` (`api-system/user/business-unit`) — uses PATCH (not PUT) for update; platform admin only
+- `user-cluster/` → `platform_user-cluster.controller.ts` (`api-system/user/cluster`) — uses PUT for update; platform admin only
+
+Notes:
+- All 10 modules are platform-level (cross-tenant) endpoints under `api-system/` prefix. None appear in `permission-role-map.json` (BU-level seed). All docs blocks carry "Platform admin only — managed at Keycloak realm role level".
+- `platform-user/` and `user/` both map to the same `PlatformUserController` but cover different endpoint subsets — special ops vs. standard CRUD.
+- `user-business-unit` Update endpoint uses PATCH verb; title set to "Patch User Business Unit" per convention.
+- `role-permission/` GET endpoints (`01`, `02`) have no body; bulk assign/remove bodies use `permission_ids[]` array; single assign/remove use single `permission_id`.
+- `report-template` body:json includes XML strings in `dialog` and `content` fields — stored as text in DB.
+
 ### Task 7a — master-data (A-N) (2026-04-29)
 
 No orphans found. All `.bru` files in the master-data chunk A-N map to active gateway controllers.
