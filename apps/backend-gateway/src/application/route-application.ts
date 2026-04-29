@@ -43,8 +43,6 @@ import { PurchaseRequestDetailCommentModule } from './purchase-request-detail-co
 import { PurchaseRequestTemplateCommentModule } from './purchase-request-template-comment/purchase-request-template-comment.module';
 import { RequestForPricingCommentModule } from './request-for-pricing-comment/request-for-pricing-comment.module';
 import { RequestForPricingDetailCommentModule } from './request-for-pricing-detail-comment/request-for-pricing-detail-comment.module';
-import { CountStockCommentModule } from './count-stock-comment/count-stock-comment.module';
-import { CountStockDetailCommentModule } from './count-stock-detail-comment/count-stock-detail-comment.module';
 import { PhysicalCountCommentModule } from './physical-count-comment/physical-count-comment.module';
 import { PhysicalCountDetailCommentModule } from './physical-count-detail-comment/physical-count-detail-comment.module';
 import { PhysicalCountPeriodCommentModule } from './physical-count-period-comment/physical-count-period-comment.module';
@@ -141,8 +139,6 @@ import { DashboardModule } from './dashboard/dashboard.module';
     PurchaseRequestTemplateCommentModule,
     RequestForPricingCommentModule,
     RequestForPricingDetailCommentModule,
-    CountStockCommentModule,
-    CountStockDetailCommentModule,
     PhysicalCountCommentModule,
     PhysicalCountDetailCommentModule,
     PhysicalCountPeriodCommentModule,

@@ -145,8 +145,6 @@
   "apps/backend-gateway/src/application/physical-count-detail-comment/physical-count-detail-comment.controller.ts": "Inventory: Physical Count",
   "apps/backend-gateway/src/application/physical-count-period/physical-count-period.controller.ts": "Inventory: Physical Count",
   "apps/backend-gateway/src/application/physical-count-period-comment/physical-count-period-comment.controller.ts": "Inventory: Physical Count",
-  "apps/backend-gateway/src/application/count-stock-comment/count-stock-comment.controller.ts": "Inventory: Physical Count",
-  "apps/backend-gateway/src/application/count-stock-detail-comment/count-stock-detail-comment.controller.ts": "Inventory: Physical Count",
 
   "apps/backend-gateway/src/application/spot-check/spot-check.controller.ts": "Inventory: Spot Check",
   "apps/backend-gateway/src/application/spot-check-comment/spot-check-comment.controller.ts": "Inventory: Spot Check",
