@@ -67,6 +67,7 @@ export const ProductDetailResponseSchema = z.object({
   is_used_in_recipe: z.boolean().nullable().optional(),
   price_deviation_limit: decimalField,
   qty_deviation_limit: decimalField,
+  standard_cost: decimalField,
   tax_profile_id: z.string().nullable().optional(),
   tax_profile_name: z.string().nullable().optional(),
   tax_rate: decimalField,

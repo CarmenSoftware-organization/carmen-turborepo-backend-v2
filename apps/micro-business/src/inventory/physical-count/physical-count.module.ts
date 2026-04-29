@@ -4,12 +4,14 @@ import { PhysicalCountController } from './physical-count.controller';
 import { PrismaClient_SYSTEM } from '@repo/prisma-shared-schema-platform';
 import { PrismaClient_TENANT } from '@repo/prisma-shared-schema-tenant';
 import { TenantModule } from '@/tenant/tenant.module';
+import { CostingModule } from '@/inventory/costing/costing.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { envConfig } from '@/libs/config.env';
 
 @Module({
   imports: [
     TenantModule,
+    CostingModule,
     ClientsModule.register([
       {
         name: 'MASTER_SERVICE',

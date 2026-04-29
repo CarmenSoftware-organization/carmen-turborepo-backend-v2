@@ -175,6 +175,7 @@ export class ProductsService {
           is_used_in_recipe: res.is_used_in_recipe,
           price_deviation_limit: Number(res.price_deviation_limit),
           qty_deviation_limit: Number(res.qty_deviation_limit),
+          standard_cost: Number(res.standard_cost),
           tax_profile_id: res.tax_profile_id,
           tax_profile_name: res.tax_profile_name,
           tax_rate: Number(res.tax_rate),
@@ -1358,6 +1359,7 @@ export class ProductsService {
       if ('sku' in info) productInfoFields.sku = info.sku;
       if ('price_deviation_limit' in info) productInfoFields.price_deviation_limit = info.price_deviation_limit;
       if ('qty_deviation_limit' in info) productInfoFields.qty_deviation_limit = info.qty_deviation_limit;
+      if ('standard_cost' in info) productInfoFields.standard_cost = info.standard_cost;
       if ('tax_profile_name' in info) productInfoFields.tax_profile_name = info.tax_profile_name;
       if ('tax_profile_rate' in info) productInfoFields.tax_profile_rate = info.tax_profile_rate;
       if ('info' in info) productInfoFields.info = info.info ? { attributes: info.info } : undefined;

@@ -195,6 +195,9 @@ async function upsert_business_unit_config(
   let new_business_unit_config_recipe = business_unit_config.findIndex(
     (config) => config.key === enum_business_unit_config_key.recipe
   );
+  let new_business_unit_config_physical_count_costing_method = business_unit_config.findIndex(
+    (config) => config.key === enum_business_unit_config_key.physical_count_costing_method
+  );
 
   if (new_business_unit_config_calculation_method !== -1) {
     business_unit_config[new_business_unit_config_calculation_method].value = calculation_method;
@@ -379,6 +382,17 @@ async function upsert_business_unit_config(
       label: "Recipe",
       key: enum_business_unit_config_key.recipe,
       value: { locales: "th-TH", minimumIntegerDigits: 3 },
+    });
+  }
+
+  if (new_business_unit_config_physical_count_costing_method !== -1) {
+    business_unit_config[new_business_unit_config_physical_count_costing_method].value = "last_receiving";
+  } else {
+    business_unit_config.push({
+      id: uuidv4(),
+      label: "Physical Count Costing Method",
+      key: enum_business_unit_config_key.physical_count_costing_method,
+      value: "last_receiving",
     });
   }
 
