@@ -1,10 +1,12 @@
-# Comment Endpoint Logic (Physical Count + Physical Count Detail)
+# Comment Endpoint Logic (Shared Pattern)
 
 ขอบเขตเอกสารนี้: รวม logic ของทุก endpoint ของ comment modules ที่ refactor ใน
-รอบ 2026-04-29 ใช้รูปแบบเดียวกันทั้งสองโมดูล:
+รอบ 2026-04-29 ใช้รูปแบบเดียวกันทุกโมดูล:
 
-- `physical-count-comment` (comment ระดับ document)
-- `physical-count-detail-comment` (comment ระดับ line item)
+- `physical-count-comment` (comment ระดับ document ของ physical count)
+- `physical-count-detail-comment` (comment ระดับ line item ของ physical count)
+- `credit-note-comment` (comment ของ credit note ใน procurement)
+- โมดูลใหม่ที่จะเพิ่มในอนาคต — ใช้ pattern เดียวกัน
 
 ไฟล์ที่เกี่ยวข้อง (กลุ่ม `<comment-prefix>` แทนได้ทั้ง `physical-count-comment`
 และ `physical-count-detail-comment`):

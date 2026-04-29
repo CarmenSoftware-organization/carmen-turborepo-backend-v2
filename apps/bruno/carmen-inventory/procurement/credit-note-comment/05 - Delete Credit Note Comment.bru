@@ -24,15 +24,27 @@ query {
 
 docs {
   ## Delete Credit Note Comment
-  ลบความคิดเห็นของใบลดหนี้
+  ลบความคิดเห็นของ credit-note (soft delete) พร้อมลบไฟล์แนบจาก S3
 
-  Deletes a credit-note comment. Only the author can delete.
+  ### URL
+  `DELETE {{host}}/api/{{bu_code}}/credit-note-comment/:id`
 
   ### Path Parameters
-  - `id` — Comment ID
+  - `bu_code` — Business unit code
+  - `id` — Comment UUID
 
+  ### Gateway behavior
+  1. ดึงข้อมูล comment ผ่าน `credit-note-comment.find-by-id` เพื่อ
+     อ่าน `attachments[].fileToken`
+  2. ลบไฟล์ทุกตัวออกจาก S3 ผ่าน `file.delete` (best-effort, log warn หากบางตัวล้มเหลว)
+  3. ส่ง `credit-note-comment.delete` ไปยัง business service เพื่อ
+     soft-delete record (set `deleted_at`)
 
-  ### Sample Response
+  > Important: S3 cleanup ทำ **ก่อน** flag delete เพื่อป้องกัน orphan files
+  > หากการ flag-delete ล้มเหลวภายหลัง ไฟล์ใน S3 จะถูกลบไปแล้ว — โปรดระวังในการ
+  > ออกแบบ retry/recovery flow
+
+  ### Sample Response 200
   ```json
   {
     "data": {
@@ -42,7 +54,7 @@ docs {
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T00:00:00.000Z"
   }
   ```
 }

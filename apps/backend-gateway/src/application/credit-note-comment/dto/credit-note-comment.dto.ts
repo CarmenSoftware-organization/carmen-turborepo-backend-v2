@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-export { AddAttachmentDto } from 'src/shared-dto/add-attachment.dto';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export const AttachmentSchema = z.object({
   fileName: z.string(),
@@ -13,62 +12,78 @@ export const AttachmentSchema = z.object({
 
 export type Attachment = z.infer<typeof AttachmentSchema>;
 
-export const CreateCreditNoteCommentSchema = z.object({
-  credit_note_id: z.string().uuid(),
-  message: z.string().optional().nullable(),
-  type: z.enum(['user', 'system']).default('user'),
-  attachments: z.array(AttachmentSchema).optional().default([]),
+/**
+ * Multipart body schema for PATCH update.
+ * - `message` and `type` are plain text fields.
+ * - `remove_attachments` is sent as a JSON-encoded string array of fileTokens
+ *   (multipart cannot carry nested JSON natively).
+ * - New files arrive via the `files` field (handled by FilesInterceptor).
+ */
+export const UpdateCreditNoteCommentBodySchema = z.object({
+  message: z.string().max(4000).optional().nullable(),
+  type: z.enum(['user', 'system']).optional(),
+  remove_attachments: z
+    .preprocess((v) => {
+      if (typeof v !== 'string') return v;
+      const trimmed = v.trim();
+      if (trimmed === '') return undefined;
+      try {
+        return JSON.parse(trimmed);
+      } catch {
+        return v;
+      }
+    }, z.array(z.string().min(1)).optional())
+    .optional(),
 });
 
-export class CreateCreditNoteCommentDto extends createZodDto(CreateCreditNoteCommentSchema) {
-  @ApiProperty({ description: 'The ID of the credit-note', example: '123e4567-e89b-12d3-a456-426614174000' })
-  credit_note_id: string;
+export type UpdateCreditNoteCommentBody = z.infer<
+  typeof UpdateCreditNoteCommentBodySchema
+>;
 
-  @ApiPropertyOptional({ description: 'The comment message', example: 'This is a comment' })
+export class UpdateCreditNoteCommentDto {
+  @ApiPropertyOptional({
+    description: 'Updated comment message (≤ 4000 chars)',
+    example: 'Updated comment',
+    nullable: true,
+  })
   message?: string | null;
 
-  @ApiPropertyOptional({ description: 'Comment type', enum: ['user', 'system'], default: 'user' })
+  @ApiPropertyOptional({
+    description: 'Comment type',
+    enum: ['user', 'system'],
+  })
   type?: 'user' | 'system';
 
   @ApiPropertyOptional({
-    description: 'File attachments',
-    type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        fileName: { type: 'string' },
-        fileToken: { type: 'string' },
-        fileUrl: { type: 'string' },
-        contentType: { type: 'string' },
-        size: { type: 'number' },
-      },
-    },
+    description:
+      'JSON-encoded string array of fileTokens to remove, e.g. `["tok-1","tok-2"]`',
+    example: '["tok-1","tok-2"]',
   })
-  attachments?: Attachment[];
-}
-
-export const UpdateCreditNoteCommentSchema = z.object({
-  message: z.string().optional().nullable(),
-  attachments: z.array(AttachmentSchema).optional(),
-});
-
-export class UpdateCreditNoteCommentDto extends createZodDto(UpdateCreditNoteCommentSchema) {
-  @ApiPropertyOptional({ description: 'Updated comment message', example: 'Updated comment' })
-  message?: string | null;
+  remove_attachments?: string;
 
   @ApiPropertyOptional({
-    description: 'Updated file attachments',
+    description:
+      'New attachments to add (0–10 files). Allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf. Max 10 MB each.',
     type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        fileName: { type: 'string' },
-        fileToken: { type: 'string' },
-        fileUrl: { type: 'string' },
-        contentType: { type: 'string' },
-        size: { type: 'number' },
-      },
-    },
+    items: { type: 'string', format: 'binary' },
   })
-  attachments?: Attachment[];
+  files?: unknown[];
+}
+
+export class UpdateCreditNoteCommentBodyDto extends createZodDto(
+  UpdateCreditNoteCommentBodySchema,
+) {}
+
+/**
+ * Swagger-only DTO for POST `:id/attachment` (multipart/form-data).
+ * Runtime validation: count/size/mime checks performed in the controller.
+ */
+export class AddAttachmentsDto {
+  @ApiPropertyOptional({
+    description:
+      'Attachments to add (1–10 files). Allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf. Max 10 MB each.',
+    type: 'array',
+    items: { type: 'string', format: 'binary' },
+  })
+  files?: unknown[];
 }

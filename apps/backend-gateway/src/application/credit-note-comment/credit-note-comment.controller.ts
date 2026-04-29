@@ -18,7 +18,10 @@ import {
 } from '@nestjs/common';
 import { CreditNoteCommentService } from './credit-note-comment.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { UploadCommentWithFilesBodySchema, UploadCommentWithFilesDto } from './dto/upload-comment-with-files.dto';
+import {
+  UploadCommentWithFilesBodySchema,
+  UploadCommentWithFilesDto,
+} from './dto/upload-comment-with-files.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -35,9 +38,9 @@ import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
-  CreateCreditNoteCommentDto,
   UpdateCreditNoteCommentDto,
-  AddAttachmentDto,
+  UpdateCreditNoteCommentBodySchema,
+  AddAttachmentsDto,
 } from './dto/credit-note-comment.dto';
 
 const MAX_FILES = 10;
@@ -64,7 +67,7 @@ export class CreditNoteCommentController {
     private readonly creditNoteCommentService: CreditNoteCommentService,
   ) {}
 
-  @Get(':bu_code/credit-note/:credit_note_id/comments')
+  @Get(':bu_code/credit-note-comment/:credit_note_id')
   @UseGuards(new AppIdGuard('creditNoteComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
@@ -96,74 +99,86 @@ export class CreditNoteCommentController {
     );
   }
 
-  @Get(':bu_code/credit-note-comment/:id')
-  @UseGuards(new AppIdGuard('creditNoteComment.findOne'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Get a credit-note comment by ID',
-    operationId: 'findOneCreditNoteComment',
-    responses: {
-      200: { description: 'Comment retrieved successfully' },
-      404: { description: 'Comment not found' },
-    },
-  } as any)
-  @HttpCode(HttpStatus.OK)
-  async findById(
-    @Param('bu_code') bu_code: string,
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Req() req: Request,
-    @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.creditNoteCommentService.findById(id, user_id, bu_code, version);
-  }
-
-  @Post(':bu_code/credit-note-comment')
-  @UseGuards(new AppIdGuard('creditNoteComment.create'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Create a new credit-note comment',
-    operationId: 'createCreditNoteComment',
-    responses: {
-      201: { description: 'Comment created successfully' },
-      404: { description: 'CreditNote not found' },
-    },
-  } as any)
-  @ApiBody({ type: CreateCreditNoteCommentDto })
-  @HttpCode(HttpStatus.CREATED)
-  async create(
-    @Param('bu_code') bu_code: string,
-    @Body() createDto: CreateCreditNoteCommentDto,
-    @Req() req: Request,
-    @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.creditNoteCommentService.create({ ...createDto }, user_id, bu_code, version);
-  }
-
   @Patch(':bu_code/credit-note-comment/:id')
   @UseGuards(new AppIdGuard('creditNoteComment.update'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Update a credit-note comment',
+    summary: 'Update a credit-note comment with attachment add/remove',
     operationId: 'updateCreditNoteComment',
     responses: {
       200: { description: 'Comment updated successfully' },
-      404: { description: 'Comment not found' },
+      400: { description: 'Validation failed' },
       403: { description: 'Forbidden' },
+      404: { description: 'Comment not found' },
+      502: { description: 'File service upstream failure' },
     },
   } as any)
+  @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateCreditNoteCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('bu_code') bu_code: string,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() updateDto: UpdateCreditNoteCommentDto,
+    @UploadedFiles() files: Express.Multer.File[] = [],
+    @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    const parsed = UpdateCreditNoteCommentBodySchema.safeParse(rawBody);
+    if (!parsed.success) {
+      throw new BadRequestException({
+        message: 'Invalid request body',
+        errors: parsed.error.errors,
+      });
+    }
+    const body = parsed.data as {
+      message?: string | null;
+      type?: 'user' | 'system';
+      remove_attachments?: string[];
+    };
+
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
+    const removeTokens = body.remove_attachments ?? [];
+    const hasMessage =
+      typeof body.message === 'string' && body.message.trim().length > 0;
+    const hasType = typeof body.type === 'string';
+    if (!hasMessage && !hasType && files.length === 0 && removeTokens.length === 0) {
+      throw new BadRequestException(
+        'At least one of `message`, `type`, `files`, or `remove_attachments` must be provided',
+      );
+    }
+
     const { user_id } = ExtractRequestHeader(req);
-    return this.creditNoteCommentService.update(id, { ...updateDto }, user_id, bu_code, version);
+    return this.creditNoteCommentService.update(
+      id,
+      {
+        message: body.message ?? undefined,
+        type: body.type,
+        addFiles: files,
+        removeFileTokens: removeTokens,
+      },
+      user_id,
+      bu_code,
+      version,
+    );
   }
 
   @Delete(':bu_code/credit-note-comment/:id')
@@ -191,26 +206,57 @@ export class CreditNoteCommentController {
 
   @Post(':bu_code/credit-note-comment/:id/attachment')
   @UseGuards(new AppIdGuard('creditNoteComment.addAttachment'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Add an attachment to a credit-note comment',
+    summary: 'Add attachments (file uploads) to a credit-note comment',
     operationId: 'addAttachmentToCreditNoteComment',
     responses: {
-      200: { description: 'Attachment added successfully' },
+      200: { description: 'Attachments added successfully' },
+      400: { description: 'Validation failed' },
       404: { description: 'Comment not found' },
+      502: { description: 'File service upstream failure' },
     },
   } as any)
-  @ApiBody({ type: AddAttachmentDto })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: AddAttachmentsDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(
     @Param('bu_code') bu_code: string,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() attachment: AddAttachmentDto,
+    @UploadedFiles() files: Express.Multer.File[] = [],
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    if (files.length === 0) {
+      throw new BadRequestException('At least one file is required');
+    }
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
     const { user_id } = ExtractRequestHeader(req);
-    return this.creditNoteCommentService.addAttachment(id, { ...attachment }, user_id, bu_code, version);
+    return this.creditNoteCommentService.addAttachments(
+      id,
+      files,
+      user_id,
+      bu_code,
+      version,
+    );
   }
 
   @Delete(':bu_code/credit-note-comment/:id/attachment/:fileToken')
@@ -235,7 +281,8 @@ export class CreditNoteCommentController {
     const { user_id } = ExtractRequestHeader(req);
     return this.creditNoteCommentService.removeAttachment(id, fileToken, user_id, bu_code, version);
   }
-  @Post(':bu_code/credit-note-comment/upload')
+
+  @Post(':bu_code/credit-note-comment/:credit_note_id')
   @UseGuards(new AppIdGuard('creditNoteComment.createWithFiles'))
   @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
@@ -245,6 +292,7 @@ export class CreditNoteCommentController {
     responses: {
       201: { description: 'Comment created with attachments' },
       400: { description: 'Validation failed' },
+      404: { description: 'CreditNote not found' },
       502: { description: 'File service upstream failure' },
     },
   } as any)
@@ -253,11 +301,22 @@ export class CreditNoteCommentController {
   @HttpCode(HttpStatus.CREATED)
   async createWithFiles(
     @Param('bu_code') bu_code: string,
+    @Param('credit_note_id', new ParseUUIDPipe({ version: '4' }))
+    credit_note_id: string,
     @UploadedFiles() files: Express.Multer.File[] = [],
     @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    this.logger.debug(
+      {
+        function: 'createWithFiles',
+        bu_code,
+        credit_note_id,
+        file_count: files.length,
+      },
+      CreditNoteCommentController.name,
+    );
     const parsed = UploadCommentWithFilesBodySchema.safeParse(rawBody);
     if (!parsed.success) {
       throw new BadRequestException({
@@ -266,7 +325,6 @@ export class CreditNoteCommentController {
       });
     }
     const body = parsed.data as {
-      credit_note_id: string;
       message?: string | null;
       type?: 'user' | 'system';
     };
@@ -299,7 +357,7 @@ export class CreditNoteCommentController {
     const { user_id } = ExtractRequestHeader(req);
     return this.creditNoteCommentService.createWithFiles(
       files,
-      body,
+      { ...body, credit_note_id },
       user_id,
       bu_code,
       version,
