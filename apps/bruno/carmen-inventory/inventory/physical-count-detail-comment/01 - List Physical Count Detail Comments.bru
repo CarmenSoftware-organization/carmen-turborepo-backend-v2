@@ -10,20 +10,20 @@ get {
   auth: bearer
 }
 
-params:query {
-  ~version: 
-}
-
-params:path {
-  physical_count_detail_id: {{test_id}}
-}
-
 headers {
   x-app-id: {{x_app_id}}
 }
 
 auth:bearer {
   token: {{access_token}}
+}
+
+query {
+  ~version:
+}
+
+params:path {
+  physical_count_detail_id: {{test_id}}
 }
 
 vars:pre-request {
@@ -79,6 +79,6 @@ docs {
   }
   ```
 
-  Note: `fileUrl` ในการ response จะว่าง — frontend ต้องเรียก
+  Note: `fileUrl` ใน response จะว่าง — frontend ต้องเรียก
   `GET /api/{bu_code}/documents/presigned-url/{fileToken}` เพื่อแสดงไฟล์
 }

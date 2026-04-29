@@ -1,7 +1,7 @@
 meta {
   name: Remove attachment physical-count-comment
   type: http
-  seq: 8
+  seq: 7
 }
 
 delete {
@@ -10,21 +10,21 @@ delete {
   auth: bearer
 }
 
-params:query {
-  ~version: 
-}
-
-params:path {
-  id: {{test_id}}
-  fileToken: 
-}
-
 headers {
   x-app-id: {{x_app_id}}
 }
 
 auth:bearer {
   token: {{access_token}}
+}
+
+query {
+  ~version:
+}
+
+params:path {
+  id: {{test_id}}
+  fileToken:
 }
 
 docs {

@@ -1,28 +1,85 @@
 meta {
   name: Create with files delivery-point-comment
   type: http
-  seq: 8
+  seq: 2
 }
 
 post {
-  url: {{host}}/api/{{bu_code}}/delivery-point-comment/upload
-  body: json
+  url: {{host}}/api/{{bu_code}}/delivery-point-comment/{{delivery_point_id}}
+  body: multipartForm
   auth: bearer
+}
+
+params:query {
+  ~version: latest
 }
 
 headers {
   x-app-id: {{x_app_id}}
-  Content-Type: application/json
 }
 
 auth:bearer {
   token: {{access_token}}
 }
 
-query {
-  ~version: 
-}
-
 body:json {
   {}
+}
+
+body:multipart-form {
+  message: Comment with attached photos
+  type: user
+  files: @file(/Users/samutpra/Pictures/logo.png)
+  files: @file(/Users/samutpra/Pictures/logo_CARMEN_Classic-Blue_low-res.png)
+}
+
+vars:pre-request {
+  delivery_point_id: 5d5fa453-f687-4fcd-bbdb-5956f7e810b3
+}
+
+docs {
+  ## Create Delivery Point Comment (with file uploads)
+  สร้างความคิดเห็นใหม่สำหรับ delivery-point พร้อมแนบไฟล์ใน request เดียว
+  ไม่ต้อง upload file แยกก่อน
+
+  `delivery_point_id` ระบุผ่าน URL path parameter (ไม่ใช่ body field)
+
+  ### URL
+  `POST {{host}}/api/{{bu_code}}/delivery-point-comment/:delivery_point_id`
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `delivery_point_id` — Delivery Point UUID
+
+  ### Body (multipart/form-data)
+  - `message` (text, optional) — ข้อความคอมเมนต์ ≤ 4000 ตัวอักษร
+  - `type` (text, optional, default `user`) — `user` | `system`
+  - `files` (binary, optional, repeatable) — ไฟล์แนบ
+
+  ต้องส่งอย่างน้อยหนึ่งใน `message` หรือ `files`
+
+  ### Constraints
+  - max 10 files per request
+  - max 10 MB per file
+  - allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf
+
+  ### Gateway behavior
+  1. Upload ทุกไฟล์ไป S3 ผ่าน `file.upload`
+  2. หาก upload ใดล้มเหลว — rollback (ลบไฟล์ที่ upload สำเร็จออกจาก S3) แล้วตอบ 502
+  3. Forward `{ delivery_point_id, message, type, attachments: [...] }` ไปยัง business service
+  4. หาก business service ตอบ error — rollback ลบไฟล์ที่ upload ไปแล้วออกจาก S3
+
+  ### Response 201
+  ```json
+  {
+    "data": { "id": "<uuid>", "delivery_point_id": "<uuid>", "attachments": [...] },
+    "status": 201,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-04-29T12:00:00.000Z"
+  }
+  ```
+
+  Note: `fileUrl` ใน response จะว่าง — frontend ต้องเรียก
+  `GET /api/{bu_code}/documents/presigned-url/{fileToken}` เพื่อแสดงไฟล์
 }

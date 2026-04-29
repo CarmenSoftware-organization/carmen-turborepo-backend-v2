@@ -36,9 +36,7 @@ export const UpdateCreditNoteCommentBodySchema = z.object({
     .optional(),
 });
 
-export type UpdateCreditNoteCommentBody = z.infer<
-  typeof UpdateCreditNoteCommentBodySchema
->;
+export type UpdateCreditNoteCommentBody = z.infer<typeof UpdateCreditNoteCommentBodySchema>;
 
 export class UpdateCreditNoteCommentDto {
   @ApiPropertyOptional({
@@ -56,7 +54,7 @@ export class UpdateCreditNoteCommentDto {
 
   @ApiPropertyOptional({
     description:
-      'JSON-encoded string array of fileTokens to remove, e.g. `["tok-1","tok-2"]`',
+      'JSON-encoded string array of fileTokens to remove, e.g. \`["tok-1","tok-2"]\`',
     example: '["tok-1","tok-2"]',
   })
   remove_attachments?: string;

@@ -13,6 +13,7 @@ import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
 import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
+
 export interface UploadedAttachment {
   fileName: string;
   fileToken: string;
@@ -28,30 +29,12 @@ export class StockOutDetailCommentService {
   );
 
   constructor(
-    @Inject('BUSINESS_SERVICE') private readonly businessService: ClientProxy,
+    @Inject('BUSINESS_SERVICE')
+    private readonly businessService: ClientProxy,
     @Inject('FILE_SERVICE') private readonly fileService: ClientProxy,
   ) {}
 
-  async findById(
-    id: string,
-    user_id: string,
-    bu_code: string,
-    version: string,
-  ): Promise<unknown> {
-    const res: Observable<MicroserviceResponse> = this.businessService.send(
-      { cmd: 'stock-out-detail-comment.find-by-id', service: 'stock-out-detail-comment' },
-      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
-    );
-    const response = await firstValueFrom(res);
-    if (response.response.status !== HttpStatus.OK)
-      return Result.error(
-        response.response.message,
-        httpStatusToErrorCode(response.response.status),
-      );
-    return ResponseLib.success(response.data);
-  }
-
-  async findAllByStockOutDetailId(
+  async findAllByParentId(
     stock_out_detail_id: string,
     user_id: string,
     bu_code: string,
@@ -63,50 +46,120 @@ export class StockOutDetailCommentService {
       { stock_out_detail_id, user_id, bu_code, paginate, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
-    if (response.response.status !== HttpStatus.OK)
+    if (response.response.status !== HttpStatus.OK) {
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
+    }
     return ResponseLib.successWithPaginate(response.data, response.paginate);
-  }
-
-  async create(
-    data: Record<string, unknown>,
-    user_id: string,
-    bu_code: string,
-    version: string,
-  ): Promise<unknown> {
-    const res: Observable<MicroserviceResponse> = this.businessService.send(
-      { cmd: 'stock-out-detail-comment.create', service: 'stock-out-detail-comment' },
-      { data, user_id, bu_code, version, ...getGatewayRequestContext() },
-    );
-    const response = await firstValueFrom(res);
-    if (response.response.status !== HttpStatus.CREATED)
-      return Result.error(
-        response.response.message,
-        httpStatusToErrorCode(response.response.status),
-      );
-    return ResponseLib.created(response.data);
   }
 
   async update(
     id: string,
-    data: Record<string, unknown>,
+    dto: {
+      message?: string | null;
+      type?: 'user' | 'system';
+      addFiles?: Express.Multer.File[];
+      removeFileTokens?: string[];
+    },
     user_id: string,
     bu_code: string,
     version: string,
   ): Promise<unknown> {
+    const addFiles = dto.addFiles ?? [];
+    const removeTokens = dto.removeFileTokens ?? [];
+
+    const uploaded: UploadedAttachment[] = [];
+    if (addFiles.length > 0) {
+      const settled = await Promise.allSettled(
+        addFiles.map((f) => this.uploadFile(f, user_id, bu_code)),
+      );
+      const failures = settled.filter((s) => s.status === 'rejected');
+      const successes = settled.filter(
+        (s): s is PromiseFulfilledResult<UploadedAttachment> => s.status === 'fulfilled',
+      );
+      uploaded.push(...successes.map((s) => s.value));
+
+      if (failures.length > 0) {
+        this.logger.warn(
+          {
+            function: 'update',
+            phase: 'upload-rollback',
+            bu_code,
+            comment_id: id,
+            uploaded_count: uploaded.length,
+            failed_count: failures.length,
+          },
+          StockOutDetailCommentService.name,
+        );
+        await Promise.all(
+          uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
+        );
+        const firstReason = (failures[0] as PromiseRejectedResult).reason;
+        const msg = firstReason instanceof Error ? firstReason.message : String(firstReason);
+        throw new BadGatewayException(`File upload failed: ${msg}`);
+      }
+    }
+
+    if (removeTokens.length > 0) {
+      const results = await Promise.all(
+        removeTokens.map((tok) => this.deleteFile(tok, user_id, bu_code)),
+      );
+      const failedTokens = removeTokens.filter((_, i) => !results[i]);
+      if (failedTokens.length > 0) {
+        this.logger.warn(
+          {
+            function: 'update',
+            phase: 's3-delete-partial',
+            bu_code,
+            comment_id: id,
+            failed_count: failedTokens.length,
+            failed_tokens: failedTokens,
+          },
+          StockOutDetailCommentService.name,
+        );
+      }
+    }
+
+    const data: Record<string, unknown> = {};
+    if (dto.message !== undefined) data.message = dto.message;
+    if (dto.type !== undefined) data.type = dto.type;
+    if (uploaded.length > 0 || removeTokens.length > 0) {
+      data.attachments = {
+        add: uploaded,
+        remove: removeTokens,
+      };
+    }
+
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'stock-out-detail-comment.update', service: 'stock-out-detail-comment' },
       { id, data, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
-    if (response.response.status !== HttpStatus.OK)
+
+    if (response.response.status !== HttpStatus.OK) {
+      if (uploaded.length > 0) {
+        this.logger.warn(
+          {
+            function: 'update',
+            phase: 'update-rollback',
+            bu_code,
+            comment_id: id,
+            uploaded_count: uploaded.length,
+            update_status: response.response.status,
+          },
+          StockOutDetailCommentService.name,
+        );
+        await Promise.all(
+          uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
+        );
+      }
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
+    }
     return ResponseLib.success(response.data);
   }
 
@@ -116,36 +169,125 @@ export class StockOutDetailCommentService {
     bu_code: string,
     version: string,
   ): Promise<unknown> {
+    const findRes: Observable<MicroserviceResponse> = this.businessService.send(
+      { cmd: 'stock-out-detail-comment.find-by-id', service: 'stock-out-detail-comment' },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
+    );
+    const findResponse = await firstValueFrom(findRes);
+    if (findResponse.response.status !== HttpStatus.OK) {
+      return Result.error(
+        findResponse.response.message,
+        httpStatusToErrorCode(findResponse.response.status),
+      );
+    }
+
+    const attachments = ((findResponse.data as { attachments?: Array<{ fileToken?: string }> } | undefined)?.attachments ?? [])
+      .map((a) => a?.fileToken)
+      .filter((t): t is string => typeof t === 'string' && t.length > 0);
+
+    if (attachments.length > 0) {
+      const results = await Promise.all(
+        attachments.map((fileToken) => this.deleteFile(fileToken, user_id, bu_code)),
+      );
+      const failedTokens = attachments.filter((_, i) => !results[i]);
+      if (failedTokens.length > 0) {
+        this.logger.warn(
+          {
+            function: 'delete',
+            phase: 's3-delete-partial',
+            bu_code,
+            comment_id: id,
+            failed_count: failedTokens.length,
+            failed_tokens: failedTokens,
+          },
+          StockOutDetailCommentService.name,
+        );
+      }
+    }
+
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'stock-out-detail-comment.delete', service: 'stock-out-detail-comment' },
       { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
-    if (response.response.status !== HttpStatus.OK)
+    if (response.response.status !== HttpStatus.OK) {
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
+    }
     return ResponseLib.success(response.data);
   }
 
-  async addAttachment(
+  async addAttachments(
     id: string,
-    attachment: Record<string, unknown>,
+    files: Express.Multer.File[],
     user_id: string,
     bu_code: string,
     version: string,
   ): Promise<unknown> {
+    const settled = await Promise.allSettled(
+      files.map((f) => this.uploadFile(f, user_id, bu_code)),
+    );
+    const failures = settled.filter((s) => s.status === 'rejected');
+    const successes = settled.filter(
+      (s): s is PromiseFulfilledResult<UploadedAttachment> => s.status === 'fulfilled',
+    );
+    const uploaded: UploadedAttachment[] = successes.map((s) => s.value);
+
+    if (failures.length > 0) {
+      this.logger.warn(
+        {
+          function: 'addAttachments',
+          phase: 'upload-rollback',
+          bu_code,
+          comment_id: id,
+          uploaded_count: uploaded.length,
+          failed_count: failures.length,
+        },
+        StockOutDetailCommentService.name,
+      );
+      await Promise.all(
+        uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
+      );
+      const firstReason = (failures[0] as PromiseRejectedResult).reason;
+      const msg = firstReason instanceof Error ? firstReason.message : String(firstReason);
+      throw new BadGatewayException(`File upload failed: ${msg}`);
+    }
+
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'stock-out-detail-comment.add-attachment', service: 'stock-out-detail-comment' },
-      { id, attachment, user_id, bu_code, version, ...getGatewayRequestContext() },
+      {
+        id,
+        attachments: uploaded,
+        user_id,
+        bu_code,
+        version,
+        ...getGatewayRequestContext(),
+      },
     );
     const response = await firstValueFrom(res);
-    if (response.response.status !== HttpStatus.OK)
+
+    if (response.response.status !== HttpStatus.OK) {
+      this.logger.warn(
+        {
+          function: 'addAttachments',
+          phase: 'business-rollback',
+          bu_code,
+          comment_id: id,
+          uploaded_count: uploaded.length,
+          add_status: response.response.status,
+        },
+        StockOutDetailCommentService.name,
+      );
+      await Promise.all(
+        uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
+      );
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
+    }
     return ResponseLib.success(response.data);
   }
 
@@ -161,13 +303,15 @@ export class StockOutDetailCommentService {
       { id, fileToken, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
-    if (response.response.status !== HttpStatus.OK)
+    if (response.response.status !== HttpStatus.OK) {
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
+    }
     return ResponseLib.success(response.data);
   }
+
   async createWithFiles(
     files: Express.Multer.File[],
     dto: {
@@ -185,13 +329,10 @@ export class StockOutDetailCommentService {
       const settled = await Promise.allSettled(
         files.map((f) => this.uploadFile(f, user_id, bu_code)),
       );
-
       const failures = settled.filter((s) => s.status === 'rejected');
       const successes = settled.filter(
-        (s): s is PromiseFulfilledResult<UploadedAttachment> =>
-          s.status === 'fulfilled',
+        (s): s is PromiseFulfilledResult<UploadedAttachment> => s.status === 'fulfilled',
       );
-
       uploaded.push(...successes.map((s) => s.value));
 
       if (failures.length > 0) {
@@ -210,8 +351,7 @@ export class StockOutDetailCommentService {
           uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
         );
         const firstReason = (failures[0] as PromiseRejectedResult).reason;
-        const msg =
-          firstReason instanceof Error ? firstReason.message : String(firstReason);
+        const msg = firstReason instanceof Error ? firstReason.message : String(firstReason);
         throw new BadGatewayException(`File upload failed: ${msg}`);
       }
     }

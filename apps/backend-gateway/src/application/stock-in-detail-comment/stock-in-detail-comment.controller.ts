@@ -18,7 +18,10 @@ import {
 } from '@nestjs/common';
 import { StockInDetailCommentService } from './stock-in-detail-comment.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { UploadCommentWithFilesBodySchema, UploadCommentWithFilesDto } from './dto/upload-comment-with-files.dto';
+import {
+  UploadCommentWithFilesBodySchema,
+  UploadCommentWithFilesDto,
+} from './dto/upload-comment-with-files.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -35,9 +38,9 @@ import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
-  CreateStockInDetailCommentDto,
   UpdateStockInDetailCommentDto,
-  AddAttachmentDto,
+  UpdateStockInDetailCommentBodySchema,
+  AddAttachmentsDto,
 } from './dto/stock-in-detail-comment.dto';
 
 const MAX_FILES = 10;
@@ -64,7 +67,7 @@ export class StockInDetailCommentController {
     private readonly stockInDetailCommentService: StockInDetailCommentService,
   ) {}
 
-  @Get(':bu_code/stock-in-detail/:stock_in_detail_id/comments')
+  @Get(':bu_code/stock-in-detail-comment/:stock_in_detail_id')
   @UseGuards(new AppIdGuard('stockInDetailComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
@@ -76,7 +79,7 @@ export class StockInDetailCommentController {
     },
   } as any)
   @HttpCode(HttpStatus.OK)
-  async findAllByStockInDetailId(
+  async findAllByParentId(
     @Param('bu_code') bu_code: string,
     @Param('stock_in_detail_id', new ParseUUIDPipe({ version: '4' })) stock_in_detail_id: string,
     @Req() req: Request,
@@ -85,7 +88,7 @@ export class StockInDetailCommentController {
   ): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
-    return this.stockInDetailCommentService.findAllByStockInDetailId(
+    return this.stockInDetailCommentService.findAllByParentId(
       stock_in_detail_id,
       user_id,
       bu_code,
@@ -94,77 +97,80 @@ export class StockInDetailCommentController {
     );
   }
 
-  @Get(':bu_code/stock-in-detail-comment/:id')
-  @UseGuards(new AppIdGuard('stockInDetailComment.findOne'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Get a stock-in-detail comment by ID',
-    operationId: 'findOneStockInDetailComment',
-    responses: {
-      200: { description: 'Comment retrieved successfully' },
-    },
-  } as any)
-  @HttpCode(HttpStatus.OK)
-  async findById(
-    @Param('bu_code') bu_code: string,
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Req() req: Request,
-    @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.stockInDetailCommentService.findById(id, user_id, bu_code, version);
-  }
-
-  @Post(':bu_code/stock-in-detail-comment')
-  @UseGuards(new AppIdGuard('stockInDetailComment.create'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Create a new stock-in-detail comment',
-    operationId: 'createStockInDetailComment',
-    responses: {
-      201: { description: 'Comment created successfully' },
-    },
-  } as any)
-  @ApiBody({ type: CreateStockInDetailCommentDto, description: 'Comment data with optional attachments' })
-  @HttpCode(HttpStatus.CREATED)
-  async create(
-    @Param('bu_code') bu_code: string,
-    @Body() createDto: CreateStockInDetailCommentDto,
-    @Req() req: Request,
-    @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.stockInDetailCommentService.create(
-      { ...createDto },
-      user_id,
-      bu_code,
-      version,
-    );
-  }
-
   @Patch(':bu_code/stock-in-detail-comment/:id')
   @UseGuards(new AppIdGuard('stockInDetailComment.update'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Update a stock-in-detail comment',
+    summary: 'Update a stock-in-detail comment with attachment add/remove',
     operationId: 'updateStockInDetailComment',
     responses: {
       200: { description: 'Comment updated successfully' },
+      400: { description: 'Validation failed' },
+      502: { description: 'File service upstream failure' },
     },
   } as any)
-  @ApiBody({ type: UpdateStockInDetailCommentDto, description: 'Updated comment data' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UpdateStockInDetailCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('bu_code') bu_code: string,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() updateDto: UpdateStockInDetailCommentDto,
+    @UploadedFiles() files: Express.Multer.File[] = [],
+    @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    const parsed = UpdateStockInDetailCommentBodySchema.safeParse(rawBody);
+    if (!parsed.success) {
+      throw new BadRequestException({
+        message: 'Invalid request body',
+        errors: parsed.error.errors,
+      });
+    }
+    const body = parsed.data as {
+      message?: string | null;
+      type?: 'user' | 'system';
+      remove_attachments?: string[];
+    };
+
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
+    const removeTokens = body.remove_attachments ?? [];
+    const hasMessage =
+      typeof body.message === 'string' && body.message.trim().length > 0;
+    const hasType = typeof body.type === 'string';
+    if (!hasMessage && !hasType && files.length === 0 && removeTokens.length === 0) {
+      throw new BadRequestException(
+        'At least one of \`message\`, \`type\`, \`files\`, or \`remove_attachments\` must be provided',
+      );
+    }
+
     const { user_id } = ExtractRequestHeader(req);
     return this.stockInDetailCommentService.update(
       id,
-      { ...updateDto },
+      {
+        message: body.message ?? undefined,
+        type: body.type,
+        addFiles: files,
+        removeFileTokens: removeTokens,
+      },
       user_id,
       bu_code,
       version,
@@ -194,27 +200,52 @@ export class StockInDetailCommentController {
 
   @Post(':bu_code/stock-in-detail-comment/:id/attachment')
   @UseGuards(new AppIdGuard('stockInDetailComment.addAttachment'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Add an attachment to a stock-in-detail comment',
-    operationId: 'addAttachmentToStockInDetailComment',
+    summary: 'Add attachments to a stock-in-detail comment',
+    operationId: 'addAttachmentsToStockInDetailComment',
     responses: {
-      200: { description: 'Attachment added successfully' },
+      200: { description: 'Attachments added successfully' },
+      400: { description: 'Validation failed' },
+      502: { description: 'File service upstream failure' },
     },
   } as any)
-  @ApiBody({ type: AddAttachmentDto, description: 'Attachment data from file service' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: AddAttachmentsDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(
     @Param('bu_code') bu_code: string,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() attachment: AddAttachmentDto,
+    @UploadedFiles() files: Express.Multer.File[] = [],
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    if (files.length === 0) {
+      throw new BadRequestException('At least one file is required');
+    }
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
     const { user_id } = ExtractRequestHeader(req);
-    return this.stockInDetailCommentService.addAttachment(
+    return this.stockInDetailCommentService.addAttachments(
       id,
-      { ...attachment },
+      files,
       user_id,
       bu_code,
       version,
@@ -240,15 +271,10 @@ export class StockInDetailCommentController {
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
-    return this.stockInDetailCommentService.removeAttachment(
-      id,
-      fileToken,
-      user_id,
-      bu_code,
-      version,
-    );
+    return this.stockInDetailCommentService.removeAttachment(id, fileToken, user_id, bu_code, version);
   }
-  @Post(':bu_code/stock-in-detail-comment/upload')
+
+  @Post(':bu_code/stock-in-detail-comment/:stock_in_detail_id')
   @UseGuards(new AppIdGuard('stockInDetailComment.createWithFiles'))
   @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
@@ -266,11 +292,22 @@ export class StockInDetailCommentController {
   @HttpCode(HttpStatus.CREATED)
   async createWithFiles(
     @Param('bu_code') bu_code: string,
+    @Param('stock_in_detail_id', new ParseUUIDPipe({ version: '4' }))
+    stock_in_detail_id: string,
     @UploadedFiles() files: Express.Multer.File[] = [],
     @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    this.logger.debug(
+      {
+        function: 'createWithFiles',
+        bu_code,
+        stock_in_detail_id,
+        file_count: files.length,
+      },
+      StockInDetailCommentController.name,
+    );
     const parsed = UploadCommentWithFilesBodySchema.safeParse(rawBody);
     if (!parsed.success) {
       throw new BadRequestException({
@@ -279,7 +316,6 @@ export class StockInDetailCommentController {
       });
     }
     const body = parsed.data as {
-      stock_in_detail_id: string;
       message?: string | null;
       type?: 'user' | 'system';
     };
@@ -305,14 +341,14 @@ export class StockInDetailCommentController {
       typeof body.message === 'string' && body.message.trim().length > 0;
     if (!hasMessage && files.length === 0) {
       throw new BadRequestException(
-        'At least one of `message` or `files` must be provided',
+        'At least one of \`message\` or \`files\` must be provided',
       );
     }
 
     const { user_id } = ExtractRequestHeader(req);
     return this.stockInDetailCommentService.createWithFiles(
       files,
-      body,
+      { ...body, stock_in_detail_id },
       user_id,
       bu_code,
       version,

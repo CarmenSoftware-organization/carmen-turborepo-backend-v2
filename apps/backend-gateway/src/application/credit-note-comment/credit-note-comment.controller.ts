@@ -73,15 +73,13 @@ export class CreditNoteCommentController {
   @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all comments for a credit-note',
-    description: 'Retrieves all comments for a credit-note.',
     operationId: 'findAllCreditNoteComments',
     responses: {
       200: { description: 'Comments retrieved successfully' },
-      404: { description: 'CreditNote not found' },
     },
   } as any)
   @HttpCode(HttpStatus.OK)
-  async findAllByCreditNoteId(
+  async findAllByParentId(
     @Param('bu_code') bu_code: string,
     @Param('credit_note_id', new ParseUUIDPipe({ version: '4' })) credit_note_id: string,
     @Req() req: Request,
@@ -90,7 +88,7 @@ export class CreditNoteCommentController {
   ): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
-    return this.creditNoteCommentService.findAllByCreditNoteId(
+    return this.creditNoteCommentService.findAllByParentId(
       credit_note_id,
       user_id,
       bu_code,
@@ -109,8 +107,6 @@ export class CreditNoteCommentController {
     responses: {
       200: { description: 'Comment updated successfully' },
       400: { description: 'Validation failed' },
-      403: { description: 'Forbidden' },
-      404: { description: 'Comment not found' },
       502: { description: 'File service upstream failure' },
     },
   } as any)
@@ -162,7 +158,7 @@ export class CreditNoteCommentController {
     const hasType = typeof body.type === 'string';
     if (!hasMessage && !hasType && files.length === 0 && removeTokens.length === 0) {
       throw new BadRequestException(
-        'At least one of `message`, `type`, `files`, or `remove_attachments` must be provided',
+        'At least one of \`message\`, \`type\`, \`files\`, or \`remove_attachments\` must be provided',
       );
     }
 
@@ -189,8 +185,6 @@ export class CreditNoteCommentController {
     operationId: 'deleteCreditNoteComment',
     responses: {
       200: { description: 'Comment deleted successfully' },
-      404: { description: 'Comment not found' },
-      403: { description: 'Forbidden' },
     },
   } as any)
   @HttpCode(HttpStatus.OK)
@@ -209,12 +203,11 @@ export class CreditNoteCommentController {
   @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Add attachments (file uploads) to a credit-note comment',
-    operationId: 'addAttachmentToCreditNoteComment',
+    summary: 'Add attachments to a credit-note comment',
+    operationId: 'addAttachmentsToCreditNoteComment',
     responses: {
       200: { description: 'Attachments added successfully' },
       400: { description: 'Validation failed' },
-      404: { description: 'Comment not found' },
       502: { description: 'File service upstream failure' },
     },
   } as any)
@@ -267,7 +260,6 @@ export class CreditNoteCommentController {
     operationId: 'removeAttachmentFromCreditNoteComment',
     responses: {
       200: { description: 'Attachment removed successfully' },
-      404: { description: 'Comment not found' },
     },
   } as any)
   @HttpCode(HttpStatus.OK)
@@ -292,7 +284,6 @@ export class CreditNoteCommentController {
     responses: {
       201: { description: 'Comment created with attachments' },
       400: { description: 'Validation failed' },
-      404: { description: 'CreditNote not found' },
       502: { description: 'File service upstream failure' },
     },
   } as any)
@@ -350,7 +341,7 @@ export class CreditNoteCommentController {
       typeof body.message === 'string' && body.message.trim().length > 0;
     if (!hasMessage && files.length === 0) {
       throw new BadRequestException(
-        'At least one of `message` or `files` must be provided',
+        'At least one of \`message\` or \`files\` must be provided',
       );
     }
 

@@ -79,7 +79,7 @@ export class PhysicalCountCommentController {
     },
   } as any)
   @HttpCode(HttpStatus.OK)
-  async findAllByPhysicalCountId(
+  async findAllByParentId(
     @Param('bu_code') bu_code: string,
     @Param('physical_count_id', new ParseUUIDPipe({ version: '4' })) physical_count_id: string,
     @Req() req: Request,
@@ -88,7 +88,7 @@ export class PhysicalCountCommentController {
   ): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
-    return this.physicalCountCommentService.findAllByPhysicalCountId(
+    return this.physicalCountCommentService.findAllByParentId(
       physical_count_id,
       user_id,
       bu_code,
@@ -158,7 +158,7 @@ export class PhysicalCountCommentController {
     const hasType = typeof body.type === 'string';
     if (!hasMessage && !hasType && files.length === 0 && removeTokens.length === 0) {
       throw new BadRequestException(
-        'At least one of `message`, `type`, `files`, or `remove_attachments` must be provided',
+        'At least one of \`message\`, \`type\`, \`files\`, or \`remove_attachments\` must be provided',
       );
     }
 
@@ -203,8 +203,8 @@ export class PhysicalCountCommentController {
   @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Add attachments (file uploads) to a physical-count comment',
-    operationId: 'addAttachmentToPhysicalCountComment',
+    summary: 'Add attachments to a physical-count comment',
+    operationId: 'addAttachmentsToPhysicalCountComment',
     responses: {
       200: { description: 'Attachments added successfully' },
       400: { description: 'Validation failed' },
@@ -271,13 +271,7 @@ export class PhysicalCountCommentController {
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
-    return this.physicalCountCommentService.removeAttachment(
-      id,
-      fileToken,
-      user_id,
-      bu_code,
-      version,
-    );
+    return this.physicalCountCommentService.removeAttachment(id, fileToken, user_id, bu_code, version);
   }
 
   @Post(':bu_code/physical-count-comment/:physical_count_id')
@@ -347,7 +341,7 @@ export class PhysicalCountCommentController {
       typeof body.message === 'string' && body.message.trim().length > 0;
     if (!hasMessage && files.length === 0) {
       throw new BadRequestException(
-        'At least one of `message` or `files` must be provided',
+        'At least one of \`message\` or \`files\` must be provided',
       );
     }
 

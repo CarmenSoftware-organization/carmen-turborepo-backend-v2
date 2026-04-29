@@ -19,7 +19,12 @@ auth:bearer {
 }
 
 query {
-  ~version: 
+  ~version:
+}
+
+params:path {
+  id: {{test_id}}
+  fileToken:
 }
 
 docs {
@@ -50,9 +55,4 @@ docs {
     "timestamp": "2026-04-29T00:00:00.000Z"
   }
   ```
-}
-
-params:path {
-  id: {{test_id}}
-  fileToken:
 }

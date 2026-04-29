@@ -3,11 +3,16 @@
 ขอบเขตเอกสารนี้: รวม logic ของทุก endpoint ของ comment modules ที่ refactor ใน
 รอบ 2026-04-29 ใช้รูปแบบเดียวกันทุกโมดูล:
 
-- `physical-count-comment` (comment ระดับ document ของ physical count)
-- `physical-count-detail-comment` (comment ระดับ line item ของ physical count)
-- `credit-note-comment` (comment ระดับ document ของ credit note)
-- `credit-note-detail-comment` (comment ระดับ line item ของ credit note)
-- โมดูลใหม่ที่จะเพิ่มในอนาคต — ใช้ pattern เดียวกัน
+โมดูลทั้งหมดใน `apps/backend-gateway/src/application/*-comment/` ใช้ pattern เดียวกัน
+(46 โมดูล ณ 2026-04-29) เช่น `physical-count-comment`, `physical-count-detail-comment`,
+`credit-note-comment`, `credit-note-detail-comment`, `purchase-order-comment`,
+`good-received-note-detail-comment`, ฯลฯ — refactor ครั้งหลังทำผ่าน 2 codemods:
+
+- `scripts/apply-comment-logic/run.ts` — gateway controller/service/dto
+- `scripts/apply-comment-logic/bruno.ts` — Bruno collection (.bru files + docs)
+  ครอบคลุม 47 โฟลเดอร์ใน `apps/bruno/carmen-inventory/**/*-comment/`
+
+โมดูลใหม่ที่จะเพิ่มในอนาคต — ใช้ pattern เดียวกัน รัน codemod ทั้งสองตัวซ้ำได้
 
 ไฟล์ที่เกี่ยวข้อง (กลุ่ม `<comment-prefix>` แทนได้ทั้ง `physical-count-comment`
 และ `physical-count-detail-comment`):

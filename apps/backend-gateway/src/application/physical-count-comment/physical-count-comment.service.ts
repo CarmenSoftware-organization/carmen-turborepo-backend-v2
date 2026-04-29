@@ -29,11 +29,12 @@ export class PhysicalCountCommentService {
   );
 
   constructor(
-    @Inject('BUSINESS_SERVICE') private readonly businessService: ClientProxy,
+    @Inject('BUSINESS_SERVICE')
+    private readonly businessService: ClientProxy,
     @Inject('FILE_SERVICE') private readonly fileService: ClientProxy,
   ) {}
 
-  async findAllByPhysicalCountId(
+  async findAllByParentId(
     physical_count_id: string,
     user_id: string,
     bu_code: string,
@@ -45,11 +46,12 @@ export class PhysicalCountCommentService {
       { physical_count_id, user_id, bu_code, paginate, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
-    if (response.response.status !== HttpStatus.OK)
+    if (response.response.status !== HttpStatus.OK) {
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
+    }
     return ResponseLib.successWithPaginate(response.data, response.paginate);
   }
 
@@ -68,7 +70,6 @@ export class PhysicalCountCommentService {
     const addFiles = dto.addFiles ?? [];
     const removeTokens = dto.removeFileTokens ?? [];
 
-    // 1. Upload new files to S3 (rollback on partial failure)
     const uploaded: UploadedAttachment[] = [];
     if (addFiles.length > 0) {
       const settled = await Promise.allSettled(
@@ -101,7 +102,6 @@ export class PhysicalCountCommentService {
       }
     }
 
-    // 2. Delete removed files from S3 (best-effort, log on failure)
     if (removeTokens.length > 0) {
       const results = await Promise.all(
         removeTokens.map((tok) => this.deleteFile(tok, user_id, bu_code)),
@@ -122,7 +122,6 @@ export class PhysicalCountCommentService {
       }
     }
 
-    // 3. Forward to business service with attachments: { add, remove }
     const data: Record<string, unknown> = {};
     if (dto.message !== undefined) data.message = dto.message;
     if (dto.type !== undefined) data.type = dto.type;
@@ -140,7 +139,6 @@ export class PhysicalCountCommentService {
     const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.OK) {
-      // Rollback: delete the files we just uploaded since the DB update failed
       if (uploaded.length > 0) {
         this.logger.warn(
           {
@@ -171,7 +169,6 @@ export class PhysicalCountCommentService {
     bu_code: string,
     version: string,
   ): Promise<unknown> {
-    // 1. Fetch the comment to get attachments before delete
     const findRes: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'physical-count-comment.find-by-id', service: 'physical-count-comment' },
       { id, user_id, bu_code, version, ...getGatewayRequestContext() },
@@ -188,7 +185,6 @@ export class PhysicalCountCommentService {
       .map((a) => a?.fileToken)
       .filter((t): t is string => typeof t === 'string' && t.length > 0);
 
-    // 2. Delete S3 files first (best-effort)
     if (attachments.length > 0) {
       const results = await Promise.all(
         attachments.map((fileToken) => this.deleteFile(fileToken, user_id, bu_code)),
@@ -209,17 +205,17 @@ export class PhysicalCountCommentService {
       }
     }
 
-    // 3. Soft-delete the comment in business service
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'physical-count-comment.delete', service: 'physical-count-comment' },
       { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
-    if (response.response.status !== HttpStatus.OK)
+    if (response.response.status !== HttpStatus.OK) {
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
+    }
     return ResponseLib.success(response.data);
   }
 
@@ -230,7 +226,6 @@ export class PhysicalCountCommentService {
     bu_code: string,
     version: string,
   ): Promise<unknown> {
-    // 1. Upload all files to S3 (rollback on partial failure)
     const settled = await Promise.allSettled(
       files.map((f) => this.uploadFile(f, user_id, bu_code)),
     );
@@ -260,7 +255,6 @@ export class PhysicalCountCommentService {
       throw new BadGatewayException(`File upload failed: ${msg}`);
     }
 
-    // 2. Forward batched attachments to business service
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'physical-count-comment.add-attachment', service: 'physical-count-comment' },
       {
@@ -309,11 +303,12 @@ export class PhysicalCountCommentService {
       { id, fileToken, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
-    if (response.response.status !== HttpStatus.OK)
+    if (response.response.status !== HttpStatus.OK) {
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
+    }
     return ResponseLib.success(response.data);
   }
 
@@ -334,13 +329,10 @@ export class PhysicalCountCommentService {
       const settled = await Promise.allSettled(
         files.map((f) => this.uploadFile(f, user_id, bu_code)),
       );
-
       const failures = settled.filter((s) => s.status === 'rejected');
       const successes = settled.filter(
-        (s): s is PromiseFulfilledResult<UploadedAttachment> =>
-          s.status === 'fulfilled',
+        (s): s is PromiseFulfilledResult<UploadedAttachment> => s.status === 'fulfilled',
       );
-
       uploaded.push(...successes.map((s) => s.value));
 
       if (failures.length > 0) {
@@ -359,8 +351,7 @@ export class PhysicalCountCommentService {
           uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
         );
         const firstReason = (failures[0] as PromiseRejectedResult).reason;
-        const msg =
-          firstReason instanceof Error ? firstReason.message : String(firstReason);
+        const msg = firstReason instanceof Error ? firstReason.message : String(firstReason);
         throw new BadGatewayException(`File upload failed: ${msg}`);
       }
     }

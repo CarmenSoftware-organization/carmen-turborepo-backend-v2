@@ -19,34 +19,42 @@ auth:bearer {
 }
 
 query {
-  ~version: 
-}
-
-docs {
-  ## Delete Pricelist Template Detail Comment
-  ลบความคิดเห็นของรายละเอียดแม่แบบรายการราคา
-
-  Deletes a pricelist-template-detail comment. Only the author can delete.
-
-  ### Path Parameters
-  - `id` — Comment ID
-
-
-  ### Sample Response
-  ```json
-  {
-    "data": {
-      "id": "uuid"
-    },
-    "paginate": null,
-    "status": 200,
-    "success": true,
-    "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
-  }
-  ```
+  ~version:
 }
 
 params:path {
   id: {{test_id}}
+}
+
+docs {
+  ## Delete Pricelist Template Detail Comment
+  ลบความคิดเห็นของ pricelist-template-detail (soft delete) พร้อมลบไฟล์แนบจาก S3
+
+  ### URL
+  `DELETE {{host}}/api/{{bu_code}}/pricelist-template-detail-comment/:id`
+
+  ### Path Parameters
+  - `bu_code` — Business unit code
+  - `id` — Comment UUID
+
+  ### Gateway behavior
+  1. ดึงข้อมูล comment ผ่าน `pricelist-template-detail-comment.find-by-id` เพื่อ
+     อ่าน `attachments[].fileToken`
+  2. ลบไฟล์ทุกตัวออกจาก S3 ผ่าน `file.delete` (best-effort, log warn หากบางตัวล้มเหลว)
+  3. ส่ง `pricelist-template-detail-comment.delete` ไปยัง business service เพื่อ
+     soft-delete record (set `deleted_at`)
+
+  > Important: S3 cleanup ทำ **ก่อน** flag delete เพื่อป้องกัน orphan files
+
+  ### Sample Response 200
+  ```json
+  {
+    "data": { "id": "uuid" },
+    "paginate": null,
+    "status": 200,
+    "success": true,
+    "message": "Success",
+    "timestamp": "2026-04-29T00:00:00.000Z"
+  }
+  ```
 }

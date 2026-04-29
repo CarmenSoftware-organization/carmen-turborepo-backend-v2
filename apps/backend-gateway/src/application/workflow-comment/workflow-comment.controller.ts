@@ -18,7 +18,10 @@ import {
 } from '@nestjs/common';
 import { WorkflowCommentService } from './workflow-comment.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { UploadCommentWithFilesBodySchema, UploadCommentWithFilesDto } from './dto/upload-comment-with-files.dto';
+import {
+  UploadCommentWithFilesBodySchema,
+  UploadCommentWithFilesDto,
+} from './dto/upload-comment-with-files.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -34,7 +37,11 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
-import { CreateWorkflowCommentDto, UpdateWorkflowCommentDto, AddAttachmentDto } from './dto/workflow-comment.dto';
+import {
+  UpdateWorkflowCommentDto,
+  UpdateWorkflowCommentBodySchema,
+  AddAttachmentsDto,
+} from './dto/workflow-comment.dto';
 
 const MAX_FILES = 10;
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
@@ -52,84 +59,222 @@ const ALLOWED_MIME_TYPES = [
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()
 export class WorkflowCommentController {
-  private readonly logger: BackendLogger = new BackendLogger(WorkflowCommentController.name);
-  constructor(private readonly workflowCommentService: WorkflowCommentService) {}
+  private readonly logger: BackendLogger = new BackendLogger(
+    WorkflowCommentController.name,
+  );
 
-  @Get(':bu_code/workflow/:workflow_id/comments')
+  constructor(
+    private readonly workflowCommentService: WorkflowCommentService,
+  ) {}
+
+  @Get(':bu_code/workflow-comment/:workflow_id')
   @UseGuards(new AppIdGuard('workflowComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all comments for a workflow', operationId: 'findAllWorkflowComments', responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
+  @ApiOperation({
+    summary: 'Get all comments for a workflow',
+    operationId: 'findAllWorkflowComments',
+    responses: {
+      200: { description: 'Comments retrieved successfully' },
+    },
+  } as any)
   @HttpCode(HttpStatus.OK)
-  async findAllByWorkflowId(@Param('bu_code') bu_code: string, @Param('workflow_id', new ParseUUIDPipe({ version: '4' })) workflow_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
+  async findAllByParentId(
+    @Param('bu_code') bu_code: string,
+    @Param('workflow_id', new ParseUUIDPipe({ version: '4' })) workflow_id: string,
+    @Req() req: Request,
+    @Query() query: IPaginateQuery,
+    @Query('version') version: string = 'latest',
+  ): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
-    return this.workflowCommentService.findAllByWorkflowId(workflow_id, user_id, bu_code, paginate, version);
-  }
-
-  @Get(':bu_code/workflow-comment/:id')
-  @UseGuards(new AppIdGuard('workflowComment.findOne'))
-  @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a workflow comment by ID', operationId: 'findOneWorkflowComment', responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
-  @HttpCode(HttpStatus.OK)
-  async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.workflowCommentService.findById(id, user_id, bu_code, version);
-  }
-
-  @Post(':bu_code/workflow-comment')
-  @UseGuards(new AppIdGuard('workflowComment.create'))
-  @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new workflow comment', operationId: 'createWorkflowComment', responses: { 201: { description: 'Comment created successfully' } } } as any)
-  @ApiBody({ type: CreateWorkflowCommentDto })
-  @HttpCode(HttpStatus.CREATED)
-  async create(@Param('bu_code') bu_code: string, @Body() createDto: CreateWorkflowCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.workflowCommentService.create({ ...createDto }, user_id, bu_code, version);
+    return this.workflowCommentService.findAllByParentId(
+      workflow_id,
+      user_id,
+      bu_code,
+      paginate,
+      version,
+    );
   }
 
   @Patch(':bu_code/workflow-comment/:id')
   @UseGuards(new AppIdGuard('workflowComment.update'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a workflow comment', operationId: 'updateWorkflowComment', responses: { 200: { description: 'Comment updated successfully' } } } as any)
+  @ApiOperation({
+    summary: 'Update a workflow comment with attachment add/remove',
+    operationId: 'updateWorkflowComment',
+    responses: {
+      200: { description: 'Comment updated successfully' },
+      400: { description: 'Validation failed' },
+      502: { description: 'File service upstream failure' },
+    },
+  } as any)
+  @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateWorkflowCommentDto })
   @HttpCode(HttpStatus.OK)
-  async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdateWorkflowCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
+  async update(
+    @Param('bu_code') bu_code: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @UploadedFiles() files: Express.Multer.File[] = [],
+    @Body() rawBody: Record<string, unknown>,
+    @Req() req: Request,
+    @Query('version') version: string = 'latest',
+  ): Promise<unknown> {
+    const parsed = UpdateWorkflowCommentBodySchema.safeParse(rawBody);
+    if (!parsed.success) {
+      throw new BadRequestException({
+        message: 'Invalid request body',
+        errors: parsed.error.errors,
+      });
+    }
+    const body = parsed.data as {
+      message?: string | null;
+      type?: 'user' | 'system';
+      remove_attachments?: string[];
+    };
+
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
+    const removeTokens = body.remove_attachments ?? [];
+    const hasMessage =
+      typeof body.message === 'string' && body.message.trim().length > 0;
+    const hasType = typeof body.type === 'string';
+    if (!hasMessage && !hasType && files.length === 0 && removeTokens.length === 0) {
+      throw new BadRequestException(
+        'At least one of \`message\`, \`type\`, \`files\`, or \`remove_attachments\` must be provided',
+      );
+    }
+
     const { user_id } = ExtractRequestHeader(req);
-    return this.workflowCommentService.update(id, { ...updateDto }, user_id, bu_code, version);
+    return this.workflowCommentService.update(
+      id,
+      {
+        message: body.message ?? undefined,
+        type: body.type,
+        addFiles: files,
+        removeFileTokens: removeTokens,
+      },
+      user_id,
+      bu_code,
+      version,
+    );
   }
 
   @Delete(':bu_code/workflow-comment/:id')
   @UseGuards(new AppIdGuard('workflowComment.delete'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a workflow comment', operationId: 'deleteWorkflowComment', responses: { 200: { description: 'Comment deleted successfully' } } } as any)
+  @ApiOperation({
+    summary: 'Delete a workflow comment',
+    operationId: 'deleteWorkflowComment',
+    responses: {
+      200: { description: 'Comment deleted successfully' },
+    },
+  } as any)
   @HttpCode(HttpStatus.OK)
-  async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
+  async delete(
+    @Param('bu_code') bu_code: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Req() req: Request,
+    @Query('version') version: string = 'latest',
+  ): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     return this.workflowCommentService.delete(id, user_id, bu_code, version);
   }
 
   @Post(':bu_code/workflow-comment/:id/attachment')
   @UseGuards(new AppIdGuard('workflowComment.addAttachment'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Add attachment to a workflow comment', operationId: 'addAttachmentToWorkflowComment', responses: { 200: { description: 'Attachment added successfully' } } } as any)
-  @ApiBody({ type: AddAttachmentDto })
+  @ApiOperation({
+    summary: 'Add attachments to a workflow comment',
+    operationId: 'addAttachmentsToWorkflowComment',
+    responses: {
+      200: { description: 'Attachments added successfully' },
+      400: { description: 'Validation failed' },
+      502: { description: 'File service upstream failure' },
+    },
+  } as any)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: AddAttachmentsDto })
   @HttpCode(HttpStatus.OK)
-  async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
+  async addAttachment(
+    @Param('bu_code') bu_code: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @UploadedFiles() files: Express.Multer.File[] = [],
+    @Req() req: Request,
+    @Query('version') version: string = 'latest',
+  ): Promise<unknown> {
+    if (files.length === 0) {
+      throw new BadRequestException('At least one file is required');
+    }
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
     const { user_id } = ExtractRequestHeader(req);
-    return this.workflowCommentService.addAttachment(id, { ...attachment }, user_id, bu_code, version);
+    return this.workflowCommentService.addAttachments(
+      id,
+      files,
+      user_id,
+      bu_code,
+      version,
+    );
   }
 
   @Delete(':bu_code/workflow-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('workflowComment.removeAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove attachment from a workflow comment', operationId: 'removeAttachmentFromWorkflowComment', responses: { 200: { description: 'Attachment removed successfully' } } } as any)
+  @ApiOperation({
+    summary: 'Remove an attachment from a workflow comment',
+    operationId: 'removeAttachmentFromWorkflowComment',
+    responses: {
+      200: { description: 'Attachment removed successfully' },
+    },
+  } as any)
   @HttpCode(HttpStatus.OK)
-  async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
+  async removeAttachment(
+    @Param('bu_code') bu_code: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('fileToken') fileToken: string,
+    @Req() req: Request,
+    @Query('version') version: string = 'latest',
+  ): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     return this.workflowCommentService.removeAttachment(id, fileToken, user_id, bu_code, version);
   }
-  @Post(':bu_code/workflow-comment/upload')
+
+  @Post(':bu_code/workflow-comment/:workflow_id')
   @UseGuards(new AppIdGuard('workflowComment.createWithFiles'))
   @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
@@ -147,11 +292,22 @@ export class WorkflowCommentController {
   @HttpCode(HttpStatus.CREATED)
   async createWithFiles(
     @Param('bu_code') bu_code: string,
+    @Param('workflow_id', new ParseUUIDPipe({ version: '4' }))
+    workflow_id: string,
     @UploadedFiles() files: Express.Multer.File[] = [],
     @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    this.logger.debug(
+      {
+        function: 'createWithFiles',
+        bu_code,
+        workflow_id,
+        file_count: files.length,
+      },
+      WorkflowCommentController.name,
+    );
     const parsed = UploadCommentWithFilesBodySchema.safeParse(rawBody);
     if (!parsed.success) {
       throw new BadRequestException({
@@ -160,7 +316,6 @@ export class WorkflowCommentController {
       });
     }
     const body = parsed.data as {
-      workflow_id: string;
       message?: string | null;
       type?: 'user' | 'system';
     };
@@ -186,14 +341,14 @@ export class WorkflowCommentController {
       typeof body.message === 'string' && body.message.trim().length > 0;
     if (!hasMessage && files.length === 0) {
       throw new BadRequestException(
-        'At least one of `message` or `files` must be provided',
+        'At least one of \`message\` or \`files\` must be provided',
       );
     }
 
     const { user_id } = ExtractRequestHeader(req);
     return this.workflowCommentService.createWithFiles(
       files,
-      body,
+      { ...body, workflow_id },
       user_id,
       bu_code,
       version,

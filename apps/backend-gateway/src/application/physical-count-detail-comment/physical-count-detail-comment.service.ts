@@ -29,11 +29,12 @@ export class PhysicalCountDetailCommentService {
   );
 
   constructor(
-    @Inject('BUSINESS_SERVICE') private readonly businessService: ClientProxy,
+    @Inject('BUSINESS_SERVICE')
+    private readonly businessService: ClientProxy,
     @Inject('FILE_SERVICE') private readonly fileService: ClientProxy,
   ) {}
 
-  async findAllByPhysicalCountDetailId(
+  async findAllByParentId(
     physical_count_detail_id: string,
     user_id: string,
     bu_code: string,
@@ -45,11 +46,12 @@ export class PhysicalCountDetailCommentService {
       { physical_count_detail_id, user_id, bu_code, paginate, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
-    if (response.response.status !== HttpStatus.OK)
+    if (response.response.status !== HttpStatus.OK) {
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
+    }
     return ResponseLib.successWithPaginate(response.data, response.paginate);
   }
 
@@ -68,7 +70,6 @@ export class PhysicalCountDetailCommentService {
     const addFiles = dto.addFiles ?? [];
     const removeTokens = dto.removeFileTokens ?? [];
 
-    // 1. Upload new files to S3 (rollback on partial failure)
     const uploaded: UploadedAttachment[] = [];
     if (addFiles.length > 0) {
       const settled = await Promise.allSettled(
@@ -101,7 +102,6 @@ export class PhysicalCountDetailCommentService {
       }
     }
 
-    // 2. Delete removed files from S3 (best-effort, log on failure)
     if (removeTokens.length > 0) {
       const results = await Promise.all(
         removeTokens.map((tok) => this.deleteFile(tok, user_id, bu_code)),
@@ -122,7 +122,6 @@ export class PhysicalCountDetailCommentService {
       }
     }
 
-    // 3. Forward to business service with attachments: { add, remove }
     const data: Record<string, unknown> = {};
     if (dto.message !== undefined) data.message = dto.message;
     if (dto.type !== undefined) data.type = dto.type;
@@ -140,7 +139,6 @@ export class PhysicalCountDetailCommentService {
     const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.OK) {
-      // Rollback: delete the files we just uploaded since the DB update failed
       if (uploaded.length > 0) {
         this.logger.warn(
           {
@@ -212,11 +210,12 @@ export class PhysicalCountDetailCommentService {
       { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
-    if (response.response.status !== HttpStatus.OK)
+    if (response.response.status !== HttpStatus.OK) {
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
+    }
     return ResponseLib.success(response.data);
   }
 
@@ -227,7 +226,6 @@ export class PhysicalCountDetailCommentService {
     bu_code: string,
     version: string,
   ): Promise<unknown> {
-    // 1. Upload all files to S3 (rollback on partial failure)
     const settled = await Promise.allSettled(
       files.map((f) => this.uploadFile(f, user_id, bu_code)),
     );
@@ -257,7 +255,6 @@ export class PhysicalCountDetailCommentService {
       throw new BadGatewayException(`File upload failed: ${msg}`);
     }
 
-    // 2. Forward batched attachments to business service
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'physical-count-detail-comment.add-attachment', service: 'physical-count' },
       {
@@ -272,7 +269,6 @@ export class PhysicalCountDetailCommentService {
     const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.OK) {
-      // Rollback: delete S3 files since the DB update failed
       this.logger.warn(
         {
           function: 'addAttachments',
@@ -307,11 +303,12 @@ export class PhysicalCountDetailCommentService {
       { id, fileToken, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
     const response = await firstValueFrom(res);
-    if (response.response.status !== HttpStatus.OK)
+    if (response.response.status !== HttpStatus.OK) {
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
+    }
     return ResponseLib.success(response.data);
   }
 
@@ -332,13 +329,10 @@ export class PhysicalCountDetailCommentService {
       const settled = await Promise.allSettled(
         files.map((f) => this.uploadFile(f, user_id, bu_code)),
       );
-
       const failures = settled.filter((s) => s.status === 'rejected');
       const successes = settled.filter(
-        (s): s is PromiseFulfilledResult<UploadedAttachment> =>
-          s.status === 'fulfilled',
+        (s): s is PromiseFulfilledResult<UploadedAttachment> => s.status === 'fulfilled',
       );
-
       uploaded.push(...successes.map((s) => s.value));
 
       if (failures.length > 0) {
@@ -357,8 +351,7 @@ export class PhysicalCountDetailCommentService {
           uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
         );
         const firstReason = (failures[0] as PromiseRejectedResult).reason;
-        const msg =
-          firstReason instanceof Error ? firstReason.message : String(firstReason);
+        const msg = firstReason instanceof Error ? firstReason.message : String(firstReason);
         throw new BadGatewayException(`File upload failed: ${msg}`);
       }
     }

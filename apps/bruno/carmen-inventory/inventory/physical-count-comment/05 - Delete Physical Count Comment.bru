@@ -1,7 +1,7 @@
 meta {
   name: Remove physical-count-comment
   type: http
-  seq: 6
+  seq: 5
 }
 
 delete {
@@ -10,20 +10,20 @@ delete {
   auth: bearer
 }
 
-params:query {
-  ~version: 
-}
-
-params:path {
-  id: {{test_id}}
-}
-
 headers {
   x-app-id: {{x_app_id}}
 }
 
 auth:bearer {
   token: {{access_token}}
+}
+
+query {
+  ~version:
+}
+
+params:path {
+  id: {{test_id}}
 }
 
 docs {
@@ -45,15 +45,11 @@ docs {
      soft-delete record (set `deleted_at`)
 
   > Important: S3 cleanup ทำ **ก่อน** flag delete เพื่อป้องกัน orphan files
-  > หากการ flag-delete ล้มเหลวภายหลัง ไฟล์ใน S3 จะถูกลบไปแล้ว — โปรดระวังในการ
-  > ออกแบบ retry/recovery flow
 
   ### Sample Response 200
   ```json
   {
-    "data": {
-      "id": "uuid"
-    },
+    "data": { "id": "uuid" },
     "paginate": null,
     "status": 200,
     "success": true,

@@ -1,7 +1,7 @@
 meta {
   name: Add attachments physical-count-comment
   type: http
-  seq: 5
+  seq: 6
 }
 
 post {
@@ -10,20 +10,20 @@ post {
   auth: bearer
 }
 
-params:query {
-  ~version:
-}
-
-params:path {
-  id: {{test_id}}
-}
-
 headers {
   x-app-id: {{x_app_id}}
 }
 
 auth:bearer {
   token: {{access_token}}
+}
+
+query {
+  ~version:
+}
+
+params:path {
+  id: {{test_id}}
 }
 
 body:json {
@@ -64,18 +64,7 @@ docs {
   ### Sample Response 200
   ```json
   {
-    "data": {
-      "id": "uuid",
-      "attachments": [
-        {
-          "fileName": "logo.png",
-          "fileToken": "tok-1",
-          "fileUrl": "",
-          "contentType": "image/png",
-          "size": 12345
-        }
-      ]
-    },
+    "data": { "id": "uuid", "attachments": [...] },
     "paginate": null,
     "status": 200,
     "success": true,

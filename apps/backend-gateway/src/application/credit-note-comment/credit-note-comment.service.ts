@@ -34,7 +34,7 @@ export class CreditNoteCommentService {
     @Inject('FILE_SERVICE') private readonly fileService: ClientProxy,
   ) {}
 
-  async findAllByCreditNoteId(
+  async findAllByParentId(
     credit_note_id: string,
     user_id: string,
     bu_code: string,
@@ -70,7 +70,6 @@ export class CreditNoteCommentService {
     const addFiles = dto.addFiles ?? [];
     const removeTokens = dto.removeFileTokens ?? [];
 
-    // 1. Upload new files to S3 (rollback on partial failure)
     const uploaded: UploadedAttachment[] = [];
     if (addFiles.length > 0) {
       const settled = await Promise.allSettled(
@@ -103,7 +102,6 @@ export class CreditNoteCommentService {
       }
     }
 
-    // 2. Delete removed files from S3 (best-effort, log on failure)
     if (removeTokens.length > 0) {
       const results = await Promise.all(
         removeTokens.map((tok) => this.deleteFile(tok, user_id, bu_code)),
@@ -124,7 +122,6 @@ export class CreditNoteCommentService {
       }
     }
 
-    // 3. Forward to business service with attachments: { add, remove }
     const data: Record<string, unknown> = {};
     if (dto.message !== undefined) data.message = dto.message;
     if (dto.type !== undefined) data.type = dto.type;
@@ -142,7 +139,6 @@ export class CreditNoteCommentService {
     const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.OK) {
-      // Rollback: delete the files we just uploaded since the DB update failed
       if (uploaded.length > 0) {
         this.logger.warn(
           {
@@ -173,7 +169,6 @@ export class CreditNoteCommentService {
     bu_code: string,
     version: string,
   ): Promise<unknown> {
-    // 1. Fetch the comment to get attachments before delete
     const findRes: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'credit-note-comment.find-by-id', service: 'credit-note-comment' },
       { id, user_id, bu_code, version, ...getGatewayRequestContext() },
@@ -190,7 +185,6 @@ export class CreditNoteCommentService {
       .map((a) => a?.fileToken)
       .filter((t): t is string => typeof t === 'string' && t.length > 0);
 
-    // 2. Delete S3 files first (best-effort)
     if (attachments.length > 0) {
       const results = await Promise.all(
         attachments.map((fileToken) => this.deleteFile(fileToken, user_id, bu_code)),
@@ -211,7 +205,6 @@ export class CreditNoteCommentService {
       }
     }
 
-    // 3. Soft-delete the comment in business service
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'credit-note-comment.delete', service: 'credit-note-comment' },
       { id, user_id, bu_code, version, ...getGatewayRequestContext() },
@@ -233,7 +226,6 @@ export class CreditNoteCommentService {
     bu_code: string,
     version: string,
   ): Promise<unknown> {
-    // 1. Upload all files to S3 (rollback on partial failure)
     const settled = await Promise.allSettled(
       files.map((f) => this.uploadFile(f, user_id, bu_code)),
     );
@@ -263,7 +255,6 @@ export class CreditNoteCommentService {
       throw new BadGatewayException(`File upload failed: ${msg}`);
     }
 
-    // 2. Forward batched attachments to business service
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'credit-note-comment.add-attachment', service: 'credit-note-comment' },
       {
@@ -338,13 +329,10 @@ export class CreditNoteCommentService {
       const settled = await Promise.allSettled(
         files.map((f) => this.uploadFile(f, user_id, bu_code)),
       );
-
       const failures = settled.filter((s) => s.status === 'rejected');
       const successes = settled.filter(
-        (s): s is PromiseFulfilledResult<UploadedAttachment> =>
-          s.status === 'fulfilled',
+        (s): s is PromiseFulfilledResult<UploadedAttachment> => s.status === 'fulfilled',
       );
-
       uploaded.push(...successes.map((s) => s.value));
 
       if (failures.length > 0) {
@@ -363,8 +351,7 @@ export class CreditNoteCommentService {
           uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
         );
         const firstReason = (failures[0] as PromiseRejectedResult).reason;
-        const msg =
-          firstReason instanceof Error ? firstReason.message : String(firstReason);
+        const msg = firstReason instanceof Error ? firstReason.message : String(firstReason);
         throw new BadGatewayException(`File upload failed: ${msg}`);
       }
     }

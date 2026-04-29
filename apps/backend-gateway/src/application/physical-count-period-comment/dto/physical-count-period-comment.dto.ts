@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-export { AddAttachmentDto } from 'src/shared-dto/add-attachment.dto';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export const AttachmentSchema = z.object({
   fileName: z.string(),
@@ -10,66 +9,79 @@ export const AttachmentSchema = z.object({
   contentType: z.string(),
   size: z.number().optional(),
 });
+
 export type Attachment = z.infer<typeof AttachmentSchema>;
 
-export const CreatePhysicalCountPeriodCommentSchema = z.object({
-  physical_count_period_id: z.string().uuid(),
-  message: z.string().optional().nullable(),
-  type: z.enum(['user', 'system']).default('user'),
-  attachments: z.array(AttachmentSchema).optional().default([]),
+/**
+ * Multipart body schema for PATCH update.
+ * - `message` and `type` are plain text fields.
+ * - `remove_attachments` is sent as a JSON-encoded string array of fileTokens
+ *   (multipart cannot carry nested JSON natively).
+ * - New files arrive via the `files` field (handled by FilesInterceptor).
+ */
+export const UpdatePhysicalCountPeriodCommentBodySchema = z.object({
+  message: z.string().max(4000).optional().nullable(),
+  type: z.enum(['user', 'system']).optional(),
+  remove_attachments: z
+    .preprocess((v) => {
+      if (typeof v !== 'string') return v;
+      const trimmed = v.trim();
+      if (trimmed === '') return undefined;
+      try {
+        return JSON.parse(trimmed);
+      } catch {
+        return v;
+      }
+    }, z.array(z.string().min(1)).optional())
+    .optional(),
 });
 
-export class CreatePhysicalCountPeriodCommentDto extends createZodDto(CreatePhysicalCountPeriodCommentSchema) {
-  @ApiProperty({
-    description: 'The ID of the physical-count-period',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
-  physical_count_period_id: string;
+export type UpdatePhysicalCountPeriodCommentBody = z.infer<typeof UpdatePhysicalCountPeriodCommentBodySchema>;
 
+export class UpdatePhysicalCountPeriodCommentDto {
   @ApiPropertyOptional({
-    description: 'Comment message',
-    example: 'This is a comment',
+    description: 'Updated comment message (≤ 4000 chars)',
+    example: 'Updated comment',
+    nullable: true,
   })
   message?: string | null;
 
   @ApiPropertyOptional({
     description: 'Comment type',
     enum: ['user', 'system'],
-    default: 'user',
   })
   type?: 'user' | 'system';
 
   @ApiPropertyOptional({
-    description: 'File attachments',
-    type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        fileName: { type: 'string' },
-        fileToken: { type: 'string' },
-        contentType: { type: 'string' },
-      },
-    },
+    description:
+      'JSON-encoded string array of fileTokens to remove, e.g. \`["tok-1","tok-2"]\`',
+    example: '["tok-1","tok-2"]',
   })
-  attachments?: Attachment[];
+  remove_attachments?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'New attachments to add (0–10 files). Allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf. Max 10 MB each.',
+    type: 'array',
+    items: { type: 'string', format: 'binary' },
+  })
+  files?: unknown[];
 }
 
-export const UpdatePhysicalCountPeriodCommentSchema = z.object({
-  message: z.string().optional().nullable(),
-  attachments: z.array(AttachmentSchema).optional(),
-});
+export class UpdatePhysicalCountPeriodCommentBodyDto extends createZodDto(
+  UpdatePhysicalCountPeriodCommentBodySchema,
+) {}
 
-export class UpdatePhysicalCountPeriodCommentDto extends createZodDto(UpdatePhysicalCountPeriodCommentSchema) {
+/**
+ * Swagger-only DTO for POST `:id/attachment` (multipart/form-data).
+ * Runtime validation: count/size/mime checks performed in the controller.
+ */
+export class AddAttachmentsDto {
   @ApiPropertyOptional({
-    description: 'Updated comment message',
-    example: 'Updated comment',
-  })
-  message?: string | null;
-
-  @ApiPropertyOptional({
-    description: 'Updated file attachments',
+    description:
+      'Attachments to add (1–10 files). Allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf. Max 10 MB each.',
     type: 'array',
-    items: { type: 'object' },
+    items: { type: 'string', format: 'binary' },
   })
-  attachments?: Attachment[];
+  files?: unknown[];
 }

@@ -18,7 +18,10 @@ import {
 } from '@nestjs/common';
 import { PurchaseRequestTemplateCommentService } from './purchase-request-template-comment.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { UploadCommentWithFilesBodySchema, UploadCommentWithFilesDto } from './dto/upload-comment-with-files.dto';
+import {
+  UploadCommentWithFilesBodySchema,
+  UploadCommentWithFilesDto,
+} from './dto/upload-comment-with-files.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -35,9 +38,9 @@ import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
-  CreatePurchaseRequestTemplateCommentDto,
   UpdatePurchaseRequestTemplateCommentDto,
-  AddAttachmentDto,
+  UpdatePurchaseRequestTemplateCommentBodySchema,
+  AddAttachmentsDto,
 } from './dto/purchase-request-template-comment.dto';
 
 const MAX_FILES = 10;
@@ -64,21 +67,19 @@ export class PurchaseRequestTemplateCommentController {
     private readonly purchaseRequestTemplateCommentService: PurchaseRequestTemplateCommentService,
   ) {}
 
-  @Get(':bu_code/purchase-request-template/:purchase_request_template_id/comments')
+  @Get(':bu_code/purchase-request-template-comment/:purchase_request_template_id')
   @UseGuards(new AppIdGuard('purchaseRequestTemplateComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all comments for a purchase-request-template',
-    description: 'Retrieves all comments for a purchase-request-template.',
     operationId: 'findAllPurchaseRequestTemplateComments',
     responses: {
       200: { description: 'Comments retrieved successfully' },
-      404: { description: 'PurchaseRequestTemplate not found' },
     },
   } as any)
   @HttpCode(HttpStatus.OK)
-  async findAllByPurchaseRequestTemplateId(
+  async findAllByParentId(
     @Param('bu_code') bu_code: string,
     @Param('purchase_request_template_id', new ParseUUIDPipe({ version: '4' })) purchase_request_template_id: string,
     @Req() req: Request,
@@ -87,7 +88,7 @@ export class PurchaseRequestTemplateCommentController {
   ): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
-    return this.purchaseRequestTemplateCommentService.findAllByPurchaseRequestTemplateId(
+    return this.purchaseRequestTemplateCommentService.findAllByParentId(
       purchase_request_template_id,
       user_id,
       bu_code,
@@ -96,74 +97,84 @@ export class PurchaseRequestTemplateCommentController {
     );
   }
 
-  @Get(':bu_code/purchase-request-template-comment/:id')
-  @UseGuards(new AppIdGuard('purchaseRequestTemplateComment.findOne'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Get a purchase-request-template comment by ID',
-    operationId: 'findOnePurchaseRequestTemplateComment',
-    responses: {
-      200: { description: 'Comment retrieved successfully' },
-      404: { description: 'Comment not found' },
-    },
-  } as any)
-  @HttpCode(HttpStatus.OK)
-  async findById(
-    @Param('bu_code') bu_code: string,
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Req() req: Request,
-    @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.purchaseRequestTemplateCommentService.findById(id, user_id, bu_code, version);
-  }
-
-  @Post(':bu_code/purchase-request-template-comment')
-  @UseGuards(new AppIdGuard('purchaseRequestTemplateComment.create'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Create a new purchase-request-template comment',
-    operationId: 'createPurchaseRequestTemplateComment',
-    responses: {
-      201: { description: 'Comment created successfully' },
-      404: { description: 'PurchaseRequestTemplate not found' },
-    },
-  } as any)
-  @ApiBody({ type: CreatePurchaseRequestTemplateCommentDto })
-  @HttpCode(HttpStatus.CREATED)
-  async create(
-    @Param('bu_code') bu_code: string,
-    @Body() createDto: CreatePurchaseRequestTemplateCommentDto,
-    @Req() req: Request,
-    @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.purchaseRequestTemplateCommentService.create({ ...createDto }, user_id, bu_code, version);
-  }
-
   @Patch(':bu_code/purchase-request-template-comment/:id')
   @UseGuards(new AppIdGuard('purchaseRequestTemplateComment.update'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Update a purchase-request-template comment',
+    summary: 'Update a purchase-request-template comment with attachment add/remove',
     operationId: 'updatePurchaseRequestTemplateComment',
     responses: {
       200: { description: 'Comment updated successfully' },
-      404: { description: 'Comment not found' },
-      403: { description: 'Forbidden' },
+      400: { description: 'Validation failed' },
+      502: { description: 'File service upstream failure' },
     },
   } as any)
+  @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdatePurchaseRequestTemplateCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('bu_code') bu_code: string,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() updateDto: UpdatePurchaseRequestTemplateCommentDto,
+    @UploadedFiles() files: Express.Multer.File[] = [],
+    @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    const parsed = UpdatePurchaseRequestTemplateCommentBodySchema.safeParse(rawBody);
+    if (!parsed.success) {
+      throw new BadRequestException({
+        message: 'Invalid request body',
+        errors: parsed.error.errors,
+      });
+    }
+    const body = parsed.data as {
+      message?: string | null;
+      type?: 'user' | 'system';
+      remove_attachments?: string[];
+    };
+
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
+    const removeTokens = body.remove_attachments ?? [];
+    const hasMessage =
+      typeof body.message === 'string' && body.message.trim().length > 0;
+    const hasType = typeof body.type === 'string';
+    if (!hasMessage && !hasType && files.length === 0 && removeTokens.length === 0) {
+      throw new BadRequestException(
+        'At least one of \`message\`, \`type\`, \`files\`, or \`remove_attachments\` must be provided',
+      );
+    }
+
     const { user_id } = ExtractRequestHeader(req);
-    return this.purchaseRequestTemplateCommentService.update(id, { ...updateDto }, user_id, bu_code, version);
+    return this.purchaseRequestTemplateCommentService.update(
+      id,
+      {
+        message: body.message ?? undefined,
+        type: body.type,
+        addFiles: files,
+        removeFileTokens: removeTokens,
+      },
+      user_id,
+      bu_code,
+      version,
+    );
   }
 
   @Delete(':bu_code/purchase-request-template-comment/:id')
@@ -174,8 +185,6 @@ export class PurchaseRequestTemplateCommentController {
     operationId: 'deletePurchaseRequestTemplateComment',
     responses: {
       200: { description: 'Comment deleted successfully' },
-      404: { description: 'Comment not found' },
-      403: { description: 'Forbidden' },
     },
   } as any)
   @HttpCode(HttpStatus.OK)
@@ -191,26 +200,56 @@ export class PurchaseRequestTemplateCommentController {
 
   @Post(':bu_code/purchase-request-template-comment/:id/attachment')
   @UseGuards(new AppIdGuard('purchaseRequestTemplateComment.addAttachment'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Add an attachment to a purchase-request-template comment',
-    operationId: 'addAttachmentToPurchaseRequestTemplateComment',
+    summary: 'Add attachments to a purchase-request-template comment',
+    operationId: 'addAttachmentsToPurchaseRequestTemplateComment',
     responses: {
-      200: { description: 'Attachment added successfully' },
-      404: { description: 'Comment not found' },
+      200: { description: 'Attachments added successfully' },
+      400: { description: 'Validation failed' },
+      502: { description: 'File service upstream failure' },
     },
   } as any)
-  @ApiBody({ type: AddAttachmentDto })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: AddAttachmentsDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(
     @Param('bu_code') bu_code: string,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() attachment: AddAttachmentDto,
+    @UploadedFiles() files: Express.Multer.File[] = [],
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    if (files.length === 0) {
+      throw new BadRequestException('At least one file is required');
+    }
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
     const { user_id } = ExtractRequestHeader(req);
-    return this.purchaseRequestTemplateCommentService.addAttachment(id, { ...attachment }, user_id, bu_code, version);
+    return this.purchaseRequestTemplateCommentService.addAttachments(
+      id,
+      files,
+      user_id,
+      bu_code,
+      version,
+    );
   }
 
   @Delete(':bu_code/purchase-request-template-comment/:id/attachment/:fileToken')
@@ -221,7 +260,6 @@ export class PurchaseRequestTemplateCommentController {
     operationId: 'removeAttachmentFromPurchaseRequestTemplateComment',
     responses: {
       200: { description: 'Attachment removed successfully' },
-      404: { description: 'Comment not found' },
     },
   } as any)
   @HttpCode(HttpStatus.OK)
@@ -235,7 +273,8 @@ export class PurchaseRequestTemplateCommentController {
     const { user_id } = ExtractRequestHeader(req);
     return this.purchaseRequestTemplateCommentService.removeAttachment(id, fileToken, user_id, bu_code, version);
   }
-  @Post(':bu_code/purchase-request-template-comment/upload')
+
+  @Post(':bu_code/purchase-request-template-comment/:purchase_request_template_id')
   @UseGuards(new AppIdGuard('purchaseRequestTemplateComment.createWithFiles'))
   @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
@@ -253,11 +292,22 @@ export class PurchaseRequestTemplateCommentController {
   @HttpCode(HttpStatus.CREATED)
   async createWithFiles(
     @Param('bu_code') bu_code: string,
+    @Param('purchase_request_template_id', new ParseUUIDPipe({ version: '4' }))
+    purchase_request_template_id: string,
     @UploadedFiles() files: Express.Multer.File[] = [],
     @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    this.logger.debug(
+      {
+        function: 'createWithFiles',
+        bu_code,
+        purchase_request_template_id,
+        file_count: files.length,
+      },
+      PurchaseRequestTemplateCommentController.name,
+    );
     const parsed = UploadCommentWithFilesBodySchema.safeParse(rawBody);
     if (!parsed.success) {
       throw new BadRequestException({
@@ -266,7 +316,6 @@ export class PurchaseRequestTemplateCommentController {
       });
     }
     const body = parsed.data as {
-      purchase_request_template_id: string;
       message?: string | null;
       type?: 'user' | 'system';
     };
@@ -292,14 +341,14 @@ export class PurchaseRequestTemplateCommentController {
       typeof body.message === 'string' && body.message.trim().length > 0;
     if (!hasMessage && files.length === 0) {
       throw new BadRequestException(
-        'At least one of `message` or `files` must be provided',
+        'At least one of \`message\` or \`files\` must be provided',
       );
     }
 
     const { user_id } = ExtractRequestHeader(req);
     return this.purchaseRequestTemplateCommentService.createWithFiles(
       files,
-      body,
+      { ...body, purchase_request_template_id },
       user_id,
       bu_code,
       version,

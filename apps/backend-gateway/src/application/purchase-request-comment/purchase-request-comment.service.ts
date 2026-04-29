@@ -13,6 +13,7 @@ import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
 import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
+
 export interface UploadedAttachment {
   fileName: string;
   fileToken: string;
@@ -29,293 +30,267 @@ export class PurchaseRequestCommentService {
 
   constructor(
     @Inject('BUSINESS_SERVICE')
-    private readonly procurementService: ClientProxy,
+    private readonly businessService: ClientProxy,
     @Inject('FILE_SERVICE') private readonly fileService: ClientProxy,
   ) {}
 
-  /**
-   * Find a comment by ID via microservice
-   * ค้นหารายการเดียวตาม ID ของความคิดเห็นผ่านไมโครเซอร์วิส
-   * @param id - Comment ID / รหัสความคิดเห็น
-   * @param user_id - User ID / รหัสผู้ใช้
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param version - API version / เวอร์ชัน API
-   * @returns Comment data / ข้อมูลความคิดเห็น
-   */
-  async findById(
-    id: string,
-    user_id: string,
-    bu_code: string,
-    version: string,
-  ): Promise<unknown> {
-    this.logger.debug(
-      {
-        function: 'findById',
-        id,
-        version,
-      },
-      PurchaseRequestCommentService.name,
-    );
-
-    const res: Observable<MicroserviceResponse> = this.procurementService.send(
-      {
-        cmd: 'purchase-request-comment.find-by-id',
-        service: 'purchase-request-comment',
-      },
-      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
-    );
-
-    const response = await firstValueFrom(res);
-
-    if (response.response.status !== HttpStatus.OK) {
-      return Result.error(
-        response.response.message,
-        httpStatusToErrorCode(response.response.status),
-      );
-    }
-
-    return ResponseLib.success(response.data);
-  }
-
-  /**
-   * Find all comments for a purchase request via microservice
-   * ค้นหารายการทั้งหมดของความคิดเห็นสำหรับใบขอซื้อผ่านไมโครเซอร์วิส
-   * @param purchase_request_id - Purchase request ID / รหัสใบขอซื้อ
-   * @param user_id - User ID / รหัสผู้ใช้
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param paginate - Pagination parameters / พารามิเตอร์การแบ่งหน้า
-   * @param version - API version / เวอร์ชัน API
-   * @returns Paginated comment list / รายการความคิดเห็นแบบแบ่งหน้า
-   */
-  async findAllByPurchaseRequestId(
+  async findAllByParentId(
     purchase_request_id: string,
     user_id: string,
     bu_code: string,
     paginate: IPaginate,
     version: string,
   ): Promise<unknown> {
-    this.logger.debug(
-      {
-        function: 'findAllByPurchaseRequestId',
-        purchase_request_id,
-        paginate,
-        version,
-      },
-      PurchaseRequestCommentService.name,
-    );
-
-    const res: Observable<MicroserviceResponse> = this.procurementService.send(
-      {
-        cmd: 'purchase-request-comment.find-all-by-purchase-request-id',
-        service: 'purchase-request-comment',
-      },
+    const res: Observable<MicroserviceResponse> = this.businessService.send(
+      { cmd: 'purchase-request-comment.find-all-by-purchase-request-id', service: 'purchase-request-comment' },
       { purchase_request_id, user_id, bu_code, paginate, version, ...getGatewayRequestContext() },
     );
-
     const response = await firstValueFrom(res);
-
     if (response.response.status !== HttpStatus.OK) {
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
     }
-
     return ResponseLib.successWithPaginate(response.data, response.paginate);
   }
 
-  /**
-   * Create a new comment via microservice
-   * สร้างความคิดเห็นใหม่ผ่านไมโครเซอร์วิส
-   * @param data - Comment data / ข้อมูลความคิดเห็น
-   * @param user_id - User ID / รหัสผู้ใช้
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param version - API version / เวอร์ชัน API
-   * @returns Created comment / ความคิดเห็นที่สร้างแล้ว
-   */
-  async create(
-    data: Record<string, unknown>,
-    user_id: string,
-    bu_code: string,
-    version: string,
-  ): Promise<unknown> {
-    this.logger.debug(
-      {
-        function: 'create',
-        data,
-        version,
-      },
-      PurchaseRequestCommentService.name,
-    );
-
-    const res: Observable<MicroserviceResponse> = this.procurementService.send(
-      {
-        cmd: 'purchase-request-comment.create',
-        service: 'purchase-request-comment',
-      },
-      { data, user_id, bu_code, version, ...getGatewayRequestContext() },
-    );
-
-    const response = await firstValueFrom(res);
-
-    if (response.response.status !== HttpStatus.CREATED) {
-      return Result.error(
-        response.response.message,
-        httpStatusToErrorCode(response.response.status),
-      );
-    }
-
-    return ResponseLib.created(response.data);
-  }
-
-  /**
-   * Update a comment via microservice
-   * อัปเดตความคิดเห็นผ่านไมโครเซอร์วิส
-   * @param id - Comment ID / รหัสความคิดเห็น
-   * @param data - Updated comment data / ข้อมูลความคิดเห็นที่อัปเดต
-   * @param user_id - User ID / รหัสผู้ใช้
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param version - API version / เวอร์ชัน API
-   * @returns Updated comment / ความคิดเห็นที่อัปเดตแล้ว
-   */
   async update(
     id: string,
-    data: Record<string, unknown>,
+    dto: {
+      message?: string | null;
+      type?: 'user' | 'system';
+      addFiles?: Express.Multer.File[];
+      removeFileTokens?: string[];
+    },
     user_id: string,
     bu_code: string,
     version: string,
   ): Promise<unknown> {
-    this.logger.debug(
-      {
-        function: 'update',
-        id,
-        data,
-        version,
-      },
-      PurchaseRequestCommentService.name,
-    );
+    const addFiles = dto.addFiles ?? [];
+    const removeTokens = dto.removeFileTokens ?? [];
 
-    const res: Observable<MicroserviceResponse> = this.procurementService.send(
-      {
-        cmd: 'purchase-request-comment.update',
-        service: 'purchase-request-comment',
-      },
+    const uploaded: UploadedAttachment[] = [];
+    if (addFiles.length > 0) {
+      const settled = await Promise.allSettled(
+        addFiles.map((f) => this.uploadFile(f, user_id, bu_code)),
+      );
+      const failures = settled.filter((s) => s.status === 'rejected');
+      const successes = settled.filter(
+        (s): s is PromiseFulfilledResult<UploadedAttachment> => s.status === 'fulfilled',
+      );
+      uploaded.push(...successes.map((s) => s.value));
+
+      if (failures.length > 0) {
+        this.logger.warn(
+          {
+            function: 'update',
+            phase: 'upload-rollback',
+            bu_code,
+            comment_id: id,
+            uploaded_count: uploaded.length,
+            failed_count: failures.length,
+          },
+          PurchaseRequestCommentService.name,
+        );
+        await Promise.all(
+          uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
+        );
+        const firstReason = (failures[0] as PromiseRejectedResult).reason;
+        const msg = firstReason instanceof Error ? firstReason.message : String(firstReason);
+        throw new BadGatewayException(`File upload failed: ${msg}`);
+      }
+    }
+
+    if (removeTokens.length > 0) {
+      const results = await Promise.all(
+        removeTokens.map((tok) => this.deleteFile(tok, user_id, bu_code)),
+      );
+      const failedTokens = removeTokens.filter((_, i) => !results[i]);
+      if (failedTokens.length > 0) {
+        this.logger.warn(
+          {
+            function: 'update',
+            phase: 's3-delete-partial',
+            bu_code,
+            comment_id: id,
+            failed_count: failedTokens.length,
+            failed_tokens: failedTokens,
+          },
+          PurchaseRequestCommentService.name,
+        );
+      }
+    }
+
+    const data: Record<string, unknown> = {};
+    if (dto.message !== undefined) data.message = dto.message;
+    if (dto.type !== undefined) data.type = dto.type;
+    if (uploaded.length > 0 || removeTokens.length > 0) {
+      data.attachments = {
+        add: uploaded,
+        remove: removeTokens,
+      };
+    }
+
+    const res: Observable<MicroserviceResponse> = this.businessService.send(
+      { cmd: 'purchase-request-comment.update', service: 'purchase-request-comment' },
       { id, data, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
-
     const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.OK) {
+      if (uploaded.length > 0) {
+        this.logger.warn(
+          {
+            function: 'update',
+            phase: 'update-rollback',
+            bu_code,
+            comment_id: id,
+            uploaded_count: uploaded.length,
+            update_status: response.response.status,
+          },
+          PurchaseRequestCommentService.name,
+        );
+        await Promise.all(
+          uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
+        );
+      }
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
     }
-
     return ResponseLib.success(response.data);
   }
 
-  /**
-   * Delete a comment via microservice
-   * ลบความคิดเห็นผ่านไมโครเซอร์วิส
-   * @param id - Comment ID / รหัสความคิดเห็น
-   * @param user_id - User ID / รหัสผู้ใช้
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param version - API version / เวอร์ชัน API
-   * @returns Deletion result / ผลลัพธ์การลบ
-   */
   async delete(
     id: string,
     user_id: string,
     bu_code: string,
     version: string,
   ): Promise<unknown> {
-    this.logger.debug(
-      {
-        function: 'delete',
-        id,
-        version,
-      },
-      PurchaseRequestCommentService.name,
-    );
-
-    const res: Observable<MicroserviceResponse> = this.procurementService.send(
-      {
-        cmd: 'purchase-request-comment.delete',
-        service: 'purchase-request-comment',
-      },
+    const findRes: Observable<MicroserviceResponse> = this.businessService.send(
+      { cmd: 'purchase-request-comment.find-by-id', service: 'purchase-request-comment' },
       { id, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
+    const findResponse = await firstValueFrom(findRes);
+    if (findResponse.response.status !== HttpStatus.OK) {
+      return Result.error(
+        findResponse.response.message,
+        httpStatusToErrorCode(findResponse.response.status),
+      );
+    }
 
+    const attachments = ((findResponse.data as { attachments?: Array<{ fileToken?: string }> } | undefined)?.attachments ?? [])
+      .map((a) => a?.fileToken)
+      .filter((t): t is string => typeof t === 'string' && t.length > 0);
+
+    if (attachments.length > 0) {
+      const results = await Promise.all(
+        attachments.map((fileToken) => this.deleteFile(fileToken, user_id, bu_code)),
+      );
+      const failedTokens = attachments.filter((_, i) => !results[i]);
+      if (failedTokens.length > 0) {
+        this.logger.warn(
+          {
+            function: 'delete',
+            phase: 's3-delete-partial',
+            bu_code,
+            comment_id: id,
+            failed_count: failedTokens.length,
+            failed_tokens: failedTokens,
+          },
+          PurchaseRequestCommentService.name,
+        );
+      }
+    }
+
+    const res: Observable<MicroserviceResponse> = this.businessService.send(
+      { cmd: 'purchase-request-comment.delete', service: 'purchase-request-comment' },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
+    );
     const response = await firstValueFrom(res);
-
     if (response.response.status !== HttpStatus.OK) {
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
     }
-
     return ResponseLib.success(response.data);
   }
 
-  /**
-   * Add an attachment to a comment via microservice
-   * เพิ่มไฟล์แนบในความคิดเห็นผ่านไมโครเซอร์วิส
-   * @param id - Comment ID / รหัสความคิดเห็น
-   * @param attachment - Attachment data / ข้อมูลไฟล์แนบ
-   * @param user_id - User ID / รหัสผู้ใช้
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param version - API version / เวอร์ชัน API
-   * @returns Updated comment with attachment / ความคิดเห็นที่เพิ่มไฟล์แนบแล้ว
-   */
-  async addAttachment(
+  async addAttachments(
     id: string,
-    attachment: Record<string, unknown>,
+    files: Express.Multer.File[],
     user_id: string,
     bu_code: string,
     version: string,
   ): Promise<unknown> {
-    this.logger.debug(
+    const settled = await Promise.allSettled(
+      files.map((f) => this.uploadFile(f, user_id, bu_code)),
+    );
+    const failures = settled.filter((s) => s.status === 'rejected');
+    const successes = settled.filter(
+      (s): s is PromiseFulfilledResult<UploadedAttachment> => s.status === 'fulfilled',
+    );
+    const uploaded: UploadedAttachment[] = successes.map((s) => s.value);
+
+    if (failures.length > 0) {
+      this.logger.warn(
+        {
+          function: 'addAttachments',
+          phase: 'upload-rollback',
+          bu_code,
+          comment_id: id,
+          uploaded_count: uploaded.length,
+          failed_count: failures.length,
+        },
+        PurchaseRequestCommentService.name,
+      );
+      await Promise.all(
+        uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
+      );
+      const firstReason = (failures[0] as PromiseRejectedResult).reason;
+      const msg = firstReason instanceof Error ? firstReason.message : String(firstReason);
+      throw new BadGatewayException(`File upload failed: ${msg}`);
+    }
+
+    const res: Observable<MicroserviceResponse> = this.businessService.send(
+      { cmd: 'purchase-request-comment.add-attachment', service: 'purchase-request-comment' },
       {
-        function: 'addAttachment',
         id,
-        attachment,
+        attachments: uploaded,
+        user_id,
+        bu_code,
         version,
+        ...getGatewayRequestContext(),
       },
-      PurchaseRequestCommentService.name,
     );
-
-    const res: Observable<MicroserviceResponse> = this.procurementService.send(
-      {
-        cmd: 'purchase-request-comment.add-attachment',
-        service: 'purchase-request-comment',
-      },
-      { id, attachment, user_id, bu_code, version, ...getGatewayRequestContext() },
-    );
-
     const response = await firstValueFrom(res);
 
     if (response.response.status !== HttpStatus.OK) {
+      this.logger.warn(
+        {
+          function: 'addAttachments',
+          phase: 'business-rollback',
+          bu_code,
+          comment_id: id,
+          uploaded_count: uploaded.length,
+          add_status: response.response.status,
+        },
+        PurchaseRequestCommentService.name,
+      );
+      await Promise.all(
+        uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
+      );
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
     }
-
     return ResponseLib.success(response.data);
   }
 
-  /**
-   * Remove an attachment from a comment via microservice
-   * ลบไฟล์แนบจากความคิดเห็นผ่านไมโครเซอร์วิส
-   * @param id - Comment ID / รหัสความคิดเห็น
-   * @param fileToken - File token to remove / โทเคนไฟล์ที่ต้องการลบ
-   * @param user_id - User ID / รหัสผู้ใช้
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param version - API version / เวอร์ชัน API
-   * @returns Updated comment without attachment / ความคิดเห็นที่ลบไฟล์แนบแล้ว
-   */
   async removeAttachment(
     id: string,
     fileToken: string,
@@ -323,35 +298,20 @@ export class PurchaseRequestCommentService {
     bu_code: string,
     version: string,
   ): Promise<unknown> {
-    this.logger.debug(
-      {
-        function: 'removeAttachment',
-        id,
-        fileToken,
-        version,
-      },
-      PurchaseRequestCommentService.name,
-    );
-
-    const res: Observable<MicroserviceResponse> = this.procurementService.send(
-      {
-        cmd: 'purchase-request-comment.remove-attachment',
-        service: 'purchase-request-comment',
-      },
+    const res: Observable<MicroserviceResponse> = this.businessService.send(
+      { cmd: 'purchase-request-comment.remove-attachment', service: 'purchase-request-comment' },
       { id, fileToken, user_id, bu_code, version, ...getGatewayRequestContext() },
     );
-
     const response = await firstValueFrom(res);
-
     if (response.response.status !== HttpStatus.OK) {
       return Result.error(
         response.response.message,
         httpStatusToErrorCode(response.response.status),
       );
     }
-
     return ResponseLib.success(response.data);
   }
+
   async createWithFiles(
     files: Express.Multer.File[],
     dto: {
@@ -369,13 +329,10 @@ export class PurchaseRequestCommentService {
       const settled = await Promise.allSettled(
         files.map((f) => this.uploadFile(f, user_id, bu_code)),
       );
-
       const failures = settled.filter((s) => s.status === 'rejected');
       const successes = settled.filter(
-        (s): s is PromiseFulfilledResult<UploadedAttachment> =>
-          s.status === 'fulfilled',
+        (s): s is PromiseFulfilledResult<UploadedAttachment> => s.status === 'fulfilled',
       );
-
       uploaded.push(...successes.map((s) => s.value));
 
       if (failures.length > 0) {
@@ -394,8 +351,7 @@ export class PurchaseRequestCommentService {
           uploaded.map((a) => this.deleteFile(a.fileToken, user_id, bu_code)),
         );
         const firstReason = (failures[0] as PromiseRejectedResult).reason;
-        const msg =
-          firstReason instanceof Error ? firstReason.message : String(firstReason);
+        const msg = firstReason instanceof Error ? firstReason.message : String(firstReason);
         throw new BadGatewayException(`File upload failed: ${msg}`);
       }
     }
@@ -407,7 +363,7 @@ export class PurchaseRequestCommentService {
       attachments: uploaded,
     };
 
-    const res: Observable<MicroserviceResponse> = this.procurementService.send(
+    const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'purchase-request-comment.create', service: 'purchase-request-comment' },
       { data, user_id, bu_code, version, ...getGatewayRequestContext() },
     );

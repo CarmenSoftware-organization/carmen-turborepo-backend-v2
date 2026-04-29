@@ -21,7 +21,7 @@ export class UploadCommentWithFilesBodyDto extends createZodDto(
 export class UploadCommentWithFilesDto {
   @ApiPropertyOptional({
     description: 'Comment message (≤ 4000 chars). Required if no files.',
-    example: 'Damage on outer carton',
+    example: 'Comment message',
     nullable: true,
   })
   message?: string | null;

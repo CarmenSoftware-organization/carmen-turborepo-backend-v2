@@ -1,95 +1,87 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-export { AddAttachmentDto } from 'src/shared-dto/add-attachment.dto';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
-// Attachment schema for files
-// After uploading to MinIO via files.service, store the fileToken and fileUrl
 export const AttachmentSchema = z.object({
-  fileName: z.string(), // Original file name
-  fileToken: z.string(), // Token from files.service (format: bu_code/uuid)
-  fileUrl: z.string().optional(), // Presigned URL from files.service
+  fileName: z.string(),
+  fileToken: z.string(),
+  fileUrl: z.string().optional(),
   contentType: z.string(),
   size: z.number().optional(),
 });
 
 export type Attachment = z.infer<typeof AttachmentSchema>;
 
-// Create comment schema
-export const CreatePurchaseRequestCommentSchema = z.object({
-  purchase_request_id: z.string().uuid(),
-  message: z.string().optional().nullable(),
-  type: z.enum(['user', 'system']).default('user'),
-  attachments: z.array(AttachmentSchema).optional().default([]),
+/**
+ * Multipart body schema for PATCH update.
+ * - `message` and `type` are plain text fields.
+ * - `remove_attachments` is sent as a JSON-encoded string array of fileTokens
+ *   (multipart cannot carry nested JSON natively).
+ * - New files arrive via the `files` field (handled by FilesInterceptor).
+ */
+export const UpdatePurchaseRequestCommentBodySchema = z.object({
+  message: z.string().max(4000).optional().nullable(),
+  type: z.enum(['user', 'system']).optional(),
+  remove_attachments: z
+    .preprocess((v) => {
+      if (typeof v !== 'string') return v;
+      const trimmed = v.trim();
+      if (trimmed === '') return undefined;
+      try {
+        return JSON.parse(trimmed);
+      } catch {
+        return v;
+      }
+    }, z.array(z.string().min(1)).optional())
+    .optional(),
 });
 
-export class CreatePurchaseRequestCommentDto extends createZodDto(
-  CreatePurchaseRequestCommentSchema,
-) {
-  @ApiProperty({
-    description: 'The ID of the purchase request',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
-  purchase_request_id: string;
+export type UpdatePurchaseRequestCommentBody = z.infer<typeof UpdatePurchaseRequestCommentBodySchema>;
 
+export class UpdatePurchaseRequestCommentDto {
   @ApiPropertyOptional({
-    description: 'The comment message',
-    example: 'This is a comment on the purchase request',
+    description: 'Updated comment message (≤ 4000 chars)',
+    example: 'Updated comment',
+    nullable: true,
   })
   message?: string | null;
 
   @ApiPropertyOptional({
-    description: 'The type of comment',
+    description: 'Comment type',
     enum: ['user', 'system'],
-    default: 'user',
   })
   type?: 'user' | 'system';
 
   @ApiPropertyOptional({
-    description: 'Array of file attachments (upload files via files.service first)',
-    type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        fileName: { type: 'string', example: 'document.pdf' },
-        fileToken: { type: 'string', example: 'bu-code/uuid-here' },
-        fileUrl: { type: 'string', example: 'https://minio.example.com/presigned-url' },
-        contentType: { type: 'string', example: 'application/pdf' },
-        size: { type: 'number', example: 1024 },
-      },
-    },
+    description:
+      'JSON-encoded string array of fileTokens to remove, e.g. \`["tok-1","tok-2"]\`',
+    example: '["tok-1","tok-2"]',
   })
-  attachments?: Attachment[];
+  remove_attachments?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'New attachments to add (0–10 files). Allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf. Max 10 MB each.',
+    type: 'array',
+    items: { type: 'string', format: 'binary' },
+  })
+  files?: unknown[];
 }
 
-// Update comment schema
-export const UpdatePurchaseRequestCommentSchema = z.object({
-  message: z.string().optional().nullable(),
-  attachments: z.array(AttachmentSchema).optional(),
-});
+export class UpdatePurchaseRequestCommentBodyDto extends createZodDto(
+  UpdatePurchaseRequestCommentBodySchema,
+) {}
 
-export class UpdatePurchaseRequestCommentDto extends createZodDto(
-  UpdatePurchaseRequestCommentSchema,
-) {
+/**
+ * Swagger-only DTO for POST `:id/attachment` (multipart/form-data).
+ * Runtime validation: count/size/mime checks performed in the controller.
+ */
+export class AddAttachmentsDto {
   @ApiPropertyOptional({
-    description: 'The updated comment message',
-    example: 'Updated comment text',
-  })
-  message?: string | null;
-
-  @ApiPropertyOptional({
-    description: 'Updated array of file attachments (upload files via files.service first)',
+    description:
+      'Attachments to add (1–10 files). Allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf. Max 10 MB each.',
     type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        fileName: { type: 'string', example: 'document.pdf' },
-        fileToken: { type: 'string', example: 'bu-code/uuid-here' },
-        fileUrl: { type: 'string', example: 'https://minio.example.com/presigned-url' },
-        contentType: { type: 'string', example: 'application/pdf' },
-        size: { type: 'number', example: 1024 },
-      },
-    },
+    items: { type: 'string', format: 'binary' },
   })
-  attachments?: Attachment[];
+  files?: unknown[];
 }

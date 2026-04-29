@@ -18,7 +18,10 @@ import {
 } from '@nestjs/common';
 import { ExtraCostCommentService } from './extra-cost-comment.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { UploadCommentWithFilesBodySchema, UploadCommentWithFilesDto } from './dto/upload-comment-with-files.dto';
+import {
+  UploadCommentWithFilesBodySchema,
+  UploadCommentWithFilesDto,
+} from './dto/upload-comment-with-files.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -35,9 +38,9 @@ import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
-  CreateExtraCostCommentDto,
   UpdateExtraCostCommentDto,
-  AddAttachmentDto,
+  UpdateExtraCostCommentBodySchema,
+  AddAttachmentsDto,
 } from './dto/extra-cost-comment.dto';
 
 const MAX_FILES = 10;
@@ -64,21 +67,19 @@ export class ExtraCostCommentController {
     private readonly extraCostCommentService: ExtraCostCommentService,
   ) {}
 
-  @Get(':bu_code/extra-cost/:extra_cost_id/comments')
+  @Get(':bu_code/extra-cost-comment/:extra_cost_id')
   @UseGuards(new AppIdGuard('extraCostComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @ApiOperation({
     summary: 'Get all comments for a extra-cost',
-    description: 'Retrieves all comments for a extra-cost.',
     operationId: 'findAllExtraCostComments',
     responses: {
       200: { description: 'Comments retrieved successfully' },
-      404: { description: 'ExtraCost not found' },
     },
   } as any)
   @HttpCode(HttpStatus.OK)
-  async findAllByExtraCostId(
+  async findAllByParentId(
     @Param('bu_code') bu_code: string,
     @Param('extra_cost_id', new ParseUUIDPipe({ version: '4' })) extra_cost_id: string,
     @Req() req: Request,
@@ -87,7 +88,7 @@ export class ExtraCostCommentController {
   ): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
-    return this.extraCostCommentService.findAllByExtraCostId(
+    return this.extraCostCommentService.findAllByParentId(
       extra_cost_id,
       user_id,
       bu_code,
@@ -96,74 +97,84 @@ export class ExtraCostCommentController {
     );
   }
 
-  @Get(':bu_code/extra-cost-comment/:id')
-  @UseGuards(new AppIdGuard('extraCostComment.findOne'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Get a extra-cost comment by ID',
-    operationId: 'findOneExtraCostComment',
-    responses: {
-      200: { description: 'Comment retrieved successfully' },
-      404: { description: 'Comment not found' },
-    },
-  } as any)
-  @HttpCode(HttpStatus.OK)
-  async findById(
-    @Param('bu_code') bu_code: string,
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Req() req: Request,
-    @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.extraCostCommentService.findById(id, user_id, bu_code, version);
-  }
-
-  @Post(':bu_code/extra-cost-comment')
-  @UseGuards(new AppIdGuard('extraCostComment.create'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Create a new extra-cost comment',
-    operationId: 'createExtraCostComment',
-    responses: {
-      201: { description: 'Comment created successfully' },
-      404: { description: 'ExtraCost not found' },
-    },
-  } as any)
-  @ApiBody({ type: CreateExtraCostCommentDto })
-  @HttpCode(HttpStatus.CREATED)
-  async create(
-    @Param('bu_code') bu_code: string,
-    @Body() createDto: CreateExtraCostCommentDto,
-    @Req() req: Request,
-    @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.extraCostCommentService.create({ ...createDto }, user_id, bu_code, version);
-  }
-
   @Patch(':bu_code/extra-cost-comment/:id')
   @UseGuards(new AppIdGuard('extraCostComment.update'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Update a extra-cost comment',
+    summary: 'Update a extra-cost comment with attachment add/remove',
     operationId: 'updateExtraCostComment',
     responses: {
       200: { description: 'Comment updated successfully' },
-      404: { description: 'Comment not found' },
-      403: { description: 'Forbidden' },
+      400: { description: 'Validation failed' },
+      502: { description: 'File service upstream failure' },
     },
   } as any)
+  @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateExtraCostCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('bu_code') bu_code: string,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() updateDto: UpdateExtraCostCommentDto,
+    @UploadedFiles() files: Express.Multer.File[] = [],
+    @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    const parsed = UpdateExtraCostCommentBodySchema.safeParse(rawBody);
+    if (!parsed.success) {
+      throw new BadRequestException({
+        message: 'Invalid request body',
+        errors: parsed.error.errors,
+      });
+    }
+    const body = parsed.data as {
+      message?: string | null;
+      type?: 'user' | 'system';
+      remove_attachments?: string[];
+    };
+
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
+    const removeTokens = body.remove_attachments ?? [];
+    const hasMessage =
+      typeof body.message === 'string' && body.message.trim().length > 0;
+    const hasType = typeof body.type === 'string';
+    if (!hasMessage && !hasType && files.length === 0 && removeTokens.length === 0) {
+      throw new BadRequestException(
+        'At least one of \`message\`, \`type\`, \`files\`, or \`remove_attachments\` must be provided',
+      );
+    }
+
     const { user_id } = ExtractRequestHeader(req);
-    return this.extraCostCommentService.update(id, { ...updateDto }, user_id, bu_code, version);
+    return this.extraCostCommentService.update(
+      id,
+      {
+        message: body.message ?? undefined,
+        type: body.type,
+        addFiles: files,
+        removeFileTokens: removeTokens,
+      },
+      user_id,
+      bu_code,
+      version,
+    );
   }
 
   @Delete(':bu_code/extra-cost-comment/:id')
@@ -174,8 +185,6 @@ export class ExtraCostCommentController {
     operationId: 'deleteExtraCostComment',
     responses: {
       200: { description: 'Comment deleted successfully' },
-      404: { description: 'Comment not found' },
-      403: { description: 'Forbidden' },
     },
   } as any)
   @HttpCode(HttpStatus.OK)
@@ -191,26 +200,56 @@ export class ExtraCostCommentController {
 
   @Post(':bu_code/extra-cost-comment/:id/attachment')
   @UseGuards(new AppIdGuard('extraCostComment.addAttachment'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Add an attachment to a extra-cost comment',
-    operationId: 'addAttachmentToExtraCostComment',
+    summary: 'Add attachments to a extra-cost comment',
+    operationId: 'addAttachmentsToExtraCostComment',
     responses: {
-      200: { description: 'Attachment added successfully' },
-      404: { description: 'Comment not found' },
+      200: { description: 'Attachments added successfully' },
+      400: { description: 'Validation failed' },
+      502: { description: 'File service upstream failure' },
     },
   } as any)
-  @ApiBody({ type: AddAttachmentDto })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: AddAttachmentsDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(
     @Param('bu_code') bu_code: string,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() attachment: AddAttachmentDto,
+    @UploadedFiles() files: Express.Multer.File[] = [],
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    if (files.length === 0) {
+      throw new BadRequestException('At least one file is required');
+    }
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
     const { user_id } = ExtractRequestHeader(req);
-    return this.extraCostCommentService.addAttachment(id, { ...attachment }, user_id, bu_code, version);
+    return this.extraCostCommentService.addAttachments(
+      id,
+      files,
+      user_id,
+      bu_code,
+      version,
+    );
   }
 
   @Delete(':bu_code/extra-cost-comment/:id/attachment/:fileToken')
@@ -221,7 +260,6 @@ export class ExtraCostCommentController {
     operationId: 'removeAttachmentFromExtraCostComment',
     responses: {
       200: { description: 'Attachment removed successfully' },
-      404: { description: 'Comment not found' },
     },
   } as any)
   @HttpCode(HttpStatus.OK)
@@ -235,7 +273,8 @@ export class ExtraCostCommentController {
     const { user_id } = ExtractRequestHeader(req);
     return this.extraCostCommentService.removeAttachment(id, fileToken, user_id, bu_code, version);
   }
-  @Post(':bu_code/extra-cost-comment/upload')
+
+  @Post(':bu_code/extra-cost-comment/:extra_cost_id')
   @UseGuards(new AppIdGuard('extraCostComment.createWithFiles'))
   @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
@@ -253,11 +292,22 @@ export class ExtraCostCommentController {
   @HttpCode(HttpStatus.CREATED)
   async createWithFiles(
     @Param('bu_code') bu_code: string,
+    @Param('extra_cost_id', new ParseUUIDPipe({ version: '4' }))
+    extra_cost_id: string,
     @UploadedFiles() files: Express.Multer.File[] = [],
     @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    this.logger.debug(
+      {
+        function: 'createWithFiles',
+        bu_code,
+        extra_cost_id,
+        file_count: files.length,
+      },
+      ExtraCostCommentController.name,
+    );
     const parsed = UploadCommentWithFilesBodySchema.safeParse(rawBody);
     if (!parsed.success) {
       throw new BadRequestException({
@@ -266,7 +316,6 @@ export class ExtraCostCommentController {
       });
     }
     const body = parsed.data as {
-      extra_cost_id: string;
       message?: string | null;
       type?: 'user' | 'system';
     };
@@ -292,14 +341,14 @@ export class ExtraCostCommentController {
       typeof body.message === 'string' && body.message.trim().length > 0;
     if (!hasMessage && files.length === 0) {
       throw new BadRequestException(
-        'At least one of `message` or `files` must be provided',
+        'At least one of \`message\` or \`files\` must be provided',
       );
     }
 
     const { user_id } = ExtractRequestHeader(req);
     return this.extraCostCommentService.createWithFiles(
       files,
-      body,
+      { ...body, extra_cost_id },
       user_id,
       bu_code,
       version,

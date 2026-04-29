@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{host}}/api/{{bu_code}}/credit-term/:credit_term_id/comments
+  url: {{host}}/api/{{bu_code}}/credit-term-comment/:credit_term_id
   body: none
   auth: bearer
 }
@@ -19,26 +19,51 @@ auth:bearer {
 }
 
 query {
-  ~version: 
+  ~version:
+}
+
+params:path {
+  credit_term_id: {{test_id}}
+}
+
+vars:pre-request {
+  test_id: 5d5fa453-f687-4fcd-bbdb-5956f7e810b3
 }
 
 docs {
   ## List Credit Term Comments
-  แสดงความคิดเห็นทั้งหมดของเงื่อนไขเครดิต
+  แสดงความคิดเห็นทั้งหมดของ credit-term (พร้อม pagination)
 
-  Retrieves all comments for a credit-term.
+  ### URL
+  `GET {{host}}/api/{{bu_code}}/credit-term-comment/:credit_term_id`
 
   ### Path Parameters
-  - `credit_term_id` — Credit Term ID
+  - `bu_code` — Business unit code
+  - `credit_term_id` — Credit Term UUID
 
+  ### Query Parameters
+  - `version` (optional) — API version (default `latest`)
+  - Pagination params (`page`, `perpage`, etc.)
 
-  ### Sample Response
+  ### Sample Response 200
   ```json
   {
     "data": [
       {
         "id": "uuid",
-        "message": "comment text"
+        "credit_term_id": "uuid",
+        "message": "comment text",
+        "type": "user",
+        "attachments": [
+          {
+            "fileName": "photo.jpg",
+            "fileToken": "tok-1",
+            "fileUrl": "",
+            "contentType": "image/jpeg",
+            "size": 204800
+          }
+        ],
+        "created_at": "2026-04-29T00:00:00.000Z"
       }
     ],
     "paginate": {
@@ -50,11 +75,10 @@ docs {
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T00:00:00.000Z"
   }
   ```
-}
 
-params:path {
-  credit_term_id: {{test_id}}
+  Note: `fileUrl` ใน response จะว่าง — frontend ต้องเรียก
+  `GET /api/{bu_code}/documents/presigned-url/{fileToken}` เพื่อแสดงไฟล์
 }

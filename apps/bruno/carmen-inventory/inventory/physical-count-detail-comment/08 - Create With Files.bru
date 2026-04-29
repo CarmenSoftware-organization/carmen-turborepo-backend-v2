@@ -27,7 +27,7 @@ body:json {
 }
 
 body:multipart-form {
-  message: Damage on outer carton
+  message: Comment with attached photos
   type: user
   files: @file(/Users/samutpra/Pictures/logo.png)
   files: @file(/Users/samutpra/Pictures/logo_CARMEN_Classic-Blue_low-res.png)
@@ -72,22 +72,7 @@ docs {
   ### Response 201
   ```json
   {
-    "data": {
-      "id": "<uuid>",
-      "physical_count_detail_id": "<uuid>",
-      "message": "Damage on outer carton",
-      "attachments": [
-        {
-          "fileName": "photo1.jpg",
-          "fileToken": "tok-1",
-          "fileUrl": "",
-          "contentType": "image/jpeg",
-          "size": 204800
-        }
-      ],
-      "type": "user",
-      "created_at": "2026-04-29T12:00:00.000Z"
-    },
+    "data": { "id": "<uuid>", "physical_count_detail_id": "<uuid>", "attachments": [...] },
     "status": 201,
     "success": true,
     "message": "Success",
@@ -95,6 +80,6 @@ docs {
   }
   ```
 
-  Note: `fileUrl` ในการ response จะว่าง — frontend ต้องเรียก
+  Note: `fileUrl` ใน response จะว่าง — frontend ต้องเรียก
   `GET /api/{bu_code}/documents/presigned-url/{fileToken}` เพื่อแสดงไฟล์
 }

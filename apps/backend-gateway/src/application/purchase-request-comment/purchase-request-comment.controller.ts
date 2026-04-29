@@ -18,7 +18,10 @@ import {
 } from '@nestjs/common';
 import { PurchaseRequestCommentService } from './purchase-request-comment.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { UploadCommentWithFilesBodySchema, UploadCommentWithFilesDto } from './dto/upload-comment-with-files.dto';
+import {
+  UploadCommentWithFilesBodySchema,
+  UploadCommentWithFilesDto,
+} from './dto/upload-comment-with-files.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -35,9 +38,9 @@ import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
-  CreatePurchaseRequestCommentDto,
   UpdatePurchaseRequestCommentDto,
-  AddAttachmentDto,
+  UpdatePurchaseRequestCommentBodySchema,
+  AddAttachmentsDto,
 } from './dto/purchase-request-comment.dto';
 
 const MAX_FILES = 10;
@@ -64,56 +67,28 @@ export class PurchaseRequestCommentController {
     private readonly purchaseRequestCommentService: PurchaseRequestCommentService,
   ) {}
 
-  /**
-   * Retrieve all comments for a purchase request
-   * ค้นหารายการทั้งหมดของความคิดเห็นสำหรับใบขอซื้อ
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param purchase_request_id - Purchase request ID / รหัสใบขอซื้อ
-   * @param query - Pagination parameters / พารามิเตอร์การแบ่งหน้า
-   * @param version - API version / เวอร์ชัน API
-   * @returns List of comments with pagination / รายการความคิดเห็นแบบแบ่งหน้า
-   */
-  @Get(':bu_code/purchase-request/:purchase_request_id/comments')
+  @Get(':bu_code/purchase-request-comment/:purchase_request_id')
   @UseGuards(new AppIdGuard('purchaseRequestComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @ApiOperation({
-    summary: 'Get all comments for a purchase request',
-    description:
-      'Retrieves the full discussion thread on a purchase request, enabling requestors and approvers to review collaboration notes, clarification requests, and approval-related feedback.',
+    summary: 'Get all comments for a purchase-request',
     operationId: 'findAllPurchaseRequestComments',
     responses: {
-      200: {
-        description: 'Comments retrieved successfully',
-      },
-      404: {
-        description: 'Purchase request not found',
-      },
+      200: { description: 'Comments retrieved successfully' },
     },
-    'x-description-th': 'แสดงกระทู้สนทนาทั้งหมดของใบขอซื้อ ช่วยให้ผู้ขอและผู้อนุมัติตรวจสอบบันทึกการทำงานร่วมกัน คำขอชี้แจง และข้อคิดเห็นเกี่ยวกับการอนุมัติ',
   } as any)
   @HttpCode(HttpStatus.OK)
-  async findAllByPurchaseRequestId(
+  async findAllByParentId(
     @Param('bu_code') bu_code: string,
     @Param('purchase_request_id', new ParseUUIDPipe({ version: '4' })) purchase_request_id: string,
     @Req() req: Request,
     @Query() query: IPaginateQuery,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
-    this.logger.debug(
-      {
-        function: 'findAllByPurchaseRequestId',
-        purchase_request_id,
-        query,
-        version,
-      },
-      PurchaseRequestCommentController.name,
-    );
-
     const { user_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
-
-    return this.purchaseRequestCommentService.findAllByPurchaseRequestId(
+    return this.purchaseRequestCommentService.findAllByParentId(
       purchase_request_id,
       user_id,
       bu_code,
@@ -122,201 +97,95 @@ export class PurchaseRequestCommentController {
     );
   }
 
-  /**
-   * Retrieve a specific comment by ID
-   * ค้นหารายการเดียวตาม ID ของความคิดเห็น
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param id - Comment ID / รหัสความคิดเห็น
-   * @param version - API version / เวอร์ชัน API
-   * @returns Comment details / รายละเอียดความคิดเห็น
-   */
-  @Get(':bu_code/purchase-request-comment/:id')
-  @UseGuards(new AppIdGuard('purchaseRequestComment.findOne'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Get a comment by ID',
-    description: 'Retrieves a specific comment from a purchase request discussion thread, including its content, author, timestamp, and any attached supporting documents.',
-    operationId: 'findOnePurchaseRequestComment',
-    responses: {
-      200: {
-        description: 'Comment retrieved successfully',
-      },
-      404: {
-        description: 'Comment not found',
-      },
-    },
-    'x-description-th': 'ดึงความคิดเห็นเฉพาะจากกระทู้สนทนาของใบขอซื้อ รวมถึงเนื้อหา ผู้เขียน เวลา และเอกสารแนบ',
-  } as any)
-  @HttpCode(HttpStatus.OK)
-  async findById(
-    @Param('bu_code') bu_code: string,
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Req() req: Request,
-    @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
-    this.logger.debug(
-      {
-        function: 'findById',
-        id,
-        version,
-      },
-      PurchaseRequestCommentController.name,
-    );
-
-    const { user_id } = ExtractRequestHeader(req);
-
-    return this.purchaseRequestCommentService.findById(
-      id,
-      user_id,
-      bu_code,
-      version,
-    );
-  }
-
-  /**
-   * Create a new comment on a purchase request
-   * สร้างความคิดเห็นใหม่ในใบขอซื้อ
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param createDto - Comment creation data / ข้อมูลสำหรับสร้างความคิดเห็น
-   * @param version - API version / เวอร์ชัน API
-   * @returns Created comment / ความคิดเห็นที่สร้างแล้ว
-   */
-  @Post(':bu_code/purchase-request-comment')
-  @UseGuards(new AppIdGuard('purchaseRequestComment.create'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Create a new comment',
-    description: 'Posts a new comment on a purchase request discussion thread, allowing requestors and approvers to collaborate by asking questions, providing justifications, or requesting changes before approval.',
-    operationId: 'createPurchaseRequestComment',
-    responses: {
-      201: {
-        description: 'Comment created successfully',
-      },
-      404: {
-        description: 'Purchase request not found',
-      },
-    },
-    'x-description-th': 'โพสต์ความคิดเห็นใหม่ในกระทู้สนทนาของใบขอซื้อ ช่วยให้ผู้ขอและผู้อนุมัติทำงานร่วมกันโดยถามคำถาม ให้เหตุผล หรือขอการแก้ไข',
-  } as any)
-  @ApiBody({
-    type: CreatePurchaseRequestCommentDto,
-    description: 'Comment data with optional attachments',
-  })
-  @HttpCode(HttpStatus.CREATED)
-  async create(
-    @Param('bu_code') bu_code: string,
-    @Body() createDto: CreatePurchaseRequestCommentDto,
-    @Req() req: Request,
-    @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
-    this.logger.debug(
-      {
-        function: 'create',
-        createDto,
-        version,
-      },
-      PurchaseRequestCommentController.name,
-    );
-
-    const { user_id } = ExtractRequestHeader(req);
-
-    return this.purchaseRequestCommentService.create(
-      { ...createDto },
-      user_id,
-      bu_code,
-      version,
-    );
-  }
-
-  /**
-   * Update an existing comment on a purchase request
-   * อัปเดตความคิดเห็นที่มีอยู่ในใบขอซื้อ
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param id - Comment ID / รหัสความคิดเห็น
-   * @param updateDto - Updated comment data / ข้อมูลความคิดเห็นที่อัปเดต
-   * @param version - API version / เวอร์ชัน API
-   * @returns Updated comment / ความคิดเห็นที่อัปเดตแล้ว
-   */
   @Patch(':bu_code/purchase-request-comment/:id')
   @UseGuards(new AppIdGuard('purchaseRequestComment.update'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Update a comment',
-    description: 'Edits an existing comment in a purchase request discussion thread. Only the comment author can modify their own remarks, preserving accountability in the procurement collaboration process.',
+    summary: 'Update a purchase-request comment with attachment add/remove',
     operationId: 'updatePurchaseRequestComment',
     responses: {
-      200: {
-        description: 'Comment updated successfully',
-      },
-      404: {
-        description: 'Comment not found',
-      },
-      403: {
-        description: 'Forbidden - can only update own comments',
-      },
+      200: { description: 'Comment updated successfully' },
+      400: { description: 'Validation failed' },
+      502: { description: 'File service upstream failure' },
     },
-    'x-description-th': 'แก้ไขความคิดเห็นที่มีอยู่ในกระทู้สนทนาของใบขอซื้อ เฉพาะผู้เขียนความคิดเห็นเท่านั้นที่สามารถแก้ไขได้ เพื่อรักษาความรับผิดชอบในกระบวนการจัดซื้อ',
   } as any)
-  @ApiBody({
-    type: UpdatePurchaseRequestCommentDto,
-    description: 'Updated comment data',
-  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UpdatePurchaseRequestCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('bu_code') bu_code: string,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() updateDto: UpdatePurchaseRequestCommentDto,
+    @UploadedFiles() files: Express.Multer.File[] = [],
+    @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
-    this.logger.debug(
-      {
-        function: 'update',
-        id,
-        updateDto,
-        version,
-      },
-      PurchaseRequestCommentController.name,
-    );
+    const parsed = UpdatePurchaseRequestCommentBodySchema.safeParse(rawBody);
+    if (!parsed.success) {
+      throw new BadRequestException({
+        message: 'Invalid request body',
+        errors: parsed.error.errors,
+      });
+    }
+    const body = parsed.data as {
+      message?: string | null;
+      type?: 'user' | 'system';
+      remove_attachments?: string[];
+    };
+
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
+    const removeTokens = body.remove_attachments ?? [];
+    const hasMessage =
+      typeof body.message === 'string' && body.message.trim().length > 0;
+    const hasType = typeof body.type === 'string';
+    if (!hasMessage && !hasType && files.length === 0 && removeTokens.length === 0) {
+      throw new BadRequestException(
+        'At least one of \`message\`, \`type\`, \`files\`, or \`remove_attachments\` must be provided',
+      );
+    }
 
     const { user_id } = ExtractRequestHeader(req);
-
     return this.purchaseRequestCommentService.update(
       id,
-      { ...updateDto },
+      {
+        message: body.message ?? undefined,
+        type: body.type,
+        addFiles: files,
+        removeFileTokens: removeTokens,
+      },
       user_id,
       bu_code,
       version,
     );
   }
 
-  /**
-   * Delete a comment from a purchase request
-   * ลบความคิดเห็นจากใบขอซื้อ
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param id - Comment ID / รหัสความคิดเห็น
-   * @param version - API version / เวอร์ชัน API
-   * @returns Deletion result / ผลลัพธ์การลบ
-   */
   @Delete(':bu_code/purchase-request-comment/:id')
   @UseGuards(new AppIdGuard('purchaseRequestComment.delete'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Delete a comment',
-    description: 'Removes a comment from a purchase request discussion thread. Only the comment author can delete their own remarks, maintaining an auditable collaboration history.',
+    summary: 'Delete a purchase-request comment',
     operationId: 'deletePurchaseRequestComment',
     responses: {
-      200: {
-        description: 'Comment deleted successfully',
-      },
-      404: {
-        description: 'Comment not found',
-      },
-      403: {
-        description: 'Forbidden - can only delete own comments',
-      },
+      200: { description: 'Comment deleted successfully' },
     },
-    'x-description-th': 'ลบความคิดเห็นจากกระทู้สนทนาของใบขอซื้อ เฉพาะผู้เขียนความคิดเห็นเท่านั้นที่สามารถลบได้ เพื่อรักษาประวัติการทำงานร่วมกันที่ตรวจสอบได้',
   } as any)
   @HttpCode(HttpStatus.OK)
   async delete(
@@ -325,117 +194,73 @@ export class PurchaseRequestCommentController {
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
-    this.logger.debug(
-      {
-        function: 'delete',
-        id,
-        version,
-      },
-      PurchaseRequestCommentController.name,
-    );
-
     const { user_id } = ExtractRequestHeader(req);
-
-    return this.purchaseRequestCommentService.delete(
-      id,
-      user_id,
-      bu_code,
-      version,
-    );
+    return this.purchaseRequestCommentService.delete(id, user_id, bu_code, version);
   }
 
-  /**
-   * Add an attachment to a purchase request comment
-   * เพิ่มไฟล์แนบในความคิดเห็นของใบขอซื้อ
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param id - Comment ID / รหัสความคิดเห็น
-   * @param attachment - Attachment data / ข้อมูลไฟล์แนบ
-   * @param version - API version / เวอร์ชัน API
-   * @returns Updated comment with attachment / ความคิดเห็นที่เพิ่มไฟล์แนบแล้ว
-   */
   @Post(':bu_code/purchase-request-comment/:id/attachment')
   @UseGuards(new AppIdGuard('purchaseRequestComment.addAttachment'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Add an attachment to a comment',
-    description:
-      'Attaches a supporting document (e.g., quotation, specification sheet, or photo) to a purchase request comment, enabling stakeholders to share evidence and documentation during the procurement review process.',
-    operationId: 'addAttachmentToPurchaseRequestComment',
+    summary: 'Add attachments to a purchase-request comment',
+    operationId: 'addAttachmentsToPurchaseRequestComment',
     responses: {
-      200: {
-        description: 'Attachment added successfully',
-      },
-      404: {
-        description: 'Comment not found',
-      },
-      403: {
-        description: 'Forbidden - can only modify own comments',
-      },
+      200: { description: 'Attachments added successfully' },
+      400: { description: 'Validation failed' },
+      502: { description: 'File service upstream failure' },
     },
-    'x-description-th': 'แนบเอกสารสนับสนุน (เช่น ใบเสนอราคา สเปค หรือรูปภาพ) ในความคิดเห็นของใบขอซื้อ ช่วยให้ผู้เกี่ยวข้องแชร์หลักฐานและเอกสารระหว่างกระบวนการตรวจสอบการจัดซื้อ',
   } as any)
-  @ApiBody({
-    type: AddAttachmentDto,
-    description: 'Attachment data from file service',
-  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: AddAttachmentsDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(
     @Param('bu_code') bu_code: string,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() attachment: AddAttachmentDto,
+    @UploadedFiles() files: Express.Multer.File[] = [],
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
-    this.logger.debug(
-      {
-        function: 'addAttachment',
-        id,
-        attachment,
-        version,
-      },
-      PurchaseRequestCommentController.name,
-    );
+    if (files.length === 0) {
+      throw new BadRequestException('At least one file is required');
+    }
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
 
     const { user_id } = ExtractRequestHeader(req);
-
-    return this.purchaseRequestCommentService.addAttachment(
+    return this.purchaseRequestCommentService.addAttachments(
       id,
-      { ...attachment },
+      files,
       user_id,
       bu_code,
       version,
     );
   }
 
-  /**
-   * Remove an attachment from a purchase request comment
-   * ลบไฟล์แนบจากความคิดเห็นของใบขอซื้อ
-   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
-   * @param id - Comment ID / รหัสความคิดเห็น
-   * @param fileToken - File token to remove / โทเคนไฟล์ที่ต้องการลบ
-   * @param version - API version / เวอร์ชัน API
-   * @returns Updated comment without attachment / ความคิดเห็นที่ลบไฟล์แนบแล้ว
-   */
   @Delete(':bu_code/purchase-request-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('purchaseRequestComment.removeAttachment'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Remove an attachment from a comment',
-    description:
-      'Removes a previously attached supporting document from a purchase request comment, allowing the comment author to clean up outdated or incorrect attachments from the discussion thread.',
+    summary: 'Remove an attachment from a purchase-request comment',
     operationId: 'removeAttachmentFromPurchaseRequestComment',
     responses: {
-      200: {
-        description: 'Attachment removed successfully',
-      },
-      404: {
-        description: 'Comment not found',
-      },
-      403: {
-        description: 'Forbidden - can only modify own comments',
-      },
+      200: { description: 'Attachment removed successfully' },
     },
-    'x-description-th': 'ลบเอกสารแนบที่เคยแนบไว้จากความคิดเห็นของใบขอซื้อ ช่วยให้ผู้เขียนความคิดเห็นจัดการไฟล์แนบที่ล้าสมัยหรือไม่ถูกต้อง',
   } as any)
   @HttpCode(HttpStatus.OK)
   async removeAttachment(
@@ -445,27 +270,11 @@ export class PurchaseRequestCommentController {
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
-    this.logger.debug(
-      {
-        function: 'removeAttachment',
-        id,
-        fileToken,
-        version,
-      },
-      PurchaseRequestCommentController.name,
-    );
-
     const { user_id } = ExtractRequestHeader(req);
-
-    return this.purchaseRequestCommentService.removeAttachment(
-      id,
-      fileToken,
-      user_id,
-      bu_code,
-      version,
-    );
+    return this.purchaseRequestCommentService.removeAttachment(id, fileToken, user_id, bu_code, version);
   }
-  @Post(':bu_code/purchase-request-comment/upload')
+
+  @Post(':bu_code/purchase-request-comment/:purchase_request_id')
   @UseGuards(new AppIdGuard('purchaseRequestComment.createWithFiles'))
   @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
@@ -483,11 +292,22 @@ export class PurchaseRequestCommentController {
   @HttpCode(HttpStatus.CREATED)
   async createWithFiles(
     @Param('bu_code') bu_code: string,
+    @Param('purchase_request_id', new ParseUUIDPipe({ version: '4' }))
+    purchase_request_id: string,
     @UploadedFiles() files: Express.Multer.File[] = [],
     @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    this.logger.debug(
+      {
+        function: 'createWithFiles',
+        bu_code,
+        purchase_request_id,
+        file_count: files.length,
+      },
+      PurchaseRequestCommentController.name,
+    );
     const parsed = UploadCommentWithFilesBodySchema.safeParse(rawBody);
     if (!parsed.success) {
       throw new BadRequestException({
@@ -496,7 +316,6 @@ export class PurchaseRequestCommentController {
       });
     }
     const body = parsed.data as {
-      purchase_request_id: string;
       message?: string | null;
       type?: 'user' | 'system';
     };
@@ -522,14 +341,14 @@ export class PurchaseRequestCommentController {
       typeof body.message === 'string' && body.message.trim().length > 0;
     if (!hasMessage && files.length === 0) {
       throw new BadRequestException(
-        'At least one of `message` or `files` must be provided',
+        'At least one of \`message\` or \`files\` must be provided',
       );
     }
 
     const { user_id } = ExtractRequestHeader(req);
     return this.purchaseRequestCommentService.createWithFiles(
       files,
-      body,
+      { ...body, purchase_request_id },
       user_id,
       bu_code,
       version,

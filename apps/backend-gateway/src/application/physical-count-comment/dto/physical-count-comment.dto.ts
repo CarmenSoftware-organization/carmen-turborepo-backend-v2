@@ -9,6 +9,7 @@ export const AttachmentSchema = z.object({
   contentType: z.string(),
   size: z.number().optional(),
 });
+
 export type Attachment = z.infer<typeof AttachmentSchema>;
 
 /**
@@ -35,9 +36,7 @@ export const UpdatePhysicalCountCommentBodySchema = z.object({
     .optional(),
 });
 
-export type UpdatePhysicalCountCommentBody = z.infer<
-  typeof UpdatePhysicalCountCommentBodySchema
->;
+export type UpdatePhysicalCountCommentBody = z.infer<typeof UpdatePhysicalCountCommentBodySchema>;
 
 export class UpdatePhysicalCountCommentDto {
   @ApiPropertyOptional({
@@ -55,7 +54,7 @@ export class UpdatePhysicalCountCommentDto {
 
   @ApiPropertyOptional({
     description:
-      'JSON-encoded string array of fileTokens to remove, e.g. `["tok-1","tok-2"]`',
+      'JSON-encoded string array of fileTokens to remove, e.g. \`["tok-1","tok-2"]\`',
     example: '["tok-1","tok-2"]',
   })
   remove_attachments?: string;

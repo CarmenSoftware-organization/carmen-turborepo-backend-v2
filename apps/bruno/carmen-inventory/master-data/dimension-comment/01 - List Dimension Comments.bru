@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{host}}/api/{{bu_code}}/dimension/:dimension_id/comments
+  url: {{host}}/api/{{bu_code}}/dimension-comment/:dimension_id
   body: none
   auth: bearer
 }
@@ -19,26 +19,51 @@ auth:bearer {
 }
 
 query {
-  ~version: 
+  ~version:
+}
+
+params:path {
+  dimension_id: {{test_id}}
+}
+
+vars:pre-request {
+  test_id: 5d5fa453-f687-4fcd-bbdb-5956f7e810b3
 }
 
 docs {
   ## List Dimension Comments
-  แสดงความคิดเห็นทั้งหมดของขนาด
+  แสดงความคิดเห็นทั้งหมดของ dimension (พร้อม pagination)
 
-  Retrieves all comments for a dimension.
+  ### URL
+  `GET {{host}}/api/{{bu_code}}/dimension-comment/:dimension_id`
 
   ### Path Parameters
-  - `dimension_id` — Dimension ID
+  - `bu_code` — Business unit code
+  - `dimension_id` — Dimension UUID
 
+  ### Query Parameters
+  - `version` (optional) — API version (default `latest`)
+  - Pagination params (`page`, `perpage`, etc.)
 
-  ### Sample Response
+  ### Sample Response 200
   ```json
   {
     "data": [
       {
         "id": "uuid",
-        "message": "comment text"
+        "dimension_id": "uuid",
+        "message": "comment text",
+        "type": "user",
+        "attachments": [
+          {
+            "fileName": "photo.jpg",
+            "fileToken": "tok-1",
+            "fileUrl": "",
+            "contentType": "image/jpeg",
+            "size": 204800
+          }
+        ],
+        "created_at": "2026-04-29T00:00:00.000Z"
       }
     ],
     "paginate": {
@@ -50,11 +75,10 @@ docs {
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T00:00:00.000Z"
   }
   ```
-}
 
-params:path {
-  dimension_id: {{test_id}}
+  Note: `fileUrl` ใน response จะว่าง — frontend ต้องเรียก
+  `GET /api/{bu_code}/documents/presigned-url/{fileToken}` เพื่อแสดงไฟล์
 }

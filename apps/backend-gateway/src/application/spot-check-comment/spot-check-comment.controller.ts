@@ -18,7 +18,10 @@ import {
 } from '@nestjs/common';
 import { SpotCheckCommentService } from './spot-check-comment.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { UploadCommentWithFilesBodySchema, UploadCommentWithFilesDto } from './dto/upload-comment-with-files.dto';
+import {
+  UploadCommentWithFilesBodySchema,
+  UploadCommentWithFilesDto,
+} from './dto/upload-comment-with-files.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -35,9 +38,9 @@ import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
-  CreateSpotCheckCommentDto,
   UpdateSpotCheckCommentDto,
-  AddAttachmentDto,
+  UpdateSpotCheckCommentBodySchema,
+  AddAttachmentsDto,
 } from './dto/spot-check-comment.dto';
 
 const MAX_FILES = 10;
@@ -64,7 +67,7 @@ export class SpotCheckCommentController {
     private readonly spotCheckCommentService: SpotCheckCommentService,
   ) {}
 
-  @Get(':bu_code/spot-check/:spot_check_id/comments')
+  @Get(':bu_code/spot-check-comment/:spot_check_id')
   @UseGuards(new AppIdGuard('spotCheckComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
@@ -76,7 +79,7 @@ export class SpotCheckCommentController {
     },
   } as any)
   @HttpCode(HttpStatus.OK)
-  async findAllBySpotCheckId(
+  async findAllByParentId(
     @Param('bu_code') bu_code: string,
     @Param('spot_check_id', new ParseUUIDPipe({ version: '4' })) spot_check_id: string,
     @Req() req: Request,
@@ -85,7 +88,7 @@ export class SpotCheckCommentController {
   ): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
-    return this.spotCheckCommentService.findAllBySpotCheckId(
+    return this.spotCheckCommentService.findAllByParentId(
       spot_check_id,
       user_id,
       bu_code,
@@ -94,77 +97,80 @@ export class SpotCheckCommentController {
     );
   }
 
-  @Get(':bu_code/spot-check-comment/:id')
-  @UseGuards(new AppIdGuard('spotCheckComment.findOne'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Get a spot-check comment by ID',
-    operationId: 'findOneSpotCheckComment',
-    responses: {
-      200: { description: 'Comment retrieved successfully' },
-    },
-  } as any)
-  @HttpCode(HttpStatus.OK)
-  async findById(
-    @Param('bu_code') bu_code: string,
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Req() req: Request,
-    @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.spotCheckCommentService.findById(id, user_id, bu_code, version);
-  }
-
-  @Post(':bu_code/spot-check-comment')
-  @UseGuards(new AppIdGuard('spotCheckComment.create'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Create a new spot-check comment',
-    operationId: 'createSpotCheckComment',
-    responses: {
-      201: { description: 'Comment created successfully' },
-    },
-  } as any)
-  @ApiBody({ type: CreateSpotCheckCommentDto, description: 'Comment data with optional attachments' })
-  @HttpCode(HttpStatus.CREATED)
-  async create(
-    @Param('bu_code') bu_code: string,
-    @Body() createDto: CreateSpotCheckCommentDto,
-    @Req() req: Request,
-    @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.spotCheckCommentService.create(
-      { ...createDto },
-      user_id,
-      bu_code,
-      version,
-    );
-  }
-
   @Patch(':bu_code/spot-check-comment/:id')
   @UseGuards(new AppIdGuard('spotCheckComment.update'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Update a spot-check comment',
+    summary: 'Update a spot-check comment with attachment add/remove',
     operationId: 'updateSpotCheckComment',
     responses: {
       200: { description: 'Comment updated successfully' },
+      400: { description: 'Validation failed' },
+      502: { description: 'File service upstream failure' },
     },
   } as any)
-  @ApiBody({ type: UpdateSpotCheckCommentDto, description: 'Updated comment data' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UpdateSpotCheckCommentDto })
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('bu_code') bu_code: string,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() updateDto: UpdateSpotCheckCommentDto,
+    @UploadedFiles() files: Express.Multer.File[] = [],
+    @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    const parsed = UpdateSpotCheckCommentBodySchema.safeParse(rawBody);
+    if (!parsed.success) {
+      throw new BadRequestException({
+        message: 'Invalid request body',
+        errors: parsed.error.errors,
+      });
+    }
+    const body = parsed.data as {
+      message?: string | null;
+      type?: 'user' | 'system';
+      remove_attachments?: string[];
+    };
+
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
+    const removeTokens = body.remove_attachments ?? [];
+    const hasMessage =
+      typeof body.message === 'string' && body.message.trim().length > 0;
+    const hasType = typeof body.type === 'string';
+    if (!hasMessage && !hasType && files.length === 0 && removeTokens.length === 0) {
+      throw new BadRequestException(
+        'At least one of \`message\`, \`type\`, \`files\`, or \`remove_attachments\` must be provided',
+      );
+    }
+
     const { user_id } = ExtractRequestHeader(req);
     return this.spotCheckCommentService.update(
       id,
-      { ...updateDto },
+      {
+        message: body.message ?? undefined,
+        type: body.type,
+        addFiles: files,
+        removeFileTokens: removeTokens,
+      },
       user_id,
       bu_code,
       version,
@@ -194,27 +200,52 @@ export class SpotCheckCommentController {
 
   @Post(':bu_code/spot-check-comment/:id/attachment')
   @UseGuards(new AppIdGuard('spotCheckComment.addAttachment'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Add an attachment to a spot-check comment',
-    operationId: 'addAttachmentToSpotCheckComment',
+    summary: 'Add attachments to a spot-check comment',
+    operationId: 'addAttachmentsToSpotCheckComment',
     responses: {
-      200: { description: 'Attachment added successfully' },
+      200: { description: 'Attachments added successfully' },
+      400: { description: 'Validation failed' },
+      502: { description: 'File service upstream failure' },
     },
   } as any)
-  @ApiBody({ type: AddAttachmentDto, description: 'Attachment data from file service' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: AddAttachmentsDto })
   @HttpCode(HttpStatus.OK)
   async addAttachment(
     @Param('bu_code') bu_code: string,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() attachment: AddAttachmentDto,
+    @UploadedFiles() files: Express.Multer.File[] = [],
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    if (files.length === 0) {
+      throw new BadRequestException('At least one file is required');
+    }
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
     const { user_id } = ExtractRequestHeader(req);
-    return this.spotCheckCommentService.addAttachment(
+    return this.spotCheckCommentService.addAttachments(
       id,
-      { ...attachment },
+      files,
       user_id,
       bu_code,
       version,
@@ -240,15 +271,10 @@ export class SpotCheckCommentController {
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
-    return this.spotCheckCommentService.removeAttachment(
-      id,
-      fileToken,
-      user_id,
-      bu_code,
-      version,
-    );
+    return this.spotCheckCommentService.removeAttachment(id, fileToken, user_id, bu_code, version);
   }
-  @Post(':bu_code/spot-check-comment/upload')
+
+  @Post(':bu_code/spot-check-comment/:spot_check_id')
   @UseGuards(new AppIdGuard('spotCheckComment.createWithFiles'))
   @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
@@ -266,11 +292,22 @@ export class SpotCheckCommentController {
   @HttpCode(HttpStatus.CREATED)
   async createWithFiles(
     @Param('bu_code') bu_code: string,
+    @Param('spot_check_id', new ParseUUIDPipe({ version: '4' }))
+    spot_check_id: string,
     @UploadedFiles() files: Express.Multer.File[] = [],
     @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    this.logger.debug(
+      {
+        function: 'createWithFiles',
+        bu_code,
+        spot_check_id,
+        file_count: files.length,
+      },
+      SpotCheckCommentController.name,
+    );
     const parsed = UploadCommentWithFilesBodySchema.safeParse(rawBody);
     if (!parsed.success) {
       throw new BadRequestException({
@@ -279,7 +316,6 @@ export class SpotCheckCommentController {
       });
     }
     const body = parsed.data as {
-      spot_check_id: string;
       message?: string | null;
       type?: 'user' | 'system';
     };
@@ -305,14 +341,14 @@ export class SpotCheckCommentController {
       typeof body.message === 'string' && body.message.trim().length > 0;
     if (!hasMessage && files.length === 0) {
       throw new BadRequestException(
-        'At least one of `message` or `files` must be provided',
+        'At least one of \`message\` or \`files\` must be provided',
       );
     }
 
     const { user_id } = ExtractRequestHeader(req);
     return this.spotCheckCommentService.createWithFiles(
       files,
-      body,
+      { ...body, spot_check_id },
       user_id,
       bu_code,
       version,

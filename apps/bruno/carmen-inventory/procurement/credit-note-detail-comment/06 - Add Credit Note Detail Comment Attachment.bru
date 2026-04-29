@@ -1,7 +1,7 @@
 meta {
   name: Add attachments credit-note-detail-comment
   type: http
-  seq: 5
+  seq: 6
 }
 
 post {
@@ -64,18 +64,7 @@ docs {
   ### Sample Response 200
   ```json
   {
-    "data": {
-      "id": "uuid",
-      "attachments": [
-        {
-          "fileName": "logo.png",
-          "fileToken": "tok-1",
-          "fileUrl": "",
-          "contentType": "image/png",
-          "size": 12345
-        }
-      ]
-    },
+    "data": { "id": "uuid", "attachments": [...] },
     "paginate": null,
     "status": 200,
     "success": true,

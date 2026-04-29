@@ -18,7 +18,10 @@ import {
 } from '@nestjs/common';
 import { DeliveryPointCommentService } from './delivery-point-comment.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { UploadCommentWithFilesBodySchema, UploadCommentWithFilesDto } from './dto/upload-comment-with-files.dto';
+import {
+  UploadCommentWithFilesBodySchema,
+  UploadCommentWithFilesDto,
+} from './dto/upload-comment-with-files.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -34,7 +37,11 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
-import { CreateDeliveryPointCommentDto, UpdateDeliveryPointCommentDto, AddAttachmentDto } from './dto/delivery-point-comment.dto';
+import {
+  UpdateDeliveryPointCommentDto,
+  UpdateDeliveryPointCommentBodySchema,
+  AddAttachmentsDto,
+} from './dto/delivery-point-comment.dto';
 
 const MAX_FILES = 10;
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
@@ -52,84 +59,222 @@ const ALLOWED_MIME_TYPES = [
 @UseGuards(KeycloakGuard, PermissionGuard)
 @ApiBearerAuth()
 export class DeliveryPointCommentController {
-  private readonly logger: BackendLogger = new BackendLogger(DeliveryPointCommentController.name);
-  constructor(private readonly deliveryPointCommentService: DeliveryPointCommentService) {}
+  private readonly logger: BackendLogger = new BackendLogger(
+    DeliveryPointCommentController.name,
+  );
 
-  @Get(':bu_code/delivery-point/:delivery_point_id/comments')
+  constructor(
+    private readonly deliveryPointCommentService: DeliveryPointCommentService,
+  ) {}
+
+  @Get(':bu_code/delivery-point-comment/:delivery_point_id')
   @UseGuards(new AppIdGuard('deliveryPointComment.findAll'))
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
-  @ApiOperation({ summary: 'Get all comments for a delivery-point', operationId: 'findAllDeliveryPointComments', responses: { 200: { description: 'Comments retrieved successfully' } } } as any)
+  @ApiOperation({
+    summary: 'Get all comments for a delivery-point',
+    operationId: 'findAllDeliveryPointComments',
+    responses: {
+      200: { description: 'Comments retrieved successfully' },
+    },
+  } as any)
   @HttpCode(HttpStatus.OK)
-  async findAllByDeliveryPointId(@Param('bu_code') bu_code: string, @Param('delivery_point_id', new ParseUUIDPipe({ version: '4' })) delivery_point_id: string, @Req() req: Request, @Query() query: IPaginateQuery, @Query('version') version: string = 'latest'): Promise<unknown> {
+  async findAllByParentId(
+    @Param('bu_code') bu_code: string,
+    @Param('delivery_point_id', new ParseUUIDPipe({ version: '4' })) delivery_point_id: string,
+    @Req() req: Request,
+    @Query() query: IPaginateQuery,
+    @Query('version') version: string = 'latest',
+  ): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     const paginate = PaginateQuery(query);
-    return this.deliveryPointCommentService.findAllByDeliveryPointId(delivery_point_id, user_id, bu_code, paginate, version);
-  }
-
-  @Get(':bu_code/delivery-point-comment/:id')
-  @UseGuards(new AppIdGuard('deliveryPointComment.findOne'))
-  @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Get a delivery-point comment by ID', operationId: 'findOneDeliveryPointComment', responses: { 200: { description: 'Comment retrieved successfully' } } } as any)
-  @HttpCode(HttpStatus.OK)
-  async findById(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.deliveryPointCommentService.findById(id, user_id, bu_code, version);
-  }
-
-  @Post(':bu_code/delivery-point-comment')
-  @UseGuards(new AppIdGuard('deliveryPointComment.create'))
-  @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Create a new delivery-point comment', operationId: 'createDeliveryPointComment', responses: { 201: { description: 'Comment created successfully' } } } as any)
-  @ApiBody({ type: CreateDeliveryPointCommentDto })
-  @HttpCode(HttpStatus.CREATED)
-  async create(@Param('bu_code') bu_code: string, @Body() createDto: CreateDeliveryPointCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.deliveryPointCommentService.create({ ...createDto }, user_id, bu_code, version);
+    return this.deliveryPointCommentService.findAllByParentId(
+      delivery_point_id,
+      user_id,
+      bu_code,
+      paginate,
+      version,
+    );
   }
 
   @Patch(':bu_code/delivery-point-comment/:id')
   @UseGuards(new AppIdGuard('deliveryPointComment.update'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Update a delivery-point comment', operationId: 'updateDeliveryPointComment', responses: { 200: { description: 'Comment updated successfully' } } } as any)
+  @ApiOperation({
+    summary: 'Update a delivery-point comment with attachment add/remove',
+    operationId: 'updateDeliveryPointComment',
+    responses: {
+      200: { description: 'Comment updated successfully' },
+      400: { description: 'Validation failed' },
+      502: { description: 'File service upstream failure' },
+    },
+  } as any)
+  @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateDeliveryPointCommentDto })
   @HttpCode(HttpStatus.OK)
-  async update(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() updateDto: UpdateDeliveryPointCommentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
+  async update(
+    @Param('bu_code') bu_code: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @UploadedFiles() files: Express.Multer.File[] = [],
+    @Body() rawBody: Record<string, unknown>,
+    @Req() req: Request,
+    @Query('version') version: string = 'latest',
+  ): Promise<unknown> {
+    const parsed = UpdateDeliveryPointCommentBodySchema.safeParse(rawBody);
+    if (!parsed.success) {
+      throw new BadRequestException({
+        message: 'Invalid request body',
+        errors: parsed.error.errors,
+      });
+    }
+    const body = parsed.data as {
+      message?: string | null;
+      type?: 'user' | 'system';
+      remove_attachments?: string[];
+    };
+
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
+    const removeTokens = body.remove_attachments ?? [];
+    const hasMessage =
+      typeof body.message === 'string' && body.message.trim().length > 0;
+    const hasType = typeof body.type === 'string';
+    if (!hasMessage && !hasType && files.length === 0 && removeTokens.length === 0) {
+      throw new BadRequestException(
+        'At least one of \`message\`, \`type\`, \`files\`, or \`remove_attachments\` must be provided',
+      );
+    }
+
     const { user_id } = ExtractRequestHeader(req);
-    return this.deliveryPointCommentService.update(id, { ...updateDto }, user_id, bu_code, version);
+    return this.deliveryPointCommentService.update(
+      id,
+      {
+        message: body.message ?? undefined,
+        type: body.type,
+        addFiles: files,
+        removeFileTokens: removeTokens,
+      },
+      user_id,
+      bu_code,
+      version,
+    );
   }
 
   @Delete(':bu_code/delivery-point-comment/:id')
   @UseGuards(new AppIdGuard('deliveryPointComment.delete'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Delete a delivery-point comment', operationId: 'deleteDeliveryPointComment', responses: { 200: { description: 'Comment deleted successfully' } } } as any)
+  @ApiOperation({
+    summary: 'Delete a delivery-point comment',
+    operationId: 'deleteDeliveryPointComment',
+    responses: {
+      200: { description: 'Comment deleted successfully' },
+    },
+  } as any)
   @HttpCode(HttpStatus.OK)
-  async delete(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
+  async delete(
+    @Param('bu_code') bu_code: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Req() req: Request,
+    @Query('version') version: string = 'latest',
+  ): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     return this.deliveryPointCommentService.delete(id, user_id, bu_code, version);
   }
 
   @Post(':bu_code/delivery-point-comment/:id/attachment')
   @UseGuards(new AppIdGuard('deliveryPointComment.addAttachment'))
+  @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Add attachment to a delivery-point comment', operationId: 'addAttachmentToDeliveryPointComment', responses: { 200: { description: 'Attachment added successfully' } } } as any)
-  @ApiBody({ type: AddAttachmentDto })
+  @ApiOperation({
+    summary: 'Add attachments to a delivery-point comment',
+    operationId: 'addAttachmentsToDeliveryPointComment',
+    responses: {
+      200: { description: 'Attachments added successfully' },
+      400: { description: 'Validation failed' },
+      502: { description: 'File service upstream failure' },
+    },
+  } as any)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: AddAttachmentsDto })
   @HttpCode(HttpStatus.OK)
-  async addAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() attachment: AddAttachmentDto, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
+  async addAttachment(
+    @Param('bu_code') bu_code: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @UploadedFiles() files: Express.Multer.File[] = [],
+    @Req() req: Request,
+    @Query('version') version: string = 'latest',
+  ): Promise<unknown> {
+    if (files.length === 0) {
+      throw new BadRequestException('At least one file is required');
+    }
+    if (files.length > MAX_FILES) {
+      throw new BadRequestException(
+        `Too many files (max ${MAX_FILES}, received ${files.length})`,
+      );
+    }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestException(
+          `File "${f.originalname}" exceeds max size of ${MAX_FILE_SIZE_BYTES} bytes`,
+        );
+      }
+      if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(f.mimetype)) {
+        throw new BadRequestException(
+          `File "${f.originalname}" has unsupported mime type "${f.mimetype}"`,
+        );
+      }
+    }
+
     const { user_id } = ExtractRequestHeader(req);
-    return this.deliveryPointCommentService.addAttachment(id, { ...attachment }, user_id, bu_code, version);
+    return this.deliveryPointCommentService.addAttachments(
+      id,
+      files,
+      user_id,
+      bu_code,
+      version,
+    );
   }
 
   @Delete(':bu_code/delivery-point-comment/:id/attachment/:fileToken')
   @UseGuards(new AppIdGuard('deliveryPointComment.removeAttachment'))
   @ApiVersionMinRequest()
-  @ApiOperation({ summary: 'Remove attachment from a delivery-point comment', operationId: 'removeAttachmentFromDeliveryPointComment', responses: { 200: { description: 'Attachment removed successfully' } } } as any)
+  @ApiOperation({
+    summary: 'Remove an attachment from a delivery-point comment',
+    operationId: 'removeAttachmentFromDeliveryPointComment',
+    responses: {
+      200: { description: 'Attachment removed successfully' },
+    },
+  } as any)
   @HttpCode(HttpStatus.OK)
-  async removeAttachment(@Param('bu_code') bu_code: string, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Param('fileToken') fileToken: string, @Req() req: Request, @Query('version') version: string = 'latest'): Promise<unknown> {
+  async removeAttachment(
+    @Param('bu_code') bu_code: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('fileToken') fileToken: string,
+    @Req() req: Request,
+    @Query('version') version: string = 'latest',
+  ): Promise<unknown> {
     const { user_id } = ExtractRequestHeader(req);
     return this.deliveryPointCommentService.removeAttachment(id, fileToken, user_id, bu_code, version);
   }
-  @Post(':bu_code/delivery-point-comment/upload')
+
+  @Post(':bu_code/delivery-point-comment/:delivery_point_id')
   @UseGuards(new AppIdGuard('deliveryPointComment.createWithFiles'))
   @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
@@ -147,11 +292,22 @@ export class DeliveryPointCommentController {
   @HttpCode(HttpStatus.CREATED)
   async createWithFiles(
     @Param('bu_code') bu_code: string,
+    @Param('delivery_point_id', new ParseUUIDPipe({ version: '4' }))
+    delivery_point_id: string,
     @UploadedFiles() files: Express.Multer.File[] = [],
     @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
     @Query('version') version: string = 'latest',
   ): Promise<unknown> {
+    this.logger.debug(
+      {
+        function: 'createWithFiles',
+        bu_code,
+        delivery_point_id,
+        file_count: files.length,
+      },
+      DeliveryPointCommentController.name,
+    );
     const parsed = UploadCommentWithFilesBodySchema.safeParse(rawBody);
     if (!parsed.success) {
       throw new BadRequestException({
@@ -160,7 +316,6 @@ export class DeliveryPointCommentController {
       });
     }
     const body = parsed.data as {
-      delivery_point_id: string;
       message?: string | null;
       type?: 'user' | 'system';
     };
@@ -186,14 +341,14 @@ export class DeliveryPointCommentController {
       typeof body.message === 'string' && body.message.trim().length > 0;
     if (!hasMessage && files.length === 0) {
       throw new BadRequestException(
-        'At least one of `message` or `files` must be provided',
+        'At least one of \`message\` or \`files\` must be provided',
       );
     }
 
     const { user_id } = ExtractRequestHeader(req);
     return this.deliveryPointCommentService.createWithFiles(
       files,
-      body,
+      { ...body, delivery_point_id },
       user_id,
       bu_code,
       version,
