@@ -784,7 +784,7 @@ export class PhysicalCountService {
       { timeout: 30000, maxWait: 10000 },
     );
 
-    return this.findOne(id, user_id, tenant_id);
+    return Result.ok({ id });
   }
 
   /**
