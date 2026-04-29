@@ -132,7 +132,7 @@ API collections for testing are located at `apps/bruno/carmen-inventory/`. Uses 
 - `environments/` — Environment configs (`localhost-4000.bru`, `dev.blueledgers.com-4001.bru`)
 - `auth/` — Authentication endpoints (login, logout, refresh, change-password, user-info)
 - `auth/login/` — Login variants for different user roles (test, requestor, HOD, purchaser, FC, GM, Owner)
-- Domain folders: `stock-in/`, `stock-out/`, `transfer/`, `purchase-request/`, `purchase-order/`, `good-received-note/`, etc.
+- Domain folders: `stock-in/`, `stock-out/`, `purchase-request/`, `purchase-order/`, `good-received-note/`, etc.
 - `config/` — Configuration endpoints (32 modules)
 - `platform/` — Platform management endpoints (8 modules)
 

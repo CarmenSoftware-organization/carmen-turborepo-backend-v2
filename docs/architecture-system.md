@@ -274,7 +274,7 @@ flowchart TD
     PostgreSQL[(PostgreSQL\nAWS RDS)]
     S3Storage[(MinIO / S3\nStorage)]
     FileService["micro-file\nTCP: 5007\nHTTP: 6007"]
-    BusinessService["micro-business\nTCP: 5020 / HTTP: 6020\n• Auth & Roles\n• Clusters & BUs\n• Inventory (GRN, Stock, Transfer)\n• Master Data (Products, Vendors)\n• Procurement (PO, PR, Credit Notes)\n• Recipes\n• Activity Logging\n• Notifications"]
+    BusinessService["micro-business\nTCP: 5020 / HTTP: 6020\n• Auth & Roles\n• Clusters & BUs\n• Inventory (GRN, Stock, Store Requisition)\n• Master Data (Products, Vendors)\n• Procurement (PO, PR, Credit Notes)\n• Recipes\n• Activity Logging\n• Notifications"]
     KeycloakService["micro-keycloak-api\nTCP: 5013 / HTTP: 6013"]
     KeycloakServer["Keycloak Server\n:8080"]
     NotificationService["micro-notification\nTCP: 5006 / HTTP: 6006\nSocket.io"]
@@ -305,7 +305,7 @@ flowchart TD
 
     subgraph TenantDB["Tenant Schema"]
         Products["tb_product, tb_vendor, tb_location"]
-        Inventory["tb_stock_in, tb_stock_out, tb_transfer"]
+        Inventory["tb_stock_in, tb_stock_out, tb_store_requisition"]
         Procurement["tb_purchase_order, tb_purchase_request"]
     end
 
@@ -1529,10 +1529,6 @@ tb_user ──< tb_user_tb_application_role >>── tb_application_role
 **tb_stock_out**: id, doc_number, doc_date, doc_status (enum_doc_status), location_id (FK), workflow_id (FK), remark, dimension (JSON), created_by_id (FK), deleted_at
 
 **tb_stock_out_detail**: id, stock_out_id (FK), product_id (FK), unit_id (FK), qty, cost, remark, dimension (JSON)
-
-**tb_transfer**: id, doc_number, doc_date, doc_status (enum_doc_status), from_loc_id (FK), to_loc_id (FK), workflow_id (FK), remark, dimension (JSON), created_by_id (FK), deleted_at
-
-**tb_transfer_detail**: id, transfer_id (FK), product_id (FK), unit_id (FK), qty, cost, remark, dimension (JSON)
 
 **tb_store_requisition**: id, doc_number, doc_date, doc_status (enum_doc_status), from_loc_id (FK), to_loc_id (FK), workflow_id (FK)
 
