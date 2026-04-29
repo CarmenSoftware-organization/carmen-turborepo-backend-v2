@@ -706,7 +706,6 @@ export class WorkflowsService {
     cn: 'tb_credit_note',
     si: 'tb_stock_in',
     so: 'tb_stock_out',
-    tf: 'tb_transfer',
     jv: 'tb_jv_header',
   };
 

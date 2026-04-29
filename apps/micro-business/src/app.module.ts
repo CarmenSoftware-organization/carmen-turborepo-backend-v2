@@ -29,7 +29,6 @@ import { InventoryTransactionModule } from './inventory/inventory-transaction/in
 import { StoreRequisitionModule } from './inventory/store-requisition/store-requisition.module';
 import { StockInModule } from './inventory/stock-in/stock-in.module';
 import { StockOutModule } from './inventory/stock-out/stock-out.module';
-import { TransferModule } from './inventory/transfer/transfer.module';
 import { InventoryPeriodModule } from './inventory/period/period.module';
 import { SpotCheckModule } from './inventory/spot-check/spot-check.module';
 import { PhysicalCountModule } from './inventory/physical-count/physical-count.module';
@@ -128,7 +127,6 @@ import { SqlQueryModule } from './sql-query/sql-query.module';
     StoreRequisitionModule,
     StockInModule,
     StockOutModule,
-    TransferModule,
     InventoryPeriodModule,
     SpotCheckModule,
     PhysicalCountModule,

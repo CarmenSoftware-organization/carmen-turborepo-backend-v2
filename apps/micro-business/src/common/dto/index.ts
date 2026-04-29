@@ -52,7 +52,6 @@ export * from '@/inventory/store-requisition/dto/store-requisition.dto';
 export * from '@/inventory/store-requisition/dto/store-requisition-detail.dto';
 export * from '@/inventory/store-requisition/dto/store-requisition.serializer';
 export * from '@/inventory/store-requisition/dto/stage_role/store-requisition.stage-role.dto';
-export * from '@/inventory/transfer/dto/index';
 
 // Procurement
 export * from '@/procurement/credit-note/dto/credit-note.dto';
