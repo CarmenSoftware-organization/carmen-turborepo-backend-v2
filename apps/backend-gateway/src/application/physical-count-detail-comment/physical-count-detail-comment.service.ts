@@ -79,6 +79,42 @@ export class PhysicalCountDetailCommentService {
     bu_code: string,
     version: string,
   ): Promise<unknown> {
+    const findRes: Observable<MicroserviceResponse> = this.businessService.send(
+      { cmd: 'physical-count-detail-comment.find-by-id', service: 'physical-count' },
+      { id, user_id, bu_code, version, ...getGatewayRequestContext() },
+    );
+    const findResponse = await firstValueFrom(findRes);
+    if (findResponse.response.status !== HttpStatus.OK) {
+      return Result.error(
+        findResponse.response.message,
+        httpStatusToErrorCode(findResponse.response.status),
+      );
+    }
+
+    const attachments = ((findResponse.data as { attachments?: Array<{ fileToken?: string }> } | undefined)?.attachments ?? [])
+      .map((a) => a?.fileToken)
+      .filter((t): t is string => typeof t === 'string' && t.length > 0);
+
+    if (attachments.length > 0) {
+      const results = await Promise.all(
+        attachments.map((fileToken) => this.deleteFile(fileToken, user_id, bu_code)),
+      );
+      const failedTokens = attachments.filter((_, i) => !results[i]);
+      if (failedTokens.length > 0) {
+        this.logger.warn(
+          {
+            function: 'delete',
+            phase: 's3-delete-partial',
+            bu_code,
+            comment_id: id,
+            failed_count: failedTokens.length,
+            failed_tokens: failedTokens,
+          },
+          PhysicalCountDetailCommentService.name,
+        );
+      }
+    }
+
     const res: Observable<MicroserviceResponse> = this.businessService.send(
       { cmd: 'physical-count-detail-comment.delete', service: 'physical-count' },
       { id, user_id, bu_code, version, ...getGatewayRequestContext() },
