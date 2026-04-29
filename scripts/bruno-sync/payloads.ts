@@ -43,78 +43,100 @@ export async function runPayloadSync(opts: RunOptions): Promise<PayloadSyncRepor
 
   for (const file of files) {
     const relPath = relative(opts.brunoRoot, file);
-    const text = await Bun.file(file).text();
-    const sections = parseBruText(text);
+    try {
+      const text = await Bun.file(file).text();
+      const sections = parseBruText(text);
 
-    if (!sections.method) continue;
-    if (sections.body_json === undefined) {
-      // No body block AND method is GET/DELETE => skip silently.
-      const method = sections.method.verb.toUpperCase();
-      if (method === 'GET' || method === 'DELETE' || method === 'HEAD' || method === 'OPTIONS') continue;
+      if (!sections.method) continue;
+
+      const bodyTypeMatch = sections.method.body.match(/^\s*body:\s*(\w[\w-]*)/m);
+      const bodyType = bodyTypeMatch ? bodyTypeMatch[1] : 'none';
+      if (bodyType !== 'json' && bodyType !== 'none') {
+        results.push({
+          filePath: file,
+          relativePath: relPath,
+          status: 'SKIPPED_NON_JSON_BODY',
+          warnings: [],
+        });
+        continue;
+      }
+
+      if (sections.body_json === undefined) {
+        // No body block AND method is GET/DELETE => skip silently.
+        const method = sections.method.verb.toUpperCase();
+        if (method === 'GET' || method === 'DELETE' || method === 'HEAD' || method === 'OPTIONS') continue;
+        results.push({
+          filePath: file,
+          relativePath: relPath,
+          status: 'SKIPPED_NO_BODY',
+          warnings: [],
+        });
+        continue;
+      }
+
+      if (!isEmptyBody(sections.body_json)) {
+        results.push({
+          filePath: file,
+          relativePath: relPath,
+          status: 'SKIPPED_NOT_EMPTY',
+          warnings: [],
+        });
+        continue;
+      }
+
+      const urlMatch = sections.method.body.match(/^\s*url:\s*(\S+)/m);
+      if (!urlMatch) {
+        results.push({
+          filePath: file,
+          relativePath: relPath,
+          status: 'SKIPPED_NO_BODY',
+          warnings: ['no url in method block'],
+        });
+        continue;
+      }
+      const url = urlMatch[1];
+      const matched = matchOperation(loaded.doc, sections.method.verb, url);
+      if (!matched.operation) {
+        results.push({
+          filePath: file,
+          relativePath: relPath,
+          status: 'NO_MATCH',
+          warnings: matched.reason ? [matched.reason] : [],
+        });
+        continue;
+      }
+
+      const generated = generatePayload(matched.operation, loaded.doc, sections.docs ?? '');
+      if (generated.value === null) {
+        results.push({
+          filePath: file,
+          relativePath: relPath,
+          status: 'NO_REQUEST_BODY',
+          warnings: generated.warnings,
+        });
+        continue;
+      }
+
+      const newText = replaceBodyJsonBlock(text, generated.value);
+      if (opts.apply) {
+        writeFileSync(file, newText, 'utf8');
+      }
       results.push({
         filePath: file,
         relativePath: relPath,
-        status: 'SKIPPED_NO_BODY',
-        warnings: [],
+        status: 'UPDATED',
+        warnings: generated.warnings,
+        before: text,
+        after: newText,
       });
-      continue;
-    }
-
-    if (!isEmptyBody(sections.body_json)) {
-      results.push({
-        filePath: file,
-        relativePath: relPath,
-        status: 'SKIPPED_NOT_EMPTY',
-        warnings: [],
-      });
-      continue;
-    }
-
-    const urlMatch = sections.method.body.match(/^\s*url:\s*(\S+)/m);
-    if (!urlMatch) {
-      results.push({
-        filePath: file,
-        relativePath: relPath,
-        status: 'SKIPPED_NO_BODY',
-        warnings: ['no url in method block'],
-      });
-      continue;
-    }
-    const url = urlMatch[1];
-    const matched = matchOperation(loaded.doc, sections.method.verb, url);
-    if (!matched.operation) {
+    } catch (err) {
       results.push({
         filePath: file,
         relativePath: relPath,
         status: 'NO_MATCH',
-        warnings: matched.reason ? [matched.reason] : [],
+        warnings: [`error processing file: ${err instanceof Error ? err.message : String(err)}`],
       });
-      continue;
     }
-
-    const generated = generatePayload(matched.operation, loaded.doc, sections.docs ?? '');
-    if (generated.value === null) {
-      results.push({
-        filePath: file,
-        relativePath: relPath,
-        status: 'NO_REQUEST_BODY',
-        warnings: generated.warnings,
-      });
-      continue;
-    }
-
-    const newText = replaceBodyJsonBlock(text, generated.value);
-    if (opts.apply) {
-      writeFileSync(file, newText, 'utf8');
-    }
-    results.push({
-      filePath: file,
-      relativePath: relPath,
-      status: 'UPDATED',
-      warnings: generated.warnings,
-      before: text,
-      after: newText,
-    });
   }
 
   return {

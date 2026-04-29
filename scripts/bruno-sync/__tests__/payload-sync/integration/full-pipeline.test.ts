@@ -12,7 +12,7 @@ let tmpBruno: string;
 beforeEach(() => {
   tmpBruno = join(tmpdir(), `payload-sync-${Date.now()}-${Math.random().toString(36).slice(2)}`);
   mkdirSync(tmpBruno, { recursive: true });
-  for (const f of ['empty-body.bru', 'populated-body.bru', 'no-match.bru']) {
+  for (const f of ['empty-body.bru', 'populated-body.bru', 'no-match.bru', 'non-json-body.bru']) {
     copyFileSync(join(fixturesDir, 'bruno', f), join(tmpBruno, f));
   }
 });
@@ -80,6 +80,18 @@ describe('runPayloadSync (integration)', () => {
     });
     const updated = second.results.filter((r) => r.status === 'UPDATED');
     expect(updated.length).toBe(0);
+  });
+
+  it('reports SKIPPED_NON_JSON_BODY for multipart bodies', async () => {
+    const report = await runPayloadSync({
+      brunoRoot: tmpBruno,
+      swaggerPath: openapiFixture,
+      gatewaySrcDir: dirname(openapiFixture),
+      apply: false,
+      verbose: true,
+    });
+    const nonJson = report.results.find((r) => r.relativePath.endsWith('non-json-body.bru'));
+    expect(nonJson?.status).toBe('SKIPPED_NON_JSON_BODY');
   });
 
   it('preserves docs and headers blocks byte-identical except body', async () => {
