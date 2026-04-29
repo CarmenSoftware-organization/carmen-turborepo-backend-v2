@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgcrypto(schema: "public")]
 }
 
 generator prismaTypesGenerator {
@@ -43,11 +44,19 @@ enum enum_business_unit_config_key {
   amount
   quantity
   recipe
+  physical_count_costing_method
 }
 
 enum enum_calculation_method {
   FIFO
   AVG
+}
+
+enum enum_physical_count_costing_method {
+  standard
+  last
+  average
+  last_receiving
 }
 
 enum enum_physical_count_type {
@@ -1468,6 +1477,7 @@ model tb_product {
 
   price_deviation_limit Decimal? @default(0) @db.Decimal(20, 5)
   qty_deviation_limit   Decimal? @default(0) @db.Decimal(20, 5)
+  standard_cost         Decimal? @default(0) @db.Decimal(20, 5)
 
   tax_profile_id   String?  @db.Uuid
   tax_profile_name String?  @db.VarChar
@@ -2846,7 +2856,9 @@ model tb_stock_out_detail {
   product_local_name String? @db.VarChar
   product_sku        String? @db.VarChar
 
-  qty Decimal? @default(0) @db.Decimal(20, 5)
+  qty           Decimal? @default(0) @db.Decimal(20, 5)
+  cost_per_unit Decimal? @default(0) @db.Decimal(20, 5)
+  total_cost    Decimal? @default(0) @db.Decimal(20, 5)
 
   note        String? @db.VarChar
   info        Json?   @default("{}") @db.JsonB
