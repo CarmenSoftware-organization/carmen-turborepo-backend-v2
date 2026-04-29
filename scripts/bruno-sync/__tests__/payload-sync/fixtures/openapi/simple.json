@@ -1,0 +1,53 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/{bu_code}/credit-term": {
+      "post": {
+        "operationId": "createCreditTerm",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCreditTermDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string", "minLength": 6 }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateCreditTermDto": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "Net 30" },
+          "code": { "type": "string", "example": "N30" },
+          "is_active": { "type": "boolean", "default": true }
+        },
+        "required": ["name", "code"]
+      }
+    }
+  }
+}
