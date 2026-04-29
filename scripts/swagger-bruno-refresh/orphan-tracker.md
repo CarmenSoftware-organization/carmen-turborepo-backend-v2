@@ -197,6 +197,29 @@ Notes:
 - Comment modules inherit parent permission key (`procurement.purchase_request:view`) — no separate comment permission key exists in seed.
 - Sample responses updated to use UUID v7 (`019638a6-2a00-7c4f-8e46-9b7a52c80c4d`) and timestamp `2026-04-29T08:30:00.000Z`. Paginate format updated to 6-field `{ page, perpage, pages, total, prev, next }`.
 
+### Task 11 — user-management (2026-04-29)
+
+No orphans found. All 8 `.bru` files in `user-management/` map to active gateway controllers.
+
+Modules processed (2):
+- `user/` (7 files) → multiple controllers in `apps/backend-gateway/src/application/`:
+  - `01 - Get Profile.bru` → `user.controller.ts` (`GET /api/user/profile`)
+  - `02 - Get Permission.bru` → `user.controller.ts` (`GET /api/user/permission`)
+  - `03 - List Users.bru` → `user.controller.ts` (`GET /api/:bu_code/users`)
+  - `04 - Update User.bru` → `user.controller.ts` (`PUT /api/user/:user_id`)
+  - `05 - Set Default Business Unit.bru` → `user-business-unit.controller.ts` (`POST /api/business-unit/default`)
+  - `06 - Get User Locations.bru` → `user-location.controller.ts` (`GET /api/:bu_code/user-location`)
+  - `07 - Update Profile.bru` → `user.controller.ts` (`PATCH /api/user/profile`)
+- `user-business-unit/` (1 file) → `user-business-unit.controller.ts` (`POST /api/business-unit/default`)
+
+Notes:
+- All user-management permission keys are absent from `permission-role-map.json` (BU-level seed). All docs blocks carry `> Permission key not found in seed; review needed.`
+- `05 - Set Default Business Unit.bru` (in `user/` folder) and `user-business-unit/01 - Set Default Business Unit.bru` both map to the same `POST /api/business-unit/default` endpoint — intentional duplication for discoverability from different folder contexts.
+- `body:json` for both Set Default Business Unit files was fixed: old field `business_unit_id` replaced with the correct `tenant_id` field as defined in `SetDefaultTenantRequestDto`.
+- `body:json` for `07 - Update Profile.bru` was filled (was empty `{}`) with realistic profile update fields (`alias_name`, `firstname`, `middlename`, `lastname`, `telephone`).
+- `user.controller.ts` is in `src/application/user/` (BU-scoped user management); distinct from `platform/platform-user/` (cross-tenant platform admin) and `platform/user/` (platform CRUD).
+- All 8 `.bru` files refreshed with full R7 docs template. Sample responses updated to use UUID v7 and timestamp `2026-04-29T08:30:00.000Z`. Paginate format updated to 6-field `{ page, perpage, pages, total, prev, next }` where applicable.
+
 ### Task 7a — master-data (A-N) (2026-04-29)
 
 No orphans found. All `.bru` files in the master-data chunk A-N map to active gateway controllers.
