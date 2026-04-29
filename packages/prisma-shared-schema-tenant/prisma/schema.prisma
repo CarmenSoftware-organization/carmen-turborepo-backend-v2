@@ -1058,7 +1058,6 @@ model tb_inventory_transaction {
   tb_inventory_transaction_detail tb_inventory_transaction_detail[]
   tb_stock_in_detail              tb_stock_in_detail[]
   tb_stock_out_detail             tb_stock_out_detail[]
-  tb_transfer_detail              tb_transfer_detail[]
   tb_store_requisition_detail     tb_store_requisition_detail[]
 
   @@index([inventory_doc_no], map: "inventorytransaction_inventory_doc_no_idx")
@@ -1320,8 +1319,6 @@ model tb_location {
   tb_credit_note_detail                         tb_credit_note_detail[]
   tb_store_requisition_from                     tb_store_requisition[]                                @relation("store_requisition_from_location")
   tb_store_requisition_to                       tb_store_requisition[]                                @relation("store_requisition_to_location")
-  tb_transfer_from                              tb_transfer[]                                         @relation("transfer_from_location")
-  tb_transfer_to                                tb_transfer[]                                         @relation("transfer_to_location")
   tb_spot_check                                 tb_spot_check[]
   tb_physical_count                             tb_physical_count[]
   tb_location_comment                           tb_location_comment[]
@@ -1509,7 +1506,6 @@ model tb_product {
   tb_purchase_request_template_detail tb_purchase_request_template_detail[]
   tb_stock_in_detail                  tb_stock_in_detail[]
   tb_stock_out_detail                 tb_stock_out_detail[]
-  tb_transfer_detail                  tb_transfer_detail[]
   tb_store_requisition_detail         tb_store_requisition_detail[]
   tb_unit_conversion                  tb_unit_conversion[]
   tb_product_item_group               tb_product_item_group?                @relation(fields: [product_item_group_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -2914,137 +2910,6 @@ model tb_stock_out_detail_comment {
   deleted_by_id String?   @db.Uuid
 
   tb_stock_out_detail tb_stock_out_detail @relation(fields: [stock_out_detail_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model tb_transfer {
-  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tr_no       String?         @db.VarChar
-  tr_date     DateTime?       @db.Timestamptz(6)
-  description String?         @db.VarChar
-  doc_status  enum_doc_status @default(draft)
-
-  from_location_id   String? @db.Uuid
-  from_location_code String? @db.VarChar
-  from_location_name String? @db.VarChar
-
-  to_location_id   String? @db.Uuid
-  to_location_code String? @db.VarChar
-  to_location_name String? @db.VarChar
-
-  workflow_id             String? @db.Uuid
-  workflow_name           String? @db.VarChar
-  workflow_history        Json?   @default("{}") @db.JsonB
-  /**
-   * [{"stage": "draft", "action": "submit", "meassage": "", "by": {id: "00000000-0000-0000-0000-000000000000", name: "User A"}, "at": "2023-01-01T00:00:00Z"}, {...}]
-   */
-  workflow_current_stage  String? @db.VarChar
-  workflow_previous_stage String? @db.VarChar
-  workflow_next_stage     String? @db.VarChar
-
-  user_action         Json?             @default("{}") @db.JsonB
-  /**
-   * {"execute": [{id: "00000000-0000-0000-0000-000000000000"}, {id : "00000000-0000-0000-0000-123123123"}]}
-   */
-  last_action         enum_last_action? @default(submitted)
-  last_action_at_date DateTime?         @db.Timestamptz(6)
-  last_action_by_id   String?           @db.Uuid
-  last_action_by_name String?           @db.VarChar
-
-  note        String? @db.VarChar
-  info        Json?   @default("{}") @db.JsonB
-  dimension   Json?   @default("[]") @db.JsonB
-  doc_version Int     @default(0) @db.Integer
-
-  created_at    DateTime? @default(now()) @db.Timestamptz(6)
-  created_by_id String?   @db.Uuid
-  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
-  updated_by_id String?   @db.Uuid
-  deleted_at    DateTime? @db.Timestamptz(6)
-  deleted_by_id String?   @db.Uuid
-
-  tb_transfer_detail  tb_transfer_detail[]
-  tb_transfer_comment tb_transfer_comment[]
-  tb_location_from    tb_location?          @relation("transfer_from_location", fields: [from_location_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tb_location_to      tb_location?          @relation("transfer_to_location", fields: [to_location_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@unique([tr_no, deleted_at], map: "TR1_tr_no_u")
-  @@index([tr_no], map: "TR0_tr_no_idx")
-}
-
-model tb_transfer_comment {
-  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  transfer_id String            @db.Uuid
-  type        enum_comment_type @default(user)
-  user_id     String?           @db.Uuid
-  message     String?
-  attachments Json?             @default("[]") @db.JsonB
-
-  created_at    DateTime? @default(now()) @db.Timestamptz(6)
-  created_by_id String?   @db.Uuid
-  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
-  updated_by_id String?   @db.Uuid
-  deleted_at    DateTime? @db.Timestamptz(6)
-  deleted_by_id String?   @db.Uuid
-
-  tb_transfer tb_transfer @relation(fields: [transfer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model tb_transfer_detail {
-  id                       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  inventory_transaction_id String? @db.Uuid
-  transfer_id              String  @db.Uuid
-  sequence_no              Int?    @default(1)
-  description              String? @db.VarChar
-  comment                  String? @db.VarChar
-
-  product_id         String  @db.Uuid
-  product_code       String? @db.VarChar
-  product_name       String? @db.VarChar
-  product_local_name String? @db.VarChar
-  product_sku        String? @db.VarChar
-
-  qty           Decimal? @default(0) @db.Decimal(20, 5)
-  cost_per_unit Decimal? @default(0) @db.Decimal(20, 5)
-  total_cost    Decimal? @default(0) @db.Decimal(20, 5)
-
-  note        String? @db.VarChar
-  info        Json?   @default("{}") @db.JsonB
-  dimension   Json?   @default("[]") @db.JsonB
-  doc_version Int     @default(0) @db.Integer
-
-  created_at    DateTime? @default(now()) @db.Timestamptz(6)
-  created_by_id String?   @db.Uuid
-  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
-  updated_by_id String?   @db.Uuid
-  deleted_at    DateTime? @db.Timestamptz(6)
-  deleted_by_id String?   @db.Uuid
-
-  tb_inventory_transaction   tb_inventory_transaction?    @relation(fields: [inventory_transaction_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tb_product                 tb_product                   @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tb_transfer                tb_transfer                  @relation(fields: [transfer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tb_transfer_detail_comment tb_transfer_detail_comment[]
-
-  @@unique([transfer_id, product_id, dimension, deleted_at], map: "TRT1_transfer_product_dimension_u")
-  @@index([transfer_id, product_id], map: "TRT2_transfer_product_idx")
-  @@index([transfer_id], map: "TRT2_transfer_idx")
-}
-
-model tb_transfer_detail_comment {
-  id                 String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  transfer_detail_id String            @db.Uuid
-  type               enum_comment_type @default(user)
-  user_id            String?           @db.Uuid
-  message            String?
-  attachments        Json?             @default("[]") @db.JsonB
-
-  created_at    DateTime? @default(now()) @db.Timestamptz(6)
-  created_by_id String?   @db.Uuid
-  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
-  updated_by_id String?   @db.Uuid
-  deleted_at    DateTime? @db.Timestamptz(6)
-  deleted_by_id String?   @db.Uuid
-
-  tb_transfer_detail tb_transfer_detail @relation(fields: [transfer_detail_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model tb_store_requisition {
@@ -5890,4 +5755,3 @@ model tb_dashboard_widget {
 
   @@index([dashboard_id], map: "idx_dashboard_widget_dashboard")
 }
-
