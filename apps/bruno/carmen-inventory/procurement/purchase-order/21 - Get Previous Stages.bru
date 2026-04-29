@@ -29,23 +29,43 @@ docs {
   Retrieves all workflow stages before the current stage of a purchase order. Used to determine revert/return-to options in the approval chain.
 
   ### Path Parameters
-  - `po_id` — Purchase order ID
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `po_id` | string (UUID) | Purchase order ID |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `procurement.purchase_order:view`
+  - **Roles**: Requestor, HOD, Purchase, Approval
 
   ### Sample Response
   ```json
   {
     "data": {
       "1": "Create Request",
-      "2": "HOD"
+      "2": "HOD",
+      "3": "Purchaser"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `procurement.purchase_order:view` permission |
+  | 404 | Purchase order not found or no workflow assigned |
 }
 
 params:path {

@@ -66,12 +66,50 @@ docs {
 
   Creates a new purchase request for a department to request items or services they need. The PR starts in draft status and includes line items with product details, quantities, and estimated costs. Once created, it can be submitted for approval through the configured workflow.
 
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+  | `Content-Type` | Yes | `application/json` |
+
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
   {
-    "description": "",
-    "note": ""
+    "stage_role": "create",
+    "details": {
+      "pr_date": "2026-04-29T08:30:00.000Z",
+      "description": "Kitchen supplies for May 2026",
+      "requestor_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "workflow_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4e",
+      "department_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4f",
+      "purchase_request_detail": {
+        "add": [
+          {
+            "description": "Olive oil 1L",
+            "comment": "",
+            "product_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c50",
+            "location_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c51",
+            "delivery_point_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c52",
+            "delivery_date": "2026-05-10T00:00:00.000Z",
+            "requested_qty": 10,
+            "requested_unit_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c53",
+            "requested_unit_conversion_factor": 1,
+            "currency_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c54",
+            "exchange_rate": 1.0,
+            "exchange_rate_date": "2026-04-29T08:30:00.000Z"
+          }
+        ]
+      }
+    }
   }
   ```
 
@@ -79,13 +117,20 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Validation error in request body |
+  | 401 | Missing or invalid bearer token |
+  | 403 | Insufficient permissions |
 }

@@ -177,6 +177,26 @@ Notes:
 - `price-list-template` uses the same `vendor_management.price_list` resource key as `price-list` — no dedicated template key in the seed.
 - All 26 `.bru` files refreshed with full R7 docs template (Path Parameters table, Headers table, Permissions bullet, Sample Body/Response, Error Responses table).
 
+### Task 10b — procurement (purchase-order, purchase-order-comment, purchase-order-detail-comment, purchase-request, purchase-request-comment) (2026-04-29)
+
+No orphans found. All `.bru` files in these 5 modules map to active gateway controllers.
+
+Modules processed (5):
+- `purchase-order/` (24 files including GET-find-all-for-grn, PATCH-submit) → `purchase-order.controller.ts` (`api/:bu_code/purchase-order`) — `procurement.purchase_order:view` (Requestor, HOD, Purchase, Approval); workflow action permission keys (create/approve/reject/review/cancel/close/save/submit/group/confirm) are absent from seed
+- `purchase-order-comment/` (6 files) → `purchase-order-comment.controller.ts` (`api/:bu_code/purchase-order-comment`) — parent resource `procurement.purchase_order:view` (all 4 roles); no dedicated comment permission key in seed
+- `purchase-order-detail-comment/` (6 files) → `purchase-order-detail-comment.controller.ts` (`api/:bu_code/purchase-order-detail-comment`) — same permission mapping as purchase-order-comment
+- `purchase-request/` (25 files including GET-print-to-report, POST-swipe-approve, POST-swipe-reject) → `purchase-request.controller.ts` (`api/:bu_code/purchase-request`) — `procurement.purchase_request:view` (Requestor, HOD, Purchase, Approval); workflow action permission keys (create/approve/reject/review/submit/save/split/duplicate/swipe) are absent from seed
+- `purchase-request-comment/` (6 files) → `purchase-request-comment.controller.ts` (`api/:bu_code/purchase-request-comment`) — parent resource `procurement.purchase_request:view` (all 4 roles); no dedicated comment permission key in seed
+
+Notes:
+- `purchase-order` and `purchase-request` only have `view` in `permission-role-map.json`. All workflow action endpoints (approve, reject, review, submit, save, create, cancel, close, group-pr, confirm-pr, duplicate, split, regenerate-totals, swipe-approve, swipe-reject) are marked `> Permission key not found in seed; review needed.`
+- `purchase-request:view_all` and `purchase-request:view_department` exist in seed but map to no specific Bruno file; they apply to the list endpoint filtered by scope.
+- `GET-print-to-report.bru` and `POST-swipe-approve.bru` / `POST-swipe-reject.bru` had no docs block — added complete docs blocks from scratch.
+- Regenerate-totals endpoints (21, 22) are admin/repair tools to fix denormalized `base_net_amount`/`base_total_amount` fields on PR headers.
+- `detail_id` path param is used for sub-resource endpoints (dimension, history, calculate) on purchase-request detail lines.
+- Comment modules inherit parent permission key (`procurement.purchase_request:view`) — no separate comment permission key exists in seed.
+- Sample responses updated to use UUID v7 (`019638a6-2a00-7c4f-8e46-9b7a52c80c4d`) and timestamp `2026-04-29T08:30:00.000Z`. Paginate format updated to 6-field `{ page, perpage, pages, total, prev, next }`.
+
 ### Task 7a — master-data (A-N) (2026-04-29)
 
 No orphans found. All `.bru` files in the master-data chunk A-N map to active gateway controllers.

@@ -39,47 +39,60 @@ vars:pre-request {
 
 docs {
   ## Create Purchase Order Detail Comment (with file uploads)
-  สร้างความคิดเห็นใหม่สำหรับ purchase-order-detail พร้อมแนบไฟล์ใน request เดียว
-  ไม่ต้อง upload file แยกก่อน
+  สร้างความคิดเห็นใหม่สำหรับ purchase-order-detail พร้อมแนบไฟล์ใน request เดียว ไม่ต้อง upload file แยกก่อน
 
-  `purchase_order_detail_id` ระบุผ่าน URL path parameter (ไม่ใช่ body field)
-
-  ### URL
-  `POST {{host}}/api/{{bu_code}}/purchase-order-detail-comment/:purchase_order_detail_id`
+  Creates a new comment for a purchase order detail line item with optional file attachments. `purchase_order_detail_id` is specified in the URL path (not body).
 
   ### Path Parameters
-  - `bu_code` — Business unit code
-  - `purchase_order_detail_id` — Purchase Order Detail UUID
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `purchase_order_detail_id` | string (UUID) | Purchase Order Detail ID |
 
-  ### Body (multipart/form-data)
-  - `message` (text, optional) — ข้อความคอมเมนต์ ≤ 4000 ตัวอักษร
-  - `type` (text, optional, default `user`) — `user` | `system`
-  - `files` (binary, optional, repeatable) — ไฟล์แนบ
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
 
-  ต้องส่งอย่างน้อยหนึ่งใน `message` หรือ `files`
+  ### Permissions
+  - **Permission key**: `procurement.purchase_order:view`
+  - **Roles**: Requestor, HOD, Purchase, Approval
 
-  ### Constraints
-  - max 10 files per request
-  - max 10 MB per file
-  - allowed mime: image/jpeg, image/png, image/webp, image/gif, application/pdf
+  ### Sample Body (multipart/form-data)
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | `message` | text | Conditional | Comment text (≤ 4000 chars). Required if no files. |
+  | `type` | text | No | `user` \| `system` (default: `user`) |
+  | `files` | binary (repeatable) | Conditional | Attachment files. Required if no message. |
 
-  ### Gateway behavior
-  1. Upload ทุกไฟล์ไป S3 ผ่าน `file.upload`
-  2. หาก upload ใดล้มเหลว — rollback (ลบไฟล์ที่ upload สำเร็จออกจาก S3) แล้วตอบ 502
-  3. Forward `{ purchase_order_detail_id, message, type, attachments: [...] }` ไปยัง business service
-  4. หาก business service ตอบ error — rollback ลบไฟล์ที่ upload ไปแล้วออกจาก S3
+  Constraints: max 10 files, max 10 MB each, allowed: image/jpeg, image/png, image/webp, image/gif, application/pdf.
 
-  ### Response 201
+  ### Sample Response
   ```json
   {
-    "data": { "id": "<uuid>", "purchase_order_detail_id": "<uuid>", "attachments": [...] },
+    "data": {
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "purchase_order_detail_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+      "message": "Item quantity confirmed with vendor",
+      "type": "user",
+      "attachments": []
+    },
+    "paginate": null,
     "status": 201,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-04-29T12:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
 
-  Note: `fileUrl` ใน response จะว่าง — frontend ต้องเรียก
-  `GET /api/{bu_code}/documents/presigned-url/{fileToken}` เพื่อแสดงไฟล์
+  > `fileUrl` ใน response จะว่าง — frontend ต้องเรียก
+  > `GET /api/{bu_code}/documents/presigned-url/{fileToken}` เพื่อแสดงไฟล์
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Neither `message` nor `files` provided; file count/size/mime validation failed |
+  | 401 | Missing or invalid bearer token |
+  | 502 | File service (S3) upload failure |
 }

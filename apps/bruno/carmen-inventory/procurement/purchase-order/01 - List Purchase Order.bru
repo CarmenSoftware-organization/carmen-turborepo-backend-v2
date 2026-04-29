@@ -27,46 +27,70 @@ docs {
   ## List Purchase Orders
   แสดงรายการใบสั่งซื้อทั้งหมดของหน่วยธุรกิจพร้อมการแบ่งหน้าและค้นหา สามารถกรองตาม vendor_id ได้
 
-  Lists all purchase orders for the business unit with pagination and search.
-  Optionally filter by `vendor_id`.
+  Lists all purchase orders for the business unit with pagination and search. Optionally filter by `vendor_id`. Used by purchasers and managers to track outstanding orders, monitor delivery status, and manage vendor commitments.
 
-  Used by purchasers and managers to track outstanding orders, monitor delivery status, and manage vendor commitments.
+  ### Path Parameters
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
 
   ### Query Parameters
-  - `vendor_id` (optional) — Filter by vendor UUID
-  - `page`, `perpage` — Pagination
-  - `search` — Search by PO number, description, vendor name
-  - `filter`, `sort` — Advanced filtering and sorting
+  | Name | Type | Required | Default | Description |
+  |------|------|----------|---------|-------------|
+  | `vendor_id` | string (UUID) | No | — | Filter by vendor UUID |
+  | `page` | number | No | 1 | Page number |
+  | `perpage` | number | No | 10 | Items per page |
+  | `search` | string | No | — | Search by PO number, description, vendor name |
+  | `filter` | string | No | — | Advanced filter expression |
+  | `sort` | string | No | — | Sort expression |
+  | `version` | string | No | latest | API version |
 
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
+
+  ### Permissions
+  - **Permission key**: `procurement.purchase_order:view`
+  - **Roles**: Requestor, HOD, Purchase, Approval
 
   ### Sample Response
   ```json
   {
     "data": [
       {
-        "id": "uuid",
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
         "po_no": "PO-2026-0001",
         "po_status": "draft",
-        "description": "Purchase order",
-        "order_date": "2026-03-27T00:00:00.000Z",
-        "vendor_name": "Vendor Name",
+        "description": "Purchase order for kitchen supplies",
+        "order_date": "2026-04-29T08:30:00.000Z",
+        "vendor_name": "ABC Food Supplies Co., Ltd.",
         "currency_code": "THB",
-        "total_amount": 15000,
-        "created_at": "2026-03-27T00:00:00.000Z"
+        "total_amount": 15000.00,
+        "created_at": "2026-04-29T08:30:00.000Z"
       }
     ],
     "paginate": {
-      "total": 100,
       "page": 1,
       "perpage": 10,
-      "pages": 10
+      "pages": 5,
+      "total": 42,
+      "prev": null,
+      "next": 2
     },
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 401 | Missing or invalid bearer token |
+  | 403 | User lacks `procurement.purchase_order:view` permission |
 }
 
 params:query {

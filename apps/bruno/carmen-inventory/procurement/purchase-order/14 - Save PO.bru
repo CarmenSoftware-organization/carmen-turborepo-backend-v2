@@ -90,24 +90,43 @@ docs {
   Saves incremental changes to a purchase order that is still being prepared, including adding new items, modifying quantities or pricing, and removing line items. Used by purchasers to finalize PO details before submitting for approval.
 
   ### Path Parameters
-  - `id` — Purchase order UUID
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Purchase order ID |
 
-  ### Body
-  - `details.add[]` — New line items to add
-  - `details.update[]` — Existing line items to modify
-  - `details.remove[]` — Line items to remove
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
 
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
   {
-    "vendor_id": "<vendor_uuid>",
-    "vendor_name": "Fresh Farm Supplies Co.",
-    "delivery_date": "2026-04-05",
-    "currency_id": "<currency_uuid>",
+    "vendor_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+    "vendor_name": "ABC Food Supplies Co., Ltd.",
+    "delivery_date": "2026-05-06",
+    "currency_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
     "currency_code": "THB",
     "exchange_rate": 1,
-    "...": "..."
+    "description": "PO for kitchen supplies May 2026",
+    "details": {
+      "add": [
+        {
+          "product_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+          "product_name": "Rice Jasmine 5kg",
+          "order_unit_id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
+          "order_qty": 10.5,
+          "unit_price": 250.00
+        }
+      ],
+      "update": [],
+      "remove": []
+    }
   }
   ```
 
@@ -115,15 +134,24 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | Invalid data or user does not have permission to save |
+  | 401 | Missing or invalid bearer token |
+  | 404 | Purchase order not found or not in progress |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {

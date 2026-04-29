@@ -37,12 +37,19 @@ docs {
   Advances a purchase order through its approval workflow at the current stage. Each authorized approver (e.g., FC, GM) signs off to authorize the vendor commitment and expenditure.
 
   ### Path Parameters
-  - `id` — Purchase order UUID
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `bu_code` | string | Business unit code |
+  | `id` | string (UUID) | Purchase order ID |
 
-  ### Body
-  - `stage_role` — Role of the approver (e.g., "approve")
-  - `details[]` — Line items with `id` and `stage_status`
+  ### Headers
+  | Name | Required | Description |
+  |------|----------|-------------|
+  | `Authorization` | Yes | `Bearer {{access_token}}` |
+  | `x-app-id` | Yes | `{{x_app_id}}` |
 
+  ### Permissions
+  > Permission key not found in seed; review needed.
 
   ### Sample Body
   ```json
@@ -50,7 +57,7 @@ docs {
     "stage_role": "approve",
     "details": [
       {
-        "id": "<po_detail_uuid>",
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d",
         "stage_status": "approve"
       }
     ]
@@ -61,15 +68,25 @@ docs {
   ```json
   {
     "data": {
-      "id": "uuid"
+      "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4d"
     },
     "paginate": null,
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-03-27T00:00:00.000Z"
+    "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
+
+  ### Error Responses
+  | Status | When |
+  |--------|------|
+  | 400 | PO is not in a state that allows approval |
+  | 401 | Missing or invalid bearer token |
+  | 403 | User does not have the approver role for this stage |
+  | 404 | Purchase order not found |
+
+  > Service-layer errors propagate via TCP; see micro-business for full list.
 }
 
 params:path {
