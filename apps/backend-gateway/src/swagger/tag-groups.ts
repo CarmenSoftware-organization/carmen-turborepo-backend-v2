@@ -52,7 +52,6 @@ export const SWAGGER_TAGS: SwaggerTag[] = [
   // Group 5 — Inventory
   { name: 'Inventory: Stock In',         description: 'Stock-in header, details, comments' },
   { name: 'Inventory: Stock Out',        description: 'Stock-out header, details, comments' },
-  { name: 'Inventory: Transfers',        description: 'Transfer header, details, comments' },
   { name: 'Inventory: Physical Count',   description: 'Physical count, periods, details, comments' },
   { name: 'Inventory: Spot Check',       description: 'Spot check header, details, comments' },
   { name: 'Inventory: Adjustments',      description: 'Inventory adjustments' },
@@ -133,7 +132,6 @@ export const SWAGGER_TAG_GROUPS: SwaggerTagGroup[] = [
     tags: [
       'Inventory: Stock In',
       'Inventory: Stock Out',
-      'Inventory: Transfers',
       'Inventory: Physical Count',
       'Inventory: Spot Check',
       'Inventory: Adjustments',

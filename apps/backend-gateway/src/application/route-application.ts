@@ -54,8 +54,6 @@ import { StockOutCommentModule } from './stock-out-comment/stock-out-comment.mod
 import { StockOutDetailCommentModule } from './stock-out-detail-comment/stock-out-detail-comment.module';
 import { StoreRequisitionCommentModule } from './store-requisition-comment/store-requisition-comment.module';
 import { StoreRequisitionDetailCommentModule } from './store-requisition-detail-comment/store-requisition-detail-comment.module';
-import { TransferCommentModule } from './transfer-comment/transfer-comment.module';
-import { TransferDetailCommentModule } from './transfer-detail-comment/transfer-detail-comment.module';
 import { ConfigRunningCodeCommentModule } from './config-running-code-comment/config-running-code-comment.module';
 import { CreditTermCommentModule } from './credit-term-comment/credit-term-comment.module';
 import { CurrencyCommentModule } from './currency-comment/currency-comment.module';
@@ -84,8 +82,6 @@ import { StockInModule } from './stock-in/stock-in.module';
 import { StockInDetailModule } from './stock-in-detail/stock-in-detail.module';
 import { StockOutModule } from './stock-out/stock-out.module';
 import { StockOutDetailModule } from './stock-out-detail/stock-out-detail.module';
-import { TransferModule } from './transfer/transfer.module';
-import { TransferDetailModule } from './transfer-detail/transfer-detail.module';
 import { InventoryAdjustmentModule } from './inventory-adjustment/inventory-adjustment.module';
 import { InventoryTransactionModule } from './inventory-transaction/inventory-transaction.module'; // ⚠️ TEST ONLY — DELETE when GRN approve integration is verified
 import { PeriodModule } from './period/period.module';
@@ -150,8 +146,6 @@ import { DashboardModule } from './dashboard/dashboard.module';
     StockOutDetailCommentModule,
     StoreRequisitionCommentModule,
     StoreRequisitionDetailCommentModule,
-    TransferCommentModule,
-    TransferDetailCommentModule,
     ConfigRunningCodeCommentModule,
     CreditTermCommentModule,
     CurrencyCommentModule,
@@ -180,8 +174,6 @@ import { DashboardModule } from './dashboard/dashboard.module';
     StockInDetailModule,
     StockOutModule,
     StockOutDetailModule,
-    TransferModule,
-    TransferDetailModule,
     InventoryAdjustmentModule,
     InventoryTransactionModule, // ⚠️ TEST ONLY — DELETE when GRN approve integration is verified
     PeriodModule,

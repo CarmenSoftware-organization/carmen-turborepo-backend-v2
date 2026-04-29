@@ -135,11 +135,6 @@
   "apps/backend-gateway/src/application/stock-out-comment/stock-out-comment.controller.ts": "Inventory: Stock Out",
   "apps/backend-gateway/src/application/stock-out-detail-comment/stock-out-detail-comment.controller.ts": "Inventory: Stock Out",
 
-  "apps/backend-gateway/src/application/transfer/transfer.controller.ts": "Inventory: Transfers",
-  "apps/backend-gateway/src/application/transfer-detail/transfer-detail.controller.ts": "Inventory: Transfers",
-  "apps/backend-gateway/src/application/transfer-comment/transfer-comment.controller.ts": "Inventory: Transfers",
-  "apps/backend-gateway/src/application/transfer-detail-comment/transfer-detail-comment.controller.ts": "Inventory: Transfers",
-
   "apps/backend-gateway/src/application/physical-count/physical-count.controller.ts": "Inventory: Physical Count",
   "apps/backend-gateway/src/application/physical-count-comment/physical-count-comment.controller.ts": "Inventory: Physical Count",
   "apps/backend-gateway/src/application/physical-count-detail-comment/physical-count-detail-comment.controller.ts": "Inventory: Physical Count",
