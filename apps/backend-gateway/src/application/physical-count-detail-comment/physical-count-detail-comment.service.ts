@@ -72,25 +72,6 @@ export class PhysicalCountDetailCommentService {
     return ResponseLib.successWithPaginate(response.data, response.paginate);
   }
 
-  async create(
-    data: Record<string, unknown>,
-    user_id: string,
-    bu_code: string,
-    version: string,
-  ): Promise<unknown> {
-    const res: Observable<MicroserviceResponse> = this.businessService.send(
-      { cmd: 'physical-count-detail-comment.create', service: 'physical-count' },
-      { data, user_id, bu_code, version, ...getGatewayRequestContext() },
-    );
-    const response = await firstValueFrom(res);
-    if (response.response.status !== HttpStatus.CREATED)
-      return Result.error(
-        response.response.message,
-        httpStatusToErrorCode(response.response.status),
-      );
-    return ResponseLib.created(response.data);
-  }
-
   async update(
     id: string,
     data: Record<string, unknown>,

@@ -28,7 +28,6 @@ import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
-  CreatePhysicalCountDetailCommentDto,
   UpdatePhysicalCountDetailCommentDto,
   AddAttachmentDto,
 } from './dto/physical-count-detail-comment.dto';
@@ -112,33 +111,6 @@ export class PhysicalCountDetailCommentController {
     return this.physicalCountDetailCommentService.findById(id, user_id, bu_code, version);
   }
 
-  @Post(':bu_code/physical-count-detail-comment')
-  @UseGuards(new AppIdGuard('physicalCountDetailComment.create'))
-  @ApiVersionMinRequest()
-  @ApiOperation({
-    summary: 'Create a new physical-count-detail comment',
-    operationId: 'createPhysicalCountDetailComment',
-    responses: {
-      201: { description: 'Comment created successfully' },
-    },
-  } as any)
-  @ApiBody({ type: CreatePhysicalCountDetailCommentDto, description: 'Comment data with optional attachments' })
-  @HttpCode(HttpStatus.CREATED)
-  async create(
-    @Param('bu_code') bu_code: string,
-    @Body() createDto: CreatePhysicalCountDetailCommentDto,
-    @Req() req: Request,
-    @Query('version') version: string = 'latest',
-  ): Promise<unknown> {
-    const { user_id } = ExtractRequestHeader(req);
-    return this.physicalCountDetailCommentService.create(
-      { ...createDto },
-      user_id,
-      bu_code,
-      version,
-    );
-  }
-
   @Patch(':bu_code/physical-count-detail-comment/:id')
   @UseGuards(new AppIdGuard('physicalCountDetailComment.update'))
   @ApiVersionMinRequest()
@@ -189,7 +161,7 @@ export class PhysicalCountDetailCommentController {
     return this.physicalCountDetailCommentService.delete(id, user_id, bu_code, version);
   }
 
-  @Post(':bu_code/physical-count-detail-comment/upload')
+  @Post(':bu_code/physical-count-detail-comment/:physical_count_detail_id')
   @UseGuards(new AppIdGuard('physicalCountDetailComment.createWithFiles'))
   @UseInterceptors(FilesInterceptor('files'))
   @ApiVersionMinRequest()
@@ -207,6 +179,8 @@ export class PhysicalCountDetailCommentController {
   @HttpCode(HttpStatus.CREATED)
   async createWithFiles(
     @Param('bu_code') bu_code: string,
+    @Param('physical_count_detail_id', new ParseUUIDPipe({ version: '4' }))
+    physical_count_detail_id: string,
     @UploadedFiles() files: Express.Multer.File[] = [],
     @Body() rawBody: Record<string, unknown>,
     @Req() req: Request,
@@ -216,6 +190,7 @@ export class PhysicalCountDetailCommentController {
       {
         function: 'createWithFiles',
         bu_code,
+        physical_count_detail_id,
         file_count: files.length,
       },
       PhysicalCountDetailCommentController.name,
@@ -228,7 +203,6 @@ export class PhysicalCountDetailCommentController {
       });
     }
     const body = parsed.data as {
-      physical_count_detail_id: string;
       message?: string | null;
       type?: 'user' | 'system';
     };
@@ -261,7 +235,7 @@ export class PhysicalCountDetailCommentController {
     const { user_id } = ExtractRequestHeader(req);
     return this.physicalCountDetailCommentService.createWithFiles(
       files,
-      body,
+      { ...body, physical_count_detail_id },
       user_id,
       bu_code,
       version,

@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{host}}/api/{{bu_code}}/physical-count-detail-comment/upload
+  url: {{host}}/api/{{bu_code}}/physical-count-detail-comment/{{physical_count_detail_id}}
   body: multipartForm
   auth: bearer
 }
@@ -27,7 +27,6 @@ body:json {
 }
 
 body:multipart-form {
-  physical_count_detail_id: {{physical_count_detail_id}}
   message: Damage on outer carton
   type: user
   files: @file(/Users/samutpra/Pictures/logo.png)

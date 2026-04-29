@@ -50,32 +50,19 @@ describe('PhysicalCountDetailCommentController.createWithFiles', () => {
     jest.clearAllMocks();
   });
 
+  const PHYSICAL_COUNT_DETAIL_ID = '11111111-1111-1111-1111-111111111111';
   const validBody = {
-    physical_count_detail_id: '11111111-1111-1111-1111-111111111111',
     message: 'hello',
     type: 'user',
   };
-
-  it('rejects bad uuid', async () => {
-    await expect(
-      controller.createWithFiles(
-        'HQ-001',
-        [],
-        { ...validBody, physical_count_detail_id: 'not-a-uuid' },
-        fakeReq,
-      ),
-    ).rejects.toBeInstanceOf(BadRequestException);
-  });
 
   it('rejects when no message and no files', async () => {
     await expect(
       controller.createWithFiles(
         'HQ-001',
+        PHYSICAL_COUNT_DETAIL_ID,
         [],
-        {
-          physical_count_detail_id: validBody.physical_count_detail_id,
-          type: 'user',
-        },
+        { type: 'user' },
         fakeReq,
       ),
     ).rejects.toBeInstanceOf(BadRequestException);
@@ -86,21 +73,39 @@ describe('PhysicalCountDetailCommentController.createWithFiles', () => {
       mkFile(`f${i}.jpg`, 'image/jpeg', 100),
     );
     await expect(
-      controller.createWithFiles('HQ-001', files, validBody, fakeReq),
+      controller.createWithFiles(
+        'HQ-001',
+        PHYSICAL_COUNT_DETAIL_ID,
+        files,
+        validBody,
+        fakeReq,
+      ),
     ).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('rejects file too large', async () => {
     const big = mkFile('big.jpg', 'image/jpeg', 11 * 1024 * 1024);
     await expect(
-      controller.createWithFiles('HQ-001', [big], validBody, fakeReq),
+      controller.createWithFiles(
+        'HQ-001',
+        PHYSICAL_COUNT_DETAIL_ID,
+        [big],
+        validBody,
+        fakeReq,
+      ),
     ).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('rejects bad mime', async () => {
     const txt = mkFile('a.txt', 'text/plain', 10);
     await expect(
-      controller.createWithFiles('HQ-001', [txt], validBody, fakeReq),
+      controller.createWithFiles(
+        'HQ-001',
+        PHYSICAL_COUNT_DETAIL_ID,
+        [txt],
+        validBody,
+        fakeReq,
+      ),
     ).rejects.toBeInstanceOf(BadRequestException);
   });
 
@@ -110,6 +115,7 @@ describe('PhysicalCountDetailCommentController.createWithFiles', () => {
 
     const result = await controller.createWithFiles(
       'HQ-001',
+      PHYSICAL_COUNT_DETAIL_ID,
       [file],
       validBody,
       fakeReq,
@@ -118,7 +124,7 @@ describe('PhysicalCountDetailCommentController.createWithFiles', () => {
     expect(mockService.createWithFiles).toHaveBeenCalledWith(
       [file],
       expect.objectContaining({
-        physical_count_detail_id: validBody.physical_count_detail_id,
+        physical_count_detail_id: PHYSICAL_COUNT_DETAIL_ID,
         message: 'hello',
         type: 'user',
       }),
@@ -133,7 +139,13 @@ describe('PhysicalCountDetailCommentController.createWithFiles', () => {
     mockService.createWithFiles.mockResolvedValueOnce({ ok: true });
     const pdf = mkFile('a.pdf', 'application/pdf', 1000);
 
-    await controller.createWithFiles('HQ-001', [pdf], validBody, fakeReq);
+    await controller.createWithFiles(
+      'HQ-001',
+      PHYSICAL_COUNT_DETAIL_ID,
+      [pdf],
+      validBody,
+      fakeReq,
+    );
     expect(mockService.createWithFiles).toHaveBeenCalled();
   });
 });

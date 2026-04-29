@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 export { AddAttachmentDto } from 'src/shared-dto/add-attachment.dto';
 
 export const AttachmentSchema = z.object({
@@ -11,48 +11,6 @@ export const AttachmentSchema = z.object({
   size: z.number().optional(),
 });
 export type Attachment = z.infer<typeof AttachmentSchema>;
-
-export const CreatePhysicalCountDetailCommentSchema = z.object({
-  physical_count_detail_id: z.string().uuid(),
-  message: z.string().optional().nullable(),
-  type: z.enum(['user', 'system']).default('user'),
-  attachments: z.array(AttachmentSchema).optional().default([]),
-});
-
-export class CreatePhysicalCountDetailCommentDto extends createZodDto(CreatePhysicalCountDetailCommentSchema) {
-  @ApiProperty({
-    description: 'The ID of the physical-count-detail',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
-  physical_count_detail_id: string;
-
-  @ApiPropertyOptional({
-    description: 'Comment message',
-    example: 'This is a comment',
-  })
-  message?: string | null;
-
-  @ApiPropertyOptional({
-    description: 'Comment type',
-    enum: ['user', 'system'],
-    default: 'user',
-  })
-  type?: 'user' | 'system';
-
-  @ApiPropertyOptional({
-    description: 'File attachments',
-    type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        fileName: { type: 'string' },
-        fileToken: { type: 'string' },
-        contentType: { type: 'string' },
-      },
-    },
-  })
-  attachments?: Attachment[];
-}
 
 export const UpdatePhysicalCountDetailCommentSchema = z.object({
   message: z.string().optional().nullable(),
