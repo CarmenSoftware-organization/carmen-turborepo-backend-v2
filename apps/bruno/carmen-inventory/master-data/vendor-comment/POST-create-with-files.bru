@@ -1,0 +1,28 @@
+meta {
+  name: Create with files vendor-comment
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{host}}/api/{{bu_code}}/vendor-comment/upload
+  body: json
+  auth: bearer
+}
+
+headers {
+  x-app-id: {{x_app_id}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+query {
+  ~version: 
+}
+
+body:json {
+  {}
+}
