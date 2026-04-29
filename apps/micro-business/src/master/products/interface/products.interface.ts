@@ -8,6 +8,7 @@ export interface IProductInfo {
   barcode?: string;
   price_deviation_limit?: number;
   qty_deviation_limit?: number;
+  standard_cost?: number;
   tax_profile_id?: string;
   tax_profile_name?: string;
   tax_rate?: number;

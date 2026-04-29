@@ -46,6 +46,9 @@ export class ProductResponseDto {
   @ApiPropertyOptional({ description: 'Quantity deviation limit', example: 5.0 })
   qty_deviation_limit?: number;
 
+  @ApiPropertyOptional({ description: 'Standard cost per inventory unit', example: 100 })
+  standard_cost?: number;
+
   @ApiPropertyOptional({ description: 'Tax profile ID (UUID)', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   tax_profile_id?: string;
 
