@@ -5,6 +5,8 @@ import {
   Attachment,
 } from '../../../common/dto/attachment.schema';
 
+export { AttachmentSchema, Attachment };
+
 export const CreateStockOutDetailCommentSchema = z.object({
   stock_out_detail_id: z.string().uuid(),
   message: z.string().optional().nullable(),
