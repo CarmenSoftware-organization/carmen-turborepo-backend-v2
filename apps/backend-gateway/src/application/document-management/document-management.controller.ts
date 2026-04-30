@@ -199,6 +199,61 @@ export class DocumentManagementController extends BaseHttpController {
   }
 
   /**
+   * Download a document as raw binary stream
+   * ดาวน์โหลดเอกสารเป็น binary stream
+   * @param fileToken - Unique file token / โทเค็นไฟล์เฉพาะ
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @param req - HTTP request / คำขอ HTTP
+   * @param res - HTTP response / การตอบกลับ HTTP
+   * @returns Raw binary file body / เนื้อหาไฟล์ binary ดิบ
+   */
+  @Get(':filetoken/download')
+  @UseGuards(new AppIdGuard('documents.download'))
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Download document binary',
+    description:
+      'Streams the raw binary content of a procurement document for direct browser viewing or download (images, PDFs). Unlike the JSON-wrapped variant, this returns the file body with proper Content-Type/Content-Disposition headers.',
+    'x-description-th': 'ดาวน์โหลดไฟล์ binary โดยตรง สำหรับเปิดดูในเบราว์เซอร์',
+    operationId: 'downloadDocument',
+  } as any)
+  async downloadDocument(
+    @Param('filetoken') fileToken: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    this.logger.debug(
+      {
+        function: 'downloadDocument',
+        fileToken,
+        bu_code,
+      },
+      DocumentManagementController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.documentManagementService.downloadDocument(
+      fileToken,
+      user_id,
+      bu_code,
+    );
+
+    if (!result.isOk()) {
+      this.respond(res, result);
+      return;
+    }
+
+    const { buffer, contentType, fileName, size } = result.unwrap();
+    res.set({
+      'Content-Type': contentType,
+      'Content-Disposition': `inline; filename="${fileName}"`,
+      'Content-Length': size,
+    });
+    res.send(buffer);
+  }
+
+  /**
    * Get document metadata without downloading content
    * ดึงข้อมูลเมตาของเอกสารโดยไม่ดาวน์โหลดเนื้อหา
    * @param fileToken - Unique file token / โทเค็นไฟล์เฉพาะ

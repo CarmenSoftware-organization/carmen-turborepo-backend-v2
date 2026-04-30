@@ -263,4 +263,53 @@ export class DocumentManagementService {
 
     return Result.ok(response.data);
   }
+
+  /**
+   * Download a document and return the decoded binary buffer.
+   * ดาวน์โหลดเอกสารและคืนค่า binary buffer
+   * @param fileToken - Unique file token / โทเค็นไฟล์เฉพาะ
+   * @param user_id - User ID / รหัสผู้ใช้
+   * @param bu_code - Business unit code / รหัสหน่วยธุรกิจ
+   * @returns Decoded buffer with content metadata / buffer ที่ถอดรหัสแล้วพร้อมข้อมูลไฟล์
+   */
+  async downloadDocument(
+    fileToken: string,
+    user_id: string,
+    bu_code: string,
+  ): Promise<
+    Result<{ buffer: Buffer; contentType: string; fileName: string; size: number }>
+  > {
+    this.logger.debug(
+      {
+        function: 'downloadDocument',
+        fileToken,
+        bu_code,
+      },
+      DocumentManagementService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.fileService.send(
+      { cmd: 'file.get', service: 'files' },
+      { fileToken, user_id, bu_code, ...getGatewayRequestContext() },
+    );
+
+    const response = (await firstValueFrom(res)) as any;
+
+    if (!response.success) {
+      return Result.error(
+        response.response?.message ?? response.message,
+        httpStatusToErrorCode(response.response?.status),
+      );
+    }
+
+    const data = response.data ?? {};
+    const buffer = Buffer.from(String(data.buffer ?? ''), 'base64');
+
+    return Result.ok({
+      buffer,
+      contentType: data.mimeType ?? 'application/octet-stream',
+      fileName: data.fileName ?? fileToken,
+      size: typeof data.size === 'number' ? data.size : buffer.length,
+    });
+  }
 }
