@@ -87,6 +87,33 @@ export class Platform_ReportTemplateController extends BaseHttpController {
   }
 
   /**
+   * List views, functions, and stored procedures present in a tenant schema.
+   * Used by the report-template Edit form to populate the Source Name picker.
+   */
+  @Get('db-objects')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'List tenant DB objects (views / functions / procedures)',
+    description: 'Introspects the given tenant schema and returns user-defined views, functions, and procedures usable as a report source.',
+    'x-description-th': 'แสดงรายการ view / function / procedure ของ tenant ที่เลือก สำหรับใช้เลือกเป็น source ของ report template',
+    operationId: 'platformReportTemplate_listDbObjects',
+    tags: ['Platform Admin', 'Report Template'],
+  } as any)
+  async listDbObjects(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('bu_code') bu_code: string,
+  ): Promise<void> {
+    if (!bu_code) {
+      this.respond(res, { kind: 'error', message: 'bu_code query param is required', code: 'BAD_REQUEST' } as any);
+      return;
+    }
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.reportTemplateService.listDbObjects(user_id, bu_code);
+    this.respond(res, result);
+  }
+
+  /**
    * Get a report template by ID
    * ค้นหาเทมเพลตรายงานตาม ID
    */

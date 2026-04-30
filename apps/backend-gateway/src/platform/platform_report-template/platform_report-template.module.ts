@@ -15,6 +15,14 @@ import { envConfig } from 'src/libs/config.env';
           port: Number(envConfig.CLUSTER_SERVICE_TCP_PORT),
         },
       },
+      {
+        name: 'BUSINESS_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          host: envConfig.BUSINESS_SERVICE_HOST,
+          port: Number(envConfig.BUSINESS_SERVICE_TCP_PORT),
+        },
+      },
     ]),
   ],
   controllers: [Platform_ReportTemplateController],

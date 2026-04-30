@@ -18,6 +18,7 @@ import { RouteApplicationModule } from './application/route-application';
 import { Platform_UserBusinessUnitModule } from './platform/platform_user-business-unit/platform_user-business-unit.module';
 import { PlatformUserModule } from './platform/platform-user/platform-user.module';
 import { Platform_ReportTemplateModule } from './platform/platform_report-template/platform_report-template.module';
+import { Platform_PrintTemplateMappingModule } from './platform/platform_print-template-mapping/platform_print-template-mapping.module';
 import { ExceptionFilter } from './exception/exception.fillter';
 import { GatewayRequestContextInterceptor } from './common/interceptors/gateway-request-context.interceptor';
 import { NotificationModule } from './notification/notification.module';
@@ -77,6 +78,7 @@ import { BaseHttpController } from './common/http/base-http-controller';
     Platform_UserBusinessUnitModule,
     PlatformUserModule,
     Platform_ReportTemplateModule,
+    Platform_PrintTemplateMappingModule,
     // UserClusterModule,
     UserModule,
     RouteApplicationModule,

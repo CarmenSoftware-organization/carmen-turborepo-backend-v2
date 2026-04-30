@@ -2885,54 +2885,36 @@ export class PurchaseRequestService {
       return Result.error('Purchase request not found', ErrorCode.NOT_FOUND);
     }
 
-    // 2. Load signature names from workflow stages (skip first "Request Creation" stage)
+    // 2. Resolve template via tb_print_template_mapping (document_type='PR'),
+    //    scoped to the caller's BU. Template row carries orientation +
+    //    signature_config — no more app_config lookup, no more workflow walk.
+    const mapping = await this.prismaSystem.tb_print_template_mapping.findFirst({
+      where: {
+        document_type: 'PR',
+        is_active: true,
+        deleted_at: null,
+      },
+      orderBy: [{ is_default: 'desc' }, { display_order: 'asc' }],
+    });
+    if (!mapping) {
+      return Result.error('No active PR print mapping found', ErrorCode.NOT_FOUND);
+    }
+    const template = await this.prismaSystem.tb_report_template.findFirst({
+      where: { id: mapping.report_template_id, deleted_at: null },
+      select: { id: true, name: true, signature_config: true },
+    });
+    if (!template) {
+      return Result.error(`Mapped template ${mapping.report_template_id} not found`, ErrorCode.NOT_FOUND);
+    }
+
+    // 3. Pull signature labels straight from the template metadata.
+    type SignatureBlock = { key: string; label: string; required?: boolean };
+    const sigCfg = (template.signature_config as { blocks?: SignatureBlock[] } | null) ?? { blocks: [] };
     const sigNames: Record<string, string> = {
       Sig1Name: '', Sig2Name: '', Sig3Name: '', Sig4Name: '', Sig5Name: '',
     };
-    try {
-      if (pr.workflow_id) {
-        const workflow = await this.prismaService.tb_workflow.findFirst({
-          where: { id: pr.workflow_id, deleted_at: null },
-          select: { data: true },
-        });
-        if (workflow?.data) {
-          const wfData = workflow.data as { stages?: Array<{ name: string }> };
-          const sigStages = (wfData.stages || []).filter((_, i) => i > 0);
-          for (let i = 0; i < Math.min(sigStages.length, 5); i++) {
-            sigNames[`Sig${i + 1}Name`] = sigStages[i].name;
-          }
-        }
-      }
-    } catch {
-      this.logger.warn('Failed to load workflow stages for PR signatures');
-    }
-
-    // 3. Load print config (orientation) from tb_application_config
-    let orientation: 'portrait' | 'landscape' = 'portrait';
-    try {
-      const printConfig = await this.prismaService.tb_application_config.findFirst({
-        where: { key: 'pr_print_config', deleted_at: null },
-      });
-      if (printConfig?.value) {
-        const cfg = printConfig.value as { orientation?: string };
-        if (cfg.orientation === 'landscape') orientation = 'landscape';
-      }
-    } catch {
-      this.logger.warn('Failed to load pr_print_config, using portrait');
-    }
-
-    // 4. Load template name/id from platform DB
-    const templateName = orientation === 'landscape'
-      ? 'Purchase Request Document Landscape'
-      : 'Purchase Request Document';
-
-    const template = await this.prismaSystem.tb_report_template.findFirst({
-      where: { name: templateName, deleted_at: null },
-      select: { id: true, name: true },
-    });
-
-    if (!template) {
-      return Result.error(`Report template "${templateName}" not found`, ErrorCode.NOT_FOUND);
+    for (const b of sigCfg.blocks ?? []) {
+      if (b.key in sigNames) sigNames[b.key] = b.label;
     }
 
     // 4. Build data matching template DataSource columns
@@ -2969,7 +2951,7 @@ export class PurchaseRequestService {
     const reportUrl = `http://${reportHost}:${reportPort}/api/${this.bu_code}/report/viewer-with-data`;
 
     const payload = {
-      template_name: templateName,
+      template_name: template.name,
       data: {
         PRHeader: headerData,
         PRDetail: detailData,
