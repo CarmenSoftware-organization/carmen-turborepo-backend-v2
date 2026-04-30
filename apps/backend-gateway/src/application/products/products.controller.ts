@@ -56,6 +56,173 @@ export class ProductsController extends BaseHttpController {
   }
 
   /**
+   * List locations that have any inventory movement
+   * ดึงสถานที่ทั้งหมดที่มีการเคลื่อนไหวสต็อก
+   */
+  @Get(':bu_code/products/movement/locations')
+  @UseGuards(new AppIdGuard('product.list-locations-with-any-movement'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'List locations that have any inventory movement',
+    description:
+      'Returns distinct locations that appear in tb_inventory_transaction_cost_layer. Useful for filtering location pickers to only those with real stock activity.',
+    operationId: 'listLocationsWithAnyMovement',
+    responses: {
+      200: { description: 'Locations with movement retrieved successfully' },
+    },
+    'x-description-th': 'ดึงสถานที่ที่เคยมีการเคลื่อนไหวสต็อกจริง',
+  } as any)
+  @ApiResponse({ status: 200, description: 'Locations with movement retrieved successfully' })
+  async listLocationsWithAnyMovement(
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'listLocationsWithAnyMovement', bu_code, version },
+      ProductsController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.productService.listLocationsWithAnyMovement(
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * List products that have movement at a given location
+   * ดึงสินค้าที่มีการเคลื่อนไหวสต็อกที่สถานที่ที่ระบุ
+   */
+  @Get(':bu_code/products/movement/locations/:location_id/products')
+  @UseGuards(new AppIdGuard('product.list-products-with-movement-at-location'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'List products with movement at a location',
+    description:
+      'Returns distinct products that have at least one inventory movement (cost-layer entry) at the given location.',
+    operationId: 'listProductsWithMovementAtLocation',
+    parameters: [
+      { name: 'location_id', in: 'path', required: true, description: 'Location UUID' },
+    ],
+    responses: {
+      200: { description: 'Products with movement retrieved successfully' },
+    },
+    'x-description-th': 'ดึงสินค้าที่มีการเคลื่อนไหวสต็อกในสถานที่ที่ระบุ',
+  } as any)
+  @ApiResponse({ status: 200, description: 'Products with movement retrieved successfully' })
+  async listProductsWithMovementAtLocation(
+    @Param('location_id', new ParseUUIDPipe({ version: '4' })) location_id: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'listProductsWithMovementAtLocation', location_id, bu_code, version },
+      ProductsController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.productService.listProductsWithMovementAtLocation(
+      location_id,
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * List products that have at least one inventory movement
+   * ดึงรายการสินค้าที่เคยมีการเคลื่อนไหวสต็อก
+   */
+  @Get(':bu_code/products/with-movement')
+  @UseGuards(new AppIdGuard('product.list-with-movement'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'List products that have inventory movements',
+    description:
+      'Returns distinct products that appear in tb_inventory_transaction_cost_layer (i.e. products with at least one real inventory movement). Useful for filtering pickers to products that will return non-empty stock-card data.',
+    operationId: 'listProductsWithMovement',
+    responses: {
+      200: { description: 'Products with movement retrieved successfully' },
+    },
+    'x-description-th': 'ดึงสินค้าที่เคยมีการเคลื่อนไหวสต็อกจริง',
+  } as any)
+  @ApiResponse({ status: 200, description: 'Products with movement retrieved successfully' })
+  async listProductsWithMovement(
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'listProductsWithMovement', bu_code, version },
+      ProductsController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.productService.listProductsWithMovement(
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
+   * List locations that have inventory movement for a given product
+   * ดึงสถานที่ที่มีการเคลื่อนไหวสต็อกสำหรับสินค้าที่ระบุ
+   */
+  @Get(':bu_code/products/:product_id/locations-with-movement')
+  @UseGuards(new AppIdGuard('product.list-locations-with-movement'))
+  @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
+  @ApiOperation({
+    summary: 'List locations with movement for a product',
+    description:
+      'Returns distinct locations where the given product has at least one inventory movement (cost-layer entry). Useful for filtering location pickers tied to a selected product.',
+    operationId: 'listLocationsWithMovementByProduct',
+    parameters: [
+      { name: 'product_id', in: 'path', required: true, description: 'Product UUID' },
+    ],
+    responses: {
+      200: { description: 'Locations with movement retrieved successfully' },
+      404: { description: 'Product not found' },
+    },
+    'x-description-th': 'ดึงสถานที่ที่มีการเคลื่อนไหวสต็อกของสินค้าที่ระบุ',
+  } as any)
+  @ApiResponse({ status: 200, description: 'Locations with movement retrieved successfully' })
+  async listLocationsWithMovement(
+    @Param('product_id', new ParseUUIDPipe({ version: '4' })) product_id: string,
+    @Param('bu_code') bu_code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('version') version: string = 'latest',
+  ): Promise<void> {
+    this.logger.debug(
+      { function: 'listLocationsWithMovement', product_id, bu_code, version },
+      ProductsController.name,
+    );
+
+    const { user_id } = ExtractRequestHeader(req);
+    const result = await this.productService.listLocationsWithMovement(
+      product_id,
+      user_id,
+      bu_code,
+      version,
+    );
+    this.respond(res, result);
+  }
+
+  /**
    * Get last purchase by product ID and date
    * ค้นหาการซื้อล่าสุดตาม ID สินค้าและวันที่
    */

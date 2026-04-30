@@ -16,7 +16,47 @@ export class Platform_ReportTemplateService {
   constructor(
     @Inject('CLUSTER_SERVICE')
     private readonly clusterService: ClientProxy,
+    @Inject('BUSINESS_SERVICE')
+    private readonly businessService: ClientProxy,
   ) {}
+
+  /**
+   * Forward to micro-business sqlQuery.dbObjects to introspect the tenant
+   * schema for views / functions / procedures available as a report source.
+   */
+  async listDbObjects(user_id: string, bu_code: string): Promise<unknown> {
+    interface DbObjectsResp {
+      status: number;
+      data?: {
+        views?: { name: string }[];
+        procedures?: { name: string; kind?: string }[];
+      };
+      error?: string;
+      details?: string;
+    }
+    const obs: Observable<DbObjectsResp> = this.businessService.send(
+      { cmd: 'sqlQuery.dbObjects', service: 'business' },
+      { bu_code, user_id, ...getGatewayRequestContext() },
+    );
+    const response = await firstValueFrom(obs);
+    if (response.status !== HttpStatus.OK) {
+      const message = response.details
+        ? `${response.error || 'Request failed'}: ${response.details}`
+        : response.error || 'Request failed';
+      return Result.error(message, httpStatusToErrorCode(response.status));
+    }
+    const data = response.data ?? {};
+    const procs = data.procedures ?? [];
+    return Result.ok({
+      views: (data.views ?? []).map((v) => ({ name: v.name, kind: 'view' })),
+      functions: procs
+        .filter((p) => p.kind === 'function')
+        .map((p) => ({ name: p.name, kind: 'function' })),
+      procedures: procs
+        .filter((p) => p.kind === 'procedure')
+        .map((p) => ({ name: p.name, kind: 'procedure' })),
+    });
+  }
 
   async findAll(
     user_id: string,

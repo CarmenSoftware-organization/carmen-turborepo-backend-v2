@@ -592,16 +592,49 @@ model tb_report_template {
   description  String?
   report_group String  @db.VarChar(100)
 
+  // kind — "report" (user-facing analytical report) or "print" (printable
+  // document layout used by tb_print_template_mapping). Replaces the old
+  // "_DOC" suffix convention on report_group.
+  kind String @default("report") @db.VarChar(20)
+
   dialog  String @db.Text
   content String @db.Text
 
   // builder_key links a template row to a Go report.Definition key (when set).
   builder_key String? @db.VarChar
 
-  // view_name is the tenant-schema view that the report executor reads.
-  // Required for the row to be runnable; admins populate it alongside the
-  // CREATE VIEW for new reports. NULL → registry skips the row.
+  // view_name — legacy column retained for backward compatibility. Prefer
+  // source_type + source_name. The Go registry falls back to view_name when
+  // source_name is empty.
   view_name String? @db.VarChar
+
+  // source_type tells the report executor how to read the data:
+  //   - "view"      → SELECT * FROM <source_name>
+  //   - "function"  → SELECT * FROM <source_name>($1, $2, ...) (RETURNS TABLE/SETOF)
+  //   - "procedure" → CALL <source_name>($1, ..., 'rs'::refcursor); FETCH ALL FROM "rs"
+  source_type String @default("view") @db.VarChar(20)
+
+  // source_name — bare identifier of the view / function / procedure
+  // (no schema prefix; resolved against the tenant's current_schema()).
+  source_name String? @db.VarChar
+
+  // source_params — positional argument mapping for function/procedure.
+  // Shape: { "params": [{"filter": "DateFrom", "type": "date", "nullable": false}, ...] }
+  source_params Json @default("{\"params\":[]}") @db.JsonB
+
+  // orientation — page orientation for print-style templates ("portrait" | "landscape").
+  // Replaces the legacy "Document"/"Document Landscape" name suffix convention.
+  orientation String @default("portrait") @db.VarChar(20)
+
+  // signature_config — labelled signature blocks rendered on the print layout.
+  // Replaces the previous behaviour of pulling Sig1Name..Sig5Name from the
+  // active workflow stages. Shape:
+  //   { "blocks": [
+  //       { "key": "Sig1Name", "label": "Requestor",  "required": true },
+  //       { "key": "Sig2Name", "label": "Department", "required": true },
+  //       ...
+  //     ] }
+  signature_config Json @default("{\"blocks\":[]}") @db.JsonB
 
   is_standard Boolean @default(true)
 
@@ -620,6 +653,38 @@ model tb_report_template {
 
   @@unique([name, deleted_at], map: "report_template_name_deleted_at_u")
   @@index([report_group], map: "idx_report_template_report_group")
+}
+
+// ─── Print template mapping ─────────────────────────────────────────────
+// Maps a document type (PO, PR, SR, GRN, CN, IA, …) to a tb_report_template
+// row used to render its print/preview output. Multiple templates can be
+// registered per document_type — exactly one should be flagged is_default
+// for the legacy "Print" button; others surface in the "Print as…" menu.
+model tb_print_template_mapping {
+  id                 String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  document_type      String  @db.VarChar(50)
+  report_template_id String  @db.Uuid
+
+  is_default    Boolean @default(true)
+  display_label String? @db.VarChar(255)
+  display_order Int     @default(0)
+
+  // BU scoping (same convention as tb_report_template). NULL/empty = applies
+  // to all BUs; populate to restrict.
+  allow_business_unit Json? @db.JsonB
+  deny_business_unit  Json? @db.JsonB
+
+  is_active Boolean @default(true)
+
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  created_by_id String?   @db.Uuid
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_by_id String?   @db.Uuid
+  deleted_at    DateTime? @db.Timestamptz(6)
+  deleted_by_id String?   @db.Uuid
+
+  @@index([document_type], map: "idx_print_template_mapping_document_type")
+  @@index([report_template_id], map: "idx_print_template_mapping_template_id")
 }
 
 model tb_news {
