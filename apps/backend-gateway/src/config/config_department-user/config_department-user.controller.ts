@@ -187,6 +187,7 @@ export class Config_DepartmentUserController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('departmentUser.findAll'))
+  // TODO: when findAll is implemented, add @Serialize(DepartmentUserListItemResponseSchema) and confirm default root-only paths match the wrapper shape.
   @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()

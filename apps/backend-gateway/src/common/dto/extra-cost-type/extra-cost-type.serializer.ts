@@ -10,16 +10,20 @@ const ExtraCostTypeBaseSchema = z.object({
   is_active: z.boolean().nullable().optional(),
   created_at: z.coerce.date().nullable().optional(),
   updated_at: z.coerce.date().nullable().optional(),
-  created_by: z.string().nullable().optional(),
-  updated_by: z.string().nullable().optional(),
+  created_by_id: z.string().nullable().optional(),
+  updated_by_id: z.string().nullable().optional(),
+  deleted_at: z.coerce.date().nullable().optional(),
+  deleted_by_id: z.string().nullable().optional(),
 });
 
 // Detail response schema (for findOne with audit enrichment)
 export const ExtraCostTypeDetailResponseSchema = ExtraCostTypeBaseSchema.omit({
   created_at: true,
+  created_by_id: true,
   updated_at: true,
-  created_by: true,
-  updated_by: true,
+  updated_by_id: true,
+  deleted_at: true,
+  deleted_by_id: true,
 }).extend({
   audit: AuditSchema.optional(),
 }).passthrough();
@@ -27,9 +31,11 @@ export const ExtraCostTypeDetailResponseSchema = ExtraCostTypeBaseSchema.omit({
 // List item response schema (for findAll)
 export const ExtraCostTypeListItemResponseSchema = ExtraCostTypeBaseSchema.omit({
   created_at: true,
+  created_by_id: true,
   updated_at: true,
-  created_by: true,
-  updated_by: true,
+  updated_by_id: true,
+  deleted_at: true,
+  deleted_by_id: true,
 }).extend({
   audit: AuditSchema.optional(),
 }).passthrough();
