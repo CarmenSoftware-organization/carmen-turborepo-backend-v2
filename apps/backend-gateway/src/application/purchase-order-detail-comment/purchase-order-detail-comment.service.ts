@@ -13,6 +13,10 @@ import { Result, MicroserviceResponse } from '@/common';
 import { httpStatusToErrorCode } from 'src/common/helpers/http-status-to-error-code';
 
 import { getGatewayRequestContext } from '@/common/context/gateway-request-context';
+import {
+  buildDocumentDownloadUrl,
+  fillCommentAttachmentUrls,
+} from 'src/common/helpers/document-download-url';
 
 export interface UploadedAttachment {
   fileName: string;
@@ -52,7 +56,10 @@ export class PurchaseOrderDetailCommentService {
         httpStatusToErrorCode(response.response.status),
       );
     }
-    return ResponseLib.successWithPaginate(response.data, response.paginate);
+    return ResponseLib.successWithPaginate(
+      fillCommentAttachmentUrls(response.data, bu_code),
+      response.paginate,
+    );
   }
 
   async update(
@@ -160,7 +167,7 @@ export class PurchaseOrderDetailCommentService {
         httpStatusToErrorCode(response.response.status),
       );
     }
-    return ResponseLib.success(response.data);
+    return ResponseLib.success(fillCommentAttachmentUrls(response.data, bu_code));
   }
 
   async delete(
@@ -288,7 +295,7 @@ export class PurchaseOrderDetailCommentService {
         httpStatusToErrorCode(response.response.status),
       );
     }
-    return ResponseLib.success(response.data);
+    return ResponseLib.success(fillCommentAttachmentUrls(response.data, bu_code));
   }
 
   async removeAttachment(
@@ -309,7 +316,7 @@ export class PurchaseOrderDetailCommentService {
         httpStatusToErrorCode(response.response.status),
       );
     }
-    return ResponseLib.success(response.data);
+    return ResponseLib.success(fillCommentAttachmentUrls(response.data, bu_code));
   }
 
   async createWithFiles(
@@ -391,7 +398,7 @@ export class PurchaseOrderDetailCommentService {
         httpStatusToErrorCode(response.response.status),
       );
     }
-    return ResponseLib.created(response.data);
+    return ResponseLib.created(fillCommentAttachmentUrls(response.data, bu_code));
   }
 
   async uploadFile(
@@ -428,7 +435,7 @@ export class PurchaseOrderDetailCommentService {
     return {
       fileName: data?.originalName ?? file.originalname,
       fileToken: String(data?.fileToken ?? ''),
-      fileUrl: '',
+      fileUrl: buildDocumentDownloadUrl(bu_code, String(data?.fileToken ?? '')),
       contentType: data?.contentType ?? file.mimetype,
       size: typeof data?.size === 'number' ? data.size : file.size,
     };
