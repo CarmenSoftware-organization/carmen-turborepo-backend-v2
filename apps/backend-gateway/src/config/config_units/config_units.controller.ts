@@ -25,6 +25,7 @@ import {
   UnitsUpdateDto,
   IUpdateUnits,
   Serialize,
+  EnrichAuditUsers,
   UnitDetailResponseSchema,
   UnitListItemResponseSchema,
   UnitMutationResponseSchema,
@@ -67,6 +68,7 @@ export class Config_UnitsController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('unit.findOne'))
   @Serialize(UnitDetailResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({

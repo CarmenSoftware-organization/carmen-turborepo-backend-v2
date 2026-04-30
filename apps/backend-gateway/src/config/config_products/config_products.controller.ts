@@ -24,6 +24,7 @@ import {
   ProductCreateDto,
   ProductUpdateDto,
   Serialize,
+  EnrichAuditUsers,
   ProductDetailResponseSchema,
   ProductListItemResponseSchema,
   ProductItemGroupResponseSchema,
@@ -70,6 +71,7 @@ export class Config_ProductsController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('product.findOne'))
   @Serialize(ProductDetailResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({

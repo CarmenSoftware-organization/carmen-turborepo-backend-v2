@@ -20,7 +20,7 @@ import { Config_RecipeCuisineService } from './config_recipe-cuisine.service';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RecipeCuisineCreateRequest, RecipeCuisineUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { BaseHttpController, Serialize } from '@/common';
+import { BaseHttpController, EnrichAuditUsers, Serialize } from '@/common';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { ApiUserFilterQueries, ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
@@ -56,6 +56,7 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('recipe-cuisine.findOne'))
   @Serialize(RecipeCuisineResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get a recipe cuisine by ID', description: 'Retrieves a specific cuisine type definition (e.g., Thai, Italian, Japanese, Continental) used to classify recipes by culinary origin for menu diversity management.', operationId: 'configRecipeCuisine_findOne', 'x-description-th': 'ดึงข้อมูลประเภทอาหารเดียวตาม ID สำหรับจำแนกสูตรอาหารตามต้นกำเนิดการทำอาหาร' } as any)

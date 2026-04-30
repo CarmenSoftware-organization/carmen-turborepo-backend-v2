@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_UnitCommentService as Config_UnitCommentService } from './config_unit_comment.service';
-import { BaseHttpController } from '@/common';
+import { BaseHttpController, EnrichAuditUsers } from '@/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UnitCommentCreateRequest, UnitCommentUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
@@ -58,6 +58,7 @@ export class Config_UnitCommentController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('unitComment.findOne'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({ summary: 'Get a unit comment by ID', description: 'Retrieves a specific predefined comment/note template associated with unit operations. These standardized comments streamline data entry for inventory and procurement transactions.', operationId: 'configUnitComment_findOne', 'x-description-th': 'ดึงข้อมูลหมายเหตุหน่วยนับรายการเดียวตาม ID' } as any)

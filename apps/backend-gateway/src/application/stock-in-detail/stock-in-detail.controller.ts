@@ -28,6 +28,7 @@ import {
 } from './swagger/request';
 import {
   BaseHttpController,
+  EnrichAuditUsers,
   Serialize,
   StockInMutationResponseSchema,
 } from '@/common';
@@ -101,6 +102,7 @@ export class StockInDetailController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('stockInDetail.findOne'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({

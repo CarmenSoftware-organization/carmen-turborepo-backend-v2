@@ -29,6 +29,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
   BaseHttpController,
+  EnrichAuditUsers,
   Serialize,
   TaxProfileDetailResponseSchema,
   TaxProfileListItemResponseSchema,
@@ -63,6 +64,7 @@ export class TaxProfileController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('taxProfile.findOne'))
   @Serialize(TaxProfileDetailResponseSchema)
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get a tax profile by ID',

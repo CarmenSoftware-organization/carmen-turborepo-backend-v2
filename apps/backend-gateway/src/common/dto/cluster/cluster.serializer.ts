@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 const ClusterUserSchema = z.object({
   id: z.string(),
@@ -35,6 +36,7 @@ export const ClusterDetailResponseSchema = z.object({
   info: z.any().nullable().optional(),
   tb_business_unit: z.array(ClusterBusinessUnitSchema).nullable().optional(),
   tb_cluster_user: z.array(ClusterUserSchema).nullable().optional(),
+  audit: AuditSchema.optional(),
 });
 
 export const ClusterListItemResponseSchema = z.object({

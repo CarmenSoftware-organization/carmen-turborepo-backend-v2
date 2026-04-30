@@ -30,7 +30,9 @@ import {
   DeliveryPointUpdateDto,
   IUpdateDeliveryPoint,
   Serialize,
+  EnrichAuditUsers,
   DeliveryPointResponseSchema,
+  DeliveryPointDetailResponseSchema,
 } from '@/common';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import {
@@ -70,9 +72,10 @@ export class Config_DeliveryPointController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('delivery-point.findOne'))
-  @Serialize(DeliveryPointResponseSchema)
-  @ApiVersionMinRequest()
+  @Serialize(DeliveryPointDetailResponseSchema)
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a delivery point by ID',
     description: 'Retrieves a specific delivery point where vendors deliver goods to the property. Delivery points are used in purchase orders to specify the exact receiving location for vendor shipments.',

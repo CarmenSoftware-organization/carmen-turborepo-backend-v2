@@ -25,6 +25,7 @@ import {
   ProductItemGroupCreateDto,
   ProductItemGroupUpdateDto,
   Serialize,
+  EnrichAuditUsers,
   ProductItemGroupDetailResponseSchema,
   ProductItemGroupListItemResponseSchema,
   ProductItemGroupMutationResponseSchema,
@@ -69,6 +70,7 @@ export class Config_ProductItemGroupController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('productItemGroup.findOne'))
   @Serialize(ProductItemGroupDetailResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get a product item group by ID', description: 'Retrieves a specific product item group definition used to group products for procurement reporting and analysis (e.g., Food Items, Beverage Items, Operating Supplies).', operationId: 'configProductItemGroup_findOne', 'x-description-th': 'ดึงข้อมูลกลุ่มรายการสินค้ารายการเดียวตาม ID' } as any)

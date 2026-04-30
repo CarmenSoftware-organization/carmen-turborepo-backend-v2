@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 const decimalField = z.number().or(z.string()).pipe(z.coerce.number()).nullable().optional();
 const decimalFieldRequired = z.number().or(z.string()).pipe(z.coerce.number());
@@ -76,6 +77,7 @@ export const ProductDetailResponseSchema = z.object({
   ingredient_units: z.array(UnitConversionEmbeddedSchema).optional(),
   product_sub_category: ProductSubCategoryEmbeddedSchema.optional(),
   product_category: ProductCategoryEmbeddedSchema.optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type ProductDetailResponse = z.infer<typeof ProductDetailResponseSchema>;

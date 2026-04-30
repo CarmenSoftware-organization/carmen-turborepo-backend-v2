@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 const AuditFields = {
   created_at: z.coerce.date().nullable().optional(),
@@ -171,7 +172,7 @@ const CreditNoteDetailEmbeddedSchema = z.object({
   dimension: z.any().nullable().optional(),
   doc_version: z.number().nullable().optional(),
 
-  ...AuditFields,
+  audit: AuditSchema.optional(),
 
   tb_product: ProductEmbeddedSchema,
   tb_tax_profile: TaxProfileEmbeddedSchema,
@@ -234,7 +235,7 @@ export const CreditNoteDetailResponseSchema = z.object({
   dimension: z.any().nullable().optional(),
   doc_version: z.number().nullable().optional(),
 
-  ...AuditFields,
+  audit: AuditSchema.optional(),
 
   tb_vendor: VendorEmbeddedSchema,
   tb_currency: CurrencyEmbeddedSchema,

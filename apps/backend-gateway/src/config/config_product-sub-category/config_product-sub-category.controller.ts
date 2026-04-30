@@ -25,6 +25,7 @@ import {
   ProductSubCategoryCreateDto,
   ProductSubCategoryUpdateDto,
   Serialize,
+  EnrichAuditUsers,
   ProductSubCategoryDetailResponseSchema,
   ProductSubCategoryListItemResponseSchema,
   ProductSubCategoryMutationResponseSchema,
@@ -69,6 +70,7 @@ export class Config_ProductSubCategoryController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('productSubCategory.findOne'))
   @Serialize(ProductSubCategoryDetailResponseSchema)
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({ summary: 'Get a product sub-category by ID', description: 'Retrieves a specific product sub-category that provides a second level of classification under a parent category (e.g., Dairy under Fresh Produce, Spirits under Beverages).', operationId: 'configProductSubCategory_findOne', 'x-description-th': 'ดึงข้อมูลหมวดหมู่ย่อยสินค้ารายการเดียวตาม ID' } as any)

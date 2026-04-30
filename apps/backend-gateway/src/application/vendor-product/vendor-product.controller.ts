@@ -30,6 +30,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
   BaseHttpController,
+  EnrichAuditUsers,
 } from '@/common';
 
 @Controller('api/:bu_code/vendor-product')
@@ -58,6 +59,7 @@ export class VendorProductController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('vendorProduct.findOne'))
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get vendor product by ID',

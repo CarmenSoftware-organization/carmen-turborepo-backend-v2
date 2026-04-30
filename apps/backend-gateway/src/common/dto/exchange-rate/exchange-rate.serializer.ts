@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 // Base schema for ExchangeRate (matches tb_exchange_rate database schema)
 const ExchangeRateBaseSchema = z.object({
@@ -19,9 +20,17 @@ const ExchangeRateBaseSchema = z.object({
   deleted_by_id: z.string().uuid().nullable().optional(),
 });
 
-// Detail response schema (for findOne)
-export const ExchangeRateDetailResponseSchema = ExchangeRateBaseSchema.extend({
+// Detail response schema (for findOne with audit enrichment)
+export const ExchangeRateDetailResponseSchema = ExchangeRateBaseSchema.omit({
+  created_at: true,
+  created_by_id: true,
+  updated_at: true,
+  updated_by_id: true,
+  deleted_at: true,
+  deleted_by_id: true,
+}).extend({
   tb_currency: z.any().nullable().optional(),
+  audit: AuditSchema.optional(),
 }).passthrough();
 
 // List item response schema (for findAll)

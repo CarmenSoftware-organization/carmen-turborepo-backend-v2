@@ -29,7 +29,7 @@ import { PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
-import { BaseHttpController } from '@/common';
+import { BaseHttpController, EnrichAuditUsers } from '@/common';
 
 @Controller('api-system/cluster')
 @ApiTags('Platform: Clusters')
@@ -106,6 +106,7 @@ export class Platform_ClusterController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('cluster.findOne'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiParam({ name: 'id', description: 'Cluster ID', type: 'string' })

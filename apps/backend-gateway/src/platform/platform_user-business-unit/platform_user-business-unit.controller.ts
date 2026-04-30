@@ -37,7 +37,7 @@ import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
-import { BaseHttpController } from '@/common';
+import { BaseHttpController, EnrichAuditUsers } from '@/common';
 
 @Controller('api-system/user/business-unit')
 @ApiTags('Platform: User ↔ Business Unit')
@@ -66,6 +66,7 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('userBusinessUnit.findOne'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiParam({

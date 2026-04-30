@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 // Delivery Point response schema (for findOne)
 export const DeliveryPointResponseSchema = z.object({
@@ -17,6 +18,19 @@ export const DeliveryPointResponseSchema = z.object({
 });
 
 export type DeliveryPointResponse = z.infer<typeof DeliveryPointResponseSchema>;
+
+// Delivery Point detail response schema (for findById with audit enrichment)
+export const DeliveryPointDetailResponseSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  is_active: z.boolean().nullable().optional(),
+  note: z.string().nullable().optional(),
+  info: z.any().nullable().optional(),
+  dimension: z.any().nullable().optional(),
+  audit: AuditSchema.optional(),
+});
+
+export type DeliveryPointDetailResponse = z.infer<typeof DeliveryPointDetailResponseSchema>;
 
 // Delivery Point list item response schema (for findAll)
 export const DeliveryPointListItemResponseSchema = z.object({

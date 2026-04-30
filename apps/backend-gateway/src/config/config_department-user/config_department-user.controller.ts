@@ -16,7 +16,10 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_DepartmentUserService } from './config_department-user.service';
-import { BaseHttpController } from '@/common';
+import {
+  BaseHttpController,
+  EnrichAuditUsers,
+} from '@/common';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -119,6 +122,7 @@ export class Config_DepartmentUserController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('departmentUser.findOne'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({

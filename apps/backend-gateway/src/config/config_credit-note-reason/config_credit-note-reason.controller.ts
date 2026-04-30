@@ -29,6 +29,7 @@ import {
   CreditNoteReasonCreateDto,
   CreditNoteReasonUpdateDto,
   IUpdateCreditNoteReason,
+  EnrichAuditUsers,
   Serialize,
   CreditNoteReasonDetailResponseSchema,
   CreditNoteReasonMutationResponseSchema,
@@ -66,8 +67,9 @@ export class Config_CreditNoteReasonController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('creditNoteReason.findOne'))
   @Serialize(CreditNoteReasonDetailResponseSchema)
-  @ApiVersionMinRequest()
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a credit note reason by ID',
     description:

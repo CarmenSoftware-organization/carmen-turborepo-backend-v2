@@ -18,7 +18,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { BaseHttpController } from '@/common';
+import { BaseHttpController, EnrichAuditUsers } from '@/common';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import {
   ApiUserFilterQueries,
@@ -112,6 +112,7 @@ export class InventoryAdjustmentController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('inventoryAdjustment.findOne'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiQuery({

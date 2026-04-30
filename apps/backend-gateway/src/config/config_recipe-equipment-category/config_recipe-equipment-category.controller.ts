@@ -20,7 +20,7 @@ import { Config_RecipeEquipmentCategoryService } from './config_recipe-equipment
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RecipeEquipmentCategoryCreateRequest, RecipeEquipmentCategoryUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { BaseHttpController, Serialize } from '@/common';
+import { BaseHttpController, EnrichAuditUsers, Serialize } from '@/common';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { ApiUserFilterQueries, ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
@@ -47,6 +47,7 @@ export class Config_RecipeEquipmentCategoryController extends BaseHttpController
   @Get(':id')
   @UseGuards(new AppIdGuard('recipe-equipment-category.findOne'))
   @Serialize(RecipeEquipmentCategoryResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get a recipe equipment category by ID', operationId: 'configRecipeEquipmentCategory_findOne', 'x-description-th': 'ดึงข้อมูลหมวดหมู่อุปกรณ์ทำอาหารเดียวตาม ID' } as any)

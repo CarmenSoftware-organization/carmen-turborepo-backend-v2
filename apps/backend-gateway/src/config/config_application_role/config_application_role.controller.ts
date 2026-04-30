@@ -17,7 +17,12 @@ import {
 import { Response } from 'express';
 import { KeycloakGuard } from 'src/auth'
 import { ConfigApplicationRoleService } from './config_application_role.service'
-import { BaseHttpController } from '@/common'
+import {
+  BaseHttpController,
+  EnrichAuditUsers,
+  Serialize,
+  ApplicationRoleDetailResponseSchema,
+} from '@/common'
 import { CreateConfigApplicationRoleDto, UpdateConfigApplicationRoleDto } from './dto/application_role.dto'
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto'
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header'
@@ -89,6 +94,8 @@ export class ConfigApplicationRoleController extends BaseHttpController {
    * @param version - API version / เวอร์ชัน API
    */
   @Get(':id')
+  @Serialize(ApplicationRoleDetailResponseSchema)
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get an application role by ID', description: 'Retrieves a specific application role definition with its associated permissions. Used to review what system capabilities are granted to users assigned this role.', operationId: 'configApplicationRole_findOne', 'x-description-th': 'ดึงข้อมูลบทบาทในระบบรายการเดียวตาม ID' } as any)
   async findOne(

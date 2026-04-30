@@ -21,7 +21,7 @@ import {
   ApiOperation,
   ApiBody,
 } from '@nestjs/swagger';
-import { BaseHttpController } from '@/common';
+import { BaseHttpController, EnrichAuditUsers } from '@/common';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
@@ -171,6 +171,7 @@ export class ActivityLogController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('activityLog.findOne'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get an activity log by ID',

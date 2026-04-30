@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
+import { AuditSchema } from '@/common/dto/audit/audit.dto';
 
 export const RecipeEquipmentCreate = z.object({
   code: z.string().min(1),
@@ -102,8 +103,5 @@ export const RecipeEquipmentResponseSchema = z.object({
   info: z.any().nullable().optional(),
   dimension: z.any().nullable().optional(),
   doc_version: z.number().optional(),
-  created_at: z.string().or(z.date()).nullable().optional(),
-  created_by_id: z.string().uuid().nullable().optional(),
-  updated_at: z.string().or(z.date()).nullable().optional(),
-  updated_by_id: z.string().uuid().nullable().optional(),
+  audit: AuditSchema.optional(),
 });

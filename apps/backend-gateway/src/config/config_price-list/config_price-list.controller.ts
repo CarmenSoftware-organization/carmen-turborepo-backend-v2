@@ -25,6 +25,7 @@ import {
   BaseHttpController,
   Result,
   ErrorCode,
+  EnrichAuditUsers,
 } from '@/common';
 import {
   IPaginate,
@@ -262,6 +263,7 @@ export class Config_PriceListController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('priceList.findOne'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get a price list by ID',

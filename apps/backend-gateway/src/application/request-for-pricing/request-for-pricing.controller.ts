@@ -34,6 +34,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
   BaseHttpController,
+  EnrichAuditUsers,
 } from '@/common';
 
 @Controller('api/:bu_code/request-for-pricing')
@@ -63,6 +64,7 @@ export class RequestForPricingController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('requestForPricing.findOne'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({

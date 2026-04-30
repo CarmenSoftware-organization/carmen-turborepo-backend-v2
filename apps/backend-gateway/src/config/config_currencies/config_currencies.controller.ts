@@ -29,8 +29,10 @@ import {
   CurrenciesCreateDto,
   CurrenciesUpdateDto,
   IUpdateCurrencies,
+  EnrichAuditUsers,
   Serialize,
   CurrencyResponseSchema,
+  CurrencyDetailResponseSchema,
 } from '@/common';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import {
@@ -69,9 +71,10 @@ export class Config_CurrenciesController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('currencies.findOne'))
-  @Serialize(CurrencyResponseSchema)
-  @ApiVersionMinRequest()
+  @Serialize(CurrencyDetailResponseSchema)
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a currency by ID',
     description: 'Retrieves a specific currency configuration including its code, symbol, and base currency status. Currencies are used in multi-currency procurement for purchase orders and vendor price lists.',

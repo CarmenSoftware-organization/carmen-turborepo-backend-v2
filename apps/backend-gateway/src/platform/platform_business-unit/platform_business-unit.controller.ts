@@ -32,7 +32,7 @@ import { PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
-import { BaseHttpController } from '@/common';
+import { BaseHttpController, EnrichAuditUsers } from '@/common';
 
 @Controller('api-system/business-unit')
 @ApiTags('Platform: Business Units')
@@ -109,6 +109,7 @@ export class Platform_BusinessUnitController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('businessUnit.findOne'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiParam({ name: 'id', description: 'Business unit ID', type: 'string' })
   @ApiOperation({

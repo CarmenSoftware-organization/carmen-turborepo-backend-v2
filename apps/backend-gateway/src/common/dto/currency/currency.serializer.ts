@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 const decimalField = z.number().or(z.string()).pipe(z.coerce.number()).nullable().optional();
 
@@ -22,8 +23,10 @@ export const CurrencyResponseSchema = z.object({
 
 export type CurrencyResponse = z.infer<typeof CurrencyResponseSchema>;
 
-// Currency detail response schema (for findOne)
-export const CurrencyDetailResponseSchema = CurrencyResponseSchema;
+// Currency detail response schema (for findOne with audit enrichment)
+export const CurrencyDetailResponseSchema = CurrencyResponseSchema
+  .omit({ created_at: true, updated_at: true })
+  .extend({ audit: AuditSchema.optional() });
 
 export type CurrencyDetailResponse = z.infer<typeof CurrencyDetailResponseSchema>;
 

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 // Embedded schema for currency
 const CurrencyEmbeddedSchema = z.object({
@@ -81,10 +82,9 @@ export const RequestForPricingDetailResponseSchema = z.object({
   info: z.any().nullable().optional(),
   dimension: z.any().nullable().optional(),
   doc_version: z.number().nullable().optional(),
-  created_at: z.coerce.date().nullable().optional(),
-  updated_at: z.coerce.date().nullable().optional(),
   pricelist_template: PricelistTemplateDetailEmbeddedSchema,
   vendors: z.array(VendorDetailSchema).optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type RequestForPricingDetailResponse = z.infer<typeof RequestForPricingDetailResponseSchema>;

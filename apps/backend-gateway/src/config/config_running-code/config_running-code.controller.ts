@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_RunningCodeService } from './config_running-code.service';
-import { BaseHttpController } from '@/common';
+import { BaseHttpController, EnrichAuditUsers } from '@/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RunningCodeCreateRequest, RunningCodeUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
@@ -63,6 +63,7 @@ export class Config_RunningCodeController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('runningCode.findOne'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({ summary: 'Get a running code by ID', description: 'Retrieves a specific auto-numbering rule configuration used to generate sequential document codes (e.g., PR-001, PO-001, GRN-001) for procurement and inventory documents.', operationId: 'configRunningCode_findOne', 'x-description-th': 'ดึงข้อมูลรหัสเลขที่เอกสารอัตโนมัติเดียวตาม ID สำหรับสร้างรหัสเอกสาร' } as any)

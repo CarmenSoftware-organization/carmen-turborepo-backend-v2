@@ -28,6 +28,7 @@ import {
   VendorListItemResponseSchema,
   VendorMutationResponseSchema,
   BaseHttpController,
+  EnrichAuditUsers,
 } from '@/common';
 import {
   ApiUserFilterQueries,
@@ -67,6 +68,7 @@ export class Config_VendorsController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('vendor.findOne'))
   @Serialize(VendorDetailResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({

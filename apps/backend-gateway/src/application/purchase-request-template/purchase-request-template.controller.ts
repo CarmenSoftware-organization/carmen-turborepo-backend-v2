@@ -30,6 +30,7 @@ import { ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator'
 
 import {
   BaseHttpController,
+  EnrichAuditUsers,
 } from '@/common';
 
 @Controller('api/:bu_code/purchase-request-template')
@@ -107,6 +108,7 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('purchaseRequestTemplate.findOne'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get a purchase request template by ID',

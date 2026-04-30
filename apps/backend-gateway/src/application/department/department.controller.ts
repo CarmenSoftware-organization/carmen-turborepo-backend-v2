@@ -16,6 +16,7 @@ import { DepartmentService } from './department.service';
 import {
   BaseHttpController,
   Serialize,
+  EnrichAuditUsers,
   DepartmentDetailResponseSchema,
   DepartmentListItemResponseSchema,
 } from '@/common';
@@ -111,6 +112,7 @@ export class DepartmentController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('department.findOne'))
   @Serialize(DepartmentDetailResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a department by id',

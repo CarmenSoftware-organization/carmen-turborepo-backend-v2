@@ -25,6 +25,7 @@ import {
   ProductCategoryCreateDto,
   ProductCategoryUpdateDto,
   Serialize,
+  EnrichAuditUsers,
   ProductCategoryDetailResponseSchema,
   ProductCategoryListItemResponseSchema,
   ProductCategoryMutationResponseSchema,
@@ -71,6 +72,7 @@ export class Config_ProductCategoryController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('productCategory.findOne'))
   @Serialize(ProductCategoryDetailResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get a product category by ID', description: 'Retrieves a specific product category used to classify products in the master catalog (e.g., Fresh Produce, Dry Goods, Beverages, Cleaning Supplies). Categories form the top level of the product classification hierarchy.', operationId: 'configProductCategory_findOne', 'x-description-th': 'ดึงข้อมูลหมวดหมู่สินค้ารายการเดียวตาม ID' } as any)

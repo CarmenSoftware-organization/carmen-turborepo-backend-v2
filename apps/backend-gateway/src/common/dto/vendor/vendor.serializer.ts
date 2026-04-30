@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 const decimalField = z.number().or(z.string()).pipe(z.coerce.number()).nullable().optional();
 
@@ -42,10 +43,9 @@ export const VendorDetailResponseSchema = z.object({
   is_active: z.boolean().optional(),
   info: z.any().nullable().optional(),
   dimension: z.any().nullable().optional(),
-  created_at: z.coerce.date().optional(),
-  updated_at: z.coerce.date().optional(),
   vendor_address: z.array(VendorAddressEmbeddedSchema).optional(),
   vendor_contact: z.array(VendorContactEmbeddedSchema).optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type VendorDetailResponse = z.infer<typeof VendorDetailResponseSchema>;

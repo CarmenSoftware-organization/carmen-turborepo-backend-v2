@@ -20,7 +20,7 @@ import { Config_RecipeCategoryService } from './config_recipe-category.service';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RecipeCategoryCreateRequest, RecipeCategoryUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { BaseHttpController, Serialize } from '@/common';
+import { BaseHttpController, EnrichAuditUsers, Serialize } from '@/common';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { ApiUserFilterQueries, ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
@@ -56,6 +56,7 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('recipe-category.findOne'))
   @Serialize(RecipeCategoryResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get a recipe category by ID', description: 'Retrieves a specific recipe category used to classify recipes (e.g., Appetizers, Main Course, Desserts, Beverages). Categories help organize the recipe catalog for menu planning and cost analysis.', operationId: 'configRecipeCategory_findOne', 'x-description-th': 'ดึงข้อมูลหมวดหมู่สูตรอาหารเดียวตาม ID สำหรับจำแนกประเภทสูตรอาหาร' } as any)

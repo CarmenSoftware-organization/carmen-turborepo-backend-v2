@@ -29,6 +29,7 @@ import {
 import {
   BaseHttpController,
   Serialize,
+  EnrichAuditUsers,
   CreditNoteDetailResponseSchema,
   CreditNoteListItemResponseSchema,
   CreditNoteMutationResponseSchema,
@@ -74,6 +75,7 @@ export class CreditNoteController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('creditNote.findOne'))
   @Serialize(CreditNoteDetailResponseSchema)
+  @EnrichAuditUsers({ paths: ['', 'credit_note_detail'] })
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a credit note by ID',

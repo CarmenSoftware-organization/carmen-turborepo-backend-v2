@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 const PurchaseRequestTemplateDetailItemSchema = z.object({
   id: z.string(),
@@ -81,11 +82,8 @@ export const PurchaseRequestTemplateDetailResponseSchema = z.object({
   info: z.any().nullable().optional(),
   dimension: z.any().nullable().optional(),
   is_active: z.boolean().nullable().optional(),
-  created_at: z.coerce.date().nullable().optional(),
-  created_by_id: z.string().nullable().optional(),
-  updated_at: z.coerce.date().nullable().optional(),
-  updated_by_id: z.string().nullable().optional(),
   purchase_request_template_detail: z.array(PurchaseRequestTemplateDetailItemSchema).nullable().optional(),
+  audit: AuditSchema.optional(),
 });
 
 const PurchaseRequestTemplateListDetailItemSchema = z.object({

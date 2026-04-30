@@ -29,6 +29,7 @@ import {
   ExtraCostTypeUpdateDto,
   IUpdateExtraCostType,
   Serialize,
+  EnrichAuditUsers,
   ExtraCostTypeDetailResponseSchema,
   ExtraCostTypeListItemResponseSchema,
   ExtraCostTypeMutationResponseSchema,
@@ -73,8 +74,9 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('extraCostType.findOne'))
   @Serialize(ExtraCostTypeDetailResponseSchema)
-  @ApiVersionMinRequest()
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
   @ApiOperation({ summary: 'Get an extra cost type by ID', description: 'Retrieves a specific extra cost type definition (e.g., shipping, insurance, customs duty) used to categorize additional charges on procurement documents beyond product prices.', operationId: 'configExtraCostType_findOne', 'x-description-th': 'ดึงข้อมูลประเภทค่าใช้จ่ายเพิ่มเติมรายการเดียวตาม ID' } as any)
   async findOne(
     @Req() req: Request,

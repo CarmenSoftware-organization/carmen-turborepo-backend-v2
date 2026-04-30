@@ -28,7 +28,7 @@ import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
-import { BaseHttpController } from '@/common';
+import { BaseHttpController, EnrichAuditUsers } from '@/common';
 
 @Controller('/api/news')
 @ApiTags('Reports: News')
@@ -100,6 +100,7 @@ export class NewsController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('news.findOne'))
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({

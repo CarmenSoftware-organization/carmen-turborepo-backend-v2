@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 // Credit term response schema (for findOne and list items)
 export const CreditTermResponseSchema = z.object({
@@ -15,8 +16,10 @@ export const CreditTermResponseSchema = z.object({
 
 export type CreditTermResponse = z.infer<typeof CreditTermResponseSchema>;
 
-// Credit term detail response schema (for findOne)
-export const CreditTermDetailResponseSchema = CreditTermResponseSchema;
+// Credit term detail response schema (for findOne with audit enrichment)
+export const CreditTermDetailResponseSchema = CreditTermResponseSchema
+  .omit({ created_at: true, updated_at: true })
+  .extend({ audit: AuditSchema.optional() });
 
 export type CreditTermDetailResponse = z.infer<typeof CreditTermDetailResponseSchema>;
 

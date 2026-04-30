@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Config_VendorBusinessTypeService } from './config_vendor_business_type.service';
-import { BaseHttpController } from '@/common';
+import { BaseHttpController, EnrichAuditUsers } from '@/common';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -68,6 +68,7 @@ export class Config_VendorBusinessTypeController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('vendorBusinessType.findOne'))
   @ApiVersionMinRequest()
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get a vendor business type by ID', description: 'Retrieves a specific vendor business type classification (e.g., food supplier, cleaning supplies, equipment maintenance). Used to categorize vendors by their service or product specialty.', operationId: 'configVendorBusinessType_findOne', 'x-description-th': 'ดึงข้อมูลประเภทธุรกิจผู้ขายรายการเดียวตาม ID' } as any)
   async findOne(
