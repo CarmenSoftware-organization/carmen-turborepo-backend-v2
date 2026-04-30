@@ -24,6 +24,7 @@
       "documents.info",
       "documents.presignedUrl",
       "documents.delete",
+      "documents.download",
       "my-pending.purchaseRequest",
       "my-pending.purchaseRequest.findAll",
       "my-pending.purchaseRequest.findAllPending.count",
