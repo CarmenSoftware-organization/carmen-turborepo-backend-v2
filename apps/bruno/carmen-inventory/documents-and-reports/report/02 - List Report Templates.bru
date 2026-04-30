@@ -18,39 +18,31 @@ auth:bearer {
   token: {{access_token}}
 }
 
-query {
-  ~report_group:
-}
-
-params:query {
-  ~report_group:
-}
-
 docs {
   ## List Report Templates
   แสดงรายการแม่แบบรายงานทั้งหมด
-
+  
   Returns all active report templates, optionally filtered by report_group. Templates define the structure, dialog configuration, and rendering content for reports.
-
+  
   ### Path Parameters
   | Name | Type | Description |
   |------|------|-------------|
   | `bu_code` | string | Business unit code |
-
+  
   ### Query Parameters
   | Name | Type | Required | Default | Description |
   |------|------|----------|---------|-------------|
   | `report_group` | string | No | — | Filter by report group (e.g. `inventory`, `procurement`) |
-
+  
   ### Headers
   | Name | Required | Description |
   |------|----------|-------------|
   | `Authorization` | Yes | `Bearer {{access_token}}` |
   | `x-app-id` | Yes | `{{x_app_id}}` |
-
+  
   ### Permissions
   > Permission key not found in seed; review needed.
-
+  
   ### Sample Response
   ```json
   {
@@ -75,7 +67,7 @@ docs {
     "timestamp": "2026-04-29T08:30:00.000Z"
   }
   ```
-
+  
   ### Error Responses
   | Status | When |
   |--------|------|
