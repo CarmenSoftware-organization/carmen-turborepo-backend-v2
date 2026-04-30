@@ -74,6 +74,7 @@ import { PermissionGuard } from 'src/auth';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
   BaseHttpController,
+  EnrichAuditUsers,
   Serialize,
   PurchaseOrderDetailResponseSchema,
   PurchaseOrderListItemResponseSchema,
@@ -305,6 +306,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('purchaseOrder.findOne'))
   @Serialize(PurchaseOrderDetailResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a purchase order by ID',

@@ -30,6 +30,7 @@ import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
 import {
   BaseHttpController,
+  EnrichAuditUsers,
   Serialize,
   PriceListDetailResponseSchema,
   PriceListListItemResponseSchema,
@@ -143,6 +144,7 @@ export class PriceListController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('priceList.findOne'))
   @Serialize(PriceListDetailResponseSchema)
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({

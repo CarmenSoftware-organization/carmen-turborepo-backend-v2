@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 const decimalField = z.number().or(z.string()).pipe(z.coerce.number()).nullable().optional();
 
@@ -78,9 +79,8 @@ export const PurchaseOrderDetailResponseSchema = z.object({
   doc_version: z.number().nullable().optional(),
   info: z.any().nullable().optional(),
   is_active: z.boolean().optional(),
-  created_at: z.coerce.date().optional(),
-  updated_at: z.coerce.date().optional(),
   details: z.array(PurchaseOrderDetailEmbeddedSchema).optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type PurchaseOrderDetailResponse = z.infer<typeof PurchaseOrderDetailResponseSchema>;
@@ -108,7 +108,6 @@ export const PurchaseOrderListItemResponseSchema = z.object({
   workflow_next_stage: z.string().nullable().optional(),
   last_action: z.string().nullable().optional(),
   doc_version: z.number().nullable().optional(),
-  created_at: z.coerce.date().optional(),
 });
 
 export type PurchaseOrderListItemResponse = z.infer<typeof PurchaseOrderListItemResponseSchema>;
