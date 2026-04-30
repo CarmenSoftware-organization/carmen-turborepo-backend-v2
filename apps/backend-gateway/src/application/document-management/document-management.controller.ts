@@ -244,7 +244,7 @@ export class DocumentManagementController extends BaseHttpController {
       return;
     }
 
-    const { buffer, contentType, fileName, size } = result.unwrap();
+    const { buffer, contentType, fileName, size } = result.value;
     res.set({
       'Content-Type': contentType,
       'Content-Disposition': `inline; filename="${fileName}"`,
