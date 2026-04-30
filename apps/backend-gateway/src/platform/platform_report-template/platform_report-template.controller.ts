@@ -28,7 +28,7 @@ import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
 import { BackendLogger } from 'src/common/helpers/backend.logger';
 import { AppIdGuard } from 'src/common/guard/app-id.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
-import { BaseHttpController } from '@/common';
+import { BaseHttpController, EnrichAuditUsers } from '@/common';
 
 @Controller('api-system/report-template')
 @ApiTags('Platform: Report Templates')
@@ -92,6 +92,7 @@ export class Platform_ReportTemplateController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('report-template.findOne'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiParam({ name: 'id', description: 'Report Template ID', type: 'string' })
