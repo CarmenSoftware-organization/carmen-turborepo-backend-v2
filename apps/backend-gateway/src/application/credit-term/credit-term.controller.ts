@@ -15,6 +15,7 @@ import { CreditTermService } from './credit-term.service';
 import {
   BaseHttpController,
   Serialize,
+  EnrichAuditUsers,
   CreditTermDetailResponseSchema,
   CreditTermListItemResponseSchema,
 } from '@/common';
@@ -96,6 +97,7 @@ export class CreditTermController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('creditTerm.findOne'))
   @Serialize(CreditTermDetailResponseSchema)
+  @EnrichAuditUsers()
   @ApiOperation({
     summary: 'Get a credit term by id',
     description: 'Retrieves the details of a specific payment term including its code, name, and number of days, used when reviewing or assigning vendor payment conditions.',
