@@ -18,9 +18,7 @@ import { Response } from 'express';
 import { Config_DepartmentUserService } from './config_department-user.service';
 import {
   BaseHttpController,
-  Serialize,
   EnrichAuditUsers,
-  DepartmentUserDetailResponseSchema,
 } from '@/common';
 import {
   ApiBearerAuth,
@@ -124,7 +122,6 @@ export class Config_DepartmentUserController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('departmentUser.findOne'))
-  @Serialize(DepartmentUserDetailResponseSchema)
   @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
