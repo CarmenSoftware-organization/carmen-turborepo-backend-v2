@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 // Embedded schema for stock out detail
 const StockOutDetailEmbeddedSchema = z.object({
@@ -32,11 +33,8 @@ export const StockOutDetailResponseSchema = z.object({
   doc_version: z.number().nullable().optional(),
   info: z.any().nullable().optional(),
   dimension: z.any().nullable().optional(),
-  created_at: z.coerce.date().optional(),
-  created_by_id: z.string().nullable().optional(),
-  updated_at: z.coerce.date().optional(),
-  updated_by_id: z.string().nullable().optional(),
   stock_out_detail: z.array(StockOutDetailEmbeddedSchema).optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type StockOutDetailResponse = z.infer<typeof StockOutDetailResponseSchema>;
