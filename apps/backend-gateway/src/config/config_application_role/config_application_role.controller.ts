@@ -30,7 +30,6 @@ import { BackendLogger } from 'src/common/helpers/backend.logger'
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator'
 import { ApiUserFilterQueries } from 'src/common/decorator/userfilter.decorator'
-import { AppIdGuard } from 'src/common/guard/app-id.guard'
 import { CreateApplicationRoleRequest, UpdateApplicationRoleRequest } from './swagger/request'
 
 @Controller('api/config/:bu_code/application-roles')
@@ -95,7 +94,6 @@ export class ConfigApplicationRoleController extends BaseHttpController {
    * @param version - API version / เวอร์ชัน API
    */
   @Get(':id')
-  @UseGuards(new AppIdGuard('application-role.findOne'))
   @Serialize(ApplicationRoleDetailResponseSchema)
   @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
