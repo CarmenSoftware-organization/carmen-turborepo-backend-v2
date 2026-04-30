@@ -10,7 +10,7 @@
 ## Endpoint
 
 ```
-GET /api/:bu_code/documents/:filetoken/data
+GET /api/:bu_code/documents/:filetoken/download
 ```
 
 **Response:**
@@ -24,7 +24,7 @@ GET /api/:bu_code/documents/:filetoken/data
 | Endpoint | Response |
 |----------|----------|
 | `GET /:filetoken` | JSON: `{ data: { buffer: base64, ... }, success, ... }` |
-| `GET /:filetoken/data` | Raw binary stream + binary-friendly headers |
+| `GET /:filetoken/download` | Raw binary stream + binary-friendly headers |
 
 ## Architecture
 
@@ -32,7 +32,7 @@ GET /api/:bu_code/documents/:filetoken/data
 
 **Flow:**
 
-1. Gateway controller รับ request ที่ `:filetoken/data`
+1. Gateway controller รับ request ที่ `:filetoken/download`
 2. Gateway service ส่ง TCP `cmd: 'file.get'` ไปยัง micro-file (ใช้ของเดิม)
 3. micro-file return `{ data: { buffer: base64, fileName, mimeType, size } }`
 4. Gateway service decode `base64` → `Buffer` แล้ว return เป็น object `{ buffer, contentType, fileName, size }`
@@ -47,16 +47,16 @@ GET /api/:bu_code/documents/:filetoken/data
 เพิ่ม method ใหม่:
 
 ```ts
-@Get(':filetoken/data')
-@UseGuards(new AppIdGuard('documents.getData'))
+@Get(':filetoken/download')
+@UseGuards(new AppIdGuard('documents.download'))
 @HttpCode(HttpStatus.OK)
 @ApiOperation({
-  summary: 'Get document binary data',
+  summary: 'Download document binary',
   description: 'Streams the raw binary content of a procurement document for direct browser viewing or download (images, PDFs). Unlike the JSON-wrapped variant, this returns the file body with proper Content-Type/Content-Disposition headers.',
-  'x-description-th': 'ดึงข้อมูลไฟล์ binary โดยตรง สำหรับเปิดดูในเบราว์เซอร์',
-  operationId: 'getDocumentData',
+  'x-description-th': 'ดาวน์โหลดไฟล์ binary โดยตรง สำหรับเปิดดูในเบราว์เซอร์',
+  operationId: 'downloadDocument',
 } as any)
-async getDocumentData(
+async downloadDocument(
   @Param('filetoken') fileToken: string,
   @Param('bu_code') bu_code: string,
   @Req() req: Request,
@@ -71,7 +71,7 @@ async getDocumentData(
 เพิ่ม method ใหม่:
 
 ```ts
-async getDocumentData(
+async downloadDocument(
   fileToken: string,
   user_id: string,
   bu_code: string,
@@ -89,16 +89,16 @@ async getDocumentData(
 
 ### 3. Permission
 
-เพิ่ม permission key `documents.getData` ใน permission seed:
+เพิ่ม permission key `documents.download` ใน permission seed:
 - `packages/prisma-shared-schema-platform/prisma/seed/permissions/` (ตรวจดู path ปัจจุบัน)
 - ระดับ permission เทียบเท่ากับ `documents.get` (read access)
 
 ### 4. Bruno
 
-**File:** `apps/bruno/carmen-inventory/documents-and-reports/documents/06 - Get Document Data.bru`
+**File:** `apps/bruno/carmen-inventory/documents-and-reports/documents/06 - Download Document.bru`
 
 เนื้อหา:
-- `GET {{host}}/api/{{bu_code}}/documents/:filetoken/data`
+- `GET {{host}}/api/{{bu_code}}/documents/:filetoken/download`
 - Path param `filetoken` (สามารถใช้ vars:pre-request เดียวกับ `02 - Get Document.bru`)
 - Header `x-app-id: {{x_app_id}}`, `Authorization: Bearer {{access_token}}`
 - Docs section อธิบาย response เป็น raw binary stream
@@ -111,7 +111,7 @@ async getDocumentData(
 |--------|------|
 | 200 | สำเร็จ — return binary |
 | 401 | Bearer token หาย/ไม่ถูกต้อง |
-| 403 | ไม่มี permission `documents.getData` |
+| 403 | ไม่มี permission `documents.download` |
 | 404 | filetoken ไม่พบใน storage |
 | 500 | error จาก micro-file หรือ S3 |
 
@@ -120,15 +120,15 @@ Error response (status ≠ 200) ยังคงเป็น JSON ตาม Resul
 ## Testing
 
 **Unit tests:**
-- `document-management.controller.spec.ts` — เพิ่ม test สำหรับ `getDocumentData`:
+- `document-management.controller.spec.ts` — เพิ่ม test สำหรับ `downloadDocument`:
   - happy path: response.send ถูกเรียกพร้อม buffer + headers ถูกต้อง
   - error path: ใช้ `respond()` ส่ง error JSON
-- `document-management.service.spec.ts` — เพิ่ม test สำหรับ `getDocumentData`:
+- `document-management.service.spec.ts` — เพิ่ม test สำหรับ `downloadDocument`:
   - decode base64 ถูกต้อง
   - error path คืน `Result.error()`
 
 **Manual test:**
-- Bruno: เปิดไฟล์ `06 - Get Document Data.bru` แล้วยิง — ควรได้ binary
+- Bruno: เปิดไฟล์ `06 - Download Document.bru` แล้วยิง — ควรได้ binary
 - Browser: เปิด URL ตรง ๆ พร้อม token — ควรเปิดรูป/PDF ได้
 
 ## Out of Scope
