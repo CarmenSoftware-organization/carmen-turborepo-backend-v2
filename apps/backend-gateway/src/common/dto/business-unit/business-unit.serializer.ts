@@ -1,6 +1,7 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
-// Business unit response schema (for findOne and list items)
+// Business unit response schema (for list items)
 export const BusinessUnitResponseSchema = z.object({
   id: z.string(),
   cluster_id: z.string().nullable().optional(),
@@ -52,8 +53,13 @@ export const BusinessUnitResponseSchema = z.object({
 
 export type BusinessUnitResponse = z.infer<typeof BusinessUnitResponseSchema>;
 
-// Business unit detail response schema (for findOne)
-export const BusinessUnitDetailResponseSchema = BusinessUnitResponseSchema;
+// Business unit detail response schema (for findOne — audit enriched)
+export const BusinessUnitDetailResponseSchema = BusinessUnitResponseSchema.omit({
+  created_at: true,
+  updated_at: true,
+}).extend({
+  audit: AuditSchema.optional(),
+});
 
 export type BusinessUnitDetailResponse = z.infer<typeof BusinessUnitDetailResponseSchema>;
 
