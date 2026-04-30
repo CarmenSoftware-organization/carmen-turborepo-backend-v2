@@ -20,7 +20,7 @@ import { Config_RecipeService } from './config_recipe.service';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RecipeCreateRequestDto, RecipeUpdateRequestDto } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { BaseHttpController, Serialize } from '@/common';
+import { BaseHttpController, EnrichAuditUsers, Serialize } from '@/common';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import {
   ApiUserFilterQueries,
@@ -63,6 +63,7 @@ export class Config_RecipeController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('recipe.findOne'))
   @Serialize(RecipeResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({

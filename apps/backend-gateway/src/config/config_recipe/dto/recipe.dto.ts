@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 import { enum_recipe_difficulty, enum_recipe_status } from '@repo/prisma-shared-schema-tenant';
+import { AuditSchema } from '@/common/dto/audit/audit.dto';
 
 export const RecipeCreate = z.object({
   code: z.string().min(1),
@@ -117,8 +118,5 @@ export const RecipeResponseSchema = z.object({
   preparation_steps: z.any().optional(),
   yield_variants: z.any().optional(),
   doc_version: z.number().optional(),
-  created_at: z.string().or(z.date()).nullable().optional(),
-  created_by_id: z.string().uuid().nullable().optional(),
-  updated_at: z.string().or(z.date()).nullable().optional(),
-  updated_by_id: z.string().uuid().nullable().optional(),
+  audit: AuditSchema.optional(),
 });

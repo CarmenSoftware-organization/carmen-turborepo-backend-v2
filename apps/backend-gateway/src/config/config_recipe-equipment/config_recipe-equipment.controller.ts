@@ -20,7 +20,7 @@ import { Config_RecipeEquipmentService } from './config_recipe-equipment.service
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RecipeEquipmentCreateRequest, RecipeEquipmentUpdateRequest } from './swagger/request';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { BaseHttpController, Serialize } from '@/common';
+import { BaseHttpController, EnrichAuditUsers, Serialize } from '@/common';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import { ApiUserFilterQueries, ApiVersionMinRequest } from 'src/common/decorator/userfilter.decorator';
 import { ExtractRequestHeader } from 'src/common/helpers/extract_header';
@@ -56,6 +56,7 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('recipe-equipment.findOne'))
   @Serialize(RecipeEquipmentResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get a recipe equipment by ID', description: 'Retrieves a specific kitchen equipment definition (e.g., oven, mixer, blender, sous vide) that can be associated with recipes to track required equipment for preparation.', operationId: 'configRecipeEquipment_findOne', 'x-description-th': 'ดึงข้อมูลอุปกรณ์ทำอาหารเดียวตาม ID สำหรับติดตามอุปกรณ์ที่จำเป็นในการเตรียมสูตรอาหาร' } as any)
