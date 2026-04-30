@@ -29,6 +29,7 @@ import {
   LocationCreateDto,
   LocationUpdateDto,
   Serialize,
+  EnrichAuditUsers,
   LocationDetailResponseSchema,
   LocationListItemResponseSchema,
   LocationMutationResponseSchema,
@@ -76,6 +77,7 @@ export class Config_LocationsController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('location.findOne'))
   @Serialize(LocationDetailResponseSchema)
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({

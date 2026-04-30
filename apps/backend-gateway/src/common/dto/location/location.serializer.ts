@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 // Embedded schemas
 const DeliveryPointEmbeddedSchema = z.object({
@@ -25,7 +26,7 @@ const ProductLocationEmbeddedSchema = z.object({
   par_qty: z.number().nullable().optional(),
 });
 
-// Location detail response schema (for findOne)
+// Location detail response schema (for findOne with audit enrichment)
 export const LocationDetailResponseSchema = z.object({
   id: z.string(),
   code: z.string(),
@@ -38,6 +39,7 @@ export const LocationDetailResponseSchema = z.object({
   user_location: z.array(UserLocationEmbeddedSchema).optional(),
   product_location: z.array(ProductLocationEmbeddedSchema).optional(),
   delivery_point: DeliveryPointEmbeddedSchema.optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type LocationDetailResponse = z.infer<typeof LocationDetailResponseSchema>;

@@ -31,6 +31,7 @@ import {
   ExchangeRateUpdateDto,
   IUpdateExchangeRate,
   Serialize,
+  EnrichAuditUsers,
   ExchangeRateDetailResponseSchema,
   ExchangeRateListItemResponseSchema,
   ExchangeRateMutationResponseSchema,
@@ -81,6 +82,7 @@ export class Config_ExchangeRateController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('exchangeRate.findOne'))
   @Serialize(ExchangeRateDetailResponseSchema)
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({

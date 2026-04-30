@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 // Base schema for ExtraCostType
 const ExtraCostTypeBaseSchema = z.object({
@@ -13,8 +14,15 @@ const ExtraCostTypeBaseSchema = z.object({
   updated_by: z.string().nullable().optional(),
 });
 
-// Detail response schema (for findOne)
-export const ExtraCostTypeDetailResponseSchema = ExtraCostTypeBaseSchema.passthrough();
+// Detail response schema (for findOne with audit enrichment)
+export const ExtraCostTypeDetailResponseSchema = ExtraCostTypeBaseSchema.omit({
+  created_at: true,
+  updated_at: true,
+  created_by: true,
+  updated_by: true,
+}).extend({
+  audit: AuditSchema.optional(),
+}).passthrough();
 
 // List item response schema (for findAll)
 export const ExtraCostTypeListItemResponseSchema = ExtraCostTypeBaseSchema.passthrough();
