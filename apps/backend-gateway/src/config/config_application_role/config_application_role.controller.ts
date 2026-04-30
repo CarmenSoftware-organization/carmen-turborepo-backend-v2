@@ -22,6 +22,7 @@ import {
   EnrichAuditUsers,
   Serialize,
   ApplicationRoleDetailResponseSchema,
+  ApplicationRoleListItemResponseSchema,
 } from '@/common'
 import { CreateConfigApplicationRoleDto, UpdateConfigApplicationRoleDto } from './dto/application_role.dto'
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto'
@@ -57,6 +58,8 @@ export class ConfigApplicationRoleController extends BaseHttpController {
    * @param version - API version / เวอร์ชัน API
    */
   @Get()
+  @Serialize(ApplicationRoleListItemResponseSchema)
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiUserFilterQueries()
   @ApiOperation({ summary: 'Get all application roles', description: 'Returns all defined application roles (e.g., Admin, Manager, Purchaser, Requestor) used for access control. Roles determine which system features and data each user can access.', operationId: 'configApplicationRole_findAll', 'x-description-th': 'แสดงรายการบทบาทในระบบทั้งหมดพร้อมการแบ่งหน้าและค้นหา' } as any)

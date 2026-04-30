@@ -32,6 +32,7 @@ import {
   EnrichAuditUsers,
   Serialize,
   CreditNoteReasonDetailResponseSchema,
+  CreditNoteReasonListItemResponseSchema,
   CreditNoteReasonMutationResponseSchema,
 } from '@/common';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
@@ -96,6 +97,8 @@ export class Config_CreditNoteReasonController extends BaseHttpController {
 
   @Get()
   @UseGuards(new AppIdGuard('creditNoteReason.findAll'))
+  @Serialize(CreditNoteReasonListItemResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
