@@ -28,6 +28,7 @@ import {
   CreditTermCreateDto,
   CreditTermUpdateDto,
   IUpdateCreditTerm,
+  EnrichAuditUsers,
   Serialize,
   CreditTermDetailResponseSchema,
   CreditTermListItemResponseSchema,
@@ -74,8 +75,9 @@ export class Config_CreditTermController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('creditTerm.findOne'))
   @Serialize(CreditTermDetailResponseSchema)
-  @ApiVersionMinRequest()
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get a credit term by ID',
     description: 'Retrieves a specific payment term definition (e.g., Net 30, Net 60, COD) including its due day calculation rules. Credit terms are assigned to vendors to determine invoice payment deadlines.',

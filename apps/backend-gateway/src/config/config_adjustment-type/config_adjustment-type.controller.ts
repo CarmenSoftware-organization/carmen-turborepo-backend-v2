@@ -18,7 +18,12 @@ import { Response } from 'express';
 import { Config_AdjustmentTypeService } from './config_adjustment-type.service';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
-import { BaseHttpController } from '@/common';
+import {
+  BaseHttpController,
+  EnrichAuditUsers,
+  Serialize,
+  AdjustmentTypeDetailResponseSchema,
+} from '@/common';
 import {
   ApiUserFilterQueries,
   ApiVersionMinRequest,
@@ -66,8 +71,10 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
    */
   @Get(':id')
   @UseGuards(new AppIdGuard('adjustment-type.findOne'))
-  @ApiVersionMinRequest()
+  @Serialize(AdjustmentTypeDetailResponseSchema)
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
+  @ApiVersionMinRequest()
   @ApiOperation({ summary: 'Get an adjustment type by ID', description: 'Retrieves a specific inventory adjustment type definition (e.g., spoilage, breakage, theft, expiration). Adjustment types categorize the reason for inventory quantity changes outside normal operations.', operationId: 'configAdjustmentType_findOne', 'x-description-th': 'ดึงข้อมูลประเภทการปรับปรุงรายการเดียวตาม ID' } as any)
   async findOne(
     @Req() req: Request,
