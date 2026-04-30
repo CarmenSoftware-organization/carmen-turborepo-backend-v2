@@ -18,7 +18,6 @@ export type ApplicationRoleDetailResponse = z.infer<typeof ApplicationRoleDetail
 export const ApplicationRoleListItemResponseSchema = z.object({
   id: z.string(),
   business_unit_id: z.string().nullable().optional(),
-  application_role_name: z.string().nullable().optional(),
   name: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   is_active: z.boolean().nullable().optional(),
