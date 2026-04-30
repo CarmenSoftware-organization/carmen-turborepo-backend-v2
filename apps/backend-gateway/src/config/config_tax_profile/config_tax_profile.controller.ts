@@ -30,6 +30,7 @@ import {
   TaxProfileUpdateDto,
   IUpdateTaxProfile,
   Serialize,
+  EnrichAuditUsers,
   TaxProfileDetailResponseSchema,
   TaxProfileListItemResponseSchema,
   TaxProfileMutationResponseSchema,
@@ -73,6 +74,7 @@ export class Config_TaxProfileController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('taxProfile.findOne'))
   @Serialize(TaxProfileDetailResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get a tax profile by ID', description: 'Retrieves a specific tax rate configuration (e.g., VAT 7%, withholding tax 3%) used to calculate taxes on procurement documents and vendor invoices.', operationId: 'configTaxProfile_findOne', 'x-description-th': 'ดึงข้อมูลโปรไฟล์ภาษีรายการเดียวตาม ID' } as any)

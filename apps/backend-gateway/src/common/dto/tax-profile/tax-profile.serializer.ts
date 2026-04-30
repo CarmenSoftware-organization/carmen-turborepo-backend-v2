@@ -1,8 +1,9 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 const decimalFieldRequired = z.number().or(z.string()).pipe(z.coerce.number());
 
-// Tax profile response schema (for findOne)
+// Tax profile response schema (base — used internally)
 export const TaxProfileResponseSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -22,8 +23,17 @@ export const TaxProfileResponseSchema = z.object({
 
 export type TaxProfileResponse = z.infer<typeof TaxProfileResponseSchema>;
 
-// Tax profile detail response schema (for findOne)
-export const TaxProfileDetailResponseSchema = TaxProfileResponseSchema;
+// Tax profile detail response schema (for findOne — uses enriched audit block)
+export const TaxProfileDetailResponseSchema = TaxProfileResponseSchema.omit({
+  created_at: true,
+  created_by_id: true,
+  updated_at: true,
+  updated_by_id: true,
+  deleted_at: true,
+  deleted_by_id: true,
+}).extend({
+  audit: AuditSchema.optional(),
+});
 
 export type TaxProfileDetailResponse = z.infer<typeof TaxProfileDetailResponseSchema>;
 
