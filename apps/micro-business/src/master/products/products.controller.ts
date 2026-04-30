@@ -397,4 +397,80 @@ export class ProductsController extends BaseMicroserviceController {
     );
     return this.handleResult(result);
   }
+
+  /**
+   * List products that have at least one inventory movement
+   * ดึงสินค้าที่เคยมีการเคลื่อนไหวสต็อก
+   */
+  @MessagePattern({ cmd: 'product.list-with-movement', service: 'product' })
+  async listProductsWithMovement(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'listProductsWithMovement', payload }, ProductsController.name);
+    const bu_code = payload.bu_code;
+    const user_id = payload.user_id;
+    this.productsService.userId = user_id;
+    this.productsService.bu_code = bu_code;
+    await this.productsService.initializePrismaService(bu_code, user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.productsService.listProductsWithMovement(),
+    );
+    return this.handleResult(result);
+  }
+
+  /**
+   * List locations that have inventory movement for a given product
+   * ดึงสถานที่ที่มีการเคลื่อนไหวสต็อกสำหรับสินค้าที่ระบุ
+   */
+  @MessagePattern({ cmd: 'product.list-locations-with-movement', service: 'product' })
+  async listLocationsWithMovement(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'listLocationsWithMovement', payload }, ProductsController.name);
+    const bu_code = payload.bu_code;
+    const user_id = payload.user_id;
+    this.productsService.userId = user_id;
+    this.productsService.bu_code = bu_code;
+    await this.productsService.initializePrismaService(bu_code, user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.productsService.listLocationsWithMovement(payload.product_id),
+    );
+    return this.handleResult(result);
+  }
+
+  /**
+   * List locations that have any inventory movement
+   * ดึงสถานที่ที่มีการเคลื่อนไหวสต็อก (ไม่ระบุสินค้า)
+   */
+  @MessagePattern({ cmd: 'product.list-locations-with-any-movement', service: 'product' })
+  async listLocationsWithAnyMovement(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'listLocationsWithAnyMovement', payload }, ProductsController.name);
+    const bu_code = payload.bu_code;
+    const user_id = payload.user_id;
+    this.productsService.userId = user_id;
+    this.productsService.bu_code = bu_code;
+    await this.productsService.initializePrismaService(bu_code, user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.productsService.listLocationsWithAnyMovement(),
+    );
+    return this.handleResult(result);
+  }
+
+  /**
+   * List products that have movement at a given location
+   * ดึงสินค้าที่มีการเคลื่อนไหวสต็อกที่สถานที่ที่ระบุ
+   */
+  @MessagePattern({ cmd: 'product.list-products-with-movement-at-location', service: 'product' })
+  async listProductsWithMovementAtLocation(@Payload() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'listProductsWithMovementAtLocation', payload }, ProductsController.name);
+    const bu_code = payload.bu_code;
+    const user_id = payload.user_id;
+    this.productsService.userId = user_id;
+    this.productsService.bu_code = bu_code;
+    await this.productsService.initializePrismaService(bu_code, user_id);
+    const auditContext = this.createAuditContext(payload);
+    const result = await runWithAuditContext(auditContext, () =>
+      this.productsService.listProductsWithMovementAtLocation(payload.location_id),
+    );
+    return this.handleResult(result);
+  }
 }

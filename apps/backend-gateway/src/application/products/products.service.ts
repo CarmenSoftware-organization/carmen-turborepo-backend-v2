@@ -216,4 +216,114 @@ export class ProductsService {
     return Result.ok(response.data);
   }
 
+  async listProductsWithMovement(
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'listProductsWithMovement', user_id, bu_code, version },
+      ProductsService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
+      { cmd: 'product.list-with-movement', service: 'product' },
+      { user_id, bu_code, version, ...getGatewayRequestContext() },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
+  async listLocationsWithMovement(
+    product_id: string,
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'listLocationsWithMovement', product_id, user_id, bu_code, version },
+      ProductsService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
+      { cmd: 'product.list-locations-with-movement', service: 'product' },
+      { product_id, user_id, bu_code, version, ...getGatewayRequestContext() },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
+  async listLocationsWithAnyMovement(
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'listLocationsWithAnyMovement', user_id, bu_code, version },
+      ProductsService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
+      { cmd: 'product.list-locations-with-any-movement', service: 'product' },
+      { user_id, bu_code, version, ...getGatewayRequestContext() },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
+  async listProductsWithMovementAtLocation(
+    location_id: string,
+    user_id: string,
+    bu_code: string,
+    version: string,
+  ): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'listProductsWithMovementAtLocation', location_id, user_id, bu_code, version },
+      ProductsService.name,
+    );
+
+    const res: Observable<MicroserviceResponse> = this.masterService.send(
+      { cmd: 'product.list-products-with-movement-at-location', service: 'product' },
+      { location_id, user_id, bu_code, version, ...getGatewayRequestContext() },
+    );
+
+    const response = await firstValueFrom(res);
+
+    if (response.response.status !== HttpStatus.OK) {
+      return Result.error(
+        response.response.message,
+        httpStatusToErrorCode(response.response.status),
+      );
+    }
+
+    return Result.ok(response.data);
+  }
+
 }

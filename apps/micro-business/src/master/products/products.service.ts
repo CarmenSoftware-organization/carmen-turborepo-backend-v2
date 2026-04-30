@@ -2008,7 +2008,7 @@ export class ProductsService {
     const total_on_hand = locations.reduce((sum, loc) => sum + loc.on_hand_qty, 0);
 
     // Fetch inventory transactions for this product
-    const txDetailWhere: any = { product_id, deleted_at: null };
+    const txDetailWhere: any = { product_id };
     if (location_id) txDetailWhere.location_id = location_id;
 
     const transactionDetails = await this.prismaService.tb_inventory_transaction_detail.findMany({
@@ -2579,6 +2579,7 @@ export class ProductsService {
       total_qty: number;
       cost: number;
       total_cost: number;
+      balance_cost: number;
       cost_average: string;
     };
     type LocationGroup = {
@@ -2635,6 +2636,7 @@ export class ProductsService {
         total_qty: totalQty,
         cost: round2(cost),
         total_cost: totalCost,
+        balance_cost: round2(newValue),
         cost_average,
       });
     }
@@ -2643,5 +2645,122 @@ export class ProductsService {
       calculation_method: calculationMethod,
       locations: [...groupMap.values()],
     });
+  }
+
+  /**
+   * List distinct products that appear in tb_inventory_transaction_cost_layer
+   * (i.e. products that have at least one real inventory movement).
+   * ดึงรายการสินค้าที่เคยมีการเคลื่อนไหวสต็อกจริง
+   */
+  @TryCatch
+  async listProductsWithMovement(): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'listProductsWithMovement', user_id: this.userId, tenant_id: this.bu_code },
+      ProductsService.name,
+    );
+
+    const layers = await this.prismaService.tb_inventory_transaction_cost_layer.findMany({
+      where: { deleted_at: null },
+      distinct: ['product_id'],
+      select: { product_id: true },
+    });
+
+    const productIds = layers.map((l) => l.product_id).filter((id): id is string => !!id);
+    if (productIds.length === 0) return Result.ok([]);
+
+    const products = await this.prismaService.tb_product.findMany({
+      where: { id: { in: productIds }, deleted_at: null },
+      select: { id: true, code: true, name: true },
+      orderBy: { code: 'asc' },
+    });
+
+    return Result.ok(products);
+  }
+
+  /**
+   * List distinct locations that have any movement (across all products).
+   * ดึงสถานที่ทั้งหมดที่มีการเคลื่อนไหวสต็อก (โดยไม่ระบุสินค้า)
+   */
+  @TryCatch
+  async listLocationsWithAnyMovement(): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'listLocationsWithAnyMovement', user_id: this.userId, tenant_id: this.bu_code },
+      ProductsService.name,
+    );
+
+    const layers = await this.prismaService.tb_inventory_transaction_cost_layer.findMany({
+      where: { deleted_at: null },
+      distinct: ['location_id'],
+      select: { location_id: true },
+    });
+
+    const locationIds = layers.map((l) => l.location_id).filter((id): id is string => !!id);
+    if (locationIds.length === 0) return Result.ok([]);
+
+    const locations = await this.prismaService.tb_location.findMany({
+      where: { id: { in: locationIds }, deleted_at: null },
+      select: { id: true, code: true, name: true },
+      orderBy: { code: 'asc' },
+    });
+
+    return Result.ok(locations);
+  }
+
+  /**
+   * List distinct products that have movement at a given location.
+   * ดึงสินค้าที่มีการเคลื่อนไหวสต็อกที่สถานที่ที่ระบุ
+   */
+  @TryCatch
+  async listProductsWithMovementAtLocation(location_id: string): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'listProductsWithMovementAtLocation', location_id, user_id: this.userId, tenant_id: this.bu_code },
+      ProductsService.name,
+    );
+
+    const layers = await this.prismaService.tb_inventory_transaction_cost_layer.findMany({
+      where: { location_id, deleted_at: null },
+      distinct: ['product_id'],
+      select: { product_id: true },
+    });
+
+    const productIds = layers.map((l) => l.product_id).filter((id): id is string => !!id);
+    if (productIds.length === 0) return Result.ok([]);
+
+    const products = await this.prismaService.tb_product.findMany({
+      where: { id: { in: productIds }, deleted_at: null },
+      select: { id: true, code: true, name: true },
+      orderBy: { code: 'asc' },
+    });
+
+    return Result.ok(products);
+  }
+
+  /**
+   * List distinct locations that have movement for a given product.
+   * ดึงสถานที่ที่มีการเคลื่อนไหวสต็อกสำหรับสินค้าที่ระบุ
+   */
+  @TryCatch
+  async listLocationsWithMovement(product_id: string): Promise<Result<unknown>> {
+    this.logger.debug(
+      { function: 'listLocationsWithMovement', product_id, user_id: this.userId, tenant_id: this.bu_code },
+      ProductsService.name,
+    );
+
+    const layers = await this.prismaService.tb_inventory_transaction_cost_layer.findMany({
+      where: { product_id, deleted_at: null },
+      distinct: ['location_id'],
+      select: { location_id: true },
+    });
+
+    const locationIds = layers.map((l) => l.location_id).filter((id): id is string => !!id);
+    if (locationIds.length === 0) return Result.ok([]);
+
+    const locations = await this.prismaService.tb_location.findMany({
+      where: { id: { in: locationIds }, deleted_at: null },
+      select: { id: true, code: true, name: true },
+      orderBy: { code: 'asc' },
+    });
+
+    return Result.ok(locations);
   }
 }
