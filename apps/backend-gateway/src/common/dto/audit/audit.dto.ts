@@ -1,38 +1,35 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { z } from 'zod';
 
-export class AuditUserDto {
-  @ApiProperty({ example: '00000000-0000-0000-0000-000000000000' }) id!: string;
-  @ApiProperty({ example: 'John Doe' }) name!: string;
+export class AuditEntryDto {
+  @ApiProperty({ type: String, format: 'date-time', required: false, example: '2026-04-29T08:30:00.000Z' })
+  at?: string;
+  @ApiProperty({ required: false, example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  id?: string;
+  @ApiProperty({ required: false, example: 'John Doe' })
+  name?: string;
 }
 
 export class AuditDto {
-  @ApiProperty({ type: String, format: 'date-time', nullable: true, example: '2026-04-01T10:00:00Z' })
-  created_at!: string | null;
-  @ApiProperty({ type: AuditUserDto, nullable: true })
-  created_by!: AuditUserDto | null;
-  @ApiProperty({ type: String, format: 'date-time', nullable: true, example: '2026-04-15T08:30:00Z' })
-  updated_at!: string | null;
-  @ApiProperty({ type: AuditUserDto, nullable: true })
-  updated_by!: AuditUserDto | null;
-  @ApiProperty({ type: String, format: 'date-time', nullable: true, example: null })
-  deleted_at!: string | null;
-  @ApiProperty({ type: AuditUserDto, nullable: true })
-  deleted_by!: AuditUserDto | null;
+  @ApiProperty({ type: AuditEntryDto, required: false })
+  created?: AuditEntryDto;
+  @ApiProperty({ type: AuditEntryDto, required: false })
+  updated?: AuditEntryDto;
+  @ApiProperty({ type: AuditEntryDto, required: false })
+  deleted?: AuditEntryDto;
 }
 
-const AuditUserSchema = z.object({
-  id: z.string(),
-  name: z.string(),
+export const AuditEntrySchema = z.object({
+  at: z.string().optional(),
+  id: z.string().optional(),
+  name: z.string().optional(),
 });
 
 export const AuditSchema = z.object({
-  created_at: z.union([z.string(), z.date()]).nullable(),
-  created_by: AuditUserSchema.nullable(),
-  updated_at: z.union([z.string(), z.date()]).nullable(),
-  updated_by: AuditUserSchema.nullable(),
-  deleted_at: z.union([z.string(), z.date()]).nullable(),
-  deleted_by: AuditUserSchema.nullable(),
+  created: AuditEntrySchema.optional(),
+  updated: AuditEntrySchema.optional(),
+  deleted: AuditEntrySchema.optional(),
 });
 
 export type Audit = z.infer<typeof AuditSchema>;
+export type AuditEntry = z.infer<typeof AuditEntrySchema>;
