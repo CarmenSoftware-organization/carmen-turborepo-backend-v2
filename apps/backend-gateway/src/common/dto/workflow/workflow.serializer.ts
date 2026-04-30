@@ -18,9 +18,9 @@ export const WorkflowResponseSchema = z.object({
 export type WorkflowResponse = z.infer<typeof WorkflowResponseSchema>;
 
 // Workflow detail response schema (for findOne)
-export const WorkflowDetailResponseSchema = WorkflowResponseSchema.extend({
-  audit: AuditSchema.optional(),
-});
+export const WorkflowDetailResponseSchema = WorkflowResponseSchema
+  .omit({ created_at: true, updated_at: true })
+  .extend({ audit: AuditSchema.optional() });
 
 export type WorkflowDetailResponse = z.infer<typeof WorkflowDetailResponseSchema>;
 
