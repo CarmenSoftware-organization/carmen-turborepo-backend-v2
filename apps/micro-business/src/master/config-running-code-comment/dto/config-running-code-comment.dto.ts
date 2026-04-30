@@ -5,6 +5,8 @@ import {
   Attachment,
 } from '../../../common/dto/attachment.schema';
 
+export { AttachmentSchema, Attachment };
+
 export const CreateConfigRunningCodeCommentSchema = z.object({
   config_running_code_id: z.string().uuid(),
   message: z.string().optional().nullable(),
