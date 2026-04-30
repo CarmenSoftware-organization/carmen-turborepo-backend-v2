@@ -274,6 +274,12 @@ export class PriceListService {
       info: true,
       effective_from_date: true,
       effective_to_date: true,
+      created_at: true,
+      created_by_id: true,
+      updated_at: true,
+      updated_by_id: true,
+      deleted_at: true,
+      deleted_by_id: true,
       tb_currency: {
         select: {
           id: true,
@@ -378,6 +384,12 @@ export class PriceListService {
         effectivePeriod: item.effective_from_date + ' - ' + item.effective_to_date,
         note: item.note,
         pricelist_detail,
+        created_at: item.created_at,
+        created_by_id: item.created_by_id,
+        updated_at: item.updated_at,
+        updated_by_id: item.updated_by_id,
+        deleted_at: item.deleted_at,
+        deleted_by_id: item.deleted_by_id,
       };
     });
 

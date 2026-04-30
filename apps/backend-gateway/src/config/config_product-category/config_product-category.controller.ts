@@ -115,6 +115,7 @@ export class Config_ProductCategoryController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('productCategory.findAll'))
   @Serialize(ProductCategoryListItemResponseSchema)
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

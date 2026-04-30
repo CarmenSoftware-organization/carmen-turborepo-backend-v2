@@ -12,24 +12,38 @@ const ProductSubCategoryBaseSchema = z.object({
   category_id: z.string().uuid().nullable().optional(),
   is_active: z.boolean().nullable().optional(),
   created_at: dateField,
+  created_by_id: z.string().nullable().optional(),
   updated_at: dateField,
-  created_by: z.string().nullable().optional(),
-  updated_by: z.string().nullable().optional(),
+  updated_by_id: z.string().nullable().optional(),
+  deleted_at: dateField,
+  deleted_by_id: z.string().nullable().optional(),
 });
 
 // Detail response schema (for findOne)
 export const ProductSubCategoryDetailResponseSchema = ProductSubCategoryBaseSchema.omit({
   created_at: true,
+  created_by_id: true,
   updated_at: true,
-  created_by: true,
-  updated_by: true,
+  updated_by_id: true,
+  deleted_at: true,
+  deleted_by_id: true,
 }).extend({
   category: z.any().nullable().optional(),
   audit: AuditSchema.optional(),
 }).passthrough();
 
 // List item response schema (for findAll)
-export const ProductSubCategoryListItemResponseSchema = ProductSubCategoryBaseSchema.passthrough();
+export const ProductSubCategoryListItemResponseSchema = ProductSubCategoryBaseSchema.omit({
+  created_at: true,
+  created_by_id: true,
+  updated_at: true,
+  updated_by_id: true,
+  deleted_at: true,
+  deleted_by_id: true,
+}).extend({
+  category: z.any().nullable().optional(),
+  audit: AuditSchema.optional(),
+}).passthrough();
 
 // Mutation response schema (for create, update, delete)
 export const ProductSubCategoryMutationResponseSchema = z.object({

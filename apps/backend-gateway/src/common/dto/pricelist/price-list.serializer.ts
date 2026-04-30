@@ -69,6 +69,7 @@ export const PriceListListItemResponseSchema = z.object({
   effectivePeriod: z.string().nullable().optional(),
   note: z.string().nullable().optional(),
   pricelist_detail: z.array(PriceListDetailEmbeddedSchema).optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type PriceListListItemResponse = z.infer<typeof PriceListListItemResponseSchema>;

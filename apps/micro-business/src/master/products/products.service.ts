@@ -947,6 +947,12 @@ export class ProductsService {
           product_status_type: true,
           inventory_unit_id: true,
           inventory_unit_name: true,
+          created_at: true,
+          created_by_id: true,
+          updated_at: true,
+          updated_by_id: true,
+          deleted_at: true,
+          deleted_by_id: true,
           tb_unit: {
             select: { id: true, name: true },
           },
@@ -993,6 +999,12 @@ export class ProductsService {
         product_category: category
           ? { id: category.id, name: category.name }
           : {},
+        created_at: product.created_at,
+        created_by_id: product.created_by_id,
+        updated_at: product.updated_at,
+        updated_by_id: product.updated_by_id,
+        deleted_at: product.deleted_at,
+        deleted_by_id: product.deleted_by_id,
       };
     });
 

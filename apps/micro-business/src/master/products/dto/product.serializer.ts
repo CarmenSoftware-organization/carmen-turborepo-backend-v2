@@ -96,6 +96,12 @@ export const ProductListItemResponseSchema = z.object({
   product_item_group: ProductItemGroupEmbeddedSchema.optional(),
   product_sub_category: ProductSubCategoryEmbeddedSchema.optional(),
   product_category: ProductCategoryEmbeddedSchema.optional(),
+  created_at: z.coerce.date().nullable().optional(),
+  created_by_id: z.string().nullable().optional(),
+  updated_at: z.coerce.date().nullable().optional(),
+  updated_by_id: z.string().nullable().optional(),
+  deleted_at: z.coerce.date().nullable().optional(),
+  deleted_by_id: z.string().nullable().optional(),
 });
 
 export type ProductListItemResponse = z.infer<typeof ProductListItemResponseSchema>;

@@ -213,6 +213,7 @@ export class Config_PriceListController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('priceList.findAll'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiUserFilterQueries()
   @ApiOperation({
