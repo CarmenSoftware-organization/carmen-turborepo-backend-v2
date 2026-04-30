@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 const dateField = z.coerce.date().nullable();
 
@@ -16,8 +17,14 @@ const ProductCategoryBaseSchema = z.object({
 });
 
 // Detail response schema (for findOne)
-export const ProductCategoryDetailResponseSchema = ProductCategoryBaseSchema.extend({
+export const ProductCategoryDetailResponseSchema = ProductCategoryBaseSchema.omit({
+  created_at: true,
+  updated_at: true,
+  created_by: true,
+  updated_by: true,
+}).extend({
   sub_categories: z.array(z.any()).nullable().optional(),
+  audit: AuditSchema.optional(),
 }).passthrough();
 
 // List item response schema (for findAll)

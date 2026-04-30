@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
 // Embedded schemas
 const TaxProfileEmbeddedSchema = z.object({
@@ -51,6 +52,7 @@ export const PriceListDetailResponseSchema = z.object({
   effectivePeriod: z.string().nullable().optional(),
   note: z.string().nullable().optional(),
   pricelist_detail: z.array(PriceListDetailEmbeddedSchema).optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type PriceListDetailResponse = z.infer<typeof PriceListDetailResponseSchema>;
