@@ -41,28 +41,6 @@ export const StockInDetailResponseSchema = z.object({
 
 export type StockInDetailResponse = z.infer<typeof StockInDetailResponseSchema>;
 
-// Stock In detail line-item response schema (for stock-in-detail findOne)
-export const StockInDetailLineItemResponseSchema = z.object({
-  id: z.string(),
-  stock_in_id: z.string().nullable().optional(),
-  inventory_transaction_id: z.string().nullable().optional(),
-  sequence_no: z.number().nullable().optional(),
-  product_id: z.string().nullable().optional(),
-  product_name: z.string().nullable().optional(),
-  product_local_name: z.string().nullable().optional(),
-  description: z.string().nullable().optional(),
-  qty: z.number().nullable().optional(),
-  cost_per_unit: z.number().nullable().optional(),
-  total_cost: z.number().nullable().optional(),
-  note: z.string().nullable().optional(),
-  info: z.any().nullable().optional(),
-  dimension: z.any().nullable().optional(),
-  doc_version: z.number().nullable().optional(),
-  audit: AuditSchema.optional(),
-});
-
-export type StockInDetailLineItemResponse = z.infer<typeof StockInDetailLineItemResponseSchema>;
-
 // Stock In list item response schema (for findAll)
 export const StockInListItemResponseSchema = z.object({
   id: z.string(),
