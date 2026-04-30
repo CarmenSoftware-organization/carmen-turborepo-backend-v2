@@ -1,7 +1,8 @@
 import { z } from 'zod';
+import { AuditSchema } from '../audit/audit.dto';
 
-// Workflow response schema (for findOne)
-export const WorkflowResponseSchema = z.object({
+// Workflow base schema (shared fields)
+const WorkflowBaseSchema = z.object({
   id: z.string(),
   name: z.string(),
   workflow_type: z.string(),
@@ -10,14 +11,12 @@ export const WorkflowResponseSchema = z.object({
   description: z.string().nullable().optional(),
   info: z.any().nullable().optional(),
   dimension: z.any().nullable().optional(),
-  created_at: z.coerce.date().optional(),
-  updated_at: z.coerce.date().optional(),
 });
 
-export type WorkflowResponse = z.infer<typeof WorkflowResponseSchema>;
-
 // Workflow detail response schema (for findOne)
-export const WorkflowDetailResponseSchema = WorkflowResponseSchema;
+export const WorkflowDetailResponseSchema = WorkflowBaseSchema.extend({
+  audit: AuditSchema.optional(),
+});
 
 export type WorkflowDetailResponse = z.infer<typeof WorkflowDetailResponseSchema>;
 

@@ -28,6 +28,7 @@ import {
   WorkflowDetailResponseSchema,
   WorkflowListItemResponseSchema,
   WorkflowMutationResponseSchema,
+  EnrichAuditUsers,
 } from '@/common';
 import {
   ApiUserFilterQueries,
@@ -67,6 +68,7 @@ export class Config_WorkflowsController extends BaseHttpController {
   @Get(':id')
   @UseGuards(new AppIdGuard('workflow.findOne'))
   @Serialize(WorkflowDetailResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
