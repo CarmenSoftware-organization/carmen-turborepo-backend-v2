@@ -323,6 +323,12 @@ export class LocationsService {
               is_active: item.tb_delivery_point.is_active,
             }
           : {},
+        created_at: item.created_at,
+        created_by_id: item.created_by_id,
+        updated_at: item.updated_at,
+        updated_by_id: item.updated_by_id,
+        deleted_at: item.deleted_at,
+        deleted_by_id: item.deleted_by_id,
       };
     });
 

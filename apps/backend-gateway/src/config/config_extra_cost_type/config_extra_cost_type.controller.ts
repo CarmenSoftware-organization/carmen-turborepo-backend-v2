@@ -116,6 +116,7 @@ export class Config_ExtraCostTypeController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('extraCostType.findAll'))
   @Serialize(ExtraCostTypeListItemResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @HttpCode(HttpStatus.OK)

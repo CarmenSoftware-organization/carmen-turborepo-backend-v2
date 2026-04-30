@@ -33,6 +33,7 @@ import {
   EnrichAuditUsers,
   DeliveryPointResponseSchema,
   DeliveryPointDetailResponseSchema,
+  DeliveryPointListItemResponseSchema,
 } from '@/common';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import {
@@ -145,7 +146,8 @@ export class Config_DeliveryPointController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('delivery-point.findAll'))
-  @Serialize(DeliveryPointResponseSchema)
+  @Serialize(DeliveryPointListItemResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({

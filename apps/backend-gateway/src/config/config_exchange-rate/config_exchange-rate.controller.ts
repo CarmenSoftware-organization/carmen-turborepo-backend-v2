@@ -132,6 +132,7 @@ export class Config_ExchangeRateController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('exchangeRate.findAll'))
   @Serialize(ExchangeRateListItemResponseSchema)
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

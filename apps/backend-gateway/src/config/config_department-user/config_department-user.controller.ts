@@ -187,6 +187,7 @@ export class Config_DepartmentUserController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('departmentUser.findAll'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

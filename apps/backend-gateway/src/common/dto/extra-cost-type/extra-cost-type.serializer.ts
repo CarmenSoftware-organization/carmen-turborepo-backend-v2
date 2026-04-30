@@ -25,7 +25,14 @@ export const ExtraCostTypeDetailResponseSchema = ExtraCostTypeBaseSchema.omit({
 }).passthrough();
 
 // List item response schema (for findAll)
-export const ExtraCostTypeListItemResponseSchema = ExtraCostTypeBaseSchema.passthrough();
+export const ExtraCostTypeListItemResponseSchema = ExtraCostTypeBaseSchema.omit({
+  created_at: true,
+  updated_at: true,
+  created_by: true,
+  updated_by: true,
+}).extend({
+  audit: AuditSchema.optional(),
+}).passthrough();
 
 // Mutation response schema (for create, update, delete)
 export const ExtraCostTypeMutationResponseSchema = z.object({

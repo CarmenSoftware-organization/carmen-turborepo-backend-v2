@@ -34,7 +34,16 @@ export const ExchangeRateDetailResponseSchema = ExchangeRateBaseSchema.omit({
 }).passthrough();
 
 // List item response schema (for findAll)
-export const ExchangeRateListItemResponseSchema = ExchangeRateBaseSchema.passthrough();
+export const ExchangeRateListItemResponseSchema = ExchangeRateBaseSchema.omit({
+  created_at: true,
+  created_by_id: true,
+  updated_at: true,
+  updated_by_id: true,
+  deleted_at: true,
+  deleted_by_id: true,
+}).extend({
+  audit: AuditSchema.optional(),
+}).passthrough();
 
 // Mutation response schema (for create, update, delete)
 export const ExchangeRateMutationResponseSchema = z.object({
