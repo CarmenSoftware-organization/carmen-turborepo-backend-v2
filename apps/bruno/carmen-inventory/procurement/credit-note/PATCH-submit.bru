@@ -1,11 +1,11 @@
 meta {
-  name: Confirm credit-note
+  name: Submit credit-note
   type: http
   seq: 6
 }
 
-post {
-  url: {{host}}/api/{{bu_code}}/credit-note/:id/confirm
+patch {
+  url: {{host}}/api/{{bu_code}}/credit-note/:id/submit
   body: json
   auth: bearer
 }
@@ -28,10 +28,10 @@ body:json {
 }
 
 docs {
-  ## Confirm Credit Note
-  ยืนยันใบลดหนี้ฉบับร่างและสร้างรายการเคลื่อนไหวสินค้าคงคลัง: กรณีส่งคืนจำนวนจะหักสินค้าออกจากล็อตใบรับสินค้า กรณีส่วนลดเงินจะปรับต้นทุนโดยไม่เคลื่อนไหวสินค้า
+  ## Submit Credit Note
+  ส่งใบลดหนี้ฉบับร่างและสร้างรายการเคลื่อนไหวสินค้าคงคลัง: กรณีส่งคืนจำนวนจะหักสินค้าออกจากล็อตใบรับสินค้า กรณีส่วนลดเงินจะปรับต้นทุนโดยไม่เคลื่อนไหวสินค้า
 
-  Confirms a draft credit note and triggers inventory: quantity_return deducts stock from GRN lots, amount_discount adjusts cost without stock movement.
+  Submits a draft credit note and triggers inventory: quantity_return deducts stock from GRN lots, amount_discount adjusts cost without stock movement.
 
   ### Path Parameters
   | Name | Type | Description |
@@ -66,7 +66,7 @@ docs {
   ### Error Responses
   | Status | When |
   |--------|------|
-  | 400 | Credit note cannot be confirmed (e.g. already confirmed, missing details) |
+  | 400 | Credit note cannot be submitted (e.g. already submitted, missing details) |
   | 401 | Missing or invalid bearer token |
   | 403 | User lacks `procurement.credit_note:update` permission |
   | 404 | Credit note not found |

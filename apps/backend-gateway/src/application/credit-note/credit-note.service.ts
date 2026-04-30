@@ -247,19 +247,19 @@ export class CreditNoteService {
     return Result.ok(response.data);
   }
 
-  async confirm(
+  async submit(
     id: string,
     user_id: string,
     tenant_id: string,
     version: string,
   ): Promise<Result<unknown>> {
     this.logger.debug(
-      { function: 'confirm', id, user_id, tenant_id, version },
+      { function: 'submit', id, user_id, tenant_id, version },
       CreditNoteService.name,
     );
 
     const res: Observable<MicroserviceResponse> = this.procurementService.send(
-      { cmd: 'credit-note.confirm', service: 'credit-note' },
+      { cmd: 'credit-note.submit', service: 'credit-note' },
       { id, user_id, tenant_id, version, ...getGatewayRequestContext() },
     );
 

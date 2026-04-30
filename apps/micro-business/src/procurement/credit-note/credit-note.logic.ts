@@ -285,19 +285,19 @@ export class CreditNoteLogic implements IClassLogic {
     }
   }
 
-  // ==================== Confirm ====================
+  // ==================== Submit ====================
 
   /**
-   * Confirm a credit note (no workflow — direct confirm from draft):
+   * Submit a credit note (no workflow — direct submit from draft):
    * - quantity_return → deduct stock from GRN lots (executeCreditNoteQty)
    * - amount_discount → adjust cost on GRN lots (executeCreditNoteAmount)
    */
-  async confirm(
+  async submit(
     id: string,
     user_id: string,
     tenant_id: string,
   ): Promise<Result<unknown>> {
-    this.logger.debug({ function: 'confirm', id, user_id, tenant_id }, CreditNoteLogic.name);
+    this.logger.debug({ function: 'submit', id, user_id, tenant_id }, CreditNoteLogic.name);
 
     await this.creditNoteService.initializePrismaService(tenant_id, user_id);
     const prisma = this.creditNoteService.prismaService;
@@ -316,7 +316,7 @@ export class CreditNoteLogic implements IClassLogic {
 
     if (cn.doc_status !== enum_credit_note_doc_status.draft) {
       return Result.error(
-        `Cannot confirm credit note with status '${cn.doc_status}'. Only draft can be confirmed.`,
+        `Cannot submit credit note with status '${cn.doc_status}'. Only draft can be submitted.`,
         ErrorCode.INVALID_ARGUMENT,
       );
     }
@@ -333,7 +333,7 @@ export class CreditNoteLogic implements IClassLogic {
 
     // Trigger inventory transaction based on credit_note_type
     if (!cn.grn_id || cn.tb_credit_note_detail.length === 0) {
-      return Result.ok({ id, message: 'Credit note confirmed (no inventory impact — missing GRN or details)' });
+      return Result.ok({ id, message: 'Credit note submitted (no inventory impact — missing GRN or details)' });
     }
 
     const method = await this.inventoryTransactionService.getCalculationMethod(tenant_id);
@@ -371,6 +371,6 @@ export class CreditNoteLogic implements IClassLogic {
       }
     });
 
-    return Result.ok({ id, message: 'Credit note confirmed and inventory updated' });
+    return Result.ok({ id, message: 'Credit note submitted and inventory updated' });
   }
 }

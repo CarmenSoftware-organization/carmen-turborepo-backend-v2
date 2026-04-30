@@ -139,18 +139,18 @@ export class CreditNoteController extends BaseMicroserviceController {
   }
 
   /**
-   * Confirm a credit note — triggers inventory transaction based on type
-   * ยืนยันใบลดหนี้ — สร้างรายการเคลื่อนไหวสินค้าคงคลังตามประเภท
+   * Submit a credit note — triggers inventory transaction based on type
+   * ส่งใบลดหนี้ — สร้างรายการเคลื่อนไหวสินค้าคงคลังตามประเภท
    */
   @MessagePattern({
-    cmd: 'credit-note.confirm',
+    cmd: 'credit-note.submit',
     service: 'credit-note',
   })
-  async confirm(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
-    this.logger.debug({ function: 'confirm', payload }, CreditNoteController.name);
+  async submit(@Body() payload: MicroservicePayload): Promise<MicroserviceResponse> {
+    this.logger.debug({ function: 'submit', payload }, CreditNoteController.name);
     const auditContext = this.createAuditContext(payload);
     const result = await runWithAuditContext(auditContext, () =>
-      this.creditNoteLogic.confirm(payload.id, payload.user_id, payload.tenant_id || payload.bu_code),
+      this.creditNoteLogic.submit(payload.id, payload.user_id, payload.tenant_id || payload.bu_code),
     );
     return this.handleResult(result);
   }

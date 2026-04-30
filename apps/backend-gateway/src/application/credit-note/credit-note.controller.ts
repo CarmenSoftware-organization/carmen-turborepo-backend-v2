@@ -302,28 +302,28 @@ export class CreditNoteController extends BaseHttpController {
   }
 
   /**
-   * Confirm a credit note and trigger inventory transaction
-   * ยืนยันใบลดหนี้และสร้างรายการเคลื่อนไหวสินค้าคงคลัง
+   * Submit a credit note and trigger inventory transaction
+   * ส่งใบลดหนี้และสร้างรายการเคลื่อนไหวสินค้าคงคลัง
    */
-  @Post(':id/confirm')
-  @UseGuards(new AppIdGuard('creditNote.confirm'))
+  @Patch(':id/submit')
+  @UseGuards(new AppIdGuard('creditNote.submit'))
   @ApiVersionMinRequest()
   @ApiOperation({
-    summary: 'Confirm a credit note',
-    description: 'Confirms a draft credit note and triggers inventory: quantity_return deducts stock from GRN lots, amount_discount adjusts cost without stock movement.',
-    operationId: 'confirmCreditNote',
+    summary: 'Submit a credit note',
+    description: 'Submits a draft credit note and triggers inventory: quantity_return deducts stock from GRN lots, amount_discount adjusts cost without stock movement.',
+    operationId: 'submitCreditNote',
     parameters: [
       { name: 'id', in: 'path', required: true, description: 'Credit Note ID' },
     ],
     responses: {
-      200: { description: 'Credit note confirmed and inventory updated' },
-      400: { description: 'Credit note cannot be confirmed' },
+      200: { description: 'Credit note submitted and inventory updated' },
+      400: { description: 'Credit note cannot be submitted' },
       404: { description: 'Credit note not found' },
     },
-    'x-description-th': 'ยืนยันใบลดหนี้ฉบับร่างและสร้างรายการเคลื่อนไหวสินค้าคงคลัง: กรณีส่งคืนจำนวนจะหักสินค้าออกจากล็อตใบรับสินค้า กรณีส่วนลดเงินจะปรับต้นทุนโดยไม่เคลื่อนไหวสินค้า',
+    'x-description-th': 'ส่งใบลดหนี้ฉบับร่างและสร้างรายการเคลื่อนไหวสินค้าคงคลัง: กรณีส่งคืนจำนวนจะหักสินค้าออกจากล็อตใบรับสินค้า กรณีส่วนลดเงินจะปรับต้นทุนโดยไม่เคลื่อนไหวสินค้า',
   } as any)
   @HttpCode(HttpStatus.OK)
-  async confirm(
+  async submit(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Param('bu_code') bu_code: string,
     @Req() req: Request,
@@ -331,12 +331,12 @@ export class CreditNoteController extends BaseHttpController {
     @Query('version') version: string = 'latest',
   ): Promise<void> {
     this.logger.debug(
-      { function: 'confirm', id, version },
+      { function: 'submit', id, version },
       CreditNoteController.name,
     );
 
     const { user_id } = ExtractRequestHeader(req);
-    const result = await this.creditNoteService.confirm(id, user_id, bu_code, version);
+    const result = await this.creditNoteService.submit(id, user_id, bu_code, version);
     this.respond(res, result);
   }
 }
