@@ -19,9 +19,8 @@ import { PrismaClient } from '../generated/client';
 const prisma = new PrismaClient();
 
 interface DocSpec {
-  code: string; // PR, PO, GRN, ...
+  code: string; // PR, PO, GRN, ... — also used as report_group (kind='print' carries the type signal)
   label: string; // human-friendly title
-  reportGroup: string; // e.g. PR_DOC, PO_DOC, GRN_DOC
   signatures: { key: string; label: string; required: boolean }[];
 }
 
@@ -30,7 +29,6 @@ const DOCS: DocSpec[] = [
   {
     code: 'PR',
     label: 'Purchase Request',
-    reportGroup: 'PR_DOC',
     signatures: [
       { key: 'Sig1Name', label: 'Requestor', required: true },
       { key: 'Sig2Name', label: 'Department Head', required: true },
@@ -40,7 +38,6 @@ const DOCS: DocSpec[] = [
   {
     code: 'PO',
     label: 'Purchase Order',
-    reportGroup: 'PO_DOC',
     signatures: [
       { key: 'Sig1Name', label: 'Buyer', required: true },
       { key: 'Sig2Name', label: 'Procurement Manager', required: true },
@@ -50,7 +47,6 @@ const DOCS: DocSpec[] = [
   {
     code: 'GRN',
     label: 'Good Received Note',
-    reportGroup: 'GRN_DOC',
     signatures: [
       { key: 'Sig1Name', label: 'Receiver', required: true },
       { key: 'Sig2Name', label: 'Store Keeper', required: true },
@@ -60,7 +56,6 @@ const DOCS: DocSpec[] = [
   {
     code: 'SR',
     label: 'Store Requisition',
-    reportGroup: 'SR_DOC',
     signatures: [
       { key: 'Sig1Name', label: 'Requestor', required: true },
       { key: 'Sig2Name', label: 'Issuer', required: true },
@@ -69,7 +64,6 @@ const DOCS: DocSpec[] = [
   {
     code: 'CN',
     label: 'Credit Note',
-    reportGroup: 'CN_DOC',
     signatures: [
       { key: 'Sig1Name', label: 'Issuer', required: true },
       { key: 'Sig2Name', label: 'Approver', required: true },
@@ -78,7 +72,6 @@ const DOCS: DocSpec[] = [
   {
     code: 'IA',
     label: 'Inventory Adjustment',
-    reportGroup: 'IA_DOC',
     signatures: [
       { key: 'Sig1Name', label: 'Adjuster', required: true },
       { key: 'Sig2Name', label: 'Manager', required: true },
@@ -87,7 +80,6 @@ const DOCS: DocSpec[] = [
   {
     code: 'PC',
     label: 'Physical Count',
-    reportGroup: 'PC_DOC',
     signatures: [
       { key: 'Sig1Name', label: 'Counted By', required: true },
       { key: 'Sig2Name', label: 'Verified By', required: true },
@@ -96,7 +88,6 @@ const DOCS: DocSpec[] = [
   {
     code: 'SC',
     label: 'Spot Check',
-    reportGroup: 'SC_DOC',
     signatures: [
       { key: 'Sig1Name', label: 'Counted By', required: true },
       { key: 'Sig2Name', label: 'Approved By', required: true },
@@ -105,7 +96,6 @@ const DOCS: DocSpec[] = [
   {
     code: 'RFQ',
     label: 'Request For Quotation',
-    reportGroup: 'RFQ_DOC',
     signatures: [
       { key: 'Sig1Name', label: 'Buyer', required: true },
       { key: 'Sig2Name', label: 'Manager', required: true },
@@ -114,7 +104,6 @@ const DOCS: DocSpec[] = [
   {
     code: 'INV',
     label: 'Invoice',
-    reportGroup: 'INV_DOC',
     signatures: [
       { key: 'Sig1Name', label: 'Issuer', required: true },
       { key: 'Sig2Name', label: 'Approver', required: false },
@@ -219,7 +208,8 @@ async function upsertTemplate(
     await prisma.tb_report_template.update({
       where: { id: existing.id },
       data: {
-        report_group: doc.reportGroup,
+        report_group: doc.code,
+        kind: 'print',
         orientation,
         signature_config: signatureConfig as never,
         allow_business_unit: ALLOW_BU as never,

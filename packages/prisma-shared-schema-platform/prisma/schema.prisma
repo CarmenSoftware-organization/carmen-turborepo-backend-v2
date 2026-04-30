@@ -592,6 +592,11 @@ model tb_report_template {
   description  String?
   report_group String  @db.VarChar(100)
 
+  // kind — "report" (user-facing analytical report) or "print" (printable
+  // document layout used by tb_print_template_mapping). Replaces the old
+  // "_DOC" suffix convention on report_group.
+  kind String @default("report") @db.VarChar(20)
+
   dialog  String @db.Text
   content String @db.Text
 

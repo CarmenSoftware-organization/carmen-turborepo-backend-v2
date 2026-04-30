@@ -1807,6 +1807,7 @@ async function main() {
         name: t.name,
         description: t.description,
         report_group: t.report_group,
+        kind: 'report',
         dialog: '',
         content: contentXml,
         is_standard: t.is_standard,
