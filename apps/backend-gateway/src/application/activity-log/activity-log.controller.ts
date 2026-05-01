@@ -62,6 +62,7 @@ export class ActivityLogController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('activityLog.findAll'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all activity logs',

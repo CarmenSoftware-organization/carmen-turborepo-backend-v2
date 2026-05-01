@@ -111,6 +111,7 @@ export class Config_UnitsController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('unit.findAll'))
   @Serialize(UnitListItemResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiUserFilterQueries()

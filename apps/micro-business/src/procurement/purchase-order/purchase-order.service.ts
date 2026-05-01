@@ -957,6 +957,11 @@ export class PurchaseOrderService {
       workflow_next_stage: true,
       last_action: true,
       created_at: true,
+      created_by_id: true,
+      updated_at: true,
+      updated_by_id: true,
+      deleted_at: true,
+      deleted_by_id: true,
       doc_version: true,
       tb_vendor: {
         select: {
@@ -1029,6 +1034,11 @@ export class PurchaseOrderService {
         workflow_next_stage: po.workflow_next_stage,
         last_action: po.last_action,
         created_at: po.created_at,
+        created_by_id: po.created_by_id,
+        updated_at: po.updated_at,
+        updated_by_id: po.updated_by_id,
+        deleted_at: po.deleted_at,
+        deleted_by_id: po.deleted_by_id,
         doc_version: po.doc_version,
       };
     });

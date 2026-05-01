@@ -95,6 +95,7 @@ export const ProductListItemResponseSchema = z.object({
   product_item_group: ProductItemGroupEmbeddedSchema.optional(),
   product_sub_category: ProductSubCategoryEmbeddedSchema.optional(),
   product_category: ProductCategoryEmbeddedSchema.optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type ProductListItemResponse = z.infer<typeof ProductListItemResponseSchema>;

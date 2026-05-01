@@ -53,6 +53,12 @@ export const LocationListItemResponseSchema = z.object({
   is_active: z.boolean().optional(),
   info: z.any().nullable().optional(),
   delivery_point: DeliveryPointEmbeddedSchema.optional(),
+  created_at: z.coerce.date().nullable().optional(),
+  created_by_id: z.string().nullable().optional(),
+  updated_at: z.coerce.date().nullable().optional(),
+  updated_by_id: z.string().nullable().optional(),
+  deleted_at: z.coerce.date().nullable().optional(),
+  deleted_by_id: z.string().nullable().optional(),
 });
 
 export type LocationListItemResponse = z.infer<typeof LocationListItemResponseSchema>;

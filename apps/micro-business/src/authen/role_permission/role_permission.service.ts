@@ -119,6 +119,11 @@ export class ApplicationRolePermissionService {
         name: true,
         description: true,
         created_at: true,
+        created_by_id: true,
+        updated_at: true,
+        updated_by_id: true,
+        deleted_at: true,
+        deleted_by_id: true,
         tb_application_role_tb_permission: {
           select: {
             permission_id: true,
@@ -144,6 +149,11 @@ export class ApplicationRolePermissionService {
       name: role.name,
       description: role.description,
       created_at: role.created_at,
+      created_by_id: role.created_by_id,
+      updated_at: role.updated_at,
+      updated_by_id: role.updated_by_id,
+      deleted_at: role.deleted_at,
+      deleted_by_id: role.deleted_by_id,
       permissions: role.tb_application_role_tb_permission.map((item) => ({
         permission_id: item.permission_id,
         action: item.tb_permission.action,

@@ -144,6 +144,11 @@ export class CreditNoteService {
         currency_code: true,
         exchange_rate: true,
         created_at: true,
+        created_by_id: true,
+        updated_at: true,
+        updated_by_id: true,
+        deleted_at: true,
+        deleted_by_id: true,
         tb_credit_note_detail: {
           select: {
             net_amount: true,
@@ -190,6 +195,11 @@ export class CreditNoteService {
         total_amount,
         base_total_amount,
         created_at: cn.created_at,
+        created_by_id: cn.created_by_id,
+        updated_at: cn.updated_at,
+        updated_by_id: cn.updated_by_id,
+        deleted_at: cn.deleted_at,
+        deleted_by_id: cn.deleted_by_id,
       };
     });
 

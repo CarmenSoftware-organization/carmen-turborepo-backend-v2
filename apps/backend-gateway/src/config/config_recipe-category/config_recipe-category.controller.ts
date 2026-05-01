@@ -79,6 +79,7 @@ export class Config_RecipeCategoryController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('recipe-category.findAll'))
   @Serialize(RecipeCategoryResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all recipe categories', description: 'Returns all recipe categories configured for the business unit. Used to organize recipes by meal type or course for structured menu management and kitchen operations.', operationId: 'configRecipeCategory_findAll', 'x-description-th': 'ดึงรายการหมวดหมู่สูตรอาหารทั้งหมดสำหรับการจัดระเบียบเมนูและการดำเนินงานครัว' } as any)

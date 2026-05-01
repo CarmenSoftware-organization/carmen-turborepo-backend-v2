@@ -53,6 +53,7 @@ export class InventoryAdjustmentController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('inventoryAdjustment.findAll'))
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @ApiQuery({

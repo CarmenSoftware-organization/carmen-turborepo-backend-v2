@@ -116,6 +116,7 @@ export class CreditNoteController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('creditNote.findAll'))
   @Serialize(CreditNoteListItemResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @ApiOperation({

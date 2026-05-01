@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { DashboardService } from './dashboard.service';
-import { BaseHttpController } from '@/common';
+import { BaseHttpController, EnrichAuditUsers } from '@/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { KeycloakGuard } from 'src/auth/guards/keycloak.guard';
 import { ApiHeaderRequiredXAppId } from 'src/common/decorator/x-app-id.decorator';
@@ -37,6 +37,7 @@ export class DashboardController extends BaseHttpController {
   }
 
   @Get()
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'List dashboards for current user' })
   async findAll(

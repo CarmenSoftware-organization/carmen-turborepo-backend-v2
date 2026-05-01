@@ -23,6 +23,7 @@ import {
   EnrichAuditUsers,
   Serialize,
   AdjustmentTypeDetailResponseSchema,
+  AdjustmentTypeListItemResponseSchema,
 } from '@/common';
 import {
   ApiUserFilterQueries,
@@ -112,6 +113,8 @@ export class Config_AdjustmentTypeController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('adjustment-type.findAll'))
+  @Serialize(AdjustmentTypeListItemResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all adjustment types', description: 'Returns all configured inventory adjustment type categories. These types are used when recording inventory adjustments to classify the reason for stock discrepancies.', operationId: 'configAdjustmentType_findAll', 'x-description-th': 'แสดงรายการประเภทการปรับปรุงทั้งหมดพร้อมการแบ่งหน้าและค้นหา' } as any)

@@ -79,6 +79,7 @@ export class Config_RecipeEquipmentController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('recipe-equipment.findAll'))
   @Serialize(RecipeEquipmentResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all recipe equipment', description: 'Returns all kitchen equipment types configured for the business unit. Used to tag recipes with required equipment for kitchen capacity planning and recipe feasibility assessment.', operationId: 'configRecipeEquipment_findAll', 'x-description-th': 'ดึงรายการอุปกรณ์ทำอาหารทั้งหมดสำหรับการวางแผนกำลังการผลิตครัว' } as any)

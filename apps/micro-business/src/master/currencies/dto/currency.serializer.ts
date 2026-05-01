@@ -13,8 +13,12 @@ export const CurrencyResponseSchema = z.object({
   description: z.string().nullable().optional(),
   info: z.any().nullable().optional(),
   dimension: z.any().nullable().optional(),
-  created_at: z.coerce.date().optional(),
-  updated_at: z.coerce.date().optional(),
+  created_at: z.coerce.date().nullable().optional(),
+  created_by_id: z.string().nullable().optional(),
+  updated_at: z.coerce.date().nullable().optional(),
+  updated_by_id: z.string().nullable().optional(),
+  deleted_at: z.coerce.date().nullable().optional(),
+  deleted_by_id: z.string().nullable().optional(),
 });
 
 export type CurrencyResponse = z.infer<typeof CurrencyResponseSchema>;

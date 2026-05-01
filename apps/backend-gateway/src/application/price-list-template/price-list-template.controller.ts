@@ -137,6 +137,7 @@ export class PriceListTemplateController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('priceListTemplate.findAll'))
   @Serialize(PriceListTemplateListItemResponseSchema)
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiVersionMinRequest()

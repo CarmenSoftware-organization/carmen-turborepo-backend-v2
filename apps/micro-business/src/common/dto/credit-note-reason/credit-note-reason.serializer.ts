@@ -21,6 +21,11 @@ export const CreditNoteReasonListItemResponseSchema = z.object({
   info: z.any().nullable().optional(),
   dimension: z.any().nullable().optional(),
   created_at: z.coerce.date().nullable().optional(),
+  created_by_id: z.string().nullable().optional(),
+  updated_at: z.coerce.date().nullable().optional(),
+  updated_by_id: z.string().nullable().optional(),
+  deleted_at: z.coerce.date().nullable().optional(),
+  deleted_by_id: z.string().nullable().optional(),
 });
 
 export const CreditNoteReasonMutationResponseSchema = z.object({

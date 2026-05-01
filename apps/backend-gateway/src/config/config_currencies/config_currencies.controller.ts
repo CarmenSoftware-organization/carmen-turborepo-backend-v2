@@ -33,6 +33,7 @@ import {
   Serialize,
   CurrencyResponseSchema,
   CurrencyDetailResponseSchema,
+  CurrencyListItemResponseSchema,
 } from '@/common';
 import { IPaginateQuery, PaginateQuery } from 'src/shared-dto/paginate.dto';
 import {
@@ -145,7 +146,8 @@ export class Config_CurrenciesController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('currencies.findAll'))
-  @Serialize(CurrencyResponseSchema)
+  @Serialize(CurrencyListItemResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({

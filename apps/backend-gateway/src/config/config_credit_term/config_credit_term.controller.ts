@@ -127,6 +127,7 @@ export class Config_CreditTermController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('creditTerm.findAll'))
   @Serialize(CreditTermListItemResponseSchema)
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

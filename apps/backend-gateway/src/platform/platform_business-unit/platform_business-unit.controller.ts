@@ -60,6 +60,7 @@ export class Platform_BusinessUnitController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('businessUnit.findAll'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all business units',

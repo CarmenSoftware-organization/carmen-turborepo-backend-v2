@@ -2,9 +2,9 @@ export const AUDIT_AT_FIELDS = ['created_at', 'updated_at', 'deleted_at'] as con
 export const AUDIT_BY_ID_FIELDS = ['created_by_id', 'updated_by_id', 'deleted_by_id'] as const;
 
 const KIND_MAP = [
-  { at: 'created_at', byId: 'created_by_id', by: 'created_by' },
-  { at: 'updated_at', byId: 'updated_by_id', by: 'updated_by' },
-  { at: 'deleted_at', byId: 'deleted_by_id', by: 'deleted_by' },
+  { key: 'created', at: 'created_at', byId: 'created_by_id' },
+  { key: 'updated', at: 'updated_at', byId: 'updated_by_id' },
+  { key: 'deleted', at: 'deleted_at', byId: 'deleted_by_id' },
 ] as const;
 
 export type EnrichmentTarget = Record<string, unknown>;
@@ -73,11 +73,12 @@ export function uniqueAuditUserIds(targets: EnrichmentTarget[]): string[] {
 }
 
 /**
- * Mutate `target` in place: move `created_at / updated_at / deleted_at` and
- * convert `created_by_id / updated_by_id / deleted_by_id` into a single
- * nested `audit` object with `{ id, name }` user references resolved via
- * `nameMap`. Resolved-but-missing names become `"Unknown"`. No-op if the
- * target is not a plain object or has none of the six audit fields.
+ * Mutate `target` in place: collapse `created_at + created_by_id` (and the
+ * updated/deleted equivalents) into a single nested `audit` object of shape
+ * `{ created?, updated?, deleted? }` where each entry is `{ at?, id?, name? }`.
+ * Drops the raw fields. Omits a kind entirely when both its `*_at` and
+ * `*_by_id` are null. If all three kinds are omitted, no `audit` key is added.
+ * If the target has none of the six raw fields, no `audit` key is added.
  */
 export function mutateToAuditShape(
   target: EnrichmentTarget,
@@ -85,24 +86,37 @@ export function mutateToAuditShape(
 ): void {
   if (!isPlainObject(target)) return;
 
-  const hasAny = KIND_MAP.some(({ at, byId }) => at in target || byId in target);
-  if (!hasAny) return;
+  const hasAnyRaw = KIND_MAP.some(({ at, byId }) => at in target || byId in target);
+  if (!hasAnyRaw) return;
 
-  const audit: Record<string, unknown> = {};
-  for (const { at, byId, by } of KIND_MAP) {
-    const atVal = at in target ? target[at] : null;
-    const byIdVal = target[byId];
-    audit[at] = atVal ?? null;
+  const audit: Record<string, { at?: string; id?: string; name?: string }> = {};
+  let hasAnyKind = false;
 
-    if (typeof byIdVal === 'string' && byIdVal.length > 0) {
-      const resolved = nameMap.get(byIdVal);
-      audit[by] = { id: byIdVal, name: resolved ?? 'Unknown' };
-    } else {
-      audit[by] = null;
-    }
+  for (const { key, at, byId } of KIND_MAP) {
+    const atVal = at in target ? (target[at] as Date | string | null | undefined) : undefined;
+    const byIdVal = byId in target ? (target[byId] as string | null | undefined) : undefined;
 
     delete target[at];
     delete target[byId];
+
+    const atIsNull = atVal == null;
+    const byIdIsNull = byIdVal == null || byIdVal === '';
+    if (atIsNull && byIdIsNull) continue;
+
+    const entry: { at?: string; id?: string; name?: string } = {};
+    if (!atIsNull) {
+      entry.at = atVal instanceof Date ? atVal.toISOString() : (atVal as string);
+    }
+    if (!byIdIsNull) {
+      const id = byIdVal as string;
+      entry.id = id;
+      const name = nameMap.get(id);
+      entry.name = name == null ? 'Unknown' : name;
+    }
+
+    audit[key] = entry;
+    hasAnyKind = true;
   }
-  target.audit = audit;
+
+  if (hasAnyKind) target.audit = audit;
 }

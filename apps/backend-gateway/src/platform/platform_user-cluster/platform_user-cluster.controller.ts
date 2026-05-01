@@ -111,6 +111,7 @@ export class Platform_UserClusterController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('userCluster.findAll'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

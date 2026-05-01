@@ -125,6 +125,7 @@ export class RequestForPricingController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('requestForPricing.findAll'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiVersionMinRequest()

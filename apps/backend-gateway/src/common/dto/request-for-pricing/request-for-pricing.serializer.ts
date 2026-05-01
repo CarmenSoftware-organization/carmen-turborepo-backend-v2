@@ -100,11 +100,10 @@ export const RequestForPricingListItemResponseSchema = z.object({
   info: z.any().nullable().optional(),
   dimension: z.any().nullable().optional(),
   doc_version: z.number().nullable().optional(),
-  created_at: z.coerce.date().nullable().optional(),
-  updated_at: z.coerce.date().nullable().optional(),
   pricelist_template: PricelistTemplateEmbeddedSchema,
   vendor_count: z.number().optional(),
   vendors: z.array(VendorInListSchema).optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type RequestForPricingListItemResponse = z.infer<typeof RequestForPricingListItemResponseSchema>;

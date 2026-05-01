@@ -18,7 +18,7 @@ export const CreditNoteReasonListItemResponseSchema = z.object({
   note: z.string().nullable().optional(),
   info: z.any().nullable().optional(),
   dimension: z.any().nullable().optional(),
-  created_at: z.coerce.date().nullable().optional(),
+  audit: AuditSchema.optional(),
 });
 
 export const CreditNoteReasonMutationResponseSchema = z.object({

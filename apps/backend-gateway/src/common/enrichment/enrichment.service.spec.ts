@@ -44,8 +44,11 @@ describe('EnrichmentService', () => {
       service.enrichIfRequested(payload),
     );
     expect(out).toBe(payload);
-    expect((payload as any).audit.created_by).toEqual({ id: 'u1', name: 'John' });
+    expect((payload as any).audit).toEqual({
+      created: { at: '2026-04-01T00:00:00Z', id: 'u1', name: 'John' },
+    });
     expect((payload as any).created_by_id).toBeUndefined();
+    expect((payload as any).created_at).toBeUndefined();
     expect(resolver.resolveMany).toHaveBeenCalledWith(['u1']);
   });
 
@@ -70,7 +73,7 @@ describe('EnrichmentService', () => {
     expect((payload as any).audit).toBeUndefined();
   });
 
-  it('targets with only *_at (no *_by_id): wraps into audit shape with all *_by null', async () => {
+  it('targets with only *_at (no *_by_id): wraps into audit shape with { at } only and omits null kinds', async () => {
     const payload = {
       id: 'x',
       created_at: '2026-04-01T00:00:00Z',
@@ -82,12 +85,7 @@ describe('EnrichmentService', () => {
     expect(out).toBe(payload);
     expect(resolver.resolveMany).not.toHaveBeenCalled();
     expect((payload as any).audit).toEqual({
-      created_at: '2026-04-01T00:00:00Z',
-      created_by: null,
-      updated_at: null,
-      updated_by: null,
-      deleted_at: null,
-      deleted_by: null,
+      created: { at: '2026-04-01T00:00:00Z' },
     });
     expect((payload as any).created_at).toBeUndefined();
     expect((payload as any).updated_at).toBeUndefined();

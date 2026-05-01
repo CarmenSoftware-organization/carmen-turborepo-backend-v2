@@ -115,6 +115,7 @@ export class Config_ProductsController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('product.findAll'))
   @Serialize(ProductListItemResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiUserFilterQueries()

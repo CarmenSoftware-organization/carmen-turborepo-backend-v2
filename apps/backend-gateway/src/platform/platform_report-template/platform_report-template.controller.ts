@@ -52,6 +52,7 @@ export class Platform_ReportTemplateController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('report-template.findAll'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

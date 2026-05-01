@@ -107,6 +107,7 @@ export class Config_VendorBusinessTypeController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('vendorBusinessType.findAll'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

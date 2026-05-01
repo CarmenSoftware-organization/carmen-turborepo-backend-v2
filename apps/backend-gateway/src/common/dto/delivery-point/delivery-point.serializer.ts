@@ -40,8 +40,7 @@ export const DeliveryPointListItemResponseSchema = z.object({
   note: z.string().nullable().optional(),
   info: z.any().nullable().optional(),
   dimension: z.any().nullable().optional(),
-  created_at: z.coerce.date().nullable().optional(),
-  updated_at: z.coerce.date().nullable().optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type DeliveryPointListItemResponse = z.infer<typeof DeliveryPointListItemResponseSchema>;

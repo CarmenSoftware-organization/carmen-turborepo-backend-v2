@@ -59,6 +59,7 @@ export class PurchaseRequestTemplateController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('purchaseRequestTemplate.findAll'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiUserFilterQueries()
   @ApiOperation({

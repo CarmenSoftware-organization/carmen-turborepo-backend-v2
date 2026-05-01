@@ -263,7 +263,7 @@ export const CreditNoteListItemResponseSchema = z.object({
   base_net_amount: z.coerce.number().nullable().optional(),
   total_amount: z.coerce.number().nullable().optional(),
   base_total_amount: z.coerce.number().nullable().optional(),
-  created_at: z.coerce.date().optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type CreditNoteListItemResponse = z.infer<typeof CreditNoteListItemResponseSchema>;

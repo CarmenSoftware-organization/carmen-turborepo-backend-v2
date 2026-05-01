@@ -9,9 +9,11 @@ const ProductCategoryBaseSchema = z.object({
   description: z.string().nullable().optional(),
   is_active: z.boolean().nullable().optional(),
   created_at: dateField,
+  created_by_id: z.string().nullable().optional(),
   updated_at: dateField,
-  created_by: z.string().nullable().optional(),
-  updated_by: z.string().nullable().optional(),
+  updated_by_id: z.string().nullable().optional(),
+  deleted_at: dateField,
+  deleted_by_id: z.string().nullable().optional(),
 });
 
 // Detail response schema (for findOne)

@@ -149,6 +149,7 @@ export class Config_LocationsController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('location.findAll'))
   @Serialize(LocationListItemResponseSchema)
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

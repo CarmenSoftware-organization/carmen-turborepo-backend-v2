@@ -101,6 +101,7 @@ export class Config_RecipeController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('recipe.findAll'))
   @Serialize(RecipeResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({

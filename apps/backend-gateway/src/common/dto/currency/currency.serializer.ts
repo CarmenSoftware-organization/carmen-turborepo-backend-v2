@@ -30,8 +30,10 @@ export const CurrencyDetailResponseSchema = CurrencyResponseSchema
 
 export type CurrencyDetailResponse = z.infer<typeof CurrencyDetailResponseSchema>;
 
-// Currency list item response schema (same as CurrencyResponseSchema for this entity)
-export const CurrencyListItemResponseSchema = CurrencyResponseSchema;
+// Currency list item response schema
+export const CurrencyListItemResponseSchema = CurrencyResponseSchema
+  .omit({ created_at: true, updated_at: true })
+  .extend({ audit: AuditSchema.optional() });
 
 export type CurrencyListItemResponse = z.infer<typeof CurrencyListItemResponseSchema>;
 

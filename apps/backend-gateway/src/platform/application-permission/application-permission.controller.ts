@@ -58,6 +58,7 @@ export class ApplicationPermissionController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('application-permission.findAll'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({

@@ -113,6 +113,7 @@ export class Config_ProductItemGroupController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('productItemGroup.findAll'))
   @Serialize(ProductItemGroupListItemResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiUserFilterQueries()

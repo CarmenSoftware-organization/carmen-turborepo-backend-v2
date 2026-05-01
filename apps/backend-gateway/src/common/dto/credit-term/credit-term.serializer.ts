@@ -24,7 +24,9 @@ export const CreditTermDetailResponseSchema = CreditTermResponseSchema
 export type CreditTermDetailResponse = z.infer<typeof CreditTermDetailResponseSchema>;
 
 // Credit term list item response schema
-export const CreditTermListItemResponseSchema = CreditTermResponseSchema;
+export const CreditTermListItemResponseSchema = CreditTermResponseSchema
+  .omit({ created_at: true, updated_at: true })
+  .extend({ audit: AuditSchema.optional() });
 
 export type CreditTermListItemResponse = z.infer<typeof CreditTermListItemResponseSchema>;
 

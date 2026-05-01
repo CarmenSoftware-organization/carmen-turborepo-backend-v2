@@ -99,6 +99,7 @@ export class Config_UnitCommentController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('unitComment.findAll'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

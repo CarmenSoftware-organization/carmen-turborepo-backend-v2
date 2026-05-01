@@ -117,6 +117,7 @@ export class StockInController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('stockIn.findAll'))
   @Serialize(StockInListItemResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @ApiOperation({

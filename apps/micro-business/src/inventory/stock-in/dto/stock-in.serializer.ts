@@ -65,8 +65,12 @@ export const StockInListItemResponseSchema = z.object({
   // workflow_current_stage: z.string().nullable().optional(),
   item_count: z.number().optional().default(0),
   base_total_cost: z.number().optional().default(0),
-  created_at: z.coerce.date().optional(),
-  updated_at: z.coerce.date().optional(),
+  created_at: z.coerce.date().nullable().optional(),
+  created_by_id: z.string().nullable().optional(),
+  updated_at: z.coerce.date().nullable().optional(),
+  updated_by_id: z.string().nullable().optional(),
+  deleted_at: z.coerce.date().nullable().optional(),
+  deleted_by_id: z.string().nullable().optional(),
 });
 
 export type StockInListItemResponse = z.infer<typeof StockInListItemResponseSchema>;

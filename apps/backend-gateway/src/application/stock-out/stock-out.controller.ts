@@ -117,6 +117,7 @@ export class StockOutController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('stockOut.findAll'))
   @Serialize(StockOutListItemResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @ApiOperation({

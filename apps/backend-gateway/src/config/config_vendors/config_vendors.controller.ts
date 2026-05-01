@@ -111,6 +111,7 @@ export class Config_VendorsController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('vendor.findAll'))
   @Serialize(VendorListItemResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiUserFilterQueries()

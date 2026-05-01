@@ -17,11 +17,12 @@ export type ApplicationRoleDetailResponse = z.infer<typeof ApplicationRoleDetail
 // Application role list item response schema (for findAll)
 export const ApplicationRoleListItemResponseSchema = z.object({
   id: z.string(),
-  application_role_name: z.string().nullable().optional(),
+  business_unit_id: z.string().nullable().optional(),
+  name: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   is_active: z.boolean().nullable().optional(),
-  created_at: z.coerce.date().nullable().optional(),
-  updated_at: z.coerce.date().nullable().optional(),
+  permissions: z.array(z.any()).nullable().optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type ApplicationRoleListItemResponse = z.infer<typeof ApplicationRoleListItemResponseSchema>;

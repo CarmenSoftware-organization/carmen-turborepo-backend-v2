@@ -24,7 +24,7 @@ export const WorkflowDetailResponseSchema = WorkflowResponseSchema
 
 export type WorkflowDetailResponse = z.infer<typeof WorkflowDetailResponseSchema>;
 
-// Workflow list item response schema (for findAll)
+// Workflow list item response schema (for findAll — uses enriched audit block)
 export const WorkflowListItemResponseSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -32,8 +32,7 @@ export const WorkflowListItemResponseSchema = z.object({
   data: z.any().nullable().optional(),
   is_active: z.boolean().optional(),
   description: z.string().nullable().optional(),
-  created_at: z.coerce.date().optional(),
-  updated_at: z.coerce.date().optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type WorkflowListItemResponse = z.infer<typeof WorkflowListItemResponseSchema>;

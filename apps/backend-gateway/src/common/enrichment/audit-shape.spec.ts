@@ -84,7 +84,7 @@ describe('audit-shape', () => {
       ['u2', null], // resolved to "Unknown"
     ]);
 
-    it('moves *_at and converts *_by_id into nested audit object', () => {
+    it('collapses *_at + *_by_id into nested {created,updated,deleted}.{at,id,name}', () => {
       const t: Record<string, unknown> = {
         id: 'x',
         name: 'thing',
@@ -100,12 +100,8 @@ describe('audit-shape', () => {
         id: 'x',
         name: 'thing',
         audit: {
-          created_at: '2026-04-01T00:00:00Z',
-          created_by: { id: 'u1', name: 'John Doe' },
-          updated_at: '2026-04-15T00:00:00Z',
-          updated_by: { id: 'u2', name: 'Unknown' },
-          deleted_at: null,
-          deleted_by: null,
+          created: { at: '2026-04-01T00:00:00Z', id: 'u1', name: 'John Doe' },
+          updated: { at: '2026-04-15T00:00:00Z', id: 'u2', name: 'Unknown' },
         },
       });
     });
@@ -115,12 +111,7 @@ describe('audit-shape', () => {
       mutateToAuditShape(t, new Map());
       expect(t).toEqual({
         audit: {
-          created_at: '2026-04-01T00:00:00Z',
-          created_by: { id: 'ghost', name: 'Unknown' },
-          updated_at: null,
-          updated_by: null,
-          deleted_at: null,
-          deleted_by: null,
+          created: { at: '2026-04-01T00:00:00Z', id: 'ghost', name: 'Unknown' },
         },
       });
     });
@@ -131,7 +122,7 @@ describe('audit-shape', () => {
       expect(t).toEqual({ id: 'x', name: 'thing' });
     });
 
-    it('handles partial fields (only created_*) — fills others as null', () => {
+    it('handles partial fields (only created_*) — omits updated/deleted', () => {
       const t: Record<string, unknown> = {
         id: 'x',
         created_at: '2026-04-01T00:00:00Z',
@@ -141,27 +132,52 @@ describe('audit-shape', () => {
       expect(t).toEqual({
         id: 'x',
         audit: {
-          created_at: '2026-04-01T00:00:00Z',
-          created_by: { id: 'u1', name: 'John Doe' },
-          updated_at: null,
-          updated_by: null,
-          deleted_at: null,
-          deleted_by: null,
+          created: { at: '2026-04-01T00:00:00Z', id: 'u1', name: 'John Doe' },
         },
       });
     });
 
-    it('keeps audit.*_at = null when *_by_id present but *_at absent', () => {
+    it('emits {id,name} (no at) when *_by_id present but *_at absent', () => {
       const t: Record<string, unknown> = { created_by_id: 'u1' };
       mutateToAuditShape(t, map);
       expect(t).toEqual({
         audit: {
-          created_at: null,
-          created_by: { id: 'u1', name: 'John Doe' },
-          updated_at: null,
-          updated_by: null,
-          deleted_at: null,
-          deleted_by: null,
+          created: { id: 'u1', name: 'John Doe' },
+        },
+      });
+    });
+
+    it('emits {at} (no id/name) when *_at present but *_by_id absent (system action)', () => {
+      const t: Record<string, unknown> = { created_at: '2026-04-01T00:00:00Z' };
+      mutateToAuditShape(t, map);
+      expect(t).toEqual({
+        audit: {
+          created: { at: '2026-04-01T00:00:00Z' },
+        },
+      });
+    });
+
+    it('omits audit entirely when all three kinds are null', () => {
+      const t: Record<string, unknown> = {
+        id: 'x',
+        created_at: null,
+        created_by_id: null,
+        updated_at: null,
+        updated_by_id: null,
+        deleted_at: null,
+        deleted_by_id: null,
+      };
+      mutateToAuditShape(t, map);
+      expect(t).toEqual({ id: 'x' });
+    });
+
+    it('serializes Date instances to ISO strings', () => {
+      const d = new Date('2026-04-01T00:00:00.000Z');
+      const t: Record<string, unknown> = { created_at: d, created_by_id: 'u1' };
+      mutateToAuditShape(t, map);
+      expect(t).toEqual({
+        audit: {
+          created: { at: '2026-04-01T00:00:00.000Z', id: 'u1', name: 'John Doe' },
         },
       });
     });
