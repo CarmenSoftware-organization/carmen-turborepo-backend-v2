@@ -18,10 +18,9 @@ export const VendorBusinessTypeDetailResponseSchema = VendorBusinessTypeBaseSche
 
 export type VendorBusinessTypeDetailResponse = z.infer<typeof VendorBusinessTypeDetailResponseSchema>;
 
-// Vendor Business Type list item response schema (for findAll)
+// Vendor Business Type list item response schema (for findAll — uses enriched audit block)
 export const VendorBusinessTypeListItemResponseSchema = VendorBusinessTypeBaseSchema.extend({
-  created_at: z.coerce.date().optional(),
-  updated_at: z.coerce.date().optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type VendorBusinessTypeListItemResponse = z.infer<typeof VendorBusinessTypeListItemResponseSchema>;

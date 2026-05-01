@@ -115,6 +115,7 @@ export class Config_WorkflowsController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('workflow.findAll'))
   @Serialize(WorkflowListItemResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiUserFilterQueries()

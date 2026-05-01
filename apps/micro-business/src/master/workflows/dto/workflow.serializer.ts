@@ -29,8 +29,12 @@ export const WorkflowListItemResponseSchema = z.object({
   data: z.any().nullable().optional(),
   is_active: z.boolean().optional(),
   description: z.string().nullable().optional(),
-  created_at: z.coerce.date().optional(),
-  updated_at: z.coerce.date().optional(),
+  created_at: z.coerce.date().nullable().optional(),
+  created_by_id: z.string().nullable().optional(),
+  updated_at: z.coerce.date().nullable().optional(),
+  updated_by_id: z.string().nullable().optional(),
+  deleted_at: z.coerce.date().nullable().optional(),
+  deleted_by_id: z.string().nullable().optional(),
 });
 
 export type WorkflowListItemResponse = z.infer<typeof WorkflowListItemResponseSchema>;

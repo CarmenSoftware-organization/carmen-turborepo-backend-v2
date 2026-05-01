@@ -50,7 +50,7 @@ export const VendorDetailResponseSchema = z.object({
 
 export type VendorDetailResponse = z.infer<typeof VendorDetailResponseSchema>;
 
-// Vendor list item response schema (for findAll)
+// Vendor list item response schema (for findAll — uses enriched audit block)
 export const VendorListItemResponseSchema = z.object({
   id: z.string(),
   code: z.string(),
@@ -63,9 +63,8 @@ export const VendorListItemResponseSchema = z.object({
   tax_rate: decimalField,
   is_active: z.boolean().optional(),
   dimension: z.any().nullable().optional(),
-  created_at: z.coerce.date().optional(),
-  updated_at: z.coerce.date().optional(),
-  tb_vendor_contact: z.array(VendorContactEmbeddedSchema).optional(),
+  contacts: z.array(VendorContactEmbeddedSchema).optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type VendorListItemResponse = z.infer<typeof VendorListItemResponseSchema>;
