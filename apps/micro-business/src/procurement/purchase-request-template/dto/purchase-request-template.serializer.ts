@@ -128,6 +128,11 @@ export const PurchaseRequestTemplateListItemResponseSchema = z.object({
   note: z.string().nullable().optional(),
   is_active: z.boolean().nullable().optional(),
   created_at: z.coerce.date().nullable().optional(),
+  created_by_id: z.string().nullable().optional(),
+  updated_at: z.coerce.date().nullable().optional(),
+  updated_by_id: z.string().nullable().optional(),
+  deleted_at: z.coerce.date().nullable().optional(),
+  deleted_by_id: z.string().nullable().optional(),
   purchase_request_template_detail: z.array(PurchaseRequestTemplateListDetailItemSchema).nullable().optional(),
 });
 

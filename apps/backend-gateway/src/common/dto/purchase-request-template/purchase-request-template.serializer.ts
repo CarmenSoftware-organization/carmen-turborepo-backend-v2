@@ -125,8 +125,8 @@ export const PurchaseRequestTemplateListItemResponseSchema = z.object({
   workflow_name: z.string().nullable().optional(),
   note: z.string().nullable().optional(),
   is_active: z.boolean().nullable().optional(),
-  created_at: z.coerce.date().nullable().optional(),
   purchase_request_template_detail: z.array(PurchaseRequestTemplateListDetailItemSchema).nullable().optional(),
+  audit: AuditSchema.optional(),
 });
 
 export const PurchaseRequestTemplateMutationResponseSchema = z.object({

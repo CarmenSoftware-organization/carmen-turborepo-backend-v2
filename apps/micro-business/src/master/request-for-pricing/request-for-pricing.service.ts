@@ -376,7 +376,11 @@ export class RequestForPricingService {
       dimension: true,
       doc_version: true,
       created_at: true,
+      created_by_id: true,
       updated_at: true,
+      updated_by_id: true,
+      deleted_at: true,
+      deleted_by_id: true,
       tb_pricelist_template: {
         select: {
           id: true,
@@ -429,7 +433,11 @@ export class RequestForPricingService {
       dimension: item.dimension,
       doc_version: item.doc_version,
       created_at: item.created_at,
+      created_by_id: item.created_by_id,
       updated_at: item.updated_at,
+      updated_by_id: item.updated_by_id,
+      deleted_at: item.deleted_at,
+      deleted_by_id: item.deleted_by_id,
       pricelist_template: item.tb_pricelist_template
         ? {
           id: item.tb_pricelist_template.id,

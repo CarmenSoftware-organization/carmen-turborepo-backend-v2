@@ -66,6 +66,7 @@ export class StockInDetailController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('stockInDetail.findAll'))
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @HttpCode(HttpStatus.OK)
