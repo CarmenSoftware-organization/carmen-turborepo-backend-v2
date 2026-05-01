@@ -116,6 +116,7 @@ export class Config_TaxProfileController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('taxProfile.findAll'))
   @Serialize(TaxProfileListItemResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @HttpCode(HttpStatus.OK)

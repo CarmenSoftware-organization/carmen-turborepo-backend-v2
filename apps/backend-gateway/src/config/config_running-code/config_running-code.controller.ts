@@ -134,6 +134,7 @@ export class Config_RunningCodeController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('runningCode.findAll'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

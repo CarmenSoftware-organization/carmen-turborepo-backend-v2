@@ -37,15 +37,14 @@ export const TaxProfileDetailResponseSchema = TaxProfileResponseSchema.omit({
 
 export type TaxProfileDetailResponse = z.infer<typeof TaxProfileDetailResponseSchema>;
 
-// Tax profile list item response schema (for findAll)
+// Tax profile list item response schema (for findAll — uses enriched audit block)
 export const TaxProfileListItemResponseSchema = z.object({
   id: z.string(),
   name: z.string(),
   tax_rate: decimalFieldRequired,
   is_active: z.boolean().optional(),
   description: z.string().nullable().optional(),
-  created_at: z.coerce.date().optional(),
-  updated_at: z.coerce.date().optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type TaxProfileListItemResponse = z.infer<typeof TaxProfileListItemResponseSchema>;
