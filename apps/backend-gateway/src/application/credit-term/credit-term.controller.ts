@@ -56,6 +56,7 @@ export class CreditTermController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('creditTerm.findAll'))
   @Serialize(CreditTermListItemResponseSchema)
+  @EnrichAuditUsers()
   @ApiOperation({
     summary: 'Get all credit terms',
     description: 'Lists all available vendor payment terms (e.g., Net 30, Net 60, COD), used when setting up vendor agreements and calculating payment due dates on purchase orders.',

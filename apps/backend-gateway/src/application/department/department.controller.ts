@@ -62,6 +62,7 @@ export class DepartmentController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('department.findAll'))
   @Serialize(DepartmentListItemResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @ApiOperation({
