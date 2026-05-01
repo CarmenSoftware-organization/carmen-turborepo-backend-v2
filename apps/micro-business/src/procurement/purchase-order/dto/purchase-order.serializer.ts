@@ -150,7 +150,12 @@ export const PurchaseOrderListItemResponseSchema = z.object({
   workflow_next_stage: z.string().nullable().optional(),
   last_action: z.string().nullable().optional(),
   doc_version: z.number().nullable().optional(),
-  created_at: z.coerce.date().optional(),
+  created_at: z.coerce.date().nullable().optional(),
+  created_by_id: z.string().nullable().optional(),
+  updated_at: z.coerce.date().nullable().optional(),
+  updated_by_id: z.string().nullable().optional(),
+  deleted_at: z.coerce.date().nullable().optional(),
+  deleted_by_id: z.string().nullable().optional(),
 });
 
 export type PurchaseOrderListItemResponse = z.infer<typeof PurchaseOrderListItemResponseSchema>;

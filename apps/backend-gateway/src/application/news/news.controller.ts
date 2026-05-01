@@ -55,6 +55,7 @@ export class NewsController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('news.findAll'))
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @HttpCode(HttpStatus.OK)

@@ -370,6 +370,7 @@ export class PurchaseOrderController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('purchaseOrder.findAll'))
   @Serialize(PurchaseOrderListItemResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @ApiQuery({ name: 'vendor_id', description: 'Filter by Vendor ID', type: 'string', required: false })

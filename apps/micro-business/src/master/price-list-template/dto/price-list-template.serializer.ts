@@ -55,7 +55,11 @@ export const PriceListTemplateListItemResponseSchema = z.object({
   currency: CurrencyEmbeddedSchema,
   products: z.array(PriceListTemplateProductSchema).optional(),
   created_at: z.coerce.date().nullable().optional(),
+  created_by_id: z.string().nullable().optional(),
   updated_at: z.coerce.date().nullable().optional(),
+  updated_by_id: z.string().nullable().optional(),
+  deleted_at: z.coerce.date().nullable().optional(),
+  deleted_by_id: z.string().nullable().optional(),
 });
 
 export type PriceListTemplateListItemResponse = z.infer<typeof PriceListTemplateListItemResponseSchema>;

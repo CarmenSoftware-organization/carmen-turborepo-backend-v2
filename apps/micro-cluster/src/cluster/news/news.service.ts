@@ -54,6 +54,8 @@ export class NewsService {
         created_by_id: true,
         updated_at: true,
         updated_by_id: true,
+        deleted_at: true,
+        deleted_by_id: true,
       },
     });
 
