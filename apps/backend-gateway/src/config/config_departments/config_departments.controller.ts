@@ -141,6 +141,7 @@ export class Config_DepartmentsController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('department.findAll'))
   @Serialize(DepartmentListItemResponseSchema)
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

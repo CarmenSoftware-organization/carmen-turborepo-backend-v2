@@ -60,7 +60,32 @@ docs {
         "name": "Kitchen",
         "description": "Kitchen department",
         "is_active": true,
-        "created_at": "2026-04-29T08:30:00.000Z"
+        "audit": {
+          "created": {
+            "at": "2026-04-29T08:30:00.000Z",
+            "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "name": "John Doe"
+          },
+          "updated": {
+            "at": "2026-04-29T09:15:00.000Z",
+            "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567891",
+            "name": "Jane Smith"
+          }
+        }
+      },
+      {
+        "id": "019638a6-2a00-7c4f-8e46-9b7a52c80c4e",
+        "code": "DEPT-002",
+        "name": "Housekeeping",
+        "description": "Housekeeping department",
+        "is_active": true,
+        "audit": {
+          "created": {
+            "at": "2026-04-29T08:35:00.000Z",
+            "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "name": "John Doe"
+          }
+        }
       }
     ],
     "paginate": {
@@ -74,7 +99,7 @@ docs {
     "status": 200,
     "success": true,
     "message": "Success",
-    "timestamp": "2026-04-29T08:30:00.000Z"
+    "timestamp": "2026-04-29T09:15:00.000Z"
   }
   ```
 
