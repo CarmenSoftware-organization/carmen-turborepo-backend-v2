@@ -48,10 +48,12 @@ export const ClusterListItemResponseSchema = z.object({
   max_license_bu: z.number().nullable().optional(),
   is_active: z.boolean().nullable().optional(),
   info: z.any().nullable().optional(),
+  total_max_license_users: z.number().nullable().optional(),
   _count: z.object({
     tb_business_unit: z.number().nullable().optional(),
     tb_cluster_user: z.number().nullable().optional(),
   }).nullable().optional(),
+  audit: AuditSchema.optional(),
 });
 
 export const ClusterMutationResponseSchema = z.object({

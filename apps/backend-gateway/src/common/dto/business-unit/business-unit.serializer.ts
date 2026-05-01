@@ -63,8 +63,13 @@ export const BusinessUnitDetailResponseSchema = BusinessUnitResponseSchema.omit(
 
 export type BusinessUnitDetailResponse = z.infer<typeof BusinessUnitDetailResponseSchema>;
 
-// Business unit list item response schema
-export const BusinessUnitListItemResponseSchema = BusinessUnitResponseSchema;
+// Business unit list item response schema (audit-enriched)
+export const BusinessUnitListItemResponseSchema = BusinessUnitResponseSchema.omit({
+  created_at: true,
+  updated_at: true,
+}).extend({
+  audit: AuditSchema.optional(),
+});
 
 export type BusinessUnitListItemResponse = z.infer<typeof BusinessUnitListItemResponseSchema>;
 

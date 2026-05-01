@@ -58,6 +58,7 @@ export class ApplicationRoleController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('application-role.findAll'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiOperation({
