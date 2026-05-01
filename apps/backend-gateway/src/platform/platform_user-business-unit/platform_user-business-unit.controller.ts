@@ -122,6 +122,7 @@ export class Platform_UserBusinessUnitController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('userBusinessUnit.findAll'))
+  @EnrichAuditUsers()
   @HttpCode(HttpStatus.OK)
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()

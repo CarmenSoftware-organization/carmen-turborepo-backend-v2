@@ -362,6 +362,12 @@ export class ClusterService {
         user_id: true,
         role: true,
         parent_bu_id: true,
+        created_at: true,
+        created_by_id: true,
+        updated_at: true,
+        updated_by_id: true,
+        deleted_at: true,
+        deleted_by_id: true,
         tb_cluster: {
           select: {
             id: true,
@@ -437,6 +443,12 @@ export class ClusterService {
           cluster: item.tb_cluster,
           user_info: userProfile || null,
           business_unit: businessUnit || null,
+          created_at: item.created_at,
+          created_by_id: item.created_by_id,
+          updated_at: item.updated_at,
+          updated_by_id: item.updated_by_id,
+          deleted_at: item.deleted_at,
+          deleted_by_id: item.deleted_by_id,
         };
       })
       .filter(Boolean);

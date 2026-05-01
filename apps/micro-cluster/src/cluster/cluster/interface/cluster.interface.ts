@@ -59,6 +59,12 @@ export interface IUserClusterDTO {
     name: string;
     code: string
   };
+  created_at?: Date | null;
+  created_by_id?: string | null;
+  updated_at?: Date | null;
+  updated_by_id?: string | null;
+  deleted_at?: Date | null;
+  deleted_by_id?: string | null;
 };
 
 
