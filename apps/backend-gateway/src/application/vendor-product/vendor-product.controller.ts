@@ -121,6 +121,7 @@ export class VendorProductController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('vendorProduct.findAll'))
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @ApiOperation({
     summary: 'Get all vendor products',

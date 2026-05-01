@@ -918,7 +918,11 @@ export class StockOutService {
         info: true,
         dimension: true,
         created_at: true,
+        created_by_id: true,
         updated_at: true,
+        updated_by_id: true,
+        deleted_at: true,
+        deleted_by_id: true,
         tb_stock_out: {
           select: {
             id: true,

@@ -39,7 +39,7 @@ export const StockOutDetailResponseSchema = z.object({
 
 export type StockOutDetailResponse = z.infer<typeof StockOutDetailResponseSchema>;
 
-// Stock Out list item response schema (for findAll)
+// Stock Out list item response schema (for findAll — uses enriched audit block)
 export const StockOutListItemResponseSchema = z.object({
   id: z.string(),
   so_date: z.coerce.date().nullable().optional(),
@@ -57,8 +57,7 @@ export const StockOutListItemResponseSchema = z.object({
   // workflow_current_stage: z.string().nullable().optional(),
   item_count: z.number().optional().default(0),
   base_total_cost: z.number().optional().default(0),
-  created_at: z.coerce.date().optional(),
-  updated_at: z.coerce.date().optional(),
+  audit: AuditSchema.optional(),
 });
 
 export type StockOutListItemResponse = z.infer<typeof StockOutListItemResponseSchema>;

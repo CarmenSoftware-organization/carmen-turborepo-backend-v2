@@ -66,6 +66,7 @@ export class StockOutDetailController extends BaseHttpController {
    */
   @Get()
   @UseGuards(new AppIdGuard('stockOutDetail.findAll'))
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @ApiUserFilterQueries()
   @HttpCode(HttpStatus.OK)
