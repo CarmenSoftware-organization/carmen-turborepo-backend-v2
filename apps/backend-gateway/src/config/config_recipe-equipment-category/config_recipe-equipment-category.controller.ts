@@ -61,6 +61,7 @@ export class Config_RecipeEquipmentCategoryController extends BaseHttpController
   @Get()
   @UseGuards(new AppIdGuard('recipe-equipment-category.findAll'))
   @Serialize(RecipeEquipmentCategoryResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all recipe equipment categories', operationId: 'configRecipeEquipmentCategory_findAll', 'x-description-th': 'ดึงรายการหมวดหมู่อุปกรณ์ทำอาหารทั้งหมด' } as any)

@@ -79,6 +79,7 @@ export class Config_RecipeCuisineController extends BaseHttpController {
   @Get()
   @UseGuards(new AppIdGuard('recipe-cuisine.findAll'))
   @Serialize(RecipeCuisineResponseSchema)
+  @EnrichAuditUsers()
   @ApiVersionMinRequest()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all recipe cuisines', description: 'Returns all cuisine types configured for recipe classification. Used to tag recipes by culinary tradition for menu planning and kitchen specialization management.', operationId: 'configRecipeCuisine_findAll', 'x-description-th': 'ดึงรายการประเภทอาหารทั้งหมดสำหรับการจัดหมวดหมู่สูตรอาหารและการวางแผนเมนู' } as any)
